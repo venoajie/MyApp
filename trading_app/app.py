@@ -23,7 +23,7 @@ def main():
                     "params": {
                         "amount": 40,
                         "instrument_name": "BTC-PERPETUAL",
-                        "label": "market0000234"
+                        "label": "market0000234",
                         "type": "market"
                     },
                     "jsonrpc": "2.0",
