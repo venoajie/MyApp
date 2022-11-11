@@ -2,7 +2,7 @@ import websocket
 import json
 import time
 from datetime import datetime
-
+# https://hatpub.tistory.com/111
 def main():
     
     # 거래소에서 발급 받은 publick, secret key
