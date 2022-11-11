@@ -2,6 +2,10 @@ import websocket
 import json
 import time
 from datetime import datetime
+from loguru import logger as log
+import asyncio
+
+
 # https://hatpub.tistory.com/111
 def main():
     
@@ -35,10 +39,10 @@ def main():
             pass
 
     def on_error(ws, error):
-        print(error)
+        log.debug(error)
 
     def on_close(ws):
-        print("### closed ###")
+        log.error("### closed ###")
 
     def on_open(ws):
         
