@@ -1,19 +1,29 @@
 .PHONY: virtual install build-requirements black isort flake8 clean-pyc clean-build docs clean
 
 help:
+	@echo "install - install dependencies and requirements"
 	@echo "clean - remove all build, test, coverage and Python artifacts"
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
 	@echo "clean-test - remove test and coverage artifacts"
-	@echo "lint - check style with flake8"
-	@echo "deps - install dependencies"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
-	@echo "release - package and upload a release"
-	@echo "dist - package"
 
+swap-on:
+	sudo su
+	sudo fallocate -l 1G /swapfile
+	mkdir /swap && \
+	cd /swap && \
+	fallocate -l 2g 2GB.swap && \
+	mkswap 2GB.swap && \
+	swapon 2GB.swap && \
+	echo "# # # Swap File # # #" >> /etc/fstab && \
+	echo "/swap/2GB.swap none swap sw 0 0" >> /etc/fstab && \
+	mount -a
+	exit
+	sudo swapon
 
 install:
 	sudo apt install python3.8-venv
+	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
 
 clean: clean-build clean-pyc clean-test
@@ -33,26 +43,3 @@ clean-test:
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
-
-lint:
-	flake8 pyfin tests
-
-deps:  ## Install dependencies
-	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
-
-docs:
-	rm -f docs/pyfin.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ pyfin
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	open docs/_build/html/index.html
-
-release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
