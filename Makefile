@@ -15,7 +15,6 @@ swap-on:
 	sudo sysctl vm.swappiness=10
 	sudo sysctl vm.vfs_cache_pressure=50
 	swapon --show               # see what swap files you have active
-	sudo swapoff /swapfile      # disable /swapfile
 	# Create a new 16 GiB swap file in its place (could lock up your computer 
 	# for a few minutes if using a spinning Hard Disk Drive [HDD], so be patient)
 	sudo dd if=/dev/zero of=/swapfile count=4 bs=1G
