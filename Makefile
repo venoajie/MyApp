@@ -14,8 +14,6 @@ swap-on:
 # https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04 
 #https://askubuntu.com/questions/927854/how-do-i-increase-the-size-of-swapfile-without-removing-it-in-the-terminal
 	set -e  # bail if anything goes wrong
-	sudo sysctl vm.swappiness=10 # update swappiness to 10
-	sudo sysctl vm.vfs_cache_pressure=50 # update cache pressure to 50
 	swapon --show               # see what swap files you have active
 	sudo swapoff --all
 	# Create a new 16 GiB swap file in its place (could lock up your computer 
@@ -25,6 +23,8 @@ swap-on:
 	sudo chmod 0600 /swapfile   # only let root read from/write to it, for security
 	sudo swapon /swapfile       # enable it
 	swapon --show               # ensure it is now active
+	sudo sysctl vm.swappiness=10 # update swappiness to 10
+	sudo sysctl vm.vfs_cache_pressure=50 # update cache pressure to 50
 	sudo cp /etc/fstab /etc/fstab.bak
 	echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 	sudo reboot                    
@@ -42,6 +42,7 @@ install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
 	yes | sudo apt-get upgrade && sudo apt update
+	sudo apt-get clean
 
 clean: clean-build clean-pyc clean-test
 
