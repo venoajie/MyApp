@@ -8,7 +8,6 @@ __pycache__/
 *.pickles
 *.db
 *.csv
-*.json
 
 # C extensions
 *.so
