@@ -11,9 +11,6 @@ help:
 swap-on:# https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
 	set -e  # bail if anything goes wrong
 
-	# Obtain amount of swap in Gigabytes
-	awk '/SwapTotal/{printf "%.2f",($2/1048576)}' /proc/meminfo
-	
 	DATE=$(date +%s) # append date of creation to filename
 	filename="/swapfile.""$DATE" # File will be /swapfile.$DATE
 	dd if=/dev/zero  of="$filename" bs=1"$2" count="$1"
