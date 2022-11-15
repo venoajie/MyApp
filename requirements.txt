@@ -8,3 +8,4 @@ unsync==1.4.0
 websockets
 orjson
 loguru
+python-dotenv
