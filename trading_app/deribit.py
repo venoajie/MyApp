@@ -17,6 +17,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 from loguru import logger as log
 from dask import delayed, compute    
+import os
 #from utils import formula
 
 # installed
@@ -24,6 +25,17 @@ import websockets
 import orjson
 # user defined formula
 from utils import save_open_files
+
+from os.path import join, dirname
+from configuration import load_dotenv
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
+print (SECRET_KEY)
+print (DATABASE_PASSWORD)
 
 
 class main:
