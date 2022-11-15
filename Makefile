@@ -33,9 +33,9 @@ save-git-credential:
 	git config --global credential.helper store
 
 install:
-	sudo apt update
+	sudo apt-get upgrade && sudo apt update
 	sudo apt-get install --upgrade python3 -y # check pyhton update
-	sudo apt install --upgrade  python3-pip # install pip
+	sudo apt-get install --upgrade python3-pip -y  # install pip
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
 
