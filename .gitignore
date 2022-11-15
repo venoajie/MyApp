@@ -3,6 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# saved data/db
+*.pickle
+*.pickles
+*.db
+*.csv
+*.json
+
 # C extensions
 *.so
 
