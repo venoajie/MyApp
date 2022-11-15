@@ -15,10 +15,10 @@ swap-on:
 	sudo sysctl vm.swappiness=10 # update swappiness to 10
 	sudo sysctl vm.vfs_cache_pressure=50 # update cache pressure to 50
 	swapon --show               # see what swap files you have active
-	sudo swapoff -v /swapfile
-	# Create a new 4 GiB swap file in its place (could lock up your computer 
+	sudo swapoff --all
+	# Create a new 16 GiB swap file in its place (could lock up your computer 
 	# for a few minutes if using a spinning Hard Disk Drive [HDD], so be patient)
-	sudo dd if=/dev/zero of=/swapfile bs=1G count=4 oflag=append conv=notrunc
+	sudo dd if=/dev/zero of=/swapfile count=4 bs=1G
 	sudo mkswap /swapfile       # turn this new file into swap space
 	sudo chmod 0600 /swapfile   # only let root read from/write to it, for security
 	sudo swapon /swapfile       # enable it
