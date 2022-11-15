@@ -11,22 +11,12 @@ help:
 	@echo "release - package and upload a release"
 	@echo "dist - package"
 
-VENV=makefile_venv
 
-virtual_env:
-	python3 -m venv $(VENV)
-	. $(VENV)/bin/activate
+virtual: .venv/bin/pip # Creates an isolated python 3 environment
 
-welcome:
-# Example: make welcome name=dee
-	@echo "Hi" $(name)". Welcome to my blog, hope you like the information."
-	@echo "Let's connect" $(name)
-	@echo "Your username will be" $(name)"_friend"
-
-env_activate:
-	@echo ">>>>>>>>>>>>>>>>>> Make sure to activate virtual environment again <<<<<<<<<<<<<<<<<<<<<<<<"
-
-
+.venv/bin/pip:
+	virtualenv -p /usr/bin/python3 .venv
+	
 clean: clean-build clean-pyc clean-test
 
 clean-build:
@@ -50,11 +40,6 @@ lint:
 
 deps:  ## Install dependencies
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
-
-virtual: .venv/bin/pip # Creates an isolated python 3 environment
-
-.venv/bin/pip:
-	virtualenv -p /usr/bin/python3 .venv
 
 install:
 	pip3 install -r requirements.txt
