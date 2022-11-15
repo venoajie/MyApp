@@ -32,11 +32,6 @@ from dotenv import load_dotenv
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-SECRET_KEY = os.environ.get("SECRET_KEY")
-DATABASE_PASSWORD = os.environ.get("DATABASE_PASSWORD")
-print (SECRET_KEY)
-print (DATABASE_PASSWORD)
-
 
 class main:
     
@@ -413,9 +408,8 @@ if __name__ == "__main__":
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
     # DBT Client ID
-    client_id: str = '7aDpbWD0'#'F1Gp2cmS'
-    # DBT Client Secret
-    client_secret: str = 'M5xtKo6i-maY0y1MaO6a4uV1S6SKhGaraCQ_vY_D_pE'#'gp9Vh9ft9qeaLWwBlCTnhobz1MwDFLrg84L9Spx7haQ'
+    client_id: str = os.environ.get("client_id")
+    client_secret: str = os.environ.get("client_secret")
 
     app = main(
         ws_connection_url=ws_connection_url,
