@@ -8,7 +8,8 @@ help:
 	@echo "clean-test - remove test and coverage artifacts"
 
 swap-on:
-	sudo su fallocate -l 1G /swapfile
+	sudo su
+	sudo fallocate -l 1G /swapfile
 	mkdir /swap && \
 	cd /swap && \
 	fallocate -l 2g 2GB.swap && \
