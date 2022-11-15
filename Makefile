@@ -6,20 +6,21 @@ help:
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
 	@echo "clean-test - remove test and coverage artifacts"
+	@echo "swap-on - allocate swap"
 
-swap-on:
-	sudo su
-	sudo fallocate -l 1G /swapfile
-	mkdir /swap && \
-	cd /swap && \
-	fallocate -l 2g 2GB.swap && \
-	mkswap 2GB.swap && \
-	swapon 2GB.swap && \
-	echo "# # # Swap File # # #" >> /etc/fstab && \
-	echo "/swap/2GB.swap none swap sw 0 0" >> /etc/fstab && \
-	mount -a
-	exit
-	sudo swapon
+swap-on:# https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
+	set -e  # bail if anything goes wrong
+
+	# Obtain amount of swap in Gigabytes
+	awk '/SwapTotal/{printf "%.2f",($2/1048576)}' /proc/meminfo
+	
+	DATE=$(date +%s) # append date of creation to filename
+	filename="/swapfile.""$DATE" # File will be /swapfile.$DATE
+	dd if=/dev/zero  of="$filename" bs=1"$2" count="$1"
+	chmod 600 "$filename"
+	mkswap "$filename" && 
+	swapon "$filename" && 
+	>> /etc/fstab &&
 
 install:
 	sudo apt install python3.8-venv
