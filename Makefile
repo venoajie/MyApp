@@ -11,28 +11,17 @@ help:
 	@echo "release - package and upload a release"
 	@echo "dist - package"
 
-
-
 VENV=makefile_venv
 
 virtual_env:
 	python3 -m venv $(VENV)
 	. $(VENV)/bin/activate
 
-
 welcome:
 # Example: make welcome name=dee
 	@echo "Hi" $(name)". Welcome to my blog, hope you like the information."
 	@echo "Let's connect" $(name)
 	@echo "Your username will be" $(name)"_friend"
-
-
-install:
-	make virtual_env
-	python3 -m pip install --upgrade pip
-	python3 -m pip install pyyaml==5.1.2
-	python3 -m pip install pandas
-	@make env_activate
 
 env_activate:
 	@echo ">>>>>>>>>>>>>>>>>> Make sure to activate virtual environment again <<<<<<<<<<<<<<<<<<<<<<<<"
