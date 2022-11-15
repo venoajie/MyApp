@@ -19,6 +19,14 @@ virtual_env:
 	python3 -m venv $(VENV)
 	. $(VENV)/bin/activate
 
+
+welcome:
+# Example: make welcome name=dee
+	@echo "Hi" $(name)". Welcome to my blog, hope you like the information."
+	@echo "Let's connect" $(name)
+	@echo "Your username will be" $(name)"_friend"
+
+
 install:
 	make virtual_env
 	python3 -m pip install --upgrade pip
