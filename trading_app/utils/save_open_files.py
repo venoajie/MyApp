@@ -1,13 +1,15 @@
 import pickle
 
 import os
-#https://www.reddit.com/r/learnpython/comments/44essn/pickle_is_only_storing_files_into_home_directory/
+
 BASEDIR = os.path.dirname(os.path.realpath(__file__))
 print (BASEDIR)
+
 def save_file_to_pickle (file_name: str, data: list, saved_directory:str=None)-> None:
 
     """
-    https://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict-or-any-other-python-object
+    # https://www.reddit.com/r/learnpython/comments/44essn/pickle_is_only_storing_files_into_home_directory/
+    # https://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict-or-any-other-python-object
     """
         
     file_name=f"""{file_name}.pickle"""
