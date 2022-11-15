@@ -1,4 +1,4 @@
-.PHONY: virtual install build-requirements black isort flake8 clean-pyc clean-build docs clean
+.PHONY: clean-pyc clean-build docs clean
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -11,59 +11,40 @@ help:
 	@echo "release - package and upload a release"
 	@echo "dist - package"
 
+NAME := superproject
+VENV := $(shell echo $${VIRTUAL_ENV-.venv})
+PY3 := $(shell command -v python3 2> /dev/null)
+PYTHON := $(VENV)/bin/python
+INSTALL_STAMP := $(VENV)/.install.stamp
 
-VENV=trading
 
-virtual_env:
-	python3 -m venv $(VENV)
-	. $(VENV)/bin/activate
+$(PYTHON):
+        @if [ -z $(PY3) ]; then echo "Python 3 could not be found."; exit 2; fi
+        $(PY3) -m venv $(VENV)
 
-install:
-	pip3 install python3-venv
-	make virtual_env
-	pip3 install -r requirements.txt
-	@make env_activate
+install: $(INSTALL_STAMP)
+$(INSTALL_STAMP): $(PYTHON) requirements.txt constraints.txt
+        $(PIP_INSTALL) -Ur requirements.txt -c constraints.txt
+        touch $(INSTALL_STAMP)
 
-clean: clean-build clean-pyc clean-test
+.PHONY: clean
+clean:
+        find . -type d -name "__pycache__" | xargs rm -rf {};
+        rm -rf $(VENV) $(INSTALL_STAMP) .coverage .mypy_cache
 
-clean-build:
-	rm -fr build/
-	rm -fr dist/
-	rm -fr *.egg-info
+.PHONY: lint
+lint: $(INSTALL_STAMP)
+        $(VENV)/bin/isort --profile=black --lines-after-imports=2 --check-only ./tests/ $(NAME) --virtual-env=$(VENV)
+        $(VENV)/bin/black --check ./tests/ $(NAME) --diff
+        $(VENV)/bin/flake8 --ignore=W503,E501 ./tests/ $(NAME)
+        $(VENV)/bin/mypy ./tests/ $(NAME) --ignore-missing-imports
+        $(VENV)/bin/bandit -r $(NAME) -s B608
 
-clean-pyc:
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+.PHONY: format
+format: $(INSTALL_STAMP)
+        $(VENV)/bin/isort --profile=black --lines-after-imports=2 ./tests/ $(NAME) --virtual-env=$(VENV)
+        $(VENV)/bin/black ./tests/ $(NAME)
 
-clean-test:
-	rm -fr .tox/
-	rm -f .coverage
-	rm -fr htmlcov/
-
-lint:
-	flake8 pyfin tests
-
-deps:  ## Install dependencies
-	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
-
-install:
-	pip3 install -r requirements.txt
-
-docs:
-	rm -f docs/pyfin.rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ pyfin
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	open docs/_build/html/index.html
-
-release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
-dist: clean
-	python setup.py sdist
-	python setup.py bdist_wheel
-	ls -l dist
+.PHONY: test
+test: $(INSTALL_STAMP)
+        $(PYTHON) -m pytest ./tests/ --cov-report term-missing --cov-fail-under 100 --cov $(NAME)
