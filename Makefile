@@ -24,5 +24,5 @@ $(PYTHON):
 
 install: $(INSTALL_STAMP)
 $(INSTALL_STAMP): $(PYTHON) requirements.txt
-	$(PIP_INSTALL) -Ur requirements.txt
+	$(PIP_INSTALL) -r requirements.txt
 	touch $(INSTALL_STAMP)
