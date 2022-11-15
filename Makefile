@@ -8,16 +8,24 @@ help:
 	@echo "clean-test - remove test and coverage artifacts"
 	@echo "swap-on - allocate swap"
 
-swap-on:# https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04
+swap-on:
+# https://www.digitalocean.com/community/tutorials/how-to-add-swap-space-on-ubuntu-20-04 
+#https://askubuntu.com/questions/927854/how-do-i-increase-the-size-of-swapfile-without-removing-it-in-the-terminal
 	set -e  # bail if anything goes wrong
-
-	DATE=$(date +%s) # append date of creation to filename
-	filename="/swapfile.""$DATE" # File will be /swapfile.$DATE
-	dd if=/dev/zero  of="$filename" bs=1"$2" count="$1"
-	chmod 600 "$filename"
-	mkswap "$filename" && 
-	swapon "$filename" && 
-	>> /etc/fstab &&
+	sudo sysctl vm.swappiness=10
+	sudo sysctl vm.vfs_cache_pressure=50
+	swapon --show               # see what swap files you have active
+	sudo swapoff /swapfile      # disable /swapfile
+	# Create a new 16 GiB swap file in its place (could lock up your computer 
+	# for a few minutes if using a spinning Hard Disk Drive [HDD], so be patient)
+	sudo dd if=/dev/zero of=/swapfile count=4 bs=1G
+	sudo mkswap /swapfile       # turn this new file into swap space
+	sudo chmod 0600 /swapfile   # only let root read from/write to it, for security
+	sudo swapon /swapfile       # enable it
+	swapon --show               # ensure it is now active
+	sudo cp /etc/fstab /etc/fstab.bak
+	echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+	reboot                    
 
 install:
 	sudo apt install python3.8-venv
