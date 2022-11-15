@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs clean
+.PHONY: virtual install build-requirements black isort flake8 clean-pyc clean-build docs clean
 
 help:
 	@echo "clean - remove all build, test, coverage and Python artifacts"
@@ -35,15 +35,15 @@ lint:
 deps:  ## Install dependencies
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 
-requirements:
-    pip3 install -r requirements.txt
+virtual: .venv/bin/pip # Creates an isolated python 3 environment
 
-/opt/virtual_env:
-    # create virtual env if folder not exists
-    python -m venv /opt/virtual_env
+.venv/bin/pip:
+	virtualenv -p /usr/bin/python3 .venv
 
-virtual: /opt/virtual_env
+install:
+	.venv/bin/pip install -Ur requirements.txt
 
+	
 docs:
 	rm -f docs/pyfin.rst
 	rm -f docs/modules.rst
