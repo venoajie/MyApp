@@ -35,14 +35,14 @@ lint:
 deps:  ## Install dependencies
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 
+requirements:
+    pip3 install -r requirements.txt
+
 /opt/virtual_env:
     # create virtual env if folder not exists
     python -m venv /opt/virtual_env
 
 virtual: /opt/virtual_env
-
-requirements:
-    pip3 install -r requirements.txt
 
 docs:
 	rm -f docs/pyfin.rst
