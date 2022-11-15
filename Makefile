@@ -23,6 +23,6 @@ $(PYTHON):
 	$(PY3) -m venv $(VENV)
 
 install: $(INSTALL_STAMP)
-$(INSTALL_STAMP): $(PYTHON) requirements.txt constraints.txt
-	$(PIP_INSTALL) -Ur requirements.txt -c constraints.txt
+$(INSTALL_STAMP): $(PYTHON) requirements.txt.txt
+	$(PIP_INSTALL) -Ur requirements.txt -c .txt
 	touch $(INSTALL_STAMP)
