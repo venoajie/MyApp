@@ -12,10 +12,14 @@ help:
 	@echo "dist - package"
 
 
-virtual: .venv/bin/pip # Creates an isolated python 3 environment
+VENV=makefile_venv
 
-.venv/bin/pip:
-	virtualenv -p /usr/bin/python3 .venv
+virtual_env:
+	python3 -m venv $(VENV)
+	. $(VENV)/bin/activate
+
+env_activate:
+	@echo ">>>>>>>>>>>>>>>>>> Make sure to activate virtual environment again <<<<<<<<<<<<<<<<<<<<<<<<"
 
 clean: clean-build clean-pyc clean-test
 
@@ -42,8 +46,6 @@ deps:  ## Install dependencies
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 
 install:
-
-	.venv/bin/pip3 install -r requirements.txt
 	pip3 install -r requirements.txt
 
 docs:
