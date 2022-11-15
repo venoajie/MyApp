@@ -12,17 +12,47 @@ help:
 	@echo "dist - package"
 
 
-NAME := superproject
-VENV := $(shell echo $${VIRTUAL_ENV-.venv})
-PY3 := $(shell command -v python3 2> /dev/null)
-PYTHON := $(VENV)/bin/python
-INSTALL_STAMP := $(VENV)/.install.stamp
+install:
+	sudo apt install python3.8-venv
+	pip3 install -r requirements.txt
 
-$(PYTHON):
-	@if [ -z $(PY3) ]; then echo "Python 3 could not be found."; exit 2; fi
-	$(PY3) -m venv $(VENV)
+clean: clean-build clean-pyc clean-test
 
-install: $(INSTALL_STAMP)
-$(INSTALL_STAMP): $(PYTHON) requirements.txt
-	$(PIP_INSTALL) -r requirements.txt
-	touch $(INSTALL_STAMP)
+clean-build:
+	rm -fr build/
+	rm -fr dist/
+	rm -fr *.egg-info
+
+clean-pyc:
+	find . -name '*.pyc' -exec rm -f {} +
+	find . -name '*.pyo' -exec rm -f {} +
+	find . -name '*~' -exec rm -f {} +
+	find . -name '__pycache__' -exec rm -fr {} +
+
+clean-test:
+	rm -fr .tox/
+	rm -f .coverage
+	rm -fr htmlcov/
+
+lint:
+	flake8 pyfin tests
+
+deps:  ## Install dependencies
+	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
+
+docs:
+	rm -f docs/pyfin.rst
+	rm -f docs/modules.rst
+	sphinx-apidoc -o docs/ pyfin
+	$(MAKE) -C docs clean
+	$(MAKE) -C docs html
+	open docs/_build/html/index.html
+
+release: clean
+	python setup.py sdist upload
+	python setup.py bdist_wheel upload
+
+dist: clean
+	python setup.py sdist
+	python setup.py bdist_wheel
+	ls -l dist
