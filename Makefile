@@ -12,14 +12,17 @@ help:
 	@echo "dist - package"
 
 
-VENV=makefile_venv
+VENV=trading
 
 virtual_env:
 	python3 -m venv $(VENV)
 	. $(VENV)/bin/activate
 
-env_activate:
-	@echo ">>>>>>>>>>>>>>>>>> Make sure to activate virtual environment again <<<<<<<<<<<<<<<<<<<<<<<<"
+install:
+	pip3 install python3-venv
+	make virtual_env
+	pip3 install -r requirements.txt
+	@make env_activate
 
 clean: clean-build clean-pyc clean-test
 
