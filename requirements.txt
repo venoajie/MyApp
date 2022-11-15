@@ -5,4 +5,5 @@ numpy==1.23.2
 requests==2.28.1
 #rocketry==2.4.1
 unsync==1.4.0
+websockets
 orjson
