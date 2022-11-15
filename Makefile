@@ -41,9 +41,9 @@ virtual: .venv/bin/pip # Creates an isolated python 3 environment
 	virtualenv -p /usr/bin/python3 .venv
 
 install:
-	.venv/bin/pip install -Ur requirements.txt
+	.venv/bin/pip3 install -r requirements.txt
 
-	
+
 docs:
 	rm -f docs/pyfin.rst
 	rm -f docs/modules.rst
