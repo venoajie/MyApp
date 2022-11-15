@@ -16,7 +16,7 @@ virtual: .venv/bin/pip # Creates an isolated python 3 environment
 
 .venv/bin/pip:
 	virtualenv -p /usr/bin/python3 .venv
-	
+
 clean: clean-build clean-pyc clean-test
 
 clean-build:
@@ -42,6 +42,8 @@ deps:  ## Install dependencies
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 
 install:
+
+	.venv/bin/pip3 install -r requirements.txt
 	pip3 install -r requirements.txt
 
 docs:
