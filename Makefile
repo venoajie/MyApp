@@ -2,6 +2,8 @@
 
 help:
 	@echo "install - install dependencies and requirements"
+	@echo "save-git-credential - save git credential for private repo"
+	
 	@echo "clean - remove all build, test, coverage and Python artifacts"
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
@@ -27,8 +29,10 @@ swap-on:
 	echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 	sudo reboot                    
 
+save-git-credential:
+	git config --global credential.helper store
+
 install:
-	sudo apt install python3.8-venv
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
 
