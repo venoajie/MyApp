@@ -38,6 +38,7 @@ install:
 	sudo apt-get install --upgrade python3-pip -y  # install pip
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
+	sudo apt-get upgrade && sudo apt update
 
 clean: clean-build clean-pyc clean-test
 
