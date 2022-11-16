@@ -8,6 +8,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 from time import sleep
 import os
+from functools import lru_cache
 #from utils import formula
 
 # installed
@@ -19,7 +20,7 @@ from dask import delayed, compute
 from loguru import logger as log
 from os.path import join, dirname
 from dotenv import load_dotenv
-
+from dataclassy import dataclass
 # user defined formula
 from utils import save_open_files
 
@@ -32,7 +33,9 @@ sys.path.append(root + '/python')
 
 log.warning(root)
 log.warning(sys.path.append(root + '/python'))
+none_data = [None, [], '0.0', 0]
 
+#@dataclass(unsafe_hash=True, slots=True)
 class main:
     
     '''
@@ -92,7 +95,8 @@ class main:
         self.loop.run_until_complete(
             self.ws_manager()
             )
-
+        
+    #@lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
             self.ws_connection_url,
@@ -128,6 +132,7 @@ class main:
                 message_channel: str = None
                 balance_eth: float = []
                 log.debug(message)
+                #await self.ws_manager_private()
                 
                 #log.critical(message_or)
 
@@ -161,22 +166,6 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                 
-                if message_channel == 'trades.BTC-PERPETUAL.raw':
-                    data_trades: list = message['params']['data']
-                    log.info(data_trades)
-                if message_channel == 'user.portfolio.btc':
-                    data_portfolio: list = message['params']['data']
-                    log.error(data_portfolio)
-                if message_channel == 'user.portfolio.eth':
-                    data_portfolio: list = message['params']['data']
-                    balance_eth: list = data_portfolio ['balance']
-                    log.critical(data_portfolio)
-                    log.critical(balance_eth)                        
-                
-                if message_channel == 'user.orders.ETH-PERPETUAL.raw':
-                    data_orders: list = message['params']['data']
-                    log.debug(data_orders)
-                    
                 if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
                     data_orders: list = message['params']['data']
                     
@@ -189,14 +178,44 @@ class main:
                     best_bid_prc = bids[0][0]
                     best_ask_prc = asks[0][0]
                     #save_open_files.save_file('order_books',data_orders)
+                    
+                    
+                if message_channel == 'user.portfolio.eth':
+                    data_portfolio: list = message['params']['data']
+                    balance_eth: list = data_portfolio ['balance']
+                    log.critical(data_portfolio)
+                    log.critical(balance_eth)   
                     log.warning(best_bid_prc)
-                    log.error(best_ask_prc)
+                    log.error(best_ask_prc) 
+                    
+                if message_channel == 'user.portfolio.eth':
+                    data_portfolio: list = message['params']['data']
+                    balance_eth: list = data_portfolio ['balance']
+                    log.critical(data_portfolio)
+                    log.critical(balance_eth)
+                    
+                    if balance_eth not in none_data:
+                        save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
+                    
+                    if balance_eth in none_data:
+                        balance = save_open_files.open_file_pickle('portfolio-eth')
+                        log.warning(balance)
+                        
+                if message_channel == 'trades.BTC-PERPETUAL.raw':
+                    data_trades: list = message['params']['data']
+                    log.info(data_trades)
+                if message_channel == 'user.portfolio.btc':
+                    data_portfolio: list = message['params']['data']
+                    log.error(data_portfolio)
+                
+                if message_channel == 'user.orders.ETH-PERPETUAL.raw':
+                    data_orders: list = message['params']['data']
+                    log.debug(data_orders)
                     
             else:
                 logging.info('WebSocket connection has broken.')
-                sys.exit(1)
+                sys.exit(1)            
                 
-
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
