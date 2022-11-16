@@ -138,7 +138,8 @@ class main:
                 #message: Dict = orjson.dumps(message)
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                balance_eth: float = []
+                message_channel_list: str = None
+                balance_eth: float = list(message_channel)
                 log.debug(message)
                 #await self.ws_manager_private()
                 
@@ -174,7 +175,8 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                 
-                if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
+                if 'ETH' in list(message):
+                    
                     data_orders: list = message['params']['data']
                     
                     log.error(message_channel)
@@ -195,7 +197,7 @@ class main:
                     
                     #if balance_eth not in none_data:
                     #    save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
-                   # 
+                # 
                     #if balance_eth in none_data:
                     #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
                     #    log.warning(balance)
