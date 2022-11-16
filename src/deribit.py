@@ -71,6 +71,7 @@ class main:
         + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
         + https://sammchardy.github.io/async-binance-basics/
         + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
+        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
@@ -123,6 +124,13 @@ class main:
                     )
                 )
             
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='book.ETH-PERPETUAL.none.20.raw'
+                    )
+                )
+            
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -166,7 +174,7 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                 
-                if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
+                if message_channel == 'book.ETH-PERPETUAL.none.20.raw':
                     data_orders: list = message['params']['data']
                     
                     log.error(message_channel)
@@ -179,20 +187,24 @@ class main:
                     best_ask_prc = asks[0][0]
                     #save_open_files.save_file('order_books',data_orders)
                     
-                    
-                if message_channel == 'user.portfolio.eth':
-                    data_portfolio: list = message['params']['data']
-                    balance_eth: list = data_portfolio ['balance']
-                    log.critical(data_portfolio)
-                    log.critical(balance_eth)
-                    
-                    if balance_eth not in none_data:
-                        save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
-                    
-                    if balance_eth in none_data:
-                        balance = save_open_files.open_file_pickle('portfolio-eth')
-                        log.warning(balance)
                         
+                    if message_channel == 'user.portfolio.eth':
+                        data_portfolio: list = message['params']['data']
+                        balance_eth: list = data_portfolio ['balance']
+                        log.critical(data_portfolio)
+                        log.critical(balance_eth)
+                        
+                        if balance_eth not in none_data:
+                            save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
+                        
+                        if balance_eth in none_data:
+                            balance = save_open_files.open_file_pickle('portfolio-eth')
+                            log.warning(balance)
+                    
+                    if message_channel == 'user.orders.ETH-PERPETUAL.raw':
+                        data_orders: list = message['params']['data']
+                        log.debug(data_orders)
+                                
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
                     data_trades: list = message['params']['data']
                     log.info(data_trades)
@@ -200,9 +212,6 @@ class main:
                     data_portfolio: list = message['params']['data']
                     log.error(data_portfolio)
                 
-                if message_channel == 'user.orders.ETH-PERPETUAL.raw':
-                    data_orders: list = message['params']['data']
-                    log.debug(data_orders)
                     
             else:
                 logging.info('WebSocket connection has broken.')
