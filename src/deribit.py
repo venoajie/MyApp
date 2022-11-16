@@ -142,7 +142,7 @@ class main:
                 log.debug(message)
                 #await self.ws_manager_private()
                 
-                #log.critical(message_or)
+                log.critical(list(message))
 
                 if 'id' in list(message):
                     if message['id'] == 9929:
