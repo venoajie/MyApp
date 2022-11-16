@@ -171,7 +171,7 @@ class main:
                         await self.heartbeat_response()
 
                 if 'params' in list(message):
-                    log.warning((message)['params'])
+                    log.warning((message)['params']['channel'])
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
