@@ -187,19 +187,18 @@ class main:
                     best_ask_prc = asks[0][0]
                     #save_open_files.save_file('order_books',data_orders)
                     
-                        
-                    if message_channel == 'user.portfolio.eth':
-                        data_portfolio: list = message['params']['data']
-                        balance_eth: list = data_portfolio ['balance']
-                        log.critical(data_portfolio)
-                        log.critical(balance_eth)
-                        
-                        if balance_eth not in none_data:
-                            save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
-                        
-                        if balance_eth in none_data:
-                            balance = save_open_files.open_file_pickle('portfolio-eth')
-                            log.warning(balance)
+                    
+                    data_portfolio: list = message['params']['data']
+                    balance_eth: list = data_portfolio ['balance']
+                    log.critical(data_portfolio)
+                    log.critical(balance_eth)
+                    
+                    if balance_eth not in none_data:
+                        save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
+                    
+                    if balance_eth in none_data:
+                        balance = save_open_files.open_file_pickle('portfolio-eth')
+                        log.warning(balance)
                     
                     if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                         data_orders: list = message['params']['data']
