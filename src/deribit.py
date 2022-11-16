@@ -193,12 +193,12 @@ class main:
                     #balance_eth: list = data_portfolio ['balance']
                     #log.critical(balance_eth)
                     
-                    if balance_eth not in none_data:
-                        save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
-                    
-                    if balance_eth in none_data:
-                        balance = save_open_files.open_file_pickle('portfolio-eth')
-                        log.warning(balance)
+                    #if balance_eth not in none_data:
+                    #    save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
+                   # 
+                    #if balance_eth in none_data:
+                    #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                    #    log.warning(balance)
                     
                     if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                         data_orders: list = message['params']['data']
