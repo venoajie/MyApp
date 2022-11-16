@@ -127,7 +127,7 @@ class main:
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='book.ETH-PERPETUAL.none.20.raw'
+                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
                     )
                 )
             
