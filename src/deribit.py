@@ -189,8 +189,8 @@ class main:
                     
                     
                     data_portfolio: list = message['params']['data']
-                    balance_eth: list = data_portfolio ['balance']
                     log.critical(data_portfolio)
+                    balance_eth: list = data_portfolio ['balance']
                     log.critical(balance_eth)
                     
                     if balance_eth not in none_data:
