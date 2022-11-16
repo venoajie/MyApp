@@ -176,7 +176,7 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                                     
-                    if 'ETH' in message['params']:
+                    if ['ETH','eth'] in message['params']:
                     
                         log.error((message)['result'])
                         data_orders: list = message['params']['data']
