@@ -139,7 +139,6 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                balance_eth: float = list(message_channel)
                 log.debug(message)
                 #await self.ws_manager_private()
                 
