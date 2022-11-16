@@ -173,10 +173,8 @@ class main:
                 if 'params' in list(message):
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
-                
-                if 'result' in list(message):
-                    
-                    if 'ETH' in (message)['result']:
+                                    
+                    if 'ETH' in message['params']:
                     
                         log.error((message)['result'])
                         data_orders: list = message['params']['data']
