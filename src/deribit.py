@@ -178,7 +178,7 @@ class main:
                                     
                     if 'ETH' or 'eth' in message['params']['channel']:
                     
-                        log.error((message)['result'])
+                        log.error((message))
                         data_orders: list = message['params']['data']
                         
                         log.error(message_channel)
