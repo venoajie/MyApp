@@ -190,8 +190,8 @@ class main:
                     
                     data_portfolio: list = message['params']['data']
                     log.critical(data_portfolio)
-                    balance_eth: list = data_portfolio ['balance']
-                    log.critical(balance_eth)
+                    #balance_eth: list = data_portfolio ['balance']
+                    #log.critical(balance_eth)
                     
                     if balance_eth not in none_data:
                         save_open_files.save_file_to_pickle('portfolio-eth', balance_eth)
