@@ -184,14 +184,6 @@ class main:
                     data_portfolio: list = message['params']['data']
                     balance_eth: list = data_portfolio ['balance']
                     log.critical(data_portfolio)
-                    log.critical(balance_eth)   
-                    log.warning(best_bid_prc)
-                    log.error(best_ask_prc) 
-                    
-                if message_channel == 'user.portfolio.eth':
-                    data_portfolio: list = message['params']['data']
-                    balance_eth: list = data_portfolio ['balance']
-                    log.critical(data_portfolio)
                     log.critical(balance_eth)
                     
                     if balance_eth not in none_data:
