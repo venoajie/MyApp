@@ -174,7 +174,7 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                 
-                if message_channel == 'book.ETH-PERPETUAL.none.20.raw':
+                if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
                     data_orders: list = message['params']['data']
                     
                     log.error(message_channel)
