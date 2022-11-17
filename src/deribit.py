@@ -132,6 +132,11 @@ class main:
                     )
                 )
             
+            self.loop.create_task(
+                self.ws_operation_get_positions('ETH'
+                    )
+                )
+            
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -396,6 +401,29 @@ class main:
                     "id": 55,
                     "params": params
                     }
+
+
+    async def ws_operation_get_positions(
+        self,
+        currency: str
+            ) -> None:
+        """
+        Requests `public/subscribe` or `public/unsubscribe`
+        to DBT's API for the specific WebSocket Channel.
+        """
+        await asyncio.sleep(5)
+        params = {
+            "currency": currency,
+        }
+        
+
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": f"public/get_positions",
+                    "id": 55,
+                    "params": params
+                    }
+
 
         await self.websocket_client.send(
             json.dumps(
