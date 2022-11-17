@@ -78,13 +78,13 @@ def send_order (client_id, client_secret, endpoint, instrument, type, amount, la
             client_secret=client_secret,
             )
         )
-def get_position (client_id, client_secret, endpoint, currency):
+async def get_position (client_id, client_secret, endpoint, currency):
         
     params =  {
                 "currency": currency
                 }
     
-    main(
+    await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
