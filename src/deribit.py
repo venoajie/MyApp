@@ -72,6 +72,7 @@ class main:
         + https://sammchardy.github.io/async-binance-basics/
         + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
         + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
+        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
@@ -194,11 +195,11 @@ class main:
                         
                         data_portfolio: list = message['params']['data']
                         log.critical(data_portfolio)
-                        #balance_eth: list = data_portfolio ['balance']
+                        balance_eth: list = data_portfolio ['balance']
                         #log.critical(balance_eth)
                         
-                        #if balance_eth not in none_data:
-                        #    save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
+                        if balance_eth not in none_data:
+                            save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
                     # 
                         #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
