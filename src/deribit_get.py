@@ -36,7 +36,6 @@ async def main(
     # connection_url: str = 'https://www.deribit.com/api/v2/'
     # DBT TEST RESToverHTTP Connection URL
     connection_url: str = 'https://test.deribit.com/api/v2/'
-    print(connection_url)
 
     # DBT [POST] RESToverHTTP Payload
     payload: Dict = {
@@ -45,20 +44,16 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }    
-    print(payload)
+
     async with aiohttp.ClientSession() as session:
         async with session.post(
             connection_url+endpoint,
             auth=BasicAuth(client_id, client_secret),
             json=payload
                 ) as response:
-            # RESToverHTTP Status Code
-            status_code: int = response.status
-            logging.info(f'Response Status Code: {status_code}')
 
             # RESToverHTTP Response Content
             response: Dict = await response.json()
-            logging.info(f'Response Content: {response}')
 
 def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
         
