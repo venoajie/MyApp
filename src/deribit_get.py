@@ -24,30 +24,28 @@ from dataclassy import dataclass
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-@dataclass(unsafe_hash=True, slots=True)
-class DeribitGet ():
 
-    async def main(
-        connection_url: str,
-        endpoint: str,
-        client_id: str,
-        client_secret: str,
-        payload: Dict
-            ) -> None:
+async def main(
+    connection_url: str,
+    endpoint: str,
+    client_id: str,
+    client_secret: str,
+    payload: Dict
+        ) -> None:
 
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                connection_url+endpoint,
-                auth=BasicAuth(client_id, client_secret),
-                json=payload
-                    ) as response:
-                # RESToverHTTP Status Code
-                status_code: int = response.status
-                logging.info(f'Response Status Code: {status_code}')
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            connection_url+endpoint,
+            auth=BasicAuth(client_id, client_secret),
+            json=payload
+                ) as response:
+            # RESToverHTTP Status Code
+            status_code: int = response.status
+            logging.info(f'Response Status Code: {status_code}')
 
-                # RESToverHTTP Response Content
-                response: Dict = await response.json()
-                logging.info(f'Response Content: {response}')
+            # RESToverHTTP Response Content
+            response: Dict = await response.json()
+            logging.info(f'Response Content: {response}')
 
 
 if __name__ == "__main__":
@@ -86,9 +84,8 @@ if __name__ == "__main__":
                     }
 
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-    deribit =  DeribitGet()
     loop.run_until_complete(
-        deribit.main(
+        main(
             connection_url=connection_url,
             endpoint=endpoint,
             client_id=client_id,
