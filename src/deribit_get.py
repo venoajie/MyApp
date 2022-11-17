@@ -26,13 +26,17 @@ load_dotenv(dotenv_path)
 
 
 async def main(
-    connection_url: str,
     endpoint: str,
     client_id: str,
     client_secret: str,
     payload: Dict
         ) -> None:
 
+    # DBT LIVE RESToverHTTP Connection URL
+    # connection_url: str = 'https://www.deribit.com/api/v2/'
+    # DBT TEST RESToverHTTP Connection URL
+    connection_url: str = 'https://test.deribit.com/api/v2/'
+    
     async with aiohttp.ClientSession() as session:
         async with session.post(
             connection_url+endpoint,
@@ -56,10 +60,6 @@ if __name__ == "__main__":
         datefmt='%Y-%m-%d %H:%M:%S'
         )
 
-    # DBT LIVE RESToverHTTP Connection URL
-    # connection_url: str = 'https://www.deribit.com/api/v2/'
-    # DBT TEST RESToverHTTP Connection URL
-    connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT RESToverHTTP Endpoint + Query String Parameter(s)
     endpoint: str = 'private/buy'
