@@ -365,11 +365,7 @@ class main:
         """
         await asyncio.sleep(5)
 
-        msg: Dict = {
-                    "jsonrpc": "2.0",
-                    "method": f"public/get_currencies",
-                    "id": 42
-                    }
+        msg: Dict = 'https://test.deribit.com/api/v2/public/get_currencies?'
 
         await self.websocket_client.send(
             json.dumps(
