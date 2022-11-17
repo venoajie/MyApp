@@ -188,7 +188,7 @@ class main:
                         
                         #save_open_files.save_file('order_books',data_orders)
                         
-                        if message_channel == 'user.orders.ETH-PERPETUAL.raw':
+                        if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
                             log.debug(data_orders)
                         
