@@ -425,7 +425,7 @@ class main:
 
         msg: Dict = {
                     "jsonrpc": "2.0",
-                    "method": f"public/get_positions",
+                    "method": f"private/get_positions",
                     "id": 55,
                     "params": params
                     }
