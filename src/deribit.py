@@ -200,6 +200,9 @@ class main:
                         log.info(net_position)
                         log.info(data_orders)
                         log.error(position)
+                        index_price = position[0]['index_price']
+                        log.error(index_price)
+                        
                         #save_open_files.save_file('order_books', data_orders)
                         
                         #save_open_files.save_file('order_books',data_orders)
@@ -209,6 +212,8 @@ class main:
                             equity = data_orders ['equity']
                             log.debug(data_orders)
                             log.debug(equity)
+                            notional = index_price * equity
+                            log.error(notional)
                         
                             if equity not in none_data:
                                         
