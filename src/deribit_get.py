@@ -78,28 +78,30 @@ def send_order (client_id, client_secret, endpoint, instrument, type, amount, la
         )
 async def get_position (client_id, client_secret, endpoint, currency):
         
-    params =  {
-                "currency": currency
-                }
+    params =  {"currency": currency}
     
-    result_example = {
-        'jsonrpc': '2.0', 
-        'id': 1, 
-        'result': [
-            {'total_profit_loss': -0.000200432, 'size_currency': 0.113925747, 'size': 136.0, 'settlement_price': 1204.67, 'realized_profit_loss': -6.91e-06, 'realized_funding': -7e-06, 'open_orders_margin': 6.5233e-05, 'mark_price': 1193.76, 'maintenance_margin': 0.001139309, 'leverage': 50, 'kind': 'future', 'interest_value': 1.546050465478317, 'instrument_name': 'ETH-PERPETUAL', 'initial_margin': 0.002278567, 'index_price': 1194.59, 'floating_profit_loss': 1.8074e-05, 'estimated_liquidation_price': None, 'direction': 'buy', 'delta': 0.113925747, 'average_price': 1195.86
-             }
-            ], 
-        'usIn': 1668690571373149, 
-        'usOut': 1668690571373488, 
-        'usDiff': 339, 
-        'testnet': True
-        }
+    #result_example = {
+    #    'jsonrpc': '2.0', 
+    #    'id': 1, 
+    #    'result': [
+    #        {'total_profit_loss': -0.00045102, 'size_currency': 0.114176335, 'size': 136.0, 'settlement_price': 1204.67, 'realized_profit_loss': -6.593e-06, 
+    #          realized_funding': -7e-06, 'open_orders_margin': 6.5233e-05, 'mark_price': 1191.14, 'maintenance_margin': 0.001141815, 'leverage': 50, 'kind': 'future',
+    #          'interest_value': 1.4789043826111785, 'instrument_name': 'ETH-PERPETUAL', 'initial_margin': 0.002283579, 'index_price': 1191.91, 
+    #          'floating_profit_loss': -0.000232514, 'estimated_liquidation_price': None, 'direction': 'buy', 'delta': 0.114176335, 'average_price': 1195.86}, 
+    #        {'total_profit_loss': -7.62e-07, 'size_currency': -0.000839715, 'size': -1.0, 'settlement_price': 1202.17, 'realized_profit_loss': 0.0, 
+    #        'open_orders_margin': 0.0, 'mark_price': 1190.88, 'maintenance_margin': 8.397e-06, 'leverage': 50, 'kind': 'future', 'instrument_name': 'ETH-18NOV22', #'initial_margin': 1.6794e-05, 'index_price': 1191.91, 'floating_profit_loss': -7.62e-07, 'estimated_liquidation_price': None, 'direction': 'sell', 'delta': -0.000839715, 'average_price': 1189.8}
+    #        ], 
+    #    'usIn': 1668690571373149, 
+    #    'usOut': 1668690571373488, 
+    #    'usDiff': 339, 
+    #    'testnet': True
+    #    }
     result = await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
             client_secret=client_secret,
-            )#
+            )
     return result ['result']
         
 def get_position_ (client_id, client_secret, endpoint, currency):

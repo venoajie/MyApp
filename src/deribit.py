@@ -194,6 +194,8 @@ class main:
                         
                         log.error(message_channel)
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
+                        instrument_name =  [o['instrument_name'] for o in position ]
+                        log.info(instrument_name)
                         log.info(data_orders)
                         log.error(position)
                         #save_open_files.save_file('order_books', data_orders)
