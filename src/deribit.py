@@ -190,13 +190,15 @@ class main:
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
+                            equity = data_orders ['equity']
                             log.debug(data_orders)
+                            log.debug(equity)
                         
-                            if balance_eth not in none_data:
+                            if equity not in none_data:
                                         
-                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
+                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
                         # 
-                            if balance_eth  in none_data:
+                            if equity  in none_data:
 
                                 bids = data_orders['bids']
                                 asks = data_orders['asks']                                        
