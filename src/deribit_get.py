@@ -58,14 +58,15 @@ async def main(
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
 
-def run_file(client_id, client_secret):
+def send_order (client_id, client_secret, instrument, type, amount, label: str =None):
         
     params =  {
-                        "instrument_name": "ETH-PERPETUAL",
-                        "amount": 10,
-                        "type": "market",
-                        "label": "tester"
-                        }
+                "instrument_name": instrument,
+                "amount": amount,
+                "type": type,
+                "label": label
+                }
+    
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
         main(
