@@ -62,7 +62,7 @@ async def main(
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
 
-async def run_file():
+def run_file():
         
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
@@ -90,11 +90,3 @@ if __name__ == "__main__":
     client_secret: str = os.environ.get("client_secret")
     run_file()
     
-    loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        main(
-            endpoint=endpoint,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-        )
