@@ -82,6 +82,19 @@ def get_position (client_id, client_secret, endpoint, currency):
                 "currency": currency
                 }
     
+    main(
+            endpoint=endpoint,
+            params=params,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+        
+def get_position_ (client_id, client_secret, endpoint, currency):
+        
+    params =  {
+                "currency": currency
+                }
+    
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
         main(
