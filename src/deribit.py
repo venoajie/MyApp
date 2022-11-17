@@ -152,7 +152,7 @@ class main:
                 log.debug(message)
                 #await self.ws_manager_private()
                 endpoint: str = 'private/get_positions'
-                position = await deribit_get.get_position(client_id, client_secret, endpoint, "ETH")
+                position =  deribit_get.get_position(client_id, client_secret, endpoint, "ETH")
                 
                 log.critical((position))
                 log.critical(list(message))
