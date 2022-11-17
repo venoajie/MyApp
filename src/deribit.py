@@ -151,8 +151,6 @@ class main:
                 message_channel: str = None
                 message_channel_list: str = None
                 log.debug(message)
-                pos=await self.ws_operation_get_positions('ETH')
-                log.debug (pos)
                 #await self.ws_manager_private()
                 
                 log.critical(list(message))
@@ -414,8 +412,6 @@ class main:
         currency: str
             ) -> None:
         """
-        Requests `public/subscribe` or `public/unsubscribe`
-        to DBT's API for the specific WebSocket Channel.
         """
         await asyncio.sleep(5)
         params = {
