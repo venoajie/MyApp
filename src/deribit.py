@@ -424,13 +424,19 @@ class main:
                     "params": params
                     }
 
-        log.critical(msg)
+        log.warning(msg)
 
         await self.websocket_client.send(
             json.dumps(
                 msg
                 )
             )
+        test = await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+        log.warning(test)
         
             
     def run_connection(conn):
