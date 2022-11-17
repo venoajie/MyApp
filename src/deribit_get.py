@@ -99,7 +99,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
             params=params,
             client_id=client_id,
             client_secret=client_secret,
-            )['result']
+            )#['result']
         
 def get_position_ (client_id, client_secret, endpoint, currency):
         
