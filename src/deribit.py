@@ -186,7 +186,7 @@ class main:
                                     
                     if 'ETH' or 'eth' in message['params']['channel']:
                     
-                        log.error((message))
+                        #log.error((message))
                         data_orders: list = message['params']['data']
                         
                         log.error(message_channel)
@@ -349,6 +349,7 @@ class main:
                         "channels": [ws_channel]
                         }
                     }
+        log.critical(msg)
 
         await self.websocket_client.send(
             json.dumps(
@@ -423,6 +424,7 @@ class main:
                     "params": params
                     }
 
+        log.critical(msg)
 
         await self.websocket_client.send(
             json.dumps(
