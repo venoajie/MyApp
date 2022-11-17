@@ -57,6 +57,7 @@ async def main(
             # RESToverHTTP Response Content
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
+            return response
 
 def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
         
@@ -82,7 +83,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
                 "currency": currency
                 }
     
-    return await main(
+    await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
