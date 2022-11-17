@@ -27,6 +27,7 @@ load_dotenv(dotenv_path)
 
 async def main(
     endpoint: str,
+    params: str,
     client_id: str,
     client_secret: str,
         ) -> None:
@@ -41,12 +42,7 @@ async def main(
                     "jsonrpc": "2.0",
                     "id": 1,
                     "method": f"{endpoint}",
-                    "params": {
-                        "instrument_name": "ETH-PERPETUAL",
-                        "amount": 10,
-                        "type": "market",
-                        "label": "tester"
-                        }
+                    "params": params
                     }    
     async with aiohttp.ClientSession() as session:
         async with session.post(
@@ -62,12 +58,19 @@ async def main(
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
 
-def run_file():
+def run_file(client_id, client_secret):
         
+    params =  {
+                        "instrument_name": "ETH-PERPETUAL",
+                        "amount": 10,
+                        "type": "market",
+                        "label": "tester"
+                        }
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
         main(
             endpoint=endpoint,
+            params=params,
             client_id=client_id,
             client_secret=client_secret,
             )
@@ -88,5 +91,5 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-    run_file()
+    run_file(client_id, client_secret)
     
