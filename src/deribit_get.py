@@ -67,8 +67,7 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-    print (client_id)
-    print (client_secret)
+    
 
     # DBT [POST] RESToverHTTP Payload
     payload: Dict = {
@@ -76,8 +75,8 @@ if __name__ == "__main__":
                     "id": 1,
                     "method": "private/buy",
                     "params": {
-                        "instrument_name": "BTC-PERPETUAL",
-                        "amount": 500,
+                        "instrument_name": "ETH-PERPETUAL",
+                        "amount": .01,
                         "type": "market",
                         "label": "tester"
                         }
