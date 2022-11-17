@@ -110,5 +110,5 @@ if __name__ == "__main__":
     send_order(client_id, client_secret, endpoint, "ETH-PERPETUAL", 'market', 10,)
 
     endpoint: str = 'private/get_positions'
-    get_position(client_id, client_secret, endpoint, "ETH-PERPETUAL", 'market', 10,)
+    get_position(client_id, client_secret, endpoint, "ETH")
     
