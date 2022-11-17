@@ -133,6 +133,11 @@ class main:
                 )
             
             self.loop.create_task(
+                self.ws_operation_get_instruments('ETH'
+                    )
+                )
+            
+            self.loop.create_task(
                 self.ws_operation_get_positions('ETH'
                     )
                 )
@@ -146,8 +151,7 @@ class main:
                 message_channel: str = None
                 message_channel_list: str = None
                 log.debug(message)
-                pos=await self.ws_operation_get_positions('ETH'
-                    )
+                pos=await self.ws_operation_get_positions('ETH')
                 log.debug (pos)
                 #await self.ws_manager_private()
                 
