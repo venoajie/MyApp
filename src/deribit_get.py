@@ -53,7 +53,6 @@ async def main(
                 ) as response:
             # RESToverHTTP Status Code
             status_code: int = response.status
-            logging.info(f'Response Status Code: {status_code}')
 
             # RESToverHTTP Response Content
             response: Dict = await response.json()
