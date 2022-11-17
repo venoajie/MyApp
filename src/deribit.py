@@ -152,9 +152,7 @@ class main:
                 log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
-                
-                
-                log.critical((position))
+                                
                 log.critical(list(message))
 
                 if 'id' in list(message):
