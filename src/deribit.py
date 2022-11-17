@@ -21,6 +21,7 @@ from loguru import logger as log
 from os.path import join, dirname
 from dotenv import load_dotenv
 from dataclassy import dataclass
+import deribit_get
 # user defined formula
 from utils import save_open_files
 
@@ -150,7 +151,10 @@ class main:
                 message_channel_list: str = None
                 log.debug(message)
                 #await self.ws_manager_private()
+                endpoint: str = 'private/get_positions'
+                position = deribit_get.get_position(client_id, client_secret, endpoint, "ETH")
                 
+                log.critical((position))
                 log.critical(list(message))
 
                 if 'id' in list(message):
