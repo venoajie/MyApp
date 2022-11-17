@@ -94,7 +94,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
         'usDiff': 339, 
         'testnet': True
         }
-    result = return await main(
+    result = await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
