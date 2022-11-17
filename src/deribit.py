@@ -133,10 +133,10 @@ class main:
                     )
                 )
             
-            #self.loop.create_task(
-            #    self.ws_operation_get_instruments('ETH'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation_get_instruments('ETH','future'
+                    )
+                )
             
             self.loop.create_task (self.ws_operation_get_positions("ETH"))
             self.loop.create_task (self.ws_operation_get_currencies())
@@ -390,7 +390,8 @@ class main:
     async def ws_operation_get_instruments(
         self,
         currency: str,
-        expired: str=False
+        kind: str=None,
+        expired: bool=False
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
@@ -399,6 +400,7 @@ class main:
         await asyncio.sleep(5)
         params = {
             "currency": currency,
+            "kind": kind,
             "expired": expired
         }
         
