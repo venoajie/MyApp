@@ -192,22 +192,21 @@ class main:
                         best_ask_prc = asks[0][0]
                         #save_open_files.save_file('order_books',data_orders)
                         
-                        
-                        data_portfolio: list = message['params']['data']
-                        log.critical(data_portfolio)
-                        balance_eth: list = data_portfolio ['balance']
-                        #log.critical(balance_eth)
-                        
-                        if balance_eth not in none_data:
-                            save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
-                    # 
-                        #if balance_eth in none_data:
-                        #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                        #    log.warning(balance)
-                        
                         if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                             data_orders: list = message['params']['data']
                             log.debug(data_orders)
+                        
+                            if balance_eth not in none_data:
+                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
+                        # 
+                            
+                            data_portfolio: list = message['params']['data']
+                            log.critical(data_portfolio)
+                            balance_eth: list = data_portfolio ['balance']
+                        #log.critical(balance_eth)
+                                              #if balance_eth in none_data:
+                        #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                        #    log.warning(balance)
                                     
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
                     data_trades: list = message['params']['data']
