@@ -83,7 +83,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
                 "currency": currency
                 }
     
-    await main(
+    return await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
