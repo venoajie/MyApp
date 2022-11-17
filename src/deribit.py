@@ -186,8 +186,6 @@ class main:
                         log.error(data_orders)
                         #save_open_files.save_file('order_books', data_orders)
                         
-                        bids = data_orders['bids']
-                        asks = data_orders['asks']
                         #save_open_files.save_file('order_books',data_orders)
                         
                         if message_channel == 'user.orders.ETH-PERPETUAL.raw':
@@ -199,7 +197,9 @@ class main:
                                 save_open_files.save_file_to_pickle('portfolio-eth.pkl', balance_eth)
                         # 
                             if balance_eth  in none_data:
-                                        
+
+                                bids = data_orders['bids']
+                                asks = data_orders['asks']                                        
                                 best_bid_prc = bids[0][0]
                                 best_ask_prc = asks[0][0]
                                 log.critical(best_bid_prc)
