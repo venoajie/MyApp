@@ -151,8 +151,8 @@ class main:
                 message_channel_list: str = None
                 log.debug(message)
                 #await self.ws_manager_private()
-                endpoint: str = 'private/get_positions'
-                position =  await deribit_get.get_position(client_id, client_secret, endpoint, "ETH")
+                endpoint_position: str = 'private/get_positions'
+                
                 
                 log.critical((position))
                 log.critical(list(message))
@@ -195,7 +195,9 @@ class main:
                         data_orders: list = message['params']['data']
                         
                         log.error(message_channel)
-                        log.error(data_orders)
+                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")
+                        log.info(data_orders)
+                        log.error(position)
                         #save_open_files.save_file('order_books', data_orders)
                         
                         #save_open_files.save_file('order_books',data_orders)
@@ -382,8 +384,6 @@ class main:
                 msg
                 )
             )
-        log.error(msg)
-        log.error(test)
         
     async def ws_operation_get_instruments(
         self,
