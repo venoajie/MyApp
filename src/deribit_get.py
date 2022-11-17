@@ -62,7 +62,7 @@ async def main(
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
 
-def run_file():
+async def run_file():
         
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
