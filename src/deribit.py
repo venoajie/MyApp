@@ -380,12 +380,6 @@ class main:
                 )
             )
 
-    def get_currencies(self):
-        self.loop.create_task(
-                self.ws_operation_get_currencies()
-                )
-
-
     async def ws_operation_get_instruments(
         self,
         currency: str,
@@ -410,6 +404,11 @@ class main:
                     }
 
 
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
     async def ws_operation_get_positions(
         self,
         currency: str
