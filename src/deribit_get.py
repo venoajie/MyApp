@@ -74,7 +74,7 @@ if __name__ == "__main__":
     payload: Dict = {
                     "jsonrpc": "2.0",
                     "id": 1,
-                    "method": "private/buy",
+                    "method": f"{endpoint}",
                     "params": {
                         "instrument_name": "ETH-PERPETUAL",
                         "amount": 10,
