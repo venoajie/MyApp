@@ -58,13 +58,28 @@ async def main(
             response: Dict = await response.json()
             logging.info(f'Response Content: {response}')
 
-def send_order (client_id, client_secret, instrument, type, amount, label: str =None):
+def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
         
     params =  {
                 "instrument_name": instrument,
                 "amount": amount,
                 "type": type,
                 "label": label
+                }
+    
+    loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
+    loop.run_until_complete(
+        main(
+            endpoint=endpoint,
+            params=params,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+        )
+def get_position (client_id, client_secret, endpoint, currency):
+        
+    params =  {
+                "currency": currency
                 }
     
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
@@ -92,5 +107,8 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-    send_order(client_id, client_secret, "ETH-PERPETUAL", 'market', 10,)
+    send_order(client_id, client_secret, endpoint, "ETH-PERPETUAL", 'market', 10,)
+
+    endpoint: str = 'private/get_positions'
+    get_position(client_id, client_secret, endpoint, "ETH-PERPETUAL", 'market', 10,)
     
