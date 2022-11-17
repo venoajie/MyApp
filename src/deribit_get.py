@@ -92,5 +92,5 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-    run_file(client_id, client_secret)
+    send_order(client_id, client_secret, "ETH-PERPETUal", 'market', 10,)
     
