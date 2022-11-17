@@ -56,7 +56,7 @@ async def main(
 
             # RESToverHTTP Response Content
             response: Dict = await response.json()
-#            return response
+            return response
 
 def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
         
