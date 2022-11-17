@@ -17,6 +17,11 @@ import os
 import aiohttp
 from aiohttp.helpers import BasicAuth
 from dotenv import load_dotenv
+from os.path import join, dirname
+
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 
 async def main(
@@ -62,7 +67,8 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-    
+    print (client_id)
+    print (client_secret)
 
     # DBT [POST] RESToverHTTP Payload
     payload: Dict = {

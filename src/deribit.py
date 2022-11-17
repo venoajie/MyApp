@@ -481,6 +481,9 @@ if __name__ == "__main__":
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
 
+    print (client_id)
+    print (client_secret)
+
     main(
         ws_connection_url=ws_connection_url,
         client_id=client_id,
