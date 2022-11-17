@@ -29,14 +29,25 @@ async def main(
     endpoint: str,
     client_id: str,
     client_secret: str,
-    payload: Dict
         ) -> None:
 
     # DBT LIVE RESToverHTTP Connection URL
     # connection_url: str = 'https://www.deribit.com/api/v2/'
     # DBT TEST RESToverHTTP Connection URL
     connection_url: str = 'https://test.deribit.com/api/v2/'
-    
+
+    # DBT [POST] RESToverHTTP Payload
+    payload: Dict = {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": f"{endpoint}",
+                    "params": {
+                        "instrument_name": "ETH-PERPETUAL",
+                        "amount": 10,
+                        "type": "market",
+                        "label": "tester"
+                        }
+                    }    
     async with aiohttp.ClientSession() as session:
         async with session.post(
             connection_url+endpoint,
@@ -60,7 +71,6 @@ if __name__ == "__main__":
         datefmt='%Y-%m-%d %H:%M:%S'
         )
 
-
     # DBT RESToverHTTP Endpoint + Query String Parameter(s)
     endpoint: str = 'private/buy'
 
@@ -69,27 +79,11 @@ if __name__ == "__main__":
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
     
-
-    # DBT [POST] RESToverHTTP Payload
-    payload: Dict = {
-                    "jsonrpc": "2.0",
-                    "id": 1,
-                    "method": f"{endpoint}",
-                    "params": {
-                        "instrument_name": "ETH-PERPETUAL",
-                        "amount": 10,
-                        "type": "market",
-                        "label": "tester"
-                        }
-                    }
-
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
         main(
-            connection_url=connection_url,
             endpoint=endpoint,
             client_id=client_id,
             client_secret=client_secret,
-            payload=payload
             )
         )
