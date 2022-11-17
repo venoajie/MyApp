@@ -76,7 +76,7 @@ if __name__ == "__main__":
                     "method": "private/buy",
                     "params": {
                         "instrument_name": "ETH-PERPETUAL",
-                        "amount": .01,
+                        "amount": 10,
                         "type": "market",
                         "label": "tester"
                         }
