@@ -82,12 +82,24 @@ async def get_position (client_id, client_secret, endpoint, currency):
                 "currency": currency
                 }
     
+    result_example = {
+        'jsonrpc': '2.0', 
+        'id': 1, 
+        'result': [
+            {'total_profit_loss': -0.000200432, 'size_currency': 0.113925747, 'size': 136.0, 'settlement_price': 1204.67, 'realized_profit_loss': -6.91e-06, 'realized_funding': -7e-06, 'open_orders_margin': 6.5233e-05, 'mark_price': 1193.76, 'maintenance_margin': 0.001139309, 'leverage': 50, 'kind': 'future', 'interest_value': 1.546050465478317, 'instrument_name': 'ETH-PERPETUAL', 'initial_margin': 0.002278567, 'index_price': 1194.59, 'floating_profit_loss': 1.8074e-05, 'estimated_liquidation_price': None, 'direction': 'buy', 'delta': 0.113925747, 'average_price': 1195.86
+             }
+            ], 
+        'usIn': 1668690571373149, 
+        'usOut': 1668690571373488, 
+        'usDiff': 339, 
+        'testnet': True
+        }
     return await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
             client_secret=client_secret,
-            )
+            )['result']
         
 def get_position_ (client_id, client_secret, endpoint, currency):
         

@@ -193,7 +193,7 @@ class main:
                         data_orders: list = message['params']['data']
                         
                         log.error(message_channel)
-                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")
+                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                         log.info(data_orders)
                         log.error(position)
                         #save_open_files.save_file('order_books', data_orders)
