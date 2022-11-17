@@ -146,6 +146,9 @@ class main:
                 message_channel: str = None
                 message_channel_list: str = None
                 log.debug(message)
+                pos=self.ws_operation_get_positions('ETH'
+                    )
+                log.debug (pos)
                 #await self.ws_manager_private()
                 
                 log.critical(list(message))
