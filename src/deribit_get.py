@@ -51,9 +51,13 @@ async def main(
             auth=BasicAuth(client_id, client_secret),
             json=payload
                 ) as response:
+            # RESToverHTTP Status Code
+            status_code: int = response.status
+            logging.info(f'Response Status Code: {status_code}')
 
             # RESToverHTTP Response Content
             response: Dict = await response.json()
+            logging.info(f'Response Content: {response}')
 
 def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
         
