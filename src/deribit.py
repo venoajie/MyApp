@@ -278,7 +278,8 @@ class main:
                             for instrument in all_instruments:
                                 log.error(f'{instrument=}')
                             
-                                instrument_data = [o for o in position if o['instrument_name'] == instruments]    
+                                instrument_data = [o for o in position if o['instrument_name'] == instruments]   [0] 
+                                log.error(f'{instrument_data=}')
                                 tick_size = instrument_data ['tick_size']
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
