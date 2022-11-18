@@ -377,14 +377,14 @@ class main:
         log.warning(ws_channel)
         
         id_method = 0
-        if 'subscribe' in ws_channel:
+        if 'subscribe' in operation:
             id_method = 3
-        if 'get' in ws_channel:
+        if 'get' in operation:
             id_method = 4
         id_auth = 0
-        if 'public' in ws_channel:
+        if 'book' in ws_channel:
             id_auth = 1
-        if 'private' in ws_channel:
+        if 'user' in ws_channel:
             id_auth = 2
         id_instrument = 0
         if 'BTC'or 'btc' in ws_channel:
