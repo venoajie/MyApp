@@ -217,12 +217,12 @@ class main:
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                         instrument_name =  [o['instrument_name'] for o in position ]
                         net_position = sum([o['size'] for o in position ])
-                        log.info(instrument_name)
-                        log.info(net_position)
+                        log.info(f'{instrument_name=}')
+                        log.error(f'{net_position=}')
                         #log.info(data_orders)
                         #log.error(position)
                         index_price = position[0]['index_price']
-                        log.error(index_price)
+                        log.error(f'{index_price=}')
                         
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -254,11 +254,11 @@ class main:
 
                         #balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
                         #log.warning(balance)
-                                
-                        data_portfolio: list = message['params']['data']
-                        log.critical(data_portfolio)
-                        balance_eth: list = data_portfolio ['balance']
-                        log.error(f'{balance_eth=}')
+                                    
+                            data_portfolio: list = message['params']['data']
+                            log.critical(data_portfolio)
+                            balance_eth: list = data_portfolio ['balance']
+                            log.error(f'{balance_eth=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
