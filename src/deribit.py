@@ -24,6 +24,7 @@ from dataclassy import dataclass
 import deribit_get
 # user defined formula
 from utils import save_open_files
+from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -375,6 +376,8 @@ class main:
         """
         await asyncio.sleep(5)
         log.warning(ws_channel)
+        id = id_numbering.id(operation, ws_channel)
+        log.critical(id)
         
         id_method = 0
         if 'subscribe' in operation:
@@ -385,6 +388,8 @@ class main:
         if 'book' in ws_channel:
             id_auth = 1
         if 'user' in ws_channel:
+            id_auth = 2
+        if 'private' in operation:
             id_auth = 2
         id_instrument = 0
         if 'BTC'or 'btc' in ws_channel:
