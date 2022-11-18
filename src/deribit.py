@@ -201,7 +201,7 @@ class main:
                         await self.heartbeat_response()
 
                 if 'params' in list(message):
-                    log.warning((message)['params']['channel'])
+                    #log.warning((message)['params']['channel'])
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
@@ -211,7 +211,7 @@ class main:
                         #log.error((message))
                         data_orders: list = message['params']['data']
                         
-                        log.error(message_channel)
+                        #log.error(message_channel)
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                         instrument_name =  [o['instrument_name'] for o in position ]
                         net_position = sum([o['size'] for o in position ])
@@ -229,11 +229,11 @@ class main:
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
                             equity = data_orders ['equity']
-                            log.debug(data_orders)
-                            log.debug(equity)
+                            #log.debug(data_orders)
+                            log.debug(f'{equity=}')
                             notional = index_price * equity
                             min_hedged_size = notional
-                            log.error(notional)
+                            log.error(f'{notional=}')
                         
                             if equity not in none_data:
                                         
@@ -251,7 +251,7 @@ class main:
                                 log.warning(balance)
                                     
                             data_portfolio: list = message['params']['data']
-                            log.critical(data_portfolio)
+                            #log.critical(data_portfolio)
                             balance_eth: list = data_portfolio ['balance']
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
