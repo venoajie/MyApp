@@ -269,9 +269,10 @@ class main:
                                     
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in position]   
                         if instruments not  in none_data:
+                            log.error(f'{all_instruments=}')
                                 
                             for instrument in all_instruments:
-                                #log.error(f'{instrument=}')
+                                log.error(f'{instrument=}')
                             
                                 instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                 tick_size = instrument_data ['tick_size']
@@ -285,7 +286,7 @@ class main:
 
                                 min_hedged_size = notional / min_trade_amount * contract_size
                                     
-                                log.error(f'{instrument_data=}')
+                                #log.error(f'{instrument_data=}')
                                 log.info(f'{instruments_with_rebates=}')
                                 log.warning(f'{min_hedged_size=}')
                                 log.error(f'{net_position=}')
