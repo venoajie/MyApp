@@ -279,15 +279,15 @@ class main:
                                 contract_size = instrument_data ['contract_size']
                                 expiration_timestamp = instrument_data ['expiration_timestamp']
                                 instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
-                                #equity = data_orders ['equity']
-                                #log.debug(f'{equity=} {equity  in none_data=}')
-                                #notional = index_price * equity
+                                equity = portfolio ['equity']
+                                log.debug(f'{equity=} {equity  in none_data=}')
+                                notional = index_price * equity
 
-                                #min_hedged_size = notional / min_trade_amount * contract_size
+                                min_hedged_size = notional / min_trade_amount * contract_size
                                     
                                 log.error(f'{instrument_data=}')
                                 log.info(f'{instruments_with_rebates=}')
-                                #log.warning(f'{min_hedged_size=}')
+                                log.warning(f'{min_hedged_size=}')
                                 log.error(f'{net_position=}')
                                 #log.warning(instruments)
                                 log.error(f'{best_bid_prc=}')
