@@ -259,29 +259,30 @@ class main:
                                 equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
                             except:
                                 equity = []
-                                
-                            
+
                                     
                             data_portfolio: list = message['params']['data']
                             log.critical(data_portfolio)
                             #balance_eth: list = data_portfolio ['balance']
                             #log.error(f'{balance_eth=}')
-                        
+                    
+                        tick_size = []
+                        min_trade_amount = []
+                        contract_size = []
+                        instruments_with_rebates = []
                         
                         try:
                             instruments = save_open_files.open_file_pickle('instruments.pkl')['result']
-                            tick_size = instruments ['tick_size']
-                            min_trade_amount = instruments ['min_trade_amount']
-                            contract_size = instruments ['contract_size']
-                            instruments_with_rebates = [o['instrument_name'] for o in position if o['maker_commission'] <0]
                         except:
                             instruments = []
                             
                                     
-                            tick_size = []
-                            min_trade_amount = []
-                            contract_size = []
-                            instruments_with_rebates = []
+                        if instruments not  in none_data:
+
+                            tick_size = instruments ['tick_size']
+                            min_trade_amount = instruments ['min_trade_amount']
+                            contract_size = instruments ['contract_size']
+                            instruments_with_rebates = [o['instrument_name'] for o in position if o['maker_commission'] <0]                                
                         
                         log.warning(instruments)
                         log.debug(f'{equity=} {equity  in none_data=}')
