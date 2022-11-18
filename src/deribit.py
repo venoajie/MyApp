@@ -217,8 +217,8 @@ class main:
                         net_position = sum([o['size'] for o in position ])
                         log.info(instrument_name)
                         log.info(net_position)
-                        log.info(data_orders)
-                        log.error(position)
+                        #log.info(data_orders)
+                        #log.error(position)
                         index_price = position[0]['index_price']
                         log.error(index_price)
                         
@@ -513,10 +513,7 @@ if __name__ == "__main__":
     client_id: str = os.environ.get("client_id")
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
-
-    print (client_id)
-    print (client_secret)
-
+    
     main(
         ws_connection_url=ws_connection_url,
         client_id=client_id,
