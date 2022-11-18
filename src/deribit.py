@@ -168,7 +168,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                #log.debug(message)
+                log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                                 
@@ -201,8 +201,8 @@ class main:
                         await self.heartbeat_response()
 
                 if 'params' in list(message):
-                    log.warning((message))
-                    log.warning(list(message))
+                    #log.warning((message))
+                    #log.warning(list(message))
                     #log.warning(message['params']['channel'] != ['ETH','eth'])
 
                     if message['method'] != 'heartbeat':
@@ -211,19 +211,17 @@ class main:
                                     
                     #if  message['params']['channel'] == ['ETH','eth']:
                     
-                        log.error(f'{message=}')
+                        #log.error(f'{message=}')
                         data_orders: list = message['params']['data']
                         
                         #log.error(message_channel)
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                         instrument_name =  [o['instrument_name'] for o in position ]
                         net_position = sum([o['size'] for o in position ])
-                        log.info(f'{instrument_name=}')
-                        log.error(f'{net_position=}')
+                        #log.info(f'{instrument_name=}')
                         #log.info(data_orders)
                         #log.error(position)
                         index_price = position[0]['index_price']
-                        log.error(f'{index_price=}')
                         
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -231,8 +229,6 @@ class main:
                             asks = data_orders['asks']                                        
                             best_bid_prc = bids[0][0]
                             best_ask_prc = asks[0][0]
-                        log.error(f'{best_bid_prc=}')
-                        log.error(f'{best_ask_prc=}')
 
                             #save_open_files.save_file('order_books', data_orders)
                         
@@ -245,7 +241,7 @@ class main:
                             
                             notional = index_price * equity
                             min_hedged_size = notional
-                            log.error(f'{notional=}')
+                            
                         
                             if equity not in none_data:
                                         
@@ -263,6 +259,11 @@ class main:
                             #balance_eth: list = data_portfolio ['balance']
                             #log.error(f'{balance_eth=}')
                         log.debug(f'{equity=} {equity  in none_data=}')
+                        log.error(f'{best_bid_prc=}')
+                        log.error(f'{best_ask_prc=}')
+                        log.error(f'{index_price=}')
+                        log.error(f'{net_position=}')
+                        log.error(f'{notional=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
