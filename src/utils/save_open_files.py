@@ -12,7 +12,7 @@ def save_file_to_pickle (file_name: str, data: list, saved_directory:str=None)->
     # https://stackoverflow.com/questions/11218477/how-can-i-use-pickle-to-save-a-dict-or-any-other-python-object
     """
         
-    file_name=f"""{file_name}.pickle"""
+    file_name=f"""{file_name}.pkl"""
 
     with open(file_name, 'wb') as handle:
         pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
