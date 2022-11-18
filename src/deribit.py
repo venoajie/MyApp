@@ -207,6 +207,7 @@ class main:
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        equity = []
                                     
                     #if  message['params']['channel'] == ['ETH','eth']:
                     
@@ -241,14 +242,14 @@ class main:
                             data_orders: list = message['params']['data']
                             equity = data_orders ['equity']
                             #log.debug(data_orders)
-                            log.debug(f'{equity=}')
+                            
                             notional = index_price * equity
                             min_hedged_size = notional
                             log.error(f'{notional=}')
                         
-                            #if equity not in none_data:
+                            if equity not in none_data:
                                         
-                            #    save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
+                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
                         # 
                             #if equity  in none_data:
 
@@ -259,6 +260,7 @@ class main:
                             log.critical(data_portfolio)
                             balance_eth: list = data_portfolio ['balance']
                             log.error(f'{balance_eth=}')
+                        log.debug(f'{equity=} {equity  in none_data=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
