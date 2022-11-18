@@ -375,32 +375,13 @@ class main:
         to DBT's API for the specific WebSocket Channel.
         """
         await asyncio.sleep(5)
-        log.warning(ws_channel)
-        id = id_numbering.id(operation, ws_channel)
-        log.critical(id)
-        
-        id_method = 0
-        if 'subscribe' in operation:
-            id_method = 3
-        if 'get' in operation:
-            id_method = 4
-        id_auth = 0
-        if 'book' in ws_channel:
-            id_auth = 1
-        if 'user' in ws_channel:
-            id_auth = 2
-        if 'private' in operation:
-            id_auth = 2
-        id_instrument = 0
-        if 'BTC'or 'btc' in ws_channel:
-            id_instrument = 1
-        if 'ETH' or 'eth' in ws_channel:
-            id_instrument = 2
 
+        id = id_numbering.id(operation, ws_channel)
+        
         msg: Dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
-                    "id": int(f'{id_method}{id_auth}{id_instrument}'),
+                    "id": id,
                     "params": {
                         "channels": [ws_channel]
                         }
@@ -451,11 +432,12 @@ class main:
             "expired": expired
         }
         
-
+        method =  f"public/get_instruments"
+        id = id_numbering.id(method, method)
         msg: Dict = {
                     "jsonrpc": "2.0",
-                    "method": f"public/get_instruments",
-                    "id": 55,
+                    "method": method,
+                    "id": id,
                     "params": params
                     }
 
@@ -477,10 +459,12 @@ class main:
         }
         
 
+        method =  f"private/get_positions"
+        id = id_numbering.id(method, method)
         msg: Dict = {
                     "jsonrpc": "2.0",
-                    "method": f"private/get_positions",
-                    "id": 55,
+                    "method": method,
+                    "id": id,
                     "params": params
                     }
 
