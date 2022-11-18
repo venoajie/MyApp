@@ -253,7 +253,7 @@ class main:
                                 portfolio = []
 
                     # 
-                        log.debug(portfolio)
+                        #log.debug(portfolio)
                         tick_size = []
                         min_trade_amount = []
                         contract_size = []
@@ -267,7 +267,7 @@ class main:
                             instruments = []
                             
                                     
-                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in position]   
+                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
                                 
