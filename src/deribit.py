@@ -412,7 +412,7 @@ class main:
         self,
         operation: str,
         ws_channel: str,
-        id: int=42
+        id: int=100
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
@@ -430,7 +430,7 @@ class main:
                         "channels": [ws_channel]
                         }
                     }
-        log.critical(msg)
+        #log.critical(msg)
 
         await self.websocket_client.send(
             json.dumps(
@@ -512,7 +512,7 @@ class main:
                     "params": params
                     }
 
-        log.warning(msg)
+        #log.warning(msg)
 
         await self.websocket_client.send(
             json.dumps(
