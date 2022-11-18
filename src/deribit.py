@@ -214,11 +214,6 @@ class main:
                         message_channel = message['params']['channel']
                         equity = []
                                     
-                                
-                        tick_size = []
-                        min_trade_amount = []
-                        contract_size = []
-                        instruments_with_rebates = []
                             
                     #if  message['params']['channel'] == ['ETH','eth']:
                     
@@ -282,6 +277,12 @@ class main:
                         except:
                             instruments = []
                             
+                                    
+                            tick_size = []
+                            min_trade_amount = []
+                            contract_size = []
+                            instruments_with_rebates = []
+                        
                         log.warning(instruments)
                         log.debug(f'{equity=} {equity  in none_data=}')
                         log.error(f'{best_bid_prc=}')
