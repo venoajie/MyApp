@@ -172,9 +172,10 @@ class main:
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                                 
-                #log.critical(list(message))
+                log.critical(list(message))
 
                 if 'id' in list(message):
+                    log.critical(list(message))
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             logging.debug('Successfully authenticated WebSocket Connection')
@@ -191,11 +192,11 @@ class main:
 
                         self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
 
-                    elif message['id'] == 8212:
+                    elif message['id'] == 402:
                         # Avoid logging Heartbeat messages
                         save_open_files.save_file_to_pickle('instruments', message)
                     
-                    elif message['id'] == 402:
+                    elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
                         continue
 
