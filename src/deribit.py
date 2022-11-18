@@ -168,15 +168,15 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                log.debug(message)
+                #log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                                 
-                log.critical(list(message))
+                #log.critical(list(message))
 
                 if 'id' in list(message):
-                    log.critical(list(message))
-                    log.info(message['id'] )
+                    #log.critical(list(message))
+                    #log.info(message['id'] )
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             logging.debug('Successfully authenticated WebSocket Connection')
@@ -268,7 +268,11 @@ class main:
                         
                         
                         try:
-                            instruments = save_open_files.open_file_pickle('instruments.pkl')
+                            instruments = save_open_files.open_file_pickle('instruments.pkl')['result']
+                            tick_size = instruments ['tick_size']
+                            min_trade_amount = instruments ['min_trade_amount']
+                            contract_size = instruments ['contract_size']
+                            instruments_with_rebates = [o['instrument_name'] for o in position if o['maker_commission'] <0]
                         except:
                             instruments = []
                             
@@ -278,6 +282,7 @@ class main:
                         log.error(f'{best_ask_prc=}')
                         log.error(f'{index_price=}')
                         log.error(f'{net_position=}')
+                        log.error(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
