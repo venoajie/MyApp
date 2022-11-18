@@ -253,7 +253,7 @@ class main:
                                 portfolio = []
 
                     # 
-                        #log.debug(portfolio)
+                        log.debug(portfolio)
                         tick_size = []
                         min_trade_amount = []
                         contract_size = []
