@@ -251,9 +251,8 @@ class main:
                                         
                                 save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
                         # 
-                            #if equity  in none_data:
-
-                        #balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                        if equity  in none_data:
+                            equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
                         #log.warning(balance)
                                     
                             data_portfolio: list = message['params']['data']
