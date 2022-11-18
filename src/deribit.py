@@ -377,7 +377,7 @@ class main:
         log.warning(ws_channel)
         
         id_method = 0
-        if 'subscription' in ws_channel:
+        if 'subscribe' in ws_channel:
             id_method = 3
         if 'get' in ws_channel:
             id_method = 4
