@@ -260,8 +260,8 @@ class main:
                                     
                             data_portfolio: list = message['params']['data']
                             log.critical(data_portfolio)
-                            balance_eth: list = data_portfolio ['balance']
-                            log.error(f'{balance_eth=}')
+                            #balance_eth: list = data_portfolio ['balance']
+                            #log.error(f'{balance_eth=}')
                         log.debug(f'{equity=} {equity  in none_data=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
