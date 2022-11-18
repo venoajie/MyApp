@@ -239,26 +239,21 @@ class main:
                             #save_open_files.save_file('order_books', data_orders)
                         
                         #save_open_files.save_file('order_books',data_orders)
+                        portfolio = []
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
-                            equity = data_orders ['equity']
                             #log.debug(data_orders)
+                            save_open_files.save_file_to_pickle('portfolio-eth', data_orders)
                             
-                            notional = index_price * equity
-                            
-                            
-                    
-                            if equity  in none_data:
-                                try:
-                                    equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                                except:
-                                    equity = []
+                        if portfolio  in none_data:
+                            try:
+                                portfolio = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                            except:
+                                portfolio = []
 
-                            if equity not in none_data:
-                                        
-                                save_open_files.save_file_to_pickle('portfolio-eth', equity)
-                        # 
+                    # 
+                        log.debug(portfolio)
                         tick_size = []
                         min_trade_amount = []
                         contract_size = []
@@ -284,6 +279,10 @@ class main:
                                 contract_size = instrument_data ['contract_size']
                                 expiration_timestamp = instrument_data ['expiration_timestamp']
                                 instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
+                                equity = data_orders ['equity']
+                                log.debug(f'{equity=} {equity  in none_data=}')
+                                notional = index_price * equity
+
                                 min_hedged_size = notional / min_trade_amount * contract_size
                                     
                                 log.error(f'{instrument_data=}')
@@ -291,7 +290,6 @@ class main:
                                 log.warning(f'{min_hedged_size=}')
                                 log.error(f'{net_position=}')
                                 #log.warning(instruments)
-                                log.debug(f'{equity=} {equity  in none_data=}')
                                 log.error(f'{best_bid_prc=}')
                                 log.debug(f'{best_ask_prc=}')
                                 log.error(f'{index_price=}')
