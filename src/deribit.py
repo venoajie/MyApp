@@ -237,20 +237,20 @@ class main:
                             min_hedged_size = notional
                             log.error(f'{notional=}')
                         
-                            if equity not in none_data:
+                            #if equity not in none_data:
                                         
-                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
+                            #    save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
                         # 
-                            if equity  in none_data:
+                            #if equity  in none_data:
 
-                                bids = data_orders['bids']
-                                asks = data_orders['asks']                                        
-                                best_bid_prc = bids[0][0]
-                                best_ask_prc = asks[0][0]
-                                log.critical(best_bid_prc)
-                                log.critical(best_ask_prc)
-                                balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                                log.warning(balance)
+                            bids = data_orders['bids']
+                            asks = data_orders['asks']                                        
+                            best_bid_prc = bids[0][0]
+                            best_ask_prc = asks[0][0]
+                            log.critical(best_bid_prc)
+                            log.critical(best_ask_prc)
+                            balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                            log.warning(balance)
                                     
                             data_portfolio: list = message['params']['data']
                             #log.critical(data_portfolio)
