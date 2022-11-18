@@ -249,7 +249,7 @@ class main:
                         
                             if equity not in none_data:
                                         
-                                save_open_files.save_file_to_pickle('portfolio-eth.pkl', equity)
+                                save_open_files.save_file_to_pickle('portfolio-eth', equity)
                         # 
                         if equity  in none_data:
                             try:
