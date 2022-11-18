@@ -224,7 +224,15 @@ class main:
                         index_price = position[0]['index_price']
                         log.error(index_price)
                         
-                        #save_open_files.save_file('order_books', data_orders)
+                        if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
+
+                            bids = data_orders['bids']
+                            asks = data_orders['asks']                                        
+                            best_bid_prc = bids[0][0]
+                            best_ask_prc = asks[0][0]
+                        log.critical(best_bid_prc)
+                        log.critical(best_ask_prc)                        
+                            #save_open_files.save_file('order_books', data_orders)
                         
                         #save_open_files.save_file('order_books',data_orders)
                         
@@ -243,18 +251,12 @@ class main:
                         # 
                             #if equity  in none_data:
 
-                            bids = data_orders['bids']
-                            asks = data_orders['asks']                                        
-                            best_bid_prc = bids[0][0]
-                            best_ask_prc = asks[0][0]
-                            log.critical(best_bid_prc)
-                            log.critical(best_ask_prc)
-                            balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                            log.warning(balance)
-                                    
-                            data_portfolio: list = message['params']['data']
+                        balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                        log.warning(balance)
+                                
+                        data_portfolio: list = message['params']['data']
                             #log.critical(data_portfolio)
-                            balance_eth: list = data_portfolio ['balance']
+                        balance_eth: list = data_portfolio ['balance']
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
