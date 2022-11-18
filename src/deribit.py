@@ -387,9 +387,9 @@ class main:
         if 'private' in ws_channel:
             id_auth = 2
         id_instrument = 0
-        if ['BTC','btc'] in ws_channel:
+        if 'BTC'or 'btc' in ws_channel:
             id_instrument = 1
-        if ['ETH','eth'] in ws_channel:
+        if 'ETH' or 'eth' in ws_channel:
             id_instrument = 2
 
         msg: Dict = {
