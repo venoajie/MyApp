@@ -193,6 +193,10 @@ class main:
 
                     elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
+                        save_open_files.save_file_to_pickle('instruments', message)
+                    
+                    elif message['id'] == 402:
+                        # Avoid logging Heartbeat messages
                         continue
 
                 elif 'method' in list(message):
