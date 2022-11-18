@@ -241,6 +241,7 @@ class main:
                             
                             notional = index_price * equity
                             min_hedged_size = notional
+                            log.error(f'{notional=}')
                             
                         
                             if equity not in none_data:
@@ -263,7 +264,6 @@ class main:
                         log.error(f'{best_ask_prc=}')
                         log.error(f'{index_price=}')
                         log.error(f'{net_position=}')
-                        log.error(f'{notional=}')
                         #log.critical(balance_eth)
                                               #if balance_eth in none_data:
                         #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
