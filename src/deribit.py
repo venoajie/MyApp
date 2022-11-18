@@ -375,16 +375,27 @@ class main:
         """
         await asyncio.sleep(5)
         log.warning(ws_channel)
-        id_auth = 1 if 'public' in ws_channel else 0
-        id_auth = 2 if 'private' in ws_channel else 0
-        id_instrument = 1 if 'public' in ws_channel else 0
-        id_instrument = 2 if 'eth' in ws_channel else 0
-        id = f'3{id}'
+        
+        id_method = 0
+        if 'subscription' in ws_channel:
+            id_method = 3
+        if 'get' in ws_channel:
+            id_method = 4
+        id_auth = 0
+        if 'public' in ws_channel:
+            id_auth = 1
+        if 'private' in ws_channel:
+            id_auth = 2
+        id_instrument = 0
+        if ['BTC','btc'] in ws_channel:
+            id_instrument = 1
+        if ['ETH','eth'] in ws_channel:
+            id_instrument = 2
 
         msg: Dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
-                    "id": int(f'{id}{id_auth}{id_instrument}'),
+                    "id": int(f'{id_method}{id_auth}{id_instrument}'),
                     "params": {
                         "channels": [ws_channel]
                         }
