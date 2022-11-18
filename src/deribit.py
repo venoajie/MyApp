@@ -258,12 +258,21 @@ class main:
                                 equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
                             except:
                                 equity = []
-                        #log.warning(balance)
+                                
+                            
                                     
                             data_portfolio: list = message['params']['data']
                             log.critical(data_portfolio)
                             #balance_eth: list = data_portfolio ['balance']
                             #log.error(f'{balance_eth=}')
+                        
+                        
+                        try:
+                            instruments = save_open_files.open_file_pickle('instruments.pkl')
+                        except:
+                            instruments = []
+                            
+                        log.warning(instruments)
                         log.debug(f'{equity=} {equity  in none_data=}')
                         log.error(f'{best_bid_prc=}')
                         log.error(f'{best_ask_prc=}')
