@@ -203,12 +203,12 @@ class main:
                 if 'params' in list(message):
                     log.warning((message))
                     log.warning(list(message))
-                    log.warning(message['params']['channel'] != ['ETH','eth'])
+                    #log.warning(message['params']['channel'] != ['ETH','eth'])
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                                     
-                    if  message['params']['channel'] == ['ETH','eth']:
+                    #if  message['params']['channel'] == ['ETH','eth']:
                     
                         log.error(f'{message=}')
                         data_orders: list = message['params']['data']
