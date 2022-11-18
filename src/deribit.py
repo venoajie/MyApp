@@ -172,7 +172,7 @@ class main:
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                                 
-                log.critical(list(message))
+                #log.critical(list(message))
 
                 if 'id' in list(message):
                     if message['id'] == 9929:
@@ -475,12 +475,6 @@ class main:
                 msg
                 )
             )
-        test = await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
-            )
-        log.warning(test)
         
             
     def run_connection(conn):
