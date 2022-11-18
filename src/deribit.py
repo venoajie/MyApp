@@ -214,6 +214,12 @@ class main:
                         message_channel = message['params']['channel']
                         equity = []
                                     
+                                
+                        tick_size = []
+                        min_trade_amount = []
+                        contract_size = []
+                        instruments_with_rebates = []
+                            
                     #if  message['params']['channel'] == ['ETH','eth']:
                     
                         #log.error(f'{message=}')
