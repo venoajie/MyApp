@@ -249,27 +249,22 @@ class main:
                             min_hedged_size = notional
                             log.error(f'{notional=}')
                             
-                        
+                    
+                            if equity  in none_data:
+                                try:
+                                    equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                                except:
+                                    equity = []
+
                             if equity not in none_data:
                                         
                                 save_open_files.save_file_to_pickle('portfolio-eth', equity)
                         # 
-                        if equity  in none_data:
-                            try:
-                                equity = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                            except:
-                                equity = []
-
-                                    
-                            data_portfolio: list = message['params']['data']
-                            log.critical(data_portfolio)
-                            #balance_eth: list = data_portfolio ['balance']
-                            #log.error(f'{balance_eth=}')
-                    
                         tick_size = []
                         min_trade_amount = []
                         contract_size = []
                         instruments_with_rebates = []
+                        all_instruments = []
                         
                         try:
                             instruments = save_open_files.open_file_pickle('instruments.pkl')['result']
@@ -277,25 +272,31 @@ class main:
                             instruments = []
                             
                                     
+                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in position]   
                         if instruments not  in none_data:
-
-                            tick_size = instruments ['tick_size']
-                            min_trade_amount = instruments ['min_trade_amount']
-                            contract_size = instruments ['contract_size']
-                            instruments_with_rebates = [o['instrument_name'] for o in position if o['maker_commission'] <0]                                
-                        
-                        log.warning(instruments)
-                        log.debug(f'{equity=} {equity  in none_data=}')
-                        log.error(f'{best_bid_prc=}')
-                        log.error(f'{best_ask_prc=}')
-                        log.error(f'{index_price=}')
-                        log.error(f'{net_position=}')
-                        log.error(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
-                        #log.critical(balance_eth)
-                                              #if balance_eth in none_data:
-                        #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
-                        #    log.warning(balance)
+                                
+                            for instrument in all_instruments:
+                                log.error(f'{instrument=}')
+                            
+                                instrument_data = [o for o in position if o['instrument_name'] == instruments]    
+                                tick_size = instrument_data ['tick_size']
+                                min_trade_amount = instrument_data ['min_trade_amount']
+                                contract_size = instrument_data ['contract_size']
+                                instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
                                     
+                                log.error(f'{net_position=}')
+                                log.warning(instruments)
+                                log.debug(f'{equity=} {equity  in none_data=}')
+                                log.error(f'{best_bid_prc=}')
+                                log.error(f'{best_ask_prc=}')
+                                log.error(f'{index_price=}')
+                                log.error(f'{net_position=}')
+                                log.error(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
+                                #log.critical(balance_eth)
+                                                    #if balance_eth in none_data:
+                                #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                                #    log.warning(balance)
+                                        
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
                     data_trades: list = message['params']['data']
                     log.info(data_trades)
