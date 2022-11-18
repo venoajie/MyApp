@@ -47,20 +47,38 @@ class main:
         - tp: 0,5%. no cl
         - bila ada satu posisi rugi, maka di avg down (10%). posisi lawan kirim order dengan qty x 2
         
-        id convention for subscription    4
-        get             5
+        id convention
         
+        method
+        subscription    3
+        get             4
+        
+        auth
         public	        1
         private	        2
-        --------------
-        portfolio	    1	1	11
-        user_order	    1	2	12
-        my_trade	    1	3	13
-        order_book	    2	4	24
-        trade	        2	5	25
-        index	        2	6	26
-        announcement	2	7	27
+        
+        instruments
+        all             0
+        btc             1
+        eth             2
+        
+        subscription
+        --------------  method      auth    seq    inst
+        portfolio	        3	    1	    01
+        user_order	        3	    1	    02
+        my_trade	        3	    1	    03
+        order_book	        3	    2	    04
+        trade	            3	    1	    05
+        index	            3	    1	    06
+        announcement	    3	    1	    07
 
+        get
+        --------------
+        currencies	        4	    2	    01
+        instruments	        4	    2	    02
+        positions	        4	    1	    03
+        
+        
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
@@ -213,6 +231,7 @@ class main:
                             log.debug(data_orders)
                             log.debug(equity)
                             notional = index_price * equity
+                            min_hedged_size = notional
                             log.error(notional)
                         
                             if equity not in none_data:
@@ -347,18 +366,25 @@ class main:
     async def ws_operation(
         self,
         operation: str,
-        ws_channel: str
+        ws_channel: str,
+        id: int=42
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
         await asyncio.sleep(5)
+        log.warning(ws_channel)
+        id_auth = 1 if 'public' in ws_channel else 0
+        id_auth = 2 if 'private' in ws_channel else 0
+        id_instrument = 1 if 'public' in ws_channel else 0
+        id_instrument = 2 if 'eth' in ws_channel else 0
+        id = f'3{id}'
 
         msg: Dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
-                    "id": 42,
+                    "id": int(f'{id}{id_auth}{id_instrument}'),
                     "params": {
                         "channels": [ws_channel]
                         }
