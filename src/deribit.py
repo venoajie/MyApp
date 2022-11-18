@@ -176,6 +176,7 @@ class main:
 
                 if 'id' in list(message):
                     log.critical(list(message))
+                    log.info(message['id'] )
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             logging.debug('Successfully authenticated WebSocket Connection')
@@ -192,14 +193,13 @@ class main:
 
                         self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
 
-                    elif message['id'] == 402:
-                        # Avoid logging Heartbeat messages
-                        save_open_files.save_file_to_pickle('instruments', message)
-                    
                     elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
                         continue
 
+                    if message['id'] == 402:
+                        save_open_files.save_file_to_pickle('instruments', message)
+                    
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
