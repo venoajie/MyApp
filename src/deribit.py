@@ -285,6 +285,7 @@ class main:
                                 contract_size = instrument_data ['contract_size']
                                 instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
                                     
+                                log.info(f'{instruments_with_rebates=}')
                                 log.error(f'{net_position=}')
                                 #log.warning(instruments)
                                 log.debug(f'{equity=} {equity  in none_data=}')
