@@ -246,8 +246,7 @@ class main:
                             #log.debug(data_orders)
                             
                             notional = index_price * equity
-                            min_hedged_size = notional
-                            log.error(f'{notional=}')
+                            
                             
                     
                             if equity  in none_data:
@@ -265,6 +264,7 @@ class main:
                         contract_size = []
                         instruments_with_rebates = []
                         all_instruments = []
+                        min_hedged_size = []
                         
                         try:
                             instruments = save_open_files.open_file_pickle('instruments.pkl')['result']
@@ -276,24 +276,28 @@ class main:
                         if instruments not  in none_data:
                                 
                             for instrument in all_instruments:
-                                log.error(f'{instrument=}')
+                                #log.error(f'{instrument=}')
                             
                                 instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                log.error(f'{instrument_data=}')
                                 tick_size = instrument_data ['tick_size']
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
+                                expiration_timestamp = instrument_data ['expiration_timestamp']
                                 instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
+                                min_hedged_size = notional / min_trade_amount * contract_size
                                     
+                                log.error(f'{instrument_data=}')
                                 log.info(f'{instruments_with_rebates=}')
+                                log.warning(f'{min_hedged_size=}')
                                 log.error(f'{net_position=}')
                                 #log.warning(instruments)
                                 log.debug(f'{equity=} {equity  in none_data=}')
                                 log.error(f'{best_bid_prc=}')
-                                log.error(f'{best_ask_prc=}')
+                                log.debug(f'{best_ask_prc=}')
                                 log.error(f'{index_price=}')
+                                log.warning(f'{expiration_timestamp=}')
                                 log.error(f'{net_position=}')
-                                log.error(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
+                                log.info(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
                                 #log.critical(balance_eth)
                                                     #if balance_eth in none_data:
                                 #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
