@@ -260,7 +260,7 @@ class main:
                             except:
                                 open_orders = []
 
-                        log.error(f'{open_orders=}')
+                        log.info(f'{open_orders=}')
                         
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
