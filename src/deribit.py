@@ -246,14 +246,14 @@ class main:
                             open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                             
                             
-                            log.critical(f'{open_orders_currency=}')
+                            #log.critical(f'{open_orders_currency=}')
 
                             save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
                             
                         if open_orders  in none_data:
                             try:
                                 try:
-                                    open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')
+                                    open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')['result']
                                 except:
                                     open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                                     save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
