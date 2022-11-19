@@ -89,7 +89,7 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
             client_id=client_id,
             client_secret=client_secret,
             )
-    return result ['result']
+    return result 
 
 async def get_position (client_id, client_secret, endpoint, currency):
         
