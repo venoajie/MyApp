@@ -20,6 +20,8 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 from dataclassy import dataclass
 
+# user defined formula
+from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -38,9 +40,10 @@ async def main(
     connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
+    id = id_numbering.id(endpoint, endpoint)
     payload: Dict = {
                     "jsonrpc": "2.0",
-                    "id": 1,
+                    "id": id,
                     "method": f"{endpoint}",
                     "params": params
                     }    
