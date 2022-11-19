@@ -236,10 +236,11 @@ class main:
                         index_price = position[0]['index_price']
                         
                         open_orders = []
+                        endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
                         if message_channel == 'user.orders.future.ETH.raw':
 
                             #endpoint_open_orders_instruments: str = f'private/get_open_orders_by_instrument'
-                            endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
+                            
                             
                             #open_orders_instruments = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders_instruments, instrument, "all")
                             open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
