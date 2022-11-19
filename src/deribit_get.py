@@ -44,7 +44,15 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }    
-    print (payload)
+    
+    if 'private/get_open_orders_by_instrument' in endpoint:
+        payload: Dict = {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": f"{endpoint}",
+                    }    
+    
+    print (f'{payload}')
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
@@ -90,6 +98,7 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
     print (client_secret)
     result = await main(
             endpoint=endpoint,
+            params=params,
             client_id=client_id,
             client_secret=client_secret,
             )
