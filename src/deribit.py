@@ -286,15 +286,14 @@ class main:
                                     endpoint_open_orders: str = f'private/get_open_orders_by_instrument?instrument_name={instrument}&type={endpoint_open_orders_type}'
                                     endpoint_open_orders2 = f'private/get_open_orders_by_instrument?instrument_name={instrument}&type=all'
                                     endpoint_open_orders3 = f'private/get_open_orders_by_instrument/instrument_name={instrument}&type=all'
-                                    log.error(f'{open_orders2=}')
                                     open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
+                                    log.error(f'{open_orders=}')
                                     open_orders2 = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders2, instrument, "all")
-                                    log.error(f'{open_orders2=}')
+                                    log.info(f'{open_orders2=}')
                                     open_orders3 = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders3, instrument, "all")
-                                    log.error(f'{open_orders3=}')
+                                    log.debug(f'{open_orders3=}')
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                    log.error(f'{open_orders=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
