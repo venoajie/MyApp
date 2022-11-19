@@ -53,6 +53,7 @@ async def main(
                     }    
     
     print (f'{payload=}')
+    print (f'{connection_url+endpoint}')
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
