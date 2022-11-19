@@ -176,7 +176,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                #log.debug(message)
+                log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                 
@@ -235,6 +235,10 @@ class main:
                         #log.error(position)
                         index_price = position[0]['index_price']
                         
+                        if message_channel == 'user.orders.future.ETH.raw':
+
+                            log.critical(message)
+                            
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             bids = data_orders['bids']
