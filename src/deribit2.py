@@ -146,11 +146,6 @@ class main:
                     )
                 )
 
-            self.loop.create_task(
-                self.ws_operation_get_instruments('ETH'
-                    )
-                )
-            
             #self.loop.create_task(self.ws_operation_get_currencies())         
 
             while self.websocket_client.open:
