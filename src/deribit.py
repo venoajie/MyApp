@@ -152,6 +152,12 @@ class main:
                     )
                 )
             
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.orders.future.ETH.raw'
+                    )
+                )
             
             self.loop.create_task(
                 self.ws_operation_get_instruments('ETH','future'
@@ -270,11 +276,11 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
-                                    #endpoint_open_orders: str = f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
-                                    #open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
+                                    endpoint_open_orders: str = f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
+                                    open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                    #log.error(f'{open_orders=}')
+                                    log.error(f'{open_orders=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
