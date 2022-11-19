@@ -52,7 +52,7 @@ async def main(
                     "method": f"{endpoint}",
                     }    
     
-    print (f'{payload}')
+    print (f'{payload=}')
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
@@ -94,8 +94,7 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
     print (endpoint)
     print (instrument)
     print (type)
-    print (client_id)
-    print (client_secret)
+    
     result = await main(
             endpoint=endpoint,
             params=params,
