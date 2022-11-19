@@ -276,7 +276,8 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
-                                    endpoint_open_orders: str = f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
+                                    endpoint_open_orders_type = 'all'
+                                    endpoint_open_orders: str = f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={endpoint_open_orders_type}"
                                     open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
