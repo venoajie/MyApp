@@ -246,7 +246,7 @@ class main:
                             open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                             
                             
-                            log.error(f'{open_orders_currency=}')
+                            log.critical(f'{open_orders_currency=}')
 
                             save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
                             
