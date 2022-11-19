@@ -176,7 +176,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                log.debug(message)
+                #log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                 
