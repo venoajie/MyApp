@@ -155,7 +155,7 @@ class main:
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='user.orders.ETH-PERPETUAL.raw'
+                    ws_channel='user.orders.future.ETH.raw'
                     )
                 )
             
