@@ -44,6 +44,7 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }    
+    print (payload)
 
     async with aiohttp.ClientSession() as session:
         async with session.post(
