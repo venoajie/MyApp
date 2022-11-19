@@ -260,7 +260,7 @@ class main:
                             except:
                                 open_orders = []
 
-                        log.info(f'{open_orders=}')
+                        #log.info(f'{open_orders=}')
                         
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -304,6 +304,8 @@ class main:
                                     log.error(f'{instrument=}')
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
+                                    open_orders_instrument = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]   [0] 
+                                    log.info(f'{open_orders_instrument=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
