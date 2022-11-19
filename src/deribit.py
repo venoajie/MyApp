@@ -251,7 +251,11 @@ class main:
                             
                         if open_orders  in none_data:
                             try:
-                                open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')
+                                try:
+                                    open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')
+                                except:
+                                    open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
+                                    save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
                             except:
                                 open_orders = []
 
