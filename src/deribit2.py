@@ -1,37 +1,37 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+"""
+Description:
+    Deribit WebSocket Asyncio Example.
+    - Authenticated connection.
+Usage:
+    python3.9 dbt-ws-authenticated-example.py
+Requirements:
+    - websocket-client >= 1.2.1
+"""
 
 # built ins
+import asyncio
 import sys
+import json
 import logging
 from typing import Dict
 from datetime import datetime, timedelta
-from time import sleep
+from loguru import logger as log
+from dask import delayed, compute    
 import os
 #from utils import formula
 
 # installed
 import websockets
-import asyncio
 import orjson
-import json
-from dask import delayed, compute    
-from loguru import logger as log
-from os.path import join, dirname
-from dotenv import load_dotenv
-
 # user defined formula
 from utils import save_open_files
+
+from os.path import join, dirname
+from dotenv import load_dotenv
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-
-root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(root + '/python')
-
-log.warning(root)
-log.warning(sys.path.append(root + '/python'))
 
 class main:
     
@@ -56,18 +56,12 @@ class main:
         trade	        2	5	25
         index	        2	6	26
         announcement	2	7	27
+
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
-        + https://niekdeschipper.com/projects/asyncio.md
-        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
-        + https://realpython.com/async-io-python/
-        + https://www.youtube.com/watch?v=ZzfHjytDceU
-        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
-        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
-        + https://sammchardy.github.io/async-binance-basics/
-        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
     +----------------------------------------------------------------------------------------------+ 
+
     '''       
     def __init__(
         self,
@@ -76,7 +70,7 @@ class main:
         client_secret: str
             ) -> None:
         # Async Event Loop
-        self.loop = asyncio.get_event_loop() # https://stackoverflow.com/questions/65206110/when-to-use-asyncio-get-running-loop-or-asyncio-get-event-loop-in-python
+        self.loop = asyncio.get_event_loop()
 
         # Instance Variables
         self.ws_connection_url: str = ws_connection_url
@@ -110,6 +104,14 @@ class main:
                 self.ws_refresh_auth()
                 )
 
+            # Subscribe to the specified WebSocket Channel
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation='subscribe',
+            #        ws_channel='trades.BTC-PERPETUAL.raw'
+            #       )
+            #    )
+
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
@@ -117,6 +119,34 @@ class main:
                     )
                 )
             
+            self.loop.create_task(
+            self.ws_operation(
+                operation='subscribe',
+                ws_channel='user.orders.ETH-PERPETUAL.raw'
+                )
+            )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.portfolio.BTC'
+                    )
+                )
+
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='book.BTC-PERPETUAL.none.20.100ms'
+                    )
+                )
+
+            self.loop.create_task(
+                self.ws_operation_get_instruments('ETH'
+                    )
+                )
+            
+            #self.loop.create_task(self.ws_operation_get_currencies())         
+
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -169,7 +199,21 @@ class main:
                     data_portfolio: list = message['params']['data']
                     balance_eth: list = data_portfolio ['balance']
                     log.critical(data_portfolio)
-                    log.critical(balance_eth)                        
+                    if balance_eth != []:
+                        self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel='book.BTC-PERPETUAL.none.20.100ms'
+                        )
+                    )
+                        
+                    message: bytes = await self.websocket_client.recv()
+                    #message: Dict = json.loads(message)
+                    #message: Dict = orjson.dumps(message)
+                    message: Dict = orjson.loads(message)
+                    message_channel: str = None
+                    balance_eth: float = []
+                    log.debug(message)
                 
                 if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                     data_orders: list = message['params']['data']
@@ -178,7 +222,6 @@ class main:
                 if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
                     data_orders: list = message['params']['data']
                     
-                    log.error(message_channel)
                     log.error(data_orders)
                     #save_open_files.save_file('order_books', data_orders)
                     
@@ -189,11 +232,12 @@ class main:
                     #save_open_files.save_file('order_books',data_orders)
                     log.warning(best_bid_prc)
                     log.error(best_ask_prc)
-                    
+                log.critical (balance_eth)
             else:
                 logging.info('WebSocket connection has broken.')
                 sys.exit(1)
                 
+        return balance_eth
 
     async def establish_heartbeat(self) -> None:
         """
@@ -209,15 +253,11 @@ class main:
                                }
                     }
 
-                
-        try:
-            await self.websocket_client.send(
+        await self.websocket_client.send(
             json.dumps(
                 msg
                 )
                 )
-        except Exception as error:
-            log.warning (error)
 
     async def heartbeat_response(self) -> None:
         """
@@ -231,16 +271,12 @@ class main:
                     "params": {}
                     }
 
-        try:
-            await self.websocket_client.send(
+        await self.websocket_client.send(
             json.dumps(
                 msg
                 )
                 )
 
-        except Exception as error:
-            log.warning (error)
-            
     async def ws_auth(self) -> None:
         """
         Requests DBT's `public/auth` to
@@ -369,21 +405,6 @@ class main:
                 )
             )
         
-            
-    def run_connection(conn):
-        try:
-            conn.run()
-        except KeyboardInterrupt:
-            print("Interrupted execution by user")
-            asyncio.get_event_loop().run_until_complete(conn.stop_ws())
-            exit(0)
-        except Exception as e:
-            print(f'Exception from websocket connection: {e}')
-        finally:
-            print("Trying to re-establish connection")
-            sleep(3)
-            #run_connection(conn)
-        
 if __name__ == "__main__":
     # Logging
     logging.basicConfig(
@@ -407,8 +428,9 @@ if __name__ == "__main__":
     # DBT Client Secret
     client_secret: str = os.environ.get("client_secret")
 
-    main(
+    app = main(
         ws_connection_url=ws_connection_url,
         client_id=client_id,
         client_secret=client_secret
         )
+    app.ws_manager()
