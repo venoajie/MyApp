@@ -283,15 +283,14 @@ class main:
                                     endpoint_position: str = 'private/get_positions'
                                     position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")
                                     endpoint_open_orders_type = "all"
-                                    endpoint_open_orders: str = f'private/get_open_orders_by_instrument'
-                                    endpoint_open_orders2 = f'private/get_open_orders_by_instrument?instrument_name={instrument}&type=all'
-                                    endpoint_open_orders3 = f'private/get_open_orders_by_instrument/instrument_name={instrument}&type=all'
-                                    open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
-                                    log.error(f'{open_orders=}')
-                                    open_orders2 = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders2, instrument, "all")
-                                    log.info(f'{open_orders2=}')
-                                    open_orders3 = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders3, instrument, "all")
-                                    log.debug(f'{open_orders3=}')
+                                    endpoint_open_orders_instruments: str = f'private/get_open_orders_by_instrument'
+                                    endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
+                                    
+                                    open_orders_instruments = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders_instruments, instrument, "all")
+                                    open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
+                                    
+                                    log.error(f'{open_orders_instruments=}')
+                                    log.error(f'{open_orders_currency=}')
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     log.error(f'{instrument_data=}')

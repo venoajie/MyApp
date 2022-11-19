@@ -94,6 +94,18 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
             )
     return result 
 
+async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
+    params =  {
+                "currency": currency
+                }
+    
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+    return result 
 async def get_position (client_id, client_secret, endpoint, currency):
         
     params =  {"currency": currency}
