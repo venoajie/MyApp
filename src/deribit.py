@@ -153,6 +153,13 @@ class main:
                 )
             
             self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='"user.orders.ETH-PERPETUAL.raw"'
+                    )
+                )
+            
+            self.loop.create_task(
                 self.ws_operation_get_instruments('ETH','future'
                     )
                 )
@@ -168,11 +175,9 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                #log.debug(message)
+                log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
-                                
-                #log.critical(list(message))
 
                 if 'id' in list(message):
                     #log.critical(list(message))
@@ -212,10 +217,8 @@ class main:
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        
                         equity = []
-                                    
-                            
-                    #if  message['params']['channel'] == ['ETH','eth']:
                     
                         #log.error(f'{message=}')
                         data_orders: list = message['params']['data']
@@ -235,10 +238,7 @@ class main:
                             asks = data_orders['asks']                                        
                             best_bid_prc = bids[0][0]
                             best_ask_prc = asks[0][0]
-
-                            #save_open_files.save_file('order_books', data_orders)
                         
-                        #save_open_files.save_file('order_books',data_orders)
                         portfolio = []
                         
                         if message_channel == 'user.portfolio.eth':
@@ -252,8 +252,6 @@ class main:
                             except:
                                 portfolio = []
 
-                    # 
-                        log.debug(portfolio)
                         tick_size = []
                         min_trade_amount = []
                         contract_size = []
