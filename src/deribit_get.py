@@ -90,7 +90,6 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
     print (client_secret)
     result = await main(
             endpoint=endpoint,
-            params=params,
             client_id=client_id,
             client_secret=client_secret,
             )
