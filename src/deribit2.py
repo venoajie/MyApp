@@ -223,6 +223,14 @@ class main:
                 
                 if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                     data_orders: list = message['params']['data']
+                    log.critical(data_orders)
+                    
+                if message_channel == 'user.orders.future.ETH.raw':
+                    data_orders: list = message['params']['data']
+                    log.critical(data_orders)
+                    
+                if message_channel == 'user.orders.future.ETH.raw':
+                    data_orders: list = message['params']['data']
                     log.debug(data_orders)
                     
                 if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
