@@ -235,10 +235,28 @@ class main:
                         #log.error(position)
                         index_price = position[0]['index_price']
                         
+                        open_orders = []
                         if message_channel == 'user.orders.future.ETH.raw':
 
-                            log.critical(message)
+                            #endpoint_open_orders_instruments: str = f'private/get_open_orders_by_instrument'
+                            endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
                             
+                            #open_orders_instruments = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders_instruments, instrument, "all")
+                            open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
+                            
+                            
+                            log.error(f'{open_orders_currency=}')
+
+                            save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
+                            
+                        if open_orders  in none_data:
+                            try:
+                                open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')
+                            except:
+                                open_orders = []
+
+                        log.error(f'{open_orders=}')
+                        
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             bids = data_orders['bids']
@@ -271,7 +289,6 @@ class main:
                         except:
                             instruments = []
                             
-                                    
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
@@ -280,17 +297,6 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
-                                    endpoint_position: str = 'private/get_positions'
-                                    position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")
-                                    endpoint_open_orders_type = "all"
-                                    endpoint_open_orders_instruments: str = f'private/get_open_orders_by_instrument'
-                                    endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
-                                    
-                                    open_orders_instruments = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders_instruments, instrument, "all")
-                                    open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
-                                    
-                                    log.error(f'{open_orders_instruments=}')
-                                    log.error(f'{open_orders_currency=}')
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     log.error(f'{instrument_data=}')
