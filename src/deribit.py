@@ -151,20 +151,14 @@ class main:
                     ws_channel='book.ETH-PERPETUAL.none.20.100ms'
                     )
                 )
-            
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='user.orders.future.ETH.raw'
-                    )
-                )
-            
+           
             self.loop.create_task(
                 self.ws_operation_get_instruments('ETH','future'
                     )
                 )
             
             self.loop.create_task (self.ws_operation_get_positions("ETH"))
+            
             self.loop.create_task (self.ws_operation_get_currencies())
             
             while self.websocket_client.open:
@@ -175,9 +169,10 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                log.debug(message)
+                #log.debug(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
+                
 
                 if 'id' in list(message):
                     #log.critical(list(message))
@@ -225,6 +220,7 @@ class main:
                         
                         #log.error(message_channel)
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
+                        
                         instrument_name =  [o['instrument_name'] for o in position ]
                         net_position = sum([o['size'] for o in position ])
                         #log.info(f'{instrument_name=}')
@@ -273,8 +269,11 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
+                                    endpoint_open_orders: str = f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
+                                    open_orders = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders, instrument, "all")
                                 
                                     instrument_data = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
+                                    log.error(f'{open_orders=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
@@ -505,6 +504,38 @@ class main:
         
 
         method =  f"private/get_positions"
+        id = id_numbering.id(method, method)
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "id": id,
+                    "params": params
+                    }
+
+        #log.warning(msg)
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+        
+        
+    async def ws_operation_get_open_orders_byInstruments(
+        self,
+        instrument: str,
+        type: str
+            ) -> None:
+        """
+        """
+        await asyncio.sleep(5)
+        params = {
+                "instrument_name": instrument,
+                "type": type,
+                }
+        
+
+        method =  f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
         id = id_numbering.id(method, method)
         msg: Dict = {
                     "jsonrpc": "2.0",

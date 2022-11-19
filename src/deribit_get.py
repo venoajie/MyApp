@@ -76,6 +76,23 @@ def send_order (client_id, client_secret, endpoint, instrument, type, amount, la
             client_secret=client_secret,
             )
         )
+    
+def get_open_orders_byInstruments (client_id, client_secret, endpoint, instrument, type):
+        
+    params =  {
+                "instrument_name": instrument,
+                "type": type,
+                }
+    
+    loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
+    loop.run_until_complete(
+        main(
+            endpoint=endpoint,
+            params=params,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+        )
 async def get_position (client_id, client_secret, endpoint, currency):
         
     params =  {"currency": currency}
