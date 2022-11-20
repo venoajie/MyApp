@@ -320,7 +320,7 @@ class main:
 
                                     min_hedged_size = notional / min_trade_amount * contract_size
                                     instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
-                                    hedging_size = min_hedged_size if instrument_position == [] else min_hedged_size - instrument_position
+                                    hedging_size = int(min_hedged_size if instrument_position == [] else min_hedged_size - instrument_position)
                                     log.info(f'{position=}')
                                     log.warning(f'{instrument_position=}')
                                     log.warning(f'{hedging_size=}')
@@ -331,7 +331,7 @@ class main:
 
                                     if open_orders_hedging in none_data or instrument_position < min_hedged_size:
                                         if instrument in instruments_with_rebates:
-                                            await deribit_get.send_order (client_id, 
+                                            await deribit_get.send_order_limit (client_id, 
                                                                       client_secret, 
                                                                       endpoint_short, 
                                                                       instrument, 
