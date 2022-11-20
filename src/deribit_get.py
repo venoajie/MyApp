@@ -61,7 +61,7 @@ async def main(
             response: Dict = await response.json()
             return response
 
-def send_order_limit (client_id, 
+async def send_order_limit (client_id, 
                       client_secret, 
                       endpoint, 
                       instrument, 
@@ -84,15 +84,14 @@ def send_order_limit (client_id,
                 "reject_post_only": reject_post_only,
                 }
     
-    loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        main(
+    result = await main(
             endpoint=endpoint,
             params=params,
             client_id=client_id,
             client_secret=client_secret,
             )
-        )
+        
+    return result 
     
 async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, instrument, type):
     params =  {
