@@ -331,7 +331,7 @@ class main:
                                     label: str = 'hedging spot'
                                     type: str = 'limit'
 
-                                    if open_orders_hedging_size in none_data or instrument_position < min_hedged_size:
+                                    if open_orders_hedging_size in none_data and instrument_position < min_hedged_size:
                                         if instrument in instruments_with_rebates:
                                             await deribit_get.send_order_limit (client_id, 
                                                                       client_secret, 
