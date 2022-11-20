@@ -160,6 +160,13 @@ class main:
                 )
             
             self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='deribit_price_index.eth_usd'
+                    )
+                )
+            
+            self.loop.create_task(
                 self.ws_operation_get_instruments('ETH','future'
                     )
                 )
@@ -232,12 +239,18 @@ class main:
                         net_position = sum([o['size'] for o in position ])
                         #log.info(f'{instrument_name=}')
                         #log.info(data_orders)
-                        log.error(position)
-                        index_price = position[0]['index_price']
+                        #log.error(position)
+                        
                         
                         endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
                         open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
+
                         
+                        if message_channel == 'deribit_price_index.eth_usd':
+                            log.warning (f'{message=}')
+
+                            index_price = data_orders
+                            
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             bids = data_orders['bids']
@@ -278,6 +291,7 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
+                                    
                                 
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
