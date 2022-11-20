@@ -232,7 +232,7 @@ class main:
                         net_position = sum([o['size'] for o in position ])
                         #log.info(f'{instrument_name=}')
                         #log.info(data_orders)
-                        #log.error(position)
+                        log.error(position)
                         index_price = position[0]['index_price']
                         
                         endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
