@@ -305,11 +305,11 @@ class main:
                                 
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
-                                    log.info(f'{open_orders_instrument=}')
+                                    #log.info(f'{open_orders_instrument=}')
                                     open_orders_hedging:list = [o for o in open_orders_instrument if o['label'] == 'hedging spot'] 
                                     open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
                                     log.info(f'{open_orders_hedging=} {open_orders_hedging_size=}')
-                                    log.error(f'{instrument_data=}')
+                                    #log.error(f'{instrument_data=}')
                                     tick_size:float = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
                                     contract_size = instrument_data ['contract_size']
@@ -322,11 +322,11 @@ class main:
                                     min_hedged_size = notional / min_trade_amount * contract_size
                                     instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
                                     hedging_size = int(min_hedged_size if instrument_position == [] else min_hedged_size - instrument_position)
-                                    log.info(f'{position=}')
+                                    #log.info(f'{position=}')
                                     log.warning(f'{instrument_position=}')
                                     log.warning(f'{hedging_size=}')
                                     log.critical(f'{ open_orders_hedging_size in none_data=} {instrument_position < min_hedged_size=} {instrument in instruments_with_rebates=}')
-                                    log.critical(f'{pen_orders_hedging_size in none_data and instrument_position < min_hedged_size=}')
+                                    log.critical(f'{open_orders_hedging_size in none_data and instrument_position < min_hedged_size=}')
                                         
                                     endpoint_short: str = 'private/sell'
                                     label: str = 'hedging spot'
