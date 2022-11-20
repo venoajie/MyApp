@@ -325,7 +325,8 @@ class main:
                                     log.info(f'{position=}')
                                     log.warning(f'{instrument_position=}')
                                     log.warning(f'{hedging_size=}')
-                                    log.debug(f'{instrument_position < min_hedged_size=} {instrument in instruments_with_rebates=}')
+                                    log.critical(f'{ open_orders_hedging_size in none_data=} {instrument_position < min_hedged_size=} {instrument in instruments_with_rebates=}')
+                                    log.critical(f'{pen_orders_hedging_size in none_data and instrument_position < min_hedged_size=}')
                                         
                                     endpoint_short: str = 'private/sell'
                                     label: str = 'hedging spot'
