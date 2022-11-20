@@ -306,6 +306,8 @@ class main:
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
                                     log.info(f'{open_orders_instrument=}')
+                                    open_orders_hedging:list = [o for o in open_orders_instrument if o['label'] == 'hedging spot']  
+                                    log.info(f'{open_orders_hedging=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size:float = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
