@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from dataclassy import dataclass
 import deribit_get
 # user defined formula
-from utils import save_open_files
+from utils import modify
 from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -205,7 +205,7 @@ class main:
                         continue
 
                     if message['id'] == 402:
-                        save_open_files.save_file_to_pickle('instruments', message)
+                        modify.save_file_to_pickle('instruments', message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
@@ -235,32 +235,8 @@ class main:
                         #log.error(position)
                         index_price = position[0]['index_price']
                         
-                        open_orders = []
                         endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
-                        if message_channel == 'user.orders.future.ETH.raw':
-
-                            #endpoint_open_orders_instruments: str = f'private/get_open_orders_by_instrument'
-                            
-                            
-                            #open_orders_instruments = await deribit_get.get_open_orders_byInstruments (client_id, client_secret, endpoint_open_orders_instruments, instrument, "all")
-                            open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
-                            
-                            
-                            #log.critical(f'{open_orders_currency=}')
-
-                            save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
-                            
-                        if open_orders  in none_data:
-                            try:
-                                try:
-                                    open_orders = save_open_files.open_file_pickle('open-orders-eth.pkl')['result']
-                                except:
-                                    open_orders_currency = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
-                                    save_open_files.save_file_to_pickle('open-orders-eth', open_orders_currency)
-                            except:
-                                open_orders = []
-
-                        #log.info(f'{open_orders=}')
+                        open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                         
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -274,11 +250,11 @@ class main:
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
                             #log.debug(data_orders)
-                            save_open_files.save_file_to_pickle('portfolio-eth', data_orders)
+                            modify.save_file_to_pickle('portfolio-eth', data_orders)
                             
                         if portfolio  in none_data:
                             try:
-                                portfolio = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                                portfolio = modify.open_file_pickle('portfolio-eth.pkl')
                             except:
                                 portfolio = []
 
@@ -290,7 +266,7 @@ class main:
                         min_hedged_size = []
                         
                         try:
-                            instruments = save_open_files.open_file_pickle('instruments.pkl')['result']
+                            instruments = modify.open_file_pickle('instruments.pkl')['result']
                         except:
                             instruments = []
                             
@@ -354,7 +330,7 @@ class main:
                                     log.info(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
                                 #log.critical(balance_eth)
                                                     #if balance_eth in none_data:
-                                #    balance = save_open_files.open_file_pickle('portfolio-eth.pkl')
+                                #    balance = modify.open_file_pickle('portfolio-eth.pkl')
                                 #    log.warning(balance)
                                         
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
