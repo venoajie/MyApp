@@ -61,13 +61,27 @@ async def main(
             response: Dict = await response.json()
             return response
 
-def send_order (client_id, client_secret, endpoint, instrument, type, amount, label: str =None):
+def send_order_limit (client_id, 
+                      client_secret, 
+                      endpoint, 
+                      instrument, 
+                      amount, 
+                      price, 
+                      label: str, 
+                      type: str ='limit', 
+                      reduce_only: bool = False, 
+                      post_only: bool = True, 
+                      reject_post_only: bool =True):
         
     params =  {
                 "instrument_name": instrument,
                 "amount": amount,
+                "price": price,
+                "label": label,
                 "type": type,
-                "label": label
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
                 }
     
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()

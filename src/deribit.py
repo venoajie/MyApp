@@ -306,7 +306,7 @@ class main:
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
                                     log.info(f'{open_orders_instrument=}')
-                                    open_orders_hedging:list = [o for o in open_orders_instrument if o['label'] == 'hedging spot']  
+                                    open_orders_hedging:list = [o for o in open_orders_instrument if o['label'] == 'hedging spot'] 
                                     log.info(f'{open_orders_hedging=}')
                                     log.error(f'{instrument_data=}')
                                     tick_size:float = instrument_data ['tick_size']
@@ -319,7 +319,25 @@ class main:
                                     notional = index_price * equity
 
                                     min_hedged_size = notional / min_trade_amount * contract_size
+                                    instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
+                                    hedging_size = min_hedged_size if instrument_position == [] else min_hedged_size - instrument_position
+                                    log.info(f'{position=}')
+                                    log.warning(f'{instrument_position=}')
+                                    log.warning(f'{hedging_size=}')
                                         
+                                    endpoint_short: str = 'private/sell'
+                                    label: str = 'hedging spot'
+                                    type: str = 'limit'
+
+                                    if open_orders_hedging in none_data or instrument_position < min_hedged_size:
+                                        if instrument in instruments_with_rebates:
+                                            await deribit_get.send_order (client_id, 
+                                                                      client_secret, 
+                                                                      endpoint_short, 
+                                                                      instrument, 
+                                                                      hedging_size, 
+                                                                      best_ask_prc, 
+                                                                      label)
                                     #log.error(f'{instrument_data=}')
                                     log.info(f'{instruments_with_rebates=}')
                                     log.warning(f'{min_hedged_size=}')
