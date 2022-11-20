@@ -291,6 +291,7 @@ class main:
                                 if portfolio != []:
                                         
                                     log.error(f'{instrument=}')
+                                    log.error(f'{open_orders=}')
                                     
                                 
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
