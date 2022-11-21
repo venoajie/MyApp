@@ -59,7 +59,6 @@ async def main(
 
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
-                logging.info(f'Response Content: {response}')
 
             return response
                 
@@ -151,6 +150,7 @@ async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, curre
             client_secret=client_secret,
             )
     return result 
+
 async def get_position (client_id, client_secret, endpoint, currency):
         
     params =  {"currency": currency}
