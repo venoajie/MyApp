@@ -59,6 +59,7 @@ async def main(
 
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
+                logging.info(f'Response Content: {response}')
 
             return response
                 
@@ -134,7 +135,9 @@ async def  get_index (index_name):
                 }
             )
     #print(result)
-    return result ['result']
+    return {'index_price': result ['result']['index_price'], 
+            'estimated_delivery_price': result ['result']['estimated_delivery_price']
+            }
 
 async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
     params =  {
@@ -174,9 +177,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
             client_id=client_id,
             client_secret=client_secret,
             )
-    return {'index_price': result ['result']['index_price'], 
-            'estimated_delivery_price': result ['result']['estimated_delivery_price']
-            }
+    return result ['result']
         
 def get_position_ (client_id, client_secret, endpoint, currency):
         
