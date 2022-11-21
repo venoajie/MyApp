@@ -30,8 +30,8 @@ load_dotenv(dotenv_path)
 async def main(
     endpoint: str,
     params: str,
-    client_id: str,
-    client_secret: str,
+    client_id: str =None,
+    client_secret: str=None,
         ) -> None:
 
     # DBT LIVE RESToverHTTP Connection URL
@@ -48,18 +48,35 @@ async def main(
                     "params": params
                     }    
 
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            connection_url+endpoint,
-            auth=BasicAuth(client_id, client_secret),
-            json=payload
-                ) as response:
-            # RESToverHTTP Status Code
-            status_code: int = response.status
 
-            # RESToverHTTP Response Content
-            response: Dict = await response.json()
+    if client_id == None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(
+                connection_url+endpoint
+                    ) as response:
+                # RESToverHTTP Status Code
+                status_code: int = response.status
+                logging.info(f'Response Status Code: {status_code}')
+
+                # RESToverHTTP Response Content
+                response: Dict = await response.json()
+                logging.info(f'Response Content: {response}')
+                
+    else:
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                connection_url+endpoint,
+                auth=BasicAuth(client_id, client_secret),
+                json=payload
+                    ) as response:
+                # RESToverHTTP Status Code
+                status_code: int = response.status
+
+                # RESToverHTTP Response Content
+                response: Dict = await response.json()
             return response
+
 
 async def send_order_limit (client_id, 
                       client_secret, 
