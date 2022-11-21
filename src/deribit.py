@@ -316,7 +316,7 @@ class main:
                                     min_hedged_size = notional / min_trade_amount * contract_size
                                     log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                     instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
-                                    hedging_size = int(min_hedged_size if instrument_position == [] else min_hedged_size - instrument_position)
+                                    hedging_size = int(min_hedged_size if instrument_position == [] else min_hedged_size + instrument_position)
                                     #log.info(f'{position=}')
                                     log.warning(f'{instrument_position=}')
                                     log.warning(f'{hedging_size=}')
