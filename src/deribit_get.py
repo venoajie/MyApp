@@ -129,7 +129,7 @@ async def  get_index (index_name):
                 "index_name": index_name,
                 }
     print (params)
-    endpoint = "public/get_index_price"
+    endpoint = "public/get_index_price?index_name=eth_usd"
     result = await main(
             endpoint=endpoint,
             params={
