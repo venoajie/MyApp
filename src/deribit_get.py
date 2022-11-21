@@ -61,6 +61,8 @@ async def main(
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
                 logging.info(f'Response Content: {response}')
+
+            return response
                 
     else:
 
