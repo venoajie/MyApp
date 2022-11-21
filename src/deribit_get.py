@@ -174,7 +174,9 @@ async def get_position (client_id, client_secret, endpoint, currency):
             client_id=client_id,
             client_secret=client_secret,
             )
-    return result ['result']
+    return {'index_price': result ['result']['index_price'], 
+            'estimated_delivery_price': result ['result']['estimated_delivery_price']
+            }
         
 def get_position_ (client_id, client_secret, endpoint, currency):
         
