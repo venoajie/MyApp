@@ -249,9 +249,9 @@ class main:
 
                         index_price = []
                         if message_channel == 'deribit_price_index.eth_usd':
-                            log.warning (f'{message=}')
 
-                            index_price = data_orders
+                            index_price = data_orders ['price']
+                            log.warning (f'{index_price=}')
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
