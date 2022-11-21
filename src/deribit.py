@@ -316,12 +316,13 @@ class main:
                                     min_hedged_size = notional / min_trade_amount * contract_size
                                     log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                     instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
-                                    hedging_size = int(min_hedged_size if instrument_position == [] else min_hedged_size + instrument_position)
+                                    instrument_position_hedging = sum([o['size'] for o in position if o['instrument_name'] in instruments_with_rebates ])
+                                    hedging_size = int(min_hedged_size if instrument_position_hedging == [] else min_hedged_size + instrument_position_hedging)
                                     #log.info(f'{position=}')
-                                    log.warning(f'{instrument_position=}')
+                                    log.warning(f'{instrument_position_hedging=}')
                                     log.warning(f'{hedging_size=}')
-                                    log.critical(f'{ open_orders_hedging_size in none_data=} {instrument_position < min_hedged_size=} {instrument in instruments_with_rebates=}')
-                                    log.critical(f'{open_orders_hedging_size in none_data and instrument_position < min_hedged_size=}')
+                                    log.critical(f'{ open_orders_hedging_size in none_data=} {instrument_position_hedging < min_hedged_size=} {instrument in instruments_with_rebates=}')
+                                    log.critical(f'{open_orders_hedging_size in none_data and instrument_position_hedging < min_hedged_size=}')
                                         
                                     endpoint_short: str = 'private/sell'
                                     label: str = 'hedging spot'
