@@ -124,6 +124,18 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
             )
     return result 
 
+async def  get_index (index_name):
+    params =  {
+                "index_name": index_name,
+                }
+    
+    endpoint = "public/get_index_price"
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            )
+    return result 
+
 async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
     params =  {
                 "currency": currency
