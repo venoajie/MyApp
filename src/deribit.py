@@ -298,15 +298,17 @@ class main:
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
                                     #log.info(f'{open_orders_instrument=}')
-                                    open_orders_hedging:list = [o for o in open_orders_instrument if o['label'] == 'hedging spot'] 
-                                    open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
-                                    log.info(f'{open_orders_hedging=} {open_orders_hedging_size=}')
                                     #log.error(f'{instrument_data=}')
                                     tick_size:float = instrument_data ['tick_size']
                                     min_trade_amount = instrument_data ['min_trade_amount']
                                     contract_size = instrument_data ['contract_size']
                                     expiration_timestamp = instrument_data ['expiration_timestamp']
                                     instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
+
+
+                                    open_orders_hedging:list = [o for o in open_orders if o['label'] == 'hedging spot'] 
+                                    open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
+                                    log.info(f'{open_orders_hedging=} {open_orders_hedging_size=}')                                    
                                     equity = portfolio ['equity']
                                     index_price_rest = await deribit_get.get_index ('eth_usd')
                                     index_price = index_price if index_price not in none_data else index_price_rest ['index_price']
