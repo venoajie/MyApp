@@ -311,8 +311,6 @@ class main:
                                     instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
                                     equity = portfolio ['equity']
                                     index_price_rest = await deribit_get.get_index ('eth_usd')
-                                    index_price_rest = index_price_rest ['index_price']
-                                    log.debug(f'{index_price_rest=}')
                                     index_price = index_price if index_price not in none_data else index_price_rest ['index_price']
                                     log.debug(f'{equity=} {equity  in none_data=}')
                                     notional = index_price * equity
