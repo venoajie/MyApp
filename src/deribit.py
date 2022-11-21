@@ -251,7 +251,6 @@ class main:
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            log.warning (f'{index_price=}')
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -261,7 +260,6 @@ class main:
                             best_ask_prc = asks[0][0]
                         
                         portfolio = []
-                        log.debug(f'{index_price=}')
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
