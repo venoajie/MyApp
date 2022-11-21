@@ -133,6 +133,8 @@ async def  get_index (index_name):
                 "index_name": index_name,
                 }
             )
+    print(result)
+    print(result ['result'])
     return result ['result']
 
 async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
