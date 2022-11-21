@@ -56,11 +56,9 @@ async def main(
                     ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
-                logging.info(f'Response Status Code: {status_code}')
 
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
-                logging.info(f'Response Content: {response}')
 
             return response
                 
@@ -135,8 +133,8 @@ async def  get_index (index_name):
                 "index_name": index_name,
                 }
             )
-    print(result)
-    return result
+    #print(result)
+    return result ['result']
 
 async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
     params =  {
