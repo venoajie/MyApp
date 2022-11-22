@@ -156,7 +156,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 balance_eth: float = []
-                #log.debug(message)
+                log.debug(message)
                 
                 #log.critical(message_or)
 
@@ -218,7 +218,7 @@ class main:
                     message: Dict = orjson.loads(message)
                     message_channel: str = None
                     balance_eth: float = []
-                    log.debug(message)
+                    #log.debug(message)
                 
                 if message_channel == 'user.orders.ETH-PERPETUAL.raw':
                     data_orders: list = message['params']['data']
