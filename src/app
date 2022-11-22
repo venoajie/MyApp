@@ -265,13 +265,10 @@ class main:
                     #save_open_files.save_file('order_books',data_orders)
                     log.warning(best_bid_prc)
                     log.error(best_ask_prc)
-                log.critical (balance_eth)
             else:
                 logging.info('WebSocket connection has broken.')
                 sys.exit(1)
                 
-        return balance_eth
-
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
