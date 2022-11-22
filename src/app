@@ -23,6 +23,7 @@ from dask import delayed, compute
 # user defined formula
 from utils import modify
 from configuration import id_numbering
+import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -188,6 +189,10 @@ class main:
                 if 'params' in list(message):
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        
+                        equity = []
+                        data_orders: list = message['params']['data']
+                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                 
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
                     data_trades: list = message['params']['data']
