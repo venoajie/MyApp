@@ -155,13 +155,11 @@ class main:
                 #message: Dict = orjson.dumps(message)
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                balance_eth: float = []
-                #log.debug(message)
+                
+                log.debug(message)
                 
                 endpoint_position: str = 'private/get_positions'
                 
-                #log.critical(message_or)
-
                 if 'id' in list(message):
                     if message['id'] == 9929:
                         if self.refresh_token is None:
@@ -195,6 +193,7 @@ class main:
                         equity = [] 
                         index_price = []
                         portfolio = []
+                        balance_eth: float = []
                         
                         data_orders: list = message['params']['data']
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
