@@ -21,7 +21,7 @@ from loguru import logger as log
 from dask import delayed, compute    
 
 # user defined formula
-from utils import modify
+from utils import modify, formula
 from configuration import id_numbering
 import deribit_get
 
@@ -216,6 +216,7 @@ class main:
             
             else:
                 logging.info('WebSocket connection has broken.')
+                formula.sleep_and_restart_program(5)
                 sys.exit(1)
                 
     async def establish_heartbeat(self) -> None:
