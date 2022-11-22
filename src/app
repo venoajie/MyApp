@@ -335,7 +335,8 @@ class main:
     async def ws_operation(
         self,
         operation: str,
-        ws_channel: str
+        ws_channel: str,
+        id: int=100
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
@@ -343,14 +344,17 @@ class main:
         """
         await asyncio.sleep(5)
 
+        id = id_numbering.id(operation, ws_channel)
+        
         msg: Dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
-                    "id": 42,
+                    "id": id,
                     "params": {
                         "channels": [ws_channel]
                         }
                     }
+        #log.critical(msg)
 
         await self.websocket_client.send(
             json.dumps(
@@ -365,11 +369,7 @@ class main:
         """
         await asyncio.sleep(5)
 
-        msg: Dict = {
-                    "jsonrpc": "2.0",
-                    "method": f"public/get_currencies",
-                    "id": 42
-                    }
+        msg: Dict = 'https://test.deribit.com/api/v2/public/get_currencies?'
 
         await self.websocket_client.send(
             json.dumps(
@@ -377,16 +377,17 @@ class main:
                 )
             )
 
-    def get_currencies(self):
-        self.loop.create_task(
-                self.ws_operation_get_currencies()
+        test = await self.websocket_client.send(
+            json.dumps(
+                msg
                 )
-
-
+            )
+        
     async def ws_operation_get_instruments(
         self,
         currency: str,
-        expired: str=False
+        kind: str=None,
+        expired: bool=False
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
@@ -395,22 +396,86 @@ class main:
         await asyncio.sleep(5)
         params = {
             "currency": currency,
+            "kind": kind,
             "expired": expired
         }
         
-
+        method =  f"public/get_instruments"
+        id = id_numbering.id(method, method)
         msg: Dict = {
                     "jsonrpc": "2.0",
-                    "method": f"public/get_instruments",
-                    "id": 55,
+                    "method": method,
+                    "id": id,
                     "params": params
                     }
+
 
         await self.websocket_client.send(
             json.dumps(
                 msg
                 )
             )
+    async def ws_operation_get_positions(
+        self,
+        currency: str
+            ) -> None:
+        """
+        """
+        await asyncio.sleep(5)
+        params = {
+            "currency": currency,
+        }
+        
+
+        method =  f"private/get_positions"
+        id = id_numbering.id(method, method)
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "id": id,
+                    "params": params
+                    }
+
+        #log.warning(msg)
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+        
+        
+    async def ws_operation_get_open_orders_byInstruments(
+        self,
+        instrument: str,
+        type: str
+            ) -> None:
+        """
+        """
+        await asyncio.sleep(5)
+        params = {
+                "instrument_name": instrument,
+                "type": type,
+                }
+        
+
+        method =  f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
+        id = id_numbering.id(method, method)
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "id": id,
+                    "params": params
+                    }
+
+        #log.warning(msg)
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+        
         
 if __name__ == "__main__":
     # Logging
