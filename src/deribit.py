@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from dataclassy import dataclass
 import deribit_get
 # user defined formula
-from utils import modify
+from utils import modify, formula
 from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
