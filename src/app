@@ -156,7 +156,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 balance_eth: float = []
-                log.debug(message)
+                #log.debug(message)
                 
                 endpoint_position: str = 'private/get_positions'
                 
@@ -204,9 +204,9 @@ class main:
                         open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                         open_orders = open_orders ['result']
                         
-                        if message_channel == 'deribit_price_index.eth_usd':
+                        #if message_channel == 'deribit_price_index.eth_usd':
 
-                            index_price = data_orders ['price']
+                            #index_price = data_orders ['price']
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
