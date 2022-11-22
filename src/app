@@ -192,10 +192,28 @@ class main:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                         
-                        equity = []
+                        equity = [] 
+                        index_price = []
+                        portfolio = []
+                        
                         data_orders: list = message['params']['data']
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                 
+                        
+                        endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
+                        open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
+                        open_orders = open_orders ['result']
+                        
+                        if message_channel == 'deribit_price_index.eth_usd':
+
+                            index_price = data_orders ['price']
+                            
+                        if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
+
+                            bids = data_orders['bids']
+                            asks = data_orders['asks']                                        
+                            best_bid_prc = bids[0][0]
+                            best_ask_prc = asks[0][0]
                 if message_channel == 'trades.BTC-PERPETUAL.raw':
                     data_trades: list = message['params']['data']
                     log.info(data_trades)
@@ -237,7 +255,7 @@ class main:
                 if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
                     data_orders: list = message['params']['data']
                     
-                    log.error(data_orders)
+                    #log.error(data_orders)
                     #save_open_files.save_file('order_books', data_orders)
                     
                     bids = data_orders['bids']
