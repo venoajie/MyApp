@@ -365,7 +365,7 @@ class main:
                     
             else:
                 logging.info('WebSocket connection has broken.')
-                formula.sleep_and_restart_program(5)
+                formula.sleep_and_restart_program(1)
                 sys.exit(1)            
                 
     async def establish_heartbeat(self) -> None:
