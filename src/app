@@ -1,12 +1,6 @@
-"""
-Description:
-    Deribit WebSocket Asyncio Example.
-    - Authenticated connection.
-Usage:
-    python3.9 dbt-ws-authenticated-example.py
-Requirements:
-    - websocket-client >= 1.2.1
-"""
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
 
 # built ins
 import asyncio
@@ -15,19 +9,19 @@ import json
 import logging
 from typing import Dict
 from datetime import datetime, timedelta
-from loguru import logger as log
-from dask import delayed, compute    
 import os
 #from utils import formula
 
 # installed
 import websockets
 import orjson
-# user defined formula
-from utils import modify
-
 from os.path import join, dirname
 from dotenv import load_dotenv
+from loguru import logger as log
+from dask import delayed, compute    
+
+# user defined formula
+from utils import modify
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -59,7 +53,18 @@ class main:
 
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
+
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
+        + https://niekdeschipper.com/projects/asyncio.md
+        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
+        + https://realpython.com/async-io-python/
+        + https://www.youtube.com/watch?v=ZzfHjytDceU
+        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
+        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
+        + https://sammchardy.github.io/async-binance-basics/
+        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
+        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
+        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
@@ -104,14 +109,6 @@ class main:
                 self.ws_refresh_auth()
                 )
 
-            # Subscribe to the specified WebSocket Channel
-            #self.loop.create_task(
-            #    self.ws_operation(
-            #        operation='subscribe',
-            #        ws_channel='trades.BTC-PERPETUAL.raw'
-            #       )
-            #    )
-
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
@@ -120,33 +117,34 @@ class main:
                 )
             
             self.loop.create_task(
-            self.ws_operation(
-                operation='subscribe',
-                ws_channel='user.orders.future.ETH.raw'
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
+                    )
                 )
-            )
-            self.loop.create_task(
-            self.ws_operation(
-                operation='subscribe',
-                ws_channel='user.orders.ETH-PERPETUAL.raw'
-                )
-            )
             
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='user.portfolio.BTC'
+                    ws_channel='user.orders.future.ETH.raw'
                     )
                 )
-
+            
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='book.BTC-PERPETUAL.none.20.100ms'
+                    ws_channel='deribit_price_index.eth_usd'
                     )
                 )
-
-            #self.loop.create_task(self.ws_operation_get_currencies())         
+            
+            self.loop.create_task(
+                self.ws_operation_get_instruments('ETH','future'
+                    )
+                )
+            
+            self.loop.create_task (self.ws_operation_get_positions("ETH"))
+            
+            self.loop.create_task (self.ws_operation_get_currencies())     
 
             while self.websocket_client.open:
                 # Receive WebSocket messages
