@@ -198,73 +198,22 @@ class main:
                         data_orders: list = message['params']['data']
                         position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, "ETH")#['result']
                 
-                        
                         endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
                         #open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                        # open_orders = open_orders ['result']
                         
                         if message_channel == 'deribit_price_index.eth_usd':
-
                             log.critical(data_orders)
                             index_price = data_orders ['price']
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
-
                             bids = data_orders['bids']
                             asks = data_orders['asks']                                        
                             best_bid_prc = bids[0][0]
                             best_ask_prc = asks[0][0]
-                if message_channel == 'trades.BTC-PERPETUAL.raw':
-                    data_trades: list = message['params']['data']
-                    log.info(data_trades)
-                if message_channel == 'user.portfolio.btc':
-                    data_portfolio: list = message['params']['data']
-                    log.error(data_portfolio)
-                if message_channel == 'user.portfolio.eth':
-                    data_portfolio: list = message['params']['data']
-                    balance_eth: list = data_portfolio ['balance']
-                    log.critical(data_portfolio)
-                    if balance_eth != []:
-                        self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel='book.BTC-PERPETUAL.none.20.100ms'
-                        )
-                    )
-                        
-                    message: bytes = await self.websocket_client.recv()
-                    #message: Dict = json.loads(message)
-                    #message: Dict = orjson.dumps(message)
-                    message: Dict = orjson.loads(message)
-                    message_channel: str = None
-                    balance_eth: float = []
-                    #log.debug(message)
-                
-                if message_channel == 'user.orders.ETH-PERPETUAL.raw':
-                    data_orders: list = message['params']['data']
-                    log.critical(data_orders)
-                    
-                if message_channel == 'user.orders.future.ETH.raw':
-                    data_orders: list = message['params']['data']
-                    log.critical(data_orders)
-                    
-                if message_channel == 'user.orders.future.ETH.raw':
-                    data_orders: list = message['params']['data']
-                    log.debug(data_orders)
-                    
-                if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
-                    data_orders: list = message['params']['data']
-                    
-                    #log.error(data_orders)
-                    #save_open_files.save_file('order_books', data_orders)
-                    
-                    bids = data_orders['bids']
-                    asks = data_orders['asks']
-                    best_bid_prc = bids[0][0]
-                    best_ask_prc = asks[0][0]
-                    #save_open_files.save_file('order_books',data_orders)
-                    log.warning(best_bid_prc)
-                    log.error(best_ask_prc)
+
+                        log.warning(index_price)
+            
             else:
                 logging.info('WebSocket connection has broken.')
                 sys.exit(1)
