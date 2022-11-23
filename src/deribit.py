@@ -24,7 +24,7 @@ import deribit_get
 from utils import modify, formula
 from configuration import id_numbering
 
-
+@lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
 
     return {'client_id': os.environ.get("client_id"),
@@ -645,9 +645,13 @@ if __name__ == "__main__":
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
     parse_env = parse_dotenv()
+    # DBT Client ID
+    client_id: str = parse_dotenv() ['client_id']
+    # DBT Client Secret
+    client_secret: str = parse_dotenv() ["client_secret"]
     
     main(
         ws_connection_url=ws_connection_url,
-        client_id=parse_env ['client_id'],
-        client_secret= parse_env ["client_secret"]
+        client_id=client_id,
+        client_secret= client_secret
         )
