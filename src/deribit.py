@@ -640,9 +640,9 @@ if __name__ == "__main__":
         main_()
         
     except (KeyboardInterrupt, SystemExit):
-        import sys
+        #import sys
         asyncio.get_event_loop().run_until_complete(main_().stop_ws())
-        sys.exit()
+        #sys.exit()
 
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
