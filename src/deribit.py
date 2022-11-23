@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # built ins
-import sys
+#import sys
 import logging
 from typing import Dict
 from datetime import datetime, timedelta
@@ -32,10 +32,10 @@ def parse_dotenv()->dict:
             }
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.append(root + '/python')
-
 log.warning(root)
-log.warning(sys.path.append(root + '/python'))
+#sys.path.append(root + '/python')
+
+#log.warning(sys.path.append(root + '/python'))
 none_data = [None, [], '0.0', 0]
 
 #@dataclass(unsafe_hash=True, slots=True)
@@ -371,7 +371,6 @@ class main:
             else:
                 log.info('WebSocket connection has broken.')
                 formula.sleep_and_restart_program(1)
-                sys.exit(1)            
                 
     async def establish_heartbeat(self) -> None:
         """
@@ -640,7 +639,7 @@ if __name__ == "__main__":
         main_()
         
     except (KeyboardInterrupt, SystemExit):
-        #import sys
+        import sys
         asyncio.get_event_loop().run_until_complete(main_().stop_ws())
         #sys.exit()
 
