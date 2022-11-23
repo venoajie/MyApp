@@ -612,7 +612,7 @@ class main:
             print("Trying to re-establish connection")
             sleep(3)
             #run_connection(conn)
-def main ():
+def main_ ():
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
@@ -634,7 +634,7 @@ if __name__ == "__main__":
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
     client_secret: str = parse_dotenv() ['client_secret']
-    main()
+    main_()
     #main(
     #    ws_connection_url=ws_connection_url,
     #    client_id=client_id,
