@@ -616,7 +616,7 @@ def main_ ():
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
-        
+         # ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
     main(
         ws_connection_url=ws_connection_url,
         client_id=client_id,
@@ -625,11 +625,6 @@ def main_ ():
 
 if __name__ == "__main__":
 
-    # DBT LIVE WebSocket Connection URL
-    # ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
-    # DBT TEST WebSocket Connection URL
-    #ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
-    
     # DBT Client ID
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
