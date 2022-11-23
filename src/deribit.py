@@ -624,10 +624,6 @@ def main_ ():
         client_id=client_id,
         client_secret= client_secret
         )
-        
-    except (KeyboardInterrupt, SystemExit):
-        import sys
-        sys.exit()
 
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
@@ -640,12 +636,12 @@ if __name__ == "__main__":
     # DBT Client Secret
     client_secret: str = parse_dotenv() ['client_secret']
     
-    
     try:
         main_()
         
     except (KeyboardInterrupt, SystemExit):
         import sys
+        asyncio.get_event_loop().run_until_complete(main_().stop_ws())
         sys.exit()
 
     except Exception as error:
