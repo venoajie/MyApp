@@ -21,7 +21,7 @@ from dataclassy import dataclass
 import deribit_get
 
 # user defined formula
-from utils import modify, formula
+from utils import pickling, formula
 from configuration import id_numbering
 
 @lru_cache(maxsize=None)
@@ -217,7 +217,7 @@ class main:
                         continue
 
                     if message['id'] == 402:
-                        modify.save_file_to_pickle('instruments', message)
+                        pickling.replace_data('instruments', message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
@@ -269,11 +269,11 @@ class main:
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
                             #log.debug(data_orders)
-                            modify.save_file_to_pickle('portfolio-eth', data_orders)
+                            pickling.replace_data('portfolio-eth', data_orders)
                             
                         if portfolio  in none_data:
                             try:
-                                portfolio = modify.open_file_pickle('portfolio-eth.pkl')
+                                portfolio = pickling.read_data('portfolio-eth.pkl')
                             except:
                                 portfolio = []
 
@@ -285,7 +285,7 @@ class main:
                         min_hedged_size = []
                         
                         try:
-                            instruments = modify.open_file_pickle('instruments.pkl')['result']
+                            instruments = pickling.read_data('instruments.pkl')['result']
                         except:
                             instruments = []
                             
