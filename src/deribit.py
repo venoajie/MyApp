@@ -645,10 +645,6 @@ if __name__ == "__main__":
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
     parse_env = parse_dotenv()
-    # DBT Client ID
-    client_id: str = parse_dotenv() ['client_id']
-    # DBT Client Secret
-    client_secret: str = parse_dotenv() ["client_secret"]
     
     main(
         ws_connection_url=ws_connection_url,
