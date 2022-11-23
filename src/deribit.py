@@ -618,7 +618,6 @@ def main_ ():
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
          # ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
 
-
     try:
         main(
         ws_connection_url=ws_connection_url,
@@ -640,4 +639,16 @@ if __name__ == "__main__":
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
     client_secret: str = parse_dotenv() ['client_secret']
-    main_()
+    
+    
+    try:
+        main_()
+        
+    except (KeyboardInterrupt, SystemExit):
+        import sys
+        sys.exit()
+
+    except Exception as error:
+        formula.log_error('app','name-try2', error, 10)
+
+    
