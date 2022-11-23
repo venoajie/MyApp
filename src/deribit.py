@@ -24,7 +24,6 @@ import deribit_get
 from utils import modify, formula
 from configuration import id_numbering
 
-@lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
 
     return {'client_id': os.environ.get("client_id"),
