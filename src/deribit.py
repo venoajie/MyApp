@@ -24,14 +24,12 @@ import deribit_get
 from utils import modify, formula
 from configuration import id_numbering
 
-
+@lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
 
     return {'client_id': os.environ.get("client_id"),
             'client_secret': os.environ.get("client_secret")
             }
-parse = parse_dotenv()
-print (parse)
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root + '/python')
@@ -646,13 +644,10 @@ if __name__ == "__main__":
     # DBT TEST WebSocket Connection URL
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
-    # DBT Client ID
-    client_id: str = parse_dotenv() ['client_id']
-    # DBT Client Secret
-    client_secret: str = parse_dotenv() ["client_secret"]
+    parse_env: dict = parse_dotenv()
     
     main(
         ws_connection_url=ws_connection_url,
-        client_id=parse_dotenv() ['client_id'],
-        client_secret=parse_dotenv() ["client_secret"]
+        client_id=parse_env ['client_id'],
+        client_secret= parse_env ["client_secret"]
         )
