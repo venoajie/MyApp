@@ -1,177 +1,445 @@
-import json
-import time
+"""
+Description:
+    Deribit WebSocket Asyncio Example.
+    - Authenticated connection.
+Usage:
+    python3.9 dbt-ws-authenticated-example.py
+Requirements:
+    - websocket-client >= 1.2.1
+"""
+
+# built ins
 import asyncio
+import sys
+import json
+import logging
+from typing import Dict
+from datetime import datetime, timedelta
+from loguru import logger as log
+from dask import delayed, compute    
+import os
+#from utils import formula
+
+# installed
 import websockets
+import orjson
+# user defined formula
+from utils import modify
+
+from os.path import join, dirname
+from dotenv import load_dotenv
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 
-def init_md_heartbeat(md_hb_value, running):
+class main:
+    
+    '''
+    # Market maker
+    +----------------------------------------------------------------------------------------------+ 
+        - tentukan koin yang akan ditransaksikan (pertimbangkan fundimg rate dan likuiditas)
+        - kirim order long dan short secara bersamaan
+        - tp: 0,5%. no cl
+        - bila ada satu posisi rugi, maka di avg down (10%). posisi lawan kirim order dengan qty x 2
+        
+        id convention for subscription    4
+        get             5
+        
+        public	        1
+        private	        2
+        --------------
+        portfolio	    1	1	11
+        user_order	    1	2	12
+        my_trade	    1	3	13
+        order_book	    2	4	24
+        trade	        2	5	25
+        index	        2	6	26
+        announcement	2	7	27
 
-    while running:
-        if(md_hb_value.value <= 0): #i used a multiprocessing value, to share memory across processes
-            md_hb_value.value = 1
-            # print("md_heartbeat   -- beating setting value to -- [{0}]".format(md_hb_value.value))
-        else:
-            # print("md_heartbeat -- SKIP beating VALUE -- [{0}] SLEEPING".format(md_hb_value.value))
-            pass
-        time.sleep(1.5) #probably don't want to hardcoded values like these
+    +----------------------------------------------------------------------------------------------+ 
+    #  References: 
+        + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
+    +----------------------------------------------------------------------------------------------+ 
 
+    '''       
+    def __init__(
+        self,
+        ws_connection_url: str,
+        client_id: str,
+        client_secret: str
+            ) -> None:
+        # Async Event Loop
+        self.loop = asyncio.get_event_loop()
 
-async def websocket_connect(access_token, ws_url):
-    warmup   = True
-    msg      = None
-    init_msg = None
-    init_s   = None
-    a_seq_n  = 0     #this is a good habit of recording certain sequence numbers to match when you get a response from the websocket api.
-    init     = "authorize\n{0}\n\n{1}".format(a_seq_n, access_token)
-    mdws     = await websockets.connect(ws_url, ssl=True, compression=None)
+        # Instance Variables
+        self.ws_connection_url: str = ws_connection_url
+        self.client_id: str = client_id
+        self.client_secret: str = client_secret
+        self.websocket_client: websockets.WebSocketClientProtocol = None
+        self.refresh_token: str = None
+        self.refresh_token_expiry_time: int = None
 
-    while warmup:
-        try:
-            msg = await mdws.recv()
-        except Exception as e:
-            print("websocket_connect -- await mdws.recv() Exception -- [{0}]\n\n".format(str(e)))
+        # Start Primary Coroutine
+        self.loop.run_until_complete(
+            self.ws_manager()
+            )
 
-        if(msg[0] == "o"):
-            try:
-                await mdws.send(init)
-            except Exception as e:
-                print("websocket_connect -- await mdws.send(init) Exception -- [{0}]\n\n".format(str(e)))
+    async def ws_manager(self) -> None:
+        async with websockets.connect(
+            self.ws_connection_url,
+            ping_interval=None,
+            compression=None,
+            close_timeout=60
+            ) as self.websocket_client:
 
-        if(msg != "o"):
-            try:
-                init_s = json.loads(msg[2:-1])
-                if(init_s["s"] == 200 and init_s['d']['i'] == a_seq_n): #use this seq_num check pattern 
-                    print("websocket_connect -- successfully authorized -- \n[{0}]\n[{1}]\n\n".format(ws_url, msg))
-                    warmup = False
-                    break
-            except Exception as e:
-                    print("websocket_connect -- Exception -- [{0}]".format(str(e)))
+            # Authenticate WebSocket Connection
+            await self.ws_auth()
 
-                    
-        if(warmup == False):
-            print("websocket_connect -- exiting warmup -- ")
-            break
+            # Establish Heartbeat
+            await self.establish_heartbeat()
 
-    return mdws
+            # Start Authentication Refresh Task
+            self.loop.create_task(
+                self.ws_refresh_auth()
+                )
 
+            # Subscribe to the specified WebSocket Channel
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation='subscribe',
+            #        ws_channel='trades.BTC-PERPETUAL.raw'
+            #       )
+            #    )
 
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.portfolio.ETH'
+                    )
+                )
+            
+            self.loop.create_task(
+            self.ws_operation(
+                operation='subscribe',
+                ws_channel='user.orders.future.ETH.raw'
+                )
+            )
+            self.loop.create_task(
+            self.ws_operation(
+                operation='subscribe',
+                ws_channel='user.orders.ETH-PERPETUAL.raw'
+                )
+            )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.portfolio.BTC'
+                    )
+                )
 
-async def marketdata_run(management_pkg):
-    payload          = management_pkg['payload'] #payload is the json payload you get back from the authentication request
-    """ I keep predefine certain commonly used variables to avoid creating garbage doing my main loop"""
-    md_hb_value      = management_pkg['md_hb_value']
-    access_token     = payload['accessToken']
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='book.BTC-PERPETUAL.none.20.100ms'
+                    )
+                )
 
-    heartbeat_thread = None
-    heartbeat_count  = 0
-    running          = False
-    item             = None
-    bid              = 0.0
-    ask              = 0.0
+            #self.loop.create_task(self.ws_operation_get_currencies())         
 
-    low              = 0.0
-    high             = 0.0
-    last_bid         = 0.0
-    last_ask         = 0.0
-    last_trade       = 0.0
+            while self.websocket_client.open:
+                # Receive WebSocket messages
+                message: bytes = await self.websocket_client.recv()
+                #message: Dict = json.loads(message)
+                #message: Dict = orjson.dumps(message)
+                message: Dict = orjson.loads(message)
+                message_channel: str = None
+                balance_eth: float = []
+                log.debug(message)
+                
+                #log.critical(message_or)
 
+                if 'id' in list(message):
+                    if message['id'] == 9929:
+                        if self.refresh_token is None:
+                            logging.debug('Successfully authenticated WebSocket Connection')
+                        else:
+                            logging.info('Successfully refreshed the authentication of the WebSocket Connection')
 
-    last_trade_price = 0.0
-    bid_low_price    = 0.0
-    bid_hig_price    = 0.0
-    ask_low_price    = 0.0
-    ask_hig_price    = 0.0
-    open_position    = False
-    open_price       = 0.0
+                        self.refresh_token = message['result']['refresh_token']
 
+                        # Refresh Authentication well before the required datetime
+                        if message['testnet']:
+                            expires_in: int = 300
+                        else:
+                            expires_in: int = message['result']['expires_in'] - 240
 
+                        self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
 
-    DEMO = True
-
-
-    if(DEMO):
-        WS_URL  = management_pkg['md_demo_wss'] 
-        accountSpec      = payload['DEMO_ACCOUNT_SPEC'] #REPLACE THESE
-        accountId        = payload['DEMO_USER_ID']
-
-    else:
-        accountSpec      = payload['name']
-        accountId        = payload['userId']
-        WS_URL  = management_pkg['md_live_wss'] 
-
-    ws  = await websocket_connect(access_token, MD_WS_URL)
-    if(ws):
-        heartbeat_thread = threading.Thread(target=init_md_heartbeat, args=(md_hb_value, True))
-        heartbeat_thread.daemon = True
-        heartbeat_thread.start()
-        running = True
-
-
-    while running:
-        try:
-            msg = await ws.recv()
-        except Exception as e:
-            print("marketdata_run -- msg = await ws.recv() got exception -- [{0}]".format(str(e)))
-
-
-        if(msg):
-            msg_t = msg[0]
-            if(msg_t == "a"):
-                jmsg = json.loads(msg[2:-1])
-                try:
-                    event_msg = jmsg['e']
-                    response_msg = False
-                except Exception as e:
-                    response_msg = jmsg['s']
-                    event_msg = False
-
-                if(event_msg):
-                    try:
-                        item             = jmsg['d']['quotes']
-                    except Exception as e:
-                        item = None
-
-                    if(item == None):
+                    elif message['id'] == 8212:
+                        # Avoid logging Heartbeat messages
                         continue
-                    else
-                        for ix, itm in enumerate(item):
-                            low        = itm['entries']['LowPrice']['price']
-                            high       = itm['entries']['HighPrice']['price']
-                            bid        = itm['entries']['Bid']['price']
-                            ask        = itm['entries']['Offer']['price']
-                            last       = itm['entries']['Trade']['price']
-                            #================ USE MARKETDATA TO do SOMETHING USEFUL BEGIN ============================
-                            #
-                            #
-                            #
-                            #================ USE MARKETDATA TO do SOMETHING USEFUL  END  ============================
-                else:
-                    response_status = jmsg['s']
-                    if(response_status == 200):
-                        response_id     = jmsg['i']
-                        response_pld    = jmsg['d']
 
-                    else:
-                        print("got response ERROR --\n{0}\n".format(jmsg))
-            elif(msg_t == "h"):
-                print("\tmarketdata_run -- MD -- heartbeat -- ")
-            elif(msg_t == "c"):
-                print("marketdata_run -- close message -- [{0}]".format(msg))
+                elif 'method' in list(message):
+                    # Respond to Heartbeat Message
+                    if message['method'] == 'heartbeat':
+                        await self.heartbeat_response()
+
+                if 'params' in list(message):
+                    if message['method'] != 'heartbeat':
+                        message_channel = message['params']['channel']
+                
+                if message_channel == 'trades.BTC-PERPETUAL.raw':
+                    data_trades: list = message['params']['data']
+                    log.info(data_trades)
+                if message_channel == 'user.portfolio.btc':
+                    data_portfolio: list = message['params']['data']
+                    log.error(data_portfolio)
+                if message_channel == 'user.portfolio.eth':
+                    data_portfolio: list = message['params']['data']
+                    balance_eth: list = data_portfolio ['balance']
+                    log.critical(data_portfolio)
+                    if balance_eth != []:
+                        self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel='book.BTC-PERPETUAL.none.20.100ms'
+                        )
+                    )
+                        
+                    message: bytes = await self.websocket_client.recv()
+                    #message: Dict = json.loads(message)
+                    #message: Dict = orjson.dumps(message)
+                    message: Dict = orjson.loads(message)
+                    message_channel: str = None
+                    balance_eth: float = []
+                    log.debug(message)
+                
+                if message_channel == 'user.orders.ETH-PERPETUAL.raw':
+                    data_orders: list = message['params']['data']
+                    log.critical(data_orders)
+                    
+                if message_channel == 'user.orders.future.ETH.raw':
+                    data_orders: list = message['params']['data']
+                    log.critical(data_orders)
+                    
+                if message_channel == 'user.orders.future.ETH.raw':
+                    data_orders: list = message['params']['data']
+                    log.debug(data_orders)
+                    
+                if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
+                    data_orders: list = message['params']['data']
+                    
+                    log.error(data_orders)
+                    #save_open_files.save_file('order_books', data_orders)
+                    
+                    bids = data_orders['bids']
+                    asks = data_orders['asks']
+                    best_bid_prc = bids[0][0]
+                    best_ask_prc = asks[0][0]
+                    #save_open_files.save_file('order_books',data_orders)
+                    log.warning(best_bid_prc)
+                    log.error(best_ask_prc)
+                log.critical (balance_eth)
             else:
-                pass
+                logging.info('WebSocket connection has broken.')
+                sys.exit(1)
+                
+        return balance_eth
+
+    async def establish_heartbeat(self) -> None:
+        """
+        Requests DBT's `public/set_heartbeat` to
+        establish a heartbeat connection.
+        """
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "id": 9098,
+                    "method": "public/set_heartbeat",
+                    "params": {
+                              "interval": 10
+                               }
+                    }
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+                )
+
+    async def heartbeat_response(self) -> None:
+        """
+        Sends the required WebSocket response to
+        the Deribit API Heartbeat message.
+        """
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "id": 8212,
+                    "method": "public/test",
+                    "params": {}
+                    }
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+                )
+
+    async def ws_auth(self) -> None:
+        """
+        Requests DBT's `public/auth` to
+        authenticate the WebSocket Connection.
+        """
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "id": 9929,
+                    "method": "public/auth",
+                    "params": {
+                              "grant_type": "client_credentials",
+                              "client_id": self.client_id,
+                              "client_secret": self.client_secret
+                               }
+                    }
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+
+    async def ws_refresh_auth(self) -> None:
+        """
+        Requests DBT's `public/auth` to refresh
+        the WebSocket Connection's authentication.
+        """
+        while True:
+            if self.refresh_token_expiry_time is not None:
+                if datetime.utcnow() > self.refresh_token_expiry_time:
+                    msg: Dict = {
+                                "jsonrpc": "2.0",
+                                "id": 9929,
+                                "method": "public/auth",
+                                "params": {
+                                          "grant_type": "refresh_token",
+                                          "refresh_token": self.refresh_token
+                                            }
+                                }
+
+                    await self.websocket_client.send(
+                        json.dumps(
+                            msg
+                            )
+                            )
+
+            await asyncio.sleep(150)
+
+    async def ws_operation(
+        self,
+        operation: str,
+        ws_channel: str
+            ) -> None:
+        """
+        Requests `public/subscribe` or `public/unsubscribe`
+        to DBT's API for the specific WebSocket Channel.
+        """
+        await asyncio.sleep(5)
+
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": f"public/{operation}",
+                    "id": 42,
+                    "params": {
+                        "channels": [ws_channel]
+                        }
+                    }
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+
+    async def ws_operation_get_currencies(
+        self
+            ) -> None:
+        """
+        """
+        await asyncio.sleep(5)
+
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": f"public/get_currencies",
+                    "id": 42
+                    }
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+
+    def get_currencies(self):
+        self.loop.create_task(
+                self.ws_operation_get_currencies()
+                )
 
 
-        if(md_hb_value.value >= 1.0):
-            try:
-                await ws.send("[]")
-                md_hb_value.value -= 1
-            except Exception as e:
-                print("\nmarketdata_run -- WEBSOCKET -- sent heartbeat EXCEPTION -- [{0}] [{1}]".format(md_hb_value.value, str(e)))
+    async def ws_operation_get_instruments(
+        self,
+        currency: str,
+        expired: str=False
+            ) -> None:
+        """
+        Requests `public/subscribe` or `public/unsubscribe`
+        to DBT's API for the specific WebSocket Channel.
+        """
+        await asyncio.sleep(5)
+        params = {
+            "currency": currency,
+            "expired": expired
+        }
+        
 
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": f"public/get_instruments",
+                    "id": 55,
+                    "params": params
+                    }
 
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
+        
+if __name__ == "__main__":
+    # Logging
+    logging.basicConfig(
+        level='INFO',
+        format='%(asctime)s | %(levelname)s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+        )
+    logging.basicConfig(
+        level='DEBUG',
+        format='%(asctime)s | %(levelname)s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+        )
 
+    # DBT LIVE WebSocket Connection URL
+    # ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
+    # DBT TEST WebSocket Connection URL
+    ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
-def marketdata_init(management_pkg):
-    marketdata_loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(marketdata_loop)
-    marketdata_loop.run_until_complete(marketdata_run(management_pkg))
+    # DBT Client ID
+    client_id: str = os.environ.get("client_id")
+    # DBT Client Secret
+    client_secret: str = os.environ.get("client_secret")
+
+    app = main(
+        ws_connection_url=ws_connection_url,
+        client_id=client_id,
+        client_secret=client_secret
+        )
+    app.ws_manager()

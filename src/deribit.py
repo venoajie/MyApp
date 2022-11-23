@@ -29,6 +29,17 @@ from configuration import id_numbering
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
+def parse_dotenv()->dict:    
+    from dotenv import load_dotenv
+
+    #dotenv_path = join(dirname(__file__), '.env')
+    #load_dotenv(dotenv_path)
+
+    return {'client_id': os.environ.get("client_id"),
+            'client_secret': os.environ.get("client_secret")
+            }
+#parse = parse_dotenv()
+#print (parse)
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root + '/python')
@@ -93,6 +104,10 @@ class main:
         + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
         + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
         + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
+        
+        Basic:
+        + https://websockets.readthedocs.io/en/6.0/intro.html
+        + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
@@ -640,12 +655,12 @@ if __name__ == "__main__":
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
     # DBT Client ID
-    client_id: str = os.environ.get("client_id")
+    #client_id: str = os.environ.get("client_id")
     # DBT Client Secret
-    client_secret: str = os.environ.get("client_secret")
+    #client_secret: str = os.environ.get("client_secret")
     
     main(
         ws_connection_url=ws_connection_url,
-        client_id=client_id,
-        client_secret=client_secret
+        client_id=parse_dotenv() ['client_id'],
+        client_secret=parse_dotenv() ['client_secret']
         )
