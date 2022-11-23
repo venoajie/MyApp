@@ -661,6 +661,6 @@ if __name__ == "__main__":
     
     main(
         ws_connection_url=ws_connection_url,
-        client_id=client_id,
-        client_secret=client_secret
+        client_id=parse_dotenv() ['client_id'],
+        client_secret=parse_dotenv() ["client_secret"]
         )
