@@ -489,7 +489,6 @@ class main:
                         "channels": [ws_channel]
                         }
                     }
-        #log.critical(msg)
 
         await self.websocket_client.send(
             json.dumps(
@@ -507,12 +506,6 @@ class main:
         msg: Dict = 'https://test.deribit.com/api/v2/public/get_currencies?'
 
         await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
-            )
-
-        test = await self.websocket_client.send(
             json.dumps(
                 msg
                 )
@@ -550,6 +543,7 @@ class main:
                 msg
                 )
             )
+        
     async def ws_operation_get_positions(
         self,
         currency: str
@@ -560,7 +554,6 @@ class main:
         params = {
             "currency": currency,
         }
-        
 
         method =  f"private/get_positions"
         id = id_numbering.id(method, method)
@@ -571,14 +564,11 @@ class main:
                     "params": params
                     }
 
-        #log.warning(msg)
-
         await self.websocket_client.send(
             json.dumps(
                 msg
                 )
             )
-        
         
     async def ws_operation_get_open_orders_byInstruments(
         self,
@@ -593,7 +583,6 @@ class main:
                 "type": type,
                 }
         
-
         method =  f"private/get_open_orders_by_instrument?instrument_name={instrument}&type={type}"
         id = id_numbering.id(method, method)
         msg: Dict = {
@@ -602,9 +591,7 @@ class main:
                     "id": id,
                     "params": params
                     }
-
-        #log.warning(msg)
-
+        
         await self.websocket_client.send(
             json.dumps(
                 msg
@@ -625,7 +612,16 @@ class main:
             print("Trying to re-establish connection")
             sleep(3)
             #run_connection(conn)
+def main ():
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
         
+    main(
+        ws_connection_url=ws_connection_url,
+        client_id=client_id,
+        client_secret= client_secret
+        )
+
 if __name__ == "__main__":
 
     # DBT LIVE WebSocket Connection URL
@@ -637,9 +633,9 @@ if __name__ == "__main__":
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
     client_secret: str = parse_dotenv() ['client_secret']
-    
-    main(
-        ws_connection_url=ws_connection_url,
-        client_id=client_id,
-        client_secret= client_secret
-        )
+    main()
+    #main(
+    #    ws_connection_url=ws_connection_url,
+    #    client_id=client_id,
+    #    client_secret= client_secret
+    #    )
