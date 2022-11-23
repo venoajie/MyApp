@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 from time import sleep
 import os
 from functools import lru_cache
-#from utils import formula
 
 # installed
 import websockets
@@ -20,6 +19,7 @@ from dask import delayed, compute
 from loguru import logger as log
 from dataclassy import dataclass
 import deribit_get
+
 # user defined formula
 from utils import modify, formula
 from configuration import id_numbering
@@ -27,8 +27,8 @@ from configuration import id_numbering
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
 
-    return {'client_id': os.environ.get("client_id"),
-            'client_secret': os.environ.get("client_secret")
+    return {'client_id': os.environ.get('client_id'),
+            'client_secret': os.environ.get('client_secret')
             }
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -198,9 +198,9 @@ class main:
                     #log.info(message['id'] )
                     if message['id'] == 9929:
                         if self.refresh_token is None:
-                            logging.debug('Successfully authenticated WebSocket Connection')
+                            log.debug('Successfully authenticated WebSocket Connection')
                         else:
-                            logging.info('Successfully refreshed the authentication of the WebSocket Connection')
+                            log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
                         self.refresh_token = message['result']['refresh_token']
 
@@ -369,7 +369,7 @@ class main:
                 
                     
             else:
-                logging.info('WebSocket connection has broken.')
+                log.info('WebSocket connection has broken.')
                 formula.sleep_and_restart_program(1)
                 sys.exit(1)            
                 
@@ -627,28 +627,16 @@ class main:
             #run_connection(conn)
         
 if __name__ == "__main__":
-    # Logging
-    logging.basicConfig(
-        level='INFO',
-        format='%(asctime)s | %(levelname)s | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-        )
-    logging.basicConfig(
-        level='DEBUG',
-        format='%(asctime)s | %(levelname)s | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-        )
 
     # DBT LIVE WebSocket Connection URL
     # ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
     # DBT TEST WebSocket Connection URL
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
-
-    parse_env = parse_dotenv()
+    
     # DBT Client ID
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
-    client_secret: str = parse_dotenv() ["client_secret"]
+    client_secret: str = parse_dotenv() ['client_secret']
     
     main(
         ws_connection_url=ws_connection_url,
