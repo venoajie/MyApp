@@ -32,14 +32,14 @@ load_dotenv(dotenv_path)
 def parse_dotenv()->dict:    
     from dotenv import load_dotenv
 
-    #dotenv_path = join(dirname(__file__), '.env')
-    #load_dotenv(dotenv_path)
+    dotenv_path = join(dirname(__file__), '.env')
+    load_dotenv(dotenv_path)
 
     return {'client_id': os.environ.get("client_id"),
             'client_secret': os.environ.get("client_secret")
             }
-#parse = parse_dotenv()
-#print (parse)
+parse = parse_dotenv()
+print (parse)
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(root + '/python')
@@ -655,12 +655,12 @@ if __name__ == "__main__":
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
 
     # DBT Client ID
-    #client_id: str = os.environ.get("client_id")
+    client_id: str = parse_dotenv() ("client_id")
     # DBT Client Secret
-    #client_secret: str = os.environ.get("client_secret")
+    client_secret: str = parse_dotenv() ("client_secret")
     
     main(
         ws_connection_url=ws_connection_url,
-        client_id=parse_dotenv() ['client_id'],
-        client_secret=parse_dotenv() ['client_secret']
+        client_id=client_id,
+        client_secret=client_secret
         )
