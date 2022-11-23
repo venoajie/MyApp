@@ -18,22 +18,14 @@ import orjson
 import json
 from dask import delayed, compute    
 from loguru import logger as log
-from os.path import join, dirname
-from dotenv import load_dotenv
 from dataclassy import dataclass
 import deribit_get
 # user defined formula
 from utils import modify, formula
 from configuration import id_numbering
 
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 def parse_dotenv()->dict:    
-    from dotenv import load_dotenv
-
-    dotenv_path = join(dirname(__file__), '.env')
-    load_dotenv(dotenv_path)
 
     return {'client_id': os.environ.get("client_id"),
             'client_secret': os.environ.get("client_secret")
