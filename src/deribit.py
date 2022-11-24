@@ -254,16 +254,14 @@ class main:
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            log.debug(f'{index_price=}')
                             pickling.replace_data('index-eth.pkl', index_price)
                             
                         try:
                             index_price = pickling.read_data('index-eth.pkl')#['result']
                             index_price = index_price [0]
-                            log.debug(f'{index_price=}')
+
                         except:
                             index_price = []
-                            log.debug(f'{index_price=}')
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -298,7 +296,6 @@ class main:
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
-                            log.critical(f'{index_price=}')
                             
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
