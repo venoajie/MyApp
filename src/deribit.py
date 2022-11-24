@@ -259,7 +259,7 @@ class main:
                             
                         try:
                             index_price = pickling.read_data('index-eth.pkl')#['result']
-                            log.debug(f'{index_price=}')
+                            log.debug(f'{index_price=}')[0]
                         except:
                             index_price = []
                             
