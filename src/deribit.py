@@ -247,12 +247,9 @@ class main:
                         #log.info(data_orders)
                         #log.error(position)
                         
-                        
                         endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
                         open_orders = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, 'ETH')
                         open_orders = open_orders ['result']
-                        
-
                         
                         if message_channel == 'deribit_price_index.eth_usd':
 
@@ -261,7 +258,8 @@ class main:
                             pickling.replace_data('index-eth.pkl', index_price)
                             
                         try:
-                            index_price = pickling.read_data('index-eth.pkl')['result']
+                            index_price = pickling.read_data('index-eth.pkl')#['result']
+                            log.debug(f'{index_price=}')
                         except:
                             index_price = []
                             
