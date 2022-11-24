@@ -232,6 +232,8 @@ class main:
                         message_channel = message['params']['channel']
                         
                         equity = []
+                        portfolio = []
+                        index_price = []
                     
                         #log.error(f'{message=}')
                         data_orders: list = message['params']['data']
@@ -251,10 +253,17 @@ class main:
                         open_orders = open_orders ['result']
                         
 
-                        index_price = []
+                        
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
+                            log.debug(f'{index_price=}')
+                            pickling.replace_data('index-eth', index_price)
+                            
+                        try:
+                            index_price = pickling.read_data('index-eth.pkl')['result']
+                        except:
+                            index_price = []
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
@@ -263,7 +272,7 @@ class main:
                             best_bid_prc = bids[0][0]
                             best_ask_prc = asks[0][0]
                         
-                        portfolio = []
+                        
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
@@ -291,7 +300,7 @@ class main:
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
-                            log.error(f'{index_price=}')
+                            
                                 
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
