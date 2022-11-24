@@ -3,7 +3,7 @@
 
 # built ins
 #import sys
-import logging
+#import logging
 from typing import Dict
 from datetime import datetime, timedelta
 from time import sleep
@@ -13,16 +13,15 @@ from functools import lru_cache
 # installed
 import websockets
 import asyncio
-import orjson
-import json
+import orjson, json
 from dask import delayed, compute    
 from loguru import logger as log
 from dataclassy import dataclass
-import deribit_get
 
 # user defined formula
 from utils import pickling, formula
 from configuration import id_numbering
+import deribit_get
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
@@ -292,9 +291,10 @@ class main:
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
+                            log.error(f'{index_price=}')
                                 
                             for instrument in all_instruments:
-                                if portfolio != []:
+                                if portfolio != [] and index_price != []:
                                         
                                     log.error(f'{instrument=}')
                                     log.error(f'{open_orders=}')
@@ -315,8 +315,8 @@ class main:
                                     open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
                                     log.info(f'{open_orders_hedging=} {open_orders_hedging_size=}')                                    
                                     equity = portfolio ['equity']
-                                    index_price_rest = await deribit_get.get_index ('eth_usd')
-                                    index_price = index_price if index_price not in none_data else index_price_rest ['index_price']
+                                    #index_price_rest = await deribit_get.get_index ('eth_usd')
+                                    #index_price = index_price if index_price not in none_data else index_price_rest ['index_price']
                                     log.debug(f'{equity=} {equity  in none_data=}')
                                     notional = index_price * equity
 
@@ -334,6 +334,7 @@ class main:
                                     endpoint_short: str = 'private/sell'
                                     label: str = 'hedging spot'
                                     type: str = 'limit'
+                                    essential_figures_not_in_noneData = index_price != []
 
                                     if open_orders_hedging_size in none_data and hedging_size > 0:
                                         if instrument in instruments_with_rebates:
