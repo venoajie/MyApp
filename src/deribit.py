@@ -259,18 +259,18 @@ class main:
                             
                         try:
                             index_price = pickling.read_data('index-eth.pkl')#['result']
-                            log.debug(f'{index_price=}')[0]
+                            index_price = index_price [0]
+                            log.debug(f'{index_price=}')
                         except:
                             index_price = []
+                            log.debug(f'{index_price=}')
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             bids = data_orders['bids']
                             asks = data_orders['asks']                                        
                             best_bid_prc = bids[0][0]
-                            best_ask_prc = asks[0][0]
-                        
-                        
+                            best_ask_prc = asks[0][0]                       
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
@@ -300,7 +300,6 @@ class main:
                             log.error(f'{all_instruments=}')
                             log.critical(f'{index_price=}')
                             
-                                
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
                                         
