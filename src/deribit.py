@@ -258,7 +258,7 @@ class main:
 
                             index_price = data_orders ['price']
                             log.debug(f'{index_price=}')
-                            pickling.replace_data('index-eth', index_price)
+                            pickling.replace_data('index-eth.pkl', index_price)
                             
                         try:
                             index_price = pickling.read_data('index-eth.pkl')['result']
