@@ -3,7 +3,6 @@
 
 import requests
 import pickle, pathlib, os
-import pandas as pd
 from loguru import logger as log
 from dataclassy import dataclass
 
