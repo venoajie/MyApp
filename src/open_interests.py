@@ -85,16 +85,12 @@ def check_and_save_every_5_minutes ():
     from utils import pickling
         
     try:
-        pickling.read_data('open_interest_historical.pkl')
         open_interest =  OpenInterest('ETH')
         open_interest_historical = open_interest. open_interest_historical ()
-
         pickling.replace_data('open_interest_historical.pkl', open_interest_historical)
-        pickling.read_data('open_interest_historical.pkl')
+        
         open_interest_symbol = open_interest. open_interest_symbol ()
-
         pickling.replace_data('open_interest_symbol.pkl', open_interest_symbol)
-        pickling.read_data('open_interest_symbol.pkl')
         
     except Exception as error:
         import traceback
