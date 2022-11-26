@@ -274,7 +274,7 @@ class main:
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
                             log.debug(data_orders)
-                            pickling.replace_data('portfolio-eth', data_orders)
+                            pickling.replace_data('portfolio-eth.pkl', data_orders)
                             
                         if portfolio  in none_data:
                             try:
