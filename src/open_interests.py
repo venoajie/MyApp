@@ -63,13 +63,14 @@ class OpenInterest ():
             log.error(f"{error}")
             log.error(traceback.format_exc())
 
-    def open_interest_aggregated_ohlc_endPoint(self, interval, start_time, end_time):
+    def open_interest_aggregated_ohlc_endPoint(self, interval):
                     
         '''
         interval = m1 m5 m15 h1 h4 h12 all
     
         '''       
-        return  (f' https://open-api.coinglass.com/public/v2/indicator/open_interest_aggregated_ohlc?symbol={self.symbol}&interval={interval}&start_time={start_time}&end_time={end_time}')
+        return  (f' https://open-api.coinglass.com/public/v2/indicator/open_interest_aggregated_ohlc?symbol={self.symbol}&interval={interval}')
+    
     
     def open_interest_aggregated_ohlc(self, interval, start_time, end_time):
                     
@@ -85,11 +86,15 @@ def check_and_save_every_5_minutes ():
         
     try:
         open_interest =  OpenInterest('ETH')
+        
         open_interest_historical = open_interest. open_interest_historical ()
         pickling.replace_data('open_interest_historical.pkl', open_interest_historical)
         
         open_interest_symbol = open_interest. open_interest_symbol ()
         pickling.replace_data('open_interest_symbol.pkl', open_interest_symbol)
+        
+        open_interest_aggregated_ohlc = open_interest. open_interest_aggregated_ohlc ()
+        pickling.replace_data('open_interest_aggregated_ohlc.pkl', open_interest_aggregated_ohlc)
         
     except Exception as error:
         import traceback
