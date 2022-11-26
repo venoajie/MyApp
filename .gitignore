@@ -6,6 +6,7 @@ __pycache__/
 # saved data/db
 *.pickle
 *.pickles
+*.pkl
 *.db
 *.csv
 
