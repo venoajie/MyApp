@@ -302,7 +302,10 @@ class main:
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
                                     log.warning(f' {portfolio=}')
-                                    portfolio = portfolio [0]
+                                    try:
+                                        portfolio = portfolio [0]
+                                    except:
+                                        portfolio = portfolio 
                                     log.warning(f' {portfolio=}')
                                         
                                     log.error(f'{instrument=}')
