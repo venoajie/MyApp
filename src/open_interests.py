@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# built ins
 import requests
-import pickle, pathlib, os
+
+# installed
 from loguru import logger as log
 from dataclassy import dataclass
 
+# user defined formula
+from utils import formula
 
 @dataclass(unsafe_hash=True, slots=True)
 class OpenInterest ():
@@ -26,7 +30,11 @@ class OpenInterest ():
     def open_interest_symbol(self):
 
         try:            
-            return requests.get(self.open_interest_symbol_endPoint(), headers=self.headers).json()['data']
+            try:
+                log.error (requests.get(self.open_interest_symbol_endPoint()).json()['data'])
+                return requests.get(self.open_interest_symbol_endPoint()).json()['data']
+            except:
+                return requests.get(self.open_interest_symbol_endPoint(), headers=self.headers).json()['data']
 
         except Exception as error:
             import traceback
@@ -46,7 +54,10 @@ class OpenInterest ():
         '''       
 
         try:
-            return requests.get(self.open_interest_historical(time_type, currency), headers=self.headers).json()['data']
+            try:
+                return requests.get(self.open_interest_historical_endPoint(time_type, currency)).json()['data']
+            except:
+                return requests.get(self.open_interest_historical_endPoint(time_type, currency), headers=self.headers).json()['data']
 
         except Exception as error:
             import traceback
@@ -74,33 +85,34 @@ def check_and_save_every_5_minutes ():
     from utils import pickling
         
     try:
-        open_interest =  OpenInterest('BTC')
+        pickling.read_data('open_interest_historical.pkl')
+        open_interest =  OpenInterest('ETH')
         open_interest_historical = open_interest. open_interest_historical ()
-        log.error (open_interest_historical)
+
         pickling.replace_data('open_interest_historical.pkl', open_interest_historical)
         pickling.read_data('open_interest_historical.pkl')
         open_interest_symbol = open_interest. open_interest_symbol ()
-        log.warning (open_interest_symbol)
+
         pickling.replace_data('open_interest_symbol.pkl', open_interest_symbol)
         pickling.read_data('open_interest_symbol.pkl')
+        
     except Exception as error:
         import traceback
         log.error(f"{error}")
         log.error(traceback.format_exc())
-    
-open_interest =  OpenInterest('BTC')    
-open_interest_historical = open_interest. open_interest_historical ()
-log.error (open_interest_historical)
-check_and_save_every_5_minutes()
 
-file_name = 'TRXBTC_1h.bin'
-home_path = str(pathlib.Path.home())
-data_path = os.path.join(home_path, file_name)
-log.warning (home_path)
-log.error (data_path)
+if __name__ == "__main__":
+    
+    try:
 
-    
-# https://opensource.com/article/20/4/python-crypto-trading-bot
-    
-endPoints = []
-    
+        check_and_save_every_5_minutes()
+        formula.sleep_and_restart_program (600)
+        
+    except (KeyboardInterrupt, SystemExit):
+        import sys
+        sys.exit()
+
+    except Exception as error:
+        
+        formula.log_error('open interest','open interest main', error, 10)
+        
