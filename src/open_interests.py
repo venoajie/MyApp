@@ -31,7 +31,6 @@ class OpenInterest ():
 
         try:            
             try:
-                log.error (requests.get(self.open_interest_symbol_endPoint()).json()['data'])
                 return requests.get(self.open_interest_symbol_endPoint()).json()['data']
             except:
                 return requests.get(self.open_interest_symbol_endPoint(), headers=self.headers).json()['data']
