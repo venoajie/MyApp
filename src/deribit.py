@@ -618,10 +618,10 @@ class main:
             sleep(3)
             #run_connection(conn)
 def main_ ():
-    config = dotenv_values(".env")
-    log.info (config)
-    log.info (load_dotenv())
-    print ( parse_dotenv())
+    #config = dotenv_values(".env")
+    #log.info (config)
+    #log.info (load_dotenv())
+    #print ( parse_dotenv())
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
