@@ -366,13 +366,6 @@ class main:
                                                     #if balance_eth in none_data:
                                 #    balance = modify.open_file_pickle('portfolio-eth.pkl')
                                 #    log.warning(balance)
-                                        
-                if message_channel == 'trades.BTC-PERPETUAL.raw':
-                    data_trades: list = message['params']['data']
-                    log.info(data_trades)
-                if message_channel == 'user.portfolio.btc':
-                    data_portfolio: list = message['params']['data']
-                    log.error(data_portfolio)
                 
                     
             else:
