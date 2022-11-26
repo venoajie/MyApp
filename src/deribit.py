@@ -188,7 +188,7 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                log.warning(message)
+                #log.warning(message)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                 
@@ -301,12 +301,12 @@ class main:
                             
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
-                                    log.warning(f' {portfolio=}')
+
                                     try:
                                         portfolio = portfolio [0]
                                     except:
                                         portfolio = portfolio 
-                                    log.warning(f' {portfolio=}')
+
                                         
                                     log.error(f'{instrument=}')
                                     log.error(f'{open_orders=}')
