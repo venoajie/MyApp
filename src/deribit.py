@@ -297,6 +297,7 @@ class main:
                         all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         if instruments not  in none_data:
                             log.error(f'{all_instruments=}')
+                            log.error(f'{all_instruments=} {portfolio=} {index_price=}')
                             
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
