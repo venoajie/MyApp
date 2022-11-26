@@ -40,7 +40,7 @@ class OpenInterest ():
             log.error(f"{error}")
             log.error(traceback.format_exc())
 
-    def open_interest_historical_endPoint(self, time_type: str = 'm5', currency: str = 'USD'):
+    def open_interest_historical_endPoint(self, time_type: str, currency: str):
         return  (f' https://open-api.coinglass.com/public/v2/open_interest_history?symbol={self.symbol}&time_type={time_type}&currency={currency}')
     
     def open_interest_historical(self, time_type: str = 'm5', currency: str = 'USD'):
@@ -63,7 +63,7 @@ class OpenInterest ():
             log.error(f"{error}")
             log.error(traceback.format_exc())
 
-    def open_interest_aggregated_ohlc_endPoint(self, interval):
+    def open_interest_aggregated_ohlc_endPoint(self, interval: str):
                     
         '''
         interval = m1 m5 m15 h1 h4 h12 all
@@ -72,14 +72,24 @@ class OpenInterest ():
         return  (f' https://open-api.coinglass.com/public/v2/indicator/open_interest_aggregated_ohlc?symbol={self.symbol}&interval={interval}')
     
     
-    def open_interest_aggregated_ohlc(self, interval, start_time, end_time):
+    def open_interest_aggregated_ohlc(self, interval: str = 'm5'):
                     
         '''
         interval = m1 m5 m15 h1 h4 h12 all
     
         '''
 
-        return requests.get(self.open_interest_aggregated_ohlc_endPoint(interval, start_time, end_time), headers=self.headers)
+        try:
+            try:
+                return requests.get(self.open_interest_aggregated_ohlc_endPoint(interval)).json()['data']
+            except:
+                return requests.get(self.open_interest_aggregated_ohlc_endPoint(interval), headers=self.headers).json()['data']
+            
+        except Exception as error:
+            import traceback
+            log.error(f"{error}")
+            log.error(traceback.format_exc())
+        
     
 def check_and_save_every_5_minutes ():
     from utils import pickling
