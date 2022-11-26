@@ -301,6 +301,7 @@ class main:
                             
                             for instrument in all_instruments:
                                 if portfolio != [] and index_price != []:
+                                    portfolio = portfolio [0]
                                         
                                     log.error(f'{instrument=}')
                                     log.error(f'{open_orders=}')
