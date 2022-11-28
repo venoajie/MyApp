@@ -151,6 +151,23 @@ async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, curre
             )
     return result 
 
+async def  get_tradingview_chart_data (client_id, client_secret, endpoint):
+    params =  {
+    "instrument_name" : "ETH-PERPETUAL",
+    "start_timestamp" : 1554373800000,
+    "end_timestamp" : 1554376800000,
+    "resolution" : "30"
+  }
+    
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+    return result 
+
+
 async def get_position (client_id, client_secret, endpoint, currency):
         
     params =  {"currency": currency}

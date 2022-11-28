@@ -644,7 +644,15 @@ if __name__ == "__main__":
     client_id: str = parse_dotenv() ['client_id']
     # DBT Client Secret
     client_secret: str = parse_dotenv() ['client_secret']
-    
+    config = {
+    'client_id': 'client_id',
+    'client_secret': 'client_secret'
+}
+    db_config = [{k: os.environ.get(v) for k, v in config.items()}]
+    log.error (db_config)
+    db_config = [o  for o in db_config]
+    log.error (db_config)
+        
     try:
         main_()
         
