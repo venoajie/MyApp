@@ -19,7 +19,7 @@ from loguru import logger as log
 from dataclassy import dataclass
 from dotenv import dotenv_values
 from dotenv import load_dotenv
-# user defined formula
+# user defined formula vfdgvfdsbv ffdsss
 from utils import pickling, formula
 from configuration import id_numbering
 import deribit_get
