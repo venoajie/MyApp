@@ -53,10 +53,10 @@ def convert_time_to_utc (transaction_time: str= None, hours_diff_with_utc: float
             'jkt_now':utc_p_jkt,
             'transaction_time':None if transaction_time == None else utc_p_transaction}
 
-def convert_time_to_unix (time):
+def convert_time_to_unix (time)-> int:
 
     '''  
-        # Mendapatkan waktu unix
+        # Get time  (milliseconds since the UNIX epoch)
                 
             Args:
                 param1 (Date): Waktu dalam format '%Y-%m-%d %H:%M:%S.%f'
@@ -92,11 +92,8 @@ def convert_time_to_unix (time):
 
     except Exception as error:
         log.error ('formula', 'convert_time_to_unix', error, None)
-    
-    print (microsecs)
-    unix= int((calendar.timegm(time.timetuple())*1000000+microsecs)/1000) 
-            
-    return unix
+                
+    return int((calendar.timegm(time.timetuple())*1000000+microsecs)/1000) 
 
 
 def time_delta_between_now_and_transaction_time_both_in_utc (transaction_time: str)-> float:
@@ -129,15 +126,3 @@ def time_delta_between_two_times (start_time: str, end_time: str)-> float:
     return {'seconds': time_delta,
             'hours': time_delta/3600,
             'days': time_delta/3600/24}
-
-now_time = convert_time_to_utc () ['utc_now']
-nows1 =  datetime.strptime('2022-11-28 08:17:00.000000','%Y-%m-%d %H:%M:%S.%f') 
-nows2 =  datetime.strptime('2022-11-28 18:17:00.000000','%Y-%m-%d %H:%M:%S.%f') 
-log.error (nows1)
-log.error (nows2)
-nows3 = nows2 - nows1
-log.error (nows3)
-unix_time1 = convert_time_to_unix (nows1)
-unix_time2 = convert_time_to_unix (nows2)
-unix_time3 = unix_time2 - unix_time1
-log.error (unix_time3)
