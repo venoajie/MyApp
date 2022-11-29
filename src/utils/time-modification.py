@@ -93,7 +93,8 @@ def convert_time_to_unix (time):
     except Exception as error:
         log.error ('formula', 'convert_time_to_unix', error, None)
     
-    unix= int((calendar.timegm(time.timetuple())*1000000+microsecs)) 
+    print (microsecs)
+    unix= int((calendar.timegm(time.timetuple())*1000000+microsecs)/1000) 
             
     return unix
 
