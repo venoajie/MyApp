@@ -14,7 +14,7 @@ from functools import lru_cache
 import websockets
 import asyncio
 import orjson, json
-from dask import delayed, compute    
+#from dask import delayed, compute    
 from loguru import logger as log
 from dataclassy import dataclass
 from dotenv import dotenv_values
