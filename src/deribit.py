@@ -255,7 +255,7 @@ class main:
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            pickling.replace_data('index-eth.pkl', index_price)
+                            pickling.replace_data('eth-index.pkl', index_price)
                             
                         try:
                             index_price = pickling.read_data('index-eth.pkl')#['result']

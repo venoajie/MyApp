@@ -25,7 +25,7 @@ def check_and_save_every_1_minutes ():
     try:
         
         time_frame = 1
-        file_name = (f' {symbol.lower()}-ohlc-{time_frame}m.pkl')
+        file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
         ohlc = market_data. ohlc (time_frame, 500)
         
         pickling.replace_data(file_name, ohlc)
