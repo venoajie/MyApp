@@ -8,7 +8,7 @@ def telegram_bot_sendtext(bot_message, purpose) -> None:
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
 @contextmanager
-def db_ops(db_name: str = 'trading')->None:
+def db_ops(db_name: str = 'trading.db')->None:
 
     '''
     # prepare sqlite initial connection + close
@@ -35,10 +35,9 @@ def db_ops(db_name: str = 'trading')->None:
     else:        
         conn.commit()
         conn.close()
-        
 
 @contextmanager
-def db_ops2(db_name: str = 'trading')->None:
+def create_dataBase_sqlite(db_name: str = 'trading.db')->None:
 
     '''
     # prepare sqlite initial connection + close
@@ -47,11 +46,20 @@ def db_ops2(db_name: str = 'trading')->None:
             # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
     ''' 
     
-            
     conn = sqlite3.connect(db_name)
     conn.execute('BEGIN')            
     cur = conn.cursor()
     yield cur
     conn.commit()
     conn.close()
+    
+if __name__ == "__main__":
+    
+    try:   
+        db_ops()
 
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit()
+
+    except Exception as error:
+        formula.log_error('database', 'main', error, 10)

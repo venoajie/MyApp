@@ -52,7 +52,7 @@ if __name__ == "__main__":
         
     try:   
         
-        insert_initial_data_to_table_strategy ()
+        create_table_strategy ()
         
     except (KeyboardInterrupt, SystemExit):
         import sys
