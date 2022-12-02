@@ -8,6 +8,7 @@ from time import sleep
 import os
 import json
 from functools import lru_cache
+from pathlib import Path
 
 ##
 # installed
@@ -178,9 +179,9 @@ class main:
                         await self.heartbeat_response()
 
                 if 'params' in list(message):
-                    #log.warning((message))
-                    #log.warning(list(message))
-                    #log.warning(message['params']['channel'] != ['ETH','eth'])
+                    
+                    # Set root equal to  current folder
+                    root = Path(".")
 
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
@@ -191,7 +192,8 @@ class main:
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            pickling.replace_data('eth-index.pkl', index_price)
+                            my_path = root / "market_data" / "eth-index.pkl"
+                            pickling.replace_data(my_path, index_price)
                             
                         try:
                             index_price = pickling.read_data('eth-index.pkl')#['result']
@@ -211,9 +213,10 @@ class main:
 
                             data : list = message 
                             file_name = (f'eth-perpetual-ohlc-1m')
+                            my_path = root / "market_data" / file_name
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
                             except:
                                 continue
             
