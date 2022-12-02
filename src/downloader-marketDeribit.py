@@ -188,6 +188,12 @@ class main:
                         index_price = []
                         data_orders: list = message['params']['data']
                         
+                        my_path = root / "market_data" /  "deribit" /
+                                                
+                        # Create target Directory if doesn't exist
+                        if not os.path.exists(my_path):
+                            os.makedirs(my_path)
+                        
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
