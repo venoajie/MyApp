@@ -161,6 +161,13 @@ class main:
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
+                    ws_channel='chart.trades.ETH-PERPETUAL.1'
+                    )
+                )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
                     ws_channel='user.orders.future.ETH.raw'
                     )
                 )
@@ -259,7 +266,7 @@ class main:
                             pickling.replace_data('eth-index.pkl', index_price)
                             
                         try:
-                            index_price = pickling.read_data('index-eth.pkl')#['result']
+                            index_price = pickling.read_data('eth-index.pkl')#['result']
                             index_price = index_price [0]
 
                         except:
@@ -271,6 +278,13 @@ class main:
                             asks = data_orders['asks']                                        
                             best_bid_prc = bids[0][0]
                             best_ask_prc = asks[0][0]                       
+                        
+                        if message_channel == 'chart.trades.ETH-PERPETUAL.1':
+                            #file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
+                            data : list = message['result']
+                            file_name = (f'eth-perpetual-ohlc-1m')
+
+                            pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
