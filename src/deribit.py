@@ -480,6 +480,7 @@ class main:
                                             }
                                 }
 
+                    log.error (msg)
                     await self.websocket_client.send(
                         json.dumps(
                             msg
