@@ -210,6 +210,7 @@ class main:
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
+                        log.warning (message)
                         self.refresh_token = message['result']['refresh_token']
 
                         # Refresh Authentication well before the required datetime
