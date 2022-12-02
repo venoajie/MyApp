@@ -204,7 +204,7 @@ class main:
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
-                            file_name = (f'eth-perpetual-orderBooks.pkl')
+                            file_name = (f'eth-perpetual-orderBooks')
                             my_path = root / "market_data" / file_name
 
                             try:
