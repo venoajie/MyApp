@@ -158,12 +158,12 @@ class main:
             #        )
             #    )
             
-            #self.loop.create_task(
-            #    self.ws_operation(
-            #        operation='subscribe',
-            #        ws_channel='chart.trades.ETH-PERPETUAL.1'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='chart.trades.ETH-PERPETUAL.1'
+                    )
+                )
             
             #self.loop.create_task(
             #    self.ws_operation(
@@ -480,7 +480,6 @@ class main:
                                             }
                                 }
 
-                    log.error (msg)
                     await self.websocket_client.send(
                         json.dumps(
                             msg
