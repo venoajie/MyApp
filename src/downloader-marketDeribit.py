@@ -147,7 +147,6 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 
-
                 if 'id' in list(message):
                     
                     if message['id'] == 9929:
@@ -192,7 +191,7 @@ class main:
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            my_path = root / "market_data" / "eth-index.pkl"
+                            my_path = root / "market_data" /  "deribit" / "eth-index.pkl"
                             pickling.replace_data(my_path, index_price)
                             
                         try:
@@ -205,7 +204,7 @@ class main:
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             file_name = (f'eth-perpetual-orderBooks')
-                            my_path = root / "market_data" / file_name
+                            my_path = root / "market_data" / "deribit" / file_name
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
@@ -216,7 +215,7 @@ class main:
 
                             data : list = message 
                             file_name = (f'eth-perpetual-ohlc-1m')
-                            my_path = root / "market_data" / file_name
+                            my_path = root / "market_data" / "deribit" / file_name
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
