@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 def id (operation, ws_channel):
+    print (operation)
+    print (ws_channel)
     id_method = 0
     if 'subscribe' in operation:
         id_method = 3
