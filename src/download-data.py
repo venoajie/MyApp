@@ -19,7 +19,7 @@ app = Rocketry(config={'task_execution': 'async',
                        'restarting': 'relaunch',
                        'cycle_sleep': 1})
 
-@app.task(every("30 seconds"))
+#@app.task(every("30 seconds"))
 def check_and_save_every_1_minutes ():
 
     try:

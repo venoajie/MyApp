@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 def id (operation, ws_channel):
-    print (operation)
-    print (ws_channel)
+    
     id_method = 0
     if 'subscribe' in operation:
         id_method = 3
@@ -15,11 +14,11 @@ def id (operation, ws_channel):
     if 'chart' in ws_channel:
         id_item = 3
     if 'index' in ws_channel:
-        id_item = 3
-    if 'order' in ws_channel:
         id_item = 4
-    if 'position' in ws_channel:
+    if 'order' in ws_channel:
         id_item = 5
+    if 'position' in ws_channel:
+        id_item = 6
     id_instrument = 0
     if 'BTC'or 'btc' in ws_channel:
         id_instrument = 1
