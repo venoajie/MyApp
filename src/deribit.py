@@ -626,20 +626,6 @@ class main:
                 )
             )
         
-            
-    def run_connection(conn):
-        try:
-            conn.run()
-        except KeyboardInterrupt:
-            print("Interrupted execution by user")
-            asyncio.get_event_loop().run_until_complete(conn.stop_ws())
-            exit(0)
-        except Exception as e:
-            print(f'Exception from websocket connection: {e}')
-        finally:
-            print("Trying to re-establish connection")
-            sleep(3)
-            #run_connection(conn)
 def main_ ():
     #config = dotenv_values(".env")
     #log.info (config)
