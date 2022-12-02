@@ -204,11 +204,14 @@ class main:
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
-                            bids = data_orders['bids']
-                            asks = data_orders['asks']                                        
-                            best_bid_prc = bids[0][0]
-                            best_ask_prc = asks[0][0]                       
-                        
+                            file_name = (f'eth-perpetual-orderBooks.pkl')
+                            my_path = root / "market_data" / file_name
+
+                            try:
+                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
+                            except:
+                                continue                        
+                            
                         if message_channel == 'chart.trades.ETH-PERPETUAL.1':
 
                             data : list = message 
@@ -219,50 +222,7 @@ class main:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
                             except:
                                 continue
-            
-                        tick_size = []
-                        min_trade_amount = []
-                        contract_size = []
-                        instruments_with_rebates = []
-                        all_instruments = []
-                        min_hedged_size = []
-                        
-                        try:
-                            instruments = pickling.read_data('instruments.pkl')['result']
-                        except:
-                            instruments = []
                             
-                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
-                        if instruments not  in none_data:
-                            log.error(f'{all_instruments=}')
-                            log.error(f'{all_instruments=} {portfolio=} {index_price=}')
-                            
-                            for instrument in all_instruments:
-                                if portfolio != [] and index_price != []:
-
-                                    try:
-                                        portfolio = portfolio [0]
-                                    except:
-                                        portfolio = portfolio 
-
-                                    instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                    #log.error(f'{instrument_data=}')
-                                    tick_size:float = instrument_data ['tick_size']
-                                    min_trade_amount = instrument_data ['min_trade_amount']
-                                    contract_size = instrument_data ['contract_size']
-                                    expiration_timestamp = instrument_data ['expiration_timestamp']
-                                    instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
-
-
-                                    log.info(f'{instruments_with_rebates=}')
-                                    log.warning(f'{min_hedged_size=}')
-                                    #log.warning(instruments)
-                                    log.error(f'{best_bid_prc=}')
-                                    log.debug(f'{best_ask_prc=}')
-                                    log.error(f'{index_price=}')
-                                    log.warning(f'{expiration_timestamp=}')
-                                    log.info(f'{tick_size=} {min_trade_amount=} {contract_size=} {instruments_with_rebates=}')
-                                    
             else:
                 log.info('WebSocket connection has broken.')
                 formula.sleep_and_restart_program(1)
