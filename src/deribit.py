@@ -184,9 +184,9 @@ class main:
                     )
                 )
             
-            self.loop.create_task (self.ws_operation_get_positions("ETH"))
+            #self.loop.create_task (self.ws_operation_get_positions("ETH"))
             
-            self.loop.create_task (self.ws_operation_get_currencies())
+            #self.loop.create_task (self.ws_operation_get_currencies())
             
             while self.websocket_client.open:
                 # Receive WebSocket messages
