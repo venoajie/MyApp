@@ -53,14 +53,7 @@ if __name__ == "__main__":
     
     try:
 
-        #check_and_save_every_1_minutes()
         app.run()
-        #check_and_save_every_5_minutes()
-        #formula.sleep_and_restart_program (600)
-                
-        #file_name = 'TRXBTC_1h.bin'
-        #home_path = str(pathlib.Path.home())
-        #data_path = os.path.join(home_path, file_name)
         
     except (KeyboardInterrupt, SystemExit):
         import sys
