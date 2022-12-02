@@ -25,7 +25,7 @@ def check_and_save_every_1_minutes ():
     try:
         
         time_frame = 1
-        file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
+        file_name =(f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
         ohlc = market_data. ohlc (time_frame, 500)
         
         pickling.replace_data(file_name, ohlc)
@@ -41,15 +41,15 @@ def check_and_save_every_5_minutes ():
     try:
                
         open_interest_historical = market_data. open_interest_historical ()
-        file_name = (f'{currency.lower()}-openInterestHistorical.pkl')
+        file_name =(f'{currency.lower()}-openInterestHistorical.pkl')
         pickling.replace_data(file_name, open_interest_historical)
         
         open_interest_symbol = market_data. open_interest_symbol ()
-        file_name = (f'{currency.lower()}-openInterestSymbol.pkl')
+        file_name =(f'{currency.lower()}-openInterestSymbol.pkl')
         pickling.replace_data(file_name, open_interest_symbol)
         
         open_interest_aggregated_ohlc = market_data. open_interest_aggregated_ohlc ()
-        file_name = (f'{currency.lower()}-openInterestAggregated.pkl')
+        file_name =(f'{currency.lower()}-openInterestAggregated.pkl')
         pickling.replace_data(file_name, open_interest_aggregated_ohlc)
         
     except Exception as error:

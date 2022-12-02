@@ -196,8 +196,8 @@ class main:
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
                 message_channel_list: str = None
-                log.warning(message)
-                log.error(message_channel)
+                #log.warning(message)
+                #log.error(message_channel)
                 #await self.ws_manager_private()
                 endpoint_position: str = 'private/get_positions'
                 
@@ -211,7 +211,6 @@ class main:
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
-                        log.warning (message)
                         self.refresh_token = message['result']['refresh_token']
 
                         # Refresh Authentication well before the required datetime
@@ -283,12 +282,15 @@ class main:
                         
                         if message_channel == 'chart.trades.ETH-PERPETUAL.1':
                             #file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
-                            log.warning (message)
                             data : list = message 
-                            log.warning (data)
                             file_name = (f'eth-perpetual-ohlc-1m')
+                            data1=pickling.read_data('eth-perpetual-ohlc-1m.pkl')
+                            log.warning (data1)
 
-                            pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
+                            try:
+                                pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
+                            except:
+                                continue
                         
                         if message_channel == 'user.portfolio.eth':
                             data_orders: list = message['params']['data']
