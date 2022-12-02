@@ -12,10 +12,14 @@ def id (operation, ws_channel):
         id_item = 1
     if 'user' in ws_channel:
         id_item = 2
-    if 'chart' in operation:
+    if 'chart' in ws_channel:
         id_item = 3
-    if 'private' in operation:
+    if 'index' in ws_channel:
+        id_item = 3
+    if 'order' in ws_channel:
         id_item = 4
+    if 'position' in ws_channel:
+        id_item = 5
     id_instrument = 0
     if 'BTC'or 'btc' in ws_channel:
         id_instrument = 1
