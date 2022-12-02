@@ -8,6 +8,7 @@ import os
 from os.path import join, dirname
 import json
 from functools import lru_cache
+from pathlib import Path
 
 ##
 # installed
@@ -400,8 +401,6 @@ def main_ ():
     
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
-    log.warning (client_id)
-    log.error (client_id)
     ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
 
     try:
