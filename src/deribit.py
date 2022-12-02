@@ -510,6 +510,8 @@ class main:
                         }
                     }
 
+        log.warning(id)
+        log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
                 msg
