@@ -144,19 +144,19 @@ class main:
                 self.ws_refresh_auth()
                 )
 
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='user.portfolio.ETH'
-                    )
-                )
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation='subscribe',
+            #        ws_channel='user.portfolio.ETH'
+            #        )
+            #    )
             
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
-                    )
-                )
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation='subscribe',
+            #        ws_channel='book.ETH-PERPETUAL.none.20.100ms'
+            #        )
+            #    )
             
             #self.loop.create_task(
             #    self.ws_operation(
@@ -165,12 +165,12 @@ class main:
             #        )
             #    )
             
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='user.orders.future.ETH.raw'
-                    )
-                )
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation='subscribe',
+            #        ws_channel='user.orders.future.ETH.raw'
+            #        )
+            #    )
             
             self.loop.create_task(
                 self.ws_operation(
