@@ -4,27 +4,21 @@
 # built ins
 from typing import Dict
 from datetime import datetime, timedelta
-from time import sleep
 import os
 import json
 from functools import lru_cache
 from pathlib import Path
 
-##
 # installed
 import websockets
 import asyncio
 import orjson
 from loguru import logger as log
-from dataclassy import dataclass
-from dotenv import dotenv_values
-from dotenv import load_dotenv
 #from dask import delayed, compute    
 
 # user defined formula 
 from utils import pickling, formula
 from configuration import id_numbering
-import deribit_get
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
@@ -188,7 +182,7 @@ class main:
                         index_price = []
                         data_orders: list = message['params']['data']
                         
-                        my_path = root / "market_data" /  "deribit" /
+                        my_path = root / "market_data" /  "deribit"
                                                 
                         # Create target Directory if doesn't exist
                         if not os.path.exists(my_path):
