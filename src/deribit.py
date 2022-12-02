@@ -28,6 +28,10 @@ import deribit_get
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
 
+    
+    log.error (os.environ.get('client_id_test'))
+    log.warning (os.environ.get('client_id'))
+    log.error (os.environ.get('client_secret'))
     return {'client_id': os.environ.get('client_id'),
             'client_secret': os.environ.get('client_secret')
             }

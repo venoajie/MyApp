@@ -5,20 +5,25 @@
 from typing import Dict
 from datetime import datetime, timedelta
 import os
+from os.path import join, dirname
 import json
 from functools import lru_cache
-from pathlib import Path
 
+##
 # installed
 import websockets
 import asyncio
 import orjson
 from loguru import logger as log
+from dotenv import load_dotenv
 #from dask import delayed, compute    
 
 # user defined formula 
 from utils import pickling, formula
 from configuration import id_numbering
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
@@ -29,21 +34,13 @@ def parse_dotenv()->dict:
 
 root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 log.warning(root)
-#sys.path.append(root + '/python')
 
-#log.warning(sys.path.append(root + '/python'))
 none_data = [None, [], '0.0', 0]
 
 #@dataclass(unsafe_hash=True, slots=True)
 class main:
     
     '''
-    # Market maker
-    +----------------------------------------------------------------------------------------------+ 
-        - tentukan koin yang akan ditransaksikan (pertimbangkan fundimg rate dan likuiditas)
-        - kirim order long dan short secara bersamaan
-        - tp: 0,5%. no cl
-        - bila ada satu posisi rugi, maka di avg down (10%). posisi lawan kirim order dengan qty x 2
         
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
@@ -399,7 +396,6 @@ class main:
                 )
             )
         
-        #
 def main_ ():
     
     client_id: str = parse_dotenv() ['client_id']
