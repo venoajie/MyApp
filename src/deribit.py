@@ -282,7 +282,9 @@ class main:
                         
                         if message_channel == 'chart.trades.ETH-PERPETUAL.1':
                             #file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
+                            log.warning (message)
                             data : list = message 
+                            log.warning (data)
                             file_name = (f'eth-perpetual-ohlc-1m')
 
                             pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
