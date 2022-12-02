@@ -284,8 +284,8 @@ class main:
                             #file_name = (f'{symbol.lower()}-ohlc-{time_frame}m.pkl')
                             data : list = message 
                             file_name = (f'eth-perpetual-ohlc-1m')
-                            data1=pickling.read_data('eth-perpetual-ohlc-1m.pkl')
-                            log.warning (data1)
+                            #data1=pickling.read_data('eth-perpetual-ohlc-1m.pkl')
+                            #log.warning (data1)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (file_name, data, 10000)          
@@ -646,7 +646,6 @@ def main_ ():
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
     
-
 if __name__ == "__main__":
 
     # DBT Client ID
