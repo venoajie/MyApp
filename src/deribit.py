@@ -672,9 +672,9 @@ if __name__ == "__main__":
     'client_secret': 'client_secret'
 }
     db_config = [{k: os.environ.get(v) for k, v in config.items()}]
-    log.error (db_config)
+    #log.error (db_config)
     db_config = [o  for o in db_config]
-    log.error (db_config)
+    #log.error (db_config)
         
     try:
         main_()
