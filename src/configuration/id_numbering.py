@@ -1,6 +1,39 @@
 #!/usr/bin/env python
 def id (operation, ws_channel):
-    
+    """
+
+        id convention
+        
+        method
+        subscription    3
+        get             4
+        
+        auth
+        public	        1
+        private	        2
+        
+        instruments
+        all             0
+        btc             1
+        eth             2
+        
+        subscription
+        --------------  method      auth    seq    inst
+        portfolio	        3	    1	    01
+        user_order	        3	    1	    02
+        my_trade	        3	    1	    03
+        order_book	        3	    2	    04
+        trade	            3	    1	    05
+        index	            3	    1	    06
+        announcement	    3	    1	    07
+
+        get
+        --------------
+        currencies	        4	    2	    01
+        instruments	        4	    2	    02
+        positions	        4	    1	    03
+        
+    """
     id_method = 0
     if 'subscribe' in operation:
         id_method = 3

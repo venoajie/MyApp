@@ -50,38 +50,6 @@ class main:
         - tp: 0,5%. no cl
         - bila ada satu posisi rugi, maka di avg down (10%). posisi lawan kirim order dengan qty x 2
         
-        id convention
-        
-        method
-        subscription    3
-        get             4
-        
-        auth
-        public	        1
-        private	        2
-        
-        instruments
-        all             0
-        btc             1
-        eth             2
-        
-        subscription
-        --------------  method      auth    seq    inst
-        portfolio	        3	    1	    01
-        user_order	        3	    1	    02
-        my_trade	        3	    1	    03
-        order_book	        3	    2	    04
-        trade	            3	    1	    05
-        index	            3	    1	    06
-        announcement	    3	    1	    07
-
-        get
-        --------------
-        currencies	        4	    2	    01
-        instruments	        4	    2	    02
-        positions	        4	    1	    03
-        
-        
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
@@ -144,19 +112,19 @@ class main:
                 self.ws_refresh_auth()
                 )
 
-            #self.loop.create_task(
-            #    self.ws_operation(
-            #        operation='subscribe',
-            #        ws_channel='user.portfolio.ETH'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.portfolio.ETH'
+                    )
+                )
             
-            #self.loop.create_task(
-            #    self.ws_operation(
-            #        operation='subscribe',
-            #        ws_channel='book.ETH-PERPETUAL.none.20.100ms'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
+                    )
+                )
             
             self.loop.create_task(
                 self.ws_operation(
@@ -165,12 +133,12 @@ class main:
                     )
                 )
             
-            #self.loop.create_task(
-            #    self.ws_operation(
-            #        operation='subscribe',
-            #        ws_channel='user.orders.future.ETH.raw'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel='user.orders.future.ETH.raw'
+                    )
+                )
             
             self.loop.create_task(
                 self.ws_operation(
@@ -179,14 +147,14 @@ class main:
                     )
                 )
             
-            #self.loop.create_task(
-            #    self.ws_operation_get_instruments('ETH','future'
-            #        )
-            #    )
+            self.loop.create_task(
+                self.ws_operation_get_instruments('ETH','future'
+                    )
+                )
             
-            #self.loop.create_task (self.ws_operation_get_positions("ETH"))
+            self.loop.create_task (self.ws_operation_get_positions("ETH"))
             
-            #self.loop.create_task (self.ws_operation_get_currencies())
+            self.loop.create_task (self.ws_operation_get_currencies())
             
             while self.websocket_client.open:
                 # Receive WebSocket messages
@@ -328,11 +296,6 @@ class main:
                                     except:
                                         portfolio = portfolio 
 
-                                        
-                                    log.error(f'{instrument=}')
-                                    log.error(f'{open_orders=}')
-                                    
-                                
                                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     open_orders_instrument:list = [] if open_orders == [] else [o for o in open_orders if o['instrument_name'] == instrument]  
                                     #log.info(f'{open_orders_instrument=}')
@@ -342,7 +305,6 @@ class main:
                                     contract_size = instrument_data ['contract_size']
                                     expiration_timestamp = instrument_data ['expiration_timestamp']
                                     instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]     
-
 
                                     open_orders_hedging:list = [o for o in open_orders if o['label'] == 'hedging spot'] 
                                     open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
@@ -393,8 +355,7 @@ class main:
                                                     #if balance_eth in none_data:
                                 #    balance = modify.open_file_pickle('portfolio-eth.pkl')
                                 #    log.warning(balance)
-                
-                    
+                                    
             else:
                 log.info('WebSocket connection has broken.')
                 formula.sleep_and_restart_program(1)
@@ -642,7 +603,6 @@ def main_ ():
         client_id=client_id,
         client_secret= client_secret
         )
-
 
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
