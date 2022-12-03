@@ -16,7 +16,6 @@ import asyncio
 import orjson
 from loguru import logger as log
 from dotenv import load_dotenv
-from dask import delayed, compute    
 
 # user defined formula 
 from utils import pickling, formula, system_tools
@@ -411,9 +410,7 @@ if __name__ == "__main__":
     #log.error (db_config)
         
     try:
-        fetch_dask = []
         main()
-        results_dask = compute(*fetch_dask) 
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
