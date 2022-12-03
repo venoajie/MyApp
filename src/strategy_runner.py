@@ -144,16 +144,21 @@ class DeribitMarketDownloader:
 
                 if 'params' in list(message):
                     
-                    # Set root equal to  current folder
-                    
-                    root = Path(".")
-
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
             
-                        index_price = []
-                        data_orders: list = message['params']['data']
+                        try:
+                            instruments = pickling.read_data('instruments.pkl')['result']
+                        except:
+                            instruments = []
+                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
+                        if instruments not  in none_data:
+                            log.error(f'{all_instruments=}')
+                            log.error(f'{all_instruments=} {portfolio=} {index_price=}')
                             
+                            for instrument in all_instruments:
+                                if portfolio != [] and index_price != []:
+
                         
                             
             else:
