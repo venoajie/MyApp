@@ -180,43 +180,18 @@ class DeribitMarketDownloader:
             
                         index_price = []
                         data_orders: list = message['params']['data']
-                        log.warning (root)
-                        
-                        my_path = root / "market_data" /  "deribit"
-                                                
-                        current_os = system_tools.get_platform ()
-                        log.error (current_os)
-                        
-                        my_path = root / "market_data" /  "deribit"
-                        my_path_win = root / "src" / "market_data" /  "deribit"
-                        my_path = my_path if current_os == 'linux' else my_path_win
-                                                
-                        # Create target Directory if doesn't exist
-                        if not os.path.exists(my_path) and current_os =='linux':
-                            os.makedirs(my_path)
                             
-                        
                         if message_channel == 'deribit_price_index.eth_usd':
 
                             index_price = data_orders ['price']
-                            my_path = root / "market_data" /  "deribit" / "eth-index.pkl"
-                            my_path_win = root / "src" / "market_data" /  "deribit" / "eth-index.pkl"
-                            my_path = my_path if current_os == 'linux' else my_path_win
+                            file_name = (f'eth-index.pkl')
+                            my_path = system_tools.save_market_data (file_name)
                             pickling.replace_data(my_path, index_price)
-                            
-                        try:
-                            index_price = pickling.read_data('eth-index.pkl')#['result']
-                            index_price = index_price [0]
-
-                        except:
-                            index_price = []
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             file_name = (f'eth-perpetual-ordBook')
-                            my_path = root / "market_data" / "deribit" / file_name
-                            my_path_win = root / "src" / "market_data" /  "deribit" / file_name
-                            my_path = my_path if current_os == 'linux' else my_path_win
+                            my_path = system_tools.save_market_data (file_name)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
@@ -227,10 +202,8 @@ class DeribitMarketDownloader:
 
                             data : list = message 
                             
-                            file_name = (f'eth-perpetual-ohlc-1m')
-                            my_path = root / "market_data" / "deribit" / file_name
-                            my_path_win = root / "src" / "market_data" /  "deribit" / file_name
-                            my_path = my_path if current_os == 'linux' else my_path_win
+                            file_name = (f'eth-perpetual-ohlc-1m')                            
+                            my_path = system_tools.save_market_data (file_name)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          

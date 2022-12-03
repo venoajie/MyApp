@@ -33,6 +33,24 @@ def sleep_and_restart_program (idle: float)-> None:
     python = sys.executable
     os.execl(python, python, * sys.argv)
     
+def save_market_data (file_name)-> None:
+    from pathlib import Path
+    
+    current_os = get_platform ()
+    
+    root = Path(".")
+    
+    my_path_linux = root / "market_data" / "deribit"
+
+    # Create target Directory if doesn't exist
+    if not os.path.exists(my_path_linux) and current_os =='linux':
+        os.makedirs(my_path_linux)
+                        
+    my_path_linux = my_path_linux / file_name
+    my_path_win = root / "src" / "market_data" /  "deribit" / file_name
+
+    return my_path_linux if get_platform () == 'linux' else my_path_win
+    
 def check_environment()->bool:
 
     '''
