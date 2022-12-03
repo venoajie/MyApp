@@ -124,8 +124,6 @@ class DeribitMarketDownloader:
                     )
                 )
             
-            self.loop.create_task (self.ws_operation_get_currencies())
-            
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -154,8 +152,10 @@ class DeribitMarketDownloader:
                         # Avoid logging Heartbeat messages
                         continue
 
-                    if message['id'] == 402:
-                        pickling.replace_data('instruments.pkl', message)
+                    if message['id'] == 1402:
+                        file_name = (f'eth-instruments.pkl')
+                        my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
+                        pickling.replace_data(my_path, message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
