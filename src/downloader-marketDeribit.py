@@ -8,8 +8,6 @@ import os
 from os.path import join, dirname
 import json
 from functools import lru_cache
-from pathlib import Path
-import pathlib
 
 ##
 # installed
@@ -18,7 +16,7 @@ import asyncio
 import orjson
 from loguru import logger as log
 from dotenv import load_dotenv
-#from dask import delayed, compute    
+from dask import delayed, compute    
 
 # user defined formula 
 from utils import pickling, formula, system_tools
@@ -29,17 +27,12 @@ load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
-
     return {'client_id': os.environ.get('client_id'),
             'client_secret': os.environ.get('client_secret')
             }
 
-#root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-#log.warning(root)
-
 none_data = [None, [], '0.0', 0]
 
-#@dataclass(unsafe_hash=True, slots=True)
 class DeribitMarketDownloader:
     
     '''
@@ -185,13 +178,13 @@ class DeribitMarketDownloader:
 
                             index_price = data_orders ['price']
                             file_name = (f'eth-index.pkl')
-                            my_path = system_tools.save_market_data (file_name)
+                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
                             pickling.replace_data(my_path, index_price)
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             file_name = (f'eth-perpetual-ordBook')
-                            my_path = system_tools.save_market_data (file_name)
+                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
@@ -203,7 +196,7 @@ class DeribitMarketDownloader:
                             data : list = message 
                             
                             file_name = (f'eth-perpetual-ohlc-1m')                            
-                            my_path = system_tools.save_market_data (file_name)
+                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
@@ -227,7 +220,6 @@ class DeribitMarketDownloader:
                               "interval": 10
                                }
                     }
-
                 
         try:
             await self.websocket_client.send(
@@ -346,7 +338,7 @@ class DeribitMarketDownloader:
         """
         await asyncio.sleep(5)
 
-        msg: Dict = 'https://test.deribit.com/api/v2/public/get_currencies?'
+        msg: Dict = 'https://www.deribit.com/api/v2/public/get_currencies?'
 
         await self.websocket_client.send(
             json.dumps(
@@ -419,7 +411,9 @@ if __name__ == "__main__":
     #log.error (db_config)
         
     try:
+        fetch_dask = []
         main()
+        results_dask = compute(*fetch_dask) 
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())

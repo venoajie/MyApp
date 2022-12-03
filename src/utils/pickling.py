@@ -10,9 +10,9 @@ def append_data (file_name: str, data: dict)-> None:
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
-    file_name=f"""{file_name}.pkl"""
+    file_name: str =f"""{file_name}.pkl"""
     
-    collected_data = []
+    collected_data: list = []
     if os.path.exists(file_name):
 
         with open(file_name,'rb') as handle: 
@@ -56,23 +56,22 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
     """
     
     
-    file_name_pkl=f"""{file_name}.pkl"""
+    file_name_pkl:str =f"""{file_name}.pkl"""
 
     append_data(file_name, data)
-    data = read_data (file_name_pkl)
+    data: object = read_data (file_name_pkl)
     #print (data)
 
-    len_tick_data = len ([o['tick']  for o in data ])  
+    len_tick_data: int = len ([o['tick']  for o in data ])  
 
     if len_tick_data > max_qty:
-        filter = [min([o['tick']  for o in data ])]
-        result = ([o for o in data if o['tick'] not in filter ])
+        filter: list = [min([o['tick']  for o in data ])]
+        result: list = ([o for o in data if o['tick'] not in filter ])
 
         with open(file_name_pkl,'wb') as handle:
             
             pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
-
 if __name__ == "__main__":
 
     # DBT Client ID
