@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 #from dask import delayed, compute    
 
 # user defined formula 
-from utils import pickling, formula, system_tools
+from utils import pickling, system_tools
 from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -45,22 +45,6 @@ class DeribitMarketDownloader:
     '''
         
     +----------------------------------------------------------------------------------------------+ 
-    #  References: 
-        + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
-        + https://niekdeschipper.com/projects/asyncio.md
-        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
-        + https://realpython.com/async-io-python/
-        + https://www.youtube.com/watch?v=ZzfHjytDceU
-        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
-        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
-        + https://sammchardy.github.io/async-binance-basics/
-        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
-        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
-        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
-        
-        Basic:
-        + https://websockets.readthedocs.io/en/6.0/intro.html
-        + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
@@ -106,33 +90,21 @@ class DeribitMarketDownloader:
                 self.ws_refresh_auth()
                 )
 
+
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
-                    )
-                )
-            
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='chart.trades.ETH-PERPETUAL.1'
+                    ws_channel='user.portfolio.ETH'
                     )
                 )
             
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='deribit_price_index.eth_usd'
+                    ws_channel='user.orders.future.ETH.raw'
                     )
                 )
             
-            self.loop.create_task(
-                self.ws_operation_get_instruments('ETH','future'
-                    )
-                )
-            
-            self.loop.create_task (self.ws_operation_get_currencies())
             
             while self.websocket_client.open:
                 # Receive WebSocket messages
@@ -173,6 +145,7 @@ class DeribitMarketDownloader:
                 if 'params' in list(message):
                     
                     # Set root equal to  current folder
+                    
                     root = Path(".")
 
                     if message['method'] != 'heartbeat':
@@ -180,62 +153,8 @@ class DeribitMarketDownloader:
             
                         index_price = []
                         data_orders: list = message['params']['data']
-                        log.warning (root)
-                        
-                        my_path = root / "market_data" /  "deribit"
-                                                
-                        current_os = system_tools.get_platform ()
-                        log.error (current_os)
-                        
-                        my_path = root / "market_data" /  "deribit"
-                        my_path_win = root / "src" / "market_data" /  "deribit"
-                        my_path = my_path if current_os == 'linux' else my_path_win
-                                                
-                        # Create target Directory if doesn't exist
-                        if not os.path.exists(my_path) and current_os =='linux':
-                            os.makedirs(my_path)
                             
                         
-                        if message_channel == 'deribit_price_index.eth_usd':
-
-                            index_price = data_orders ['price']
-                            my_path = root / "market_data" /  "deribit" / "eth-index.pkl"
-                            my_path_win = root / "src" / "market_data" /  "deribit" / "eth-index.pkl"
-                            my_path = my_path if current_os == 'linux' else my_path_win
-                            pickling.replace_data(my_path, index_price)
-                            
-                        try:
-                            index_price = pickling.read_data('eth-index.pkl')#['result']
-                            index_price = index_price [0]
-
-                        except:
-                            index_price = []
-                            
-                        if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
-
-                            file_name = (f'eth-perpetual-ordBook')
-                            my_path = root / "market_data" / "deribit" / file_name
-                            my_path_win = root / "src" / "market_data" /  "deribit" / file_name
-                            my_path = my_path if current_os == 'linux' else my_path_win
-
-                            try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
-                            except:
-                                continue        
-                            
-                        if message_channel == 'chart.trades.ETH-PERPETUAL.1':
-
-                            data : list = message 
-                            
-                            file_name = (f'eth-perpetual-ohlc-1m')
-                            my_path = root / "market_data" / "deribit" / file_name
-                            my_path_win = root / "src" / "market_data" /  "deribit" / file_name
-                            my_path = my_path if current_os == 'linux' else my_path_win
-
-                            try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
-                            except:
-                                continue
                             
             else:
                 log.info('WebSocket connection has broken.')
@@ -358,7 +277,6 @@ class DeribitMarketDownloader:
                         }
                     }
 
-        log.warning(id)
         log.warning(msg)
         await self.websocket_client.send(
             json.dumps(

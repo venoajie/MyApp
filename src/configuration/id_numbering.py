@@ -34,6 +34,10 @@ def id (operation, ws_channel):
         positions	        4	    1	    03
         
     """
+    id_auth = 1
+    if 'user' in ws_channel:
+        id_auth = 9
+        
     id_method = 0
     if 'subscribe' in operation:
         id_method = 3
@@ -57,4 +61,4 @@ def id (operation, ws_channel):
         id_instrument = 1
     if 'ETH' or 'eth' in ws_channel:
         id_instrument = 2
-    return int(f'{id_method}{id_item}{id_instrument}')
+    return int(f'{id_auth}{id_method}{id_item}{id_instrument}')

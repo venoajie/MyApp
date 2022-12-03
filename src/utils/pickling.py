@@ -12,23 +12,22 @@ def append_data (file_name: str, data: dict)-> None:
 
     file_name=f"""{file_name}.pkl"""
     
-    scores = []
-    
+    collected_data = []
     if os.path.exists(file_name):
 
         with open(file_name,'rb') as handle: 
-            scores = pickle.load(handle)
+            collected_data = pickle.load(handle)
 
-    scores.append(data)
+    collected_data.append(data)
 
     # Now we "sync" our database
     with open(file_name,'wb') as handle:
-        pickle.dump(scores, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(collected_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # Re-load our database
     with open(file_name,'rb') as handle:
-        scores = pickle.load(handle)
-    return scores
+        collected_data = pickle.load(handle)
+    return collected_data
 
 def read_data (file_name: str)-> None:
 
@@ -56,10 +55,12 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
     
+    
     file_name_pkl=f"""{file_name}.pkl"""
 
     append_data(file_name, data)
     data = read_data (file_name_pkl)
+    #print (data)
 
     len_tick_data = len ([o['tick']  for o in data ])  
 
@@ -68,6 +69,7 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
         result = ([o for o in data if o['tick'] not in filter ])
 
         with open(file_name_pkl,'wb') as handle:
+            
             pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 
