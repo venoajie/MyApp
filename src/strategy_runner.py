@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 #from dask import delayed, compute    
 
 # user defined formula 
-from utils import pickling, system_tools
+from utils import pickling, system_tools, formula
 from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -146,18 +146,30 @@ class DeribitMarketDownloader:
                     
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        
+                        index_price = pickling.read_data (system_tools.create_path_for_market_data_deribit_output ('eth-index.pkl') )[0]
+                        log.warning (index_price)
             
-                        try:
-                            instruments = pickling.read_data('instruments.pkl')['result']
-                        except:
-                            instruments = []
-                        all_instruments = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
-                        if instruments not  in none_data:
-                            log.error(f'{all_instruments=}')
-                            log.error(f'{all_instruments=} {portfolio=} {index_price=}')
+                        instruments = pickling.read_data (system_tools.create_path_for_market_data_deribit_output ('eth-instruments.pkl') )[0]['result']
                             
-                            for instrument in all_instruments:
+                        all_instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
+                        log.warning (all_instruments_name)
+
+
+                        if message_channel == 'user.portfolio.eth':
+                            data_orders: list = message['params']['data']
+                            log.debug(data_orders)
+                            pickling.replace_data('eth-portfolio.pkl', data_orders)
+                            
+                        if portfolio  in none_data:
+                            try:
+                                portfolio = pickling.read_data('portfolio-eth.pkl')
+                            except:
+                                portfolio = []                            
+                            for instrument in all_instruments_name:
+                                log.error (instrument)
                                 if portfolio != [] and index_price != []:
+                                    pass
 
                         
                             

@@ -154,7 +154,7 @@ class DeribitMarketDownloader:
 
                     if message['id'] == 1402:
                         file_name = (f'eth-instruments.pkl')
-                        my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
+                        my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                         pickling.replace_data(my_path, message)
                     
                 elif 'method' in list(message):
@@ -174,13 +174,13 @@ class DeribitMarketDownloader:
 
                             index_price = data_orders ['price']
                             file_name = (f'eth-index.pkl')
-                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
+                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             pickling.replace_data(my_path, index_price)
                             
                         if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
 
                             file_name = (f'eth-perpetual-ordBook')
-                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
+                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
@@ -192,7 +192,7 @@ class DeribitMarketDownloader:
                             data : list = message 
                             
                             file_name = (f'eth-perpetual-ohlc-1m')                            
-                            my_path = system_tools.create_path_for_market_data_deribit_output (file_name)
+                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          

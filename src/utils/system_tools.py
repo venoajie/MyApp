@@ -3,6 +3,7 @@
 
 import os,sys
 from time import sleep
+from loguru import logger as log
 
 none_data=[None, 0, []]
 
@@ -37,7 +38,7 @@ def sleep_and_restart_program (idle: float)-> None:
     python = sys.executable
     os.execl(python, python, * sys.argv)
     
-def create_path_for_market_data_deribit_output (file_name: str)-> None:
+def provide_path_for_file (file_name: str, folder1: str = None, folder2: str = None)-> None:
     '''
     '''   
     from pathlib import Path
@@ -47,16 +48,15 @@ def create_path_for_market_data_deribit_output (file_name: str)-> None:
     # Set root equal to  current folder
     root:str = Path(".")
     
-    my_path_linux: str = root / "market_data" / "deribit"
-
+    my_path_linux: str = root / folder1 if folder2 == None else  root / folder1 / folder2
+    my_path_win:str = root / "src" / folder1 if folder2 == None else  root / "src" / folder1 / folder2
+    
     # Create target Directory if doesn't exist
     if not os.path.exists(my_path_linux) and current_os =='linux':
         os.makedirs(my_path_linux)
                         
-    my_path_linux:str = my_path_linux / file_name
-    my_path_win:str = root / "src" / "market_data" /  "deribit" / file_name
 
-    return my_path_linux if get_platform () == 'linux' else my_path_win
+    return (my_path_linux / file_name )if get_platform () == 'linux' else (my_path_win / file_name)
     
 def check_environment()->bool:
 
@@ -69,3 +69,20 @@ def check_environment()->bool:
         print("No SIGHUP handler")
     else:
         print("In nohup mode")
+        
+
+if __name__ == "__main__":
+    try:
+        
+        folder1 = "market_data"
+        folder2 = "deribit"
+        file_name = "test.pkl"
+        path = provide_path_for_file (file_name, "market_data", "deribit")
+        print (path)
+
+    except (KeyboardInterrupt, SystemExit):
+        import sys
+        sys.exit()
+
+    except Exception as error:
+        print (error)
