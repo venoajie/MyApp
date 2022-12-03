@@ -44,6 +44,7 @@ def create_path_for_market_data_deribit_output (file_name: str)-> None:
     
     current_os = get_platform ()
     
+    # Set root equal to  current folder
     root:str = Path(".")
     
     my_path_linux: str = root / "market_data" / "deribit"

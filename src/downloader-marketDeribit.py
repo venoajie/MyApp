@@ -164,9 +164,6 @@ class DeribitMarketDownloader:
 
                 if 'params' in list(message):
                     
-                    # Set root equal to  current folder
-                    root = Path(".")
-
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
             
