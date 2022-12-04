@@ -3,11 +3,10 @@
 
 import os,sys
 from time import sleep
-from loguru import logger as log
 
 none_data=[None, 0, []]
 
-def get_platform()-> str:
+def get_platform ()-> str:
 
     '''
     https://www.webucator.com/article/how-to-check-the-operating-system-with-python/
@@ -48,15 +47,15 @@ def provide_path_for_file (file_name: str, folder1: str = None, folder2: str = N
     # Set root equal to  current folder
     root:str = Path(".")
     
+    # COmbine root + folders
     my_path_linux: str = root / folder1 if folder2 == None else  root / folder1 / folder2
     my_path_win:str = root / "src" / folder1 if folder2 == None else  root / "src" / folder1 / folder2
     
-    # Create target Directory if doesn't exist
+    # Create target Directory if doesn't exist in linux
     if not os.path.exists(my_path_linux) and current_os =='linux':
         os.makedirs(my_path_linux)
                         
-
-    return (my_path_linux / file_name )if get_platform () == 'linux' else (my_path_win / file_name)
+    return (my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name)
     
 def check_environment()->bool:
 

@@ -147,25 +147,29 @@ class DeribitMarketDownloader:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
                         
-                        index_price = pickling.read_data (system_tools.create_path_for_market_data_deribit_output ('eth-index.pkl') )[0]
+                        index_price = pickling.read_data (system_tools.provide_path_for_file ('eth-index.pkl', "market_data", "deribit"))[0]
                         log.warning (index_price)
             
-                        instruments = pickling.read_data (system_tools.create_path_for_market_data_deribit_output ('eth-instruments.pkl') )[0]['result']
+                        instruments = pickling.read_data (system_tools.provide_path_for_file ('eth-instruments.pkl', "market_data", "deribit") )[0]['result']
                             
                         all_instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         log.warning (all_instruments_name)
-
+                        
+                        file_name_portfolio = (f'eth-portfolio.pkl')
 
                         if message_channel == 'user.portfolio.eth':
-                            data_orders: list = message['params']['data']
-                            log.debug(data_orders)
-                            pickling.replace_data('eth-portfolio.pkl', data_orders)
+                            data_portfolio: list = message['params']['data']
+                            log.debug(data_portfolio)
                             
-                        if portfolio  in none_data:
-                            try:
-                                portfolio = pickling.read_data('portfolio-eth.pkl')
-                            except:
-                                portfolio = []                            
+                            pickling.replace_data(system_tools.provide_path_for_file (file_name_portfolio, "portfolio", "deribit"), data_portfolio)
+                    
+                        try:
+                            portfolio = pickling.read_data (system_tools.provide_path_for_file (file_name_portfolio, "portfolio", "deribit") )#[
+                            log.info(portfolio)
+                        except:
+                            portfolio = []                
+                            
+                        if portfolio  in none_data:            
                             for instrument in all_instruments_name:
                                 log.error (instrument)
                                 if portfolio != [] and index_price != []:
