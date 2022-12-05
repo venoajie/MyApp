@@ -34,8 +34,6 @@ def parse_dotenv()->dict:
 none_data = [None, [], '0.0', 0]
     
     
-
-
 async def call_api(curr, msg):
     async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
         
@@ -59,8 +57,6 @@ async def call_api(curr, msg):
                 my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                 pickling.replace_data(my_path, response_data)   
                 
-
-
 currencies = ['ETH', 'BTC']
 for curr in currencies:
 
@@ -159,11 +155,7 @@ class DeribitMarketDownloader:
                 file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                 my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
                 message: bytes = await self.websocket_client.recv()
-                message: Dict = orjson.loads(message)
-                log.warning (message)
                 instruments = pickling.read_data (my_path_instruments)
-                log.warning (currency)
-                log.warning (instruments)
                 instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
 
                 for instrument in instruments_name:
@@ -272,7 +264,7 @@ class DeribitMarketDownloader:
                             
             else:
                 log.info('WebSocket connection has broken.')
-                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 10)
+                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
                 system_tools.sleep_and_restart_program(1)
                 
     async def establish_heartbeat(self) -> None:
@@ -478,7 +470,6 @@ class DeribitMarketDownloader:
                 msg
                 )
             )
-       
                 
 def main ():
     
@@ -487,7 +478,6 @@ def main ():
     ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
     
     try:
-
 
         DeribitMarketDownloader (
         ws_connection_url=ws_connection_url,
@@ -513,7 +503,6 @@ if __name__ == "__main__":
     db_config = [o  for o in db_config]
     #log.error (db_config)
     
-        
     try:
             
             main()
