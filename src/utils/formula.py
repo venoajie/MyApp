@@ -634,8 +634,11 @@ if __name__ == '__main__':
     # wrapper = retry((ConnectionAbortedError), tries=3, delay=.2, backoff=1, logger=logger)
     # wrapped_test_func = wrapper(test_func)
     # print(wrapped_test_func('hi', 'bye', hi='ciao'))
-    modif=waktu_modifikasi_file_terakhir('funding_rates.json')
-    print(modif)
-    wrapper_all_exceptions = retry(Exception, total_tries=2, logger=logger)
-    wrapped_test_func = wrapper_all_exceptions(test_func)
-    print(wrapped_test_func('hi', 'bye', hi='ciao'))
+    #modif=waktu_modifikasi_file_terakhir('funding_rates.json')
+    #print(modif)
+    #wrapper_all_exceptions = retry(Exception, total_tries=2, logger=logger)
+    #wrapped_test_func = wrapper_all_exceptions(test_func)
+    #print(wrapped_test_func('hi', 'bye', hi='ciao'))
+    l = 'book.BTC-16DEC22.none.20.100ms'
+    l = "".join(list(l) [5:][:-14])[:3]
+    print (l)

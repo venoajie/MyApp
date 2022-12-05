@@ -24,14 +24,70 @@ from configuration import id_numbering
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
+
+
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
     return {'client_id': os.environ.get('client_id'),
             'client_secret': os.environ.get('client_secret')
             }
-
 none_data = [None, [], '0.0', 0]
+    
+    
 
+
+async def call_api(curr, msg):
+    async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
+        
+        #await asyncio.gather(*[self.call_api(json.dumps(item)) for item in url ])
+        await websocket.send(msg)
+        while websocket.open:
+            response = await websocket.recv()
+            response: dict = orjson.loads(response)
+            response_data: dict = response ['result']
+            log.info (curr)
+            log.info (msg)
+            log.info (response_data)
+
+            if response['id'] == 7617:
+                file_name = (f'{curr.lower()}-instruments.pkl')
+                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                pickling.replace_data(my_path, response_data)       
+                                    
+            if response['id'] == 7538:
+                file_name = (f'currencies.pkl')
+                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                pickling.replace_data(my_path, response_data)   
+                
+
+
+currencies = ['ETH', 'BTC']
+for curr in currencies:
+
+    msg = \
+        {
+        "jsonrpc" : "2.0",
+        "id" : 7617,
+        "method" : "public/get_instruments",
+        "params" : {
+            "currency" : f"{curr}",
+            "kind" : "future",
+            "expired" : False
+        }
+        }
+    msg_curr = \
+        {
+        "jsonrpc" : "2.0",
+        "id" : 7538,
+        "method" : "public/get_currencies",
+        "params" : {
+
+        }
+        }    
+    url =  [msg, msg_curr] 
+    
+    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
+    
 class DeribitMarketDownloader:
     
     '''
@@ -76,8 +132,8 @@ class DeribitMarketDownloader:
         # Start Primary Coroutine
         self.loop.run_until_complete(
             self.ws_manager()
-            )
-        
+            )             
+                
     #@lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
@@ -92,35 +148,44 @@ class DeribitMarketDownloader:
 
             # Establish Heartbeat
             await self.establish_heartbeat()
-
+            
             # Start Authentication Refresh Task
             self.loop.create_task(
                 self.ws_refresh_auth()
-                )
+                )              
 
+            currencies = ['ETH', 'BTC']
+            for currency in currencies:
+                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                message: bytes = await self.websocket_client.recv()
+                message: Dict = orjson.loads(message)
+                log.warning (message)
+                instruments = pickling.read_data (my_path_instruments)
+                log.warning (currency)
+                log.warning (instruments)
+                instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
+
+                for instrument in instruments_name:
+                
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'book.{instrument}.none.20.100ms'
+                            )
+                        )
+                    
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                            )
+                        )
+                
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel='book.ETH-PERPETUAL.none.20.100ms'
-                    )
-                )
-            
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='chart.trades.ETH-PERPETUAL.1'
-                    )
-                )
-            
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='deribit_price_index.eth_usd'
-                    )
-                )
-            
-            self.loop.create_task(
-                self.ws_operation_get_instruments('ETH','future'
+                    ws_channel=f'chart.trades.ETH-PERPETUAL.1'
                     )
                 )
             
@@ -129,6 +194,8 @@ class DeribitMarketDownloader:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
+                #log.error (message)
+                
                 
                 if 'id' in list(message):
                     
@@ -153,9 +220,9 @@ class DeribitMarketDownloader:
                         continue
 
                     if message['id'] == 1402:
-                        file_name = (f'eth-instruments.pkl')
-                        my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                        pickling.replace_data(my_path, message)
+                        #file_name = (f'eth-instruments.pkl')
+                        #my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                        pickling.replace_data(my_path_instruments, message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
@@ -169,18 +236,22 @@ class DeribitMarketDownloader:
             
                         index_price = []
                         data_orders: list = message['params']['data']
-                            
-                        if message_channel == 'deribit_price_index.eth_usd':
+                        
+                        if message_channel == f'deribit_price_index.{currency.lower()}_usd':
 
                             index_price = data_orders ['price']
-                            file_name = (f'eth-index.pkl')
+                            log.critical (index_price)
+                            file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             pickling.replace_data(my_path, index_price)
-                            
-                        if message_channel == 'book.ETH-PERPETUAL.none.20.100ms':
+                                                        
+                        instrument = "".join(list(message_channel) [5:][:-14])
+                        currency = "".join(list(message_channel) [5:][:-14])[:3]
+                        if message_channel == f'book.{instrument}.none.20.100ms':
 
-                            file_name = (f'eth-perpetual-ordBook')
+                            file_name = (f'{instrument.lower()}-ordBook')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                            log.warning (my_path)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
@@ -201,6 +272,7 @@ class DeribitMarketDownloader:
                             
             else:
                 log.info('WebSocket connection has broken.')
+                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', error, 10)
                 system_tools.sleep_and_restart_program(1)
                 
     async def establish_heartbeat(self) -> None:
@@ -327,6 +399,38 @@ class DeribitMarketDownloader:
                 )
             )
 
+    async def ws_operation_get_instruments(
+        self,
+        currency: str,
+        kind: str=None,
+        expired: bool=False
+            ) -> None:
+        """
+        Requests `public/subscribe` or `public/unsubscribe`
+        to DBT's API for the specific WebSocket Channel.
+        """
+        await asyncio.sleep(5)
+        params = {
+            "currency": currency,
+            "kind": kind,
+            "expired": expired
+        }
+        
+        method =  f"public/get_instruments"
+        id = id_numbering.id(method, method)
+        msg: Dict = {
+                    "jsonrpc": "2.0",
+                    "method": method,
+                    "id": id,
+                    "params": params
+                    }
+
+
+        await self.websocket_client.send(
+            json.dumps(
+                msg
+                )
+            )
     async def ws_operation_get_currencies(
         self
             ) -> None:
@@ -374,14 +478,17 @@ class DeribitMarketDownloader:
                 msg
                 )
             )
-        
+       
+                
 def main ():
     
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
-
+    
     try:
+
+
         DeribitMarketDownloader (
         ws_connection_url=ws_connection_url,
         client_id=client_id,
@@ -405,9 +512,11 @@ if __name__ == "__main__":
     #log.error (db_config)
     db_config = [o  for o in db_config]
     #log.error (db_config)
+    
         
     try:
-        main()
+            
+            main()
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
