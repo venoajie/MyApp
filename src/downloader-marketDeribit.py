@@ -286,12 +286,13 @@ class DeribitMarketDownloader:
                         log.critical (currency)
                         log.error (message_channel)
                         if message_channel == f'user.portfolio.{currency.lower()}':
+                            log.error (data_orders)
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
 
                             my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
-                            pickling.replace_data(my_path, index_price)
+                            pickling.replace_data(my_path, data_orders)
                             
                         currency = "".join(list(message_channel))[-7:][:3]
                         #log.critical (currency)
