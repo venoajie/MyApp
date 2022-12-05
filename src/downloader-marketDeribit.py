@@ -286,7 +286,7 @@ class DeribitMarketDownloader:
                         log.critical (currency)
                         log.error (message_channel)
                         if message_channel == f'user.portfolio.{currency.lower()}':
-                            log.error (data_orders)
+                            log.debug (data_orders)
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
 
