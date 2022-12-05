@@ -94,8 +94,10 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
 if __name__ == "__main__":
 
     # DBT Client ID
-    resp = 'chart.trades.BTC-PERPETUAL.1'
-    instrument = "".join(list(resp) [13:][:-2])
+    resp = 'deribit_price_index.btc_usd'
+    instrument = (resp)[-7:]
+    print (instrument)
+    instrument = (instrument)[:3]
     print (instrument)
  
     try:

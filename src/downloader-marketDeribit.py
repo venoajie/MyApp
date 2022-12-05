@@ -211,11 +211,6 @@ class DeribitMarketDownloader:
                     elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
                         continue
-
-                    if message['id'] == 1402:
-                        #file_name = (f'eth-instruments.pkl')
-                        #my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                        pickling.replace_data(my_path_instruments, message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
@@ -228,9 +223,10 @@ class DeribitMarketDownloader:
                         message_channel = message['params']['channel']
             
                         index_price = []
+                        symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
-                        
-                        if message_channel == f'deribit_price_index.{currency.lower()}_usd':
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            currency = (symbol_index)[:3]
 
                             index_price = data_orders ['price']
                             file_name = (f'{currency.lower()}-index.pkl')
@@ -249,7 +245,6 @@ class DeribitMarketDownloader:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10)          
                             except:
                                 continue        
-                            
                                                         
                         instrument = "".join(list(message_channel) [13:][:-2])
                         currency = "".join(list(message_channel) [13:][:-2])[:3]
@@ -393,86 +388,6 @@ class DeribitMarketDownloader:
                 msg
                 )
             )
-
-    async def ws_operation_get_instruments(
-        self,
-        currency: str,
-        kind: str=None,
-        expired: bool=False
-            ) -> None:
-        """
-        Requests `public/subscribe` or `public/unsubscribe`
-        to DBT's API for the specific WebSocket Channel.
-        """
-        await asyncio.sleep(5)
-        params = {
-            "currency": currency,
-            "kind": kind,
-            "expired": expired
-        }
-        
-        method =  f"public/get_instruments"
-        id = id_numbering.id(method, method)
-        msg: Dict = {
-                    "jsonrpc": "2.0",
-                    "method": method,
-                    "id": id,
-                    "params": params
-                    }
-
-
-        await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
-            )
-    async def ws_operation_get_currencies(
-        self
-            ) -> None:
-        """
-        """
-        await asyncio.sleep(5)
-
-        msg: Dict = 'https://www.deribit.com/api/v2/public/get_currencies?'
-
-        await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
-            )
-        
-    async def ws_operation_get_instruments(
-        self,
-        currency: str,
-        kind: str=None,
-        expired: bool=False
-            ) -> None:
-        """
-        Requests `public/subscribe` or `public/unsubscribe`
-        to DBT's API for the specific WebSocket Channel.
-        """
-        await asyncio.sleep(5)
-        params = {
-            "currency": currency,
-            "kind": kind,
-            "expired": expired
-        }
-        
-        method =  f"public/get_instruments"
-        id = id_numbering.id(method, method)
-        msg: Dict = {
-                    "jsonrpc": "2.0",
-                    "method": method,
-                    "id": id,
-                    "params": params
-                    }
-
-
-        await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
-            )
                 
 def main ():
     
@@ -507,7 +422,6 @@ if __name__ == "__main__":
     #log.error (db_config)
     
     try:
-            
             main()
         
     except (KeyboardInterrupt, SystemExit):

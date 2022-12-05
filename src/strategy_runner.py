@@ -90,20 +90,29 @@ class DeribitMarketDownloader:
                 self.ws_refresh_auth()
                 )
 
+            currencies = ['ETH', 'BTC']
+            for currency in currencies:
+                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                message: bytes = await self.websocket_client.recv()
+                instruments = pickling.read_data (my_path_instruments)
+                instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
 
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='user.portfolio.ETH'
-                    )
-                )
-            
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='user.orders.future.ETH.raw'
-                    )
-                )
+                for instrument in instruments_name:
+
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'user.portfolio.{currency}'
+                            )
+                        )
+                    
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'user.orders.future.{currency}.raw'
+                            )
+                        )
             
             
             while self.websocket_client.open:
@@ -146,18 +155,20 @@ class DeribitMarketDownloader:
                     
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
-                        
-                        index_price = pickling.read_data (system_tools.provide_path_for_file ('eth-index.pkl', "market_data", "deribit"))[0]
+                        index_price = pickling.read_data (system_tools.provide_path_for_file (f'{currency.lower()}-index.pkl', "market_data", "deribit"))[0]
+                        log.error (currency)
+                        log.error (message_channel)
                         log.warning (index_price)
             
-                        instruments = pickling.read_data (system_tools.provide_path_for_file ('eth-instruments.pkl', "market_data", "deribit") )[0]['result']
+                        instruments = pickling.read_data (system_tools.provide_path_for_file (f'{currency.lower()}-instruments.pkl', "market_data", "deribit") )[0]#['result']
+                        log.warning (instruments)
                             
                         all_instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         log.warning (all_instruments_name)
                         
-                        file_name_portfolio = (f'eth-portfolio.pkl')
+                        file_name_portfolio = (f'{currency.lower()}-portfolio.pkl')
 
-                        if message_channel == 'user.portfolio.eth':
+                        if message_channel == f'user.portfolio.{currency.lower()}':
                             data_portfolio: list = message['params']['data']
                             log.debug(data_portfolio)
                             
