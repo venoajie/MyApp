@@ -247,9 +247,10 @@ class DeribitMarketDownloader:
                             log.warning (message_channel)
                             
                             if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
-                                log.debug (data_orders)
-                                data = pickling.read_data (my_path)
-                                log.debug (data)
+                                #log.debug (data_orders)
+                                log.debug (my_path)
+                                #data = pickling.read_data (f'{my_path}.pkl')
+                                #og.debug (data)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100)          
