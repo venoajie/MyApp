@@ -272,7 +272,7 @@ class DeribitMarketDownloader:
                             
             else:
                 log.info('WebSocket connection has broken.')
-                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', error, 10)
+                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 10)
                 system_tools.sleep_and_restart_program(1)
                 
     async def establish_heartbeat(self) -> None:
