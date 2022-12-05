@@ -261,7 +261,7 @@ class DeribitMarketDownloader:
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data, 10)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data, 600)          
                             except:
                                 continue
                             
