@@ -90,13 +90,14 @@ class DeribitMarketDownloader:
                 self.ws_refresh_auth()
                 )
 
-            currencies = ['ETH', 'BTC']
+            currencies = ['BTC','ETH']
             for currency in currencies:
                 file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                 my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
                 message: bytes = await self.websocket_client.recv()
                 instruments = pickling.read_data (my_path_instruments)
                 instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
+                log.critical(currency)
 
                 for instrument in instruments_name:
 
@@ -142,9 +143,6 @@ class DeribitMarketDownloader:
                     elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
                         continue
-
-                    if message['id'] == 402:
-                        pickling.replace_data('instruments.pkl', message)
                     
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
@@ -161,7 +159,7 @@ class DeribitMarketDownloader:
                         log.warning (index_price)
             
                         instruments = pickling.read_data (system_tools.provide_path_for_file (f'{currency.lower()}-instruments.pkl', "market_data", "deribit") )[0]#['result']
-                        log.warning (instruments)
+                        #log.warning (instruments)
                             
                         all_instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]   
                         log.warning (all_instruments_name)
@@ -184,7 +182,7 @@ class DeribitMarketDownloader:
                             for instrument in all_instruments_name:
                                 log.error (instrument)
                                 if portfolio != [] and index_price != []:
-                                    pass
+                                    continue
 
                         
                             

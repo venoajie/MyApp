@@ -94,8 +94,10 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
 if __name__ == "__main__":
 
     # DBT Client ID
-    resp = 'deribit_price_index.btc_usd'
+    resp = 'user.portfolio.eth'
+    curr = (resp)[-3:]#[:3]
     instrument = (resp)[-7:]
+    print (curr)
     print (instrument)
     instrument = (instrument)[:3]
     print (instrument)

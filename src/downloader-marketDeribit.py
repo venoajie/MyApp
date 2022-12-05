@@ -158,6 +158,20 @@ class DeribitMarketDownloader:
                 instruments = pickling.read_data (my_path_instruments)
                 instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
 
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.portfolio.{currency}'
+                        )
+                    )
+                
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.orders.future.{currency}.raw'
+                        )
+                    )
+                
                 for instrument in instruments_name:
                 
                     self.loop.create_task(
@@ -181,6 +195,7 @@ class DeribitMarketDownloader:
                                 ws_channel=f'deribit_price_index.{currency.lower()}_usd'
                                 )
                             )
+                
                 
             while self.websocket_client.open:
                 # Receive WebSocket messages
@@ -222,17 +237,23 @@ class DeribitMarketDownloader:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
             
-                        index_price = []
+                        
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             currency = (symbol_index)[:3]
 
+                            index_price = []
                             index_price = data_orders ['price']
                             file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             pickling.replace_data(my_path, index_price)
-                                                        
+                                                    
+                        try:
+                            index_price = pickling.read_data (system_tools.provide_path_for_file (f'{currency.lower()}-index.pkl', "market_data", "deribit"))[0]
+                        except:
+                            continue
+                            
                         instrument = "".join(list(message_channel) [5:][:-14])
                         currency = "".join(list(message_channel) [5:][:-14])[:3]
                         
@@ -259,7 +280,29 @@ class DeribitMarketDownloader:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data, 600)          
                             except:
                                 continue
+                        
+                        
+                        currency = "".join(list(message_channel))[-3:]
+                        if message_channel == f'user.portfolio.{currency.lower()}':
                             
+                            file_name = (f'{currency.lower()}-portfolio.pkl')
+
+                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            
+                            pickling.replace_data(my_path, index_price)
+                            
+                        currency = "".join(list(message_channel))[-7:][:3]
+                        log.critical (currency)
+                        log.error (message_channel)
+                        if message_channel == f'user.orders.future.{currency}.raw':
+                            log.debug(data_orders)
+                            
+                            file_name = (f'{currency.lower()}-orders')    
+                                                    
+                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            
+                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100000)
+                                                   
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
