@@ -167,20 +167,21 @@ class DeribitMarketDownloader:
                             )
                         )
                     
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation='subscribe',
-                            ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                    if instrument in ['ETH-PERPETUAL', 'BTC-PERPETUAL'] :
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation='subscribe',
+                                ws_channel=f'chart.trades.{instrument}.1'
+                                )
                             )
-                        )
+                            
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation='subscribe',
+                                ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                                )
+                            )
                 
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel=f'chart.trades.ETH-PERPETUAL.1'
-                    )
-                )
-            
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -232,7 +233,6 @@ class DeribitMarketDownloader:
                         if message_channel == f'deribit_price_index.{currency.lower()}_usd':
 
                             index_price = data_orders ['price']
-                            log.critical (index_price)
                             file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             pickling.replace_data(my_path, index_price)
@@ -244,28 +244,24 @@ class DeribitMarketDownloader:
 
                             file_name = (f'{instrument.lower()}-ordBook')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                            log.warning (message_channel)
                             
-                            if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
-                                #log.debug (data_orders)
-                                log.debug (my_path)
-                                #data = pickling.read_data (f'{my_path}.pkl')
-                                #og.debug (data)
-
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10)          
                             except:
                                 continue        
                             
-                        if message_channel == 'chart.trades.ETH-PERPETUAL.1':
+                                                        
+                        instrument = "".join(list(message_channel) [13:][:-2])
+                        currency = "".join(list(message_channel) [13:][:-2])[:3]
+                        if message_channel == f'chart.trades.{instrument}.1':
 
                             data : list = message 
                             
-                            file_name = (f'eth-perpetual-ohlc-1m')                            
+                            file_name = (f'{instrument.lower()}-ohlc-1m')                            
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data, 10000)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data, 10)          
                             except:
                                 continue
                             
