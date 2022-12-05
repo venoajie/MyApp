@@ -246,7 +246,7 @@ class DeribitMarketDownloader:
                             log.warning (my_path)
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10000)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100)          
                             except:
                                 continue        
                             
