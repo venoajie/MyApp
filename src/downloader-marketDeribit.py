@@ -43,9 +43,9 @@ async def call_api(curr, msg):
             response = await websocket.recv()
             response: dict = orjson.loads(response)
             response_data: dict = response ['result']
-            log.info (curr)
-            log.info (msg)
-            log.info (response_data)
+            #log.info (curr)
+            #log.info (msg)
+            #log.info (response_data)
 
             if response['id'] == 7617:
                 file_name = (f'{curr.lower()}-instruments.pkl')
@@ -239,11 +239,15 @@ class DeribitMarketDownloader:
                                                         
                         instrument = "".join(list(message_channel) [5:][:-14])
                         currency = "".join(list(message_channel) [5:][:-14])[:3]
+                        
                         if message_channel == f'book.{instrument}.none.20.100ms':
 
                             file_name = (f'{instrument.lower()}-ordBook')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                            log.warning (my_path)
+                            log.warning (message_channel)
+                            
+                            if message_channel == 'book.BTC-PERPETUAL.none.20.100ms':
+                                log.debug (data_orders)
 
                             try:
                                 pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100)          
