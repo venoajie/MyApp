@@ -36,18 +36,36 @@ def read_data (file_name: str)-> None:
 
     try:
         with open(file_name,'rb') as handle:
-            scores = pickle.load(handle)
-            return scores
+            read_pickle = pickle.load(handle)
+            return read_pickle
     except:
         return []
 
-def replace_data (file_name: str, data: dict)-> None:
+
+def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
 
     with open(file_name,'wb') as handle:
-        pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+        if isinstance(data, dict):
+            pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+        if isinstance(data, list):
+            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+def replace_data (file_name: str, data: dict)-> None:
+
+    """
+    """
+
+    dump_data_as_list (file_name, data)
+    #with open(file_name,'wb') as handle:
+    #        
+    #    if isinstance(data, dict):
+    #        pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+    #    if isinstance(data, list):
+    #        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: int)-> None:
 
@@ -72,8 +90,10 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
 
             result: list = [o for o in data if o['timestamp'] not in filtered_timestamps ]
             
-            with open(file_name_pkl,'wb') as handle:
-                pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            dump_data_as_list (file_name_pkl, result)
+            
+            #with open(file_name_pkl,'wb') as handle:
+            #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
     if 'params' in data_list:
 
@@ -88,18 +108,20 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
             filtered_timestamps =  (sorted_data) [max_qty:]
 
             result: list = [o for o in data if o['tick'] not in filtered_timestamps ]
-            with open(file_name_pkl,'wb') as handle:
-                pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            dump_data_as_list (file_name_pkl, result)
+
+            #with open(file_name_pkl,'wb') as handle:
+            #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 if __name__ == "__main__":
 
     # DBT Client ID
-    resp = 'user.portfolio.eth'
-    curr = (resp)[-3:]#[:3]
-    instrument = (resp)[-7:]
-    print (curr)
+    resp = 'user.trades.future.ETH.100ms'
+    #curr = (resp)[-3:]#[:3]
+    instrument = (resp)[-9:][:3]
     print (instrument)
-    instrument = (instrument)[:3]
+    instrument = (instrument)
     print (instrument)
  
     try:

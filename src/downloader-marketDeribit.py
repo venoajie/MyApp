@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, formula, system_tools
 from configuration import id_numbering
+import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -28,8 +29,8 @@ load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
-    return {'client_id': os.environ.get('client_id'),
-            'client_secret': os.environ.get('client_secret')
+    return {'client_id': os.environ.get('client_id_test'),
+            'client_secret': os.environ.get('client_secret_test')
             }
 none_data = [None, [], '0.0', 0]
     
@@ -43,15 +44,13 @@ async def call_api(curr, msg):
             response = await websocket.recv()
             response: dict = orjson.loads(response)
             response_data: dict = response ['result']
-            #log.info (curr)
-            #log.info (msg)
-            #log.info (response_data)
 
             if response['id'] == 7617:
                 file_name = (f'{curr.lower()}-instruments.pkl')
                 my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                pickling.replace_data(my_path, response_data)       
-                                    
+
+                pickling.replace_data(my_path, response_data)  
+                                          
             if response['id'] == 7538:
                 file_name = (f'currencies.pkl')
                 my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
@@ -154,10 +153,11 @@ class DeribitMarketDownloader:
             for currency in currencies:
                 file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                 my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                message: bytes = await self.websocket_client.recv()
                 instruments = pickling.read_data (my_path_instruments)
-                instruments_name: list =  [o['instrument_name'] for o in instruments[0]]
-
+                instruments_name: list =  [o['instrument_name'] for o in instruments ]
+                
+                instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
+                                            
                 self.loop.create_task(
                     self.ws_operation(
                         operation='subscribe',
@@ -169,6 +169,13 @@ class DeribitMarketDownloader:
                     self.ws_operation(
                         operation='subscribe',
                         ws_channel=f'user.orders.future.{currency}.raw'
+                        )
+                    )
+                
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.trades.future.{currency.upper()}.100ms'
                         )
                     )
                 
@@ -196,14 +203,11 @@ class DeribitMarketDownloader:
                                 )
                             )
                 
-                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                #log.error (message)
-                
                 
                 if 'id' in list(message):
                     
@@ -237,26 +241,17 @@ class DeribitMarketDownloader:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
             
-                        
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             currency = (symbol_index)[:3]
-
-                            index_price = []
-                            index_price = data_orders ['price']
+                            
                             file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                            pickling.replace_data(my_path, index_price)
-                                                    
-                        try:
-                            index_price = pickling.read_data (system_tools.provide_path_for_file (f'{currency.lower()}-index.pkl', "market_data", "deribit"))[0]
-                        except:
-                            continue
-                            
+                            pickling.replace_data(my_path, data_orders)
+                             
                         instrument = "".join(list(message_channel) [5:][:-14])
                         currency = "".join(list(message_channel) [5:][:-14])[:3]
-                        
                         if message_channel == f'book.{instrument}.none.20.100ms':
 
                             file_name = (f'{instrument.lower()}-ordBook')
@@ -281,12 +276,8 @@ class DeribitMarketDownloader:
                             except:
                                 continue
                         
-                        
                         currency = "".join(list(message_channel))[-3:]
-                        log.critical (currency)
-                        log.error (message_channel)
                         if message_channel == f'user.portfolio.{currency.lower()}':
-                            log.debug (data_orders)
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
 
@@ -295,9 +286,7 @@ class DeribitMarketDownloader:
                             pickling.replace_data(my_path, data_orders)
                             
                         currency = "".join(list(message_channel))[-7:][:3]
-                        #log.critical (currency)
                         if message_channel == f'user.orders.future.{currency}.raw':
-                            log.debug(data_orders)
                             
                             file_name = (f'{currency.lower()}-orders')    
                                                     
@@ -305,6 +294,24 @@ class DeribitMarketDownloader:
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100000)
                                                    
+                        currency = "".join(list(message_channel))[-3:]
+                        if message_channel == f'user.portfolio.{currency.lower()}':
+                            
+                            file_name = (f'{currency.lower()}-portfolio.pkl')
+
+                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            
+                            pickling.replace_data(my_path, data_orders)
+                            
+                        currency = "".join(list(message_channel))[-9:][:3]
+
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':
+                            
+                            file_name = (f'{currency.lower()}-myTrades')    
+                                                    
+                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            
+                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
@@ -439,6 +446,10 @@ def main ():
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
+    
+    ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
     
     try:
 

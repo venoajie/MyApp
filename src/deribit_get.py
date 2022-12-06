@@ -35,9 +35,9 @@ async def main(
         ) -> None:
 
     # DBT LIVE RESToverHTTP Connection URL
-    # connection_url: str = 'https://www.deribit.com/api/v2/'
     # DBT TEST RESToverHTTP Connection URL
     connection_url: str = 'https://test.deribit.com/api/v2/'
+    connection_url: str = 'https://www.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
     id = id_numbering.id(endpoint, endpoint)
@@ -194,7 +194,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
             client_id=client_id,
             client_secret=client_secret,
             )
-    return result ['result']
+    return result #['result']
         
 def get_position_ (client_id, client_secret, endpoint, currency):
         
