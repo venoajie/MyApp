@@ -18,14 +18,12 @@ from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, formula, system_tools
+from utils import pickling, formula, system_tools, string_modification
 from configuration import id_numbering
 import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
-
-
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
@@ -157,27 +155,6 @@ class DeribitMarketDownloader:
                 instruments_name: list =  [o['instrument_name'] for o in instruments ]
                 
                 instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
-                                            
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'user.portfolio.{currency}'
-                        )
-                    )
-                
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'user.orders.future.{currency}.raw'
-                        )
-                    )
-                
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'user.trades.future.{currency.upper()}.100ms'
-                        )
-                    )
                 
                 for instrument in instruments_name:
                 
@@ -243,15 +220,22 @@ class DeribitMarketDownloader:
             
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
+                        currency = string_modification.extract_for_currency (message_channel)
+                        open_orders_hedging:list = [o for o in open_orders if o['label'] == 'hedging spot'] 
+                        log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             currency = (symbol_index)[:3]
                             
                             file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                            log.critical (data_orders)
                             pickling.replace_data(my_path, data_orders)
+                            read=pickling.read_data (my_path)
+                            log.info (my_path)
+                            log.critical (read)
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
-                        currency = "".join(list(message_channel) [5:][:-14])[:3]
+                        
                         if message_channel == f'book.{instrument}.none.20.100ms':
 
                             file_name = (f'{instrument.lower()}-ordBook')
@@ -263,55 +247,16 @@ class DeribitMarketDownloader:
                                 continue        
                                                         
                         instrument = "".join(list(message_channel) [13:][:-2])
-                        currency = "".join(list(message_channel) [13:][:-2])[:3]
                         if message_channel == f'chart.trades.{instrument}.1':
-
-                            data : list = message 
                             
                             file_name = (f'{instrument.lower()}-ohlc-1m')                            
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data, 600)          
+                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 600)          
                             except:
                                 continue
                         
-                        currency = "".join(list(message_channel))[-3:]
-                        if message_channel == f'user.portfolio.{currency.lower()}':
-                            
-                            file_name = (f'{currency.lower()}-portfolio.pkl')
-
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
-                            pickling.replace_data(my_path, data_orders)
-                            
-                        currency = "".join(list(message_channel))[-7:][:3]
-                        if message_channel == f'user.orders.future.{currency}.raw':
-                            
-                            file_name = (f'{currency.lower()}-orders')    
-                                                    
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
-                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100000)
-                                                   
-                        currency = "".join(list(message_channel))[-3:]
-                        if message_channel == f'user.portfolio.{currency.lower()}':
-                            
-                            file_name = (f'{currency.lower()}-portfolio.pkl')
-
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
-                            pickling.replace_data(my_path, data_orders)
-                            
-                        currency = "".join(list(message_channel))[-9:][:3]
-
-                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':
-                            
-                            file_name = (f'{currency.lower()}-myTrades')    
-                                                    
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
-                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)

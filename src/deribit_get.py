@@ -36,8 +36,8 @@ async def main(
 
     # DBT LIVE RESToverHTTP Connection URL
     # DBT TEST RESToverHTTP Connection URL
-    connection_url: str = 'https://test.deribit.com/api/v2/'
     connection_url: str = 'https://www.deribit.com/api/v2/'
+    connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
     id = id_numbering.id(endpoint, endpoint)
@@ -124,19 +124,6 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
             )
     return result 
 
-async def  get_index (index_name):
-
-    endpoint = "public/get_index_price?index_name=eth_usd"
-    result = await main(
-            endpoint=endpoint,
-            params={
-                "index_name": index_name,
-                }
-            )
-    #print(result)
-    return {'index_price': result ['result']['index_price'], 
-            'estimated_delivery_price': result ['result']['estimated_delivery_price']
-            }
 
 async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
     params =  {
@@ -151,13 +138,11 @@ async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, curre
             )
     return result 
 
-async def  get_tradingview_chart_data (client_id, client_secret, endpoint):
+
+async def  get_cancel_order_byOrderId(client_id, client_secret, endpoint, order_id):
     params =  {
-    "instrument_name" : "ETH-PERPETUAL",
-    "start_timestamp" : 1554373800000,
-    "end_timestamp" : 1554376800000,
-    "resolution" : "30"
-  }
+                "order_id": order_id
+                }
     
     result = await main(
             endpoint=endpoint,
@@ -166,7 +151,6 @@ async def  get_tradingview_chart_data (client_id, client_secret, endpoint):
             client_secret=client_secret,
             )
     return result 
-
 
 async def get_position (client_id, client_secret, endpoint, currency):
         
@@ -214,21 +198,5 @@ def get_position_ (client_id, client_secret, endpoint, currency):
 
 if __name__ == "__main__":
     # Logging
-    logging.basicConfig(
-        level='INFO'.upper(),
-        format='%(asctime)s | %(levelname)s | %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-        )
-
-    # DBT RESToverHTTP Endpoint + Query String Parameter(s)
-    endpoint: str = 'private/buy'
-
-    # DBT Client ID
-    client_id: str = os.environ.get("client_id")
-    # DBT Client Secret
-    client_secret: str = os.environ.get("client_secret")
-    send_order(client_id, client_secret, endpoint, "ETH-PERPETUAL", 'market', 10,)
-
-    endpoint: str = 'private/get_positions'
-    get_position(client_id, client_secret, endpoint, "ETH")
+    pass
     

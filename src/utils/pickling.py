@@ -114,12 +114,13 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
             #with open(file_name_pkl,'wb') as handle:
             #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
+        
 if __name__ == "__main__":
 
     # DBT Client ID
     resp = 'user.trades.future.ETH.100ms'
     #curr = (resp)[-3:]#[:3]
-    instrument = (resp)[-9:][:3]
+    instrument = extract_for_currency (resp)
     print (instrument)
     instrument = (instrument)
     print (instrument)

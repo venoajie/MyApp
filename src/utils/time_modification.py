@@ -2,14 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import calendar
-from functools import lru_cache
-import time
 from datetime import datetime, timedelta, timezone
-from collections import defaultdict
-from functools import wraps
-from unittest import result
-from loguru import logger as log
-from unsync import unsync
 
 none_data=[None, 0, []]
 
@@ -60,6 +53,7 @@ def convert_time_to_unix (time)-> int:
                 
             Args:
                 param1 (Date): Waktu dalam format '%Y-%m-%d %H:%M:%S.%f'
+                one minute = 60000
             
             Return and rtype: 
                 waktu dalam format UNIX (microseconds) utc/jkt --> int
