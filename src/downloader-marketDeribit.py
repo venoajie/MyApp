@@ -224,7 +224,7 @@ class DeribitMarketDownloader:
 
                         log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            currency = (symbol_index)[:3]
+                            #currency = (symbol_index)[:3]
                             
                             file_name = (f'{currency.lower()}-index.pkl')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
