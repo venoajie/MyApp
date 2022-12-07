@@ -8,7 +8,8 @@ import os
 from os.path import join, dirname
 import json
 from functools import lru_cache
-
+import numpy as np
+import pandas as pd
 ##
 # installed
 import websockets
@@ -33,53 +34,6 @@ def parse_dotenv()->dict:
 none_data = [None, [], '0.0', 0]
     
     
-async def call_api(curr, msg):
-    async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
-        
-        #await asyncio.gather(*[self.call_api(json.dumps(item)) for item in url ])
-        await websocket.send(msg)
-        while websocket.open:
-            response = await websocket.recv()
-            response: dict = orjson.loads(response)
-            response_data: dict = response ['result']
-
-            if response['id'] == 7617:
-                file_name = (f'{curr.lower()}-instruments.pkl')
-                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-
-                pickling.replace_data(my_path, response_data)  
-                                          
-            if response['id'] == 7538:
-                file_name = (f'currencies.pkl')
-                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                pickling.replace_data(my_path, response_data)   
-                
-currencies = ['ETH', 'BTC']
-for curr in currencies:
-
-    msg = \
-        {
-        "jsonrpc" : "2.0",
-        "id" : 7617,
-        "method" : "public/get_instruments",
-        "params" : {
-            "currency" : f"{curr}",
-            "kind" : "future",
-            "expired" : False
-        }
-        }
-    msg_curr = \
-        {
-        "jsonrpc" : "2.0",
-        "id" : 7538,
-        "method" : "public/get_currencies",
-        "params" : {
-
-        }
-        }    
-    url =  [msg, msg_curr] 
-    
-    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
     
 class DeribitMarketDownloader:
     
@@ -147,38 +101,6 @@ class DeribitMarketDownloader:
                 self.ws_refresh_auth()
                 )              
 
-            currencies = ['ETH', 'BTC']
-            for currency in currencies:
-                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                instruments = pickling.read_data (my_path_instruments)
-                instruments_name: list =  [o['instrument_name'] for o in instruments ]
-                
-                instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
-                
-                for instrument in instruments_name:
-                
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation='subscribe',
-                            ws_channel=f'book.{instrument}.none.20.100ms'
-                            )
-                        )
-                    
-                    if instrument in ['ETH-PERPETUAL', 'BTC-PERPETUAL'] :
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation='subscribe',
-                                ws_channel=f'chart.trades.{instrument}.1'
-                                )
-                            )
-                            
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation='subscribe',
-                                ws_channel=f'deribit_price_index.{currency.lower()}_usd'
-                                )
-                            )
                 
             while self.websocket_client.open:
                 # Receive WebSocket messages
@@ -213,46 +135,50 @@ class DeribitMarketDownloader:
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
 
-                if 'params' in list(message):
-                    
-                    if message['method'] != 'heartbeat':
-                        message_channel = message['params']['channel']
-            
-                        symbol_index =  (message_channel)[-7:]
-                        data_orders: list = message['params']['data']
-                        currency = string_modification.extract_for_currency (message_channel)
 
-                        log.critical (currency)
-                        if message_channel == f'deribit_price_index.{symbol_index}':
-                            currency = (symbol_index)[:3]
-                            
-                            file_name = (f'{currency.lower()}-index.pkl')
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-
-                            pickling.replace_data(my_path, data_orders)
-                             
-                        instrument = "".join(list(message_channel) [5:][:-14])
-                        if message_channel == f'book.{instrument}.none.20.100ms':
-
-                            file_name = (f'{instrument.lower()}-ordBook')
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-                            
-                            try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10)          
-                            except:
-                                continue        
-                                                        
-                        instrument = "".join(list(message_channel) [13:][:-2])
-                        if message_channel == f'chart.trades.{instrument}.1':
-                            
-                            file_name = (f'{instrument.lower()}-ohlc-1m')                            
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-
-                            try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 600)          
-                            except:
-                                continue
+                    currencies = ['ETH', 'BTC']
+                    for currency in currencies:
+                        file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                        instruments = pickling.read_data (my_path_instruments)
+                        instruments_name: list =  [o['instrument_name'] for o in instruments ]
                         
+                        instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
+                        
+                        for instrument in instruments_name:
+                
+                            file_name = (f'{instrument.lower()}-ohlc-1m.pkl')   
+                            my_path_ordBook = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                            ordBook = pickling.read_data (my_path_ordBook)
+                            
+                            
+                            if ordBook != []:
+                                df = pd.DataFrame(ordBook)
+                            
+                                # Column name standardization
+                                df	= 	df.rename(columns={'tick':'date','open': 'open','high': 'high', 'low': 'low',
+                                                        'close': 'close','volume': 'volume','cost': 'cost' })
+                                
+                                # Filter relevant data
+                                df = df.loc[:,['date', 'open', 'high', 'low', 'close',  'volume', 'cost']]
+
+                                for col in ('open', 'high', 'low', 'close', 'volume', 'cost'):
+                                    df[col] = df[col].astype(np.float32)
+                                    
+                                log.critical (instrument)
+                                print (df)
+                                # Set index
+                                tsidx = pd.DatetimeIndex(pd.to_datetime(df['date'], unit='ms'), dtype='datetime64[ns]')
+                                df.set_index(df['date'], inplace=True)
+                                df = df.drop(columns=['date'])
+                                df.index.names = ['date']
+                                df = df.iloc[::-1].reset_index()       
+
+                                if 'ETH' in instrument:
+                                    log.error (df)
+                                if 'BTC' in instrument:
+                                    log.warning (df)       
+                                                         
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
