@@ -150,8 +150,7 @@ class DeribitMarketDownloader:
                             file_name = (f'{instrument.lower()}-ohlc-1m.pkl')   
                             my_path_ordBook = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             ordBook = pickling.read_data (my_path_ordBook)
-                            instruments_perpetual = ['ETH-PERPETUAL', 'BTC-PEREPTUAL']
-                            
+                            instruments_perpetual = ['ETH-PERPETUAL', 'BTC-PERPETUAL']
                             
                             if ordBook != [] and instrument in instruments_perpetual:
                                 df = pd.DataFrame(ordBook)
