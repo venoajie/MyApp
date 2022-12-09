@@ -9,7 +9,7 @@ import pandas as pd
 from loguru import logger as log
 
 # user defined formula 
-from utils import pickling, system_tools
+from utils import pickling, system_tools, some_statistics
 
 def transform_result_to_data_frame (data: object):
 
@@ -45,12 +45,15 @@ for instrument in instruments_perpetual:
     my_path_ordBook = system_tools.provide_path_for_file (file_name, "market_data", "deribit")    
     ordBook = pd.read_pickle (my_path_ordBook)
     df = transform_result_to_data_frame(ordBook)
+    chechk_outliers = some_statistics.check_outliers (df,'costUsd')
+    outliers = some_statistics.outlier (df,'costUsd')
 
-    print (df)
+    log.critical (chechk_outliers)
+    log.critical (outliers)
     # Set index
 
     if 'ETH' in instrument:
-        log.error (df)
+        pass#log.error (df)
     if 'BTC' in instrument:
-        log.warning (df)       
+        pass#log.warning (df)       
             

@@ -11,6 +11,9 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
+start:
+	python3 src/downloader-marketDeribit.py
+	
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
