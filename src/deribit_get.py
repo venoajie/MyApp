@@ -30,15 +30,15 @@ load_dotenv(dotenv_path)
 async def main(
     endpoint: str,
     params: str,
-    connection_url: str =None,
+    connection_url: str,
     client_id: str =None,
     client_secret: str=None,
         ) -> None:
 
     # DBT LIVE RESToverHTTP Connection URL
     # DBT TEST RESToverHTTP Connection URL
-    connection_url: str = 'https://www.deribit.com/api/v2/'
-    connection_url: str = 'https://test.deribit.com/api/v2/'
+    #connection_url: str = 'https://www.deribit.com/api/v2/'
+    #connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
     id = id_numbering.id(endpoint, endpoint)
