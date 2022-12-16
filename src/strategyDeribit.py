@@ -238,7 +238,7 @@ class strategyDeribit:
                             open_orders_deltaTime = now_time_unix - open_orders_lastUpdateTStamp_min                       
                             
                             if open_orders_deltaTime > one_minute:
-                                await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_lastUpdateTStamp_min_Id)
+                                await deribit_rest.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             
