@@ -86,19 +86,15 @@ async def send_order_limit (connection_url: str,
                             amount, 
                             price, 
                             label: str, 
-                            valid_until: int =None,
+                            valid_until: int = False,
                             type: str ='limit',
                             reduce_only: bool = False, 
                             post_only: bool = True, 
                             reject_post_only: bool =True
                             ):
         
-    if side == 'buy':
-        endpoint: str = 'private/buy'
-    if side == 'sell'  :
-        endpoint: str = 'private/sell'
         
-    if valid_until== None:
+    if valid_until == False:
         params =  {
                 "instrument_name": instrument,
                 "amount": amount,
@@ -121,6 +117,12 @@ async def send_order_limit (connection_url: str,
                 "reject_post_only": reject_post_only,
                 "valid_until": valid_until,
                 }
+    print (valid_until)    
+    print (params)    
+    if side == 'buy':
+        endpoint: str = 'private/buy'
+    if side == 'sell'  :
+        endpoint: str = 'private/sell'
         
     result = await main(
             endpoint=endpoint,
