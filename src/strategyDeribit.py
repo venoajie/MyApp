@@ -413,6 +413,15 @@ class DeribitMarketDownloader:
 
         return index_price * equity
     
+    async def open_orders (self, currency) -> float:
+        """
+        """
+
+        open_ordersREST: list = await deribit_rest.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
+        open_ordersREST: list = open_ordersREST ['result']
+        open_orders: list = open_orders_management.MyOrders (open_ordersREST)
+                        
+        return open_orders_management.MyOrders (open_ordersREST)
     
     async def ws_operation(
         self,
