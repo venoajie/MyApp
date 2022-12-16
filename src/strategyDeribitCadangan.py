@@ -291,7 +291,7 @@ class strategyDeribit:
                                         open_orders_byBot: list = open_orders.my_orders_api()
                                         
                                         # cancel if orders may result to over-hedged
-                                        if spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
+                                        if False:#spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
                                             open_orders_Hedging_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
                                             open_orders_Hedging_lastUpdateTStamp_min = min(open_orders_Hedging_lastUpdateTStamps)
                                             open_orders_Hedging_lastUpdateTStamp_minId = ([o['order_id'] for o in open_orders_byBot if o['last_update_timestamp'] == open_orders_Hedging_lastUpdateTStamp_min])[0]
