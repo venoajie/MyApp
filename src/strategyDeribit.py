@@ -171,6 +171,8 @@ class strategyDeribit:
                         message_channel = message['params']['channel']
             
                         data_orders: list = message['params']['data']
+                        log.info (data_orders)
+                
 
                         currency = string_modification.extract_texts_for_currency (message_channel)
                         
