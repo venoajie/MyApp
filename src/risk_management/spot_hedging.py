@@ -5,7 +5,7 @@ none_data = [None, [], '0.0', 0]
 
 def summing_size_open_orders_basedOn_label(
     open_orders_byBot: list,
-    label: str = 'hedging spot'
+    label: str 
     ) -> int:
     
     '''
@@ -19,7 +19,7 @@ def summing_size_open_orders_basedOn_label(
     except:
         open_orders_hedging = open_orders_byBot ['result']
 
-    return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if o['label'] == label])
+    return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if label in o['label'] ])
 
 
 def compute_minimum_hedging_size (
@@ -69,7 +69,7 @@ def is_spot_hedged_properly (
     remain_unhedged: int = int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size + actual_hedging_size )
 
     # check open orders related to hedging, to ensure previous open orders has completely consumed
-    open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot)
+    open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
     
     size_pct_qty = int ((10/100 * remain_unhedged ))
         

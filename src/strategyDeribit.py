@@ -281,7 +281,7 @@ class DeribitMarketDownloader:
                                                                                      min_trade_amount,
                                                                                      contract_size)
                                 spot_not_hedged_properly = spot_hedged ['spot_was_hedged_properly']
-                                log.info(f'{spot_not_hedged_properly=}')
+                                log.critical(f'{spot_not_hedged_properly=}')
                                 
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                 instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
