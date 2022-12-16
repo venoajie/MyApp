@@ -80,17 +80,24 @@ async def main(
             return response
 
 
-async def send_order_limit (client_id, 
-                      client_secret, 
-                      endpoint, 
-                      instrument, 
-                      amount, 
-                      price, 
-                      label: str, 
-                      type: str ='limit', 
-                      reduce_only: bool = False, 
-                      post_only: bool = True, 
-                      reject_post_only: bool =True):
+async def send_order_limit (connection_url: str,
+                            client_id,
+                            client_secret,
+                            side: str, 
+                            endpoint, 
+                            instrument, 
+                            amount, 
+                            price, 
+                            label: str, 
+                            type: str ='limit',
+                            reduce_only: bool = False, 
+                            post_only: bool = True, 
+                            reject_post_only: bool =True):
+        
+    if side == 'buy':
+        endpoint: str = 'private/buy'
+    if side == 'sell'  :
+        endpoint: str = 'private/sell'
         
     params =  {
                 "instrument_name": instrument,
@@ -105,10 +112,11 @@ async def send_order_limit (client_id,
         
 
     
-    print (params)
+    #print (params)
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )

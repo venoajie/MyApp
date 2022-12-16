@@ -310,9 +310,9 @@ class strategyDeribit:
                                         await deribit_get.send_order_limit (self.connection_url,
                                                                             client_id, 
                                                                             client_secret, 
-                                                                            endpoint_short, 
+                                                                            'sell', 
                                                                             instrument, 
-                                                                            hedging_size, 
+                                                                            spot_hedged ['hedging_size'], 
                                                                             best_ask_prc,
                                                                             label)
                                                         
