@@ -98,6 +98,7 @@ async def send_order_limit (connection_url: str,
     if side == 'sell'  :
         endpoint: str = 'private/sell'
         
+    print (connection_url)
     params =  {
                 "instrument_name": instrument,
                 "amount": amount,
