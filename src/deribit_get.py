@@ -172,7 +172,7 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             )
     return result 
 
-async def get_position (connection_url: str, client_id, client_secret, currency):
+async def get_position (connection_url: str, client_id, client_secret, endpoint, currency):
         
     params =  {"currency": currency}
     
@@ -193,6 +193,7 @@ async def get_position (connection_url: str, client_id, client_secret, currency)
     #    'testnet': True
     #    }
     result = await main(
+            endpoint=endpoint,
             params=params,
             connection_url=connection_url,
             client_id=client_id,
@@ -206,6 +207,7 @@ def get_position_ (client_id, client_secret, endpoint, currency):
                 "currency": currency
                 }
     
+    endpoint: str = 'private/get_positions'
     loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
     loop.run_until_complete(
         main(
