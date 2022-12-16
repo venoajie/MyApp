@@ -307,13 +307,14 @@ class strategyDeribit:
                                     if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
                                         
-                                        await deribit_get.send_order_limit (client_id, 
-                                                                    client_secret, 
-                                                                    endpoint_short, 
-                                                                    instrument, 
-                                                                    hedging_size, 
-                                                                    best_ask_prc, 
-                                                                    label)
+                                        await deribit_get.send_order_limit (self.connection_url,
+                                                                            client_id, 
+                                                                            client_secret, 
+                                                                            endpoint_short, 
+                                                                            instrument, 
+                                                                            hedging_size, 
+                                                                            best_ask_prc,
+                                                                            label)
                                                         
                                         #open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
                                         #open_ordersREST = open_ordersREST ['result']
