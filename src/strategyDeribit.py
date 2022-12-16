@@ -238,7 +238,7 @@ class strategyDeribit:
                             open_orders_deltaTime = now_time_unix - open_orders_lastUpdateTStamp_min                       
                             
                             if open_orders_deltaTime > one_minute:
-                                await deribit_rest.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
+                                await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_lastUpdateTStamp_min_Id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             
@@ -321,22 +321,13 @@ class strategyDeribit:
                                         #open_ordersREST = open_ordersREST ['result']
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byBot: list = open_orders.my_orders_api()
-                                        log.critical (open_orders_byBot)
                                         open_orders_Hedging = ([o  for o in open_orders_byBot if o['label'] == "hedging spot"])
                                         open_orders_HedgingSum = sum([o['amount'] for o in open_orders_Hedging ])
-                                        log.critical (open_orders_HedgingSum)
-                                        log.debug (spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']))
-                                        # cancel if orders may result to over-hedged
-                                        if False:#spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
-                                            open_orders_Hedging_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
+                                        if open_orders_HedgingSum > hedging_size:
+                                            open_orders_Hedging_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_Hedging ])
                                             open_orders_Hedging_lastUpdateTStamp_min = min(open_orders_Hedging_lastUpdateTStamps)
                                             open_orders_Hedging_lastUpdateTStamp_minId = ([o['order_id'] for o in open_orders_byBot if o['last_update_timestamp'] == open_orders_Hedging_lastUpdateTStamp_min])[0]
-                                            
-                                            await deribit_rest.get_cancel_order_byOrderId (self.connection_url, 
-                                                                                          client_id, 
-                                                                                          client_secret, 
-                                                                                          open_orders_Hedging_lastUpdateTStamp_minId
-                                                                                          )
+                                            await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_Hedging_lastUpdateTStamp_minId)
                                             
             else:
                 log.info('WebSocket connection has broken.')
