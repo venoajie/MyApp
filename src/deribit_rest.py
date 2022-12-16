@@ -141,6 +141,17 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             )
     return result     
 
+
+async def  get_server_time (connection_url: str):
+    
+    endpoint: str = 'public/get_time?'
+    
+    result = await main(
+            endpoint=endpoint,
+            connection_url=connection_url
+            )
+    return result     
+
 async def get_position (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency}

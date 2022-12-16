@@ -293,12 +293,13 @@ class strategyDeribit:
                                     #if perpetual in instrument:
                                     if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
-                                        label = label_numbering.labelling ('open', 'hedging spot')
-                                        #log.debug (self.connection_url)
-                                        #log.debug (self.ws_connection_url)
-                                        now_utc = time_modification.convert_time_to_utc ()['utc_now']
-                                        three_minutes_from_now = time_modification.convert_time_to_unix (now_utc) + (1 * one_minute)
-                                        log.warning (three_minutes_from_now )
+                                        label = label_numbering.labelling ('open', 'hedging spot')                                        
+                                        
+                                        current_time = await deribit_get.get_server_time(self.connection_url)
+                                        current_server_time = current_time ['result']
+                                        three_minutes_from_now =  (current_server_time) + (1 * one_minute)
+                                        log.critical (current_time )
+                                        log.critical (three_minutes_from_now )
                                         
                                         await deribit_get.send_order_limit (self.connection_url,
                                                                             client_id, 
