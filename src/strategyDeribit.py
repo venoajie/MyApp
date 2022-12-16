@@ -301,8 +301,10 @@ class DeribitMarketDownloader:
                                                                     best_ask_prc, 
                                                                     label)
                                                         
-                                        open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
-                                        open_ordersREST = open_ordersREST ['result']
+                                        #open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
+                                        #open_ordersREST = open_ordersREST ['result']
+                                        open_orders: list = await self.open_orders (currency)
+                                        open_orders_byBot: list = open_orders.my_orders_api()
                                         open_orders_Hedging = ([o  for o in open_orders_byBot if o['label'] == "hedging spot"])
                                         open_orders_HedgingSum = sum([o['amount'] for o in open_orders_Hedging ])
                                         if open_orders_HedgingSum > hedging_size:
