@@ -97,7 +97,19 @@ async def send_order_limit (connection_url: str,
     if side == 'sell'  :
         endpoint: str = 'private/sell'
         
-    params =  {
+    if valid_until== None:
+        params =  {
+                "instrument_name": instrument,
+                "amount": amount,
+                "price": price,
+                "label": label,
+                "type": type,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
+                }
+    else:
+        params =  {
                 "instrument_name": instrument,
                 "amount": amount,
                 "price": price,
