@@ -30,6 +30,7 @@ load_dotenv(dotenv_path)
 async def main(
     endpoint: str,
     params: str,
+    connection_url: str =None,
     client_id: str =None,
     client_secret: str=None,
         ) -> None:
@@ -114,7 +115,7 @@ async def send_order_limit (client_id,
         
     return result 
     
-async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, instrument, type):
+async def  get_open_orders_byInstruments (connection_url, client_id, client_secret, endpoint, instrument, type):
     params =  {
                 "instrument_name": instrument,
                 "type": type,
@@ -123,13 +124,14 @@ async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, in
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )
     return result 
 
 
-async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
+async def  get_open_orders_byCurrency (connection_url, client_id, client_secret, endpoint, currency):
     params =  {
                 "currency": currency
                 }
@@ -137,6 +139,7 @@ async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, curre
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )

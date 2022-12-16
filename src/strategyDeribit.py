@@ -304,7 +304,7 @@ class strategyDeribit:
                                     log.warning (f'{perpetual in instrument}')
                                     
                                     #if perpetual in instrument:
-                                    if perpetual in instrument :
+                                    if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
                                         
                                         await deribit_get.send_order_limit (client_id, 
