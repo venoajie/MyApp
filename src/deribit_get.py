@@ -172,9 +172,10 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             )
     return result 
 
-async def get_position (connection_url: str, client_id, client_secret, endpoint, currency):
+async def get_position (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency}
+    endpoint: str = 'private/get_positions'
     
     #result_example = {
     #    'jsonrpc': '2.0', 
