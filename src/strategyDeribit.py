@@ -306,6 +306,7 @@ class strategyDeribit:
                                     #if perpetual in instrument:
                                     if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
+                                        label = label_numbering.labelling ('open', 'hedging spot')
                                         
                                         await deribit_get.send_order_limit (self.connection_url,
                                                                             client_id, 
