@@ -223,10 +223,10 @@ class DeribitMarketDownloader:
                         #open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
                         #open_ordersREST = open_ordersREST ['result']
                         #open_orders_byManual = [o for o in open_ordersREST if o['web'] == True]
-                        open_orders_byBot = [o for o in open_ordersREST if o['web'] == False ]
-                        open_orders_Hedging = ([o for o in open_orders_byBot if o['label'] == "hedging spot"])
+                        #open_orders_byBot = [o for o in open_ordersREST if o['web'] == False ]
+                        #open_orders_Hedging = ([o for o in open_orders_byBot if o['label'] == "hedging spot"])
                         #open_orders_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_byBot ])
-                        
+
                         one_minute = 60000
 
                         now_time = time_modification.convert_time_to_utc()['utc_now']
