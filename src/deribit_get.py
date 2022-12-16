@@ -86,11 +86,12 @@ async def send_order_limit (connection_url: str,
                             amount, 
                             price, 
                             label: str, 
+                            valid_until: int =None,
                             type: str ='limit',
                             reduce_only: bool = False, 
                             post_only: bool = True, 
-                            reject_post_only: bool =True, 
-                            valid_until: int =None):
+                            reject_post_only: bool =True
+                            ):
         
     if side == 'buy':
         endpoint: str = 'private/buy'

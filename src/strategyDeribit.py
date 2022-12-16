@@ -294,6 +294,9 @@ class strategyDeribit:
                                         label = label_numbering.labelling ('open', 'hedging spot')
                                         #log.debug (self.connection_url)
                                         #log.debug (self.ws_connection_url)
+                                        now_utc = time_modification.convert_time_to_utc ()['utc_now']
+                                        three_minutes_from_now = time_modification.convert_time_to_unix (now_utc) + (3 * one_minute)
+                                        log.warning (three_minutes_from_now )
                                         
                                         await deribit_get.send_order_limit (self.connection_url,
                                                                             client_id, 
@@ -302,7 +305,8 @@ class strategyDeribit:
                                                                             instrument, 
                                                                             spot_hedged ['hedging_size'], 
                                                                             best_ask_prc,
-                                                                            label)
+                                                                            label,
+                                                                            three_minutes_from_now)
                                         
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byBot: list = open_orders.my_orders_api()
