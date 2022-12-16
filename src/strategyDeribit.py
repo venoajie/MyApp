@@ -223,14 +223,8 @@ class strategyDeribit:
                         current_time = await deribit_get.get_server_time(self.connection_url)
                         current_server_time = current_time ['result']
                         log.error (open_orders_byBot not in none_data)
-
-                        #open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-                        #open_orders_lastUpdateTStamp_min_Id= ([o['order_id'] for o in open_orders_byBot \
-                        #    if o['last_update_timestamp'] == open_orders_lastUpdateTStamp_min])[0]
-                        #open_orders_deltaTime = current_server_time - open_orders_lastUpdateTStamp_min
-
-                            
-                        if open_orders_byBot not in none_data:
+                        
+                        if open_orders_byBot not in none_data and False:
                             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
                             open_orders_lastUpdateTStamp_min_Id= ([o['order_id'] for o in open_orders_byBot \
                                 if o['last_update_timestamp'] == open_orders_lastUpdateTStamp_min])[0]
