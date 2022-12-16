@@ -212,13 +212,19 @@ class DeribitMarketDownloader:
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
 
-                        endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
-                        open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
-                        open_ordersREST = open_ordersREST ['result']
-                        open_orders_byManual = [o for o in open_ordersREST if o['web'] == True]
+                        open_orders: list = await self.open_orders (currency)
+
+                        open_orders_byBot: list = open_orders.my_orders_api()
+
+                        open_orders_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
+                        
+                        #endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
+                        #open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
+                        #open_ordersREST = open_ordersREST ['result']
+                        #open_orders_byManual = [o for o in open_ordersREST if o['web'] == True]
                         open_orders_byBot = [o for o in open_ordersREST if o['web'] == False ]
                         open_orders_Hedging = ([o for o in open_orders_byBot if o['label'] == "hedging spot"])
-                        open_orders_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_byBot ])
+                        #open_orders_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_byBot ])
                         
                         one_minute = 60000
 
