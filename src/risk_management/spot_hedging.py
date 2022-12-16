@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-none_data = [None, [], '0.0', 0]
+
 
 
 def summing_size_open_orders_basedOn_label(
@@ -14,6 +14,7 @@ def summing_size_open_orders_basedOn_label(
 
     '''       
 
+    none_data = [None, [], '0.0', 0]
     try:
         open_orders_hedging = open_orders_byBot
     except:
@@ -72,8 +73,10 @@ def is_spot_hedged_properly (
     open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
     
     size_pct_qty = int ((10/100 * remain_unhedged ))
+
+    none_data = [None, [], '0.0', 0]
         
-    return {'spot_was_hedged_properly': open_orders_hedging_size in none_data and remain_unhedged > 0,
+    return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
             'hedging_size': remain_unhedged}
 
 def is_over_hedged (

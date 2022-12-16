@@ -262,15 +262,15 @@ class strategyDeribit:
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                 
                                 #! CHECK SPOT HEDGING
-                                spot_not_hedged_properly = False
+                                spot_was_unhedged = False
                                 spot_hedged = spot_hedging.is_spot_hedged_properly (instruments_with_rebates, 
                                                                                      position, 
                                                                                      open_orders_byBot, 
                                                                                      notional, 
                                                                                      min_trade_amount,
                                                                                      contract_size)
-                                spot_not_hedged_properly = spot_hedged ['spot_was_hedged_properly']
-                                log.critical(f'{spot_not_hedged_properly=}')
+                                spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+                                log.critical(f'{spot_was_unhedged=}')
                                 
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
 
@@ -281,7 +281,7 @@ class strategyDeribit:
                                 log.warning (f'{instrument}')
                                 log.warning (f'{open_orders_hedging_size}')
                         
-                                if spot_not_hedged_properly:
+                                if spot_was_unhedged:
                                     label: str = label_numbering.labelling ('open', 'hedging spot')
                                     perpetual = 'PERPETUAL'
                                     log.warning (f'{open_orders_hedging_size}')
@@ -292,8 +292,8 @@ class strategyDeribit:
                                     if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
                                         label = label_numbering.labelling ('open', 'hedging spot')
-                                        log.debug (self.connection_url)
-                                        log.debug (self.ws_connection_url)
+                                        #log.debug (self.connection_url)
+                                        #log.debug (self.ws_connection_url)
                                         
                                         await deribit_get.send_order_limit (self.connection_url,
                                                                             client_id, 
