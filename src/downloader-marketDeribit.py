@@ -20,7 +20,7 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification
 from configuration import id_numbering
-import deribit_get
+#import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -220,7 +220,7 @@ class DeribitMarketDownloader:
             
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
-                        currency = string_modification.extract_for_currency (message_channel)
+                        currency = string_modification.extract_texts_for_currency (message_channel)
 
                         log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':

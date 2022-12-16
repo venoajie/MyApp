@@ -11,8 +11,14 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
+download-market:
+	nohup python3 src/downloader-marketDeribit.py &
+	nohup python3 src/downloader-openInterest.py &
+
 start:
-	python3 src/downloader-marketDeribit.py
+	download-market
+	timeout 5:
+	nohup python3 src/strategyDeribit.py &
 	
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv

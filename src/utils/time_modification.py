@@ -42,10 +42,26 @@ def convert_time_to_utc (transaction_time: str= None, hours_diff_with_utc: float
     utc_p_jkt = datetime.strptime(utc_f_jkt,'%Y-%m-%d %H:%M:%S.%f')
 
     return {'utc_now':utc_p,
-            'utc_now_day_name':utc.strftime("%A"),
             'jkt_now':utc_p_jkt,
             'transaction_time':None if transaction_time == None else utc_p_transaction}
 
+def check_day_name (time: datetime)->str:
+
+    '''
+    check day name based on time given
+    '''    
+    # time in datetime format    
+    try:
+        
+        return time.strftime("%A")
+    
+    # time in text format
+    except:
+        # convert string to time format
+        time_in_time_format = datetime.strptime(time,'%Y-%m-%d %H:%M:%S.%f')
+        return time_in_time_format.strftime("%A")
+            
+    
 def convert_time_to_unix (time)-> int:
 
     '''  
@@ -82,10 +98,6 @@ def convert_time_to_unix (time)-> int:
         from loguru import logger as log
         print (f"{error}")
         print (traceback.format_exc())
-        
-
-    except Exception as error:
-        log.error ('formula', 'convert_time_to_unix', error, None)
                 
     return int((calendar.timegm(time.timetuple())*1000000+microsecs)/1000) 
 
@@ -120,3 +132,9 @@ def time_delta_between_two_times (start_time: str, end_time: str)-> float:
     return {'seconds': time_delta,
             'hours': time_delta/3600,
             'days': time_delta/3600/24}
+
+
+
+if __name__ == '__main__':
+    transaction_time = '2022-12-14 15:33:29.858518'
+    print (convert_time_to_unix(transaction_time))

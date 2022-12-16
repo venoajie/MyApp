@@ -7,9 +7,10 @@ import pandas as pd
 
 # installed
 from loguru import logger as log
+from market_understanding import some_statistics
 
 # user defined formula 
-from utils import pickling, system_tools, some_statistics
+from utils import pickling, system_tools
 
 def transform_result_to_data_frame (data: object):
 

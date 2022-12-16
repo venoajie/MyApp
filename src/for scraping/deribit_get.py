@@ -48,7 +48,6 @@ async def main(
                     "params": params
                     }    
 
-    print (payload)
 
     if client_id == None:
         async with aiohttp.ClientSession() as session:
@@ -101,10 +100,7 @@ async def send_order_limit (client_id,
                 "post_only": post_only,
                 "reject_post_only": reject_post_only,
                 }
-        
-
     
-    print (params)
     result = await main(
             endpoint=endpoint,
             params=params,

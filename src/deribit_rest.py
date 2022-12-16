@@ -1,43 +1,22 @@
-"""
-Description:
-    Deribit RESToverHTTP [POST] Asyncio Example.
-    - Authenticated request.
-Usage:
-    python3.9 dbt-post-authenticated-example.py
-Requirements:
-    - aiohttp >= 3.8.1
-"""
+# -*- coding: utf-8 -*-
 
 # built ins
-import asyncio
-import logging
 from typing import Dict
-import os
+
 # installed
 import aiohttp
 from aiohttp.helpers import BasicAuth
-from dotenv import load_dotenv
-from os.path import join, dirname
-from dataclassy import dataclass
 
 # user defined formula
 from configuration import id_numbering
 
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-
-
 async def main(
     endpoint: str,
     params: str,
+    connection_url: str =None,
     client_id: str =None,
     client_secret: str=None,
         ) -> None:
-
-    # DBT LIVE RESToverHTTP Connection URL
-    # DBT TEST RESToverHTTP Connection URL
-    connection_url: str = 'https://www.deribit.com/api/v2/'
-    connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
     id = id_numbering.id(endpoint, endpoint)
@@ -47,8 +26,6 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }    
-
-    print (payload)
 
     if client_id == None:
         async with aiohttp.ClientSession() as session:
@@ -78,18 +55,26 @@ async def main(
                 response: Dict = await response.json()
             return response
 
-
-async def send_order_limit (client_id, 
-                      client_secret, 
-                      endpoint, 
-                      instrument, 
-                      amount, 
-                      price, 
-                      label: str, 
-                      type: str ='limit', 
-                      reduce_only: bool = False, 
-                      post_only: bool = True, 
-                      reject_post_only: bool =True):
+async def send_order_limit (
+                            connection_url: str,
+                            client_id: str, 
+                            client_secret: str, 
+                            side: str, 
+                            instrument: str, 
+                            amount: float, 
+                            price: float, 
+                            label: str, 
+                            type: str ='limit', 
+                            reduce_only: bool = False, 
+                            post_only: bool = True, 
+                            reject_post_only: bool =True
+                            ):
+    
+    
+    if side == 'buy':
+        endpoint: str = 'private/buy'
+    if side == 'sell'  :
+        endpoint: str = 'private/sell'
         
     params =  {
                 "instrument_name": instrument,
@@ -101,64 +86,65 @@ async def send_order_limit (client_id,
                 "post_only": post_only,
                 "reject_post_only": reject_post_only,
                 }
+    
+    try:
         
-
-    
-    print (params)
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
+        print (params)
+        print (endpoint)
+        print (connection_url)
+        print (client_id)        
+        result = await main(
+                endpoint=endpoint,
+                params=params,
+                connection_url=connection_url,
+                client_id=client_id,
+                client_secret=client_secret,
+                )
+    except Exception as error:
+        print (error)
         
-    return result 
-    
-async def  get_open_orders_byInstruments (client_id, client_secret, endpoint, instrument, type):
-    params =  {
-                "instrument_name": instrument,
-                "type": type,
-                }
-    
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
     return result 
 
 
-async def  get_open_orders_byCurrency (client_id, client_secret, endpoint, currency):
+
+async def  get_open_orders_byCurrency (connection_url, client_id, client_secret, currency):
     params =  {
                 "currency": currency
                 }
     
+    endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
     result = await main(
-            endpoint=endpoint,
+            endpoint=endpoint_open_orders_currency,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )
     return result 
 
-
-async def  get_cancel_order_byOrderId(client_id, client_secret, endpoint, order_id):
+async def  get_cancel_order_byOrderId(connection_url: str,
+                                      client_id: str, 
+                                      client_secret: str, 
+                                      order_id: int):
     params =  {
                 "order_id": order_id
                 }
     
+    endpoint: str = 'private/cancel'
+    
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )
-    return result 
+    return result     
 
-async def get_position (client_id, client_secret, endpoint, currency):
+async def get_position (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency}
+    endpoint: str = 'private/get_positions'
     
     #result_example = {
     #    'jsonrpc': '2.0', 
@@ -179,26 +165,12 @@ async def get_position (client_id, client_secret, endpoint, currency):
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )
-    return result #['result']
+    return result     
         
-def get_position_ (client_id, client_secret, endpoint, currency):
-        
-    params =  {
-                "currency": currency
-                }
-    
-    loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
-    loop.run_until_complete(
-        main(
-            endpoint=endpoint,
-            params=params,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-        )
 
 if __name__ == "__main__":
     # Logging

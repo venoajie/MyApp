@@ -19,8 +19,10 @@ from dotenv import load_dotenv
 
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification, time_modification
-from configuration import id_numbering
-import deribit_get,deribit_rest
+from configuration import id_numbering, label_numbering
+import deribit_rest
+from risk_management import spot_hedging
+from portfolio.deribit import open_orders_management
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -32,7 +34,7 @@ def parse_dotenv()->dict:
             }
 none_data = [None, [], '0.0', 0]
     
-class DeribitMarketDownloader:
+class strategyDeribit:
     
     '''
         
@@ -67,6 +69,7 @@ class DeribitMarketDownloader:
 
         # Instance Variables
         self.ws_connection_url: str = ws_connection_url
+        self.connection_url: str = 'https://www.deribit.com/api/v2/' if 'test' not in ws_connection_url else 'https://test.deribit.com/api/v2/'
         self.client_id: str = client_id
         self.client_secret: str = client_secret
         self.websocket_client: websockets.WebSocketClientProtocol = None
@@ -176,15 +179,16 @@ class DeribitMarketDownloader:
                         index_price = pickling.read_data(my_path)[0]['price']
                                                
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                        file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
                         my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                        my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
                         instruments = pickling.read_data (my_path_instruments)
+                        myTrades = pickling.read_data (my_path_myTrades)
+                        log.error (myTrades)
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        log.debug (instruments_name)
-                            
-                        endpoint_position: str = 'private/get_positions'
-                        endpointCancel: str = 'private/cancel'
-                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, currency.upper())
+                        
+                        position =  await deribit_rest.get_position(self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
                         #log.warning (position)
                                             
@@ -200,19 +204,17 @@ class DeribitMarketDownloader:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                             log.error (data_orders)
                             
-                            file_name = (f'{currency.lower()}-myTrades')    
+                            file_name = (f'{currency.lower()}-myTrades-open')    
                                                     
                             my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
+                            
+                        open_orders: list = await self.open_orders (currency)
 
-                        endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
-                        open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
-                        open_ordersREST = open_ordersREST ['result']
-                        open_orders_byManual = [o for o in open_ordersREST if o['web'] == True]
-                        open_orders_byBot = [o for o in open_ordersREST if o['web'] == False ]
-                        open_orders_Hedging = ([o for o in open_orders_byBot if o['label'] == "hedging spot"])
-                        open_orders_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_byBot ])
+                        open_orders_byBot: list = open_orders.my_orders_api()
+
+                        open_orders_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
                         
                         one_minute = 60000
 
@@ -225,7 +227,7 @@ class DeribitMarketDownloader:
                             open_orders_deltaTime = now_time_unix - open_orders_lastUpdateTStamp_min                       
                             
                             if open_orders_deltaTime > one_minute:
-                                await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_lastUpdateTStamp_min_Id)
+                                await deribit_rest.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             
@@ -237,7 +239,7 @@ class DeribitMarketDownloader:
                             
                             portfolio = pickling.read_data(my_path_portfolio)
                             equity = portfolio [0]['equity']
-                            notional = index_price * equity    
+                            notional = self.compute_notional_value (index_price , equity) 
                                 
                             for instrument in instruments_name:
                                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
@@ -253,47 +255,52 @@ class DeribitMarketDownloader:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                                min_hedged_size = notional / min_trade_amount * contract_size
+                                min_hedged_size = spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
-                                instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
-                                instrument_position_hedging = sum([o['size'] for o in position if o['instrument_name'] in instruments_with_rebates ])
-                                hedging_size = int(min_hedged_size if instrument_position_hedging == [] else min_hedged_size + instrument_position_hedging)
-                                open_orders_hedging:list = [o for o in open_ordersREST if o['label'] == 'hedging spot'] 
-                                open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
-                                #log.info(f'{position=}')
-                                endpoint_short: str = 'private/sell'
-                                endpoint_long: str = 'private/buy'
-                                log.warning (f'{instrument}')
-                                log.warning (f'{open_orders_hedging_size}')
+                                
+                                #! CHECK SPOT HEDGING
+                                spot_not_hedged_properly = False
+                                spot_hedged = spot_hedging.is_spot_hedged_properly (instruments_with_rebates, 
+                                                                                     position, 
+                                                                                     open_orders_byBot, 
+                                                                                     notional, 
+                                                                                     min_trade_amount,
+                                                                                     contract_size)
+                                spot_not_hedged_properly = spot_hedged ['spot_was_hedged_properly']
+                                log.info(f'{spot_not_hedged_properly=}')
                         
-                                if open_orders_hedging_size in none_data and hedging_size > 0:
-                                    label: str = 'hedging spot'
-                                    perpetual = 'PERPETUAL'
-                                    log.warning (f'{open_orders_hedging_size}')
-                                    
-                                    log.warning (f'{perpetual in instrument}')
-                                    
-                                    if perpetual in instrument:
-                                    #if instrument in instruments_with_rebates:
-                                        log.error (f'{instrument}')
-                                        
-                                        await deribit_get.send_order_limit (client_id, 
-                                                                    client_secret, 
-                                                                    endpoint_short, 
-                                                                    instrument, 
-                                                                    hedging_size, 
-                                                                    best_ask_prc, 
-                                                                    label)
+                                if spot_not_hedged_properly:
+                                    label = label_numbering.labelling ('open', 'hedging spot')
+                                    perpetual ="PERPETUAL"
+                                    log.warning(f'{label=} {len(label)=} {perpetual in instrument=}')
+                                    if 'PERPETUAL' in instrument:
+                                        size_pct = ((10/100 * spot_hedged ['hedging_size']))
+                                        await deribit_rest.send_order_limit (self.connection_url,
+                                                                            client_id, 
+                                                                            client_secret, 
+                                                                            'sell', 
+                                                                            instrument, 
+                                                                            spot_hedged ['hedging_size'], 
+                                                                            best_ask_prc, 
+                                                                            label
+                                                                            )
                                                         
-                                        open_ordersREST = await deribit_get.get_open_orders_byCurrency (client_id, client_secret, endpoint_open_orders_currency, currency.upper())
-                                        open_ordersREST = open_ordersREST ['result']
-                                        open_orders_Hedging = ([o  for o in open_orders_byBot if o['label'] == "hedging spot"])
-                                        open_orders_HedgingSum = sum([o['amount'] for o in open_orders_Hedging ])
-                                        if open_orders_HedgingSum > hedging_size:
-                                            open_orders_Hedging_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_Hedging ])
+                                        #! CHECK for OVER HEDGING POSSIBILITY
+                                        # re-fetch (fresh) open orders data
+                                        open_orders: list = await self.open_orders (currency)
+                                        open_orders_byBot: list = open_orders.my_orders_api()
+                                        
+                                        # cancel if orders may result to over-hedged
+                                        if spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
+                                            open_orders_Hedging_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
                                             open_orders_Hedging_lastUpdateTStamp_min = min(open_orders_Hedging_lastUpdateTStamps)
                                             open_orders_Hedging_lastUpdateTStamp_minId = ([o['order_id'] for o in open_orders_byBot if o['last_update_timestamp'] == open_orders_Hedging_lastUpdateTStamp_min])[0]
-                                            await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_Hedging_lastUpdateTStamp_minId)
+                                            
+                                            await deribit_rest.get_cancel_order_byOrderId (self.connection_url, 
+                                                                                          client_id, 
+                                                                                          client_secret, 
+                                                                                          open_orders_Hedging_lastUpdateTStamp_minId
+                                                                                          )
                                             
             else:
                 log.info('WebSocket connection has broken.')
@@ -323,6 +330,22 @@ class DeribitMarketDownloader:
         except Exception as error:
             log.warning (error)
 
+    def compute_notional_value(self, index_price: float,  equity: float) -> float:
+        """
+        """
+
+        return index_price * equity
+    
+    async def open_orders (self, currency) -> float:
+        """
+        """
+
+        open_ordersREST: list = await deribit_rest.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
+        open_ordersREST: list = open_ordersREST ['result']
+        open_orders: list = open_orders_management.MyOrders (open_ordersREST)
+                        
+        return open_orders_management.MyOrders (open_ordersREST)
+            
     async def heartbeat_response(self) -> None:
         """
         Sends the required WebSocket response to
@@ -436,7 +459,7 @@ def main ():
     
     try:
 
-        DeribitMarketDownloader (
+        strategyDeribit (
         ws_connection_url=ws_connection_url,
         client_id=client_id,
         client_secret= client_secret
