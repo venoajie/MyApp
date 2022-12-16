@@ -268,7 +268,8 @@ class DeribitMarketDownloader:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                                min_hedged_size = notional / min_trade_amount * contract_size
+                                min_hedged_size = spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
+                                log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                 
                                 
                                 #! CHECK SPOT HEDGING
