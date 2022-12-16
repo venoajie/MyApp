@@ -83,5 +83,5 @@ def is_over_hedged (
     '''
     # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
     '''       
-    return summing_size_open_orders_basedOn_label (open_orders_byBot) > minimum_hedging_size    
+    return summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open') > minimum_hedging_size    
         
