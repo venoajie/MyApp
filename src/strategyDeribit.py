@@ -178,8 +178,12 @@ class DeribitMarketDownloader:
                         index_price = pickling.read_data(my_path)[0]['price']
                                                
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                        file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
                         my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                        my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
                         instruments = pickling.read_data (my_path_instruments)
+                        myTrades = pickling.read_data (my_path_myTrades)
+                        log.error (myTrades)
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
                         log.debug (instruments_name)
@@ -202,7 +206,7 @@ class DeribitMarketDownloader:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                             log.error (data_orders)
                             
-                            file_name = (f'{currency.lower()}-myTrades')    
+                            file_name = (f'{currency.lower()}-myTrades-open')    
                                                     
                             my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
