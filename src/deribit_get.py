@@ -153,14 +153,19 @@ async def  get_open_orders_byCurrency (connection_url, client_id, client_secret,
     return result 
 
 
-async def  get_cancel_order_byOrderId(client_id, client_secret, endpoint, order_id):
+async def  get_cancel_order_byOrderId(connection_url: str, 
+                                      client_id, 
+                                      client_secret, 
+                                      endpoint, order_id):
     params =  {
                 "order_id": order_id
                 }
+    endpoint: str = 'private/cancel'
     
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )

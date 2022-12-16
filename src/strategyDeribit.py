@@ -327,7 +327,10 @@ class strategyDeribit:
                                             open_orders_Hedging_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_Hedging ])
                                             open_orders_Hedging_lastUpdateTStamp_min = min(open_orders_Hedging_lastUpdateTStamps)
                                             open_orders_Hedging_lastUpdateTStamp_minId = ([o['order_id'] for o in open_orders_byBot if o['last_update_timestamp'] == open_orders_Hedging_lastUpdateTStamp_min])[0]
-                                            await deribit_get.get_cancel_order_byOrderId(client_id, client_secret, endpointCancel, open_orders_Hedging_lastUpdateTStamp_minId)
+                                            await deribit_get.get_cancel_order_byOrderId(self.connection_url,
+                                                                                         client_id, 
+                                                                                         client_secret, 
+                                                                                         open_orders_Hedging_lastUpdateTStamp_minId)
                                             
             else:
                 log.info('WebSocket connection has broken.')
