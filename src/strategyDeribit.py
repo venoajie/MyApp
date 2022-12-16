@@ -191,7 +191,7 @@ class strategyDeribit:
                             
                         endpoint_position: str = 'private/get_positions'
                         endpointCancel: str = 'private/cancel'
-                        position =  await deribit_get.get_position(client_id, client_secret, endpoint_position, currency.upper())
+                        position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
                         #log.warning (position)
                                             

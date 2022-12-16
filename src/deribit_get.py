@@ -172,7 +172,7 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             )
     return result 
 
-async def get_position (client_id, client_secret, endpoint, currency):
+async def get_position (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency}
     
@@ -193,7 +193,6 @@ async def get_position (client_id, client_secret, endpoint, currency):
     #    'testnet': True
     #    }
     result = await main(
-            endpoint=endpoint,
             params=params,
             connection_url=connection_url,
             client_id=client_id,
