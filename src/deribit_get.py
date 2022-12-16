@@ -195,6 +195,7 @@ async def get_position (client_id, client_secret, endpoint, currency):
     result = await main(
             endpoint=endpoint,
             params=params,
+            connection_url=connection_url,
             client_id=client_id,
             client_secret=client_secret,
             )
