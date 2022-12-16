@@ -246,8 +246,10 @@ class DeribitMarketDownloader:
                                 my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
+                                #print (ordBook)
                                 max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
                                 most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
+                                #print (most_current_ordBook)
                                 best_bid_prc= most_current_ordBook[0]['bids'][0][0]
                                 best_ask_prc= most_current_ordBook[0]['asks'][0][0]
                                     
@@ -273,8 +275,8 @@ class DeribitMarketDownloader:
                                     
                                     log.warning (f'{perpetual in instrument}')
                                     
-                                    if perpetual in instrument:
-                                    #if instrument in instruments_with_rebates:
+                                    #if perpetual in instrument:
+                                    if instrument in instruments_with_rebates:
                                         log.error (f'{instrument}')
                                         
                                         await deribit_get.send_order_limit (client_id, 
