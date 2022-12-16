@@ -187,7 +187,7 @@ class strategyDeribit:
                         log.error (myTrades)
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        log.debug (instruments_name)
+                        #log.debug (instruments_name)
                             
                         position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
@@ -275,16 +275,16 @@ class strategyDeribit:
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
 
                                 #!open_orders_hedging:list = [o for o in open_ordersREST if o['label'] == 'hedging spot'] 
-                                open_orders_hedging:list = [o for o in open_orders_byBot if o['label'] == 'hedging spot'] 
-                                open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
+                                #open_orders_hedging:list = [o for o in open_orders_byBot if o['label'] == 'hedging spot'] 
+                                #open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
                                 
                                 log.warning (f'{instrument}')
-                                log.warning (f'{open_orders_hedging_size}')
+                                #log.warning (f'{open_orders_hedging_size}')
                         
                                 if spot_was_unhedged:
                                     label: str = label_numbering.labelling ('open', 'hedging spot')
                                     perpetual = 'PERPETUAL'
-                                    log.warning (f'{open_orders_hedging_size}')
+                                    #log.warning (f'{open_orders_hedging_size}')
                                     
                                     log.warning (f'{perpetual in instrument}')
                                     
