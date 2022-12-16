@@ -297,7 +297,7 @@ class strategyDeribit:
                                         #log.debug (self.connection_url)
                                         #log.debug (self.ws_connection_url)
                                         now_utc = time_modification.convert_time_to_utc ()['utc_now']
-                                        three_minutes_from_now = time_modification.convert_time_to_unix (now_utc) + (3 * one_minute)
+                                        three_minutes_from_now = time_modification.convert_time_to_unix (now_utc) + (1 * one_minute)
                                         log.warning (three_minutes_from_now )
                                         
                                         await deribit_get.send_order_limit (self.connection_url,
