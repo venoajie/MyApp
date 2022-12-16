@@ -321,8 +321,10 @@ class strategyDeribit:
                                         #open_ordersREST = open_ordersREST ['result']
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byBot: list = open_orders.my_orders_api()
+                                        log.critical (open_orders_byBot)
                                         open_orders_Hedging = ([o  for o in open_orders_byBot if o['label'] == "hedging spot"])
                                         open_orders_HedgingSum = sum([o['amount'] for o in open_orders_Hedging ])
+                                        log.critical (open_orders_HedgingSum)
                                         if open_orders_HedgingSum > hedging_size:
                                             open_orders_Hedging_lastUpdateTStamps = ([o['last_update_timestamp'] for o in open_orders_Hedging ])
                                             open_orders_Hedging_lastUpdateTStamp_min = min(open_orders_Hedging_lastUpdateTStamps)
