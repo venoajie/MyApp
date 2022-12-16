@@ -273,7 +273,8 @@ class DeribitMarketDownloader:
                                 instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
                                 instrument_position_hedging = sum([o['size'] for o in position if o['instrument_name'] in instruments_with_rebates ])
                                 hedging_size = int(min_hedged_size if instrument_position_hedging == [] else min_hedged_size + instrument_position_hedging)
-                                open_orders_hedging:list = [o for o in open_ordersREST if o['label'] == 'hedging spot'] 
+                                #!open_orders_hedging:list = [o for o in open_ordersREST if o['label'] == 'hedging spot'] 
+                                open_orders_hedging:list = [o for o in open_orders_byBot if o['label'] == 'hedging spot'] 
                                 open_orders_hedging_size:int = sum([o['amount'] for o in open_orders_hedging] )
                                 #log.info(f'{position=}')
                                 endpoint_short: str = 'private/sell'
