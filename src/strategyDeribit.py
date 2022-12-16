@@ -296,8 +296,8 @@ class DeribitMarketDownloader:
                                 log.warning (f'{instrument}')
                                 log.warning (f'{open_orders_hedging_size}')
                         
-                                if open_orders_hedging_size in none_data and hedging_size > 0:
-                                    label: str = 'hedging spot'
+                                if spot_not_hedged_properly:
+                                    label: str = label_numbering.labelling ('open', 'hedging spot')
                                     perpetual = 'PERPETUAL'
                                     log.warning (f'{open_orders_hedging_size}')
                                     
