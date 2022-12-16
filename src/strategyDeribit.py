@@ -19,8 +19,10 @@ from dotenv import load_dotenv
 
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification, time_modification
-from configuration import id_numbering
+from configuration import id_numbering, label_numbering
 import deribit_get,deribit_rest
+from risk_management import spot_hedging
+from portfolio.deribit import open_orders_management
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -395,6 +397,13 @@ class DeribitMarketDownloader:
 
             await asyncio.sleep(150)
 
+    def compute_notional_value(self, index_price: float,  equity: float) -> float:
+        """
+        """
+
+        return index_price * equity
+    
+    
     async def ws_operation(
         self,
         operation: str,
