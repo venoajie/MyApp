@@ -269,6 +269,19 @@ class DeribitMarketDownloader:
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
                                 min_hedged_size = notional / min_trade_amount * contract_size
+                                
+                                
+                                #! CHECK SPOT HEDGING
+                                spot_not_hedged_properly = False
+                                spot_hedged = spot_hedging.is_spot_hedged_properly (instruments_with_rebates, 
+                                                                                     position, 
+                                                                                     open_orders_byBot, 
+                                                                                     notional, 
+                                                                                     min_trade_amount,
+                                                                                     contract_size)
+                                spot_not_hedged_properly = spot_hedged ['spot_was_hedged_properly']
+                                log.info(f'{spot_not_hedged_properly=}')
+                                
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
                                 instrument_position = sum([o['size'] for o in position if o['instrument_name'] == instrument ])
                                 instrument_position_hedging = sum([o['size'] for o in position if o['instrument_name'] in instruments_with_rebates ])
