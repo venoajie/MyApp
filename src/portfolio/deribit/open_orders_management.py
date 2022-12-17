@@ -51,21 +51,15 @@ class MyOrders ():
         
         '''
         '''    
-        log.warning ((label))
-        log.warning (self.my_orders_api_basedOn_label_last_update_timestamps_min (label))
-        log.warning (min(self.my_orders_api_basedOn_label_last_update_timestamps_min (label)))
-        return [] if self.my_orders_api_basedOn_label_last_update_timestamps_min (label) == [] \
-            else  min (self.my_orders_api_basedOn_label_last_update_timestamps_min (label))
+        
+        return [] if self.my_orders_api_basedOn_label_last_update_timestamps (label) == [] \
+            else  min (self.my_orders_api_basedOn_label_last_update_timestamps (label))
     
     def my_orders_api_basedOn_label_last_update_timestamps_min_id (self, label: str)-> list:
         
         '''
         '''    
-        log.error ((label))
-        log.error (self.my_orders_api_basedOn_label_last_update_timestamps_min (label))
-        log.error (min(self.my_orders_api_basedOn_label_last_update_timestamps_min (label)))
-        log.debug ( ([o['order_id'] for o in self.my_orders_api_basedOn_label (label) \
-                if o['last_update_timestamp'] == self.my_orders_api_basedOn_label_last_update_timestamps_min (label)]))
-        return [] if self.my_orders_api_basedOn_label_last_update_timestamps_min (label) == [] \
+        
+        return [] if self.my_orders_api_basedOn_label_last_update_timestamps (label) == [] \
             else  ([o['order_id'] for o in self.my_orders_api_basedOn_label (label) \
                 if o['last_update_timestamp'] == self.my_orders_api_basedOn_label_last_update_timestamps_min (label)])[0]
