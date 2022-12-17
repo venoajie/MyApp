@@ -179,6 +179,13 @@ class DeribitMarketDownloader:
                         ws_channel=f'user.trades.future.{currency.upper()}.100ms'
                         )
                     )
+        
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                        )
+                    )
                 
             while self.websocket_client.open:
                 # Receive WebSocket messages
