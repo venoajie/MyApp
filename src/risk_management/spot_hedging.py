@@ -72,12 +72,13 @@ def is_spot_hedged_properly (
     # check open orders related to hedging, to ensure previous open orders has completely consumed
     open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
     
-    size_pct_qty = int ((10/100 * remain_unhedged ))
+    size_pct_qty = int ((10/100 * min_hedged_size ))
+    hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
 
     none_data = [None, [], '0.0', 0]
         
     return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
-            'hedging_size': remain_unhedged}
+            'hedging_size': hedging_size_portion}
 
 def is_over_hedged (
     open_orders_byBot: list,
