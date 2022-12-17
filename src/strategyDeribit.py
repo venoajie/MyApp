@@ -288,7 +288,7 @@ class strategyDeribit:
                                     log.warning (f'{perpetual in instrument}')
                                     
                                     #if perpetual in instrument:
-                                    if instrument in instruments_with_rebates:
+                                    if perpetual in instrument :
                                         log.error (f'{instrument}')
                                         label = label_numbering.labelling ('open', 'hedging spot')                                        
                                         
