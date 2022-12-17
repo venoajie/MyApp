@@ -289,7 +289,7 @@ class strategyDeribit:
                                     
                                     #if perpetual in instrument:
                                     if perpetual in instrument :
-                                        log.error (f'{instrument}')
+                                        log.critical (f'{instrument}')
                                         label = label_numbering.labelling ('open', 'hedging spot')                                        
                                         
                                         three_minutes_from_now =  (current_server_time) + (1 * one_minute)
