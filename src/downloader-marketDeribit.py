@@ -232,6 +232,7 @@ class DeribitMarketDownloader:
                             pickling.replace_data(my_path, data_orders)
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
+                        log.debug (instrument)
                         if message_channel == f'book.{instrument}.none.20.100ms':
 
                             file_name = (f'{instrument.lower()}-ordBook')
