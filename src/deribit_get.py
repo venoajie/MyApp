@@ -147,13 +147,14 @@ async def  get_open_orders_byInstruments (connection_url, client_id, client_secr
     return result 
 
 
-async def  get_open_orders_byCurrency (connection_url, client_id, client_secret, endpoint, currency):
+async def  get_open_orders_byCurrency (connection_url, client_id, client_secret, currency):
     params =  {
                 "currency": currency
                 }
     
+    endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
     result = await main(
-            endpoint=endpoint,
+            endpoint=endpoint_open_orders_currency,
             params=params,
             connection_url=connection_url,
             client_id=client_id,
