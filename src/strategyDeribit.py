@@ -29,8 +29,8 @@ load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
-    return {'client_id': os.environ.get('client_id'),
-            'client_secret': os.environ.get('client_secret')
+    return {'client_id': os.environ.get('client_id_test'),
+            'client_secret': os.environ.get('client_secret_test')
             }
 none_data = [None, [], '0.0', 0]
     
@@ -467,13 +467,13 @@ class strategyDeribit:
                 
 def main ():
     
-    ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
-    client_id: str = parse_dotenv() ['client_id']
-    client_secret: str = parse_dotenv() ['client_secret']
-    
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     ws_connection_url: str = 'wss://www.deribit.com/ws/api/v2'
+    
+    ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
     
     try:
 
