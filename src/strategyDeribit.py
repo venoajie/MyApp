@@ -132,6 +132,14 @@ class strategyDeribit:
                     )
                 
                 
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                        )
+                    )
+                
+                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
