@@ -234,7 +234,7 @@ class strategyDeribit:
                             log.debug (open_orders_deltaTime)
                             log.error (open_orders_deltaTime > three_minute )                            
                             if open_orders_deltaTime > one_minute:
-                                await deribit_rest.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
+                                await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             
@@ -314,7 +314,7 @@ class strategyDeribit:
                                         if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
                                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                                             #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
-                                            await deribit_rest.get_cancel_order_byOrderId (
+                                            await deribit_get.get_cancel_order_byOrderId (
                                                                                             self.connection_url, 
                                                                                             client_id, 
                                                                                             client_secret, 
@@ -428,7 +428,7 @@ class strategyDeribit:
         """
         """
 
-        open_ordersREST: list = await deribit_rest.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
+        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
         open_ordersREST: list = open_ordersREST ['result']
         open_orders: list = open_orders_management.MyOrders (open_ordersREST)
                         
