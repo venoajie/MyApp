@@ -283,7 +283,7 @@ class strategyDeribit:
                                                                 
                                 log.warning (f'{instrument}')
                         
-                                if spot_was_unhedged:
+                                if spot_was_unhedged and False:
                                     label: str = label_numbering.labelling ('open', 'hedging spot')
                                     perpetual = 'PERPETUAL'
                                     #log.warning (f'{open_orders_hedging_size}')
