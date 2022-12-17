@@ -232,9 +232,10 @@ class strategyDeribit:
                             open_orders_deltaTime = current_server_time - open_orders_lastUpdateTStamp_min                       
 
                             log.debug (open_orders_deltaTime)
-                            log.error (open_orders_deltaTime > three_minute )                            
+                            log.error (open_orders_deltaTime > three_minute )    
+                            open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > one_minute:
-                                await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_orders_lastUpdateTStamp_min_Id)
+                                await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             
