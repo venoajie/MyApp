@@ -255,6 +255,8 @@ class strategyDeribit:
                                 my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
+                                log.warning (my_path_ordBook)
+                                log.warning (ordBook)
 
                                 max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
                                 most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
