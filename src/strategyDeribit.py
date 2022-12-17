@@ -227,14 +227,10 @@ class strategyDeribit:
                         
                         if open_orders_byBot not in none_data :
                             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-                            open_orders_lastUpdateTStamp_min_Id= ([o['order_id'] for o in open_orders_byBot \
-                                if o['last_update_timestamp'] == open_orders_lastUpdateTStamp_min])[0]
                             open_orders_deltaTime = current_server_time - open_orders_lastUpdateTStamp_min                       
 
-                            log.debug (open_orders_deltaTime)
-                            log.error (open_orders_deltaTime > three_minute )    
                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
-                            if open_orders_deltaTime > one_minute:
+                            if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                         
                         if message_channel == f'user.portfolio.{currency.lower()}':
@@ -249,6 +245,80 @@ class strategyDeribit:
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
                                 
+                            for instrument in instruments_name:
+                                instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
+                                    
+                                file_name_ordBook = (f'{instrument.lower()}-ordBook.pkl')
+                                my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
+                                
+                                ordBook = pickling.read_data(my_path_ordBook)
+                                #log.warning (my_path_ordBook)
+                                #log.warning (ordBook)
+
+                                max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+                                most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
+
+                                best_bid_prc= most_current_ordBook[0]['bids'][0][0]
+                                best_ask_prc= most_current_ordBook[0]['asks'][0][0]
+                                    
+                                min_trade_amount = instrument_data ['min_trade_amount']
+                                contract_size = instrument_data ['contract_size']
+                                min_hedged_size = spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
+                                log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
+                                
+                                #! CHECK SPOT HEDGING
+                                spot_was_unhedged = False
+                                spot_hedged = spot_hedging.is_spot_hedged_properly (instruments_with_rebates, 
+                                                                                     position, 
+                                                                                     open_orders_byBot, 
+                                                                                     notional, 
+                                                                                     min_trade_amount,
+                                                                                     contract_size)
+                                spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+                                log.critical(f'{spot_was_unhedged=}')
+                                                                
+                                log.warning (f'{instrument}')
+                        
+                                if spot_was_unhedged:
+                                    label: str = label_numbering.labelling ('open', 'hedging spot')
+                                    perpetual = 'PERPETUAL'
+                                    #log.warning (f'{open_orders_hedging_size}')
+                                    
+                                    log.warning (f'{perpetual in instrument}')
+                                    
+                                    #if perpetual in instrument:
+                                    if perpetual in instrument :
+                                        log.critical (f'{instrument}')
+                                        label = label_numbering.labelling ('open', 'hedging spot')                                        
+                                        
+                                        three_minutes_from_now =  (current_server_time) + (1 * one_minute)
+                                       # log.critical (current_time )
+                                        #log.critical (three_minutes_from_now )
+                                        
+                                        await deribit_get.send_order_limit (
+                                                                            self.connection_url,
+                                                                            client_id, 
+                                                                            client_secret, 
+                                                                            'sell', 
+                                                                            instrument, 
+                                                                            spot_hedged ['hedging_size'], 
+                                                                            best_ask_prc,
+                                                                            label,
+                                                                            three_minutes_from_now
+                                                                            )
+                                        
+                                        open_orders: list = await self.open_orders (currency)
+                                        open_orders_byBot: list = open_orders.my_orders_api()
+
+                                        if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
+                                            open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
+                                            #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
+                                            await deribit_get.get_cancel_order_byOrderId (
+                                                                                            self.connection_url, 
+                                                                                            client_id, 
+                                                                                            client_secret, 
+                                                                                            open_order_id
+                                                                                            )
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
