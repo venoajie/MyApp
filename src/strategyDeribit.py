@@ -187,14 +187,19 @@ class strategyDeribit:
                         
                         file_name_index = (f'{currency.lower()}-index.pkl')
                         my_path = system_tools.provide_path_for_file (file_name_index, "market_data", "deribit")
-                        index_price = pickling.read_data(my_path)[0]['price']
+                        #index_price = pickling.read_data(my_path)[0]['price']
                                                
+                        index_price = []
+                        symbol_index =  (message_channel)[-7:]
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            index_price =  data_orders
+                            
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                         instruments = pickling.read_data (my_path_instruments)
 
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        #log.debug (instruments_name)
+                        log.debug (f'{index_price=}')
                             
                         position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
@@ -238,7 +243,7 @@ class strategyDeribit:
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                         
-                        if message_channel == f'user.portfolio.{currency.lower()}':
+                        if message_channel == f'user.portfolio.{currency.lower()}' and index_price !=[]:
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
 
@@ -268,8 +273,7 @@ class strategyDeribit:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                                min_hedged_size = spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
-                                log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
+                                log.info(f' {min_trade_amount=}')
                                                             
                                 #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
                                 
