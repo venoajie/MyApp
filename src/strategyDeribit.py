@@ -195,6 +195,8 @@ class strategyDeribit:
                                                       
                         log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                
                         log.debug (f'{file_name_instruments=}')
                         instruments = pickling.read_data (my_path_instruments)
                         log.warning (f'{instruments}')
