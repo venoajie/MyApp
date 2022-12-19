@@ -180,8 +180,6 @@ class strategyDeribit:
                         message_channel = message['params']['channel']
             
                         data_orders: list = message['params']['data']
-                        #log.info (data_orders)
-                
 
                         currency = string_modification.extract_currency_from_text (message_channel)
                         
@@ -200,7 +198,7 @@ class strategyDeribit:
 
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        log.debug (f'{index_price=}')
+                        log.debug (f'{instruments_name=}')
                             
                         position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
