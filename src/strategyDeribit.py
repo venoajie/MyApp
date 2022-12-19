@@ -193,6 +193,7 @@ class strategyDeribit:
                             log.critical (data_orders)
                             index_price = data_orders ['price']
                                                       
+                        log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                         instruments = pickling.read_data (my_path_instruments)
 
