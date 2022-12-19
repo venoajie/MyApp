@@ -325,7 +325,7 @@ class strategyDeribit:
                                     label = f'hedging spot-close-{label_int}'
                                     open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-close")
                                     
-                                    if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close < 1:
+                                    if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
 
                                         await self.send_orders (
                                                                 'sell', 
