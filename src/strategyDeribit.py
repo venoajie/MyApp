@@ -233,7 +233,6 @@ class strategyDeribit:
                         three_minute = one_minute * 3
                         current_time = await deribit_get.get_server_time(self.connection_url)
                         current_server_time = current_time ['result']
-                        log.error (open_orders_byBot)
                         log.error (open_orders_byBot not in none_data)
                         
                         if open_orders_byBot not in none_data :
@@ -244,6 +243,9 @@ class strategyDeribit:
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                         
+                        log.error (message_channel == f'user.portfolio.{currency.lower()}')
+                        log.error (index_price !=[])
+                        log.critical ( message_channel == f'user.portfolio.{currency.lower()}' and index_price !=[])
                         if message_channel == f'user.portfolio.{currency.lower()}' and index_price !=[]:
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
