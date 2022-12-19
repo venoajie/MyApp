@@ -192,6 +192,7 @@ class strategyDeribit:
                                     
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
+                            log.critical (data_orders)
                             index_price = data_orders[0]['price']
                                                       
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
