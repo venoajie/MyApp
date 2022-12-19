@@ -247,13 +247,12 @@ class strategyDeribit:
                         log.error (message_channel == f'user.portfolio.{currency.lower()}')
                         log.error (currency.lower())
                         log.error (index_price !=[])
-                        
-                        if message_channel == f'user.portfolio.{currency.lower()}':
-                            
-                            file_name = (f'{currency.lower()}-portfolio.pkl')
+                    
+                        file_name_portfolio = (f'{currency.lower()}-portfolio.pkl')
 
-                            my_path_portfolio = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
+                        my_path_portfolio = system_tools.provide_path_for_file (file_name_portfolio, "portfolio", "deribit")
+                                                                                    
+                        if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
 
                         if  index_price !=[]:
