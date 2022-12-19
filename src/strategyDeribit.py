@@ -187,8 +187,13 @@ class strategyDeribit:
                         
                         file_name_index = (f'{currency.lower()}-index.pkl')
                         my_path = system_tools.provide_path_for_file (file_name_index, "market_data", "deribit")
-                        index_price = pickling.read_data(my_path)[0]['price']
-                                                                  
+                        index_price = []
+                        #index_price = pickling.read_data(my_path)[0]['price']
+                                    
+                        symbol_index =  (message_channel)[-7:]
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            index_price = data_orders[0]['price']
+                                                      
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                         instruments = pickling.read_data (my_path_instruments)
 
@@ -241,14 +246,16 @@ class strategyDeribit:
                         log.error (message_channel == f'user.portfolio.{currency.lower()}')
                         log.error (currency.lower())
                         log.error (index_price !=[])
-                        log.critical ( message_channel == f'user.portfolio.{currency.lower()}' and index_price !=[])
-                        if message_channel == f'user.portfolio.{currency.lower()}' and index_price !=[]:
+                        
+                        if message_channel == f'user.portfolio.{currency.lower()}':
                             
                             file_name = (f'{currency.lower()}-portfolio.pkl')
 
                             my_path_portfolio = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
                             pickling.replace_data(my_path_portfolio, data_orders)
+
+                        if  index_price !=[]:
                             
                             portfolio = pickling.read_data(my_path_portfolio)
                             equity = portfolio [0]['equity']
