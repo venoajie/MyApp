@@ -115,7 +115,7 @@ async def send_order_limit (connection_url: str,
                 "reject_post_only": reject_post_only
                 }
 
-    print (params)    
+    #print (params)    
     if side == 'buy':
         endpoint: str = 'private/buy'
     if side == 'sell'  :

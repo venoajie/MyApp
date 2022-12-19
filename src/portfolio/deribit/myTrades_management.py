@@ -24,3 +24,13 @@ class MyTrades ():
         '''
         '''    
         return [o for o in self.my_trades if o['api'] == False]
+    
+    
+    def my_trades_api_basedOn_label (self, label: str)-> list:
+        
+        '''
+        '''    
+        #print(label)
+        #print( self.my_trades_api ())
+        #print(([o for o in self.my_trades_api () if  label in o['label'] ]))
+        return [] if self.my_trades_api () == [] else  ([o for o in self.my_trades_api () if  label in o['label'] ])

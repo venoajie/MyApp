@@ -63,3 +63,12 @@ class MyOrders ():
         return [] if self.my_orders_api_basedOn_label_last_update_timestamps (label) == [] \
             else  ([o['order_id'] for o in self.my_orders_api_basedOn_label (label) \
                 if o['last_update_timestamp'] == self.my_orders_api_basedOn_label_last_update_timestamps_min (label)])[0]
+            
+            
+    def my_orders_api_basedOn_label_items_qty (self, label: str)-> list:
+        
+        '''
+        '''    
+        
+        return [] if self.my_orders_api_basedOn_label (label) == [] \
+            else  len ([o for o in self.my_orders_api_basedOn_label (label)])

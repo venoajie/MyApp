@@ -10,15 +10,27 @@ def remove_redundant_elements (data: list)->list:
     
     return sorted(set(data))    
 
-def extract_texts_for_currency(words: str) -> str:
+def extract_currency_from_text (words: str) -> str:
     
     '''  
-    extracting surrency from channel message
+    extracting currency from channel message
     '''      
     
     if 'eth' in (words).lower():
         return 'eth'
     if 'btc' in (words).lower():
         return 'btc'
+
+def extract_integers_from_text (words: str) -> int:
+    
+    '''  
+    extracting integers from label text
+    '''      
+    
+    try:
+        return int(''.join([o for o in words if o.isdigit()]))
+
+    except:
+        return []
 
     

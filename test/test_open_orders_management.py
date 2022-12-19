@@ -52,3 +52,6 @@ def test_my_orders_api_basedOn_label ():
 def test_my_orders_api_last_update_timestamp  ():
     assert open_orders.my_orders_api_last_update_timestamps () == [1671093368895, 1671095068918]
     assert open_orders_blank.my_orders_api_last_update_timestamps () == []
+    
+def test_my_orders_api_basedOn_label_items_qty  ():
+    assert open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot") == 2

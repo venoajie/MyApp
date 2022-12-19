@@ -1,7 +1,66 @@
 # -*- coding: utf-8 -*-
+from utils import pickling, system_tools  
+from portfolio.deribit import myTrades_management
 
+def fetch_my_trades (
+    currency: str
+    ) -> list:
+    
+    '''
+    '''       
+    
+    file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
+    
+    my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
+    
+    return  pickling.read_data (my_path_myTrades) 
 
+def my_trades_api_basedOn_label_max_price_attributes (
+    currency: str,
+    label: str
+    ) -> float:
+    
+    '''
+    '''       
+       
+    #print (label)
+    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency))
 
+    my_trades_api_basedOn_label = my_trades.my_trades_api_basedOn_label (label)
+    #print (my_trades_api_basedOn_label)
+    if my_trades_api_basedOn_label !=[]:
+        max_price = max ([o['price'] for o in my_trades_api_basedOn_label])
+        trade_list_with_max_price =  ([o for o in my_trades_api_basedOn_label if o['price'] == max_price ])
+        len_trade_list_with_max_price = len(trade_list_with_max_price)
+        
+        # if multiple items, select only the oldest one
+        if len_trade_list_with_max_price > 0:
+            trade_list_with_max_price_min_timestamp = min([o['timestamp'] for o in trade_list_with_max_price])
+            trade_list_with_max_price =  ([o for o in trade_list_with_max_price if o['timestamp'] == trade_list_with_max_price_min_timestamp ])
+        
+        return  {
+            'price': max_price,
+            'trade_id':  ([o['trade_id'] for o in trade_list_with_max_price])[0] ,
+            'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
+            'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
+            'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
+        
+        }
+    if my_trades_api_basedOn_label ==[]:
+        return []
+
+def my_trades_max_price_plus_threshold (
+    currency: str, threshold: float, index_price: float, label: str
+    ) -> float:
+    
+    '''
+    '''       
+
+    myTrades_max_price =  my_trades_api_basedOn_label_max_price_attributes (currency, label) ['price']
+    myTrades_max_price_plus_pct = myTrades_max_price * threshold
+                                    
+    return  {'index_price_higher_than_threshold': index_price > myTrades_max_price  + myTrades_max_price_plus_pct,
+             'index_price_lower_than_threshold': index_price < myTrades_max_price - myTrades_max_price_plus_pct}
 
 def summing_size_open_orders_basedOn_label(
     open_orders_byBot: list,
@@ -82,10 +141,11 @@ def is_spot_hedged_properly (
 
 def is_over_hedged (
     open_orders_byBot: list,
-    minimum_hedging_size: int) -> bool:
+    minimum_hedging_size: int,
+    label) -> bool:
 
     '''
     # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
     '''       
-    return summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open') > minimum_hedging_size    
+    return summing_size_open_orders_basedOn_label (open_orders_byBot, label) > minimum_hedging_size    
         

@@ -180,22 +180,18 @@ class strategyDeribit:
                         message_channel = message['params']['channel']
             
                         data_orders: list = message['params']['data']
-                        log.info (data_orders)
+                        #log.info (data_orders)
                 
 
-                        currency = string_modification.extract_texts_for_currency (message_channel)
+                        currency = string_modification.extract_currency_from_text (message_channel)
                         
                         file_name_index = (f'{currency.lower()}-index.pkl')
                         my_path = system_tools.provide_path_for_file (file_name_index, "market_data", "deribit")
                         index_price = pickling.read_data(my_path)[0]['price']
                                                
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                        file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
-                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                        my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
                         instruments = pickling.read_data (my_path_instruments)
-                        myTrades = pickling.read_data (my_path_myTrades)
-                        log.error (myTrades)
+
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
                         #log.debug (instruments_name)
@@ -274,6 +270,13 @@ class strategyDeribit:
                                 contract_size = instrument_data ['contract_size']
                                 min_hedged_size = spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
                                 log.info(f'{min_hedged_size=} {notional=} {min_trade_amount=}')
+                                                            
+                                #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
+                                
+                                #my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
+                                
+                                #read_mTrades =   pickling.read_data (my_path_myTrades)
+                                #log.debug (read_mTrades) 
                                 
                                 #! CHECK SPOT HEDGING
                                 spot_was_unhedged = False
@@ -282,44 +285,70 @@ class strategyDeribit:
                                                                                      open_orders_byBot, 
                                                                                      notional, 
                                                                                      min_trade_amount,
-                                                                                     contract_size)
+                                                                                     contract_size
+                                                                                     )
+                                
                                 spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+                                spot_was_hedged = spot_was_unhedged == False
+                                actual_hedging_size = spot_hedging.compute_actual_hedging_size (instrument, position)
                                 log.critical(f'{spot_was_unhedged=}')
+                                log.critical(f'{actual_hedging_size=}')
                                                                 
                                 log.warning (f'{instrument}')
-                        
-                                if spot_was_unhedged:
-                                    label: str = label_numbering.labelling ('open', 'hedging spot')
-                                    perpetual = 'PERPETUAL'
-                                    #log.warning (f'{open_orders_hedging_size}')
+                                
+                    
+                                label: str = label_numbering.labelling ('open', 'hedging spot')
+                                perpetual = 'PERPETUAL'
+
+                                #check possibility average up/profit realization
+                                if spot_was_hedged and actual_hedging_size != 0:
+                                    threshold = 2/100
                                     
-                                    log.warning (f'{perpetual in instrument}')
+                                    myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, 'hedging spot-open-')
+                                    log.warning (myTrades_max_price_plus_threshold)
+                                    myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, 'hedging spot-open-')
+                                    myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
+                                    label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
+                                    label = f'hedging spot-close-{label_int}'
+                                    open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-close")
+                                    
+                                    if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold']:
+
+                                        await self.send_orders (
+                                                                'sell', 
+                                                                instrument, 
+                                                                best_ask_prc, 
+                                                                myTrades_max_price_attributes ['size'], 
+                                                                label
+                                                                )
+
+                                    if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold']:
+                                        
+                                        await self.send_orders (
+                                                                'buy', 
+                                                                instrument, 
+                                                                best_bid_prc, 
+                                                                myTrades_max_price_attributes ['size'], 
+                                                                label
+                                                                )
+
+                                if spot_was_unhedged:
                                     
                                     #if perpetual in instrument:
                                     if perpetual in instrument :
-                                        log.critical (f'{instrument}')
-                                        label = label_numbering.labelling ('open', 'hedging spot')                                        
                                         
-                                        three_minutes_from_now =  (current_server_time) + (1 * one_minute)
-                                       # log.critical (current_time )
-                                        #log.critical (three_minutes_from_now )
-                                        
-                                        await deribit_get.send_order_limit (
-                                                                            self.connection_url,
-                                                                            client_id, 
-                                                                            client_secret, 
-                                                                            'sell', 
-                                                                            instrument, 
-                                                                            spot_hedged ['hedging_size'], 
-                                                                            best_ask_prc,
-                                                                            label,
-                                                                            three_minutes_from_now
-                                                                            )
+                                        await self.send_orders (
+                                                                'sell', 
+                                                                instrument, 
+                                                                best_ask_prc,
+                                                                spot_hedged ['hedging_size'], 
+                                                                label
+                                                                )
                                         
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byBot: list = open_orders.my_orders_api()
 
-                                        if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size']):
+                                        if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size'], 'hedging spot-open'):
                                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                                             #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
                                             await deribit_get.get_cancel_order_byOrderId (
@@ -442,6 +471,20 @@ class strategyDeribit:
                         
         return open_orders_management.MyOrders (open_ordersREST)
     
+    async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
+        """
+        """
+
+        await deribit_get.send_order_limit (
+                                            self.connection_url,
+                                            client_id, 
+                                            client_secret, 
+                                            side, 
+                                            instrument, 
+                                            size, 
+                                            prc,
+                                            label
+                                            )
     async def ws_operation(
         self,
         operation: str,
