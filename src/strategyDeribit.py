@@ -192,7 +192,7 @@ class strategyDeribit:
                         index_price = []
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            index_price =  data_orders
+                            index_price =  data_orders ['price']
                             
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                         instruments = pickling.read_data (my_path_instruments)
