@@ -233,6 +233,7 @@ class strategyDeribit:
                         three_minute = one_minute * 3
                         current_time = await deribit_get.get_server_time(self.connection_url)
                         current_server_time = current_time ['result']
+                        log.error (open_orders_byBot)
                         log.error (open_orders_byBot not in none_data)
                         
                         if open_orders_byBot not in none_data :
