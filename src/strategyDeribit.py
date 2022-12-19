@@ -265,6 +265,8 @@ class strategyDeribit:
                             notional = index_price * equity    
                                 
                             for instrument in instruments_name:
+                                log.warning (f'{instrument}')
+
                                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     
                                 file_name_ordBook = (f'{instrument.lower()}-ordBook.pkl')
@@ -283,6 +285,7 @@ class strategyDeribit:
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
                                 log.info(f' {min_trade_amount=}')
+                                log.critical(f'{currency=}')
                                                             
                                 #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
                                 
@@ -303,14 +306,14 @@ class strategyDeribit:
                                 
                                 spot_was_unhedged = spot_hedged ['spot_was_unhedged']
                                 spot_was_hedged = spot_was_unhedged == False
-                                actual_hedging_size = spot_hedging.compute_actual_hedging_size (instrument, position)
+                                label: str = label_numbering.labelling ('open', 'hedging spot')
+                                log.critical(f'{currency=}')
+                                actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), 'hedging spot-open-')
                                 log.critical(f'{spot_was_unhedged=}')
                                 log.critical(f'{actual_hedging_size=}')
                                                                 
-                                log.warning (f'{instrument}')
                                 
                     
-                                label: str = label_numbering.labelling ('open', 'hedging spot')
                                 perpetual = 'PERPETUAL'
 
                                 #check possibility average up/profit realization

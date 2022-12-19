@@ -15,6 +15,19 @@ def fetch_my_trades (
     
     return  pickling.read_data (my_path_myTrades) 
 
+def my_trades_api_basedOn_label (
+    currency: str,
+    label: str
+    ) -> list:
+    
+    '''
+    '''       
+    
+
+    #print (label)
+    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency))    
+    return  my_trades.my_trades_api_basedOn_label (label)
+
 def my_trades_api_basedOn_label_max_price_attributes (
     currency: str,
     label: str
@@ -23,14 +36,11 @@ def my_trades_api_basedOn_label_max_price_attributes (
     '''
     '''       
        
-    #print (label)
-    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency))
-
-    my_trades_api_basedOn_label = my_trades.my_trades_api_basedOn_label (label)
+    my_trades_api = my_trades_api_basedOn_label (currency, label)
     #print (my_trades_api_basedOn_label)
     if my_trades_api_basedOn_label !=[]:
-        max_price = max ([o['price'] for o in my_trades_api_basedOn_label])
-        trade_list_with_max_price =  ([o for o in my_trades_api_basedOn_label if o['price'] == max_price ])
+        max_price = max ([o['price'] for o in my_trades_api])
+        trade_list_with_max_price =  ([o for o in my_trades_api if o['price'] == max_price ])
         len_trade_list_with_max_price = len(trade_list_with_max_price)
         
         # if multiple items, select only the oldest one
@@ -49,8 +59,10 @@ def my_trades_api_basedOn_label_max_price_attributes (
     if my_trades_api_basedOn_label ==[]:
         return []
 
-def my_trades_max_price_plus_threshold (
-    currency: str, threshold: float, index_price: float, label: str
+def my_trades_max_price_plus_threshold (currency: str,
+    threshold: float, 
+    index_price: float, 
+    label: str
     ) -> float:
     
     '''
@@ -96,15 +108,18 @@ def compute_minimum_hedging_size (
 
 
 def compute_actual_hedging_size (
-    hedging_instruments: list,
-    position: list,
+    currency: str,
+    label: str,
     ) -> int:
     
     '''
     compute actual hedging size
 
     '''       
-    return  sum([o['size'] for o in position if o['instrument_name'] in hedging_instruments ])
+    my_trades = my_trades_api_basedOn_label (currency,
+                                             label
+                                             )
+    return  sum([o['amount'] for o in my_trades if label in o['label'] ])
 
 def is_spot_hedged_properly (
     hedging_instruments: list,

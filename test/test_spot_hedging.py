@@ -61,10 +61,13 @@ def test_summing_size_open_orders_with_hedging_label  ():
     
 def test_my_trades_api_basedOn_label_max_price_attributes  ():
     
-    # default
     assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['price'] == 1211.9  
     assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['size'] == 99.0  
-    assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['label'] == 'hedging spot-open-1671189554374'  
+    assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['label'] == 'hedging spot-open-1671189554374' 
+    
+def test_compute_actual_hedging_size  ():
+    
+    assert spot_hedging.compute_actual_hedging_size ('eth', 'hedging spot-open-') == 297 
     
 def test_myTrades_max_price_plus_threshold  ():
     
