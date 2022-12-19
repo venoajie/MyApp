@@ -335,7 +335,7 @@ class strategyDeribit:
                                                                 label
                                                                 )
 
-                                    if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close < 1:
+                                    if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
                                         
                                         await self.send_orders (
                                                                 'buy', 
