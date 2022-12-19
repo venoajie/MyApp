@@ -42,6 +42,8 @@ async def call_api(curr, msg):
             response = await websocket.recv()
             response: dict = orjson.loads(response)
             response_data: dict = response ['result']
+            log.critical (curr)
+            log.critical (response_data)
 
             if response['id'] == 7617:
                 file_name = (f'{curr.lower()}-instruments.pkl')
