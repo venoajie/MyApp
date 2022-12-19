@@ -193,13 +193,13 @@ class strategyDeribit:
                             log.critical (data_orders)
                             index_price = data_orders ['price']
                                                       
-                        log.debug (f'{currency.lower()=}')
+                        #log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
                         my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
                 
-                        log.debug (f'{file_name_instruments=}')
+                        #log.debug (f'{file_name_instruments=}')
                         instruments = pickling.read_data (my_path_instruments)
-                        log.warning (f'{instruments}')
+                        #log.warning (f'{instruments}')
 
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
@@ -237,7 +237,7 @@ class strategyDeribit:
                         three_minute = one_minute * 3
                         current_time = await deribit_get.get_server_time(self.connection_url)
                         current_server_time = current_time ['result']
-                        log.error (open_orders_byBot not in none_data)
+                        #log.error (open_orders_byBot not in none_data)
                         
                         if open_orders_byBot not in none_data :
                             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
@@ -247,9 +247,9 @@ class strategyDeribit:
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                         
-                        log.error (message_channel == f'user.portfolio.{currency.lower()}')
-                        log.error (currency.lower())
-                        log.error (index_price !=[])
+                        #log.error (message_channel == f'user.portfolio.{currency.lower()}')
+                        #log.error (currency.lower())
+                        #log.error (index_price !=[])
                     
                         file_name_portfolio = (f'{currency.lower()}-portfolio.pkl')
 

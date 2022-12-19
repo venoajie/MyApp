@@ -71,4 +71,4 @@ class MyOrders ():
         '''    
         
         return [] if self.my_orders_api_basedOn_label (label) == [] \
-            else  len ([o for o in self.my_orders_api_basedOn_label (label)])
+            else  len ([o for o in self.my_orders_api_basedOn_label (label)])[0]

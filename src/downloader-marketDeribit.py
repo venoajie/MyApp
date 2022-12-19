@@ -42,19 +42,10 @@ async def call_api(curr, msg):
             response = await websocket.recv()
             response: dict = orjson.loads(response)
             response_data: dict = response ['result']
-            log.critical (curr)
             
             if response['id'] == 7617:
                 file_name = (f'{curr.lower()}-instruments.pkl')
                 my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-
-                log.error (file_name)
-                log.error (my_path)
-                log.critical (response_data)
-
-                read_mTrades =   pickling.read_data (my_path)
-                log.debug (read_mTrades)
-                                
                 pickling.replace_data(my_path, response_data)  
                                           
             if response['id'] == 7538:
