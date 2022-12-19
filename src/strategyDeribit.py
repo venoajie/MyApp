@@ -195,6 +195,7 @@ class strategyDeribit:
                                                       
                         log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                        log.debug (f'{file_name_instruments=}')
                         instruments = pickling.read_data (my_path_instruments)
 
                         instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
