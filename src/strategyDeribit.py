@@ -263,9 +263,11 @@ class strategyDeribit:
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
 
-                        if  index_price !=[]:
+                        portfolio = pickling.read_data(my_path_portfolio)
+                        
+                        if  index_price !=[] and portfolio !=[]:
                             
-                            portfolio = pickling.read_data(my_path_portfolio)
+                            
                             log.critical (portfolio)
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
