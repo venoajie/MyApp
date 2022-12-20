@@ -191,21 +191,12 @@ class strategyDeribit:
                                                       
                         #log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                
-                        #log.debug (f'{file_name_instruments=}')
+                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")                
                         instruments = pickling.read_data (my_path_instruments)
-                        #log.warning (f'{instruments}')
 
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        #log.debug (f'{instruments_name=}')
-                            
-                                            
-                        log.debug (currency)
-                        log.debug (message_channel)
-                        log.debug (f'user.orders.future.{currency}.raw')
-                        log.debug (message_channel == f'user.orders.future.{currency.upper()}.raw')
+                        
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
                             
