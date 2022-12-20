@@ -91,7 +91,7 @@ async def send_order_limit (connection_url: str,
                             type: str ='limit',
                             reduce_only: bool = False, 
                             post_only: bool = True, 
-                            reject_post_only: bool =True
+                            reject_post_only: bool =False
                             ):
         
         
