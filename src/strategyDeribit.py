@@ -311,7 +311,7 @@ class strategyDeribit:
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
                                 #log.critical(f'{currency=}')
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
-                                log.critical(f'{spot_was_unhedged=} {actual_hedging_size=}')
+                                log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                     
                                 perpetual = 'PERPETUAL'
                                 log.critical(f'{perpetual in instrument =}')
@@ -351,6 +351,7 @@ class strategyDeribit:
                                                                     )
 
                                     if spot_was_unhedged:
+                                        log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
                                     
                                         await self.send_orders (
                                                                 'sell', 
