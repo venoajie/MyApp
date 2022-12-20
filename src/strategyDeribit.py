@@ -315,9 +315,7 @@ class strategyDeribit:
                     
                                 perpetual = 'PERPETUAL'
                                 # perpetual or other designated instruments
-                                if perpetual in instrument :
-                                    log.critical (ordBook)
-                                        
+                                if perpetual in instrument :                                        
 
                                     #check possibility average up/profit realization
                                     if spot_was_hedged and actual_hedging_size != 0:
