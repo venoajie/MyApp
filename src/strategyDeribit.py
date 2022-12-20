@@ -312,6 +312,7 @@ class strategyDeribit:
                                 #log.critical(f'{currency=}')
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                                 log.critical(f'{spot_was_unhedged=} {actual_hedging_size=}')
+                                log.critical(f'{perpetual in instrument =}')
                     
                                 perpetual = 'PERPETUAL'
                                 # perpetual or other designated instruments
