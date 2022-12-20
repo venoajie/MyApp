@@ -205,7 +205,7 @@ class strategyDeribit:
                         log.debug (currency)
                         log.debug (message_channel)
                         log.debug (f'user.orders.future.{currency}.raw')
-                        log.debug (message_channel == f'user.orders.future.{currency}.raw')
+                        log.debug (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency}.raw':
                             log.debug (data_orders)
                             
