@@ -132,14 +132,6 @@ class strategyDeribit:
                     )
                 
                 
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'deribit_price_index.{currency.lower()}_usd'
-                        )
-                    )
-                
-                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -186,12 +178,16 @@ class strategyDeribit:
                         file_name_index = (f'{currency.lower()}-index.pkl')
                         my_path = system_tools.provide_path_for_file (file_name_index, "market_data", "deribit")
                         index_price = []
-                        #index_price = pickling.read_data(my_path)[0]['price']
+                        
+                        try:
+                            index_price = pickling.read_data(my_path)[0]['price']
+                        except:
+                            index_price = []
                                     
-                        symbol_index =  (message_channel)[-7:]
-                        if message_channel == f'deribit_price_index.{symbol_index}':
+                        #symbol_index =  (message_channel)[-7:]
+                        #if message_channel == f'deribit_price_index.{symbol_index}':
                             #log.critical (data_orders)
-                            index_price = data_orders ['price']
+                        #    index_price = data_orders ['price']
                                                       
                         #log.debug (f'{currency.lower()=}')
                         file_name_instruments = (f'{currency.lower()}-instruments.pkl')
@@ -205,9 +201,6 @@ class strategyDeribit:
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
                         #log.debug (f'{instruments_name=}')
                             
-                        position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
-                        position = position ['result']
-                        #log.warning (position)
                                             
                         if message_channel == f'user.orders.future.{currency}.raw':
                             log.debug (data_orders)
