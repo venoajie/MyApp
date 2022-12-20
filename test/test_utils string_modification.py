@@ -37,6 +37,11 @@ def test_remove_redundant_elements  ():
     assert string_modification.remove_redundant_elements (elements) == ['BTC', 'ETH', 'LTC']
     
 def test_extract_integers_from_text  ():
+    list_text = ['hedging spot-open-1671189554374', 'hedging spot-close-167118955437']
+    list_int = [1671189554374, 167118955437]
     assert string_modification.extract_integers_from_text ('hedging spot-open-1671189554374') == 1671189554374    
+    assert ([string_modification.extract_integers_from_text(o)  for o in list_text  ]) == [1671189554374, 167118955437]    
     assert string_modification.extract_integers_from_text ('hedging spot-open') == []    
     assert string_modification.extract_integers_from_text ('1671189554374') == 1671189554374
+    
+    

@@ -190,7 +190,7 @@ class strategyDeribit:
                                     
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            log.critical (data_orders)
+                            #log.critical (data_orders)
                             index_price = data_orders ['price']
                                                       
                         #log.debug (f'{currency.lower()=}')
@@ -201,9 +201,9 @@ class strategyDeribit:
                         instruments = pickling.read_data (my_path_instruments)
                         #log.warning (f'{instruments}')
 
-                        instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
+                        #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        log.debug (f'{instruments_name=}')
+                        #log.debug (f'{instruments_name=}')
                             
                         position =  await deribit_get.get_position (self.connection_url, client_id, client_secret, currency.upper())
                         position = position ['result']
@@ -246,10 +246,6 @@ class strategyDeribit:
                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
-                        
-                        #log.error (message_channel == f'user.portfolio.{currency.lower()}')
-                        #log.error (currency.lower())
-                        #log.error (index_price !=[])
                     
                         file_name_portfolio = (f'{currency.lower()}-portfolio.pkl')
 
@@ -285,7 +281,7 @@ class strategyDeribit:
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
                                 log.info(f' {min_trade_amount=}')
-                                log.critical(f'{currency=}')
+                                #log.critical(f'{currency=}')
                                                             
                                 #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
                                 
@@ -294,10 +290,11 @@ class strategyDeribit:
                                 #read_mTrades =   pickling.read_data (my_path_myTrades)
                                 #log.debug (read_mTrades) 
                                 
+                                label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
                                 spot_was_unhedged = False
-                                spot_hedged = spot_hedging.is_spot_hedged_properly (instruments_with_rebates, 
-                                                                                     position, 
+                                spot_hedged = spot_hedging.is_spot_hedged_properly (currency, 
+                                                                                     label_hedging_spot_open, 
                                                                                      open_orders_byBot, 
                                                                                      notional, 
                                                                                      min_trade_amount,
@@ -307,8 +304,8 @@ class strategyDeribit:
                                 spot_was_unhedged = spot_hedged ['spot_was_unhedged']
                                 spot_was_hedged = spot_was_unhedged == False
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
-                                log.critical(f'{currency=}')
-                                actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), 'hedging spot-open-')
+                                #log.critical(f'{currency=}')
+                                actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                                 log.critical(f'{spot_was_unhedged=}')
                                 log.critical(f'{actual_hedging_size=}')
                                                                 
@@ -320,9 +317,9 @@ class strategyDeribit:
                                 if spot_was_hedged and actual_hedging_size != 0:
                                     threshold = 2/100
                                     
-                                    myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, 'hedging spot-open-')
+                                    myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, label_hedging_spot_open)
                                     log.warning (myTrades_max_price_plus_threshold)
-                                    myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, 'hedging spot-open-')
+                                    myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, label_hedging_spot_open)
                                     myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
                                     label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
                                     label = f'hedging spot-close-{label_int}'

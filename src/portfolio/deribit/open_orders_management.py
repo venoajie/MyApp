@@ -2,7 +2,7 @@
 
 # installed
 from dataclassy import dataclass
-from loguru import logger as log
+
 @dataclass(unsafe_hash=True, slots=True)
 class MyOrders ():
 

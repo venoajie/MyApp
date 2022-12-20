@@ -1,6 +1,19 @@
 # -*- coding: utf-8 -*-
-from utils import pickling, system_tools  
+from utils import pickling, system_tools, string_modification
 from portfolio.deribit import myTrades_management
+
+def my_path_myTrades (
+    currency: str,
+    status: str
+    ) -> list:
+    
+    '''
+    status = closed/open
+    '''       
+    
+    file_name_myTrades = (f'{currency.lower()}-myTrades-{status}.pkl')
+    
+    return  system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
 
 def fetch_my_trades (
     currency: str
@@ -9,11 +22,11 @@ def fetch_my_trades (
     '''
     '''       
     
-    file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
+    #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
     
-    my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
+    #my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
     
-    return  pickling.read_data (my_path_myTrades) 
+    return  pickling.read_data (my_path_myTrades(currency, 'open')) 
 
 def my_trades_api_basedOn_label (
     currency: str,
@@ -22,16 +35,97 @@ def my_trades_api_basedOn_label (
     
     '''
     '''       
-    
-
-    #print (label)
     my_trades = myTrades_management.MyTrades(fetch_my_trades (currency))    
     return  my_trades.my_trades_api_basedOn_label (label)
+
+def separate_specific_label_trade (
+    currency: str,
+    label: str,
+    closed_label: str,
+    my_trades_api: list = None 
+    )-> list:
+    
+    '''
+    '''    
+    if my_trades_api == None:
+        my_trades_api = my_trades_api_basedOn_label (currency, label)
+
+    return [] if my_trades_api == [] else  ([o for o in my_trades_api  if  closed_label in o['label'] ])
+
+def separate_open_trades_pair_which_have_closed (
+    currency: str,
+    label: str,
+    closed_label: str,
+    my_trades_api: list = None  
+    )-> list:
+    
+    '''
+    looking for pair transaction attributes which have closed previously
+    '''    
+        
+    from loguru import logger as log
+    if my_trades_api == None:
+        closed_trades = separate_specific_label_trade (currency, label, closed_label)
+        my_trades_api = my_trades_api_basedOn_label (currency, label)
+    else:
+        closed_trades = separate_specific_label_trade (currency, label, closed_label, my_trades_api)
+        
+    closed_trades_label =  ([o['label'] for o in closed_trades ])
+    closed_trades_label_int = ([string_modification.extract_integers_from_text(o)  for o in closed_trades_label  ])
+
+    if len (closed_trades_label_int) !=[]:
+        closed_trades_label_int = closed_trades_label_int[0] 
+    else:
+        return []
+        
+    return {'closed_trades': [] if closed_trades == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  in o['label'] ]),
+            'remaining_open_trades': [] if my_trades_api == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  not in o['label'] ])
+                }
+
+def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
+    currency: str,
+    label: str,
+    closed_label: str,
+    my_trades_api: list = None  
+    )-> list:
+    
+    '''
+    looking for pair transaction attributes which have closed previously
+    '''    
+        
+    if my_trades_api == None:
+        open_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                     label,
+                                                                     closed_label
+                                                                     )['remaining_open_trades']
+        closed_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                     label,
+                                                                     closed_label
+                                                                     )['closed_trades']
+    else:
+        open_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                     label,
+                                                                     closed_label, 
+                                                                     my_trades_api
+                                                                     )['remaining_open_trades']
+        closed_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                     label,
+                                                                     closed_label, 
+                                                                     my_trades_api
+                                                                     )['closed_trades']
+    if closed_trades != []  :
+        from utils import pickling
+
+        # write new data to remaining open transactions
+        pickling.replace_data(my_path_myTrades(currency, 'open'), open_trades) 
+
+        # append new data to closed transactions
+        pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
 
 def my_trades_api_basedOn_label_max_price_attributes (
     currency: str,
     label: str
-    ) -> float:
+    ) -> dict:
     
     '''
     '''       
@@ -59,7 +153,8 @@ def my_trades_api_basedOn_label_max_price_attributes (
     if my_trades_api_basedOn_label ==[]:
         return []
 
-def my_trades_max_price_plus_threshold (currency: str,
+def my_trades_max_price_plus_threshold (
+    currency: str,
     threshold: float, 
     index_price: float, 
     label: str
@@ -122,8 +217,8 @@ def compute_actual_hedging_size (
     return  sum([o['amount'] for o in my_trades if label in o['label'] ])
 
 def is_spot_hedged_properly (
-    hedging_instruments: list,
-    position: list,
+    currency: list,
+    label: list,
     open_orders_byBot: list,
     notional: float,
     min_trade_amount: float,
@@ -138,7 +233,7 @@ def is_spot_hedged_properly (
     min_hedged_size: int = compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
     
     # check whether current spot was hedged
-    actual_hedging_size : int = compute_actual_hedging_size (hedging_instruments, position) #! how to distinguish multiple strategy? (need to check label)
+    actual_hedging_size : int = compute_actual_hedging_size (currency, label) #! how to distinguish multiple strategy? (need to check label)
 
     # check remaining hedging needed
     remain_unhedged: int = int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size + actual_hedging_size )
@@ -164,3 +259,4 @@ def is_over_hedged (
     '''       
     return summing_size_open_orders_basedOn_label (open_orders_byBot, label) > minimum_hedging_size    
         
+    
