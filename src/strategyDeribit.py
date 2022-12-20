@@ -221,7 +221,6 @@ class strategyDeribit:
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
                             is_api =  [o['api'] for o in data_orders ] [0]
                             
-                            print (is_api)
                             if is_api:
                                 
                                 transaction_label =  [o['label'] for o in data_orders ] 
@@ -272,6 +271,7 @@ class strategyDeribit:
                         if  index_price !=[]:
                             
                             portfolio = pickling.read_data(my_path_portfolio)
+                            log.critical (portfolio)
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
                                 
