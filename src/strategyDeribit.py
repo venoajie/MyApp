@@ -219,7 +219,7 @@ class strategyDeribit:
                             my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
-                            is_api =  [o['api'] for o in data_orders ] 
+                            is_api =  [o['api'] for o in data_orders ] [0]
                             
                             print (is_api)
                             if is_api:
