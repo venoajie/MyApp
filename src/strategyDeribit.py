@@ -491,7 +491,8 @@ class strategyDeribit:
         """
         """
 
-        await deribit_get.send_order_limit (
+        try:
+            await deribit_get.send_order_limit (
                                             self.connection_url,
                                             client_id, 
                                             client_secret, 
@@ -501,6 +502,9 @@ class strategyDeribit:
                                             prc,
                                             label
                                             )
+        except Exception as e:
+            log.error (e)
+            
     async def ws_operation(
         self,
         operation: str,
