@@ -212,7 +212,7 @@ class strategyDeribit:
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100000)
                                                    
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
-                            log.error (data_orders)
+                            log.debug (data_orders)
                             
                             file_name = (f'{currency.lower()}-myTrades-open')    
                                                     
