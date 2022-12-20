@@ -31,13 +31,6 @@ async def main(
     client_secret: str=None,
         ) -> None:
 
-    # DBT LIVE RESToverHTTP Connection URL
-    # DBT TEST RESToverHTTP Connection URL
-    #connection_url: str = 'https://www.deribit.com/api/v2/'
-    #connection_url: str = 'https://test.deribit.com/api/v2/'
-
-    # DBT [POST] RESToverHTTP Payload
-    from loguru import logger as log
     id = id_numbering.id(endpoint, endpoint)
     payload: Dict = {
                     "jsonrpc": "2.0",
@@ -45,11 +38,6 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }  
-    log.warning (payload)  
-    print (endpoint)  
-    log.error (client_id)  
-    log.debug (client_secret)  
-
     if client_id == None:
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -132,7 +120,7 @@ async def send_order_limit (connection_url: str,
             client_id=client_id,
             client_secret=client_secret,
             )
-    print (result)    
+
     return result 
     
 async def  get_open_orders_byInstruments (connection_url, client_id, client_secret, endpoint, instrument, type):
