@@ -302,6 +302,7 @@ class strategyDeribit:
                                                                                      )
                                 
                                 spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+                                log.critical(f'{spot_was_unhedged=}')
                                 spot_was_hedged = spot_was_unhedged == False
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
                                 #log.critical(f'{currency=}')
