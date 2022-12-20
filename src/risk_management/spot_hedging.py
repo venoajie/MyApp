@@ -25,8 +25,8 @@ def fetch_my_trades (
     #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
     
     #my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
-    print_path = pickling.read_data (my_path_myTrades(currency, 'open')) 
-    print (print_path)
+    #print_path = pickling.read_data (my_path_myTrades(currency, 'open')) 
+    #print (print_path)
     
     return  pickling.read_data (my_path_myTrades(currency, 'open')) 
 
