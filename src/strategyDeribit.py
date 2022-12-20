@@ -269,26 +269,16 @@ class strategyDeribit:
                                 my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
-                                #log.warning (my_path_ordBook)
-                                #log.warning (ordBook)
+                                if ordBook ! =[] :
+                                    max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+                                    most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
 
-                                max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
-                                most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
-
-                                best_bid_prc= most_current_ordBook[0]['bids'][0][0]
-                                best_ask_prc= most_current_ordBook[0]['asks'][0][0]
+                                    best_bid_prc= most_current_ordBook[0]['bids'][0][0]
+                                    best_ask_prc= most_current_ordBook[0]['asks'][0][0]
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
                                 log.info(f' {min_trade_amount=}')
-                                #log.critical(f'{currency=}')
-                                                            
-                                #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
-                                
-                                #my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
-                                
-                                #read_mTrades =   pickling.read_data (my_path_myTrades)
-                                #log.debug (read_mTrades) 
                                 
                                 label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
