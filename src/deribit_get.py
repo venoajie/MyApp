@@ -9,7 +9,6 @@ Requirements:
 """
 
 # built ins
-import asyncio
 from typing import Dict
 # installed
 import aiohttp
@@ -44,7 +43,8 @@ async def main(
                     "id": id,
                     "method": f"{endpoint}",
                     "params": params
-                    }    
+                    }  
+    print (payload)  
 
     if client_id == None:
         async with aiohttp.ClientSession() as session:

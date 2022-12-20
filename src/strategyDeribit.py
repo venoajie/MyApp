@@ -316,7 +316,7 @@ class strategyDeribit:
                                 perpetual = 'PERPETUAL'
                                 log.critical(f'{perpetual in instrument =}')
                                 # perpetual or other designated instruments
-                                if perpetual in instrument :                                        
+                                if perpetual in instrument and  ordBook !=[] :                                        
 
                                     #check possibility average up/profit realization
                                     if spot_was_hedged and actual_hedging_size != 0:
