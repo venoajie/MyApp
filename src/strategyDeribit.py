@@ -308,47 +308,46 @@ class strategyDeribit:
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                                 log.critical(f'{spot_was_unhedged=}')
                                 log.critical(f'{actual_hedging_size=}')
-                                                                
-                                
                     
                                 perpetual = 'PERPETUAL'
-
-                                #check possibility average up/profit realization
-                                if spot_was_hedged and actual_hedging_size != 0:
-                                    threshold = 2/100
-                                    
-                                    myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, label_hedging_spot_open)
-                                    log.warning (myTrades_max_price_plus_threshold)
-                                    myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, label_hedging_spot_open)
-                                    myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
-                                    label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
-                                    label = f'hedging spot-close-{label_int}'
-                                    open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-close")
-                                    
-                                    if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
-
-                                        await self.send_orders (
-                                                                'sell', 
-                                                                instrument, 
-                                                                best_ask_prc, 
-                                                                myTrades_max_price_attributes ['size'], 
-                                                                label
-                                                                )
-
-                                    if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
+                                # perpetual or other designated instruments
+                                if perpetual in instrument :
                                         
-                                        await self.send_orders (
-                                                                'buy', 
-                                                                instrument, 
-                                                                best_bid_prc, 
-                                                                myTrades_max_price_attributes ['size'], 
-                                                                label
-                                                                )
 
-                                if spot_was_unhedged:
+                                    #check possibility average up/profit realization
+                                    if spot_was_hedged and actual_hedging_size != 0:
+                                        threshold = 2/100
+                                        
+                                        myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, label_hedging_spot_open)
+                                        log.warning (myTrades_max_price_plus_threshold)
+                                        myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, label_hedging_spot_open)
+                                        myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
+                                        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
+                                        label = f'hedging spot-close-{label_int}'
+                                        open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-close")
+                                        
+                                        if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
+
+                                            await self.send_orders (
+                                                                    'sell', 
+                                                                    instrument, 
+                                                                    best_ask_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
+
+                                        if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
+                                            
+                                            await self.send_orders (
+                                                                    'buy', 
+                                                                    instrument, 
+                                                                    best_bid_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
+
+                                    if spot_was_unhedged:
                                     
-                                    #if perpetual in instrument:
-                                    if perpetual in instrument :
                                         
                                         await self.send_orders (
                                                                 'sell', 
