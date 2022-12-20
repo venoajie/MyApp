@@ -226,21 +226,23 @@ class strategyDeribit:
                             my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
+                            transaction_label =  [o['label'] for o in data_orders ] 
 
                             label_hedging = 'spot hedging'
-                            spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
+                            if 'spot hedging' in transaction_label:
+                                spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
                                                                                                          label_hedging,
                                                                                                          'close'
                                                                                                          )
 
-                            my_trades_open_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            my_trades_open = pickling.read_data(my_trades_open_path)
-                            log.warning (f'{my_trades_open=}')
-                            
-                            file_name = (f'{currency.lower()}-myTrades-closed')    
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            my_trades_closed = pickling.read_data(my_path)
-                            log.warning (f'{my_trades_closed=}')
+                                my_trades_open_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                                my_trades_open = pickling.read_data(my_trades_open_path)
+                                log.warning (f'{my_trades_open=}')
+                                
+                                file_name = (f'{currency.lower()}-myTrades-closed')    
+                                my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                                my_trades_closed = pickling.read_data(my_path)
+                                log.warning (f'{my_trades_closed=}')
                                 
                         open_orders: list = await self.open_orders (currency)
 
