@@ -122,7 +122,7 @@ def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
         pickling.replace_data(my_path_myTrades(currency, 'open'), open_trades) 
 
         # append new data to closed transactions
-        pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
+        pickling.append_data(my_path_myTrades(currency, 'close'), closed_trades) 
 
 def my_trades_api_basedOn_label_max_price_attributes (
     currency: str,

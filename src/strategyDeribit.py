@@ -230,7 +230,7 @@ class strategyDeribit:
                             label_hedging = 'spot hedging'
                             spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
                                                                                                          label_hedging,
-                                                                                                         'closed'
+                                                                                                         'close'
                                                                                                          )
 
                             my_trades_open_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
