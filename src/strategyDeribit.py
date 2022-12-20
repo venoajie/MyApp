@@ -227,6 +227,12 @@ class strategyDeribit:
                             
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
 
+                            label_hedging = 'spot hedging'
+                            spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
+                                                                                                         label_hedging,
+                                                                                                         'closed'
+                                                                                                         )
+
                         open_orders: list = await self.open_orders (currency)
 
                         open_orders_byBot: list = open_orders.my_orders_api()
