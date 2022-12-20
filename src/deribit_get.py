@@ -132,7 +132,7 @@ async def send_order_limit (connection_url: str,
             client_id=client_id,
             client_secret=client_secret,
             )
-        
+    print (result)    
     return result 
     
 async def  get_open_orders_byInstruments (connection_url, client_id, client_secret, endpoint, instrument, type):
