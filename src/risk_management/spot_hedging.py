@@ -216,6 +216,7 @@ def compute_actual_hedging_size (
     my_trades = my_trades_api_basedOn_label (currency,
                                              label
                                              )
+    print (my_trades)
     return  sum([o['amount'] for o in my_trades if label in o['label'] ])
 
 def is_spot_hedged_properly (
@@ -231,22 +232,28 @@ def is_spot_hedged_properly (
     notional =  index_price * equity
 
     '''       
+    from loguru import logger as log
     # compute minimum hedging size
     min_hedged_size: int = compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
+    log.warning (f'{min_hedged_size=}')
     
     # check whether current spot was hedged
-    actual_hedging_size : int = compute_actual_hedging_size (currency, label) #! how to distinguish multiple strategy? (need to check label)
+    actual_hedging_size : int = compute_actual_hedging_size (currency, label) 
+    log.error (f'{actual_hedging_size=}')
 
     # check remaining hedging needed
-    remain_unhedged: int = int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size + actual_hedging_size )
+    remain_unhedged: int = int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
+    log.error (f'{remain_unhedged=}')
 
     # check open orders related to hedging, to ensure previous open orders has completely consumed
     open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
+    log.warning (f'{open_orders_hedging_size=}')
     
     size_pct_qty = int ((10/100 * min_hedged_size ))
     hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
 
     none_data = [None, [], '0.0', 0]
+    log.critical (f'{notional=}')
         
     return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
             'hedging_size': hedging_size_portion}
