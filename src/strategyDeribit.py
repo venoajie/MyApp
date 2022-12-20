@@ -137,7 +137,7 @@ class strategyDeribit:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                #log.error (message)
+                log.debug (message)
                 
                 if 'id' in list(message):
                     
