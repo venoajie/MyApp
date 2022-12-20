@@ -275,6 +275,7 @@ class strategyDeribit:
                                 my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
+                                
                                 if ordBook !=[] :
                                     max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
                                     most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
@@ -308,6 +309,8 @@ class strategyDeribit:
                                 perpetual = 'PERPETUAL'
                                 # perpetual or other designated instruments
                                 if perpetual in instrument :
+                                    if ['eth','ETH'] in currency:
+                                        log.critical (ordBook)
                                         
 
                                     #check possibility average up/profit realization
