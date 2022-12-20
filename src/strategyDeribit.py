@@ -233,6 +233,15 @@ class strategyDeribit:
                                                                                                          'closed'
                                                                                                          )
 
+                            my_trades_open_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            my_trades_open = pickling.read_data(my_trades_open_path)
+                            log.warning (f'{my_trades_open=}')
+                            
+                            file_name = (f'{currency.lower()}-myTrades-closed')    
+                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                            my_trades_closed = pickling.read_data(my_path)
+                            log.warning (f'{my_trades_closed=}')
+                                
                         open_orders: list = await self.open_orders (currency)
 
                         open_orders_byBot: list = open_orders.my_orders_api()
@@ -285,7 +294,6 @@ class strategyDeribit:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                                log.info(f' {min_trade_amount=}')
                                 
                                 label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
@@ -303,8 +311,7 @@ class strategyDeribit:
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
                                 #log.critical(f'{currency=}')
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
-                                log.critical(f'{spot_was_unhedged=}')
-                                log.critical(f'{actual_hedging_size=}')
+                                log.critical(f'{spot_was_unhedged=} {actual_hedging_size=}')
                     
                                 perpetual = 'PERPETUAL'
                                 # perpetual or other designated instruments
@@ -346,7 +353,6 @@ class strategyDeribit:
 
                                     if spot_was_unhedged:
                                     
-                                        
                                         await self.send_orders (
                                                                 'sell', 
                                                                 instrument, 
