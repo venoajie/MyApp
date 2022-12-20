@@ -332,44 +332,34 @@ class strategyDeribit:
                                         
                                         if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
 
-
-                                            await deribit_get.send_order_limit (self.connection_url,
-                                                                                client_id, 
-                                                                                client_secret, 
-                                                                                'sell', 
-                                                                                instrument, 
-                                                                                myTrades_max_price_attributes ['size'], 
-                                                                                best_ask_prc, 
-                                                                                label
-                                                                                )
-                                        
+                                            await self.send_orders (
+                                                                    'sell', 
+                                                                    instrument, 
+                                                                    best_ask_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
 
                                         if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
-                                                
-                                            await deribit_get.send_order_limit (self.connection_url,
-                                                                                client_id, 
-                                                                                client_secret, 
-                                                                                'buy', 
-                                                                                instrument, 
-                                                                                myTrades_max_price_attributes ['size'], 
-                                                                                best_bid_prc, 
-                                                                                label
-                                                                                )
+                                            
+                                            await self.send_orders (
+                                                                    'buy', 
+                                                                    instrument, 
+                                                                    best_bid_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
 
                                     if spot_was_unhedged:
                                         log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
-                                
-                                        await deribit_get.send_order_limit (self.connection_url,
-                                                                            client_id, 
-                                                                            client_secret, 
-                                                                            'sell', 
-                                                                            instrument, 
-                                                                            spot_hedged ['hedging_size'], 
-                                                                            best_ask_prc, 
-                                                                            label
-                                                                            )
-                                            
                                     
+                                        await self.send_orders (
+                                                                'sell', 
+                                                                instrument, 
+                                                                best_ask_prc,
+                                                                spot_hedged ['hedging_size'], 
+                                                                label
+                                                                )
                                         
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byBot: list = open_orders.my_orders_api()
@@ -377,7 +367,6 @@ class strategyDeribit:
                                         if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size'], 'hedging spot-open'):
                                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                                             #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
-                                            
                                             await deribit_get.get_cancel_order_byOrderId (
                                                                                             self.connection_url, 
                                                                                             client_id, 
