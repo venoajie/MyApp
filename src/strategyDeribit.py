@@ -221,6 +221,7 @@ class strategyDeribit:
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
                             is_api =  [o['api'] for o in data_orders ] 
                             
+                            print (is_api)
                             if is_api:
                                 
                                 transaction_label =  [o['label'] for o in data_orders ] 
