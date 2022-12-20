@@ -216,7 +216,7 @@ def compute_actual_hedging_size (
     my_trades = my_trades_api_basedOn_label (currency,
                                              label
                                              )
-    print (my_trades)
+    
     return  sum([o['amount'] for o in my_trades if label in o['label'] ])
 
 def is_spot_hedged_properly (
