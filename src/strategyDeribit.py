@@ -309,8 +309,7 @@ class strategyDeribit:
                                 perpetual = 'PERPETUAL'
                                 # perpetual or other designated instruments
                                 if perpetual in instrument :
-                                    if ['eth','ETH'] in currency:
-                                        log.critical (ordBook)
+                                    log.critical (ordBook)
                                         
 
                                     #check possibility average up/profit realization
