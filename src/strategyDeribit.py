@@ -137,7 +137,7 @@ class strategyDeribit:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                log.debug (message)
+                #log.debug (message)
                 
                 if 'id' in list(message):
                     
@@ -206,7 +206,7 @@ class strategyDeribit:
                         log.debug (message_channel)
                         log.debug (f'user.orders.future.{currency}.raw')
                         log.debug (message_channel == f'user.orders.future.{currency.upper()}.raw')
-                        if message_channel == f'user.orders.future.{currency}.raw':
+                        if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
                             
                             file_name = (f'{currency.lower()}-orders')    
