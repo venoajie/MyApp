@@ -45,6 +45,9 @@ async def main(
                     "params": params
                     }  
     print (payload)  
+    print (endpoint)  
+    print (client_id)  
+    print (client_secret)  
 
     if client_id == None:
         async with aiohttp.ClientSession() as session:
