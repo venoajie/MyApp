@@ -37,6 +37,7 @@ async def main(
     #connection_url: str = 'https://test.deribit.com/api/v2/'
 
     # DBT [POST] RESToverHTTP Payload
+    from loguru import logger as log
     id = id_numbering.id(endpoint, endpoint)
     payload: Dict = {
                     "jsonrpc": "2.0",
@@ -44,10 +45,10 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }  
-    print (payload)  
+    log.warning (payload)  
     print (endpoint)  
-    print (client_id)  
-    print (client_secret)  
+    log.error (client_id)  
+    log.debug (client_secret)  
 
     if client_id == None:
         async with aiohttp.ClientSession() as session:
