@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification
 from configuration import id_numbering
+import deribit_get
 #import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -232,6 +233,9 @@ class DeribitMarketDownloader:
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
                         log.debug (instrument)
+                        one_minute = 60000
+                        one_hour = one_minute * 60000
+                        
                         if message_channel == f'book.{instrument}.none.20.100ms':
 
                             file_name = (f'{instrument.lower()}-ordBook')
@@ -240,7 +244,7 @@ class DeribitMarketDownloader:
                             log.info (data_orders)
                             
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 10)          
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
                             except:
                                 continue        
                                                         
@@ -251,7 +255,7 @@ class DeribitMarketDownloader:
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
 
                             try:
-                                pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 600)          
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
                             except:
                                 continue
                         

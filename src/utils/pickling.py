@@ -114,3 +114,32 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
             #with open(file_name_pkl,'wb') as handle:
             #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
+def append_and_replace_items_based_on_time_expiration (file_name: str, data: dict, time_expiration: int)-> None:
+
+    """
+    append_and_replace_items_based_on_time_expiration in minute
+    """
+    from utils import time_modification
+    file_name_pkl:str =f"""{file_name}.pkl"""
+    
+
+    append_data(file_name, data)
+    data: object = read_data (file_name_pkl)
+    data_list = list (data [0])
+    now_time_utc = time_modification.convert_time_to_utc()['utc_now']
+    now_time_utc_in_unix = time_modification. convert_time_to_unix (now_time_utc)
+
+    time_delta = now_time_utc_in_unix - time_expiration
+    
+    if 'change_id' in data_list:
+        result: list =  ([o for o in data if  o['timestamp'] < time_delta])    
+        dump_data_as_list (file_name_pkl, result)
+                
+    if 'params' in data_list:
+
+        data = [o['params']  for o in data ]
+
+        data = [o['data']  for o in data ]
+        
+        result: list =  ([o for o in data if  o['tick'] < time_delta])    
+        dump_data_as_list (file_name_pkl, result)
