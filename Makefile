@@ -16,7 +16,7 @@ download-market:
 	nohup python3 src/downloader-openInterest.py &
 
 ram-disk:
-# https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
+#https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
 	sudo mount -t tmpfs -o rw,size=2G tmpfs MyApp/src/market_data
 
 test:
