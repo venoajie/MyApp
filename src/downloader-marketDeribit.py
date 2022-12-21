@@ -222,7 +222,7 @@ class DeribitMarketDownloader:
                         data_orders: list = message['params']['data']
                         currency = string_modification.extract_currency_from_text (message_channel)
 
-                        log.critical (currency)
+                        #log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             #currency = (symbol_index)[:3]
                             
@@ -232,7 +232,7 @@ class DeribitMarketDownloader:
                             pickling.replace_data(my_path, data_orders)
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
-                        log.debug (instrument)
+                        #log.debug (instrument)
                         one_minute = 60000
                         one_hour = one_minute * 60000
                         
@@ -241,7 +241,7 @@ class DeribitMarketDownloader:
                             file_name = (f'{instrument.lower()}-ordBook')
                             my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
                             log.critical (my_path)
-                            log.info (data_orders)
+                            #log.info (data_orders)
                             
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
