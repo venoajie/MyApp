@@ -24,6 +24,8 @@ start:
 	sleep 5
 	nohup python3 src/strategyDeribit.py &
 	nohup sh src/checkEvents.sh &
+	rm nohup.out
+	rm src/nohup.out
 	
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
