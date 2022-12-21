@@ -571,7 +571,7 @@ if __name__ == "__main__":
     #log.error (db_config)
     
     try:
-            main()
+        main()
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
