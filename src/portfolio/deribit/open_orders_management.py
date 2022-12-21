@@ -71,3 +71,9 @@ class MyOrders ():
         '''    
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  len ([o for o in self.my_orders_api_basedOn_label (label)])
+            
+    def check_whether_orders_have_excecuted (self)-> list:
+        
+        '''
+        '''    
+        pass
