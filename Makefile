@@ -11,15 +11,7 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
-download-market:
-	nohup python3 src/downloader-marketDeribit.py &
-	nohup python3 src/downloader-openInterest.py &
-
-ram-disk:
-#https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
-	sudo mount -t tmpfs -o rw,size=2G tmpfs MyApp/src/market_data
-
-run_test:
+run-test:
 	git pull
 	clear
 	python3 src/strategyDeribit.py 
@@ -31,7 +23,15 @@ start:
 	nohup sh src/checkEvents.sh &
 	rm nohup.out
 	rm src/nohup.out
-	
+
+download-market:
+	nohup python3 src/downloader-marketDeribit.py &
+	nohup python3 src/downloader-openInterest.py &
+
+ram-disk:
+#https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
+	sudo mount -t tmpfs -o rw,size=2G tmpfs MyApp/src/market_data
+
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
