@@ -21,7 +21,7 @@ ram-disk:
 
 start:
 	make download-market
-	timeout 5:
+	sleep 5
 	nohup python3 src/strategyDeribit.py &
 	nohup sh checkEvents.sh &
 	
