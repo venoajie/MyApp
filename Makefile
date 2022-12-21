@@ -19,14 +19,14 @@ run-test:
 start:
 	make download-market
 	sleep 5 
-	nohup python3 src/strategyDeribit.py &
-	nohup sh src/checkEvents.sh &
+	nohup python3 src/strategyDeribit.py >/dev/null 2>&1 &  
+	nohup sh src/checkEvents.sh >/dev/null 2>&1 &  
 	rm nohup.out
 	rm src/nohup.out
 
 download-market:
-	nohup python3 src/downloader-marketDeribit.py &
-	nohup python3 src/downloader-openInterest.py &
+	nohup python3 src/downloader-marketDeribit.py >/dev/null 2>&1 &  
+	nohup python3 src/downloader-openInterest.py >/dev/null 2>&1 &  
 
 ram-disk:
 #https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
