@@ -52,6 +52,17 @@ def test_is_over_hedged  ():
     minimum_hedging_size = 107
     assert spot_hedging.is_over_hedged (open_orders, minimum_hedging_size, 'hedging spot-open') == False
     
+def test_compute_actual_hedging_size  ():
+    
+    assert spot_hedging.compute_actual_hedging_size ('eth', 'hedging spot-open-') == 297 
+    
+def test_compute_remain_unhedged ():
+    notional = 107.38056472000001
+    min_trade_amount = 1
+    contract_size = 1
+    
+    assert spot_hedging.compute_remain_unhedged ('eth', 'hedging spot-open-', notional, min_trade_amount, contract_size) == -189 
+    
 def test_summing_size_open_orders_with_hedging_label  ():
     
     # default
@@ -64,10 +75,6 @@ def test_my_trades_api_basedOn_label_max_price_attributes  ():
     assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['price'] == 1211.9  
     assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['size'] == 99.0  
     assert spot_hedging.my_trades_api_basedOn_label_max_price_attributes ('eth', 'hedging spot')['label'] == 'hedging spot-open-1671189554374' 
-    
-def test_compute_actual_hedging_size  ():
-    
-    assert spot_hedging.compute_actual_hedging_size ('eth', 'hedging spot-open-') == 297 
     
 def test_myTrades_max_price_plus_threshold  ():
     

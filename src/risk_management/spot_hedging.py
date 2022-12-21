@@ -22,12 +22,6 @@ def fetch_my_trades (
     '''
     '''       
     
-    #file_name_myTrades = (f'{currency.lower()}-myTrades-open.pkl')
-    
-    #my_path_myTrades = system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
-    #print_path = pickling.read_data (my_path_myTrades(currency, 'open')) 
-    #print (print_path)
-    
     return  pickling.read_data (my_path_myTrades(currency, 'open')) 
 
 def my_trades_api_basedOn_label (
@@ -100,6 +94,7 @@ def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
                                                                      label,
                                                                      closed_label
                                                                      )['remaining_open_trades']
+        
         closed_trades = separate_open_trades_pair_which_have_closed (currency,
                                                                      label,
                                                                      closed_label
@@ -110,6 +105,7 @@ def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
                                                                      closed_label, 
                                                                      my_trades_api
                                                                      )['remaining_open_trades']
+        
         closed_trades = separate_open_trades_pair_which_have_closed (currency,
                                                                      label,
                                                                      closed_label, 
@@ -203,7 +199,6 @@ def compute_minimum_hedging_size (
     '''       
     return  int ((notional / min_trade_amount * contract_size) + min_trade_amount)
 
-
 def compute_actual_hedging_size (
     currency: str,
     label: str,
@@ -216,9 +211,29 @@ def compute_actual_hedging_size (
     my_trades = my_trades_api_basedOn_label (currency,
                                              label
                                              )
+    #print (my_trades)
     
     return  sum([o['amount'] for o in my_trades if label in o['label'] ])
 
+def compute_remain_unhedged (
+    currency: list,
+    label: list,
+    notional: float,
+    min_trade_amount: float,
+    contract_size: int
+    ) -> int:
+
+    '''
+    '''       
+    # compute minimum hedging size
+    min_hedged_size: int = compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
+    
+    # check whether current spot was hedged
+    actual_hedging_size : int = compute_actual_hedging_size (currency, label) 
+
+    # check remaining hedging needed
+    return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
+    
 def is_spot_hedged_properly (
     currency: list,
     label: list,
@@ -234,12 +249,15 @@ def is_spot_hedged_properly (
     '''       
     # compute minimum hedging size
     min_hedged_size: int = compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
-    
-    # check whether current spot was hedged
-    actual_hedging_size : int = compute_actual_hedging_size (currency, label) 
 
     # check remaining hedging needed
-    remain_unhedged: int = int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
+    remain_unhedged: int = compute_remain_unhedged (
+                                                    currency,
+                                                    label,
+                                                    notional,
+                                                    min_trade_amount,
+                                                    contract_size
+                                                    )
 
     # check open orders related to hedging, to ensure previous open orders has completely consumed
     open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')

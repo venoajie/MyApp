@@ -15,6 +15,10 @@ download-market:
 	nohup python3 src/downloader-marketDeribit.py &
 	nohup python3 src/downloader-openInterest.py &
 
+ram-disk:
+# https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
+	mount -t tmpfs -o rw,size=2G tmpfs /src/market_data
+
 start:
 	download-market
 	timeout 5:
@@ -23,6 +27,7 @@ start:
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
+	sudo apt-get install inotify-tools
 
 clean: clean-build clean-pyc clean-test
 
