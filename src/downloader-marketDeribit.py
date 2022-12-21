@@ -45,7 +45,7 @@ async def call_api(curr, msg):
             response_data: dict = response ['result']
             
             if response['id'] == 7617:
-                my_path = system_tools.provide_path_for_file ('index', 'replace', curr.lower()) 
+                my_path = system_tools.provide_path_for_file ('instruments', 'replace', curr.lower()) 
                 log.critical (my_path)
                 pickling.replace_data(my_path, response_data)  
                                           
@@ -79,7 +79,7 @@ for curr in currencies:
         }    
     url =  [msg, msg_curr] 
     
-    #asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
+    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
     
 class DeribitMarketDownloader:
     
@@ -149,9 +149,8 @@ class DeribitMarketDownloader:
 
             currencies = ['ETH', 'BTC']
             for currency in currencies:
-                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
-                instruments = pickling.read_data (my_path_instruments)
+                my_path = system_tools.provide_path_for_file ('instruments', 'read', currency.lower()) 
+                instruments = pickling.read_data (my_path)
                 instruments_name: list =  [o['instrument_name'] for o in instruments ]
                 
                 instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
@@ -228,7 +227,7 @@ class DeribitMarketDownloader:
                             my_path = system_tools.provide_path_for_file ('index', 'replace', instrument.lower()) 
                             log.critical (my_path)
 
-                            pickling.replace_data(my_path, data_orders)
+                            #pickling.replace_data(my_path, data_orders)
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
                         #log.debug (instrument)
