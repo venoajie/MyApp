@@ -44,30 +44,11 @@ async def call_api(curr, msg):
             response: dict = orjson.loads(response)
             response_data: dict = response ['result']
             
-            if response['id'] == 7617:
-                my_path = system_tools.provide_path_for_file ('instruments', 'replace', curr.lower()) 
-                log.critical (my_path)
-                pickling.replace_data(my_path, response_data)  
-                                          
             if response['id'] == 7538:
                 my_path = system_tools.provide_path_for_file ('currencies', 'replace') 
                 log.critical (my_path)
                 pickling.replace_data(my_path, response_data)   
-                
-currencies = ['ETH', 'BTC']
-for curr in currencies:
-
-    msg = \
-        {
-        "jsonrpc" : "2.0",
-        "id" : 7617,
-        "method" : "public/get_instruments",
-        "params" : {
-            "currency" : f"{curr}",
-            "kind" : "future",
-            "expired" : False
-        }
-        }
+          
     msg_curr = \
         {
         "jsonrpc" : "2.0",

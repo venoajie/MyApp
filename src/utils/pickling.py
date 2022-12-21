@@ -123,12 +123,17 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data:
     data: object = read_data (file_name_pkl)
     data_list = list (data [0])
     now_time_utc = time_modification.convert_time_to_utc()['utc_now']
+    print (data)
+    print (now_time_utc)
     now_time_utc_in_unix = time_modification. convert_time_to_unix (now_time_utc)
+    print (now_time_utc_in_unix)
 
     time_delta = now_time_utc_in_unix - time_expiration
+    print (time_delta)
     
     if 'change_id' in data_list:
-        result: list =  ([o for o in data if  o['timestamp'] < time_delta])    
+        result: list =  ([o for o in data if  o['timestamp'] < time_delta]) 
+        print (result)   
         dump_data_as_list (file_name_pkl, result)
                 
     if 'params' in data_list:

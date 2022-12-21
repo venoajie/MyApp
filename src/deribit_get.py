@@ -11,6 +11,9 @@ Requirements:
 # built ins
 from typing import Dict
 # installed
+import asyncio
+import websockets
+import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
 from dotenv import load_dotenv
@@ -201,7 +204,39 @@ async def  get_server_time (connection_url: str):
             )
     return result     
 
+from utils import system_tools, pickling
+async def call_api(currency, msg):
+   async with websockets.connect('wss://test.deribit.com/ws/api/v2') as websocket:
+       await websocket.send(msg)
+       while websocket.open:
+            response = await websocket.recv()
+            response: dict = orjson.loads(response)
+            response_data: dict = response ['result']
+            
+            if response['id'] == 7617:
+                my_path = system_tools.provide_path_for_file ('instruments', 'replace', currency.lower()) 
+                print (my_path)
+                pickling.replace_data(my_path, response_data)
+
 if __name__ == "__main__":
     # Logging
-    pass
-    
+
+    currencies = ['BTC', 'ETH']
+
+    for curr in currencies:
+                
+        msg = \
+        {
+        "jsonrpc" : "2.0",
+        "id" : 7617,
+        "method" : "public/get_instruments",
+        "params" : {
+            "currency" : f"{curr}",
+            "kind" : "future",
+            "expired" : False
+        }
+        }
+
+       
+        asyncio.get_event_loop().run_until_complete(call_api(curr, json.dumps(msg)))
+        
