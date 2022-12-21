@@ -23,6 +23,7 @@ start:
 	download-market
 	timeout 5:
 	nohup python3 src/strategyDeribit.py &
+	nohup sh checkEvents.sh &
 	
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
