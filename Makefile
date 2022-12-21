@@ -20,7 +20,6 @@ ram-disk:
 	sudo mount -t tmpfs -o rw,size=2G tmpfs MyApp/src/market_data
 
 test:
-	git pull
 	clear
 	python3 src/strategyDeribit.py 
 
