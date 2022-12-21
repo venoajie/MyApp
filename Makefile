@@ -20,9 +20,7 @@ start:
 	make download-market
 	sleep 5 
 	nohup python3 src/strategyDeribit.py >/dev/null 2>&1 &  
-	nohup sh src/checkEvents.sh >/dev/null 2>&1 &  
-	rm nohup.out
-	rm src/nohup.out
+	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
 
 download-market:
 	nohup python3 src/downloader-marketDeribit.py >/dev/null 2>&1 &  
