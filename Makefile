@@ -20,7 +20,7 @@ ram-disk:
 	sudo mount -t tmpfs -o rw,size=2G tmpfs MyApp/src/market_data
 
 start:
-	download-market
+	make download-market
 	timeout 5:
 	nohup python3 src/strategyDeribit.py &
 	nohup sh checkEvents.sh &
