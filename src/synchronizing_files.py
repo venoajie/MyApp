@@ -36,13 +36,15 @@ def main    ():
         my_path_orders = system_tools.provide_path_for_file (file_name_orders, "portfolio", "deribit")
 
         all_open_orders = pickling.read_data (my_path_orders)
-        log.warning (all_open_orders)
+        log.debug (my_path_orders)
+        log.debug (all_open_orders)
         my_orders = open_orders_management.MyOrders(all_open_orders)
-        log.warning (my_orders)
+        log.info (my_orders)
         
 
         file_name_trades = (f'{currency.lower()}-myTrades-open') 
         my_trades_open_path = system_tools.provide_path_for_file (file_name_trades, "portfolio", "deribit")
+        log.debug (my_trades_open_path)
         my_trades_open = pickling.read_data(my_trades_open_path)
         log.warning (my_trades_open)
         
