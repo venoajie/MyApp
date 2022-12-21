@@ -12,12 +12,14 @@ def get_platform ()-> str:
     https://www.webucator.com/article/how-to-check-the-operating-system-with-python/
     https://stackoverflow.com/questions/1325581/how-do-i-check-if-im-running-on-windows-in-python
     '''   
+    
     platforms:dict = {
         'linux1' : 'linux',
         'linux2' : 'linux',
         'darwin' : 'OS X',
         'win32' : 'win'
     }
+    
     if sys.platform not in platforms:
         return sys.platform
     
@@ -37,7 +39,7 @@ def sleep_and_restart_program (idle: float)-> None:
     python = sys.executable
     os.execl(python, python, * sys.argv)
     
-def provide_path_for_file (file_name: str, folder1: str = None, folder2: str = None)-> None:
+def provide_path_for_file_ (file_name: str, folder1: str = None, folder2: str = None)-> str:
     '''
     '''   
     from pathlib import Path
@@ -57,6 +59,76 @@ def provide_path_for_file (file_name: str, folder1: str = None, folder2: str = N
                         
     return (my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name)
     
+    
+    
+def provide_path_for_file (end_point: str, purpose: str, marker: str = None, status: str =None, method: str =None)-> str:
+    '''
+    marker: currency, instrument, other
+    purpose: read, append, save, replace
+    end_point: orders, myTrades
+    method: web/manual, api/bot
+    status: open, close
+    '''   
+    from pathlib import Path
+    from loguru import logger as log
+    
+    current_os = get_platform ()
+    
+    # Set root equal to  current folder
+    root:str = Path(".")
+    
+    exchange = None
+    #print( end_point in  ['order book', 'index', 'instruments','currencies','ohlc'] )
+    
+    if  bool([o for o in ['orders', 'myTrades'] if(o in end_point)])  :
+        sub_folder = 'portfolio'
+        exchange = 'deribit'
+    if bool([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc']  if(o in end_point)])  :
+        sub_folder = 'market_data'
+        exchange = 'deribit'
+    
+    log.debug(end_point)
+    log.debug(([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc']  if(o in end_point)]) )
+    log.info(bool([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc']  if(o in end_point)]) )
+    log.info(marker)
+    log.debug(end_point)
+    log.error(status)
+    log.info(sub_folder)
+    log.info(exchange)
+        
+    
+    if  marker != None:
+        
+        file_name =  (f'{marker.lower()}-{end_point}')  
+            
+        if  status != None:
+            file_name =  (f'{marker.lower()}-{end_point}-{status}')  
+            
+        if  method != None:
+            file_name =  (f'{marker.lower()}-{end_point}-{method}')  
+                
+    else:
+        file_name =  (f'{end_point}')
+
+    log.critical(file_name)
+        
+    file_name =  (f'{file_name}.pkl')
+    
+    # COmbine root + folders
+    my_path_linux: str = root / sub_folder if exchange == None else  root / sub_folder / exchange
+    my_path_win:str = root / "src" / sub_folder if exchange == None else  root / "src" / sub_folder / exchange
+    
+    # Create target Directory if doesn't exist in linux
+    if not os.path.exists(my_path_linux) and current_os =='linux':
+        os.makedirs(my_path_linux)
+
+    log.info(my_path_linux)
+    log.info(my_path_win)
+    log.info((my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name))
+                        
+    return (my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name)
+    
+    
 def check_environment()->bool:
 
     '''
@@ -69,19 +141,3 @@ def check_environment()->bool:
     else:
         print("In nohup mode")
         
-
-if __name__ == "__main__":
-    try:
-        
-        folder1 = "market_data"
-        folder2 = "deribit"
-        file_name = "test.pkl"
-        path = provide_path_for_file (file_name, "market_data", "deribit")
-        print (path)
-
-    except (KeyboardInterrupt, SystemExit):
-        import sys
-        sys.exit()
-
-    except Exception as error:
-        print (error)

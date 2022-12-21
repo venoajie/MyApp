@@ -125,8 +125,10 @@ def log_error (sub_account: str, underlying_aktif: str, error: str, idle: int)->
     log.error (traceback.format_exc())
     
     if idle != None:
-        if 'HTTP 502' in error:
+        if bool([o for o in ['HTTP 502']  if(o in error)])   :
             idle = max(60, idle)
+        else:
+            idle =idle
         log.critical (f"restart after error")
         sleep_and_restart_program(idle)
         

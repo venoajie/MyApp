@@ -43,7 +43,7 @@ instruments_perpetual = ['ETH-PERPETUAL', 'BTC-PERPETUAL']
 for instrument in instruments_perpetual:
 
     file_name = (f'{instrument.lower()}-ohlc-1m.pkl')   
-    my_path_ordBook = system_tools.provide_path_for_file (file_name, "market_data", "deribit")    
+    my_path_ordBook = system_tools.provide_path_for_file ('ohlc-1m', 'read', instrument)    
     ordBook = pd.read_pickle (my_path_ordBook)
     df = transform_result_to_data_frame(ordBook)
     chechk_outliers = some_statistics.check_outliers (df,'costUsd')

@@ -3,39 +3,39 @@
 # built ins
 import pickle
 import os
+from loguru import logger as log
+from pathlib import Path
 
-def append_data (file_name: str, data: dict)-> None:
+def append_data (file_name_pkl: str, data: dict)-> None:
 
     """
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
-    file_name: str =f"""{file_name}.pkl"""
-    
     collected_data: list = []
-    if os.path.exists(file_name):
+    if os.path.exists(file_name_pkl):
 
-        with open(file_name,'rb') as handle: 
+        with open(file_name_pkl,'rb') as handle: 
             collected_data = pickle.load(handle)
 
     collected_data.append(data)
 
     # Now we "sync" our database
-    with open(file_name,'wb') as handle:
+    with open(file_name_pkl,'wb') as handle:
         pickle.dump(collected_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # Re-load our database
-    with open(file_name,'rb') as handle:
+    with open(file_name_pkl,'rb') as handle:
         collected_data = pickle.load(handle)
     return collected_data
 
-def read_data (file_name: str)-> None:
+def read_data (file_name_pkl: str)-> None:
 
     """
     """
 
     try:
-        with open(file_name,'rb') as handle:
+        with open(file_name_pkl,'rb') as handle:
             read_pickle = pickle.load(handle)
             return read_pickle
     except:
@@ -46,6 +46,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
+    log.warning (file_name)
 
     with open(file_name,'wb') as handle:
             
@@ -59,24 +60,24 @@ def replace_data (file_name: str, data: dict)-> None:
     """
     """
 
-    dump_data_as_list (file_name, data)
-    #with open(file_name,'wb') as handle:
-    #        
-    #    if isinstance(data, dict):
-    #        pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
-    #    if isinstance(data, list):
-    #        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: int)-> None:
+    with open(file_name,'wb') as handle:
+        log.warning (file_name)
+            
+        if isinstance(data, dict):
+            pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+        if isinstance(data, list):
+            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
+def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
 
     """
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
     
     from loguru import logger as log
-    file_name_pkl:str =f"""{file_name}.pkl"""
+    #file_name_pkl:str =f"""{file_name}.pkl"""
 
-    append_data(file_name, data)
+    append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
     data_list = list (data [0])
     
@@ -110,20 +111,15 @@ def append_and_replace_items_based_on_qty (file_name: str, data: dict, max_qty: 
             result: list = [o for o in data if o['tick'] not in filtered_timestamps ]
 
             dump_data_as_list (file_name_pkl, result)
-
-            #with open(file_name_pkl,'wb') as handle:
-            #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
-def append_and_replace_items_based_on_time_expiration (file_name: str, data: dict, time_expiration: int)-> None:
+def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data: dict, time_expiration: int)-> None:
 
     """
     append_and_replace_items_based_on_time_expiration in minute
     """
     from utils import time_modification
-    file_name_pkl:str =f"""{file_name}.pkl"""
-    
 
-    append_data(file_name, data)
+    append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
     data_list = list (data [0])
     now_time_utc = time_modification.convert_time_to_utc()['utc_now']

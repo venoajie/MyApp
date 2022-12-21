@@ -45,13 +45,13 @@ async def call_api(curr, msg):
             response_data: dict = response ['result']
             
             if response['id'] == 7617:
-                file_name = (f'{curr.lower()}-instruments.pkl')
-                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                my_path = system_tools.provide_path_for_file ('index', 'replace', curr.lower()) 
+                log.critical (my_path)
                 pickling.replace_data(my_path, response_data)  
                                           
             if response['id'] == 7538:
-                file_name = (f'currencies.pkl')
-                my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                my_path = system_tools.provide_path_for_file ('currencies', 'replace') 
+                log.critical (my_path)
                 pickling.replace_data(my_path, response_data)   
                 
 currencies = ['ETH', 'BTC']
@@ -79,7 +79,7 @@ for curr in currencies:
         }    
     url =  [msg, msg_curr] 
     
-    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
+    #asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
     
 class DeribitMarketDownloader:
     
@@ -222,12 +222,11 @@ class DeribitMarketDownloader:
                         data_orders: list = message['params']['data']
                         currency = string_modification.extract_currency_from_text (message_channel)
 
-                        #log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            #currency = (symbol_index)[:3]
+                            log.critical (message_channel)
                             
-                            file_name = (f'{currency.lower()}-index.pkl')
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                            my_path = system_tools.provide_path_for_file ('index', 'replace', instrument.lower()) 
+                            log.critical (my_path)
 
                             pickling.replace_data(my_path, data_orders)
                              
@@ -237,9 +236,9 @@ class DeribitMarketDownloader:
                         one_hour = one_minute * 60000
                         
                         if message_channel == f'book.{instrument}.none.20.100ms':
-
-                            file_name = (f'{instrument.lower()}-ordBook')
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                            
+                            log.critical (message_channel)
+                            my_path = system_tools.provide_path_for_file ('ordBook', 'append', instrument.lower()) 
                             log.critical (my_path)
                             #log.info (data_orders)
                             
@@ -250,9 +249,8 @@ class DeribitMarketDownloader:
                                                         
                         instrument = "".join(list(message_channel) [13:][:-2])
                         if message_channel == f'chart.trades.{instrument}.1':
-                            
-                            file_name = (f'{instrument.lower()}-ohlc-1m')                            
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+                                              
+                            my_path = system_tools.provide_path_for_file ('ohlc-1m', 'append', instrument.lower()) 
 
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)

@@ -19,10 +19,11 @@ class SynchronizingFiles ():
     my_orders: list
     my_trades: list
             
-    def my_orders_api (self)-> list:
+    def transfer_manual_orders (self)-> list:
         
         '''
-        '''    
+        '''   
+         
         return [] if self.my_orders == [] else [o for o in self.my_orders if o['api'] == True]    
 
 def main    ():
