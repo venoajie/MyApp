@@ -237,6 +237,13 @@ class strategyDeribit:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
                             log.critical (data_orders)
+                            try:
+                                label_id= data_orders [0]['label']
+                            except:
+                                label_id= []
+                            log.critical (label_id)
+                            if label_id != []:
+                                pass
                             my_trades_path = system_tools.provide_path_for_file ('myTrades', currency)
                             my_trades_open = pickling.read_data(my_trades_path)  
                                      
