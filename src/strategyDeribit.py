@@ -236,18 +236,31 @@ class strategyDeribit:
                                 
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
+                            my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                            my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+                            my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
+                            my_trades_open = pickling.read_data(my_trades_path_open)  
+                                     
                             log.critical (data_orders)
+                            log.debug (f'{my_trades_open=}')
                             try:
                                 label_id= data_orders [0]['label']
                             except:
                                 label_id= []
-                            log.critical (label_id)
+                                
                             if label_id != []:
                                 pass
-                            my_trades_path = system_tools.provide_path_for_file ('myTrades', currency)
-                            my_trades_open = pickling.read_data(my_trades_path)  
-                                     
-                            pickling.append_and_replace_items_based_on_qty (my_trades_path, data_orders[0], 100000)
+                            log.debug ('open' in label_id)
+                            log.debug ('closed' in label_id)
+                            
+                            if 'open' in label_id:
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 100000)
+                                
+                            if 'closed' in label_id:
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 100000)
+                                
+                            if label_id == [] :
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
                             
                             is_api =  [o['api'] for o in data_orders ] [0]
                             
