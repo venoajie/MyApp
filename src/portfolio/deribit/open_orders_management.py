@@ -34,6 +34,13 @@ class MyOrders ():
         return [] if self.my_orders_all() == [] else  [o for o in self.my_orders_all() if o['api'] == False]
     
     
+    def my_orders_status (self, status)->list:
+        
+        '''
+        '''    
+        return [] if self.my_orders_all() == [] else  [o for o in self.my_orders_all() if o['status'] == status]
+    
+    
     def my_orders_api_basedOn_label (self, label: str)-> list:
         
         '''

@@ -23,7 +23,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
         pickle.dump(collected_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     # Re-load our database
-    print(f'{file_name_pkl=}')
+
     print(f'{data=}')
     print(f'{collected_data=}')
     with open(file_name_pkl,'rb') as handle:
@@ -79,7 +79,6 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
     data_list = list (data [0])
-    print(f'{data=}')
     
     if 'change_id' in data_list:
         sorted_data: list = sorted([o['timestamp']  for o in data ])
