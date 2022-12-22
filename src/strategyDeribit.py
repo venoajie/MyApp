@@ -18,12 +18,11 @@ from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, formula, system_tools, string_modification, time_modification
+from utils import pickling, formula, system_tools, string_modification
 from configuration import id_numbering, label_numbering
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from portfolio.deribit import open_orders_management
-import synchronizing_files
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -183,29 +182,22 @@ class strategyDeribit:
                             index_price = pickling.read_data(my_path)[0]['price']
                         except:
                             index_price = []
-                                    
-                        #symbol_index =  (message_channel)[-7:]
-                        #if message_channel == f'deribit_price_index.{symbol_index}':
-                            #log.critical (data_orders)
-                        #    index_price = data_orders ['price']
                                                       
                         #log.debug (f'{currency.lower()=}')   
-                        my_path = system_tools.provide_path_for_file ('instruments',  currency.lower())          
+                        my_path = system_tools.provide_path_for_file ('instruments',  currency)          
 
                         instruments = pickling.read_data (my_path)
 
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                        
-                        my_trades_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
-                        my_trades_open = pickling.read_data(my_trades_path)        
 
+                        my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
-                            my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+                            
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
                             
@@ -222,37 +214,7 @@ class strategyDeribit:
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
-                            open_orders_open = pickling.read_data (my_path_orders_open)
-                                
-                                
-                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':
-                            
-                            my_path = system_tools.provide_path_for_file ('myTrades', currency.lower()) 
-
-                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
-                            
-                            is_api =  [o['api'] for o in data_orders ] [0]
-                            
-                            if is_api:
-                                
-                                transaction_label =  [o['label'] for o in data_orders ] 
-
-                                label_hedging = 'spot hedging'
-                                if 'spot hedging' in transaction_label:
-                                    spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
-                                                                                                            label_hedging,
-                                                                                                            'close'
-                                                                                                            )
-
-                                    my_trades_open_path = system_tools.provide_path_for_file ('myTrades', 'open', currency.lower()) 
-                                    my_trades_open = pickling.read_data(my_trades_open_path)
-                                    log.warning (f'{my_trades_open=}')
-                                    
-                                    my_path_closed = system_tools.provide_path_for_file ('myTrades', 'closed', currency.lower()) 
-                                    my_trades_closed = pickling.read_data(my_path_closed)
-                                    log.warning (f'{my_trades_closed=}')
-                                
-                        open_orders: list = await self.open_orders (currency)
+                        open_orders: list = pickling.read_data (my_path_orders_open)
 
                         open_orders_byBot: list = open_orders.my_orders_api()
 
@@ -271,6 +233,36 @@ class strategyDeribit:
                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
+                                
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':
+                        
+                            my_trades_path = system_tools.provide_path_for_file ('myTrades', currency)
+                            my_trades_open = pickling.read_data(my_trades_path)  
+                                     
+                            pickling.append_and_replace_items_based_on_qty (my_trades_path, data_orders[0], 100000)
+                            
+                            is_api =  [o['api'] for o in data_orders ] [0]
+                            
+                            if is_api:
+                                
+                                transaction_label =  [o['label'] for o in data_orders ] 
+
+                                label_hedging = 'spot hedging'
+                                
+                                if 'spot hedging' in transaction_label:
+                                    spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
+                                                                                                            label_hedging,
+                                                                                                            'close'
+                                                                                                            )
+
+                                    my_trades_open_path = system_tools.provide_path_for_file ('myTrades', 'open', currency.lower()) 
+                                    my_trades_open = pickling.read_data(my_trades_open_path)
+                                    log.warning (f'{my_trades_open=}')
+                                    
+                                    my_path_closed = system_tools.provide_path_for_file ('myTrades', 'closed', currency.lower()) 
+                                    my_trades_closed = pickling.read_data(my_path_closed)
+                                    log.warning (f'{my_trades_closed=}')
+                                
                                 
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower()) 
                                                                                     

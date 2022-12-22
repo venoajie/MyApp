@@ -161,7 +161,7 @@ class main:
                         if message_channel == f'book.{instrument}.none.20.100ms':
                             #log.error (data_orders)
                             
-                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument.lower()) 
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
                             
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
@@ -171,7 +171,7 @@ class main:
                         instrument = "".join(list(message_channel) [13:][:-2])
                         if message_channel == f'chart.trades.{instrument}.1':
                                               
-                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument.lower()) 
+                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument) 
 
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
