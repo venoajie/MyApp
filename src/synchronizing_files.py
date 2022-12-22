@@ -40,6 +40,7 @@ class SynchronizingFiles ():
         '''   
          
         open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
+        log.warning (f'{self.my_trades=}')
         log.warning (f'{self.open_orders_exist_in_my_trades()=}')
         
         return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_exist_in_my_trades]   
