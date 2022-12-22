@@ -8,6 +8,7 @@ from typing import Dict
 from datetime import datetime, timedelta
 from os.path import join, dirname
 from functools import lru_cache
+from concurrent.futures import TimeoutError as ConnectionTimeoutError
 
 
 # installed
@@ -111,82 +112,84 @@ class main:
                                     )
                         
 
-                    while self.websocket_client.open:
-                        message: bytes = await self.websocket_client.recv()
-                        message: Dict = json.loads(message)
-                        logging.info(message)
+                    try:
+                        while self.websocket_client.open:
+                            message: bytes = await self.websocket_client.recv()
+                            message: Dict = json.loads(message)
+                            logging.info(message)
 
-                        if 'id' in list(message):
-                            if message['id'] == 9929:
-                                if self.refresh_token is None:
-                                    logging.info('Successfully authenticated WebSocket Connection')
-                                else:
-                                    logging.info('Successfully refreshed the authentication of the WebSocket Connection')
+                            if 'id' in list(message):
+                                if message['id'] == 9929:
+                                    if self.refresh_token is None:
+                                        logging.info('Successfully authenticated WebSocket Connection')
+                                    else:
+                                        logging.info('Successfully refreshed the authentication of the WebSocket Connection')
 
-                                self.refresh_token = message['result']['refresh_token']
+                                    self.refresh_token = message['result']['refresh_token']
 
-                                # Refresh Authentication well before the required datetime
-                                if message['testnet']:
-                                    expires_in: int = 300
-                                else:
-                                    expires_in: int = message['result']['expires_in'] - 240
+                                    # Refresh Authentication well before the required datetime
+                                    if message['testnet']:
+                                        expires_in: int = 300
+                                    else:
+                                        expires_in: int = message['result']['expires_in'] - 240
 
-                                self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
+                                    self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
 
-                            elif message['id'] == 8212:
-                                # Avoid logging Heartbeat messages
-                                continue
+                                elif message['id'] == 8212:
+                                    # Avoid logging Heartbeat messages
+                                    continue
 
-                        elif 'method' in list(message):
-                            # Respond to Heartbeat Message
-                            if message['method'] == 'heartbeat':
-                                await self.heartbeat_response()
+                            elif 'method' in list(message):
+                                # Respond to Heartbeat Message
+                                if message['method'] == 'heartbeat':
+                                    await self.heartbeat_response()
 
-        
-                        if 'params' in list(message):
-                            
-                            if message['method'] != 'heartbeat':
-                                                    
-                                message_channel = message['params']['channel']
+            
+                            if 'params' in list(message):
                                 
-                                symbol_index =  (message_channel)[-7:]
-                                data_orders: list = message['params']['data']
-                                currency = string_modification.extract_currency_from_text (message_channel)
+                                if message['method'] != 'heartbeat':
+                                                        
+                                    message_channel = message['params']['channel']
+                                    
+                                    symbol_index =  (message_channel)[-7:]
+                                    data_orders: list = message['params']['data']
+                                    currency = string_modification.extract_currency_from_text (message_channel)
 
-                                if message_channel == f'deribit_price_index.{symbol_index}':
-                                    
-                                    my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+                                    if message_channel == f'deribit_price_index.{symbol_index}':
+                                        
+                                        my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
 
-                                    pickling.replace_data(my_path, data_orders)
+                                        pickling.replace_data(my_path, data_orders)
 
-                                instrument = "".join(list(message_channel) [5:][:-14])
-                                #log.debug (instrument)
-                                one_minute = 60000
-                                one_hour = one_minute * 60000
-                                
-                                if message_channel == f'book.{instrument}.none.20.100ms':
-                                    #log.error (data_orders)
+                                    instrument = "".join(list(message_channel) [5:][:-14])
+                                    #log.debug (instrument)
+                                    one_minute = 60000
+                                    one_hour = one_minute * 60000
                                     
-                                    my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
-                                    
-                                    try:
-                                        pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
-                                    except:
-                                        continue        
-                                    
-                                instrument = "".join(list(message_channel) [13:][:-2])
-                                if message_channel == f'chart.trades.{instrument}.1':
-                                                    
-                                    my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument) 
+                                    if message_channel == f'book.{instrument}.none.20.100ms':
+                                        #log.error (data_orders)
+                                        
+                                        my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
+                                        
+                                        try:
+                                            pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                        except:
+                                            continue        
+                                        
+                                    instrument = "".join(list(message_channel) [13:][:-2])
+                                    if message_channel == f'chart.trades.{instrument}.1':
+                                                        
+                                        my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument) 
 
-                                    try:
-                                        pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
-                                    except:
-                                        continue
-                                
+                                        try:
+                                            pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                        except:
+                                            continue
                                     
-                    else:
-                        logging.info('WebSocket connection has broken.')
+                                    
+                    except ConnectionTimeoutError as e:
+                        logging.info(e)
+                        # https://stackoverflow.com/questions/72165175/python-websockets-how-to-connect-after-timeout-in-asyncio-loop
                         live = False
 
     async def establish_heartbeat(self) -> None:
