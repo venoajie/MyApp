@@ -206,7 +206,6 @@ class strategyDeribit:
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
                             
-                            
                             pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
 
                             all_open_orders = pickling.read_data (my_path_orders)
