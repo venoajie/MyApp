@@ -49,8 +49,8 @@ class SynchronizingFiles ():
         open_orders_id_cancelled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_cancelled () ] 
         exclude_cancelled = [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_cancelled]   
         open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
-        log.warning (f'{self.my_trades=}')
-        log.warning (f'{self.open_orders_exist_in_my_trades()=}')
+        #log.warning (f'{self.my_trades=}')
+        #log.warning (f'{self.open_orders_exist_in_my_trades()=}')
         
         return [] if self.my_orders == [] else [o for o in exclude_cancelled if o['order_id'] not in open_orders_id_exist_in_my_trades]   
     
@@ -60,7 +60,7 @@ class SynchronizingFiles ():
         '''   
 
         my_path_orders = system_tools.provide_path_for_file ('orders', self.currency) 
-        log.error (f'{self.open_orders_outstanding()=}')
+        #log.error (f'{self.open_orders_outstanding()=}')
 
         pickling.replace_data(my_path_orders, self.open_orders_outstanding())
                              
