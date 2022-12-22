@@ -283,7 +283,7 @@ class strategyDeribit:
                                 my_path_ordBook = system_tools.provide_path_for_file ('ordBook', instrument) 
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
-                                log.warning (ordBook)
+                                #log.warning (ordBook)
                                 
                                 if ordBook !=[] :
                                     max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
