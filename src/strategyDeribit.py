@@ -197,7 +197,6 @@ class strategyDeribit:
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
-                            
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
                             
@@ -237,6 +236,7 @@ class strategyDeribit:
                                 
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
+                            log.critical (data_orders)
                             my_trades_path = system_tools.provide_path_for_file ('myTrades', currency)
                             my_trades_open = pickling.read_data(my_trades_path)  
                                      
