@@ -1,15 +1,34 @@
 
 # built ins
 import asyncio
-import sys
+import sys, os
 import json
 import logging
 from typing import Dict
 from datetime import datetime, timedelta
+from os.path import join, dirname
+from functools import lru_cache
+
 
 # installed
 import websockets
+import orjson
+from loguru import logger as log
+from dotenv import load_dotenv
 
+# user defined formula 
+from utils import pickling, formula, system_tools, string_modification
+from configuration import id_numbering
+#import deribit_get
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+@lru_cache(maxsize=None)
+def parse_dotenv()->dict:    
+    return {'client_id': os.environ.get('client_id_test'),
+            'client_secret': os.environ.get('client_secret_test')
+            }
 
 class main:
     def __init__(
