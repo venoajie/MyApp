@@ -116,7 +116,7 @@ class main:
                             while self.websocket_client.open:
                                 message: bytes = await self.websocket_client.recv()
                                 message: Dict = json.loads(message)
-                                logging.info(message)
+                                #logging.info(message)
 
                                 if 'id' in list(message):
                                     if message['id'] == 9929:
