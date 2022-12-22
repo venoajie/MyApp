@@ -212,7 +212,7 @@ class strategyDeribit:
                             log.error (all_open_orders)
                             order_id_has_existed = [o for o in all_open_orders if order_id in o['order_id'] ] 
                             log.error (order_id_has_existed)
-                            if order_id_has_existed != []:
+                            if order_id_has_existed == []:
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
                             log.error (order_id_has_existed == [])
                             my_orders = open_orders_management.MyOrders(all_open_orders)
