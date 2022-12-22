@@ -25,12 +25,12 @@ class SynchronizingFiles ():
         '''
         '''   
          
-    def open_orders_status_cancelled (self)-> list:
+    def open_orders_state_cancelled (self)-> list:
         
         '''
         '''   
          
-        open_orders_status = [] if self.my_orders == [] else [o['status'] for o in self.my_orders  ] 
+        open_orders_status = [] if self.my_orders == [] else [o['order_state'] for o in self.my_orders  ] 
 
         return open_orders_status  
     
@@ -82,7 +82,7 @@ def main    ():
         
         synchronizing = SynchronizingFiles (currency, my_orders_all, my_trades_open)
         synchronizing.update_open_orders_outstanding()
-        cancel =synchronizing.open_orders_status_cancelled ()
+        cancel =synchronizing.open_orders_state_cancelled ()
         print (cancel)
 
 
