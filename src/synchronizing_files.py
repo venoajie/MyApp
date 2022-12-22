@@ -30,7 +30,7 @@ class SynchronizingFiles ():
         '''
         '''   
          
-        open_orders_status = [] if self.my_orders == [] else [o['status'] for o in self.my_orders () ] 
+        open_orders_status = [] if self.my_orders == [] else [o['status'] for o in self.my_orders  ] 
 
         return open_orders_status  
     
