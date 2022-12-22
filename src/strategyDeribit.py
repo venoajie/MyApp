@@ -308,12 +308,12 @@ class strategyDeribit:
                                                                     my_trades_open)
                             
                             
-                            spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+                            spot_was_unhedged = spot_hedged.is_spot_hedged_properly ['spot_was_unhedged']
 
                             spot_was_hedged = spot_was_unhedged == False
                             label: str = label_numbering.labelling ('open', label_hedging)
 
-                            actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
+                            actual_hedging_size = spot_hedged.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                             log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     
                             for instrument in instruments_name:
