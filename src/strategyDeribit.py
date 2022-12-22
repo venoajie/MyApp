@@ -336,9 +336,10 @@ class strategyDeribit:
                                                                                         )['spot_was_unhedged']
 
                                 spot_was_hedged = spot_was_unhedged == False
+                                actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
+
                                 label: str = label_numbering.labelling ('open', label_hedging)
 
-                                actual_hedging_size = spot_hedged.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                                 log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     
                                 label_hedging_spot_open: str = 'hedging spot-open'
