@@ -135,7 +135,12 @@ class main:
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
-                        
+                        log.warning (message_channel)
+ 
+                if 'params' in list(message):
+                    
+                    if message['method'] != 'heartbeat':
+                                               
                         message_channel = message['params']['channel']
                         
                         symbol_index =  (message_channel)[-7:]
