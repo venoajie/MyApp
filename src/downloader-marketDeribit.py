@@ -45,7 +45,7 @@ async def call_api(curr, msg):
             response_data: dict = response ['result']
             
             if response['id'] == 7538:
-                my_path = system_tools.provide_path_for_file ('currencies', 'replace') 
+                my_path = system_tools.provide_path_for_file ('currencies') 
                 log.critical (my_path)
                 pickling.replace_data(my_path, response_data)   
           
@@ -130,7 +130,7 @@ class DeribitMarketDownloader:
 
             currencies = ['ETH', 'BTC']
             for currency in currencies:
-                my_path = system_tools.provide_path_for_file ('instruments', 'read', currency.lower()) 
+                my_path = system_tools.provide_path_for_file ('instruments', currency.lower()) 
                 instruments = pickling.read_data (my_path)
                 instruments_name: list =  [o['instrument_name'] for o in instruments ]
                 
@@ -203,12 +203,10 @@ class DeribitMarketDownloader:
                         currency = string_modification.extract_currency_from_text (message_channel)
 
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            log.critical (message_channel)
                             
-                            my_path = system_tools.provide_path_for_file ('index', 'replace', instrument.lower()) 
-                            log.critical (my_path)
+                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
 
-                            #pickling.replace_data(my_path, data_orders)
+                            pickling.replace_data(my_path, data_orders)
                              
                         instrument = "".join(list(message_channel) [5:][:-14])
                         #log.debug (instrument)
@@ -217,10 +215,7 @@ class DeribitMarketDownloader:
                         
                         if message_channel == f'book.{instrument}.none.20.100ms':
                             
-                            log.critical (message_channel)
-                            my_path = system_tools.provide_path_for_file ('ordBook', 'append', instrument.lower()) 
-                            log.critical (my_path)
-                            #log.info (data_orders)
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument.lower()) 
                             
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
@@ -230,7 +225,7 @@ class DeribitMarketDownloader:
                         instrument = "".join(list(message_channel) [13:][:-2])
                         if message_channel == f'chart.trades.{instrument}.1':
                                               
-                            my_path = system_tools.provide_path_for_file ('ohlc-1m', 'append', instrument.lower()) 
+                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument.lower()) 
 
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)

@@ -16,6 +16,7 @@ class SynchronizingFiles ():
     '''
     '''       
     
+    currency: list
     my_orders: list
     my_trades: list
             
@@ -24,29 +25,52 @@ class SynchronizingFiles ():
         '''
         '''   
          
-        return [] if self.my_orders == [] else [o for o in self.my_orders if o['api'] == True]    
+    def open_orders_exist_in_my_trades (self)-> list:
+        
+        '''
+        '''   
+         
+        my_trade_order_id = [o['order_id'] for o in self.my_trades ] 
+
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] in my_trade_order_id]   
+    
+    def open_orders_outstanding (self)-> list:
+        
+        '''
+        '''   
+         
+        open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
+        
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_exist_in_my_trades]   
+    
+    def update_open_orders_outstanding (self)-> list:
+        
+        '''
+        '''   
+
+        my_path_orders = system_tools.provide_path_for_file ('orders', self.currency) 
+
+        pickling.replace_data(my_path_orders, self.open_orders_outstanding())
+                             
 
 def main    ():
     
     currencies =  ['ETH','BTC']
     
     for currency in currencies:
-
-        file_name_orders = (f'{currency.lower()}-orders.pkl')    
-                                
-        my_path_orders = system_tools.provide_path_for_file (file_name_orders, "portfolio", "deribit")
+         
+        my_trades_open_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
+        my_trades_open = pickling.read_data(my_trades_open_path)        
+        
+        my_path_orders = system_tools.provide_path_for_file ('orders', currency.lower())
 
         all_open_orders = pickling.read_data (my_path_orders)
         my_orders = open_orders_management.MyOrders(all_open_orders)
-        log.info (my_orders)
+        my_orders_all = my_orders.my_orders_all()
         
+        synchronizing = SynchronizingFiles (currency, my_orders_all, my_trades_open)
+        synchronizing.update_open_orders_outstanding()
 
-        file_name_trades = (f'{currency.lower()}-myTrades-open.pkl') 
-        my_trades_open_path = system_tools.provide_path_for_file (file_name_trades, "portfolio", "deribit")
-        my_trades_open = pickling.read_data(my_trades_open_path)
-        log.warning (my_trades_open)
-        
-        synchronizing = SynchronizingFiles (my_orders, my_trades_open)
 
 if __name__ == "__main__":
 
@@ -55,7 +79,8 @@ if __name__ == "__main__":
         main()
         
     except Exception as error:
+        log.error (error)
         message = f'SynchronizingFiles {error}'
-        telegram_app.telegram_bot_sendtext(message, 10)
+        telegram_app.telegram_bot_sendtext(message)
 
     

@@ -32,18 +32,16 @@ def check_and_save_every_5_minutes ():
     try:
                
         open_interest_historical = market_data. open_interest_historical ()
-        file_name =(f'{currency.lower()}-openInterestHistorical.pkl')
-        my_path = system_tools.provide_path_for_file (file_name, "market_data")
+        my_path = system_tools.provide_path_for_file ('openInterestHistorical', currency.lower()) 
         pickling.replace_data(my_path, open_interest_historical)
         
         open_interest_symbol = market_data. open_interest_symbol ()
         file_name =(f'{currency.lower()}-openInterestSymbol.pkl')
-        my_path = system_tools.provide_path_for_file (file_name, "market_data")
+        my_path = system_tools.provide_path_for_file ('openInterestHistorical', currency.lower())
         pickling.replace_data(my_path, open_interest_symbol)
         
         open_interest_aggregated_ohlc = market_data. open_interest_aggregated_ohlc ()
-        file_name =(f'{currency.lower()}-openInterestAggregated.pkl')
-        my_path = system_tools.provide_path_for_file (file_name, "market_data")
+        my_path = system_tools.provide_path_for_file ('openInterestAggregated', currency.lower())
         pickling.replace_data(my_path, open_interest_aggregated_ohlc)
         
     except Exception as error:

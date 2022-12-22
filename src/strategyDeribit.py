@@ -23,6 +23,7 @@ from configuration import id_numbering, label_numbering
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from portfolio.deribit import open_orders_management
+import synchronizing_files
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -103,8 +104,7 @@ class strategyDeribit:
 
             currencies = ['ETH', 'BTC']
             for currency in currencies:
-                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
+                my_path_instruments = system_tools.provide_path_for_file ('instruments', currency.lower())
                 instruments = pickling.read_data (my_path_instruments)
                 instruments_name: list =  [o['instrument_name'] for o in instruments ]
                 
@@ -175,8 +175,8 @@ class strategyDeribit:
 
                         currency = string_modification.extract_currency_from_text (message_channel)
                         
-                        file_name_index = (f'{currency.lower()}-index.pkl')
-                        my_path = system_tools.provide_path_for_file (file_name_index, "market_data", "deribit")
+                        symbol_index = (f'{currency.lower()}_usd')
+                        my_path = system_tools.provide_path_for_file ('index', symbol_index)
                         index_price = []
                         
                         try:
@@ -189,31 +189,39 @@ class strategyDeribit:
                             #log.critical (data_orders)
                         #    index_price = data_orders ['price']
                                                       
-                        #log.debug (f'{currency.lower()=}')
-                        file_name_instruments = (f'{currency.lower()}-instruments.pkl')
-                        my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")                
-                        instruments = pickling.read_data (my_path_instruments)
+                        #log.debug (f'{currency.lower()=}')   
+                        my_path = system_tools.provide_path_for_file ('instruments',  currency.lower())          
+
+                        instruments = pickling.read_data (my_path)
 
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
                         
+                                        
+                        my_trades_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
+                        my_trades_open = pickling.read_data(my_trades_path)        
+                        
+                        my_path_orders = system_tools.provide_path_for_file ('orders', currency)
+
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
                             
-                            file_name = (f'{currency.lower()}-orders')    
-                                                    
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
                             
-                            pickling.append_and_replace_items_based_on_qty (my_path, data_orders, 100000)
-                                                   
+                            pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
+
+                            all_open_orders = pickling.read_data (my_path_orders)
+                            my_orders = open_orders_management.MyOrders(all_open_orders)
+                            my_orders_all = my_orders.my_orders_all()
+                            
+                            synchronizing = synchronizing_files.SynchronizingFiles (currency, my_orders_all, my_trades_open)
+                            synchronizing.update_open_orders_outstanding()
+                                                                           
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
-                            log.debug (data_orders)
                             
-                            file_name = (f'{currency.lower()}-myTrades-open')    
-                                                    
-                            my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                            
+                            my_path = system_tools.provide_path_for_file ('myTrades', currency.lower()) 
+
                             pickling.append_and_replace_items_based_on_qty (my_path, data_orders[0], 100000)
+                            
                             is_api =  [o['api'] for o in data_orders ] [0]
                             
                             if is_api:
@@ -227,13 +235,12 @@ class strategyDeribit:
                                                                                                             'close'
                                                                                                             )
 
-                                    my_trades_open_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
+                                    my_trades_open_path = system_tools.provide_path_for_file ('myTrades', 'open', currency.lower()) 
                                     my_trades_open = pickling.read_data(my_trades_open_path)
                                     log.warning (f'{my_trades_open=}')
                                     
-                                    file_name = (f'{currency.lower()}-myTrades-closed')    
-                                    my_path = system_tools.provide_path_for_file (file_name, "portfolio", "deribit")
-                                    my_trades_closed = pickling.read_data(my_path)
+                                    my_path_closed = system_tools.provide_path_for_file ('myTrades', 'closed', currency.lower()) 
+                                    my_trades_closed = pickling.read_data(my_path_closed)
                                     log.warning (f'{my_trades_closed=}')
                                 
                         open_orders: list = await self.open_orders (currency)
@@ -255,10 +262,8 @@ class strategyDeribit:
                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
-                    
-                        file_name_portfolio = (f'{currency.lower()}-portfolio.pkl')
-
-                        my_path_portfolio = system_tools.provide_path_for_file (file_name_portfolio, "portfolio", "deribit")
+                                
+                        my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower()) 
                                                                                     
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
@@ -267,8 +272,6 @@ class strategyDeribit:
                         
                         if  index_price !=[] and portfolio !=[]:
                             
-                            
-                            log.critical (portfolio)
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
                                 
@@ -278,7 +281,7 @@ class strategyDeribit:
                                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
                                     
                                 file_name_ordBook = (f'{instrument.lower()}-ordBook.pkl')
-                                my_path_ordBook = system_tools.provide_path_for_file (file_name_ordBook, "market_data", "deribit")
+                                my_path_ordBook = system_tools.provide_path_for_file ('ordBook', currency.lower()) 
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
                                 

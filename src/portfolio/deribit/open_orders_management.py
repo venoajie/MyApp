@@ -15,17 +15,23 @@ class MyOrders ():
     
     my_orders: list
             
+    def my_orders_all (self)-> list:
+        
+        '''
+        '''    
+        return [] if self.my_orders == [] else self.my_orders 
+    
     def my_orders_api (self)-> list:
         
         '''
         '''    
-        return [] if self.my_orders == [] else [o for o in self.my_orders if o['api'] == True]
+        return [] if self.my_orders_all() == [] else [o for o in self.my_orders_all() if o['api'] == True]
     
     def my_orders_manual (self)->list:
         
         '''
         '''    
-        return [] if self.my_orders == [] else  [o for o in self.my_orders if o['api'] == False]
+        return [] if self.my_orders_all() == [] else  [o for o in self.my_orders_all() if o['api'] == False]
     
     
     def my_orders_api_basedOn_label (self, label: str)-> list:
