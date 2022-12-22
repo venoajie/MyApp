@@ -225,7 +225,7 @@ if __name__ == "__main__":
     # DBT Client ID
     client_id: str = '7aDpbWD0'
     # DBT Client Secret
-    client_secret: str = 'maY0y1MaO6a4uV1S6SKhGaraCQ_vY_D_pE'
+    client_secret: str = 'M5xtKo6i-maY0y1MaO6a4uV1S6SKhGaraCQ_vY_D_pE'
 
     main(
          ws_connection_url=ws_connection_url,
