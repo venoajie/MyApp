@@ -205,8 +205,15 @@ class strategyDeribit:
 
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
+                            order_id = data_orders ['order_id']
                             
                             all_open_orders = pickling.read_data (my_path_orders)
+                            order_id_has_existed = [o for o in all_open_orders if order_id in o['order_id'] ] 
+                            if order_id_has_existed == []:
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
+                            log.error (order_id)
+                            log.error (order_id_has_existed)
+                            log.error (order_id_has_existed == [])
                             log.error (all_open_orders)
                             my_orders = open_orders_management.MyOrders(all_open_orders)
                             my_orders_all = my_orders.my_orders_all()
