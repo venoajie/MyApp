@@ -1,7 +1,7 @@
 
 # built ins
 import asyncio
-import sys, os
+import os
 import json
 import logging
 from typing import Dict
@@ -10,17 +10,14 @@ from os.path import join, dirname
 from functools import lru_cache
 from concurrent.futures import TimeoutError as ConnectionTimeoutError
 
-
 # installed
 import websockets
-import orjson
-from loguru import logger as log
+#import orjson
+#from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, formula, system_tools, string_modification
-from configuration import id_numbering
-#import deribit_get
+from utils import pickling, system_tools, string_modification
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)

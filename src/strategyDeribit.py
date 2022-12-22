@@ -234,9 +234,11 @@ class strategyDeribit:
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                                 
+                        my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                        label_hedging = 'spot hedging'
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
-                            my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                            
                             my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
                             my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                             my_trades_open = pickling.read_data(my_trades_path_open)  
@@ -268,9 +270,9 @@ class strategyDeribit:
                                 
                                 transaction_label =  [o['label'] for o in data_orders ] 
 
-                                label_hedging = 'spot hedging'
                                 
-                                if 'spot hedging' in transaction_label:
+                                
+                                if label_hedging in transaction_label:
                                     spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
                                                                                                             label_hedging,
                                                                                                             'closed'
@@ -296,7 +298,24 @@ class strategyDeribit:
                             
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
-                                
+                        
+                            spot_was_unhedged = False
+                            
+                            # refresh myTrades source
+                            my_trades_open = pickling.read_data(my_trades_path_open)  
+                            
+                            spot_hedged = spot_hedging.SpotHedging (label_hedging,
+                                                                    my_trades_open)
+                            
+                            
+                            spot_was_unhedged = spot_hedged ['spot_was_unhedged']
+
+                            spot_was_hedged = spot_was_unhedged == False
+                            label: str = label_numbering.labelling ('open', label_hedging)
+
+                            actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
+                            log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
+                                    
                             for instrument in instruments_name:
                                 log.warning (f'{instrument}')
 
@@ -386,9 +405,9 @@ class strategyDeribit:
                                                                 )
                                         
                                         open_orders: list = await self.open_orders (currency)
-                                        open_orders_byBot: list = open_orders.my_orders_api()
+                                        open_orders_byAPI: list = open_orders.my_orders_api()
 
-                                        if  spot_hedging.is_over_hedged (open_orders_byBot, spot_hedged ['hedging_size'], 'hedging spot-open'):
+                                        if  spot_hedging.is_over_hedged (open_orders_byAPI, spot_hedged ['hedging_size'], 'hedging spot-open'):
                                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                                             #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
                                             await deribit_get.get_cancel_order_byOrderId (
