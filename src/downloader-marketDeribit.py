@@ -1,17 +1,18 @@
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 # built ins
-import asyncio
-import sys, os
-import json
-import logging
 from typing import Dict
 from datetime import datetime, timedelta
+import os
 from os.path import join, dirname
+import json
 from functools import lru_cache
 
-
+##
 # installed
 import websockets
+import asyncio
 import orjson
 from loguru import logger as log
 from dotenv import load_dotenv
@@ -19,6 +20,7 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification
 from configuration import id_numbering
+import deribit_get
 #import deribit_get
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -29,8 +31,61 @@ def parse_dotenv()->dict:
     return {'client_id': os.environ.get('client_id_test'),
             'client_secret': os.environ.get('client_secret_test')
             }
+none_data = [None, [], '0.0', 0]
+    
+    
+async def call_api(curr, msg):
+    async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
+        
+        #await asyncio.gather(*[self.call_api(json.dumps(item)) for item in url ])
+        await websocket.send(msg)
+        while websocket.open:
+            response = await websocket.recv()
+            response: dict = orjson.loads(response)
+            response_data: dict = response ['result']
+            
+            if response['id'] == 7538:
+                my_path = system_tools.provide_path_for_file ('currencies') 
+                log.critical (my_path)
+                pickling.replace_data(my_path, response_data)   
+          
+    msg_curr = \
+        {
+        "jsonrpc" : "2.0",
+        "id" : 7538,
+        "method" : "public/get_currencies",
+        "params" : {
+
+        }
+        }    
+    url =  [msg, msg_curr] 
+    
+    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
     
 class DeribitMarketDownloader:
+    
+    '''
+        
+    +----------------------------------------------------------------------------------------------+ 
+    #  References: 
+        + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
+        + https://niekdeschipper.com/projects/asyncio.md
+        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
+        + https://realpython.com/async-io-python/
+        + https://www.youtube.com/watch?v=ZzfHjytDceU
+        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
+        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
+        + https://sammchardy.github.io/async-binance-basics/
+        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
+        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
+        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
+        
+        Basic:
+        + https://websockets.readthedocs.io/en/6.0/intro.html
+        + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
+    +----------------------------------------------------------------------------------------------+ 
+
+    '''       
     def __init__(
         self,
         ws_connection_url: str,
@@ -38,7 +93,7 @@ class DeribitMarketDownloader:
         client_secret: str
             ) -> None:
         # Async Event Loop
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.get_event_loop() # https://stackoverflow.com/questions/65206110/when-to-use-asyncio-get-running-loop-or-asyncio-get-event-loop-in-python
 
         # Instance Variables
         self.ws_connection_url: str = ws_connection_url
@@ -51,8 +106,9 @@ class DeribitMarketDownloader:
         # Start Primary Coroutine
         self.loop.run_until_complete(
             self.ws_manager()
-            )
-
+            )             
+                
+    #@lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
             self.ws_connection_url,
@@ -66,31 +122,57 @@ class DeribitMarketDownloader:
 
             # Establish Heartbeat
             await self.establish_heartbeat()
-
+            
             # Start Authentication Refresh Task
             self.loop.create_task(
                 self.ws_refresh_auth()
-                )
+                )              
 
-            # Subscribe to the specified WebSocket Channel
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='trades.BTC-PERPETUAL.raw'
-                    )
-                )
-
+            currencies = ['ETH', 'BTC']
+            for currency in currencies:
+                my_path = system_tools.provide_path_for_file ('instruments', currency.lower()) 
+                instruments = pickling.read_data (my_path)
+                instruments_name: list =  [o['instrument_name'] for o in instruments ]
+                
+                instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
+                
+                for instrument in instruments_name:
+                
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'book.{instrument}.none.20.100ms'
+                            )
+                        )
+                    
+                    if instrument in ['ETH-PERPETUAL', 'BTC-PERPETUAL'] :
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation='subscribe',
+                                ws_channel=f'chart.trades.{instrument}.1'
+                                )
+                            )
+                            
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation='subscribe',
+                                ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                                )
+                            )
+                
             while self.websocket_client.open:
+                # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
-                message: Dict = json.loads(message)
-                # logging.info(message)
-
+                message: Dict = orjson.loads(message)
+                message_channel: str = None
+                
                 if 'id' in list(message):
+                    
                     if message['id'] == 9929:
                         if self.refresh_token is None:
-                            logging.info('Successfully authenticated WebSocket Connection')
+                            log.debug('Successfully authenticated WebSocket Connection')
                         else:
-                            logging.info('Successfully refreshed the authentication of the WebSocket Connection')
+                            log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
                         self.refresh_token = message['result']['refresh_token']
 
@@ -105,16 +187,57 @@ class DeribitMarketDownloader:
                     elif message['id'] == 8212:
                         # Avoid logging Heartbeat messages
                         continue
-
+                    
                 elif 'method' in list(message):
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
 
-            else:
-                logging.info('WebSocket connection has broken.')
-                sys.exit(1)
+                if 'params' in list(message):
+                    
+                    if message['method'] != 'heartbeat':
+                        message_channel = message['params']['channel']
+            
+                        symbol_index =  (message_channel)[-7:]
+                        data_orders: list = message['params']['data']
+                        currency = string_modification.extract_currency_from_text (message_channel)
 
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            
+                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+
+                            pickling.replace_data(my_path, data_orders)
+                             
+                        instrument = "".join(list(message_channel) [5:][:-14])
+                        #log.debug (instrument)
+                        one_minute = 60000
+                        one_hour = one_minute * 60000
+                        
+                        if message_channel == f'book.{instrument}.none.20.100ms':
+                            #log.error (data_orders)
+                            
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument.lower()) 
+                            
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue        
+                                                        
+                        instrument = "".join(list(message_channel) [13:][:-2])
+                        if message_channel == f'chart.trades.{instrument}.1':
+                                              
+                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument.lower()) 
+
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue
+                        
+            else:
+                log.info('WebSocket connection has broken.')
+                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
+                system_tools.sleep_and_restart_program(1)
+                
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
@@ -128,12 +251,15 @@ class DeribitMarketDownloader:
                               "interval": 10
                                }
                     }
-
-        await self.websocket_client.send(
+                
+        try:
+            await self.websocket_client.send(
             json.dumps(
                 msg
                 )
                 )
+        except Exception as error:
+            log.warning (error)
 
     async def heartbeat_response(self) -> None:
         """
@@ -147,12 +273,16 @@ class DeribitMarketDownloader:
                     "params": {}
                     }
 
-        await self.websocket_client.send(
+        try:
+            await self.websocket_client.send(
             json.dumps(
                 msg
                 )
                 )
 
+        except Exception as error:
+            log.warning (error)
+            
     async def ws_auth(self) -> None:
         """
         Requests DBT's `public/auth` to
@@ -204,7 +334,8 @@ class DeribitMarketDownloader:
     async def ws_operation(
         self,
         operation: str,
-        ws_channel: str
+        ws_channel: str,
+        id: int=100
             ) -> None:
         """
         Requests `public/subscribe` or `public/unsubscribe`
@@ -212,22 +343,25 @@ class DeribitMarketDownloader:
         """
         await asyncio.sleep(5)
 
+        id = id_numbering.id(operation, ws_channel)
+        
         msg: Dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
-                    "id": 42,
+                    "id": id,
                     "params": {
                         "channels": [ws_channel]
                         }
                     }
 
+        log.warning(id)
+        log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
                 msg
                 )
             )
-
-
+                
 def main ():
     
     client_id: str = parse_dotenv() ['client_id']
@@ -248,7 +382,29 @@ def main ():
 
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
-        
+    
 if __name__ == "__main__":
 
-    main()
+    # DBT Client ID
+    client_id: str = parse_dotenv() ['client_id']
+    # DBT Client Secret
+    client_secret: str = parse_dotenv() ['client_secret']
+    config = {
+    'client_id': 'client_id',
+    'client_secret': 'client_secret'
+}
+    db_config = [{k: os.environ.get(v) for k, v in config.items()}]
+    #log.error (db_config)
+    db_config = [o  for o in db_config]
+    #log.error (db_config)
+    
+    try:
+            main()
+        
+    except (KeyboardInterrupt, SystemExit):
+        asyncio.get_event_loop().run_until_complete(main().stop_ws())
+
+    except Exception as error:
+        formula.log_error('app','name-try2', error, 10)
+
+    

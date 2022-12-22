@@ -135,6 +135,18 @@ class main:
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
+                        
+                        message_channel = message['params']['channel']
+                        
+                        symbol_index =  (message_channel)[-7:]
+                        data_orders: list = message['params']['data']
+                        currency = string_modification.extract_currency_from_text (message_channel)
+
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            
+                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+
+                            pickling.replace_data(my_path, data_orders)
 
             else:
                 logging.info('WebSocket connection has broken.')
