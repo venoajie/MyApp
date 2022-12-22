@@ -308,7 +308,11 @@ class strategyDeribit:
                                                                     my_trades_open)
                             
                             
-                            spot_was_unhedged = spot_hedged.is_spot_hedged_properly ['spot_was_unhedged']
+                            spot_was_unhedged = spot_hedged.is_spot_hedged_properly (open_orders_byBot, 
+                                                                                     notional, 
+                                                                                     min_trade_amount,
+                                                                                     contract_size
+                                                                                     )['spot_was_unhedged']
 
                             spot_was_hedged = spot_was_unhedged == False
                             label: str = label_numbering.labelling ('open', label_hedging)
