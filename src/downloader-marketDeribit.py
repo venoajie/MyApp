@@ -34,34 +34,6 @@ def parse_dotenv()->dict:
 none_data = [None, [], '0.0', 0]
     
     
-async def call_api(curr, msg):
-    async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
-        
-        #await asyncio.gather(*[self.call_api(json.dumps(item)) for item in url ])
-        await websocket.send(msg)
-        while websocket.open:
-            response = await websocket.recv()
-            response: dict = orjson.loads(response)
-            response_data: dict = response ['result']
-            
-            if response['id'] == 7538:
-                my_path = system_tools.provide_path_for_file ('currencies') 
-                log.critical (my_path)
-                pickling.replace_data(my_path, response_data)   
-          
-    msg_curr = \
-        {
-        "jsonrpc" : "2.0",
-        "id" : 7538,
-        "method" : "public/get_currencies",
-        "params" : {
-
-        }
-        }    
-    url =  [msg, msg_curr] 
-    
-    asyncio.gather(*[call_api(curr, json.dumps(item)) for item in url ])       
-    
 class DeribitMarketDownloader:
     
     '''
