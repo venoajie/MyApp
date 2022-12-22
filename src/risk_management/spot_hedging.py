@@ -10,10 +10,8 @@ def my_path_myTrades (
     '''
     status = closed/open
     '''       
-    
-    file_name_myTrades = (f'{currency.lower()}-myTrades-{status}.pkl')
-    
-    return  system_tools.provide_path_for_file (file_name_myTrades, "portfolio", "deribit")
+        
+    return  system_tools.provide_path_for_file ('myTrades', currency, status)
 
 def fetch_my_trades (
     currency: str
@@ -118,7 +116,7 @@ def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
         pickling.replace_data(my_path_myTrades(currency, 'open'), open_trades) 
 
         # append new data to closed transactions
-        pickling.append_data(my_path_myTrades(currency, 'close'), closed_trades) 
+        pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
 
 def my_trades_api_basedOn_label_max_price_attributes (
     currency: str,

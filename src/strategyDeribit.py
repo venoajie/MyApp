@@ -253,7 +253,7 @@ class strategyDeribit:
                                 if 'spot hedging' in transaction_label:
                                     spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
                                                                                                             label_hedging,
-                                                                                                            'close'
+                                                                                                            'closed'
                                                                                                             )
 
                                     my_trades_open_path = system_tools.provide_path_for_file ('myTrades', 'open', currency.lower()) 
@@ -309,15 +309,15 @@ class strategyDeribit:
                                                                                      )
                                 
                                 spot_was_unhedged = spot_hedged ['spot_was_unhedged']
-                                log.critical(f'{spot_was_unhedged=}')
+
                                 spot_was_hedged = spot_was_unhedged == False
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
-                                #log.critical(f'{currency=}')
+
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
                                 log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                     
                                 perpetual = 'PERPETUAL'
-                                log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
+                                #log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
 
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
@@ -331,8 +331,8 @@ class strategyDeribit:
                                         myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, label_hedging_spot_open)
                                         myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
                                         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
-                                        label = f'hedging spot-close-{label_int}'
-                                        open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-close")
+                                        label = f'hedging spot-closed-{label_int}'
+                                        open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-closed")
                                         
                                         if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
 
