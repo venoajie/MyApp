@@ -211,6 +211,7 @@ class strategyDeribit:
                             all_open_orders = pickling.read_data (my_path_orders)
                             my_orders = open_orders_management.MyOrders(all_open_orders)
                             my_orders_all = my_orders.my_orders_all()
+                            log.error (my_orders_all)
                             
                             synchronizing = synchronizing_files.SynchronizingFiles (currency, my_orders_all, my_trades_open)
                             synchronizing.update_open_orders_outstanding()
