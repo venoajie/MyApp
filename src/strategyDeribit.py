@@ -205,26 +205,27 @@ class strategyDeribit:
 
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
+                            
                             order_state = data_orders ['order_state']
-                            my_path_orders = system_tools.provide_path_for_file ('orders', currency, order_state)
-                            if order_state == 'filled':
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
+                            order_id= data_orders ['order_id']
+                            
+                            my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+                            my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
+                            open_orders_open = pickling.read_data (my_path_orders_open)
+                            log.error (open_orders_open)
+                            
                             if order_state == 'open':
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
-                            if order_state == 'cancelled':
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
-                            
-                            all_open_orders = pickling.read_data (my_path_orders)
-                            log.error (all_open_orders)
-                            pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
-
-                            my_orders = open_orders_management.MyOrders(all_open_orders)
-                            my_orders_all = my_orders.my_orders_all()
-                            log.error (my_orders_all)
-                            
-                            synchronizing = synchronizing_files.SynchronizingFiles (currency, my_orders_all, my_trades_open)
-                            synchronizing.update_open_orders_outstanding()
-                                                                           
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
+                            else:
+                                item_in_open_orders_open_with_same_id =  [o for o in data_orders if o['api'] == order_id ] 
+                                item_in_open_orders_open_with_diff_id =  [o for o in data_orders if o['api'] != order_id ] 
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, item_in_open_orders_open_with_diff_id, 100000)
+                                
+                            log.critical (open_orders_open)
+                                
+                                
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                             
                             my_path = system_tools.provide_path_for_file ('myTrades', currency.lower()) 
