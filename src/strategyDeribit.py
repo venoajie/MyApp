@@ -215,7 +215,7 @@ class strategyDeribit:
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
                         open_orders_all: list = pickling.read_data (my_path_orders_open)
-                        open_order_mgt = open.MyOrders (open_orders_all)
+                        open_order_mgt = open_orders_management.MyOrders (open_orders_all)
 
                         open_orders_byBot: list = open_order_mgt.my_orders_api()
 
