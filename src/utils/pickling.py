@@ -24,7 +24,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
 
     # Re-load our database
 
-    print(f'{data=}')
+    #print(f'{data=}')
     print(f'{collected_data=}')
     with open(file_name_pkl,'rb') as handle:
         collected_data = pickle.load(handle)
