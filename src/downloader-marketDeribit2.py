@@ -153,6 +153,22 @@ class main:
 
                             pickling.replace_data(my_path, data_orders)
 
+                        instrument = "".join(list(message_channel) [5:][:-14])
+                        #log.debug (instrument)
+                        one_minute = 60000
+                        one_hour = one_minute * 60000
+                        
+                        if message_channel == f'book.{instrument}.none.20.100ms':
+                            #log.error (data_orders)
+                            
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument.lower()) 
+                            
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue        
+                            
+                            
             else:
                 logging.info('WebSocket connection has broken.')
                 sys.exit(1)
