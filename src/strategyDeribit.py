@@ -214,11 +214,12 @@ class strategyDeribit:
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
-                        open_orders: list = pickling.read_data (my_path_orders_open)
+                        open_orders_all: list = pickling.read_data (my_path_orders_open)
+                        open_order_mgt = open.MyOrders (open_orders_all)
 
-                        open_orders_byBot: list = open_orders.my_orders_api()
+                        open_orders_byBot: list = open_order_mgt.my_orders_api()
 
-                        open_orders_lastUpdateTStamps: list = open_orders.my_orders_api_last_update_timestamps()
+                        open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
 
                         one_minute = 60000
                         three_minute = one_minute * 3
@@ -230,7 +231,7 @@ class strategyDeribit:
                             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
                             open_orders_deltaTime = current_server_time - open_orders_lastUpdateTStamp_min                       
 
-                            open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
+                            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > three_minute:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                                 
