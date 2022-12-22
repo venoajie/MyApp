@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from utils import pickling, system_tools, string_modification
 from portfolio.deribit import myTrades_management
+from loguru import logger as log
 
 def my_path_myTrades (
     currency: str,
@@ -14,26 +15,29 @@ def my_path_myTrades (
     return  system_tools.provide_path_for_file ('myTrades', currency, status)
 
 def fetch_my_trades (
-    currency: str
+    currency: str,
+    status: str
     ) -> list:
     
     '''
     '''       
     
-    return  pickling.read_data (my_path_myTrades(currency, 'open')) 
+    return  pickling.read_data (my_path_myTrades(currency, status)) 
 
 def my_trades_api_basedOn_label (
     currency: str,
+    status: str,
     label: str
     ) -> list:
     
     '''
     '''       
-    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency))    
+    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency, status))    
     return  my_trades.my_trades_api_basedOn_label (label)
 
 def separate_specific_label_trade (
     currency: str,
+    status: str,
     label: str,
     closed_label: str,
     my_trades_api: list = None 
@@ -42,12 +46,13 @@ def separate_specific_label_trade (
     '''
     '''    
     if my_trades_api == None:
-        my_trades_api = my_trades_api_basedOn_label (currency, label)
+        my_trades_api = my_trades_api_basedOn_label (currency, status, label)
 
     return [] if my_trades_api == [] else  ([o for o in my_trades_api  if  closed_label in o['label'] ])
 
 def separate_open_trades_pair_which_have_closed (
     currency: str,
+    status: str,
     label: str,
     closed_label: str,
     my_trades_api: list = None  
@@ -59,7 +64,7 @@ def separate_open_trades_pair_which_have_closed (
         
     from loguru import logger as log
     if my_trades_api == None:
-        closed_trades = separate_specific_label_trade (currency, label, closed_label)
+        closed_trades = separate_specific_label_trade (currency, status,label, closed_label)
         my_trades_api = my_trades_api_basedOn_label (currency, label)
     else:
         closed_trades = separate_specific_label_trade (currency, label, closed_label, my_trades_api)
@@ -166,7 +171,7 @@ def my_trades_max_price_plus_threshold (
              'index_price_lower_than_threshold': index_price < myTrades_max_price - myTrades_max_price_plus_pct}
 
 def summing_size_open_orders_basedOn_label(
-    open_orders_byBot: list,
+    open_orders_byAPI: list,
     label: str 
     ) -> int:
     
@@ -178,9 +183,9 @@ def summing_size_open_orders_basedOn_label(
 
     none_data = [None, [], '0.0', 0]
     try:
-        open_orders_hedging = open_orders_byBot
+        open_orders_hedging = open_orders_byAPI
     except:
-        open_orders_hedging = open_orders_byBot ['result']
+        open_orders_hedging = open_orders_byAPI ['result']
 
     return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if label in o['label'] ])
 
@@ -256,6 +261,7 @@ def is_spot_hedged_properly (
                                                     min_trade_amount,
                                                     contract_size
                                                     )
+    log.error (remain_unhedged)
 
     # check open orders related to hedging, to ensure previous open orders has completely consumed
     open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
@@ -269,13 +275,14 @@ def is_spot_hedged_properly (
             'hedging_size': hedging_size_portion}
 
 def is_over_hedged (
-    open_orders_byBot: list,
+    open_orders_byAPI: list,
     minimum_hedging_size: int,
     label) -> bool:
 
     '''
     # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
     '''       
-    return summing_size_open_orders_basedOn_label (open_orders_byBot, label) > minimum_hedging_size    
+    log.warning (summing_size_open_orders_basedOn_label (open_orders_byAPI, label))
+    return summing_size_open_orders_basedOn_label (open_orders_byAPI, label) > minimum_hedging_size    
         
     
