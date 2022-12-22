@@ -279,9 +279,8 @@ class strategyDeribit:
                                 log.warning (f'{instrument}')
 
                                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                    
-                                file_name_ordBook = (f'{instrument.lower()}-ordBook.pkl')
-                                my_path_ordBook = system_tools.provide_path_for_file ('ordBook', currency.lower()) 
+                                
+                                my_path_ordBook = system_tools.provide_path_for_file ('ordBook', instrument) 
                                 
                                 ordBook = pickling.read_data(my_path_ordBook)
                                 
@@ -315,6 +314,7 @@ class strategyDeribit:
                                 log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                     
                                 perpetual = 'PERPETUAL'
+                                log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
                                 log.critical(f'{perpetual in instrument =}')
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
