@@ -197,31 +197,23 @@ class strategyDeribit:
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
                         
-                                        
                         my_trades_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
                         my_trades_open = pickling.read_data(my_trades_path)        
-                        
-                        my_path_orders = system_tools.provide_path_for_file ('orders', currency)
 
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
-                            log.debug (data_orders)
                             
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
                             my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
-                            open_orders_open = pickling.read_data (my_path_orders_open)
-                            log.debug (f'{open_orders_open=}')
-                            log.debug (f'{order_id=}')
-                            log.debug ([o for o in open_orders_open if o['order_id'] == order_id ] )
+                            open_orders_open = pickling.read_data (my_path_orders_open) 
                             
                             if order_state == 'open':
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
                             else:
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                 item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
-                                log.debug (item_in_open_orders_open_with_diff_id)
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
                                 
@@ -231,7 +223,6 @@ class strategyDeribit:
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
                             open_orders_open = pickling.read_data (my_path_orders_open)
-                            log.critical ((f'{open_orders_open=}'))
                                 
                                 
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
@@ -334,7 +325,7 @@ class strategyDeribit:
                     
                                 perpetual = 'PERPETUAL'
                                 log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
-                                log.critical(f'{perpetual in instrument =}')
+
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
 
