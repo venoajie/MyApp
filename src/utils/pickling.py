@@ -121,10 +121,10 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data:
     now_time_utc = time_modification.convert_time_to_utc()['utc_now']
     now_time_utc_in_unix = time_modification. convert_time_to_unix (now_time_utc)
 
-    time_delta = now_time_utc_in_unix - time_expiration
+    one_hour_ago = now_time_utc_in_unix - time_expiration
     
     if 'change_id' in data_list:
-        result: list =  ([o for o in data if  o['timestamp'] < time_delta]) 
+        result: list =  ([o for o in data if  o['timestamp'] > one_hour_ago]) 
         dump_data_as_list (file_name_pkl, result)
                 
     if 'params' in data_list:

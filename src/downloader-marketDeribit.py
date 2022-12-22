@@ -214,6 +214,7 @@ class DeribitMarketDownloader:
                         one_hour = one_minute * 60000
                         
                         if message_channel == f'book.{instrument}.none.20.100ms':
+                            log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument.lower()) 
                             
