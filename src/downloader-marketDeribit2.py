@@ -135,7 +135,7 @@ class main:
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
-                        log.warning (message_channel)
+
  
                 if 'params' in list(message):
                     
@@ -168,6 +168,16 @@ class main:
                             except:
                                 continue        
                             
+                        instrument = "".join(list(message_channel) [13:][:-2])
+                        if message_channel == f'chart.trades.{instrument}.1':
+                                              
+                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument.lower()) 
+
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue
+                        
                             
             else:
                 logging.info('WebSocket connection has broken.')
