@@ -67,125 +67,125 @@ class main:
                 live = True
                 
                 while live:
-
-                    # Authenticate WebSocket Connection
-                    await self.ws_auth()
-
-                    # Establish Heartbeat
-                    await self.establish_heartbeat()
-
-                    # Start Authentication Refresh Task
-                    self.loop.create_task(
-                        self.ws_refresh_auth()
-                        )
-
-                    currencies = ['ETH', 'BTC']
-                    for currency in currencies:
-                        my_path = system_tools.provide_path_for_file ('instruments', currency.lower()) 
-                        instruments = pickling.read_data (my_path)
-                        instruments_name: list =  [o['instrument_name'] for o in instruments ]
-                        
-                        instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
-                        
-                        for instrument in instruments_name:
-                        
-                            self.loop.create_task(
-                                self.ws_operation(
-                                    operation='subscribe',
-                                    ws_channel=f'book.{instrument}.none.20.100ms'
-                                    )
-                                )
-                            
-                            if instrument in ['ETH-PERPETUAL', 'BTC-PERPETUAL'] :
-                                self.loop.create_task(
-                                    self.ws_operation(
-                                        operation='subscribe',
-                                        ws_channel=f'chart.trades.{instrument}.1'
-                                        )
-                                    )
-                                    
-                                self.loop.create_task(
-                                    self.ws_operation(
-                                        operation='subscribe',
-                                        ws_channel=f'deribit_price_index.{currency.lower()}_usd'
-                                        )
-                                    )
-                        
-
                     try:
-                        while self.websocket_client.open:
-                            message: bytes = await self.websocket_client.recv()
-                            message: Dict = json.loads(message)
-                            logging.info(message)
 
-                            if 'id' in list(message):
-                                if message['id'] == 9929:
-                                    if self.refresh_token is None:
-                                        logging.info('Successfully authenticated WebSocket Connection')
-                                    else:
-                                        logging.info('Successfully refreshed the authentication of the WebSocket Connection')
+                        # Authenticate WebSocket Connection
+                        await self.ws_auth()
 
-                                    self.refresh_token = message['result']['refresh_token']
+                        # Establish Heartbeat
+                        await self.establish_heartbeat()
 
-                                    # Refresh Authentication well before the required datetime
-                                    if message['testnet']:
-                                        expires_in: int = 300
-                                    else:
-                                        expires_in: int = message['result']['expires_in'] - 240
+                        # Start Authentication Refresh Task
+                        self.loop.create_task(
+                            self.ws_refresh_auth()
+                            )
 
-                                    self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
-
-                                elif message['id'] == 8212:
-                                    # Avoid logging Heartbeat messages
-                                    continue
-
-                            elif 'method' in list(message):
-                                # Respond to Heartbeat Message
-                                if message['method'] == 'heartbeat':
-                                    await self.heartbeat_response()
-
-            
-                            if 'params' in list(message):
+                        currencies = ['ETH', 'BTC']
+                        for currency in currencies:
+                            my_path = system_tools.provide_path_for_file ('instruments', currency.lower()) 
+                            instruments = pickling.read_data (my_path)
+                            instruments_name: list =  [o['instrument_name'] for o in instruments ]
+                            
+                            instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
+                            
+                            for instrument in instruments_name:
+                            
+                                self.loop.create_task(
+                                    self.ws_operation(
+                                        operation='subscribe',
+                                        ws_channel=f'book.{instrument}.none.20.100ms'
+                                        )
+                                    )
                                 
-                                if message['method'] != 'heartbeat':
-                                                        
-                                    message_channel = message['params']['channel']
+                                if instrument in ['ETH-PERPETUAL', 'BTC-PERPETUAL'] :
+                                    self.loop.create_task(
+                                        self.ws_operation(
+                                            operation='subscribe',
+                                            ws_channel=f'chart.trades.{instrument}.1'
+                                            )
+                                        )
+                                        
+                                    self.loop.create_task(
+                                        self.ws_operation(
+                                            operation='subscribe',
+                                            ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                                            )
+                                        )
+                            
+
+                            while self.websocket_client.open:
+                                message: bytes = await self.websocket_client.recv()
+                                message: Dict = json.loads(message)
+                                logging.info(message)
+
+                                if 'id' in list(message):
+                                    if message['id'] == 9929:
+                                        if self.refresh_token is None:
+                                            logging.info('Successfully authenticated WebSocket Connection')
+                                        else:
+                                            logging.info('Successfully refreshed the authentication of the WebSocket Connection')
+
+                                        self.refresh_token = message['result']['refresh_token']
+
+                                        # Refresh Authentication well before the required datetime
+                                        if message['testnet']:
+                                            expires_in: int = 300
+                                        else:
+                                            expires_in: int = message['result']['expires_in'] - 240
+
+                                        self.refresh_token_expiry_time = datetime.utcnow() + timedelta(seconds=expires_in)
+
+                                    elif message['id'] == 8212:
+                                        # Avoid logging Heartbeat messages
+                                        continue
+
+                                elif 'method' in list(message):
+                                    # Respond to Heartbeat Message
+                                    if message['method'] == 'heartbeat':
+                                        await self.heartbeat_response()
+
+                
+                                if 'params' in list(message):
                                     
-                                    symbol_index =  (message_channel)[-7:]
-                                    data_orders: list = message['params']['data']
-                                    currency = string_modification.extract_currency_from_text (message_channel)
-
-                                    if message_channel == f'deribit_price_index.{symbol_index}':
+                                    if message['method'] != 'heartbeat':
+                                                            
+                                        message_channel = message['params']['channel']
                                         
-                                        my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+                                        symbol_index =  (message_channel)[-7:]
+                                        data_orders: list = message['params']['data']
+                                        currency = string_modification.extract_currency_from_text (message_channel)
 
-                                        pickling.replace_data(my_path, data_orders)
+                                        if message_channel == f'deribit_price_index.{symbol_index}':
+                                            
+                                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
 
-                                    instrument = "".join(list(message_channel) [5:][:-14])
-                                    #log.debug (instrument)
-                                    one_minute = 60000
-                                    one_hour = one_minute * 60000
-                                    
-                                    if message_channel == f'book.{instrument}.none.20.100ms':
-                                        #log.error (data_orders)
-                                        
-                                        my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
-                                        
-                                        try:
-                                            pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
-                                        except:
-                                            continue        
-                                        
-                                    instrument = "".join(list(message_channel) [13:][:-2])
-                                    if message_channel == f'chart.trades.{instrument}.1':
-                                                        
-                                        my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument) 
+                                            pickling.replace_data(my_path, data_orders)
 
-                                        try:
-                                            pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
-                                        except:
-                                            continue
-                                    
+                                        instrument = "".join(list(message_channel) [5:][:-14])
+                                        #log.debug (instrument)
+                                        one_minute = 60000
+                                        one_hour = one_minute * 60000
+                                        
+                                        if message_channel == f'book.{instrument}.none.20.100ms':
+                                            #log.error (data_orders)
+                                            
+                                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
+                                            
+                                            try:
+                                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                            except:
+                                                continue        
+                                            
+                                        instrument = "".join(list(message_channel) [13:][:-2])
+                                        if message_channel == f'chart.trades.{instrument}.1':
+                                                            
+                                            my_path = system_tools.provide_path_for_file ('ohlc-1m', instrument) 
+
+                                            try:
+                                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                            except:
+                                                continue
+                                        
                                     
                     except ConnectionTimeoutError as e:
                         logging.info(e)
