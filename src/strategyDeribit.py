@@ -205,6 +205,14 @@ class strategyDeribit:
 
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             log.debug (data_orders)
+                            order_state = data_orders ['order_state']
+                            my_path_orders = system_tools.provide_path_for_file ('orders', currency, order_state)
+                            if order_state == 'filled':
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
+                            if order_state == 'open':
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
+                            if order_state == 'cancelled':
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders, data_orders, 100000)
                             
                             all_open_orders = pickling.read_data (my_path_orders)
                             log.error (all_open_orders)
