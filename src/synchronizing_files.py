@@ -32,6 +32,13 @@ class SynchronizingFiles ():
 
         return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'cancelled' ]   
     
+    def open_orders_state_filled (self)-> list:
+        
+        '''
+        '''   
+
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'filled' ]   
+    
     def open_orders_exist_in_my_trades (self)-> list:
         
         '''
@@ -47,12 +54,14 @@ class SynchronizingFiles ():
         '''   
          
         open_orders_id_cancelled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_cancelled () ] 
-        exclude_cancelled = [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_cancelled]   
+        exclude_cancelled = [] if open_orders_id_cancelled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_cancelled]  
+        open_orders_id_filled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_filled () ] 
+        exclude_filled = [] if open_orders_id_filled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_filled]   
         open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
         #log.warning (f'{self.my_trades=}')
         #log.warning (f'{self.open_orders_exist_in_my_trades()=}')
         
-        return [] if self.my_orders == [] else [o for o in exclude_cancelled if o['order_id'] not in open_orders_id_exist_in_my_trades]   
+        return [] if self.my_orders == [] else [o for o in self.my_orders  if o['order_id'] not in [open_orders_id_cancelled, open_orders_id_filled, open_orders_id_exist_in_my_trades]]   
     
     def update_open_orders_outstanding (self)-> list:
         
