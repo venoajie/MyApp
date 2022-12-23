@@ -236,11 +236,12 @@ class strategyDeribit:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                                 
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                        my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
                         label_hedging = 'hedging spot'
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
                             
-                            my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+                            
                             my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                             my_trades_open = pickling.read_data(my_trades_path_open)  
                                      
@@ -368,7 +369,7 @@ class strategyDeribit:
                                         myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
                                         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
                                         label = f'hedging spot-closed-{label_int}'
-                                        open_orders_close = open_orders.my_orders_api_basedOn_label_items_qty ("hedging spot-closed")
+                                        open_orders_close =   pickling.read_data(my_trades_path_closed) 
                                         
                                         if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
 
