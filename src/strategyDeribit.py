@@ -131,12 +131,13 @@ class strategyDeribit:
                     )
                 
 
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'book.{instrument}.none.20.100ms'
+                for instruments in instruments_name:
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'book.{instrument}.none.20.100ms'
+                            )
                         )
-                    )
                                 
             while self.websocket_client.open:
                 # Receive WebSocket messages
