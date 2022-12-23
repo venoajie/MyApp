@@ -269,7 +269,7 @@ class strategyDeribit:
                             if label_id != []:
                                 pass
 
-                            closed_label_id_int = ([string_modification.extract_integers_from_text(o)  for o in label_id  ])
+                            closed_label_id_int = ([string_modification.extract_integers_from_text(o)  for o in [label_id]  ])
                             log.critical (label_id)
                             log.critical (closed_label_id_int)
 
