@@ -192,6 +192,9 @@ class strategyDeribit:
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
 
                         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+                        log.error (message_channel)
+                        log.warning (message_channel == f'user.orders.future.{currency.upper()}.raw')
+                        
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             order_state = data_orders ['order_state']
