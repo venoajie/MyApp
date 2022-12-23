@@ -199,12 +199,18 @@ class strategyDeribit:
                             
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
+                            log.debug (f'{open_orders_open=}')
+                            log.warning (f'{order_state=}')
                             
                             if order_state == 'open':
+                                log.error ('order_state')
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
                             else:
+                                log.error ('order_state')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                 item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
+                                log.info (f'{item_in_open_orders_open_with_same_id=}')
+                                log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
                                 
@@ -237,56 +243,51 @@ class strategyDeribit:
                                 
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-                        label_hedging = 'hedging spot'
-                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
+                        label_hedging = 'hedging spot'
                             
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
                             
                             my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                             my_trades_open = pickling.read_data(my_trades_path_open)  
                                      
-                            log.critical (data_orders)
+                            log.info (data_orders)
                             log.debug (f'{my_trades_open=}')
+                            
+                            #determine label id
                             try:
                                 label_id= data_orders [0]['label']
                             except:
                                 label_id= []
-                                
+                            
+                            # for data with label id/ordered through API    
                             if label_id != []:
                                 pass
+
+                            closed_label_id_int = ([string_modification.extract_integers_from_text(o)  for o in label_id  ])
+                            log.critical (label_id)
+                            log.critical (closed_label_id_int)
+
                             log.debug ('open' in label_id)
                             log.debug ('closed' in label_id)
                             
                             if 'open' in label_id:
+                                log.error ('label_id open')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 100000)
                                 
                             if 'closed' in label_id:
+                                log.error ('label_id closed')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 100000)
+                                my_trades_open = pickling.read_data(my_trades_path_open)  
+                                remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 100000)
+                                closed_trades = ([o for o in my_trades_open if  str(my_trades_open)  in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 100000)
                                 
                             if label_id == [] :
+                                log.error ('[]')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
                             
-                            is_api =  [o['api'] for o in data_orders ] [0]
-                            
-                            if is_api:
-                                
-                                transaction_label =  [o['label'] for o in data_orders ] 
-
-                                
-                                
-                                if label_hedging in transaction_label:
-                                    spot_hedging.transfer_open_trades_pair_which_have_closed_to_closedTradingDb (currency,
-                                                                                                            label_hedging,
-                                                                                                            'closed'
-                                                                                                            )
-
-                                    my_trades_open_path = system_tools.provide_path_for_file ('myTrades', 'open', currency.lower()) 
-                                    my_trades_open = pickling.read_data(my_trades_open_path)
-                                    log.warning (f'{my_trades_open=}')
-                                    
-                                    my_path_closed = system_tools.provide_path_for_file ('myTrades', 'closed', currency.lower()) 
-                                    my_trades_closed = pickling.read_data(my_path_closed)
-                                    log.warning (f'{my_trades_closed=}')
                                 
                                 
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower()) 
