@@ -171,6 +171,8 @@ class SpotHedging ():
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
+        log.warning(self.summing_size_open_orders_basedOn_label (open_orders_byAPI))
+        log.warning(minimum_hedging_size)
         return self.summing_size_open_orders_basedOn_label (open_orders_byAPI) > minimum_hedging_size    
             
 
