@@ -131,7 +131,7 @@ class strategyDeribit:
                     )
                 
 
-                for instruments in instruments_name:
+                for instrument in instruments_name:
                     self.loop.create_task(
                         self.ws_operation(
                             operation='subscribe',
