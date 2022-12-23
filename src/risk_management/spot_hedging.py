@@ -157,13 +157,8 @@ class SpotHedging ():
 
         '''       
 
-        none_data = [None, [], '0.0', 0]
-        try:
-            open_orders_hedging = open_orders_byAPI
-        except:
-            open_orders_hedging = open_orders_byAPI ['result']
 
-        return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if self.label in o['label'] ])
+        return 0 if open_orders_byAPI == [] else sum ([o['amount']  for o in open_orders_byAPI if self.label in o['label'] ])
 
 
     def is_over_hedged (self,
