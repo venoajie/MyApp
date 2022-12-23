@@ -86,10 +86,7 @@ class SpotHedging ():
         compute actual hedging size
 
         '''       
-        my_trades = self.my_trades_api_basedOn_label ()
-        print (self.my_trades)
-        print (sum([o['amount'] for o in my_trades if self.label in o['label'] ]))
-        
+        my_trades = self.my_trades_api_basedOn_label ()        
         return  sum([o['amount'] for o in my_trades if self.label in o['label'] ])
 
     def compute_remain_unhedged (self,
