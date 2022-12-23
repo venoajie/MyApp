@@ -207,7 +207,7 @@ class strategyDeribit:
                             
                             if order_state == 'open':
                                 log.error ('order_state')
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders[0], 100000)
                             else:
                                 log.error ('order_state')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
@@ -215,12 +215,12 @@ class strategyDeribit:
                                 log.info (f'{item_in_open_orders_open_with_same_id=}')
                                 log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders[0], 100000)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
-                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000)
+                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
                                     
-                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
+                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id[0])
                                 
                         open_orders_all: list = pickling.read_data (my_path_orders_open)
                         open_order_mgt = open_orders_management.MyOrders (open_orders_all)
@@ -359,6 +359,7 @@ class strategyDeribit:
 
                                     label: str = label_numbering.labelling ('open', label_hedging)
 
+                                    log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     
                                     #check possibility average up/profit realization
