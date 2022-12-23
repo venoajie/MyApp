@@ -59,16 +59,12 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
-    from loguru import logger as log
-    log.debug (file_name)
 
     with open(file_name,'wb') as handle:
             
         if isinstance(data, dict):
-            log.warning (data)
             pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
         if isinstance(data, list):
-            log.debug (data)
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
