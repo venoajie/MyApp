@@ -162,7 +162,82 @@ class SpotHedging ():
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
         return self.summing_size_open_orders (open_orders_byAPI) > minimum_hedging_size    
+                
+                    
+    def separate_open_trades_pair_which_have_closed (
+        currency: str,
+        status: str,
+        label: str,
+        closed_label: str,
+        my_trades_api: list = None  
+        )-> list:
+        
+        '''
+        looking for pair transaction attributes which have closed previously
+        '''    
             
+        from loguru import logger as log
+        if my_trades_api == None:
+            closed_trades = separate_specific_label_trade (currency, status,label, closed_label)
+            my_trades_api = my_trades_api_basedOn_label (currency, label)
+        else:
+            closed_trades = separate_specific_label_trade (currency, label, closed_label, my_trades_api)
+            
+        closed_trades_label =  ([o['label'] for o in closed_trades ])
+        closed_trades_label_int = ([string_modification.extract_integers_from_text(o)  for o in closed_trades_label  ])
+
+        if len (closed_trades_label_int) !=[]:
+            closed_trades_label_int = closed_trades_label_int[0] 
+        else:
+            return []
+            
+        return {'closed_trades': [] if closed_trades == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  in o['label'] ]),
+                'remaining_open_trades': [] if my_trades_api == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  not in o['label'] ])
+                    }
+        
+
+    def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (self,
+        currency: str,
+        label: str,
+        closed_label: str,
+        my_trades_api: list = None  
+        )-> list:
+        
+        '''
+        looking for pair transaction attributes which have closed previously
+        '''    
+            
+        if my_trades_api == None:
+            open_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                        label,
+                                                                        closed_label
+                                                                        )['remaining_open_trades']
+            
+            closed_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                        label,
+                                                                        closed_label
+                                                                        )['closed_trades']
+        else:
+            open_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                        label,
+                                                                        closed_label, 
+                                                                        my_trades_api
+                                                                        )['remaining_open_trades']
+            
+            closed_trades = separate_open_trades_pair_which_have_closed (currency,
+                                                                        label,
+                                                                        closed_label, 
+                                                                        my_trades_api
+                                                                        )['closed_trades']
+        if closed_trades != []  :
+            from utils import pickling
+
+            # write new data to remaining open transactions
+            pickling.replace_data(my_path_myTrades(currency, 'open'), open_trades) 
+
+            # append new data to closed transactions
+            pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
+
 
 def my_path_myTrades (
     currency: str,
