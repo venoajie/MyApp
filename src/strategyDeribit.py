@@ -402,7 +402,7 @@ class strategyDeribit:
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byAPI: list = open_orders.my_orders_api()
 
-                                        if  spot_hedging.is_over_hedged (open_orders_byAPI, spot_hedged ['hedging_size'], 'hedging spot-open'):
+                                        if  spot_hedged.is_over_hedged (open_orders_byAPI, spot_hedged ['hedging_size']):
                                             open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                                             #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
                                             await deribit_get.get_cancel_order_byOrderId (
