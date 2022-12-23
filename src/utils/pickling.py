@@ -136,5 +136,5 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data:
 
         data = [o['data']  for o in data ]
         
-        result: list =  ([o for o in data if  o['tick'] < time_delta])    
+        result: list =  ([o for o in data if  o['tick'] < one_hour_ago])    
         dump_data_as_list (file_name_pkl, result)
