@@ -217,7 +217,7 @@ class strategyDeribit:
                         open_order_mgt = open_orders_management.MyOrders (open_orders_all)
 
                         open_orders_byBot: list = open_order_mgt.my_orders_api()
-                        open_orders_open_byAPI: list = pickling.read(my_path_orders_open)
+                        open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
 
                         open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
 
