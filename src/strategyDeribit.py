@@ -208,7 +208,7 @@ class strategyDeribit:
                             
                             if order_state == 'open':
                                 log.error ('order_state')
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders[0], 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
                             else:
                                 log.error ('order_state')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
