@@ -68,8 +68,6 @@ class SpotHedging ():
         return  {'index_price_higher_than_threshold': index_price > myTrades_max_price  + myTrades_max_price_plus_pct,
                 'index_price_lower_than_threshold': index_price < myTrades_max_price - myTrades_max_price_plus_pct}
 
-
-
     def compute_minimum_hedging_size (self,
         notional: float,
         min_trade_amount: float,
@@ -131,12 +129,8 @@ class SpotHedging ():
                                                         min_trade_amount,
                                                         contract_size
                                                         )
-        log.error (remain_unhedged)
-
         # check open orders related to hedging, to ensure previous open orders has completely consumed
         open_orders_hedging_size = self.summing_size_open_orders (open_orders_byAPI)
-        log.debug (open_orders_byAPI)
-        log.critical (open_orders_hedging_size)
         
         size_pct_qty = int ((10/100 * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
@@ -166,8 +160,6 @@ class SpotHedging ():
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
-        log.warning(self.summing_size_open_orders (open_orders_byAPI))
-        log.warning(minimum_hedging_size)
         return self.summing_size_open_orders (open_orders_byAPI) > minimum_hedging_size    
             
 
