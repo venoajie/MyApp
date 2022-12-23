@@ -21,7 +21,7 @@ def extract_currency_from_text (words: str) -> str:
     if 'btc' in (words).lower():
         return 'btc'
 
-def extract_integers_from_text (words: str) -> int:
+def extract_integers_from_text (words: list) -> int:
     
     '''  
     extracting integers from label text
