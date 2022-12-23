@@ -17,7 +17,7 @@ import websockets
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, system_tools, string_modification
+from utils import pickling, system_tools, string_modification, formula
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -187,7 +187,11 @@ class main:
                     except ConnectionTimeoutError as e:
                         logging.info(e)
                         # https://stackoverflow.com/questions/72165175/python-websockets-how-to-connect-after-timeout-in-asyncio-loop
-                        live = False
+                        
+                        formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
+                        system_tools.sleep_and_restart_program(1)
+                
+                        
 
     async def establish_heartbeat(self) -> None:
         """
