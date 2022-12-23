@@ -362,9 +362,9 @@ class strategyDeribit:
                                     if spot_was_hedged and actual_hedging_size != 0:
                                         threshold = 2/100
                                         
-                                        myTrades_max_price_plus_threshold = spot_hedging.my_trades_max_price_plus_threshold (currency, threshold, index_price, label_hedging_spot_open)
+                                        myTrades_max_price_plus_threshold = spot_hedged.my_trades_max_price_plus_threshold (threshold, index_price)
                                         log.warning (myTrades_max_price_plus_threshold)
-                                        myTrades_max_price_attributes = spot_hedging.my_trades_api_basedOn_label_max_price_attributes (currency, label_hedging_spot_open)
+                                        myTrades_max_price_attributes = spot_hedged.my_trades_api_basedOn_label_max_price_attributes ()
                                         myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
                                         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
                                         label = f'hedging spot-closed-{label_int}'
