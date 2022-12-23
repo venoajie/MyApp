@@ -330,11 +330,12 @@ class strategyDeribit:
                                 contract_size = instrument_data ['contract_size']
                             
                                 
-                                spot_was_unhedged = spot_hedged.is_spot_hedged_properly (open_orders_byBot, 
+                                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_byBot, 
                                                                                         notional, 
                                                                                         min_trade_amount,
                                                                                         contract_size
-                                                                                        )['spot_was_unhedged']
+                                                                                        ) 
+                                spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
 
                                 spot_was_hedged = spot_was_unhedged == False
                                 actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
@@ -395,7 +396,7 @@ class strategyDeribit:
                                                                 'sell', 
                                                                 instrument, 
                                                                 best_ask_prc,
-                                                                spot_was_unhedged ['hedging_size'], 
+                                                                check_spot_hedging ['hedging_size'], 
                                                                 label
                                                                 )
                                         
