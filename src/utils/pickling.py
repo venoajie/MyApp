@@ -60,6 +60,7 @@ def replace_data (file_name: str, data: dict)-> None:
     """
     """
     from loguru import logger as log
+    log.debug (file_name)
 
     with open(file_name,'wb') as handle:
             
