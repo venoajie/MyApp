@@ -138,6 +138,16 @@ class strategyDeribit:
                             ws_channel=f'book.{instrument}.none.20.100ms'
                             )
                         )
+                    
+    
+                        
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                            )
+                        )
+                            
                                 
             while self.websocket_client.open:
                 # Receive WebSocket messages
@@ -218,6 +228,14 @@ class strategyDeribit:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
                             except:
                                 continue        
+                            
+                        symbol_index =  (message_channel)[-7:]
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            
+                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+
+                            pickling.replace_data(my_path, data_orders)
+                           
                             
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
