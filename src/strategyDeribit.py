@@ -217,6 +217,7 @@ class strategyDeribit:
                         open_order_mgt = open_orders_management.MyOrders (open_orders_all)
 
                         open_orders_byBot: list = open_order_mgt.my_orders_api()
+                        open_orders_open_byAPI: list = pickling.read(my_path_orders_open)
 
                         open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
 
@@ -330,7 +331,7 @@ class strategyDeribit:
                                 contract_size = instrument_data ['contract_size']
                             
                                 
-                                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_byBot, 
+                                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
                                                                                         notional, 
                                                                                         min_trade_amount,
                                                                                         contract_size
@@ -400,6 +401,7 @@ class strategyDeribit:
                                                                 label
                                                                 )
                                         
+                                        # refresh, check by independent endpoint
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byAPI: list = open_orders.my_orders_api()
 
