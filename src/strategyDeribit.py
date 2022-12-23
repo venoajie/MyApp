@@ -345,18 +345,7 @@ class strategyDeribit:
                                     
                                 label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
-                                spot_was_unhedged = False
-                                spot_hedged = spot_hedging.is_spot_hedged_properly (currency, 
-                                                                                     label_hedging_spot_open, 
-                                                                                     open_orders_byBot, 
-                                                                                     notional, 
-                                                                                     min_trade_amount,
-                                                                                     contract_size
-                                                                                     )
                                 
-                                spot_was_unhedged = spot_hedged ['spot_was_unhedged']
-
-                                spot_was_hedged = spot_was_unhedged == False
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
 
                                 actual_hedging_size = spot_hedging.compute_actual_hedging_size (currency.lower (), label_hedging_spot_open)
