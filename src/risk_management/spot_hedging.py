@@ -134,7 +134,7 @@ class SpotHedging ():
         log.error (remain_unhedged)
 
         # check open orders related to hedging, to ensure previous open orders has completely consumed
-        open_orders_hedging_size = summing_size_open_orders_basedOn_label (open_orders_byBot, 'hedging spot-open')
+        open_orders_hedging_size = self.summing_size_open_orders_basedOn_label (open_orders_byBot)
         
         size_pct_qty = int ((10/100 * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
@@ -171,7 +171,7 @@ class SpotHedging ():
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
-        return summing_size_open_orders_basedOn_label (open_orders_byAPI) > minimum_hedging_size    
+        return self.summing_size_open_orders_basedOn_label (open_orders_byAPI) > minimum_hedging_size    
             
 
 def my_path_myTrades (
@@ -294,70 +294,3 @@ def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
         # append new data to closed transactions
         pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
 
-def my_trades_api_basedOn_label_max_price_attributes (
-    currency: str,
-    label: str
-    ) -> dict:
-    
-    '''
-    '''       
-       
-    my_trades_api = my_trades_api_basedOn_label (currency, label)
-    #print (my_trades_api_basedOn_label)
-    if my_trades_api_basedOn_label !=[]:
-        max_price = max ([o['price'] for o in my_trades_api])
-        trade_list_with_max_price =  ([o for o in my_trades_api if o['price'] == max_price ])
-        len_trade_list_with_max_price = len(trade_list_with_max_price)
-        
-        # if multiple items, select only the oldest one
-        if len_trade_list_with_max_price > 0:
-            trade_list_with_max_price_min_timestamp = min([o['timestamp'] for o in trade_list_with_max_price])
-            trade_list_with_max_price =  ([o for o in trade_list_with_max_price if o['timestamp'] == trade_list_with_max_price_min_timestamp ])
-        
-        return  {
-            'price': max_price,
-            'trade_id':  ([o['trade_id'] for o in trade_list_with_max_price])[0] ,
-            'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
-            'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
-            'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
-        
-        }
-    if my_trades_api_basedOn_label ==[]:
-        return []
-
-def my_trades_max_price_plus_threshold (
-    currency: str,
-    threshold: float, 
-    index_price: float, 
-    label: str
-    ) -> float:
-    
-    '''
-    '''       
-
-    myTrades_max_price =  my_trades_api_basedOn_label_max_price_attributes (currency, label) ['price']
-    myTrades_max_price_plus_pct = myTrades_max_price * threshold
-                                    
-    return  {'index_price_higher_than_threshold': index_price > myTrades_max_price  + myTrades_max_price_plus_pct,
-             'index_price_lower_than_threshold': index_price < myTrades_max_price - myTrades_max_price_plus_pct}
-
-def summing_size_open_orders_basedOn_label(
-    open_orders_byAPI: list,
-    label: str 
-    ) -> int:
-    
-    '''
-    # sum current open orders with 'hedging spot' label
-    open_orders_byBot =  open orders submitted by API/not manual (web = False)
-
-    '''       
-
-    none_data = [None, [], '0.0', 0]
-    try:
-        open_orders_hedging = open_orders_byAPI
-    except:
-        open_orders_hedging = open_orders_byAPI ['result']
-
-    return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if label in o['label'] ])
-
-    
