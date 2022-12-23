@@ -144,16 +144,34 @@ class SpotHedging ():
         return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
                 'hedging_size': hedging_size_portion}
 
+
+    def summing_size_open_orders_basedOn_label(self,
+        open_orders_byAPI: list,
+        ) -> int:
+        
+        '''
+        # sum current open orders with 'hedging spot' label
+        open_orders_byBot =  open orders submitted by API/not manual (web = False)
+
+        '''       
+
+        none_data = [None, [], '0.0', 0]
+        try:
+            open_orders_hedging = open_orders_byAPI
+        except:
+            open_orders_hedging = open_orders_byAPI ['result']
+
+        return 0 if open_orders_hedging in none_data else sum ([o['amount']  for o in open_orders_hedging if self.label in o['label'] ])
+
+
     def is_over_hedged (self,
         open_orders_byAPI: list,
-        minimum_hedging_size: int,
-        label) -> bool:
+        minimum_hedging_size: int) -> bool:
 
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
-        log.warning (summing_size_open_orders_basedOn_label (open_orders_byAPI, label))
-        return summing_size_open_orders_basedOn_label (open_orders_byAPI, label) > minimum_hedging_size    
+        return summing_size_open_orders_basedOn_label (open_orders_byAPI) > minimum_hedging_size    
             
 
 def my_path_myTrades (
