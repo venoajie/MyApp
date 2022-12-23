@@ -287,8 +287,6 @@ class strategyDeribit:
                             if label_id == [] :
                                 log.error ('[]')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
-                            
-                                
                                 
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower()) 
                                                                                     
@@ -332,20 +330,6 @@ class strategyDeribit:
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
                             
-                                
-                                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
-                                                                                        notional, 
-                                                                                        min_trade_amount,
-                                                                                        contract_size
-                                                                                        ) 
-                                spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
-
-                                spot_was_hedged = spot_was_unhedged == False
-                                actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
-
-                                label: str = label_numbering.labelling ('open', label_hedging)
-
-                                log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     
                                 label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
@@ -360,6 +344,20 @@ class strategyDeribit:
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
 
+                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
+                                                                                            notional, 
+                                                                                            min_trade_amount,
+                                                                                            contract_size
+                                                                                            ) 
+                                    spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
+
+                                    spot_was_hedged = spot_was_unhedged == False
+                                    actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
+
+                                    label: str = label_numbering.labelling ('open', label_hedging)
+
+                                    log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
+                                    
                                     #check possibility average up/profit realization
                                     if spot_was_hedged and actual_hedging_size != 0:
                                         threshold = 2/100
