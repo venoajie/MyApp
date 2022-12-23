@@ -395,7 +395,7 @@ class strategyDeribit:
                                                                 'sell', 
                                                                 instrument, 
                                                                 best_ask_prc,
-                                                                spot_hedged ['hedging_size'], 
+                                                                spot_was_unhedged ['hedging_size'], 
                                                                 label
                                                                 )
                                         
