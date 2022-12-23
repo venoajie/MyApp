@@ -135,6 +135,8 @@ class SpotHedging ():
 
         # check open orders related to hedging, to ensure previous open orders has completely consumed
         open_orders_hedging_size = self.summing_size_open_orders_basedOn_label (open_orders_byBot)
+        log.error (open_orders_byBot)
+        log.error (open_orders_hedging_size)
         
         size_pct_qty = int ((10/100 * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
