@@ -130,7 +130,14 @@ class strategyDeribit:
                         )
                     )
                 
-                
+
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'book.{instrument}.none.20.100ms'
+                        )
+                    )
+                                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -195,6 +202,21 @@ class strategyDeribit:
                         log.error (message_channel)
                         log.warning (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         
+        
+        
+                        one_minute = 60000
+                        one_hour = one_minute * 60000
+                        
+                        if message_channel == f'book.{instrument}.none.20.100ms':
+                            #log.error (data_orders)
+                            
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument) 
+                            
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue        
+                            
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             log.warning (f'{data_orders=}')
