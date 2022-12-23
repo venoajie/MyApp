@@ -86,7 +86,8 @@ class SpotHedging ():
         compute actual hedging size
 
         '''       
-        my_trades = self.my_trades_api_basedOn_label ()        
+        my_trades = self.my_trades_api_basedOn_label ()
+        log.error (my_trades)        
         return  sum([o['amount'] for o in my_trades if self.label in o['label'] ])
 
     def compute_remain_unhedged (self,
@@ -134,6 +135,9 @@ class SpotHedging ():
 
         none_data = [None, [], '0.0', 0]
             
+        log.info (open_orders_hedging_size)        
+        log.error (remain_unhedged)        
+        log.debug (hedging_size_portion)        
         return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
                 'hedging_size': hedging_size_portion}
 
