@@ -236,7 +236,7 @@ class strategyDeribit:
                                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
                                 
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
-                        label_hedging = 'spot hedging'
+                        label_hedging = 'hedging spot'
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':
                         
                             

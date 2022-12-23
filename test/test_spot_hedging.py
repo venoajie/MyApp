@@ -4,13 +4,15 @@ from risk_management import spot_hedging
 
 open_orders = [
     {
-        'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': True, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1323.05, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-3094422423', 'mmp': False, 'max_show': 107.0, 'last_update_timestamp': 1671058394609, 'label': 'hedging spot-open', 'is_liquidation': False, 'instrument_name': 'ETH-23DEC22', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1671058394609, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 107.0
-        },
+        'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1216.7, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-3149033807', 'mmp': False, 'max_show': 9.0, 'last_update_timestamp': 1671757441131, 'label': 'hedging spot-open-1671757441111', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1671757441131, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 9.0
+        }, 
     {
-        'web': True, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': True, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1323.05, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-3094422424', 'mmp': False, 'max_show': 107.0, 'last_update_timestamp': 1671058394610, 'label': 'others', 'is_liquidation': False, 'instrument_name': 'ETH-23DEC22', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1671058394610, 'commission': 0.0, 'average_price': 0.0, 'api': False, 'amount': 107.0
-        }
-    ]
-
+        'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1216.7, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-3149033894', 'mmp': False, 'max_show': 9.0, 'last_update_timestamp': 1671757441796, 'label': 'hedging spot-open-1671757441776', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1671757441796, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 9.0
+        }, 
+    {
+        'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1216.7, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-3149033897', 'mmp': False, 'max_show': 9.0, 'last_update_timestamp': 1671757442106, 'label': 'hedging spot-open-1671757442085', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1671757442106, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 9.0
+        }  
+               ]
 
 myTrades =  [
     
@@ -29,6 +31,9 @@ label_hedging = 'hedging spot'
 spot_hedging = spot_hedging.SpotHedging (label_hedging,
                                         myTrades)
                             
+def test_summing_size_open_orders  ():
+    assert spot_hedging.summing_size_open_orders (open_orders) == 27     
+    
 def test_compute_minimum_hedging_size  ():
     notional = 107.38056472000001
     min_trade_amount = 1

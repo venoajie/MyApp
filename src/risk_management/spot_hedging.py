@@ -112,7 +112,7 @@ class SpotHedging ():
         return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
         
     def is_spot_hedged_properly (self,
-        open_orders_byBot: list,
+        open_orders_byAPI: list,
         notional: float,
         min_trade_amount: float,
         contract_size: int) -> dict:
@@ -134,9 +134,9 @@ class SpotHedging ():
         log.error (remain_unhedged)
 
         # check open orders related to hedging, to ensure previous open orders has completely consumed
-        open_orders_hedging_size = self.summing_size_open_orders_basedOn_label (open_orders_byBot)
-        log.error (open_orders_byBot)
-        log.error (open_orders_hedging_size)
+        open_orders_hedging_size = self.summing_size_open_orders (open_orders_byAPI)
+        log.debug (open_orders_byAPI)
+        log.critical (open_orders_hedging_size)
         
         size_pct_qty = int ((10/100 * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
@@ -147,17 +147,15 @@ class SpotHedging ():
                 'hedging_size': hedging_size_portion}
 
 
-    def summing_size_open_orders_basedOn_label(self,
+    def summing_size_open_orders(self,
         open_orders_byAPI: list,
         ) -> int:
         
         '''
         # sum current open orders with 'hedging spot' label
-        open_orders_byBot =  open orders submitted by API/not manual (web = False)
+        open_orders_byAPI =  open orders submitted by API/not manual (web = False)
 
         '''       
-
-
         return 0 if open_orders_byAPI == [] else sum ([o['amount']  for o in open_orders_byAPI if self.label in o['label'] ])
 
 
@@ -168,9 +166,9 @@ class SpotHedging ():
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
         '''       
-        log.warning(self.summing_size_open_orders_basedOn_label (open_orders_byAPI))
+        log.warning(self.summing_size_open_orders (open_orders_byAPI))
         log.warning(minimum_hedging_size)
-        return self.summing_size_open_orders_basedOn_label (open_orders_byAPI) > minimum_hedging_size    
+        return self.summing_size_open_orders (open_orders_byAPI) > minimum_hedging_size    
             
 
 def my_path_myTrades (
