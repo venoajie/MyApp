@@ -216,12 +216,15 @@ class strategyDeribit:
                                 log.info (f'{item_in_open_orders_open_with_same_id=}')
                                 log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders[0], 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
+                                    log.critical ('item_in_open_orders_open_with_same_id')
                                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
                                     
-                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id[0])
+                                if item_in_open_orders_open_with_diff_id != []:
+                                    log.critical ('item_in_open_orders_open_with_diff_id')
+                                    pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id[0])
                                 
                         open_orders_all: list = pickling.read_data (my_path_orders_open)
                         open_order_mgt = open_orders_management.MyOrders (open_orders_all)
