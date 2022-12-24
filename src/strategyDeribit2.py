@@ -152,7 +152,7 @@ class DeribitMarketDownloader:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                log.warning (message)
+                #log.warning (message)
                 if 'id' in list(message):
                     
                     if message['id'] == 9929:
@@ -239,7 +239,6 @@ class DeribitMarketDownloader:
                             pickling.replace_data(my_path, data_orders)
                            
                             
-                        log.critical (message_channel)
                         log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
