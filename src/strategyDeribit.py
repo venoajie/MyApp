@@ -47,6 +47,7 @@ class  strategyDeribit:
 
         # Instance Variables
         self.ws_connection_url: str = ws_connection_url
+        self.connection_url: str = 'https://www.deribit.com/api/v2/' if 'test' not in ws_connection_url else 'https://test.deribit.com/api/v2/'
         self.client_id: str = client_id
         self.client_secret: str = client_secret
         self.websocket_client: websockets.WebSocketClientProtocol = None
