@@ -88,7 +88,7 @@ class  strategyDeribit:
             while self.websocket_client.open:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = json.loads(message)
-                logging.info(message)
+                log.info(message)
 
                 if 'id' in list(message):
                     if message['id'] == 9929:
