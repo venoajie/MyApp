@@ -104,7 +104,7 @@ class DeribitMarketDownloader:
 
             currencies = ['ETH', 'BTC']
             #for currency in currencies: isu, multiple currency could interfere each other in the calculation function
-            currency == 'ETH'
+            currency = 'ETH'
             file_name_instruments = (f'{currency.lower()}-instruments.pkl')
             my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
             instruments = pickling.read_data (my_path_instruments)
