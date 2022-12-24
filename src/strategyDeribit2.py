@@ -249,7 +249,7 @@ class DeribitMarketDownloader:
                             
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
-                            log.debug (f'{open_orders_open=}')
+                            log.debug (f'BEFORE {open_orders_open=}')
                             log.warning (f'{order_state=}')
                             
                             if order_state == 'open':
@@ -269,6 +269,7 @@ class DeribitMarketDownloader:
                                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
+                            log.debug (f'AFTER {open_orders_open=}')
                                 
                         #open_orders_all: list = pickling.read_data (my_path_orders_open)
 
