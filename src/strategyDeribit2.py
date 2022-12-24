@@ -348,12 +348,14 @@ class DeribitMarketDownloader:
                             
                             equity = portfolio [0]['equity']
                             notional = index_price * equity    
+                            log.error(f'{notional=} {index_price=} {equity=}')
+                            
                         
                             spot_was_unhedged = False
                             
                             # refresh myTrades source
                             my_trades_open = pickling.read_data(my_trades_path_open) 
-                            #log.warning (f'{my_trades_open=}') 
+                            log.info (f'{my_trades_open=}') 
                             
                             spot_hedged = spot_hedging.SpotHedging (label_hedging,
                                                                     my_trades_open
