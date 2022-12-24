@@ -1,14 +1,29 @@
 #!/usr/bin/python3
 
+import os
+from os.path import join, dirname
 
 # installed
 from dataclassy import dataclass
-from portfolio.deribit import open_orders_management, myTrades_management
-from utils import pickling, system_tools, telegram_app
-
 from loguru import logger as log
+import asyncio
+from dotenv import load_dotenv
+from os.path import join, dirname
+import requests
+
+from portfolio.deribit import open_orders_management, myTrades_management
+from utils import pickling, system_tools, telegram_app, formula
+import deribit_get#,deribit_rest
+from risk_management import spot_hedging
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
 
+def parse_dotenv()->dict:    
+    return {'client_id': os.environ.get('client_id_test'),
+            'client_secret': os.environ.get('client_secret_test')
+            }
 @dataclass(unsafe_hash=True, slots=True)
 class SynchronizingFiles ():
 
@@ -16,97 +31,145 @@ class SynchronizingFiles ():
     '''
     '''       
     
-    currency: list
-    my_orders: list
-    my_trades: list
+    
+    connection_url: str
+    client_id: str
+    client_secret: str
+        
+    async def open_orders (self, currency) -> float:
+        """
+        """
+        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency)
+        open_ordersREST: list = open_ordersREST ['result']
+                        
+        return open_orders_management.MyOrders (open_ordersREST)
+    
+    async def get_account_summary (self, currency) -> float:
+        """
+        """
+        account_summary: list = await deribit_get.get_account_summary (self.connection_url, client_id, client_secret, currency)
+                        
+        return account_summary ['result']
+    
+    async def get_instruments (self, currency) -> float:
+        """
+        """
+    
+        end_point_all=(f' {self.connection_url}public/get_instruments?currency={currency}&expired=false&kind=future')
+        return (requests.get(end_point_all).json()) ['result'] 
+    
+    async def get_index (self, currency) -> float:
+        """
+        """
+
+        
+        
+        end_point_all=(f' {self.connection_url}public/get_index?currency={currency.upper()}')
+        index=(requests.get(end_point_all).json()) ['result']  
+        
+        return index [currency.upper()]
+    
+    async def check_if_new_order_will_create_over_hedged (self, currency, label_hedging)-> list:
+        
+        '''
+        '''   
+        label_open = 'hedging spot-open'
+        open_orders_from_exchange = await self.open_orders(currency)
+        log.error (open_orders_from_exchange)
+        open_orders_label = open_orders_from_exchange.my_orders_api_basedOn_label(label_open)
+        log.error (open_orders_label)
+        
+
+        index_price = await self.get_index (currency)
+        instruments = await self.get_instruments (currency)
+        instruments_name =  [o['instrument_name'] for o in instruments] 
+
+        portfolio = await self.get_account_summary (currency)
+        log.debug (instruments)
+        log.info (index_price)
+        log.warning (portfolio)
+        equity = portfolio  ['equity']
+        notional = index_price * equity  
+        log.warning (notional)
+        for instrument in instruments_name:
+            log.debug (instruments_name)
+            instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]  [0]
+            log.debug (instrument_data)
+            min_trade_amount = instrument_data ['min_trade_amount']
+            contract_size = instrument_data ['contract_size']  
+            log.critical (instrument)
+            log.critical ('perpetual' in instrument)
+            spot_hedged = spot_hedging.SpotHedging ('hedging spot')
             
-    def transfer_manual_orders (self)-> list:
+            if 'PERPETUAL' in instrument:
+                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_label,
+                                                                                                notional, 
+                                                                                                min_trade_amount,
+                                                                                                contract_size
+                                                                                                ) 
+
+                if  spot_hedged.is_over_hedged (open_orders_label, check_spot_hedging ['hedging_size']):
+                    open_order_id: list = open_orders_label.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
+                    #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
+                    await deribit_get.get_cancel_order_byOrderId (
+                                                                    self.connection_url, 
+                                                                    client_id, 
+                                                                client_secret, 
+                                                                open_order_id
+                                                            )
+
+
+def main ():
+    
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
+    connection_url: str = 'wss://www.deribit.com/ws/api/v2'
+    
+    connection_url: str = 'https://test.deribit.com/api/v2/'
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
+    
+    try:
+
+        syn=SynchronizingFiles (
+        connection_url=connection_url,
+        client_id=client_id,
+        client_secret= client_secret
+        )
+                
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(syn.open_orders('eth'))
+        label_hedging = 'spot hedging'
         
-        '''
-        '''   
+        loop.run_until_complete(syn.get_instruments('ETH'))
+        loop.run_until_complete(syn.get_index('ETH'))
+        loop.run_until_complete(syn.get_account_summary('ETH'))
+        loop.run_until_complete(syn.check_if_new_order_will_create_over_hedged ('ETH', label_hedging))
          
-    def open_orders_state_cancelled (self)-> list:
-        
-        '''
-        '''   
 
-        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'cancelled' ]   
+    except Exception as error:
+        formula.log_error('app','name-try2', error, 10)
     
-    def open_orders_state_filled (self)-> list:
-        
-        '''
-        '''   
-
-        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'filled' ]   
-    
-    def open_orders_exist_in_my_trades (self)-> list:
-        
-        '''
-        '''   
-         
-        my_trade_order_id = [o['order_id'] for o in self.my_trades ] 
-
-        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] in my_trade_order_id]   
-    
-    def open_orders_outstanding (self)-> list:
-        
-        '''
-        '''   
-         
-        open_orders_id_cancelled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_cancelled () ] 
-        exclude_cancelled = [] if open_orders_id_cancelled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_cancelled]  
-        open_orders_id_filled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_filled () ] 
-        exclude_filled = [] if open_orders_id_filled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_filled]   
-        open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
-        #log.warning (f'{self.my_trades=}')
-        #log.warning (f'{self.open_orders_exist_in_my_trades()=}')
-        
-        return [] if self.my_orders == [] else [o for o in self.my_orders  if o['order_id'] not in [open_orders_id_cancelled, open_orders_id_filled, open_orders_id_exist_in_my_trades]]   
-    
-    def update_open_orders_outstanding (self)-> list:
-        
-        '''
-        '''   
-
-        my_path_orders = system_tools.provide_path_for_file ('orders', self.currency) 
-        #log.error (f'{self.open_orders_outstanding()=}')
-
-        pickling.replace_data(my_path_orders, self.open_orders_outstanding())
-                             
-
-def main    ():
-    
-    currencies =  ['ETH','BTC']
-    data_orders=[{'trade_seq': 12029237, 'trade_id': 'ETH-16763888', 'timestamp': 1671691497827, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1211.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3144458614', 'mmp': False, 'matching_id': None, 'mark_price': 1211.25, 'liquidity': 'M', 'label': 'hedging spot-open-1671691324574', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1211.25, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 9.0}]
-    label_id= data_orders [0]['label']
-    log.debug ('open' in label_id)
-    
-    for currency in currencies:
-         
-        my_trades_open_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
-        my_trades_open = pickling.read_data(my_trades_open_path)        
-        
-        my_path_orders = system_tools.provide_path_for_file ('orders', currency.lower())
-
-        all_open_orders = pickling.read_data (my_path_orders)
-        my_orders = open_orders_management.MyOrders(all_open_orders)
-        my_orders_all = my_orders.my_orders_all()
-        
-        synchronizing = SynchronizingFiles (currency, my_orders_all, my_trades_open)
-        synchronizing.update_open_orders_outstanding()
-        cancel =synchronizing.open_orders_state_cancelled ()
-        print (cancel)
-
-
 if __name__ == "__main__":
 
+    # DBT Client ID
+    client_id: str = parse_dotenv() ['client_id']
+    # DBT Client Secret
+    client_secret: str = parse_dotenv() ['client_secret']
+    config = {
+    'client_id': 'client_id',
+    'client_secret': 'client_secret'
+}
+    db_config = [{k: os.environ.get(v) for k, v in config.items()}]
+    #log.error (db_config)
+    db_config = [o  for o in db_config]
+    #log.error (db_config)
     
     try:
         main()
         
-    except Exception as error:
-        log.error (error)
-        message = f'SynchronizingFiles {error}'
-        telegram_app.telegram_bot_sendtext(message)
+    except (KeyboardInterrupt, SystemExit):
+        asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
-    
+    except Exception as error:
+        formula.log_error('app','name-try2', error, 10)

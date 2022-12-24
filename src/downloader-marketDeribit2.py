@@ -182,7 +182,6 @@ class main:
                                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
                                             except:
                                                 continue
-                                        
                                     
                     except ConnectionTimeoutError as e:
                         logging.info(e)
@@ -190,8 +189,6 @@ class main:
                         
                         formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
                         system_tools.sleep_and_restart_program(1)
-                
-                        
 
     async def establish_heartbeat(self) -> None:
         """

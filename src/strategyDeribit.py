@@ -207,14 +207,11 @@ class strategyDeribit:
                         instruments = pickling.read_data (my_path)
 
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
+                        log.critical (instruments_name)
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
 
                         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
-                        log.error (message_channel)
-                        log.warning (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         
-        
-        
                         one_minute = 60000
                         one_hour = one_minute * 60000
                         
@@ -249,10 +246,10 @@ class strategyDeribit:
                             log.warning (f'{order_state=}')
                             
                             if order_state == 'open':
-                                log.error ('order_state')
+                                log.error ('ORDER_STATE')
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
                             else:
-                                log.error ('order_state')
+                                log.error ('ORDER_STATE')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                 item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
                                 log.info (f'{item_in_open_orders_open_with_same_id=}')
@@ -266,23 +263,22 @@ class strategyDeribit:
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
-                        open_orders_all: list = pickling.read_data (my_path_orders_open)
-                        open_order_mgt = open_orders_management.MyOrders (open_orders_all)
+                        #open_orders_all: list = pickling.read_data (my_path_orders_open)
 
-                        open_orders_byBot: list = open_order_mgt.my_orders_api()
                         open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
-
-                        open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
-
-                        one_minute = 60000
-                        three_minute = one_minute * 3
-                        current_time = await deribit_get.get_server_time(self.connection_url)
-                        current_server_time = current_time ['result']
+                        open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+                        #open_orders_byBot: list = open_order_mgt.my_orders_api()
+                        
                         #log.error (open_orders_byBot not in none_data)
                         
-                        if open_orders_byBot not in none_data :
+                        if open_orders_open_byAPI not in none_data :
+                            
+                            three_minute = one_minute * 3
+                            current_time = await deribit_get.get_server_time(self.connection_url)
+                            current_server_time = current_time ['result']
+                            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
                             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-                            open_orders_deltaTime = current_server_time - open_orders_lastUpdateTStamp_min                       
+                            open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
 
                             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
                             if open_orders_deltaTime > three_minute:
@@ -354,9 +350,9 @@ class strategyDeribit:
                             #log.warning (f'{my_trades_open=}') 
                             
                             spot_hedged = spot_hedging.SpotHedging (label_hedging,
-                                                                    my_trades_open)
+                                                                    my_trades_open
+                                                                    )
                             
-                                    
                             for instrument in instruments_name:
                                 log.warning (f'{instrument}')
 
@@ -376,14 +372,11 @@ class strategyDeribit:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                            
                                     
-                                label_hedging_spot_open: str = 'hedging spot-open'
+                                #label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
                                 
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
-
-                                
                     
                                 perpetual = 'PERPETUAL'
                                 #log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
@@ -403,7 +396,6 @@ class strategyDeribit:
 
                                     label: str = label_numbering.labelling ('open', label_hedging)
 
-                                    log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
                                     
                                     #check possibility average up/profit realization
@@ -449,6 +441,7 @@ class strategyDeribit:
                                                                 label
                                                                 )
                                         
+                                        #! synchronize
                                         # refresh, check by independent endpoint
                                         open_orders: list = await self.open_orders (currency)
                                         open_orders_byAPI: list = open_orders.my_orders_api()

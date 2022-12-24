@@ -41,6 +41,7 @@ async def main(
                     "method": f"{endpoint}",
                     "params": params
                     }  
+
     if client_id == None:
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -191,11 +192,58 @@ async def get_position (connection_url: str, client_id, client_secret, currency)
             client_secret=client_secret,
             )
     return result #['result']
+
+async def get_account_summary (connection_url: str, client_id, client_secret, currency):
+        
+    params =  {"currency": currency,
+    "extended": True}
+    endpoint: str = 'private/get_account_summary'
+    
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            connection_url=connection_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+    return result #['result']
         
 async def  get_server_time (connection_url: str):
     
     endpoint: str = 'public/get_time?'
     params = {}
+    
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            connection_url=connection_url
+            )
+    return result  
+
+async def  get_index (connection_url: str, currency):
+    
+    endpoint: str = 'public/get_index'
+    params =  {"currency": 'ETH'}
+    print (endpoint)
+    print (params)
+    
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            connection_url=connection_url
+            )
+    return result     
+
+
+
+async def  get_instruments (connection_url: str, currency):
+    
+    endpoint: str = 'public/get_instruments'
+    params =  {"currency": 'ETH',
+    "kind": "future",
+    "expired": False}
+    print (endpoint)
+    print (params)
     
     result = await main(
             endpoint=endpoint,

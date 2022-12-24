@@ -1,0 +1,112 @@
+#!/usr/bin/python3
+
+
+# installed
+from dataclassy import dataclass
+from portfolio.deribit import open_orders_management, myTrades_management
+from utils import pickling, system_tools, telegram_app
+
+from loguru import logger as log
+
+
+@dataclass(unsafe_hash=True, slots=True)
+class SynchronizingFiles ():
+
+    
+    '''
+    '''       
+    
+    currency: list
+    my_orders: list
+    my_trades: list
+            
+    def transfer_manual_orders (self)-> list:
+        
+        '''
+        '''   
+         
+    def open_orders_state_cancelled (self)-> list:
+        
+        '''
+        '''   
+
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'cancelled' ]   
+    
+    def open_orders_state_filled (self)-> list:
+        
+        '''
+        '''   
+
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_state'] == 'filled' ]   
+    
+    def open_orders_exist_in_my_trades (self)-> list:
+        
+        '''
+        '''   
+         
+        my_trade_order_id = [o['order_id'] for o in self.my_trades ] 
+
+        return [] if self.my_orders == [] else [o for o in self.my_orders if o['order_id'] in my_trade_order_id]   
+    
+    def open_orders_outstanding (self)-> list:
+        
+        '''
+        '''   
+         
+        open_orders_id_cancelled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_cancelled () ] 
+        exclude_cancelled = [] if open_orders_id_cancelled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_cancelled]  
+        open_orders_id_filled = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_state_filled () ] 
+        exclude_filled = [] if open_orders_id_filled == [] else [o for o in self.my_orders if o['order_id'] not in open_orders_id_filled]   
+        open_orders_id_exist_in_my_trades = [] if self.my_orders == [] else [o['order_id'] for o in self.open_orders_exist_in_my_trades () ] 
+        #log.warning (f'{self.my_trades=}')
+        #log.warning (f'{self.open_orders_exist_in_my_trades()=}')
+        
+        return [] if self.my_orders == [] else [o for o in self.my_orders  if o['order_id'] not in [open_orders_id_cancelled, open_orders_id_filled, open_orders_id_exist_in_my_trades]]   
+    
+    def update_open_orders_outstanding (self)-> list:
+        
+        '''
+        '''   
+
+        my_path_orders = system_tools.provide_path_for_file ('orders', self.currency) 
+        #log.error (f'{self.open_orders_outstanding()=}')
+
+        pickling.replace_data(my_path_orders, self.open_orders_outstanding())
+                             
+
+def main    ():
+    
+    currencies =  ['ETH','BTC']
+    data_orders=[{'trade_seq': 12029237, 'trade_id': 'ETH-16763888', 'timestamp': 1671691497827, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1211.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3144458614', 'mmp': False, 'matching_id': None, 'mark_price': 1211.25, 'liquidity': 'M', 'label': 'hedging spot-open-1671691324574', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1211.25, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 9.0}]
+    label_id= data_orders [0]['label']
+    log.debug ('open' in label_id)
+    
+    for currency in currencies:
+         
+        my_trades_open_path = system_tools.provide_path_for_file ('myTrades', currency.lower())
+        my_trades_open = pickling.read_data(my_trades_open_path)        
+        
+        my_path_orders = system_tools.provide_path_for_file ('orders', currency.lower())
+
+        all_open_orders = pickling.read_data (my_path_orders)
+        my_orders = open_orders_management.MyOrders(all_open_orders)
+        my_orders_all = my_orders.my_orders_all()
+        
+        synchronizing = SynchronizingFiles (currency, my_orders_all, my_trades_open)
+        synchronizing.update_open_orders_outstanding()
+        cancel =synchronizing.open_orders_state_cancelled ()
+        print (cancel)
+
+
+if __name__ == "__main__":
+
+    
+    try:
+        main()
+        
+    except Exception as error:
+        log.error (error)
+        message = f'SynchronizingFiles {error}'
+        telegram_app.telegram_bot_sendtext(message)
+
+    

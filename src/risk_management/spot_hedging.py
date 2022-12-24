@@ -14,7 +14,7 @@ class SpotHedging ():
     '''
     '''       
     label: str 
-    my_trades: list
+    my_trades: list = []
                 
     def my_trades_api_basedOn_label (self) -> list:
         
