@@ -109,7 +109,7 @@ class SynchronizingFiles ():
                                                                                                 ) 
 
                 if  spot_hedged.is_over_hedged (open_orders_label, check_spot_hedging ['hedging_size']):
-                    open_order_id: list = open_orders_label.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
+                    open_order_id: list = open_orders_from_exchange.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                     #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
                     await deribit_get.get_cancel_order_byOrderId (
                                                                     self.connection_url, 
