@@ -441,20 +441,6 @@ class strategyDeribit:
                                                                 label
                                                                 )
                                         
-                                        #! synchronize
-                                        # refresh, check by independent endpoint
-                                        open_orders: list = await self.open_orders (currency)
-                                        open_orders_byAPI: list = open_orders.my_orders_api()
-
-                                        if  spot_hedged.is_over_hedged (open_orders_byAPI, check_spot_hedging ['hedging_size']):
-                                            open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
-                                            #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
-                                            await deribit_get.get_cancel_order_byOrderId (
-                                                                                            self.connection_url, 
-                                                                                            client_id, 
-                                                                                            client_secret, 
-                                                                                            open_order_id
-                                                                                            )
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
