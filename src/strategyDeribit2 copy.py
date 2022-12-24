@@ -227,7 +227,8 @@ class DeribitMarketDownloader:
             
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
-                        currency = string_modification.extract_texts_for_currency (message_channel)
+                        currency = string_modification.extract_currency_from_text (message_channel)
+                        currency = string_modification.extract_currency_from_text (message_channel)
 
                         log.critical (currency)
                         if message_channel == f'deribit_price_index.{symbol_index}':

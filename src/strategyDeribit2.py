@@ -18,7 +18,7 @@ from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, formula, system_tools, string_modification
+from utils import pickling, formula, system_tools, string_modification, time_modification
 from configuration import id_numbering, label_numbering
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
@@ -33,8 +33,9 @@ def parse_dotenv()->dict:
             'client_secret': os.environ.get('client_secret_test')
             }
 none_data = [None, [], '0.0', 0]
+     
     
-class strategyDeribit:
+class DeribitMarketDownloader:
     
     '''
         
@@ -103,12 +104,13 @@ class strategyDeribit:
 
             currencies = ['ETH', 'BTC']
             for currency in currencies:
-                my_path_instruments = system_tools.provide_path_for_file ('instruments', currency.lower())
+                file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+                my_path_instruments = system_tools.provide_path_for_file (file_name_instruments, "market_data", "deribit")
                 instruments = pickling.read_data (my_path_instruments)
                 instruments_name: list =  [o['instrument_name'] for o in instruments ]
                 
                 instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
-                                            
+                      
                 self.loop.create_task(
                     self.ws_operation(
                         operation='subscribe',
@@ -129,7 +131,7 @@ class strategyDeribit:
                         ws_channel=f'user.trades.future.{currency.upper()}.100ms'
                         )
                     )
-            
+        
                 self.loop.create_task(
                     self.ws_operation(
                         operation='subscribe',
@@ -137,21 +139,20 @@ class strategyDeribit:
                         )
                     )
                 
+
                 for instrument in instruments_name:
                     self.loop.create_task(
                         self.ws_operation(
                             operation='subscribe',
                             ws_channel=f'book.{instrument}.none.20.100ms'
                             )
-                        ) 
-                                
+                        )
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = orjson.loads(message)
                 message_channel: str = None
-                log.debug (message)
-                
+                log.warning (message)
                 if 'id' in list(message):
                     
                     if message['id'] == 9929:
@@ -184,12 +185,20 @@ class strategyDeribit:
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
             
+                        symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
-
                         currency = string_modification.extract_currency_from_text (message_channel)
-                        
-                        symbol_index = (f'{currency.lower()}_usd')
-                        my_path = system_tools.provide_path_for_file ('index', symbol_index)
+                        currency = string_modification.extract_currency_from_text (message_channel)
+
+                        log.critical (currency)
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            #currency = (symbol_index)[:3]
+                            
+                            file_name = (f'{currency.lower()}-index.pkl')
+                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
+
+                            pickling.replace_data(my_path, data_orders)
+                             
                         index_price = []
                         
                         try:
@@ -197,8 +206,7 @@ class strategyDeribit:
                         except:
                             index_price = []
                                                       
-                        log.debug (f'{currency.lower()=}')   
-                        log.critical (f'{data_orders}')   
+                                                      
                         my_path = system_tools.provide_path_for_file ('instruments',  currency)          
 
                         instruments = pickling.read_data (my_path)
@@ -231,6 +239,8 @@ class strategyDeribit:
                             pickling.replace_data(my_path, data_orders)
                            
                             
+                        log.critical (message_channel)
+                        log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             log.warning (f'{data_orders=}')
@@ -349,7 +359,7 @@ class strategyDeribit:
                             spot_hedged = spot_hedging.SpotHedging (label_hedging,
                                                                     my_trades_open
                                                                     )
-                            
+                        
                             for instrument in instruments_name:
                                 log.warning (f'{instrument}')
 
@@ -369,14 +379,15 @@ class strategyDeribit:
                                     
                                 min_trade_amount = instrument_data ['min_trade_amount']
                                 contract_size = instrument_data ['contract_size']
-                                    
+
+
                                 #label_hedging_spot_open: str = 'hedging spot-open'
                                 #! CHECK SPOT HEDGING
                                 
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
                     
                                 perpetual = 'PERPETUAL'
-                                log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
+                                #log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
 
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
@@ -437,7 +448,6 @@ class strategyDeribit:
                                                                 check_spot_hedging ['hedging_size'], 
                                                                 label
                                                                 )
-                                        
             else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
@@ -569,7 +579,6 @@ class strategyDeribit:
                                             )
         except Exception as e:
             log.error (e)
-            
     async def ws_operation(
         self,
         operation: str,
@@ -595,7 +604,6 @@ class strategyDeribit:
 
         log.warning(id)
         log.warning(msg)
-        log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
                 msg
@@ -614,7 +622,7 @@ def main ():
     
     try:
 
-        strategyDeribit (
+        DeribitMarketDownloader (
         ws_connection_url=ws_connection_url,
         client_id=client_id,
         client_secret= client_secret
@@ -639,7 +647,7 @@ if __name__ == "__main__":
     #log.error (db_config)
     
     try:
-        main()
+            main()
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
