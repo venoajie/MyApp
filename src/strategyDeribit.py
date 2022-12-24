@@ -78,12 +78,54 @@ class  strategyDeribit:
                 )
 
             # Subscribe to the specified WebSocket Channel
-            self.loop.create_task(
-                self.ws_operation(
-                    operation='subscribe',
-                    ws_channel='trades.BTC-PERPETUAL.raw'
+
+            currencies = ['ETH', 'BTC']
+            for currency in currencies:
+                my_path_instruments = system_tools.provide_path_for_file ('instruments', currency.lower())
+                instruments = pickling.read_data (my_path_instruments)
+                instruments_name: list =  [o['instrument_name'] for o in instruments ]
+                
+                instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments]  
+                                            
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.portfolio.{currency}'
+                        )
                     )
-                )
+                
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.orders.future.{currency}.raw'
+                        )
+                    )
+                
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'user.trades.future.{currency.upper()}.100ms'
+                        )
+                    )
+                
+
+                for instrument in instruments_name:
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'book.{instrument}.none.20.100ms'
+                            )
+                        )
+                    
+    
+                        
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation='subscribe',
+                            ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                            )
+                        )
+                            
 
             while self.websocket_client.open:
                 message: bytes = await self.websocket_client.recv()
