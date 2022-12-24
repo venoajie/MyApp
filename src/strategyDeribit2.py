@@ -387,8 +387,8 @@ class DeribitMarketDownloader:
                                 
                                 label: str = label_numbering.labelling ('open', 'hedging spot')
                     
-                                perpetual = 'PERPETUAL'
-                                #log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
+                                perpetual = f'{currency.upper()}-PERPETUAL'
+                                log.critical(f'{perpetual=} {perpetual in instrument =} { ordBook !=[]=}')
 
                                 # perpetual or other designated instruments
                                 if perpetual in instrument and  ordBook !=[] :                                        
