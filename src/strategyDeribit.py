@@ -211,6 +211,8 @@ class  strategyDeribit:
                             pickling.replace_data(my_path, data_orders)
                            
                             
+                        log.critical (message_channel)
+                        log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             log.warning (f'{data_orders=}')
