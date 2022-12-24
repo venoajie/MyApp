@@ -510,6 +510,40 @@ class  strategyDeribit:
 
             await asyncio.sleep(150)
 
+    def compute_notional_value(self, index_price: float,  equity: float) -> float:
+        """
+        """
+
+        return index_price * equity
+    
+    async def open_orders (self, currency) -> float:
+        """
+        """
+
+        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
+        open_ordersREST: list = open_ordersREST ['result']
+        open_orders: list = open_orders_management.MyOrders (open_ordersREST)
+                        
+        return open_orders_management.MyOrders (open_ordersREST)
+    
+    async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
+        """
+        """
+
+        try:
+            await deribit_get.send_order_limit (
+                                            self.connection_url,
+                                            client_id, 
+                                            client_secret, 
+                                            side, 
+                                            instrument, 
+                                            size, 
+                                            prc,
+                                            label
+                                            )
+        except Exception as e:
+            log.error (e)
+            
     async def ws_operation(
         self,
         operation: str,
