@@ -207,7 +207,7 @@ class strategyDeribit:
                         instruments = pickling.read_data (my_path)
 
                         #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
-                        log.critical (instruments_name)
+
                         instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
 
                         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
@@ -441,21 +441,6 @@ class strategyDeribit:
                                                                 label
                                                                 )
                                         
-                                        #! synchronize
-                                        # refresh, check by independent endpoint
-                                        open_orders: list = await self.open_orders (currency)
-                                        open_orders_byAPI: list = open_orders.my_orders_api()
-
-                                        if  spot_hedged.is_over_hedged (open_orders_byAPI, check_spot_hedging ['hedging_size']):
-                                            open_order_id: list = open_orders.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
-                                            #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
-                                            await deribit_get.get_cancel_order_byOrderId (
-                                                                                            self.connection_url, 
-                                                                                            client_id, 
-                                                                                            client_secret, 
-                                                                                            open_order_id
-                                                                                            )
-            else:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
                 system_tools.sleep_and_restart_program(1)
