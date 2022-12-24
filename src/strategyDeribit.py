@@ -130,7 +130,7 @@ class  strategyDeribit:
             while self.websocket_client.open:
                 message: bytes = await self.websocket_client.recv()
                 message: Dict = json.loads(message)
-                log.info(message)
+                #log.info(message)
 
                 if 'id' in list(message):
                     if message['id'] == 9929:
@@ -157,6 +157,267 @@ class  strategyDeribit:
                     # Respond to Heartbeat Message
                     if message['method'] == 'heartbeat':
                         await self.heartbeat_response()
+
+
+                if 'params' in list(message):
+                    
+                    if message['method'] != 'heartbeat':
+                        message_channel = message['params']['channel']
+            
+                        data_orders: list = message['params']['data']
+
+                        currency = string_modification.extract_currency_from_text (message_channel)
+                        
+                        symbol_index = (f'{currency.lower()}_usd')
+                        my_path = system_tools.provide_path_for_file ('index', symbol_index)
+                        index_price = []
+                        
+                        try:
+                            index_price = pickling.read_data(my_path)[0]['price']
+                        except:
+                            index_price = []
+                                                      
+                        #log.debug (f'{currency.lower()=}')   
+                        my_path = system_tools.provide_path_for_file ('instruments',  currency)          
+
+                        instruments = pickling.read_data (my_path)
+
+                        #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
+
+                        instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+
+                        my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+                        
+                        one_minute = 60000
+                        one_hour = one_minute * 60000
+                        
+                        instrument_book = "".join(list(message_channel) [5:][:-14])
+                        if message_channel == f'book.{instrument_book}.none.20.100ms':
+                            #log.error (data_orders)
+                            
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
+                            
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                            except:
+                                continue        
+                            
+                        symbol_index =  (message_channel)[-7:]
+                        if message_channel == f'deribit_price_index.{symbol_index}':
+                            
+                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
+
+                            pickling.replace_data(my_path, data_orders)
+                           
+                            
+                        if message_channel == f'user.orders.future.{currency.upper()}.raw':
+                            
+                            log.warning (f'{data_orders=}')
+                            order_state = data_orders ['order_state']
+                            order_id= data_orders ['order_id']
+                            
+                            my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
+                            open_orders_open = pickling.read_data (my_path_orders_open) 
+                            log.debug (f'{open_orders_open=}')
+                            log.warning (f'{order_state=}')
+                            
+                            if order_state == 'open':
+                                log.error ('ORDER_STATE')
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
+                            else:
+                                log.error ('ORDER_STATE')
+                                item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
+                                item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
+                                log.info (f'{item_in_open_orders_open_with_same_id=}')
+                                log.warning (f'{item_in_open_orders_open_with_diff_id=}')
+                                
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
+                                
+                                if item_in_open_orders_open_with_same_id != []:
+                                    log.critical ('item_in_open_orders_open_with_same_id')
+                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
+                                    
+                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
+                                
+                        #open_orders_all: list = pickling.read_data (my_path_orders_open)
+
+                        open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
+                        open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+                        #open_orders_byBot: list = open_order_mgt.my_orders_api()
+                        
+                        #log.error (open_orders_byBot not in none_data)
+                        
+                        if open_orders_open_byAPI not in none_data :
+                            
+                            three_minute = one_minute * 3
+                            current_time = await deribit_get.get_server_time(self.connection_url)
+                            current_server_time = current_time ['result']
+                            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+                            open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
+                            open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
+
+                            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
+                            if open_orders_deltaTime > three_minute:
+                                await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
+                                
+                        my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                        my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+                        
+                        label_hedging = 'hedging spot'
+                            
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
+                            
+                            my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
+                            my_trades_open = pickling.read_data(my_trades_path_open)  
+                                     
+                            log.info (data_orders)
+                            log.debug (f'{my_trades_open=}')
+                            
+                            #determine label id
+                            try:
+                                label_id= data_orders [0]['label']
+                            except:
+                                label_id= []
+                            
+                            # for data with label id/ordered through API    
+                            if label_id != []:
+                                pass
+
+                            closed_label_id_int = string_modification.extract_integers_from_text(label_id)
+                            log.critical (label_id)
+                            log.critical (closed_label_id_int)
+
+                            log.debug ('open' in label_id)
+                            log.debug ('closed' in label_id)
+                            
+                            if 'open' in label_id:
+                                log.error ('label_id open')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 100000)
+                                
+                            if 'closed' in label_id:
+                                log.error ('label_id closed')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 100000)
+                                my_trades_open = pickling.read_data(my_trades_path_open)  
+                                remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 100000)
+                                closed_trades = ([o for o in my_trades_open if  str(my_trades_open)  in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 100000)
+                                
+                            if label_id == [] :
+                                log.error ('[]')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
+                                
+                        my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower()) 
+                                                                                    
+                        if message_channel == f'user.portfolio.{currency.lower()}':
+                            pickling.replace_data(my_path_portfolio, data_orders)
+
+                        portfolio = pickling.read_data(my_path_portfolio)
+                        
+                        if  index_price !=[] and portfolio !=[]:
+                            
+                            equity = portfolio [0]['equity']
+                            notional = index_price * equity    
+                        
+                            spot_was_unhedged = False
+                            
+                            # refresh myTrades source
+                            my_trades_open = pickling.read_data(my_trades_path_open) 
+                            #log.warning (f'{my_trades_open=}') 
+                            
+                            spot_hedged = spot_hedging.SpotHedging (label_hedging,
+                                                                    my_trades_open
+                                                                    )
+                            
+                            for instrument in instruments_name:
+                                log.warning (f'{instrument}')
+
+                                instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
+                                
+                                my_path_ordBook = system_tools.provide_path_for_file ('ordBook', instrument) 
+                                
+                                ordBook = pickling.read_data(my_path_ordBook)
+                                #log.warning (ordBook)
+                                
+                                if ordBook !=[] :
+                                    max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+                                    most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
+
+                                    best_bid_prc= most_current_ordBook[0]['bids'][0][0]
+                                    best_ask_prc= most_current_ordBook[0]['asks'][0][0]
+                                    
+                                min_trade_amount = instrument_data ['min_trade_amount']
+                                contract_size = instrument_data ['contract_size']
+
+
+                                #label_hedging_spot_open: str = 'hedging spot-open'
+                                #! CHECK SPOT HEDGING
+                                
+                                label: str = label_numbering.labelling ('open', 'hedging spot')
+                    
+                                perpetual = 'PERPETUAL'
+                                #log.critical(f'{perpetual in instrument =} { ordBook !=[]=}')
+
+                                # perpetual or other designated instruments
+                                if perpetual in instrument and  ordBook !=[] :                                        
+
+                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
+                                                                                            notional, 
+                                                                                            min_trade_amount,
+                                                                                            contract_size
+                                                                                            ) 
+                                    spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
+
+                                    spot_was_hedged = spot_was_unhedged == False
+                                    actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
+
+                                    label: str = label_numbering.labelling ('open', label_hedging)
+
+                                    log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
+                                    
+                                    #check possibility average up/profit realization
+                                    if spot_was_hedged and actual_hedging_size != 0:
+                                        threshold = 2/100
+                                        
+                                        myTrades_max_price_plus_threshold = spot_hedged.my_trades_max_price_plus_threshold (threshold, index_price)
+                                        log.warning (myTrades_max_price_plus_threshold)
+                                        myTrades_max_price_attributes = spot_hedged.my_trades_api_basedOn_label_max_price_attributes ()
+                                        myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
+                                        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
+                                        label = f'hedging spot-closed-{label_int}'
+                                        open_orders_close =   pickling.read_data(my_trades_path_closed) 
+                                        
+                                        if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
+
+                                            await self.send_orders (
+                                                                    'sell', 
+                                                                    instrument, 
+                                                                    best_ask_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
+
+                                        if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
+                                            
+                                            await self.send_orders (
+                                                                    'buy', 
+                                                                    instrument, 
+                                                                    best_bid_prc, 
+                                                                    myTrades_max_price_attributes ['size'], 
+                                                                    label
+                                                                    )
+
+                                    if spot_was_unhedged:
+                                        log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
+                                    
+                                        await self.send_orders (
+                                                                'sell', 
+                                                                instrument, 
+                                                                best_ask_prc,
+                                                                check_spot_hedging ['hedging_size'], 
+                                                                label
+                                                                )
+                                        
 
             else:
                 log.info('WebSocket connection has broken.')
