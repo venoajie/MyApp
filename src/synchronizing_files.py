@@ -21,6 +21,10 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 
+def telegram_bot_sendtext(bot_message, purpose) -> None:
+    from utils import telegram_app
+    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
 def parse_dotenv()->dict:    
     return {'client_id': os.environ.get('client_id_test'),
             'client_secret': os.environ.get('client_secret_test')
@@ -85,6 +89,9 @@ class SynchronizingFiles ():
                                             prc,
                                             label
                                             )
+            
+            info= (f'SEND ORDER {label} {instrument} {size} \n ')
+            telegram_bot_sendtext(info,'success_order')
         except Exception as e:
             log.error (e)
             
@@ -218,6 +225,9 @@ class SynchronizingFiles ():
                 if  spot_hedged.is_over_hedged (open_orders_label, check_spot_hedging ['hedging_size']):
                     open_order_id: list = open_orders_from_exchange.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
                     #log.critical (open_orders_hedging_lastUpdate_tStamp_minId)
+                    
+                    info= (f'CANCEL ORDER {instrument} \n ')
+                    telegram_bot_sendtext(info,'failed_order')
                     await deribit_get.get_cancel_order_byOrderId (
                                                                     self.connection_url, 
                                                                     client_id, 
@@ -242,6 +252,9 @@ async def main ():
         client_secret= client_secret
         )
         label_hedging = 'spot hedging'
+
+        info= (f'RUNNING ORDER \n ')
+        telegram_bot_sendtext(info,'general_error')
         await syn.running_strategy ('eth')
         await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
                 

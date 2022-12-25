@@ -10,8 +10,7 @@ from loguru import logger as log
 from rocketry import Rocketry
 from rocketry.conds import  every
 from loguru import logger as log
-import asyncio
-
+import requests
 # user defined formula
 from utils import pickling, formula, system_tools
 from market_data import get_market_data
@@ -26,6 +25,42 @@ app = Rocketry(config={'task_execution': 'async',
 
 root = Path(".")
 
+
+def get_currencies () -> float:
+    """
+    """
+
+    endpoint=(f'https://test.deribit.com/api/v2/public/get_currencies?')
+    return  requests.get(endpoint).json() ['result']
+
+def get_instruments (currency) -> float:
+    """
+    """
+
+    endpoint=(f'https://test.deribit.com/api/v2/public/get_instruments?currency={currency}')
+    return  requests.get(endpoint).json() ['result']
+    
+    
+@app.task(every("3600 seconds"))
+def check_and_save_every_60_minutes ():
+        
+    try:
+               
+        currencies = get_currencies ()
+        currencies = ['ETH', 'BTC']
+        for currency in currencies:
+            instruments = get_instruments (currency)
+            my_path_instruments= system_tools.provide_path_for_file ('instruments',currency) 
+            pickling.replace_data(my_path_instruments, instruments)
+            
+        my_path_cur = system_tools.provide_path_for_file ('currencies' ) 
+        pickling.replace_data(my_path_cur, currencies)
+        
+    except Exception as error:
+        import traceback
+        log.error(f"{error}")
+        log.error(traceback.format_exc())
+        
 #@app.task(every("1 seconds"))
 def check_and_save_every_30_seconds ():
         
