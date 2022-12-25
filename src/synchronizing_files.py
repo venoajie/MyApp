@@ -108,13 +108,14 @@ class SynchronizingFiles ():
         current_time = await deribit_get.get_server_time(self.connection_url)
         current_server_time = current_time ['result']
         open_order_mgt = await self.open_orders (currency)
-        open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
-        open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-        open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
+        if open_order_mgt !=[]:
+            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+            open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
+            open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
 
-        open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
-        if open_orders_deltaTime > three_minute:
-            await deribit_get.get_cancel_order_byOrderId(self.connection_url, self.client_id, self.client_secret, open_order_id)    
+            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
+            if open_orders_deltaTime > three_minute:
+                await deribit_get.get_cancel_order_byOrderId(self.connection_url, self.client_id, self.client_secret, open_order_id)    
     
     async def reading_from_database (self, currency: str) -> float:
         """
