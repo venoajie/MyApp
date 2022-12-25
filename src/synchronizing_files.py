@@ -108,7 +108,12 @@ class SynchronizingFiles ():
         current_time = await deribit_get.get_server_time(self.connection_url)
         current_server_time = current_time ['result']
         open_order_mgt = await self.open_orders (currency)
-        if open_order_mgt !=[]:
+        log.critical (open_order_mgt)
+        try:
+            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+        except:
+            open_orders_lastUpdateTStamps: list = []    
+        if open_orders_lastUpdateTStamps !=[]:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
