@@ -41,13 +41,26 @@ class SynchronizingFiles ():
     client_id: str
     client_secret: str
         
-    async def open_orders (self, currency) -> float:
+    async def open_orders (self, currency) -> list:
         """
         """
         open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, self.client_id, self.client_secret, currency)
         open_ordersREST: list = open_ordersREST ['result']
                         
         return open_orders_management.MyOrders (open_ordersREST)
+        
+    async def my_trades (self, currency, start_timestamp: int, end_timestamp: int) -> list:
+        """
+        """
+        trades: list = await deribit_get.get_user_trades_by_currency_and_time (self.connection_url, 
+                                                                               self.client_id, 
+                                                                               self.client_secret, 
+                                                                               currency, 
+                                                                               start_timestamp,
+                                                                               end_timestamp)
+        trades: list = trades ['result']
+                        
+        return myTrades_management.MyTrades (trades)
     
     async def get_account_summary (self, currency: str) -> list:
         """
@@ -99,6 +112,12 @@ class SynchronizingFiles ():
         """
         return index_price * equity  
     
+    async def current_server_time (self) -> float:
+        """
+        """
+        current_time = await deribit_get.get_server_time(self.connection_url)
+        return current_time   ['result']
+    
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency) -> float:
         """
         """
@@ -116,7 +135,7 @@ class SynchronizingFiles ():
         if open_orders_lastUpdateTStamps !=[]:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-            open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
+            open_orders_deltaTime: int = await self.current_server_time () - open_orders_lastUpdateTStamp_min                       
 
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
             if open_orders_deltaTime > three_minute:
@@ -125,22 +144,22 @@ class SynchronizingFiles ():
     async def reading_from_database (self, currency: str) -> float:
         """
         """
-        my_trades_path_open : str = system_tools.provide_path_for_file ('myTrades', currency, 'open')
-        my_trades_open : list = pickling.read_data(my_trades_path_open) 
+        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+        my_trades_open: list = pickling.read_data(my_trades_path_open) 
         
-        my_path_orders_open : str = system_tools.provide_path_for_file ('orders', currency, 'open')
-        open_orders_open_byAPI : list = pickling.read_data(my_path_orders_open)
+        my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
+        open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
         
-        my_path_portfolio : str = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
+        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
         portfolio = pickling.read_data(my_path_portfolio)
         
-        my_path_instruments : str = system_tools.provide_path_for_file ('instruments',  currency)          
+        my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  currency)          
         instruments = pickling.read_data (my_path_instruments)
                    
-        symbol_index : str = f'{currency}_usd'
-        my_path_index : str = system_tools.provide_path_for_file ('index',  symbol_index)  
-        index_price : list = pickling.read_data(my_path_index) 
-        index_price : float= index_price [0]['price']
+        symbol_index: str = f'{currency}_usd'
+        my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        index_price: list = pickling.read_data(my_path_index) 
+        index_price: float= index_price [0]['price']
         
         return {'my_trades_open': my_trades_open,
                 'open_orders_open_byAPI': open_orders_open_byAPI,
@@ -154,21 +173,21 @@ class SynchronizingFiles ():
         """
 
         reading_from_database = await self.reading_from_database (currency)
-        my_trades_open : list = reading_from_database ['my_trades_open']
-        open_orders_open_byAPI : list = reading_from_database ['open_orders_open_byAPI']
+        my_trades_open: list = reading_from_database ['my_trades_open']
+        open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         portfolio = reading_from_database ['portfolio']
         instruments = reading_from_database ['instruments']
-        index_price : float= reading_from_database['index_price']
+        index_price: float= reading_from_database['index_price']
         
-        instruments_name : list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+        instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
         
         for instrument in instruments_name:
 
-            my_path_ordBook : str = system_tools.provide_path_for_file ('ordBook', instrument) 
+            my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
             
             ordBook = pickling.read_data(my_path_ordBook)
             
-            if  index_price and portfolio and ordBook  :
+            if  index_price and portfolio and ordBook:
                 
                 equity = portfolio [0]['equity']
                 notional =  await self.compute_notional_value (index_price, equity)
@@ -226,6 +245,9 @@ class SynchronizingFiles ():
 
         equity = portfolio  ['equity']
         notional = await self.compute_notional_value (index_price, equity)
+        
+        one_minute = 60000
+        one_hour = one_minute * 60
 
         for instrument in instruments_name:
             if 'PERPETUAL' in instrument:
@@ -234,7 +256,11 @@ class SynchronizingFiles ():
                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]  [0] 
                 min_trade_amount = instrument_data ['min_trade_amount']
                 contract_size = instrument_data ['contract_size']  
-                spot_hedged = spot_hedging.SpotHedging ('hedging spot')
+                end_timestamp: int = await self.current_server_time ()
+                start_timestamp: int = end_timestamp -  one_hour
+                my_trades = self.my_trades(currency, start_timestamp, end_timestamp)
+                log.info (my_trades)
+                spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades)
             
                 check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_label,
                                                                           notional,

@@ -175,6 +175,24 @@ async def  get_open_orders_byCurrency (connection_url, client_id, client_secret,
             )
     return result 
 
+async def  get_user_trades_by_currency_and_time (connection_url, client_id, client_secret, currency, start_timestamp: int, end_timestamp: int):
+    params =  {
+                "currency": currency,
+                "kind": "any",
+                "start_timestamp": start_timestamp,
+                "end_timestamp": end_timestamp
+                }
+    
+    endpoint_open_orders_currency: str = f'"private/get_user_trades_by_currency_and_time"'
+    result = await main(
+            endpoint=endpoint_open_orders_currency,
+            params=params,
+            connection_url=connection_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+    return result 
+
 
 async def  get_cancel_order_byOrderId(connection_url: str,
                                       client_id: str, 
