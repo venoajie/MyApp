@@ -184,6 +184,7 @@ class DeribitMarketDownloader:
                     
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        log.info (message_channel)
             
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
@@ -199,7 +200,7 @@ class DeribitMarketDownloader:
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
-                            log.error (data_orders)
+                            #log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
                             
