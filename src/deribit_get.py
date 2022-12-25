@@ -25,6 +25,23 @@ from configuration import id_numbering
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
+async def get_unauthenticated(
+    connection_url: str,
+    endpoint: str
+        ) -> None:
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            connection_url+endpoint
+                ) as response:
+            # RESToverHTTP Status Code
+            status_code: int = response.status
+
+
+            # RESToverHTTP Response Content
+            response: Dict = await response.json()
+
+            return response
 
 async def main(
     endpoint: str,

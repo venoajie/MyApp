@@ -104,3 +104,18 @@ def check_environment()->bool:
     else:
         print("In nohup mode")
         
+def is_current_file_running (script)->bool:
+
+    '''
+    https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running
+    '''   
+    import psutil
+
+    for q in psutil.process_iter():
+        if q.name().startswith('python'):
+            if len(q.cmdline())>1 and script in q.cmdline()[1] and q.pid !=os.getpid():
+                print("'{}' Process is already running".format(script))
+                return True
+
+    return False
+            

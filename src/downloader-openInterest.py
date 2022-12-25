@@ -10,6 +10,7 @@ from loguru import logger as log
 from rocketry import Rocketry
 from rocketry.conds import  every
 from loguru import logger as log
+import asyncio
 
 # user defined formula
 from utils import pickling, formula, system_tools
@@ -25,6 +26,21 @@ app = Rocketry(config={'task_execution': 'async',
 
 root = Path(".")
 
+#@app.task(every("1 seconds"))
+def check_and_save_every_30_seconds ():
+        
+    try:
+        from synchronizing_files import main
+        
+        print ('AAAAAAA')
+        asyncio.get_event_loop().run_until_complete(main())
+        print ('c')
+        
+                
+    except Exception as error:
+        import traceback
+        log.error(f"{error}")
+        log.error(traceback.format_exc())
 
 @app.task(every("300 seconds"))
 def check_and_save_every_5_minutes ():
@@ -54,6 +70,7 @@ if __name__ == "__main__":
     try:
 
         app.run()
+#        check_and_save_every_30_seconds ()
         
     except (KeyboardInterrupt, SystemExit):
         import sys

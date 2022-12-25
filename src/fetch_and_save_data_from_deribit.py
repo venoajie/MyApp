@@ -189,32 +189,9 @@ class DeribitMarketDownloader:
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
                         currency = string_modification.extract_currency_from_text (message_channel)
-                        currency = string_modification.extract_currency_from_text (message_channel)
-
-                        log.critical (currency)
-                        if message_channel == f'deribit_price_index.{symbol_index}':
-                            #currency = (symbol_index)[:3]
-                            
-                            file_name = (f'{currency.lower()}-index.pkl')
-                            my_path = system_tools.provide_path_for_file (file_name, "market_data", "deribit")
-
-                            pickling.replace_data(my_path, data_orders)
-                             
-                        index_price = []
-                        
-                        try:
-                            index_price = pickling.read_data(my_path)[0]['price']
-                        except:
-                            index_price = []
+                        currency = string_modification.extract_currency_from_text (message_channel)   
                                                       
-                                                      
-                        my_path = system_tools.provide_path_for_file ('instruments',  currency)          
-
-                        instruments = pickling.read_data (my_path)
-
-                        #instruments_with_rebates = [o['instrument_name'] for o in instruments if o['maker_commission'] <0]
-
-                        instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+                        my_path = system_tools.provide_path_for_file ('instruments',  currency)       
 
                         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
                         
@@ -232,6 +209,8 @@ class DeribitMarketDownloader:
                             except:
                                 continue        
                             
+                        log.critical (currency)                                                   
+                                                   
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             
@@ -239,8 +218,7 @@ class DeribitMarketDownloader:
 
                             pickling.replace_data(my_path, data_orders)
                            
-                            
-                        log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
+                        #log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
                             log.warning (f'{data_orders=}')
@@ -255,6 +233,7 @@ class DeribitMarketDownloader:
                             if order_state == 'open':
                                 log.error ('ORDER_STATE')
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
+                                
                             else:
                                 log.error ('ORDER_STATE')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
@@ -270,32 +249,9 @@ class DeribitMarketDownloader:
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                             log.debug (f'AFTER {open_orders_open=}')
-                                
-                        #open_orders_all: list = pickling.read_data (my_path_orders_open)
-
-                        open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
-                        open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-                        #open_orders_byBot: list = open_order_mgt.my_orders_api()
                         
-                        #log.error (open_orders_byBot not in none_data)
-                        
-                        if open_orders_open_byAPI not in none_data :
-                            
-                            three_minute = one_minute * 3
-                            current_time = await deribit_get.get_server_time(self.connection_url)
-                            current_server_time = current_time ['result']
-                            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
-                            open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-                            open_orders_deltaTime : int = current_server_time - open_orders_lastUpdateTStamp_min                       
-
-                            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
-                            if open_orders_deltaTime > three_minute:
-                                await deribit_get.get_cancel_order_byOrderId(self.connection_url, client_id, client_secret, open_order_id)
-                                
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-                        
-                        label_hedging = 'hedging spot'
                             
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
                             
@@ -343,116 +299,9 @@ class DeribitMarketDownloader:
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
 
-                        portfolio = pickling.read_data(my_path_portfolio)
-                        
-                        if  index_price !=[] and portfolio !=[]:
-                            
-                            equity = portfolio [0]['equity']
-                            notional = index_price * equity    
-                            log.error(f'{notional=} {index_price=} {equity=}')
-                            
-                        
-                            spot_was_unhedged = False
-                            
-                            # refresh myTrades source
-                            my_trades_open = pickling.read_data(my_trades_path_open) 
-                            log.info (f'{my_trades_open=}') 
-                            
-                            spot_hedged = spot_hedging.SpotHedging (label_hedging,
-                                                                    my_trades_open
-                                                                    )
-                        
-                            for instrument in instruments_name:
-                                log.warning (f'{instrument}')
-
-                                instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-                                
-                                my_path_ordBook = system_tools.provide_path_for_file ('ordBook', instrument) 
-                                
-                                ordBook = pickling.read_data(my_path_ordBook)
-                                #log.warning (ordBook)
-                                
-                                if ordBook !=[] :
-                                    max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
-                                    most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
-
-                                    best_bid_prc= most_current_ordBook[0]['bids'][0][0]
-                                    best_ask_prc= most_current_ordBook[0]['asks'][0][0]
-                                    
-                                min_trade_amount = instrument_data ['min_trade_amount']
-                                contract_size = instrument_data ['contract_size']
-
-
-                                #label_hedging_spot_open: str = 'hedging spot-open'
-                                #! CHECK SPOT HEDGING
-                                
-                                label: str = label_numbering.labelling ('open', 'hedging spot')
-                    
-                                perpetual = f'{currency.upper()}-PERPETUAL'
-                                log.critical(f'{perpetual=} {perpetual in instrument =} { ordBook !=[]=}')
-
-                                # perpetual or other designated instruments
-                                if perpetual in instrument and  ordBook !=[] :                                        
-
-                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
-                                                                                            notional, 
-                                                                                            min_trade_amount,
-                                                                                            contract_size
-                                                                                            ) 
-                                    spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
-
-                                    spot_was_hedged = spot_was_unhedged == False
-                                    actual_hedging_size = spot_hedged.compute_actual_hedging_size ()
-
-                                    label: str = label_numbering.labelling ('open', label_hedging)
-
-                                    log.critical(f'{spot_was_unhedged=} {spot_was_hedged=} {actual_hedging_size=}')
-                                    
-                                    #check possibility average up/profit realization
-                                    if spot_was_hedged and actual_hedging_size != 0:
-                                        threshold = 2/100
-                                        
-                                        myTrades_max_price_plus_threshold = spot_hedged.my_trades_max_price_plus_threshold (threshold, index_price)
-                                        log.warning (myTrades_max_price_plus_threshold)
-                                        myTrades_max_price_attributes = spot_hedged.my_trades_api_basedOn_label_max_price_attributes ()
-                                        myTrades_max_price_attributes_label = myTrades_max_price_attributes ['label']
-                                        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
-                                        label = f'hedging spot-closed-{label_int}'
-                                        open_orders_close =   pickling.read_data(my_trades_path_closed) 
-                                        
-                                        if myTrades_max_price_plus_threshold ['index_price_higher_than_threshold'] and open_orders_close == []:
-
-                                            await self.send_orders (
-                                                                    'sell', 
-                                                                    instrument, 
-                                                                    best_ask_prc, 
-                                                                    myTrades_max_price_attributes ['size'], 
-                                                                    label
-                                                                    )
-
-                                        if myTrades_max_price_plus_threshold ['index_price_lower_than_threshold'] and open_orders_close ==[]:
-                                            
-                                            await self.send_orders (
-                                                                    'buy', 
-                                                                    instrument, 
-                                                                    best_bid_prc, 
-                                                                    myTrades_max_price_attributes ['size'], 
-                                                                    label
-                                                                    )
-
-                                    if spot_was_unhedged:
-                                        log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
-                                    
-                                        await self.send_orders (
-                                                                'sell', 
-                                                                instrument, 
-                                                                best_ask_prc,
-                                                                check_spot_hedging ['hedging_size'], 
-                                                                label
-                                                                )
             else:
                 log.info('WebSocket connection has broken.')
-                formula.log_error('WebSocket connection has broken','downloader-marketDeribit', 'error', 1)
+                formula.log_error('WebSocket connection has broken','fetch and save data from deribit ', 'error', 1)
                 system_tools.sleep_and_restart_program(1)
                 
     async def establish_heartbeat(self) -> None:
@@ -548,39 +397,6 @@ class DeribitMarketDownloader:
 
             await asyncio.sleep(150)
 
-    def compute_notional_value(self, index_price: float,  equity: float) -> float:
-        """
-        """
-
-        return index_price * equity
-    
-    async def open_orders (self, currency) -> float:
-        """
-        """
-
-        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, client_id, client_secret, currency.upper())
-        open_ordersREST: list = open_ordersREST ['result']
-        open_orders: list = open_orders_management.MyOrders (open_ordersREST)
-                        
-        return open_orders_management.MyOrders (open_ordersREST)
-    
-    async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
-        """
-        """
-
-        try:
-            await deribit_get.send_order_limit (
-                                            self.connection_url,
-                                            client_id, 
-                                            client_secret, 
-                                            side, 
-                                            instrument, 
-                                            size, 
-                                            prc,
-                                            label
-                                            )
-        except Exception as e:
-            log.error (e)
     async def ws_operation(
         self,
         operation: str,

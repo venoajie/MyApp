@@ -135,7 +135,7 @@ class SpotHedging ():
 
         none_data = [None, [], '0.0', 0]
             
-        log.critical (f'{open_orders_byAPI=}')        
+        #log.critical (f'{open_orders_byAPI=}')        
         log.info (f'{min_hedged_size=}')        
         log.info (f'{notional=}')        
         log.info (f'{open_orders_hedging_size=}')        

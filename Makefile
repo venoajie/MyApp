@@ -17,13 +17,13 @@ run-test:
 	python3 src/strategyDeribit.py 
 
 start:
-	make download-market
+	fetch-save-data
 	sleep 5 
 	nohup python3 src/strategyDeribit.py >/dev/null 2>&1 &  
 	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
 
-download-market:
-	nohup python3 src/downloader-marketDeribit.py >/dev/null 2>&1 &  
+fetch-save-data:
+	nohup python3 src/fetch_and_save_data_from_deribit.py >/dev/null 2>&1 &  
 	nohup python3 src/downloader-openInterest.py >/dev/null 2>&1 &  
 
 ram-disk:
