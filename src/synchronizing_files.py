@@ -70,6 +70,24 @@ class SynchronizingFiles ():
         return result ['result'] [currency.upper()]
     
     
+    async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
+        """
+        """
+
+        try:
+            await deribit_get.send_order_limit (
+                                            self.connection_url,
+                                            self.client_id, 
+                                            self.client_secret, 
+                                            side, 
+                                            instrument, 
+                                            size, 
+                                            prc,
+                                            label
+                                            )
+        except Exception as e:
+            log.error (e)
+            
     async def compute_notional_value (self, index_price: float, equity: float) -> float:
         """
         """
