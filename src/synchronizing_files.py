@@ -258,7 +258,7 @@ class SynchronizingFiles ():
                 contract_size = instrument_data ['contract_size']  
                 end_timestamp: int = await self.current_server_time ()
                 start_timestamp: int = end_timestamp -  one_hour
-                my_trades = self.my_trades(currency, start_timestamp, end_timestamp)
+                my_trades = await self.my_trades(currency, start_timestamp, end_timestamp)
                 log.info (my_trades)
                 spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades)
             
