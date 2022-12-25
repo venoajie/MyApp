@@ -105,13 +105,11 @@ class DeribitMarketDownloader:
             currencies = ['ETH', 'BTC']
             #for currency in currencies: isu, multiple currency could interfere each other in the calculation function
             currency = 'ETH'
-            file_name_instruments = (f'{currency.lower()}-instruments.pkl')
+
             my_path_instruments = system_tools.provide_path_for_file ('instruments',  currency) 
             instruments = pickling.read_data (my_path_instruments)
-            instruments_name: list =  [o['instrument_name'] for o in instruments ]
+            instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
             
-            instruments_name = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
-                    
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
