@@ -140,7 +140,6 @@ class DeribitMarketDownloader:
                     )
                 )
             
-
             for instrument in instruments_name:
                 self.loop.create_task(
                     self.ws_operation(
@@ -148,6 +147,7 @@ class DeribitMarketDownloader:
                         ws_channel=f'book.{instrument}.none.20.100ms'
                         )
                     )
+                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -200,7 +200,7 @@ class DeribitMarketDownloader:
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
-                            #log.error (data_orders)
+                            log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
                             
