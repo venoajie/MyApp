@@ -213,7 +213,7 @@ class SynchronizingFiles ():
         if myTrades :
             my_trades_mgt = myTrades_management.MyTrades (myTrades)
             
-            my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label ('hedging open')
+            my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label ('hedging spot-open')
             log.debug(f'{my_trades_max_price_attributes_filteredBy_label=}')
             myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
             myTrades_max_price_pct_vs_threshold = myTrades_max_price * threshold
