@@ -12,7 +12,7 @@ from os.path import join, dirname
 import requests
 
 from portfolio.deribit import open_orders_management, myTrades_management
-from utils import pickling, system_tools, telegram_app, formula, string_modification
+from utils import pickling, system_tools, telegram_app, formula
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from configuration import  label_numbering
@@ -126,57 +126,6 @@ class SynchronizingFiles ():
         """
         return index_price * equity  
     
-    
-    async def reading_from_database (self, currency: str= None, instrument: str = None) -> float:
-        """
-        """
-        my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        if currency==None:
-            return {'ordBook': pickling.read_data(my_path_ordBook)}
-        else:
-                
-            my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', currency, 'open')
-            my_trades_open: list = pickling.read_data(my_trades_path_open) 
-            
-            my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
-            my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', currency, 'closed')
-            
-            my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
-            portfolio = pickling.read_data(my_path_portfolio)
-            
-            my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  currency)          
-            instruments = pickling.read_data (my_path_instruments)
-                    
-            symbol_index: str = f'{currency}_usd'
-            my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
-            index_price: list = pickling.read_data(my_path_index) 
-            index_price: float= index_price [0]['price']
-            
-            
-            return {'my_trades_open': my_trades_open,
-                    'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
-                    'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
-                    'portfolio': portfolio,
-                    'index_price': index_price,
-                    'instruments': instruments}
-    
-    async def market_price (self, instrument: str) -> list:
-        """
-        """
-
-        ordBook = await self.reading_from_database (None, instrument)
-        ordBook = ordBook ['ordBook']
-            
-        max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
-        most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
-
-        best_bid_prc= most_current_ordBook[0]['bids'][0][0]
-        best_ask_prc= most_current_ordBook[0]['asks'][0][0]
-
-        return {'best_bid_prc': best_bid_prc,
-                'best_ask_prc': best_ask_prc
-                }
-    
     async def current_server_time (self) -> float:
         """
         """
@@ -206,45 +155,32 @@ class SynchronizingFiles ():
             if open_orders_deltaTime > three_minute:
                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, self.client_id, self.client_secret, open_order_id)    
     
-    async def price_averaging (self, myTrades: list, threshold, currency, index_price, label, best_bid_prc: float = None) -> float:
+    async def reading_from_database (self, currency: str) -> float:
         """
         """
+        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+        my_trades_open: list = pickling.read_data(my_trades_path_open) 
         
-        if myTrades :
-            my_trades_mgt = myTrades_management.MyTrades (myTrades)
-            
-            my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label ('hedging open')
-            log.debug(f'{my_trades_max_price_attributes_filteredBy_label=}')
-            myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
-            myTrades_max_price_pct_vs_threshold = myTrades_max_price * threshold
-            myTrades_max_price_diff_with_index_price = abs (index_price - myTrades_max_price) > myTrades_max_price_pct_vs_threshold
-            log.warning(f'{myTrades_max_price=} {myTrades_max_price_pct_vs_threshold=} {myTrades_max_price_diff_with_index_price=}')
-            if myTrades_max_price_diff_with_index_price:
-                myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
-                label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
-                
-                label = f'{label}-{label_int}'
-                
-                open_orders_close =   self.reading_from_database(currency) ['open_orders_closed_byAPI']
-                log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label=}')
-                log.error(f'{open_orders_close=}')
-                
-                if  open_orders_close == []:
-                    instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
-                    log.error(f'{instrument=}')
-                    if best_bid_prc == None:
-                        best_bid_prc = self.market_price(instrument)
-                    log.error(f'{best_bid_prc=}')
-                    log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
-
-                    await self.send_orders (
-                                            'buy', 
-                                            instrument, 
-                                            best_bid_prc, 
-                                            my_trades_max_price_attributes_filteredBy_label ['size'], 
-                                            label
-                                            )
-                
+        my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
+        open_orders_open_byAPI: list = pickling.read_data(my_path_orders_open)
+        
+        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
+        portfolio = pickling.read_data(my_path_portfolio)
+        
+        my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  currency)          
+        instruments = pickling.read_data (my_path_instruments)
+                   
+        symbol_index: str = f'{currency}_usd'
+        my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        index_price: list = pickling.read_data(my_path_index) 
+        index_price: float= index_price [0]['price']
+        
+        return {'my_trades_open': my_trades_open,
+                'open_orders_open_byAPI': open_orders_open_byAPI,
+                'portfolio': portfolio,
+                'index_price': index_price,
+                'instruments': instruments}
+    
     async def running_strategy (self, currency) -> float:
         """
         source data: loaded from database app
@@ -259,24 +195,28 @@ class SynchronizingFiles ():
         
         instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
         
-        for instrument in instruments_name: 
+        for instrument in instruments_name:
+
+            my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
             
-            if 'PERPETUAL' in instrument:
-                market_price = await self.market_price (instrument) 
-                log.info (market_price)
+            ordBook = pickling.read_data(my_path_ordBook)
+            
+            if  index_price and portfolio and ordBook:
                 
-                if  index_price and portfolio and market_price:
-                    
-                    equity = portfolio [0]['equity']
-                    notional =  await self.compute_notional_value (index_price, equity)
-        
+                equity = portfolio [0]['equity']
+                notional =  await self.compute_notional_value (index_price, equity)
+    
+                if 'PERPETUAL' in instrument:
                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
 
                     min_trade_amount = instrument_data ['min_trade_amount']
                     contract_size = instrument_data ['contract_size']
+                                    
+                    max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+                    most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
 
-                    best_bid_prc= market_price ['best_bid_prc']
-                    best_ask_prc= market_price ['best_ask_prc']
+                    best_bid_prc= most_current_ordBook[0]['bids'][0][0]
+                    best_ask_prc= most_current_ordBook[0]['asks'][0][0]
 
                     #check under hedging
                     label_hedging = 'hedging spot'
@@ -301,11 +241,6 @@ class SynchronizingFiles ():
                                                 check_spot_hedging ['hedging_size'], 
                                                 label
                                                 )
-                        
-                    else:
-                        threshold = 2/100
-                        label = f'hedging spot-closed'
-                        await self.price_averaging (my_trades_open, threshold, currency, index_price, label, best_bid_prc)
                                         
     async def check_if_new_order_will_create_over_hedged (self, currency, label_hedging)-> list:
         
@@ -381,7 +316,7 @@ async def main ():
 
         info= (f'RUNNING ORDER \n ')
         telegram_bot_sendtext(info,'general_error')
-
+        await syn.main ( 'eth')
         await syn.running_strategy ('eth')
         await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold ('eth')

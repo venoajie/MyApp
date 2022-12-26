@@ -47,6 +47,7 @@ class SpotHedging ():
                 'max_price': max_price,
                 'trade_id':  ([o['trade_id'] for o in trade_list_with_max_price])[0] ,
                 'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
+                'instrument':  ([o['instrument_name'] for o in trade_list_with_max_price])[0] ,
                 'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
                 'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
             
