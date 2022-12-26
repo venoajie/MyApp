@@ -303,7 +303,7 @@ class SynchronizingFiles ():
                                                 )
                         
                     else:
-                        threshold = 2/100
+                        threshold = .5/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, label, best_bid_prc)
                                         
