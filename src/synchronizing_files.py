@@ -225,7 +225,8 @@ class SynchronizingFiles ():
                 
                 label = f'{label}-{label_int}'
                 
-                open_orders_close =   await self.reading_from_database(currency) ['open_orders_closed_byAPI']
+                open_orders_close =   await self.reading_from_database(currency) 
+                open_orders_close =   open_orders_close ['open_orders_closed_byAPI']
                 log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label=}')
                 log.error(f'{open_orders_close=}')
                 
