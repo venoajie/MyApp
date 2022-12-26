@@ -175,7 +175,7 @@ class DeribitMarketDownloader:
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
                             
                             try:
-                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
                             except:
                                 continue                                    
                                                    
