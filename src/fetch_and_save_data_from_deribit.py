@@ -35,7 +35,7 @@ def parse_dotenv()->dict:
 none_data = [None, [], '0.0', 0]
      
     
-class DeribitMarketDownloader:
+class StreamMarketAccountData:
     
     '''
         
@@ -439,7 +439,7 @@ def main ():
     
     try:
 
-        DeribitMarketDownloader (
+        StreamMarketAccountData (
         ws_connection_url=ws_connection_url,
         client_id=client_id,
         client_secret= client_secret

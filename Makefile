@@ -26,6 +26,7 @@ fetch-save-data:
 	nohup python3 src/fetch_and_save_market_data_from_deribit.py >/dev/null 2>&1 &  
 	nohup python3 src/fetch_and_save_data_from_deribit.py >/dev/null 2>&1 &  
 	nohup python3 src/fetch_and_save_market_data.py >/dev/null 2>&1 &  
+	nohup python3 src/fetch_and_save_data.py >/dev/null 2>&1 &  
 
 kill-running-file:
 	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 

@@ -37,22 +37,6 @@ class DeribitMarketDownloader:
     '''
         
     +----------------------------------------------------------------------------------------------+ 
-    #  References: 
-        + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
-        + https://niekdeschipper.com/projects/asyncio.md
-        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
-        + https://realpython.com/async-io-python/
-        + https://www.youtube.com/watch?v=ZzfHjytDceU
-        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
-        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
-        + https://sammchardy.github.io/async-binance-basics/
-        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
-        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
-        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
-        
-        Basic:
-        + https://websockets.readthedocs.io/en/6.0/intro.html
-        + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     +----------------------------------------------------------------------------------------------+ 
 
     '''       
