@@ -107,7 +107,7 @@ def sleep_and_restart_program (idle: float)->None:
     python = sys.executable
     os.execl(python, python, * sys.argv)
     
-def log_error (sub_account: str, underlying_aktif: str, error: str, idle: int)->None:
+def log_error (sub_account: str, underlying_aktif: str, error: str, idle: float = None)->None:
 
     '''  
         # Capture & emit error message
@@ -125,7 +125,7 @@ def log_error (sub_account: str, underlying_aktif: str, error: str, idle: int)->
     log.error (traceback.format_exc())
     
     if idle != None:
-        log.critical (f"restart after error")
+        log.critical (f"restart {idle} seconds after error")
         sleep_and_restart_program(idle)
         
 def print_json(data):

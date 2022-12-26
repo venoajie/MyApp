@@ -32,7 +32,7 @@ def parse_dotenv()->dict:
 none_data = [None, [], '0.0', 0]
      
     
-class DeribitMarketDownloader:
+class DeribitAccountDownloader:
     
     '''
         
@@ -103,26 +103,27 @@ class DeribitMarketDownloader:
             #for currency in currencies: isu, multiple currency could interfere each other in the calculation function
             currency = 'ETH'
 
-            my_path_instruments = system_tools.provide_path_for_file ('instruments',  currency) 
-            instruments = pickling.read_data (my_path_instruments)
-            instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
-                
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                    ws_channel=f'user.portfolio.{currency}'
                     )
                 )
             
-            for instrument in instruments_name:
-                
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'book.{instrument}.none.20.100ms'
-                        )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel=f'user.orders.future.{currency}.raw'
                     )
-                
+                )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel=f'user.trades.future.{currency.upper()}.100ms'
+                    )
+                )
+    
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -160,34 +161,97 @@ class DeribitMarketDownloader:
                     
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
+                        log.info (message_channel)
             
-                        symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
                         currency = string_modification.extract_currency_from_text (message_channel)
                         currency = string_modification.extract_currency_from_text (message_channel)   
-                                                                              
-                        one_minute = 60000
-                        one_hour = one_minute * 60000
                         
-                        instrument_book = "".join(list(message_channel) [5:][:-14])
-                        if message_channel == f'book.{instrument_book}.none.20.100ms':
+                        log.critical (currency)                                                   
+                                                 
+                        my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+                        if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
-                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
+                            log.warning (f'{data_orders=}')
+                            order_state = data_orders ['order_state']
+                            order_id= data_orders ['order_id']
                             
+                            my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
+                            open_orders_open = pickling.read_data (my_path_orders_open) 
+                            log.debug (f'BEFORE {open_orders_open=}')
+                            log.warning (f'{order_state=}')
+                            
+                            if order_state == 'open':
+                                log.error ('ORDER_STATE')
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 100000)
+                                
+                            else:
+                                log.error ('ORDER_STATE')
+                                item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
+                                item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
+                                log.info (f'{item_in_open_orders_open_with_same_id=}')
+                                log.warning (f'{item_in_open_orders_open_with_diff_id=}')
+                                
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 100000)
+                                
+                                if item_in_open_orders_open_with_same_id != []:
+                                    log.critical ('item_in_open_orders_open_with_same_id')
+                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
+                                    
+                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
+                            log.debug (f'AFTER {open_orders_open=}')
+                        
+                        my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                        my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
+                            
+                            my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
+                            my_trades_open = pickling.read_data(my_trades_path_open)  
+                                     
+                            log.info (data_orders)
+                            log.debug (f'{my_trades_open=}')
+                            
+                            #determine label id
                             try:
-                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_hour)
+                                label_id= data_orders [0]['label']
                             except:
-                                continue                                    
-                                                   
-                        symbol_index =  (message_channel)[-7:]
-                        if message_channel == f'deribit_price_index.{symbol_index}':
+                                label_id= []
                             
-                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
-                            pickling.replace_data(my_path, data_orders)
+                            # for data with label id/ordered through API    
+                            if label_id != []:
+                                pass
+
+                            closed_label_id_int = string_modification.extract_integers_from_text(label_id)
+                            log.critical (label_id)
+                            log.critical (closed_label_id_int)
+
+                            log.debug ('open' in label_id)
+                            log.debug ('closed' in label_id)
+                            
+                            if 'open' in label_id:
+                                log.error ('label_id open')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 100000)
+                                
+                            if 'closed' in label_id:
+                                log.error ('label_id closed')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 100000)
+                                my_trades_open = pickling.read_data(my_trades_path_open)  
+                                remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 100000)
+                                closed_trades = ([o for o in my_trades_open if  str(my_trades_open)  in o['label'] ])
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 100000)
+                                
+                            if label_id == [] :
+                                log.error ('[]')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
+                                
+                        my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
+                        if message_channel == f'user.portfolio.{currency.lower()}':
+                            pickling.replace_data(my_path_portfolio, data_orders)
 
             else:
                 log.info('WebSocket connection has broken.')
-                formula.log_error('WebSocket connection has broken','fetch and save MARKET data from deribit ', 'error', .1)
+                formula.log_error('WebSocket connection has broken','fetch and save ACCOUNT data from deribit ', 'error', .1)
                 
     async def establish_heartbeat(self) -> None:
         """
@@ -305,6 +369,7 @@ class DeribitMarketDownloader:
                         }
                     }
 
+        log.warning(id)
         log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
@@ -324,7 +389,7 @@ def main ():
     
     try:
 
-        DeribitMarketDownloader (
+        DeribitAccountDownloader (
         ws_connection_url=ws_connection_url,
         client_id=client_id,
         client_secret= client_secret
