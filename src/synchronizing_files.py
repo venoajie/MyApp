@@ -277,9 +277,8 @@ class SynchronizingFiles ():
                 min_trade_amount = instrument_data ['min_trade_amount']
                 contract_size = instrument_data ['contract_size']  
                 current_server_time: int = await self.current_server_time ()
-                start_timestamp: int = current_server_time -  one_hour*5
-                log.info (current_server_time)
-                log.info (start_timestamp)
+                start_timestamp: int = current_server_time -  one_hour
+                
                 my_trades = await self.my_trades (currency, start_timestamp, current_server_time)
                 my_trades_mgt =  myTrades_management.MyTrades (my_trades)
                 my_trades_api = my_trades_mgt.my_trades_api_basedOn_label ('hedging spot')
