@@ -58,9 +58,29 @@ class SynchronizingFiles ():
                                                                                currency, 
                                                                                start_timestamp,
                                                                                end_timestamp)
-        trades: list = trades ['result']
+        #trades: list = trades ['result']
                         
-        return myTrades_management.MyTrades (trades)
+        return trades ['result'] ['trades']
+    
+    async def my_trades_api (self, currency, start_timestamp: int, end_timestamp: int) -> list:
+        """
+        """
+        return self.my_trades.my_trades_api (currency, 
+                               start_timestamp,
+                               end_timestamp
+                               )
+        
+    async def my_trades_api_basedon_label (self, currency, start_timestamp: int, end_timestamp: int, label: str) -> list:
+        """
+        """
+        my = await self.my_trades (currency, 
+                               start_timestamp,
+                               end_timestamp)
+        log.warning (my)
+        return  self.my_trades (currency, 
+                               start_timestamp,
+                               end_timestamp). my_trades_api_basedOn_label (label
+                               )
     
     async def get_account_summary (self, currency: str) -> list:
         """
@@ -252,15 +272,19 @@ class SynchronizingFiles ():
         for instrument in instruments_name:
             if 'PERPETUAL' in instrument:
 
-                log.debug (instruments_name)
+                #log.debug (instruments_name)
                 instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]  [0] 
                 min_trade_amount = instrument_data ['min_trade_amount']
                 contract_size = instrument_data ['contract_size']  
-                end_timestamp: int = await self.current_server_time ()
-                start_timestamp: int = end_timestamp -  one_hour
-                my_trades = await self.my_trades(currency, start_timestamp, end_timestamp)
-                log.info (my_trades)
-                spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades)
+                current_server_time: int = await self.current_server_time ()
+                start_timestamp: int = current_server_time -  one_hour*5
+                log.info (current_server_time)
+                log.info (start_timestamp)
+                my_trades = await self.my_trades (currency, start_timestamp, current_server_time)
+                my_trades_mgt =  myTrades_management.MyTrades (my_trades)
+                my_trades_api = my_trades_mgt.my_trades_api_basedOn_label ('hedging spot')
+
+                spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades_api)
             
                 check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_label,
                                                                           notional,
