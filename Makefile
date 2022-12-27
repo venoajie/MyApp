@@ -17,8 +17,8 @@ run-test:
 	python3 src/strategyDeribit.py 
 
 start:
+	python3 src/synchronizing_files.py
 	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
-	nohup sh src/schedulerApp.sh >/dev/null 2>&1 & 
 
 fetch-save-data:
 	nohup python3 src/fetch_and_save_market_data.py >/dev/null 2>&1 &  
