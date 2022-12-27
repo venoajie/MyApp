@@ -218,7 +218,9 @@ class SynchronizingFiles ():
             myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
             myTrades_max_price_pct_vs_threshold = myTrades_max_price * threshold
             myTrades_max_price_diff_with_index_price = abs (index_price - myTrades_max_price) > myTrades_max_price_pct_vs_threshold
+            
             log.warning(f'{myTrades_max_price=} {myTrades_max_price_pct_vs_threshold=} {myTrades_max_price_diff_with_index_price=}')
+            
             if myTrades_max_price_diff_with_index_price:
                 myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
                 label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
@@ -230,7 +232,7 @@ class SynchronizingFiles ():
                 log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label=}')
                 log.error(f'{open_orders_close=}')
                 
-                if  open_orders_close == []:
+                if  open_orders_close == [] and index_price < myTrades_max_price:
                     instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
                     log.error(f'{instrument=}')
                     if best_bid_prc == None:
@@ -304,7 +306,7 @@ class SynchronizingFiles ():
                                                 )
                         
                     else:
-                        threshold = .25/100
+                        threshold = .5/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, label, best_bid_prc)
                                         
@@ -380,8 +382,8 @@ async def main ():
         )
         label_hedging = 'spot hedging'
 
-        info= (f'RUNNING ORDER \n ')
-        telegram_bot_sendtext(info,'general_error')
+        #info= (f'RUNNING ORDER \n ')
+        #telegram_bot_sendtext(info,'general_error')
 
         await syn.running_strategy ('eth')
         await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
@@ -408,8 +410,6 @@ if __name__ == "__main__":
     
     try:
         asyncio.get_event_loop().run_until_complete(main())
-    
-        log.info ('SLEEP 30')
         #formula.sleep_and_restart_program (30)
         
     except (KeyboardInterrupt, SystemExit):
