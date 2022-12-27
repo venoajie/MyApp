@@ -3,7 +3,6 @@
 
 # built ins
 from pathlib import Path
-from datetime import datetime
 
 # installed
 from loguru import logger as log
@@ -11,6 +10,7 @@ from rocketry import Rocketry
 from rocketry.conds import  every
 from loguru import logger as log
 import requests
+
 # user defined formula
 from utils import pickling, formula, system_tools
 from market_data import get_market_data
@@ -61,11 +61,12 @@ def check_and_save_every_60_minutes ():
         log.error(f"{error}")
         log.error(traceback.format_exc())
         
-#@app.task(every("1 seconds"))
+#@app.task(every("5 seconds"))
 def check_and_save_every_30_seconds ():
         
     try:
         from synchronizing_files import main
+        import asyncio
         
         print ('AAAAAAA')
         asyncio.get_event_loop().run_until_complete(main())
