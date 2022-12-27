@@ -226,47 +226,51 @@ class SynchronizingFiles ():
                 label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
                 
                 label_to_send = f'hedging spot-closed-{label_int}'
-                label_closed = 'hedging spot-closed'
+                label_closed_for_filter = 'hedging spot-closed'
+                label_open_for_filter = 'hedging spot-open'
                 
                 current_open_orders =   await self.reading_from_database(currency) 
                 current_open_orders =   current_open_orders ['open_orders_open_byAPI']
-                current_open_orders_filtered_label_closed = [o for o in current_open_orders if label_closed in o['label'] ] 
+                current_open_orders_filtered_label_closed = [o for o in current_open_orders if label_closed_for_filter in o['label'] ] 
+                current_open_orders_filtered_label_open = [o for o in current_open_orders if label_open_for_filter in o['label'] ] 
                 
                 log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label_to_send=} {index_price < myTrades_max_price=} {index_price > myTrades_max_price}')
                 log.error(f'{current_open_orders=}')
                 log.debug(f'{current_open_orders_filtered_label_closed=}')
                 log.error(f'{ current_open_orders_filtered_label_closed == []=}')
+                log.debug(f'{current_open_orders_filtered_label_open=}')
+                log.error(f'{ current_open_orders_filtered_label_open == []=}')
                 
-                if  current_open_orders_filtered_label_closed == []:
-                    instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
-                    log.error(f'{instrument=}')
-                    if index_price < myTrades_max_price:
-                        if best_bid_prc == None:
-                            best_bid_prc = self.market_price(instrument)
-                        log.error(f'{best_bid_prc=}')
-                        log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
+                instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
+                log.error(f'{instrument=}')
+                
+                if index_price < myTrades_max_price and current_open_orders_filtered_label_closed == []:
+                    if best_bid_prc == None:
+                        best_bid_prc = self.market_price(instrument)
+                    log.error(f'{best_bid_prc=}')
+                    log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
 
-                        await self.send_orders (
-                                                'buy', 
-                                                instrument, 
-                                                best_bid_prc, 
-                                                my_trades_max_price_attributes_filteredBy_label ['size'], 
-                                                label_to_send
-                                                )
-                    
-                    if index_price > myTrades_max_price:
-                        if best_ask_prc == None:
-                            best_ask_prc = self.market_price(instrument)
-                        log.error(f'{best_ask_prc=}')
-                        log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
+                    await self.send_orders (
+                                            'buy', 
+                                            instrument, 
+                                            best_bid_prc, 
+                                            my_trades_max_price_attributes_filteredBy_label ['size'], 
+                                            label_to_send
+                                            )
+                
+                if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
+                    if best_ask_prc == None:
+                        best_ask_prc = self.market_price(instrument)
+                    log.error(f'{best_ask_prc=}')
+                    log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
 
-                        await self.send_orders (
-                                                'sell', 
-                                                instrument, 
-                                                best_ask_prc, 
-                                                size, 
-                                                label_open
-                                                )
+                    await self.send_orders (
+                                            'sell', 
+                                            instrument, 
+                                            best_ask_prc, 
+                                            size, 
+                                            label_open
+                                            )
                     
     async def running_strategy (self, currency) -> float:
         """

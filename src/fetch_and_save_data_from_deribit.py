@@ -286,16 +286,19 @@ class StreamMarketAccountData:
                                 
                             if 'closed' in label_id:
                                 log.error ('label_id closed')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 10000)
+                                
                                 my_trades_open = pickling.read_data(my_trades_path_open)  
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 10000)
+                                
                                 closed_trades = ([o for o in my_trades_open if  str(my_trades_open)  in o['label'] ])
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 100000)
+                                log.debug (f'{my_trades_open=}')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 10000)
                                 
                             if label_id == [] :
                                 log.error ('[]')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 100000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 10000)
                                 
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
                         if message_channel == f'user.portfolio.{currency.lower()}':
