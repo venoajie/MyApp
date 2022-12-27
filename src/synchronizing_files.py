@@ -206,7 +206,7 @@ class SynchronizingFiles ():
             if open_orders_deltaTime > three_minute:
                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, self.client_id, self.client_secret, open_order_id)    
     
-    async def price_averaging (self, myTrades: list, threshold, currency, index_price, label, best_bid_prc: float = None) -> float:
+    async def price_averaging (self, myTrades: list, threshold, currency, index_price, size, label_open, best_bid_prc: float = None, best_ask_prc: float = None) -> float:
         """
         """
         
@@ -225,29 +225,49 @@ class SynchronizingFiles ():
                 myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
                 label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
                 
-                label = f'{label}-{label_int}'
+                label_to_send = f'hedging spot-closed-{label_int}'
+                label_closed = 'hedging spot-closed'
                 
-                open_orders_close =   await self.reading_from_database(currency) 
-                open_orders_close =   open_orders_close ['open_orders_open_byAPI']
-                log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label=}')
-                log.error(f'{open_orders_close=}')
+                current_open_orders =   await self.reading_from_database(currency) 
+                current_open_orders =   current_open_orders ['open_orders_open_byAPI']
+                current_open_orders_filtered_label_closed = [o for o in current_open_orders if label_closed in o['label'] ] 
                 
-                if  open_orders_close == [] and index_price < myTrades_max_price:
+                log.warning(f'{myTrades_max_price_attributes_label=} {label_int=} {label_to_send=} {index_price < myTrades_max_price=} {index_price > myTrades_max_price}')
+                log.error(f'{current_open_orders=}')
+                log.debug(f'{current_open_orders_filtered_label_closed=}')
+                log.error(f'{ current_open_orders_filtered_label_closed == []=}')
+                
+                if  current_open_orders_filtered_label_closed == []:
                     instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
                     log.error(f'{instrument=}')
-                    if best_bid_prc == None:
-                        best_bid_prc = self.market_price(instrument)
-                    log.error(f'{best_bid_prc=}')
-                    log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
+                    if index_price < myTrades_max_price:
+                        if best_bid_prc == None:
+                            best_bid_prc = self.market_price(instrument)
+                        log.error(f'{best_bid_prc=}')
+                        log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
 
-                    await self.send_orders (
-                                            'buy', 
-                                            instrument, 
-                                            best_bid_prc, 
-                                            my_trades_max_price_attributes_filteredBy_label ['size'], 
-                                            label
-                                            )
-                
+                        await self.send_orders (
+                                                'buy', 
+                                                instrument, 
+                                                best_bid_prc, 
+                                                my_trades_max_price_attributes_filteredBy_label ['size'], 
+                                                label_to_send
+                                                )
+                    
+                    if index_price > myTrades_max_price:
+                        if best_ask_prc == None:
+                            best_ask_prc = self.market_price(instrument)
+                        log.error(f'{best_ask_prc=}')
+                        log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
+
+                        await self.send_orders (
+                                                'sell', 
+                                                instrument, 
+                                                best_ask_prc, 
+                                                size, 
+                                                label_open
+                                                )
+                    
     async def running_strategy (self, currency) -> float:
         """
         source data: loaded from database app
@@ -308,7 +328,7 @@ class SynchronizingFiles ():
                     else:
                         threshold = .25/100
                         label = f'hedging spot-closed'
-                        await self.price_averaging (my_trades_open, threshold, currency, index_price, label, best_bid_prc)
+                        await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
                                         
     async def check_if_new_order_will_create_over_hedged (self, currency, label_hedging)-> list:
         
