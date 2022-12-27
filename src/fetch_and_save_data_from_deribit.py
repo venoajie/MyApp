@@ -249,8 +249,8 @@ class StreamMarketAccountData:
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
-                            open_orders_open = pickling.read_data (my_path_orders_open)     
-                            log.debug (f'AFTER {open_orders_open=}')
+                            #open_orders_open = pickling.read_data (my_path_orders_open)     
+                            #log.debug (f'AFTER {open_orders_open=}')
                         
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
