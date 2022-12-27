@@ -35,6 +35,7 @@ ram-disk:
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install -r requirements.txt
+	pip3 install --upgrade requests
 	sudo apt-get install inotify-tools
 
 clean: clean-build clean-pyc clean-test
