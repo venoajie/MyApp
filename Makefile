@@ -17,7 +17,6 @@ run-test:
 	python3 src/strategyDeribit.py 
 
 start:
-	fetch-save-data
 	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
 	nohup sh src/schedulerApp.sh >/dev/null 2>&1 & 
 
