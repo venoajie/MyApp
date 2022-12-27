@@ -5,11 +5,8 @@ import calendar
 from functools import lru_cache
 import time
 from datetime import datetime, timedelta, timezone
-from collections import defaultdict
 from functools import wraps
-from unittest import result
 from loguru import logger as log
-from unsync import unsync
 
 none_data=[None, 0, []]
 
@@ -55,8 +52,7 @@ def convert_str_to_float_single (data_json: list)->list:
         data_json=data_json[0]
         return [{k: float(v) if is_float(v) else v for k, v in data_json.items()}]
                 
-@unsync        
-def convert_str_to_float_ (data_json: list)->object:
+def convert_str_to_float (data_json: list)->object:
     
 
     '''
@@ -87,7 +83,7 @@ def convert_str_to_float_ (data_json: list)->object:
         
         return list_combination
                 
-def convert_str_to_float (data_json: list)->list:
+def convert_str_to_float_ (data_json: list)->list:
     
     '''
     ''' 
