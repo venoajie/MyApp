@@ -117,6 +117,7 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
+    log.info (data)
     data_list = list (data [0])
     
     if 'change_id' in data_list:
