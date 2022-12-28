@@ -269,8 +269,11 @@ class StreamMarketAccountData:
                         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
                             
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
+                            #!
+                            my_trades_open1 = pickling.read_data(my_trades_path_open)
+                            log.warning (f'DATA FROM DB {my_trades_open1=}')
                             
-                            log.info (data_orders)
+                            log.warning (f'DATA FROM EXC {data_orders=}')
                             
                             #determine label id
                             try:
@@ -300,14 +303,13 @@ class StreamMarketAccountData:
                                 
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
-                                log.warning (my_trades_open)
+                                log.warning (f'DATA OPEN TRADE AFTER APPEND {my_trades_open=}')
                                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
                                 #!
                                 
                             if 'closed' in label_id:
                                 log.critical ('LABEL ID CLOSED')
                                 my_trades_open = pickling.read_data(my_trades_path_open)  
-                                log.debug (f'BEFORE {my_trades_open=}')
                                 
                                 #update mytrades db with the closed ones
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders , 10000)
@@ -321,12 +323,17 @@ class StreamMarketAccountData:
                                     
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
-                                log.debug (f'AFTER 1 {my_trades_open=}')
+                                log.warning (f'DATA OPEN TRADE AFTER REPLACE {my_trades_open=}')
                                     
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 log.error (f'{closed_trades_in_my_trades_open=}')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                 
+                                #!
+                                my_trades_open = pickling.read_data(my_trades_path_closed)
+                                log.warning (f'DATA CLOSED TRADE AFTER APPEND {my_trades_open=}')
+                                    
+                                    
                             if label_id == [] :
                                 my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                                 log.error ('[]')
