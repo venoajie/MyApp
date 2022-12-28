@@ -165,7 +165,7 @@ class StreamMarketAccountData:
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             log.debug('Successfully authenticated WebSocket Connection')
-                            asyncio.get_event_loop().run_until_complete(synchronizing_files.main())
+                            await (synchronizing_files.main())
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
