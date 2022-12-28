@@ -368,6 +368,7 @@ class SynchronizingFiles ():
                 my_trades = await self.my_trades (currency, start_timestamp, current_server_time)
                 my_trades_mgt =  myTrades_management.MyTrades (my_trades)
                 my_trades_api = my_trades_mgt.my_trades_api_basedOn_label ('hedging spot')
+                log.info (my_trades_api)
 
                 spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades_api)
             
