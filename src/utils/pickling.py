@@ -3,7 +3,7 @@
 # built ins
 import pickle
 import os
-from typing import List, Dict
+#from typing import List, Dict
 
 def append_data (file_name_pkl: str, data: dict)-> None:
 
@@ -53,8 +53,8 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     """
     """
 
-    from loguru import logger as log
-    read = read_data (file_name)
+    #from loguru import logger as log
+    #read = read_data (file_name)
     #log.critical (f'from DB {read=}')
     #log.warning (f'{isinstance(read, dict)=}')
     #log.debug (f'{isinstance(read, list)=}')
@@ -63,7 +63,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
             
         #log.info (f'from EXC {data=}')
         #log.error (f'{isinstance(data, Dict)=}')
-        print (f'{isinstance(data, List)=}')
+        #print (f'{isinstance(data, List)=}')
         
         if data !=[]:
                 
@@ -79,7 +79,7 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
-    from loguru import logger as log
+    #from loguru import logger as log
     read = read_data (file_name)
     #log.critical (f'from DB {read=}')
     #log.warning (f'{isinstance(read, dict)=}')
@@ -90,7 +90,7 @@ def replace_data (file_name: str, data: dict)-> None:
     dump_data_as_list (file_name, data)
 
         
-    read = read_data (file_name)
+    #read = read_data (file_name)
    # log.warning (f'from DB 2 {read=}')
     
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
@@ -99,12 +99,12 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
     
-    from loguru import logger as log
+    #from loguru import logger as log
     #file_name_pkl:str =f"""{file_name}.pkl"""
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
-    log.info (data)
+    #log.info (data)
     data_list = list (data [0])
     
     if 'change_id' in data_list:
