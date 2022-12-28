@@ -310,7 +310,7 @@ class StreamMarketAccountData:
                                 log.debug (f'BEFORE {my_trades_open=}')
                                 
                                 #update mytrades db with the closed ones
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders[0], 10000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders , 10000)
                                 
                                 # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                                 #update mytrades db with the still open ones
