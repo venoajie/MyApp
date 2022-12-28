@@ -62,13 +62,12 @@ def replace_data (file_name: str, data: dict)-> None:
     """
     from loguru import logger as log
     read = read_data (file_name)
+    log.critical (f'from DB {read=}')
     log.warning (f'{isinstance(read, dict)=}')
     log.debug (f'{isinstance(read, list)=}')
-    log.critical (f'from DB {read=}')
 
     with open(file_name,'wb') as handle:
         log.info (f'from EXC {data=}')
-        
         log.error (f'{isinstance(data, Dict)=}')
         print (f'{isinstance(data, List)=}')
         
