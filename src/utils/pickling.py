@@ -56,8 +56,8 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     from loguru import logger as log
     read = read_data (file_name)
     #log.critical (f'from DB {read=}')
-    log.warning (f'{isinstance(read, dict)=}')
-    log.debug (f'{isinstance(read, list)=}')
+    #log.warning (f'{isinstance(read, dict)=}')
+    #log.debug (f'{isinstance(read, list)=}')
     
     with open(file_name,'wb') as handle:
             
@@ -81,9 +81,9 @@ def replace_data (file_name: str, data: dict)-> None:
     """
     from loguru import logger as log
     read = read_data (file_name)
-    log.critical (f'from DB {read=}')
-    log.warning (f'{isinstance(read, dict)=}')
-    log.debug (f'{isinstance(read, list)=}')
+    #log.critical (f'from DB {read=}')
+    #log.warning (f'{isinstance(read, dict)=}')
+    #log.debug (f'{isinstance(read, list)=}')
     if read == []:
         pass
     
@@ -91,7 +91,7 @@ def replace_data (file_name: str, data: dict)-> None:
 
         
     read = read_data (file_name)
-    log.warning (f'from DB 2 {read=}')
+   # log.warning (f'from DB 2 {read=}')
     
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
 
