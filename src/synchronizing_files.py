@@ -307,10 +307,10 @@ class SynchronizingFiles ():
 
                     #check under hedging
                     label_hedging = 'hedging spot'
+                    log.info (my_trades_open)
                     spot_hedged = spot_hedging.SpotHedging (label_hedging,
                                                             my_trades_open
                                                             )
-                    log.info (my_trades_open)
                     check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_open_byAPI, 
                                                                             notional, 
                                                                             min_trade_amount,
