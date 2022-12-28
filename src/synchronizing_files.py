@@ -281,7 +281,7 @@ class SynchronizingFiles ():
                                             my_trades_max_price_attributes_filteredBy_label ['size'], 
                                             label_to_send
                                             )
-                    self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
+                    await self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
                 
                 if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
                     if best_ask_prc == None:
@@ -296,7 +296,7 @@ class SynchronizingFiles ():
                                             size, 
                                             label_open
                                             )
-                    self.cancel_redundant_orders_in_same_labels (currency, label_open_for_filter)
+                    await self.cancel_redundant_orders_in_same_labels (currency, label_open_for_filter)
                     
     async def running_strategy (self, currency) -> float:
         """
@@ -362,7 +362,7 @@ class SynchronizingFiles ():
                                                 )
                         await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
-                    if remain_unhedged < 1:
+                    if spot_was_unhedged == False and remain_unhedged < 1:
                         threshold = .25/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
