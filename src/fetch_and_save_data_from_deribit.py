@@ -286,8 +286,8 @@ class StreamMarketAccountData:
                             log.critical (label_id)
                             log.critical (closed_label_id_int)
 
-                            log.debug ('open' in label_id)
-                            log.debug ('closed' in label_id)
+                            #log.debug ('open' in label_id)
+                            #log.debug ('closed' in label_id)
                             
                             #!
                             sum_new_trading = [o['amount'] for o in data_orders  ][0]
@@ -461,7 +461,7 @@ class StreamMarketAccountData:
                         }
                     }
 
-        log.warning(id)
+        #log.warning(id)
         log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
