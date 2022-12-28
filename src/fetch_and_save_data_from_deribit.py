@@ -258,7 +258,7 @@ class StreamMarketAccountData:
                                 
                                 if item_in_open_orders_open_with_same_id != []:
                                     #log.critical ('item_in_open_orders_open_with_same_id')
-                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
+                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000)
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
@@ -296,7 +296,7 @@ class StreamMarketAccountData:
 
                             if 'open' in label_id:
                                 log.critical ('LABEL ID OPEN')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 10000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders , 10000)
                                 
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
@@ -316,7 +316,7 @@ class StreamMarketAccountData:
                                 #my_trades_open = pickling.read_data(my_trades_path_open)  
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
                                 log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
-                                pickling.replace_data (my_trades_path_open, remaining_open_trades[0])
+                                pickling.replace_data (my_trades_path_open, remaining_open_trades )
                                     
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
@@ -324,12 +324,12 @@ class StreamMarketAccountData:
                                     
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 log.error (f'{closed_trades_in_my_trades_open=}')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open[0], 10000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                 
                             if label_id == [] :
                                 my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                                 log.error ('[]')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 10000)
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders, 10000)
                                 
                             
                             #!
