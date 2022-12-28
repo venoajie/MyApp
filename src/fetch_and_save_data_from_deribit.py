@@ -317,7 +317,11 @@ class StreamMarketAccountData:
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
                                 log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
                                 pickling.replace_data (my_trades_path_open, remaining_open_trades[0])
-                                
+                                    
+                                #!
+                                my_trades_open = pickling.read_data(my_trades_path_open)
+                                log.debug (f'AFTER 1 {my_trades_open=}')
+                                    
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 log.error (f'{closed_trades_in_my_trades_open=}')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open[0], 10000)
@@ -330,7 +334,7 @@ class StreamMarketAccountData:
                             
                             #!
                             my_trades_open = pickling.read_data(my_trades_path_open)
-                            log.debug (f'AFTER {my_trades_open=}')
+                            log.debug (f'AFTER 2 {my_trades_open=}')
                             sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
                             
                             info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
