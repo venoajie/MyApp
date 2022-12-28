@@ -192,7 +192,7 @@ class SynchronizingFiles ():
     
         if len_current_open_orders > 1:
         
-            info= (f'CANCEL ORDER  \n ')
+            info= (f'CANCEL ORDER  {label_for_filter} \n ')
             telegram_bot_sendtext(info,'failed_order')        
             
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
@@ -225,6 +225,9 @@ class SynchronizingFiles ():
 
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
             if open_orders_deltaTime > three_minute:
+                
+                info= (f'CANCEL ORDER  expired \n ')
+                telegram_bot_sendtext(info,'failed_order')     
                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, self.client_id, self.client_secret, open_order_id)    
     
     async def price_averaging (self, myTrades: list, threshold, currency, index_price, size, label_open, best_bid_prc: float = None, best_ask_prc: float = None) -> float:
