@@ -366,6 +366,11 @@ class SynchronizingFiles ():
                 start_timestamp: int = current_server_time -  one_hour
                 
                 my_trades = await self.my_trades (currency, start_timestamp, current_server_time)
+                
+                #! THE filters need to be more sophisticated
+                # the time span is long enough? (hedging i prepared for long time)
+                # how to distinguish open/closed transactions? (should be thae same as the hedging method)
+                
                 my_trades_mgt =  myTrades_management.MyTrades (my_trades)
                 my_trades_api = my_trades_mgt.my_trades_api_basedOn_label ('hedging spot')
                 log.info (my_trades_api)
@@ -411,7 +416,7 @@ async def main ():
         #telegram_bot_sendtext(info,'general_error')
 
         await syn.running_strategy ('eth')
-        await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
+        #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold ('eth')
                 
          
