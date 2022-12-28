@@ -79,6 +79,9 @@ def replace_data (file_name: str, data: dict)-> None:
             if isinstance(data, list):
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
+    read = read_data (file_name)
+    log.warning (f'from DB 2 {read=}')
+    
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
 
     """
