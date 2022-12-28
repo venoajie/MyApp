@@ -142,7 +142,7 @@ class SynchronizingFiles ():
             my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', currency, 'closed')
             
             my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', currency.lower())      
-            log.error (my_path_portfolio)                                                                               
+            #log.error (my_path_portfolio)                                                                               
             portfolio = pickling.read_data(my_path_portfolio)
             
             my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  currency)          
