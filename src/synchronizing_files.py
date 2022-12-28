@@ -320,6 +320,7 @@ class SynchronizingFiles ():
             if 'PERPETUAL' in instrument:
                 market_price = await self.market_price (instrument) 
                 log.info (market_price)
+                log.info(f'{index_price=}')
                 
                 if  index_price and portfolio and market_price:
                     
