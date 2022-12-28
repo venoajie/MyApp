@@ -300,6 +300,7 @@ class StreamMarketAccountData:
                                 
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
+                                log.warning (my_trades_open)
                                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
                                 #!
                                 
