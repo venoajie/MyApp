@@ -51,9 +51,15 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
 
     with open(file_name,'wb') as handle:
             
-        if isinstance(data, dict):
-            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        if isinstance(data, list):
+        
+        if data !=[]:
+                
+            if isinstance(data, dict):
+                pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+            if isinstance(data, list):
+                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+        if data ==[]:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 def replace_data (file_name: str, data: dict)-> None:
