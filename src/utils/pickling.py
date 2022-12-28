@@ -11,13 +11,15 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
-    collected_data: list = []
-    if os.path.exists(file_name_pkl):
+    read = read_data (file_name_pkl)
+    if read != []:
+        collected_data: list = []
+        if os.path.exists(file_name_pkl):
 
-        with open(file_name_pkl,'rb') as handle: 
-            collected_data = pickle.load(handle)
+            with open(file_name_pkl,'rb') as handle: 
+                collected_data = pickle.load(handle)
 
-    collected_data.append(data)
+        collected_data.append(data)
 
     # Now we "sync" our database
     with open(file_name_pkl,'wb') as handle:
@@ -80,6 +82,8 @@ def replace_data (file_name: str, data: dict)-> None:
     log.critical (f'from DB {read=}')
     log.warning (f'{isinstance(read, dict)=}')
     log.debug (f'{isinstance(read, list)=}')
+    if read == []:
+        pass
     
 
     with open(file_name,'wb') as handle:
