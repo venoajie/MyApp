@@ -111,7 +111,6 @@ class SpotHedging ():
         return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
         
     def is_spot_hedged_properly (self,
-        open_orders_byAPI: list,
         notional: float,
         min_trade_amount: float,
         contract_size: int) -> dict:
@@ -131,7 +130,6 @@ class SpotHedging ():
                                                         contract_size
                                                         )
         # check open orders related to hedging, to ensure previous open orders has completely consumed
-        open_orders_hedging_size = self.summing_size_open_orders (open_orders_byAPI)
         
         size_pct_qty = int ((10/100 * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged > size_pct_qty else remain_unhedged)
@@ -141,12 +139,10 @@ class SpotHedging ():
         #log.critical (f'{open_orders_byAPI=}')        
         log.info (f'{min_hedged_size=}')        
         log.info (f'{notional=}')        
-        log.info (f'{open_orders_hedging_size=}')        
         log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
         log.info (f'{hedging_size_portion=}')  
-        log.info (f'{open_orders_hedging_size in none_data=}')  
-        log.info (f'{open_orders_hedging_size in none_data and remain_unhedged > 0=}')  
-        return {'spot_was_unhedged': False if notional in none_data else open_orders_hedging_size in none_data and remain_unhedged > 0,
+        log.info (f'{remain_unhedged > 0=}')  
+        return {'spot_was_unhedged': False if notional in none_data else remain_unhedged > 0,
                 'hedging_size': hedging_size_portion}
 
 

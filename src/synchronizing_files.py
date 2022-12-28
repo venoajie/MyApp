@@ -412,8 +412,7 @@ class SynchronizingFiles ():
 
                 spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades_api)
             
-                check_spot_hedging = spot_hedged.is_spot_hedged_properly (open_orders_label,
-                                                                          notional,
+                check_spot_hedging = spot_hedged.is_spot_hedged_properly (
                                                                           min_trade_amount,
                                                                           contract_size
                                                                           ) 
