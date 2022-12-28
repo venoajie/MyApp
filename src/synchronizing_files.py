@@ -455,7 +455,7 @@ async def main ():
 
         await syn.running_strategy ('eth')
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
-        await syn.cancel_orders_hedging_spot_based_on_time_threshold ('eth')
+        await syn.cancel_orders_hedging_spot_based_on_time_threshold ('eth', 'hedging spot')
                 
          
     except Exception as error:
