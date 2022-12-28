@@ -315,7 +315,7 @@ class StreamMarketAccountData:
                                 #update mytrades db with the still open ones
                                 #my_trades_open = pickling.read_data(my_trades_path_open)  
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
-                                pickling.replace_data (my_trades_path_open, remaining_open_trades[0], 10000)
+                                pickling.replace_data (my_trades_path_open, remaining_open_trades[0])
                                 
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 log.error (f'{closed_trades_in_my_trades_open=}')
