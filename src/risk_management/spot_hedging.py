@@ -21,7 +21,7 @@ class SpotHedging ():
         '''
         '''       
         my_trades = self.my_trades
-        log.error (my_trades)        
+        #log.error (my_trades)        
 
         #print (my_trades)
         #print ([o for o in my_trades  ])
