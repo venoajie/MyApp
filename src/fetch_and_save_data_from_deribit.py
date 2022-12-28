@@ -234,7 +234,7 @@ class StreamMarketAccountData:
                         #log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
-                            #log.warning (f'{data_orders=}')
+                            log.warning (f'{data_orders=}')
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
