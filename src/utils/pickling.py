@@ -3,6 +3,7 @@
 # built ins
 import pickle
 import os
+from typing import List, Dict
 
 def append_data (file_name_pkl: str, data: dict)-> None:
 
@@ -64,7 +65,9 @@ def replace_data (file_name: str, data: dict)-> None:
 
     with open(file_name,'wb') as handle:
         print (f'{isinstance(data, dict)=}')
+        print (f'{isinstance(data, Dict)=}')
         print (f'{isinstance(data, list)=}')
+        print (f'{isinstance(data, List)=}')
         
             
         if isinstance(data, dict):
