@@ -65,17 +65,19 @@ def replace_data (file_name: str, data: dict)-> None:
     log.critical (f'from DB {read=}')
     log.warning (f'{isinstance(read, dict)=}')
     log.debug (f'{isinstance(read, list)=}')
+    
+    if data !=[]:
 
-    with open(file_name,'wb') as handle:
-        log.info (f'from EXC {data=}')
-        log.error (f'{isinstance(data, Dict)=}')
-        print (f'{isinstance(data, List)=}')
-        
+        with open(file_name,'wb') as handle:
+            log.info (f'from EXC {data=}')
+            log.error (f'{isinstance(data, Dict)=}')
+            print (f'{isinstance(data, List)=}')
             
-        if isinstance(data, dict):
-            pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
-        if isinstance(data, list):
-            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                
+            if isinstance(data, dict):
+                pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+            if isinstance(data, list):
+                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
 
