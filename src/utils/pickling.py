@@ -62,9 +62,10 @@ def replace_data (file_name: str, data: dict)-> None:
     """
     from loguru import logger as log
     read = read_data (file_name)
-    print (read)
+    log.critical (f'from DB {read=}')
 
     with open(file_name,'wb') as handle:
+        log.info (f'froom exc {data=}')
         log.warning (f'{isinstance(data, dict)=}')
         log.error (f'{isinstance(data, Dict)=}')
         print (f'{isinstance(data, list)=}')
@@ -72,7 +73,7 @@ def replace_data (file_name: str, data: dict)-> None:
         
             
         if isinstance(data, dict):
-            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
         if isinstance(data, list):
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
