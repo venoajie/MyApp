@@ -25,8 +25,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
 
     collected_data = data if read == [] else collected_data
     # Now we "sync" our database
-    with open(file_name_pkl,'wb') as handle:
-        pickle.dump(collected_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    dump_data_as_list (file_name_pkl, data)
 
     # Re-load our database
 
@@ -88,20 +87,8 @@ def replace_data (file_name: str, data: dict)-> None:
     if read == []:
         pass
     
+    dump_data_as_list (file_name, data)
 
-    with open(file_name,'wb') as handle:
-        log.info (f'from EXC {data=}')
-        log.error (f'{isinstance(data, Dict)=}')
-        print (f'{isinstance(data, List)=}')
-        if data !=[]:
-                
-            if isinstance(data, dict):
-                pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
-            if isinstance(data, list):
-                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-        
-        if data ==[]:
-            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
     read = read_data (file_name)
     log.warning (f'from DB 2 {read=}')
