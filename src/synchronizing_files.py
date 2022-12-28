@@ -205,7 +205,7 @@ class SynchronizingFiles ():
                                                                 )
                     
     
-    async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency) -> float:
+    async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency, label) -> float:
         """
         """
         one_minute = 60000
@@ -223,7 +223,7 @@ class SynchronizingFiles ():
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = await self.current_server_time () - open_orders_lastUpdateTStamp_min                       
 
-            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')                        
+            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)                        
             if open_orders_deltaTime > three_minute:
                 await deribit_get.get_cancel_order_byOrderId(self.connection_url, 
                                                              self.client_id, 
