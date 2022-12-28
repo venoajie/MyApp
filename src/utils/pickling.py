@@ -61,6 +61,7 @@ def replace_data (file_name: str, data: dict)-> None:
     """
 
     with open(file_name,'wb') as handle:
+        print (f'{isinstance(data, dict)=}')
             
         if isinstance(data, dict):
             pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
