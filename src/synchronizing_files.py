@@ -21,7 +21,7 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 
-def telegram_bot_sendtext(bot_message, purpose) -> None:
+def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
