@@ -34,6 +34,12 @@ def parse_dotenv()->dict:
             }
 none_data = [None, [], '0.0', 0]
      
+     
+
+def telegram_bot_sendtext(bot_message, purpose) -> None:
+    from utils import telegram_app
+    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
     
 class StreamMarketAccountData:
     
@@ -275,9 +281,19 @@ class StreamMarketAccountData:
                             log.debug ('open' in label_id)
                             log.debug ('closed' in label_id)
                             
+                            #!
+                            sum_new_trading = [o['amount'] for o in data_orders  ][0]
+                            sum_open_trading_after_new_trading = 0
+                            #!
+
                             if 'open' in label_id:
                                 log.error ('label_id open')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 10000)
+                                
+                                #!
+                                my_trades_open = pickling.read_data(my_trades_path_open)
+                                sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
+                                #!
                                 
                             if 'closed' in label_id:
                                 log.error ('label_id closed')
@@ -302,6 +318,15 @@ class StreamMarketAccountData:
                                 log.error ('[]')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_orders[0], 10000)
                                 
+                            
+                            #!
+                            my_trades_open = pickling.read_data(my_trades_path_open)
+                            sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
+                            
+                            info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
+                            telegram_bot_sendtext(info,'success_order')
+                            #!
+                            
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
