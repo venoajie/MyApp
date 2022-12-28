@@ -190,7 +190,7 @@ class StreamMarketAccountData:
                     
                     if message['method'] != 'heartbeat':
                         message_channel = message['params']['channel']
-                        log.info (message_channel)
+                        #log.info (message_channel)
             
                         symbol_index =  (message_channel)[-7:]
                         data_orders: list = message['params']['data']
@@ -214,7 +214,7 @@ class StreamMarketAccountData:
                             except:
                                 continue        
                             
-                        log.critical (currency)                                                   
+                        #log.critical (currency)                                                   
                                                    
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
@@ -324,7 +324,7 @@ class StreamMarketAccountData:
                             sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
                             
                             info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
-                            telegram_bot_sendtext(info,'success_order')
+                            telegram_bot_sendtext(info)
                             #!
                             
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     

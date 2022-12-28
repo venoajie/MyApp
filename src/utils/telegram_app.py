@@ -12,9 +12,7 @@ def telegram_bot_sendtext(bot_message: str, purpose: str = 'general_error') -> s
     if purpose == 'failed_order':
         bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
         bot_chatID  = '-722130131'#https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
-    if purpose == 'success_order':
-        bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
-        bot_chatID  = '-621271813'#https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+        
     if purpose == 'general_error':
         bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
         bot_chatID  = '-439743060'#https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id

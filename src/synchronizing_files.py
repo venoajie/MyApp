@@ -116,7 +116,7 @@ class SynchronizingFiles ():
                                                 )
             
             info= (f'SEND ORDER {label} {instrument} {size} \n ')
-            telegram_bot_sendtext(info,'success_order')
+            telegram_bot_sendtext(info)
             
         except Exception as e:
             log.error (e)
