@@ -321,6 +321,8 @@ class SynchronizingFiles ():
                 market_price = await self.market_price (instrument) 
                 log.info (market_price)
                 log.info(f'{index_price=}')
+                log.info(f'{market_price=}')
+                log.info(f'{portfolio=}')
                 
                 if  index_price and portfolio and market_price:
                     
