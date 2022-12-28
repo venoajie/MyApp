@@ -196,7 +196,6 @@ class StreamMarketAccountData:
                         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
                         
                         one_minute = 60000
-                        one_hour = one_minute * 60000
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
@@ -294,9 +293,9 @@ class StreamMarketAccountData:
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, remaining_open_trades[0], 10000)
                                 
-                                closed_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                                log.debug (f'{my_trades_open=}')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades[0], 10000)
+                                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                                log.error (f'{closed_trades_in_my_trades_open=}')
+                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open[0], 10000)
                                 
                             if label_id == [] :
                                 my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')

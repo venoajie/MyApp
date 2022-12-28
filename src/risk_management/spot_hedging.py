@@ -88,7 +88,7 @@ class SpotHedging ():
 
         '''       
         my_trades = self.my_trades_api_basedOn_label ()
-        #log.error (my_trades)        
+        log.error (my_trades)        
         return  sum([o['amount'] for o in my_trades if self.label in o['label'] ])
 
     def compute_remain_unhedged (self,
