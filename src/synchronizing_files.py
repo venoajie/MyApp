@@ -183,6 +183,27 @@ class SynchronizingFiles ():
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time   ['result']
     
+    async def cancel_redundant_orders_in_same_labels (self, currency, label_for_filter) -> None:
+        """
+        """
+    
+        open_order_mgt = await self.open_orders (currency)
+        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+    
+        if len_current_open_orders > 1:
+        
+            info= (f'CANCEL ORDER  \n ')
+            telegram_bot_sendtext(info,'failed_order')        
+            
+            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
+            
+            await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
+                                                            client_id,
+                                                            client_secret, 
+                                                            open_order_id
+                                                            )
+                    
+    
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency) -> float:
         """
         """
@@ -257,6 +278,7 @@ class SynchronizingFiles ():
                                             my_trades_max_price_attributes_filteredBy_label ['size'], 
                                             label_to_send
                                             )
+                    self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
                 
                 if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
                     if best_ask_prc == None:
@@ -271,6 +293,7 @@ class SynchronizingFiles ():
                                             size, 
                                             label_open
                                             )
+                    self.cancel_redundant_orders_in_same_labels (currency, label_open_for_filter)
                     
     async def running_strategy (self, currency) -> float:
         """
@@ -329,6 +352,7 @@ class SynchronizingFiles ():
                                                 check_spot_hedging ['hedging_size'], 
                                                 label
                                                 )
+                        self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
                     else:
                         threshold = .25/100
