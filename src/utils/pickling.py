@@ -66,19 +66,24 @@ def replace_data (file_name: str, data: dict)-> None:
     log.warning (f'{isinstance(read, dict)=}')
     log.debug (f'{isinstance(read, list)=}')
     
-    if data !=[]:
 
-        with open(file_name,'wb') as handle:
-            log.info (f'from EXC {data=}')
-            log.error (f'{isinstance(data, Dict)=}')
-            print (f'{isinstance(data, List)=}')
-            
+    with open(file_name,'wb') as handle:
+        log.info (f'from EXC {data=}')
+        log.error (f'{isinstance(data, Dict)=}')
+        print (f'{isinstance(data, List)=}')
+        if data !=[]:
+        
                 
             if isinstance(data, dict):
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
             if isinstance(data, list):
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            
+        
+        if data ==[]:
+            pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        
+                
+            if isinstance(data, dict):
     read = read_data (file_name)
     log.warning (f'from DB 2 {read=}')
     
