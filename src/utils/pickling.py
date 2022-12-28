@@ -62,7 +62,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     with open(file_name,'wb') as handle:
             
         #log.info (f'from EXC {data=}')
-        log.error (f'{isinstance(data, Dict)=}')
+        #log.error (f'{isinstance(data, Dict)=}')
         print (f'{isinstance(data, List)=}')
         
         if data !=[]:
