@@ -272,7 +272,8 @@ class SynchronizingFiles ():
                 if index_price < myTrades_max_price and current_open_orders_filtered_label_closed == []:
                     if best_bid_prc == None:
                         best_bid_prc = self.market_price(instrument)
-                    log.error(f'{best_bid_prc=}')
+                    log.critical(f'{best_bid_prc=}')
+                    log.critical(f'{label_to_send=}')
                     log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
 
                     await self.send_orders (
