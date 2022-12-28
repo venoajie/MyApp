@@ -165,9 +165,10 @@ class StreamMarketAccountData:
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             log.debug('Successfully authenticated WebSocket Connection')
-                            await (synchronizing_files.main())
+                            
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
+                            await (synchronizing_files.main())
 
                         self.refresh_token = message['result']['refresh_token']
 
