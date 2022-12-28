@@ -60,7 +60,7 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
-    from loguru import loogger as log
+    from loguru import logger as log
     read = read_data (file_name)
     print (read)
 
