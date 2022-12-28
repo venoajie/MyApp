@@ -342,9 +342,14 @@ class SynchronizingFiles ():
                                                                             min_trade_amount,
                                                                             contract_size
                                                                             ) 
+                    remain_unhedged = spot_hedged.compute_remain_unhedged (notional,
+                                                                                 min_trade_amount,
+                                                                                 contract_size
+                                                                                 ) 
                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
                     label: str = label_numbering.labelling ('open', label_hedging)
-                    log.info (spot_was_unhedged)
+                    
+                    log.info(f'{spot_was_unhedged=} {remain_unhedged=}')
 
                     if spot_was_unhedged:
                         log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
@@ -357,7 +362,7 @@ class SynchronizingFiles ():
                                                 )
                         self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
-                    else:
+                    if remain_unhedged < 1:
                         threshold = .25/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
