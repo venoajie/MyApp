@@ -363,7 +363,7 @@ class SynchronizingFiles ():
                         await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
                     if spot_was_unhedged == False and remain_unhedged < 1:
-                        threshold = .25/100
+                        threshold = .025/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
                                         
