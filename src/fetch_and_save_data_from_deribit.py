@@ -234,30 +234,30 @@ class StreamMarketAccountData:
                         #log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
-                            log.warning (f'{data_orders=}')
+                            #log.warning (f'{data_orders=}')
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
-                            log.debug (f'BEFORE {open_orders_open=}')
-                            log.warning (f'{order_state=}')
+                            #log.debug (f'BEFORE {open_orders_open=}')
+                            #log.warning (f'{order_state=}')
                             
                             if order_state == 'open':
-                                log.error ('ORDER_STATE')
+                                #log.error ('ORDER_STATE')
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000)
                                 
                             else:
-                                log.error ('ORDER_STATE')
+                                #log.error ('ORDER_STATE')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                 item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
-                                log.info (f'{item_in_open_orders_open_with_same_id=}')
-                                log.warning (f'{item_in_open_orders_open_with_diff_id=}')
+                                #log.info (f'{item_in_open_orders_open_with_same_id=}')
+                                #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
-                                    log.critical ('item_in_open_orders_open_with_same_id')
+                                    #log.critical ('item_in_open_orders_open_with_same_id')
                                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id[0], 100000)
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
@@ -295,7 +295,7 @@ class StreamMarketAccountData:
                             #!
 
                             if 'open' in label_id:
-                                log.error ('label_id open')
+                                log.critical ('LABEL ID OPEN')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_orders[0], 10000)
                                 
                                 #!
@@ -304,7 +304,7 @@ class StreamMarketAccountData:
                                 #!
                                 
                             if 'closed' in label_id:
-                                log.error ('label_id closed')
+                                log.critical ('LABEL ID CLOSED')
                                 my_trades_open = pickling.read_data(my_trades_path_open)  
                                 log.debug (f'BEFORE {my_trades_open=}')
                                 
