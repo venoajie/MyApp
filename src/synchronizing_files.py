@@ -360,7 +360,7 @@ class SynchronizingFiles ():
                                                 check_spot_hedging ['hedging_size'], 
                                                 label
                                                 )
-                        self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
+                        await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
                     if remain_unhedged < 1:
                         threshold = .25/100
