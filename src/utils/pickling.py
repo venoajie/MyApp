@@ -60,12 +60,13 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
+    from loguru import loogger as log
     read = read_data (file_name)
     print (read)
 
     with open(file_name,'wb') as handle:
-        print (f'{isinstance(data, dict)=}')
-        print (f'{isinstance(data, Dict)=}')
+        log.warning (f'{isinstance(data, dict)=}')
+        log.error (f'{isinstance(data, Dict)=}')
         print (f'{isinstance(data, list)=}')
         print (f'{isinstance(data, List)=}')
         
