@@ -12,6 +12,8 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     """
 
     read = read_data (file_name_pkl)
+    
+    # if data from DB == [], do not combine it with the fetched one
     if read != []:
         collected_data: list = []
         if os.path.exists(file_name_pkl):
@@ -21,6 +23,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
 
         collected_data.append(data)
 
+    collected_data = data if read == [] else collected_data
     # Now we "sync" our database
     with open(file_name_pkl,'wb') as handle:
         pickle.dump(collected_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
