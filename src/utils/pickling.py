@@ -59,11 +59,12 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
+    read_data (file_name)
 
     with open(file_name,'wb') as handle:
         print (f'{isinstance(data, dict)=}')
         print (f'{isinstance(data, list)=}')
-        read_data (file_name)
+        
             
         if isinstance(data, dict):
             pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
