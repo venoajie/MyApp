@@ -190,18 +190,19 @@ class SynchronizingFiles ():
         open_order_mgt = await self.open_orders (currency)
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
     
-        if len_current_open_orders > 1:
-        
-            info= (f'CANCEL ORDER  {label_for_filter} \n ')
-            telegram_bot_sendtext(info,'failed_order')        
+        if len_current_open_orders != [] :
+            if len_current_open_orders > 1 :
             
-            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
-            
-            await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                            client_id,
-                                                            client_secret, 
-                                                            open_order_id
-                                                            )
+                info= (f'CANCEL ORDER  {label_for_filter} \n ')
+                telegram_bot_sendtext(info,'failed_order')        
+                
+                open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
+                
+                await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
+                                                                client_id,
+                                                                client_secret, 
+                                                                open_order_id
+                                                                )
                     
     
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency) -> float:
