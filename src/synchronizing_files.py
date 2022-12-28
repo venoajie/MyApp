@@ -303,11 +303,13 @@ class SynchronizingFiles ():
     async def running_strategy (self, currency) -> float:
         """
         source data: loaded from database app
+        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         """
 
         reading_from_database = await self.reading_from_database (currency)
         my_trades_open: list = reading_from_database ['my_trades_open']
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+        open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
         portfolio = reading_from_database ['portfolio']
         instruments = reading_from_database ['instruments']
         index_price: float= reading_from_database['index_price']
@@ -351,9 +353,12 @@ class SynchronizingFiles ():
                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
                     label: str = label_numbering.labelling ('open', label_hedging)
                     
-                    log.info(f'{spot_was_unhedged=} {remain_unhedged=}')
+                    label_for_filter = 'hedging'
+                    len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+                    
+                    log.info(f'{spot_was_unhedged=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
 
-                    if spot_was_unhedged:
+                    if spot_was_unhedged and len_open_orders_open_byAPI == []:
                         log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
                     
                         await self.send_orders ('sell', 
@@ -364,7 +369,7 @@ class SynchronizingFiles ():
                                                 )
                         await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
                         
-                    if spot_was_unhedged == False and remain_unhedged >= 0:
+                    if spot_was_unhedged == False and remain_unhedged >= 0 and len_open_orders_open_byAPI == []:
                         threshold = .025/100
                         label = f'hedging spot-closed'
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
