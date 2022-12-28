@@ -23,6 +23,7 @@ from configuration import id_numbering, label_numbering
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from portfolio.deribit import open_orders_management
+import synchronizing_files
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -164,6 +165,7 @@ class StreamMarketAccountData:
                     if message['id'] == 9929:
                         if self.refresh_token is None:
                             log.debug('Successfully authenticated WebSocket Connection')
+                            asyncio.get_event_loop().run_until_complete(synchronizing_files.main())
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
