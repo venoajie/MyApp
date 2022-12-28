@@ -59,7 +59,8 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
-    read_data (file_name)
+    read = read_data (file_name)
+    print (read)
 
     with open(file_name,'wb') as handle:
         print (f'{isinstance(data, dict)=}')
