@@ -318,6 +318,7 @@ class SynchronizingFiles ():
                                                                             ) 
                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
                     label: str = label_numbering.labelling ('open', label_hedging)
+                    log.info (spot_was_unhedged)
 
                     if spot_was_unhedged:
                         log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
