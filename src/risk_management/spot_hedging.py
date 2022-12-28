@@ -142,7 +142,7 @@ class SpotHedging ():
         log.info (f'{min_hedged_size=}')        
         log.info (f'{notional=}')        
         log.info (f'{open_orders_hedging_size=}')        
-        log.info (f'{remain_unhedged=}')        
+        log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
         log.info (f'{hedging_size_portion=}')  
         log.info (f'{open_orders_hedging_size in none_data=}')  
         log.info (f'{open_orders_hedging_size in none_data and remain_unhedged > 0=}')  
