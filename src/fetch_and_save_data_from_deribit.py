@@ -173,7 +173,7 @@ class StreamMarketAccountData:
                                                                 client_id=self.client_id,
                                                                 client_secret= self.client_secret
         )
-                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(currency))
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(currency, 'hedging spot'))
 
                         self.refresh_token = message['result']['refresh_token']
 
