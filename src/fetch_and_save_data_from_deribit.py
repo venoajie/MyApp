@@ -234,21 +234,21 @@ class StreamMarketAccountData:
                         #log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
                         if message_channel == f'user.orders.future.{currency.upper()}.raw':
                             
-                            log.warning (f'{data_orders=}')
+                            #log.warning (f'{data_orders=}')
                             order_state = data_orders ['order_state']
                             order_id= data_orders ['order_id']
                             
                             my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                             open_orders_open = pickling.read_data (my_path_orders_open) 
-                            log.debug (f'BEFORE {open_orders_open=}')
-                            log.warning (f'{order_state=}')
+                            #log.debug (f'BEFORE {open_orders_open=}')
+                            #log.warning (f'{order_state=}')
                             
                             if order_state == 'open':
-                                log.error ('ORDER_STATE OPEN')
+                                #log.error ('ORDER_STATE OPEN')
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000)
                                 
                             else:
-                                log.error ('ORDER_STATE ELSE')
+                                #log.error ('ORDER_STATE ELSE')
                                 item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                 item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
                                 #log.info (f'{item_in_open_orders_open_with_same_id=}')
@@ -263,7 +263,7 @@ class StreamMarketAccountData:
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
                                 
                             open_orders_open = pickling.read_data (my_path_orders_open)     
-                            log.debug (f'AFTER {open_orders_open=}')
+                            #log.debug (f'AFTER {open_orders_open=}')
                         
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
@@ -271,9 +271,11 @@ class StreamMarketAccountData:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
                             #!
                             my_trades_open1 = pickling.read_data(my_trades_path_open)
-                            log.info (f'DATA TRADE FROM DB {my_trades_open1=}')
+                            label_my_trades_open1 = [o['label'] for o in my_trades_open1  ]
+                            log.info (f'DATA TRADE FROM DB {label_my_trades_open1}')
                             
                             log.error (f'DATA FROM EXC {data_orders=}')
+                            log.error ([o['label'] for o in data_orders  ])
                             
                             #determine label id
                             try:
@@ -303,7 +305,8 @@ class StreamMarketAccountData:
                                 
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
-                                log.warning (f'DATA OPEN TRADE AFTER APPEND {my_trades_open=}')
+                                label_my_trades_open = [o['label'] for o in my_trades_open  ]
+                                log.warning (f'DATA OPEN TRADE AFTER APPEND {label_my_trades_open=}')
                                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
                                 #!
                                 
@@ -323,15 +326,17 @@ class StreamMarketAccountData:
                                     
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
-                                log.warning (f'DATA OPEN TRADE AFTER REPLACE {my_trades_open=}')
+                                label_my_trades_open = [o['label'] for o in my_trades_open  ]
+                                log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {label_my_trades_open=}')
                                     
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                                log.error (f'{closed_trades_in_my_trades_open=}')
+                                #log.error (f'{closed_trades_in_my_trades_open=}')
                                 pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                 
                                 #!
-                                my_trades_open = pickling.read_data(my_trades_path_closed)
-                                log.warning (f'DATA CLOSED TRADE AFTER APPEND {my_trades_open=}')
+                                my_trades_closed = pickling.read_data(my_trades_path_closed)
+                                label_my_trades_closed = [o['label'] for o in my_trades_closed  ]
+                                log.warning (f'DATA CLOSED TRADE FINAL {label_my_trades_closed=}')
                                     
                                     
                             if label_id == [] :
@@ -346,6 +351,8 @@ class StreamMarketAccountData:
                             sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
                             
                             info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
+                            
+                            log.critical (info)
                             telegram_bot_sendtext(info)
                             #!
                             
