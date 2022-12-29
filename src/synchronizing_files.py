@@ -269,6 +269,9 @@ class SynchronizingFiles ():
                 instrument = my_trades_max_price_attributes_filteredBy_label ['instrument']
                 log.error(f'{instrument=}')
                 
+                if current_open_orders_filtered_label_closed !=[]:
+                    await self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
+                
                 if index_price < myTrades_max_price and current_open_orders_filtered_label_closed == []:
                     if best_bid_prc == None:
                         best_bid_prc = self.market_price(instrument)
