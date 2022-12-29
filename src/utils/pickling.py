@@ -50,35 +50,22 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     collected_data: list = []
     if os.path.exists(file_name_pkl):
         data_from_db = read_data (file_name_pkl)
-        
 
+        log.critical (f'PICKLING {data_from_db=}')
+        log.info (f'{data_from_db != []=}')
+                
         # if data from DB == [], do not combine it with the fetched one
         if data_from_db != []:
-            data_from_db = data_from_db [0]
             
-            with open(file_name_pkl,'rb') as handle: 
-
-                #log.info (f'list {handle=}')        
-                #handle = handle [0]        
-                #log.critical (f'DICT {handle=}')        
-                
+            with open(file_name_pkl,'rb') as handle:                 
                 collected_data = pickle.load(handle)
-                #log.critical (f'COLLECTED DATA ORI {handle=}') 
-                    
-                #if isinstance(collected_data, list):
-                #   collected_data = collected_data [0]
-                #log.debug (f'COLLECTED DATA TRANSFORMED {handle=}') 
-        
 
+        log.info (f'DICT {data_from_db=}')
+        log.info (f'DATA {data=}')
         collected_data.append(data)
 
-    log.critical (f'PICKLING {data_from_db=}')
-    log.info (f'{data_from_db != []=}')
-    
     collected_data = data if data_from_db == [] else collected_data
 
-    if isinstance(collected_data, dict):
-        collected_data = [collected_data]
     log.debug (f'{collected_data=}')
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, data)
