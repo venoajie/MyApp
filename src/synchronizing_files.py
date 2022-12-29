@@ -378,7 +378,7 @@ class SynchronizingFiles ():
                         threshold = .025/100
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['average_up'], label, best_bid_prc, best_ask_prc)
                                         
-    async def check_if_new_opened_hedging_order_will_create_over_hedged (self, currency, actual_hedging_size, current_open_orders, min_hedging_size)-> None:
+    async def check_if_new_opened_hedging_order_will_create_over_hedged (self, currency, actual_hedging_size, min_hedging_size)-> None:
         
         '''
         '''   
