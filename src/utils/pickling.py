@@ -20,7 +20,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
 
     log.info (data)
 
-    if isinstance(data, list):
+    if isinstance(data, list) and data !=[]:
         data = data [0]
             
     if data_from_db != []:
