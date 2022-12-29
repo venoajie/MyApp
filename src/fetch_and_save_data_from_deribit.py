@@ -173,7 +173,8 @@ class StreamMarketAccountData:
                                                                            self.client_secret,
                                                                            currency
                                                                            )
-                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(currency, 'hedging spot'))
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold('hedging spot'))
+                            await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
 
                         self.refresh_token = message['result']['refresh_token']
 
@@ -318,11 +319,11 @@ class StreamMarketAccountData:
                                 my_trades_open = pickling.read_data(my_trades_path_open)  
                                 
                                 #update mytrades db with the closed ones
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders , 10000)
+                                #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_orders , 10000)
                                 
-                                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                                #closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 #log.error (f'{closed_trades_in_my_trades_open=}')
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
+                                #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                 
                                 # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                                 #update mytrades db with the still open ones
