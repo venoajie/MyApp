@@ -155,16 +155,21 @@ class SynchronizingFiles ():
 
         ordBook = await self.reading_from_database (instrument)
         ordBook = ordBook ['ordBook']
-            
-        max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
-        most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
+        
+        best_bid_prc = []
+        best_ask_prc = []
+        
+        if ordBook :
+                
+            max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+            most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
 
-        best_bid_prc= most_current_ordBook[0]['bids'][0][0]
-        best_ask_prc= most_current_ordBook[0]['asks'][0][0]
+            best_bid_prc= most_current_ordBook[0]['bids'][0][0]
+            best_ask_prc= most_current_ordBook[0]['asks'][0][0]
 
-        return {'best_bid_prc': best_bid_prc,
-                'best_ask_prc': best_ask_prc
-                }
+            return {'best_bid_prc': best_bid_prc,
+                    'best_ask_prc': best_ask_prc
+                    }
     
     async def current_server_time (self) -> float:
         """
@@ -269,7 +274,7 @@ class SynchronizingFiles ():
                 
                 if index_price < myTrades_max_price and current_open_orders_filtered_label_closed == []:
                     if best_bid_prc == None:
-                        best_bid_prc = self.market_price(instrument)
+                        best_bid_prc = self.market_price(instrument) ['best_bid_prc']
                     log.critical(f'{best_bid_prc=}')
                     log.critical(f'{label_to_send=}')
                     log.error(my_trades_max_price_attributes_filteredBy_label ['size'])
@@ -285,7 +290,7 @@ class SynchronizingFiles ():
                 
                 if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
                     if best_ask_prc == None:
-                        best_ask_prc = self.market_price(instrument)
+                        best_ask_prc = self.market_price(instrument) ['best_ask_prc']
                     size = max(int(size/3),1)
                     log.error(f'{instrument=}')
                     log.error(f'{size=}')
