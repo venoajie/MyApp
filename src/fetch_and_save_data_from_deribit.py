@@ -277,9 +277,10 @@ class StreamMarketAccountData:
                             sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
                             log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {amount_my_trades_open} {label_my_trades_open1}')
                             
-                            log.error (f'DATA FROM EXC {data_orders=}')
+                            
                             log.error ([o['label'] for o in data_orders  ])
                             for data_order in data_orders:
+                                log.error (f'DATA FROM EXC LOOP {data_order=}')
                                 
                                 #determine label id
                                 try:
