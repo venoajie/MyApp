@@ -121,35 +121,33 @@ class SynchronizingFiles ():
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        if self.currency==None:
-            return {'ordBook': pickling.read_data(my_path_ordBook)}
-        else:
+            
+        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')
+        my_trades_open: list = pickling.read_data(my_trades_path_open) 
+        
+        my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
+        my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
+        
+        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
+        #log.error (my_path_portfolio)                                                                               
+        portfolio = pickling.read_data(my_path_portfolio)
+        
+        my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
+        instruments = pickling.read_data (my_path_instruments)
                 
-            my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')
-            my_trades_open: list = pickling.read_data(my_trades_path_open) 
-            
-            my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
-            my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
-            
-            my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
-            #log.error (my_path_portfolio)                                                                               
-            portfolio = pickling.read_data(my_path_portfolio)
-            
-            my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
-            instruments = pickling.read_data (my_path_instruments)
-                    
-            symbol_index: str = f'{self.currency}_usd'
-            my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
-            index_price: list = pickling.read_data(my_path_index) 
-            index_price: float= index_price [0]['price']
-            
-            
-            return {'my_trades_open': my_trades_open,
-                    'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
-                    'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
-                    'portfolio': portfolio,
-                    'index_price': index_price,
-                    'instruments': instruments}
+        symbol_index: str = f'{self.currency}_usd'
+        my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        index_price: list = pickling.read_data(my_path_index) 
+        index_price: float= index_price [0]['price']
+        
+        
+        return {'my_trades_open': my_trades_open,
+                'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
+                'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
+                'ordBook': pickling.read_data(my_path_ordBook),
+                'portfolio': portfolio,
+                'index_price': index_price,
+                'instruments': instruments}
     
     async def market_price (self, instrument: str) -> list:
         """
