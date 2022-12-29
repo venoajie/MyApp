@@ -155,7 +155,7 @@ class SynchronizingFiles ():
         """
         """
 
-        ordBook = await self.reading_from_database (None, instrument)
+        ordBook = await self.reading_from_database (instrument)
         ordBook = ordBook ['ordBook']
             
         max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
