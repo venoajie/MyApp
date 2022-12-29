@@ -271,7 +271,7 @@ class StreamMarketAccountData:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
                             #!
                             my_trades_open1 = pickling.read_data(my_trades_path_open)
-                            log.warning (f'DATA FROM DB {my_trades_open1=}')
+                            log.info (f'DATA TRADE FROM DB {my_trades_open1=}')
                             
                             log.warning (f'DATA FROM EXC {data_orders=}')
                             
