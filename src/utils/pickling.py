@@ -3,7 +3,7 @@
 # built ins
 import pickle
 import os
-#from loguru import logger as log
+from loguru import logger as log
 
 def dump_data_as_list (file_name: str, data: dict)-> None:
 
@@ -14,6 +14,10 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
         
         if data !=[]:
             
+            log.warning (data)
+            #clean up data
+            data = ( [o for o in data if isinstance(o, dict)] )
+            print (data)
                 
             if isinstance(data, dict):
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -58,11 +62,6 @@ def read_data (file_name_pkl: str)-> None:
     try:
         with open(file_name_pkl,'rb') as handle:
             read_pickle = pickle.load(handle)
-            
-            #clean up data
-            data = ( [o for o in read_pickle if isinstance(o, dict)] )
-            print (data)
-            print (read_pickle)
             return read_pickle
     except:
         return []
