@@ -246,7 +246,7 @@ class StreamMarketAccountData:
                             
                             if order_state == 'open':
                                 #log.error ('ORDER_STATE OPEN')
-                                pickling.append_and_replace_items_based_on_qty1 (my_path_orders_open, data_orders, 1000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000)
                                 
                             else:
                                 #log.error ('ORDER_STATE ELSE')
@@ -255,7 +255,7 @@ class StreamMarketAccountData:
                                 #log.info (f'{item_in_open_orders_open_with_same_id=}')
                                 #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
-                                pickling.append_and_replace_items_based_on_qty1 (my_path_orders_else, data_orders, 1000)
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
                                     #log.critical ('item_in_open_orders_open_with_same_id')
