@@ -40,22 +40,23 @@ class SynchronizingFiles ():
     connection_url: str
     client_id: str
     client_secret: str
+    curency: str
         
-    async def open_orders (self, currency) -> list:
+    async def open_orders (self) -> list:
         """
         """
-        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, self.client_id, self.client_secret, currency)
+        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, self.client_id, self.client_secret, self.currency)
         open_ordersREST: list = open_ordersREST ['result']
                         
         return open_orders_management.MyOrders (open_ordersREST)
         
-    async def my_trades (self, currency, start_timestamp: int, end_timestamp: int) -> list:
+    async def my_trades (self, start_timestamp: int, end_timestamp: int) -> list:
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency_and_time (self.connection_url, 
                                                                                self.client_id, 
                                                                                self.client_secret, 
-                                                                               currency, 
+                                                                              self.currency, 
                                                                                start_timestamp,
                                                                                end_timestamp)
         #trades: list = trades ['result']
@@ -63,19 +64,6 @@ class SynchronizingFiles ():
         return trades ['result'] ['trades']
         
         
-        
-    async def my_trades_api_basedon_label (self, currency, start_timestamp: int, end_timestamp: int, label: str) -> list:
-        """
-        """
-        my = await self.my_trades (currency, 
-                               start_timestamp,
-                               end_timestamp)
-        log.warning (my)
-        return  self.my_trades (currency, 
-                               start_timestamp,
-                               end_timestamp). my_trades_api_basedOn_label (label
-                               )
-    
     async def get_account_summary (self, currency: str) -> list:
         """
         """
@@ -83,22 +71,22 @@ class SynchronizingFiles ():
                         
         return account_summary ['result']
     
-    async def get_instruments (self, currency: str) -> list:
+    async def get_instruments (self) -> list:
         """
         """
     
-        endpoint=(f'public/get_instruments?currency={currency}&expired=false&kind=future')
+        endpoint=(f'public/get_instruments?currency={self.currency}&expired=false&kind=future')
         result: list = await deribit_get.get_unauthenticated(self.connection_url, endpoint)
         return result ['result']
     
-    async def get_index (self, currency: str) -> float:
+    async def get_index (self) -> float:
         """
         """
             
-        endpoint: str = f'public/get_index?currency={currency.upper()}'
+        endpoint: str = f'public/get_index?currency={self.currency.upper()}'
         result: list = await deribit_get.get_unauthenticated(self.connection_url, endpoint)
         
-        return result ['result'] [currency.upper()]
+        return result ['result'] [self.currency.upper()]
     
     async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
         """
@@ -115,6 +103,8 @@ class SynchronizingFiles ():
                                                 label
                                                 )
             
+            await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
+            
             info= (f'SEND ORDER {label} {instrument} {size} \n ')
             telegram_bot_sendtext(info)
             
@@ -127,28 +117,28 @@ class SynchronizingFiles ():
         return index_price * equity  
     
     
-    async def reading_from_database (self, currency: str= None, instrument: str = None) -> float:
+    async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        if currency==None:
+        if self.currency==None:
             return {'ordBook': pickling.read_data(my_path_ordBook)}
         else:
                 
-            my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+            my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')
             my_trades_open: list = pickling.read_data(my_trades_path_open) 
             
-            my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
-            my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', currency, 'closed')
+            my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
+            my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
             
-            my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', currency.lower())      
+            my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
             #log.error (my_path_portfolio)                                                                               
             portfolio = pickling.read_data(my_path_portfolio)
             
-            my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  currency)          
+            my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
             instruments = pickling.read_data (my_path_instruments)
                     
-            symbol_index: str = f'{currency}_usd'
+            symbol_index: str = f'{self.currency}_usd'
             my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
             index_price: list = pickling.read_data(my_path_index) 
             index_price: float= index_price [0]['price']
@@ -184,11 +174,11 @@ class SynchronizingFiles ():
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time   ['result']
     
-    async def cancel_redundant_orders_in_same_labels (self, currency, label_for_filter) -> None:
+    async def cancel_redundant_orders_in_same_labels (self,  label_for_filter) -> None:
         """
         """
     
-        open_order_mgt = await self.open_orders (currency)
+        open_order_mgt = await self.open_orders ()
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
     
         if len_current_open_orders != [] :
@@ -204,16 +194,22 @@ class SynchronizingFiles ():
                                                                 client_secret, 
                                                                 open_order_id
                                                                 )
+    async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
+        """
+        """
+        label_for_filter = 'hedging spot-closed'
+    
+        await self.cancel_redundant_orders_in_same_labels (self.currency, label_for_filter) 
                     
     
-    async def cancel_orders_hedging_spot_based_on_time_threshold (self, currency, label) -> float:
+    async def cancel_orders_hedging_spot_based_on_time_threshold (self, label) -> float:
         """
         """
         one_minute = 60000
 
         three_minute = one_minute * 3
         
-        open_order_mgt = await self.open_orders (currency)
+        open_order_mgt = await self.open_orders (self.currency)
 
         try:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
@@ -254,7 +250,7 @@ class SynchronizingFiles ():
                 label_closed_for_filter = 'hedging spot-closed'
                 label_open_for_filter = 'hedging spot-open'
                 
-                current_open_orders =   await self.reading_from_database(currency) 
+                current_open_orders =   await self.reading_from_database() 
                 current_open_orders =   current_open_orders ['open_orders_open_byAPI']
                 current_open_orders_filtered_label_closed = [o for o in current_open_orders if label_closed_for_filter in o['label'] ] 
                 current_open_orders_filtered_label_open = [o for o in current_open_orders if label_open_for_filter in o['label'] ] 
@@ -270,7 +266,7 @@ class SynchronizingFiles ():
                 log.error(f'{instrument=}')
                 
                 if current_open_orders_filtered_label_closed !=[]:
-                    await self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
+                    await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
                 
                 if index_price < myTrades_max_price and current_open_orders_filtered_label_closed == []:
                     if best_bid_prc == None:
@@ -286,7 +282,7 @@ class SynchronizingFiles ():
                                             my_trades_max_price_attributes_filteredBy_label ['size'], 
                                             label_to_send
                                             )
-                    await self.cancel_redundant_orders_in_same_labels (currency, label_closed_for_filter)
+                    await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
                 
                 if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
                     if best_ask_prc == None:
@@ -304,15 +300,15 @@ class SynchronizingFiles ():
                                             size, 
                                             label_open
                                             )
-                    await self.cancel_redundant_orders_in_same_labels (currency, label_open_for_filter)
+                    await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                     
-    async def running_strategy (self, currency) -> float:
+    async def running_strategy (self) -> float:
         """
         source data: loaded from database app
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         """
 
-        reading_from_database = await self.reading_from_database (currency)
+        reading_from_database = await self.reading_from_database ()
         my_trades_open: list = reading_from_database ['my_trades_open']
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
@@ -374,14 +370,14 @@ class SynchronizingFiles ():
                                                 check_spot_hedging ['hedging_size'], 
                                                 label
                                                 )
-                        await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
-                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (currency, actual_hedging_size, min_hedging_size)
+                        await self.cancel_redundant_orders_in_same_labels ('hedging spot-open')
+                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
                         
                     if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
                         threshold = .025/100
-                        await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['average_up'], label, best_bid_prc, best_ask_prc)
+                        await self.price_averaging (my_trades_open, threshold,  index_price, check_spot_hedging ['average_up'], label, best_bid_prc, best_ask_prc)
                                         
-    async def check_if_new_opened_hedging_order_will_create_over_hedged (self, currency, actual_hedging_size, min_hedging_size)-> None:
+    async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  actual_hedging_size, min_hedging_size)-> None:
         
         '''
         '''   
@@ -389,7 +385,7 @@ class SynchronizingFiles ():
         from time import sleep
         
         #refresh open orders
-        reading_from_database = await self.reading_from_database (currency)
+        reading_from_database = await self.reading_from_database ()
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         log.info(f'{open_orders_open_byAPI=}')
         open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
@@ -425,7 +421,8 @@ async def main ():
         syn = SynchronizingFiles (
         connection_url=connection_url,
         client_id=client_id,
-        client_secret= client_secret
+        client_secret= client_secret,
+        currency = 'ETH'
         )
         label_hedging = 'spot hedging'
 
