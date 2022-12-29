@@ -178,6 +178,9 @@ class SynchronizingFiles ():
     
         open_order_mgt = await self.open_orders ()
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+        log.warning (open_order_mgt)
+        log.warning (len_current_open_orders)
+        log.warning (len_current_open_orders != [])
     
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
@@ -186,10 +189,11 @@ class SynchronizingFiles ():
                 telegram_bot_sendtext(info,'failed_order')        
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
+                log.warning (open_order_id)
                 
                 await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                                client_id,
-                                                                client_secret, 
+                                                                self.client_id,
+                                                                self.client_secret, 
                                                                 open_order_id
                                                                 )
     async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
