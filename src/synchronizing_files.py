@@ -373,8 +373,7 @@ class SynchronizingFiles ():
                         
                     if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
                         threshold = .025/100
-                        label = f'hedging spot-closed'
-                        await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['hedging_size'], label, best_bid_prc, best_ask_prc)
+                        await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['average_up'], label, best_bid_prc, best_ask_prc)
                                         
     async def check_if_new_order_will_create_over_hedged (self, currency, label_hedging)-> list:
         
