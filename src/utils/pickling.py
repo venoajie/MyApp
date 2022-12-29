@@ -4,6 +4,7 @@
 import pickle
 import os
 #from typing import List, Dict
+from loguru import logger as log
 
 def append_data (file_name_pkl: str, data: dict)-> None:
 
@@ -11,7 +12,10 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
+    
     read = read_data (file_name_pkl)
+    log.info (read)
+    log.info (f'{read != []=}')
     
     # if data from DB == [], do not combine it with the fetched one
     if read != []:
@@ -24,6 +28,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
         collected_data.append(data)
 
     collected_data = data if read == [] else collected_data
+    log.debug (f'{collected_data=}')
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, data)
 
