@@ -3,8 +3,6 @@
 # built ins
 import pickle
 import os
-#from typing import List, Dict
-from loguru import logger as log
 
 def append_data (file_name_pkl: str, data: dict)-> None:
 
@@ -29,7 +27,6 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, combined_data)
 
-
 def read_data (file_name_pkl: str)-> None:
 
     """
@@ -47,18 +44,8 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
-
-    #from loguru import logger as log
-    #read = read_data (file_name)
-    #log.critical (f'from DB {read=}')
-    #log.warning (f'{isinstance(read, dict)=}')
-    #log.debug (f'{isinstance(read, list)=}')
     
     with open(file_name,'wb') as handle:
-            
-        #log.info (f'from EXC {data=}')
-        #log.error (f'{isinstance(data, Dict)=}')
-        #print (f'{isinstance(data, List)=}')
         
         if data !=[]:
                 
@@ -74,32 +61,23 @@ def replace_data (file_name: str, data: dict)-> None:
 
     """
     """
-    #from loguru import logger as log
+
     read = read_data (file_name)
-    #log.critical (f'from DB {read=}')
-    #log.warning (f'{isinstance(read, dict)=}')
-    #log.debug (f'{isinstance(read, list)=}')
+
     if read == []:
         pass
     
     dump_data_as_list (file_name, data)
-
-        
-    #read = read_data (file_name)
-   # log.warning (f'from DB 2 {read=}')
     
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
 
     """
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
-    
-    #from loguru import logger as log
-    #file_name_pkl:str =f"""{file_name}.pkl"""
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
-    #log.info (data)
+
     data_list = list (data [0])
     
     if 'change_id' in data_list:
@@ -113,9 +91,6 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
             result: list = [o for o in data if o['timestamp'] not in filtered_timestamps ]
             
             dump_data_as_list (file_name_pkl, result)
-            
-            #with open(file_name_pkl,'wb') as handle:
-            #    pickle.dump(result, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
     if 'params' in data_list:
 
