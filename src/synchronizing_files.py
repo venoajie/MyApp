@@ -363,7 +363,7 @@ class SynchronizingFiles ():
                     log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
 
                     if spot_was_unhedged and len_open_orders_open_byAPI == []:
-                        log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
+                        log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                     
                         await self.send_orders ('sell', 
                                                 instrument, 
