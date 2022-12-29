@@ -44,21 +44,29 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     """
 
     
-    read = read_data (file_name_pkl)
-    log.info (read)
-    log.info (f'{read != []=}')
+    data_from_db = []
     
-    # if data from DB == [], do not combine it with the fetched one
-    if read != []:
-        collected_data: list = []
-        if os.path.exists(file_name_pkl):
 
+    collected_data: list = []
+    if os.path.exists(file_name_pkl):
+        data_from_db = read_data (file_name_pkl)
+
+        # if data from DB == [], do not combine it with the fetched one
+        if data_from_db != []:
             with open(file_name_pkl,'rb') as handle: 
+
+                log.info (f'list {handle=}')        
+                handle = handle [0]        
+                log.critical (f'DICT {handle=}')        
+                
                 collected_data = pickle.load(handle)
 
         collected_data.append(data)
 
-    collected_data = data if read == [] else collected_data
+    log.critical (f'PICKLING {data_from_db=}')
+    log.info (f'{data_from_db != []=}')
+    
+    collected_data = data if data_from_db == [] else collected_data
     log.debug (f'{collected_data=}')
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, data)
