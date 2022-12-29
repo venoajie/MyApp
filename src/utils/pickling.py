@@ -21,10 +21,14 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     if isinstance(data, list):
         data = data [0]
             
+    log.info (f'DATA DB {data_from_db=}')
+    log.debug (f'DATA EXCHANGE {data=}')
     if data_from_db != []:
         data_from_db.append(data)
 
+    
     combined_data = [data] if data_from_db == [] else data_from_db
+    log.critical (f'DATA APPEND {data_from_db=}')
     
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, combined_data)
