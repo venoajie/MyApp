@@ -272,7 +272,8 @@ class StreamMarketAccountData:
                             #!
                             my_trades_open1 = pickling.read_data(my_trades_path_open)
                             label_my_trades_open1 = [o['label'] for o in my_trades_open1  ]
-                            log.info (f'DATA TRADE FROM DB {label_my_trades_open1}')
+                            sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
+                            log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {label_my_trades_open1}')
                             
                             log.error (f'DATA FROM EXC {data_orders=}')
                             log.error ([o['label'] for o in data_orders  ])
@@ -306,7 +307,8 @@ class StreamMarketAccountData:
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
                                 label_my_trades_open = [o['label'] for o in my_trades_open  ]
-                                log.warning (f'DATA OPEN TRADE AFTER APPEND {label_my_trades_open=}')
+                                sum_my_trades_open = sum([o['amount'] for o in my_trades_open1  ])
+                                log.warning (f'DATA OPEN TRADE AFTER APPEND {sum_my_trades_open} {label_my_trades_open=}')
                                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
                                 #!
                                 
@@ -321,13 +323,15 @@ class StreamMarketAccountData:
                                 #update mytrades db with the still open ones
                                 #my_trades_open = pickling.read_data(my_trades_path_open)  
                                 remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
-                                log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
+                                
+                                #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
                                 pickling.replace_data (my_trades_path_open, remaining_open_trades )
                                     
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
                                 label_my_trades_open = [o['label'] for o in my_trades_open  ]
-                                log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {label_my_trades_open=}')
+                                sum_my_trades_open = sum([o['amount'] for o in my_trades_open  ])
+                                log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {sum_my_trades_open} {label_my_trades_open=}')
                                     
                                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                 #log.error (f'{closed_trades_in_my_trades_open=}')
@@ -336,7 +340,8 @@ class StreamMarketAccountData:
                                 #!
                                 my_trades_closed = pickling.read_data(my_trades_path_closed)
                                 label_my_trades_closed = [o['label'] for o in my_trades_closed  ]
-                                log.warning (f'DATA CLOSED TRADE FINAL {label_my_trades_closed=}')
+                                sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
+                                log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
                                     
                                     
                             if label_id == [] :
