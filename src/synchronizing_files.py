@@ -392,6 +392,7 @@ class SynchronizingFiles ():
         open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
         label_open = 'hedging spot-open'
         current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
+        current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
         log.info(f'{actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
 
         is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
