@@ -9,7 +9,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
-    log.info (f'dump_data_as_list {data=}')
+
     with open(file_name,'wb') as handle:
         
         if data !=[]:
