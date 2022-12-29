@@ -40,7 +40,7 @@ class SynchronizingFiles ():
     connection_url: str
     client_id: str
     client_secret: str
-    curency: str
+    currency: str
         
     async def open_orders (self) -> list:
         """
