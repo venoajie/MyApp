@@ -197,7 +197,7 @@ class SynchronizingFiles ():
         """
         label_for_filter = 'hedging spot-closed'
     
-        await self.cancel_redundant_orders_in_same_labels (self.currency, label_for_filter) 
+        await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
                     
     
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, label) -> float:
