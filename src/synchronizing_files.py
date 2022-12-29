@@ -430,9 +430,9 @@ async def main ():
         #info= (f'RUNNING ORDER \n ')
         #telegram_bot_sendtext(info,'general_error')
 
-        await syn.running_strategy ('eth')
+        await syn.running_strategy ()
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
-        await syn.cancel_orders_hedging_spot_based_on_time_threshold ('eth', 'hedging spot')
+        await syn.cancel_orders_hedging_spot_based_on_time_threshold ('hedging spot')
                 
          
     except Exception as error:
