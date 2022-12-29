@@ -55,9 +55,9 @@ def append_data (file_name_pkl: str, data: dict)-> None:
         if data_from_db != []:
             with open(file_name_pkl,'rb') as handle: 
 
-                log.info (f'list {handle=}')        
-                handle = handle [0]        
-                log.critical (f'DICT {handle=}')        
+                #log.info (f'list {handle=}')        
+                #handle = handle [0]        
+                #log.critical (f'DICT {handle=}')        
                 
                 collected_data = pickle.load(handle)
 
