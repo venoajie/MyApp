@@ -52,7 +52,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
         data_from_db = read_data (file_name_pkl)
 
     if data_from_db != []:
-        data_from_db.append(data[0])
+        data_from_db.append(data)
             
     log.info (f'DICT {data_from_db=}')
 
