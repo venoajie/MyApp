@@ -13,13 +13,17 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     with open(file_name,'wb') as handle:
         
         if data !=[]:
+            
+            #clean up data
+            data = ( [o for o in data if isinstance(o, dict)] )
                 
             if isinstance(data, dict):
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                
             if isinstance(data, list):
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
-        if data ==[]:
+        if data == []:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
 def append_data (file_name_pkl: str, data: dict)-> None:
