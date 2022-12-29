@@ -207,7 +207,7 @@ class SynchronizingFiles ():
 
         three_minute = one_minute * 3
         
-        open_order_mgt = await self.open_orders (self.currency)
+        open_order_mgt = await self.open_orders ()
 
         try:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
