@@ -60,7 +60,12 @@ def append_data (file_name_pkl: str, data: dict)-> None:
                 #log.critical (f'DICT {handle=}')        
                 
                 collected_data = pickle.load(handle)
-                log.critical (f'COLLECTED DATA {handle=}') 
+                log.critical (f'COLLECTED DATA ORI {handle=}') 
+                    
+                if isinstance(collected_data, list):
+                    collected_data = collected_data [0]
+                log.debug (f'COLLECTED DATA TRANSFORMED {handle=}') 
+        
 
         collected_data.append(data)
 
