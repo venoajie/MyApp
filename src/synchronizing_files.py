@@ -385,14 +385,15 @@ class SynchronizingFiles ():
         
         from time import sleep
         
-        is_over_hedged = actual_hedging_size + current_open_orders > min_hedging_size
-        label_open = 'hedging spot-open'
-        
         #refresh open orders
         reading_from_database = await self.reading_from_database (currency)
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
+        label_open = 'hedging spot-open'
+        current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
 
+        is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
+        
         if  is_over_hedged:
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
             
