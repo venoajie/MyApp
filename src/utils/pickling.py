@@ -10,11 +10,15 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
+    from loguru import logger as log
+    
     data_from_db = []
 
     #collected_data: list = []
     if os.path.exists(file_name_pkl):
         data_from_db = read_data (file_name_pkl)
+
+    log.info (data)
 
     if isinstance(data, list):
         data = data [0]
