@@ -280,6 +280,7 @@ class StreamMarketAccountData:
                             
                             log.error ([o['label'] for o in data_orders  ])
                             for data_order in data_orders:
+                                data_order = [data_order]
                                 log.error (f'DATA FROM EXC LOOP {data_order=}')
                                 
                                 #determine label id
@@ -321,11 +322,11 @@ class StreamMarketAccountData:
                                     my_trades_open = pickling.read_data(my_trades_path_open)  
                                     
                                     #update mytrades db with the closed ones
-                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000)
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000)
                                     
-                                    #closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                                    #log.error (f'{closed_trades_in_my_trades_open=}')
-                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
+                                    closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                                    log.error (f'{closed_trades_in_my_trades_open=}')
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                     
                                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                                     #update mytrades db with the still open ones
