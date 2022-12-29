@@ -168,11 +168,11 @@ class StreamMarketAccountData:
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
-                            syn = synchronizing_files. SynchronizingFiles (
-                                                                connection_url=self.connection_url,
-                                                                client_id=self.client_id,
-                                                                client_secret= self.client_secret
-        )
+                            syn = synchronizing_files. SynchronizingFiles (self.connection_url,
+                                                                           self.client_id,
+                                                                           self.client_secret,
+                                                                           currency
+                                                                           )
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(currency, 'hedging spot'))
 
                         self.refresh_token = message['result']['refresh_token']
