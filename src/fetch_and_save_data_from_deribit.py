@@ -342,6 +342,7 @@ class StreamMarketAccountData:
                                 #!
                                 my_trades_closed = pickling.read_data(my_trades_path_closed)
                                 if my_trades_closed !=[]:
+                                    log.warning (my_trades_closed)
                                     label_my_trades_closed = [o ['label']  for o in my_trades_closed  ]
                                     sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
                                     log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
