@@ -6,55 +6,23 @@ import os
 #from typing import List, Dict
 from loguru import logger as log
 
-def append_data1 (file_name_pkl: str, data: dict)-> None:
-
-    """
-    https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
-    """
-
-    
-    read = read_data (file_name_pkl)
-    
-    # if data from DB == [], do not combine it with the fetched one
-    if read != []:
-        collected_data: list = []
-        if os.path.exists(file_name_pkl):
-
-            with open(file_name_pkl,'rb') as handle: 
-                collected_data = pickle.load(handle)
-
-        collected_data.append(data)
-
-    collected_data = data if read == [] else collected_data
-    # Now we "sync" our database
-    dump_data_as_list (file_name_pkl, data)
-
-    # Re-load our database
-
-    #print(f'{data=}')
-    #print(f'{collected_data=}')
-    with open(file_name_pkl,'rb') as handle:
-        collected_data = pickle.load(handle)
-    return collected_data
-
 def append_data (file_name_pkl: str, data: dict)-> None:
 
     """
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
 
-    
     data_from_db = []
-    
 
     #collected_data: list = []
     if os.path.exists(file_name_pkl):
         data_from_db = read_data (file_name_pkl)
 
+    if isinstance(data, list):
+        data = data [0]
+            
     if data_from_db != []:
         data_from_db.append(data)
-            
-    log.info (f'DICT {data_from_db=}')
 
     combined_data = [data] if data_from_db == [] else data_from_db
     
@@ -172,7 +140,7 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data:
     """
     from utils import time_modification
 
-    append_data1(file_name_pkl, data)
+    append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
     data_list = list (data [0])
     now_time_utc = time_modification.convert_time_to_utc()['utc_now']
