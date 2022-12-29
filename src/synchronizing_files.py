@@ -352,13 +352,15 @@ class SynchronizingFiles ():
                                                                                  min_trade_amount,
                                                                                  contract_size
                                                                                  ) 
+                    min_hedging_size = check_spot_hedging ['all_hedging_size']
                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
+                    actual_hedging_size = spot_hedged.actual_hedging_size()
                     label: str = label_numbering.labelling ('open', label_hedging)
                     
                     label_for_filter = 'hedging'
                     len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
                     
-                    log.info(f'{spot_was_unhedged=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
+                    log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
 
                     if spot_was_unhedged and len_open_orders_open_byAPI == []:
                         log.warning(f'{instrument=} {best_ask_prc=} {spot_hedged=} {label=}')
@@ -370,69 +372,37 @@ class SynchronizingFiles ():
                                                 label
                                                 )
                         await self.cancel_redundant_orders_in_same_labels (currency, 'hedging spot-open')
+                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (currency, actual_hedging_size, min_hedging_size)
                         
                     if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
                         threshold = .025/100
                         await self.price_averaging (my_trades_open, threshold, currency, index_price, check_spot_hedging ['average_up'], label, best_bid_prc, best_ask_prc)
                                         
-    async def check_if_new_order_will_create_over_hedged (self, currency, label_hedging)-> list:
+    async def check_if_new_opened_hedging_order_will_create_over_hedged (self, currency, actual_hedging_size, current_open_orders, min_hedging_size)-> None:
         
         '''
-        source data: fetch independently from exchange through get protocol
         '''   
-        label_open = 'hedging spot-open'
-        open_orders_from_exchange = await self.open_orders(currency)
-        open_orders_label = open_orders_from_exchange.my_orders_api_basedOn_label(label_open)
-
-        index_price = await self.get_index (currency)
-        instruments = await self.get_instruments (currency)
-        instruments_name =  [o['instrument_name'] for o in instruments] 
-
-        portfolio = await self.get_account_summary (currency)
-
-        equity = portfolio  ['equity']
-        notional = await self.compute_notional_value (index_price, equity)
         
-        one_minute = 60000
-        one_hour = one_minute * 60
+        from time import sleep
+        
+        is_over_hedged = actual_hedging_size + current_open_orders > min_hedging_size
+        label_open = 'hedging spot-open'
+        
+        #refresh open orders
+        reading_from_database = await self.reading_from_database (currency)
+        open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+        open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
 
-        for instrument in instruments_name:
-            if 'PERPETUAL' in instrument:
-
-                #log.debug (instruments_name)
-                instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]  [0] 
-                min_trade_amount = instrument_data ['min_trade_amount']
-                contract_size = instrument_data ['contract_size']  
-                current_server_time: int = await self.current_server_time ()
-                start_timestamp: int = current_server_time -  one_hour
-                
-                my_trades = await self.my_trades (currency, start_timestamp, current_server_time)
-                
-                #! THE filters need to be more sophisticated
-                # the time span is long enough? (hedging i prepared for long time)
-                # how to distinguish open/closed transactions? (should be thae same as the hedging method)
-                
-                my_trades_mgt =  myTrades_management.MyTrades (my_trades)
-                my_trades_api = my_trades_mgt.my_trades_api_basedOn_label ('hedging spot')
-                log.info (my_trades_api)
-
-                spot_hedged = spot_hedging.SpotHedging ('hedging spot', my_trades_api)
+        if  is_over_hedged:
+            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
             
-                check_spot_hedging = spot_hedged.is_spot_hedged_properly (
-                                                                          min_trade_amount,
-                                                                          contract_size
-                                                                          ) 
-
-                if  spot_hedged.is_over_hedged (open_orders_label, check_spot_hedging ['hedging_size']):
-                    open_order_id: list = open_orders_from_exchange.my_orders_api_basedOn_label_last_update_timestamps_min_id ('hedging spot-open')
-                    
-                    info= (f'CANCEL ORDER {instrument} \n ')
-                    telegram_bot_sendtext(info,'failed_order')
-                    await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                                  client_id,
-                                                                  client_secret, 
-                                                                  open_order_id
-                                                                  )
+            sleep (2)
+            
+            await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
+                                                            self.client_id,
+                                                            self. client_secret, 
+                                                            open_order_id
+                                                            )
 async def main ():
     
     client_id: str = parse_dotenv() ['client_id']
