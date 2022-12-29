@@ -307,9 +307,8 @@ class StreamMarketAccountData:
                                 #!
                                 my_trades_open = pickling.read_data(my_trades_path_open)
                                 label_my_trades_open = [o['label'] for o in my_trades_open  ]
-                                sum_my_trades_open = sum([o['amount'] for o in my_trades_open1  ])
-                                log.warning (f'DATA OPEN TRADE AFTER APPEND {sum_my_trades_open} {label_my_trades_open=}')
                                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
+                                log.warning (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading} {label_my_trades_open=}')
                                 #!
                                 
                             if 'closed' in label_id:
