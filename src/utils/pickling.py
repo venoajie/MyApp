@@ -50,9 +50,12 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     collected_data: list = []
     if os.path.exists(file_name_pkl):
         data_from_db = read_data (file_name_pkl)
+        
 
         # if data from DB == [], do not combine it with the fetched one
         if data_from_db != []:
+            data_from_db = data_from_db [0]
+            
             with open(file_name_pkl,'rb') as handle: 
 
                 #log.info (f'list {handle=}')        
