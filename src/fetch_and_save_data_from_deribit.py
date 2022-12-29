@@ -273,7 +273,7 @@ class StreamMarketAccountData:
                             my_trades_open1 = pickling.read_data(my_trades_path_open)
                             log.info (f'DATA TRADE FROM DB {my_trades_open1=}')
                             
-                            log.warning (f'DATA FROM EXC {data_orders=}')
+                            log.error (f'DATA FROM EXC {data_orders=}')
                             
                             #determine label id
                             try:
