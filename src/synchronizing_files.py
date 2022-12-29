@@ -286,6 +286,7 @@ class SynchronizingFiles ():
                 if index_price > myTrades_max_price and current_open_orders_filtered_label_open ==[]:
                     if best_ask_prc == None:
                         best_ask_prc = self.market_price(instrument)
+                    size = max(int(size/3),1)
                     log.error(f'{instrument=}')
                     log.error(f'{size=}')
                     log.error(f'{label_open=}')
