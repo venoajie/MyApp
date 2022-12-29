@@ -354,7 +354,7 @@ class SynchronizingFiles ():
                                                                                  ) 
                     min_hedging_size = check_spot_hedging ['all_hedging_size']
                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
-                    actual_hedging_size = spot_hedged.actual_hedging_size()
+                    actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                     label: str = label_numbering.labelling ('open', label_hedging)
                     
                     label_for_filter = 'hedging'
