@@ -23,7 +23,7 @@ from configuration import id_numbering, label_numbering
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from portfolio.deribit import open_orders_management
-import synchronizing_files
+import hedging_spot
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -168,7 +168,7 @@ class StreamMarketAccountData:
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
-                            syn = synchronizing_files. SynchronizingFiles (self.connection_url,
+                            syn = hedging_spot. SynchronizingFiles (self.connection_url,
                                                                            self.client_id,
                                                                            self.client_secret,
                                                                            currency
