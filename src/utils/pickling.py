@@ -5,12 +5,20 @@ import pickle
 import os
 
 
-def dump_data_as_list (file_name: str, data: dict)-> None:
+def check_duplicates (file_name: str)-> None:
+
+    from utils import string_modification
+    
+    data_from_db: list = read_data (file_name)    
+    free_from_duplicates_data = string_modification.remove_redundant_elements (data_from_db)
+    
+    dump_data_as_list (file_name, free_from_duplicates_data)
+
+
+def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 
     """
-    """
-    #from utils import string_modification
-    #from loguru import logger as log
+    """    
 
     with open(file_name,'wb') as handle:
         try:
@@ -18,7 +26,6 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
             if data !=[]:
                 
                 if isinstance(data, dict):
-                    #log.debug (data)
                     pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
                     
                 if isinstance(data, list):
@@ -27,8 +34,18 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                     pickle.dump(free_from_none_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             if data == []:
-                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                data_from_db: list = read_data (file_name)
                 
+                # to avoid record [] in db with valid contents
+                if data_from_db:
+                    pass
+                
+                if data_from_db ==[]:
+                    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+            if check_duplicates == True:
+                check_duplicates (file_name)
+
         except Exception as error:
             print (f'pickling {error}')    
             
@@ -37,7 +54,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     """
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
     """
-
+    
     data_from_db = []
 
     #collected_data: list = []
@@ -49,15 +66,12 @@ def append_data (file_name_pkl: str, data: dict)-> None:
             
     if data_from_db != []:
         data_from_db.append(data)
-    
-    #log.debug (f'{data_from_db=}')
-    #log.info (f'{data=}')
+
     combined_data = [data] if data_from_db == [] else data_from_db
-    #log.error (f'{combined_data=}')
     
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, combined_data)
-
+    
 def read_data (file_name_pkl: str)-> None:
 
     """
@@ -69,10 +83,8 @@ def read_data (file_name_pkl: str)-> None:
             return read_pickle
     except:
         return []
-
-
             
-def replace_data (file_name: str, data: dict)-> None:
+def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 
     """
     """
@@ -84,7 +96,10 @@ def replace_data (file_name: str, data: dict)-> None:
     
     dump_data_as_list (file_name, data)
     
-def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int)-> None:
+    if check_duplicates == True:
+        check_duplicates (file_name)
+
+def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int, check_duplicates: bool = False)-> None:
 
     """
     append_and_replace_items_based_on_qty (file_name, resp, 3)
@@ -105,7 +120,7 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
 
             result: list = [o for o in data if o['timestamp'] not in filtered_timestamps ]
             
-            dump_data_as_list (file_name_pkl, result)
+            dump_data_as_list (file_name_pkl, result, check_duplicates)
                 
     if 'params' in data_list:
 
@@ -121,9 +136,12 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
 
             result: list = [o for o in data if o['tick'] not in filtered_timestamps ]
 
-            dump_data_as_list (file_name_pkl, result)
+            dump_data_as_list (file_name_pkl, result, check_duplicates)
             
-def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data: dict, time_expiration: int)-> None:
+def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, 
+                                                       data: dict, time_expiration: int, 
+                                                       check_duplicates: bool = False
+                                                       )-> None:
 
     """
     append_and_replace_items_based_on_time_expiration in minute
@@ -140,7 +158,7 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, data:
     
     if 'change_id' in data_list:
         result: list =  ([o for o in data if  o['timestamp'] > one_hour_ago]) 
-        dump_data_as_list (file_name_pkl, result)
+        dump_data_as_list (file_name_pkl, result, check_duplicates)
                 
     if 'params' in data_list:
 
