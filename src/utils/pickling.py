@@ -41,6 +41,11 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
     """
     """    
 
+   #! 
+    data_from_db: list = read_data (file_name)
+    print (f'{file_name=}')
+    print (f'TEST PRINT {data_from_db=}')
+#!
     with open(file_name,'wb') as handle:
         try:
             
@@ -63,13 +68,13 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
                 
                 if data_from_db ==[]:
                     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-            if check_duplicates == True:
-                check_duplicate_elements (file_name)
-
                 
         except Exception as error:
             print (f'pickling {error}')    
+
+    if check_duplicates == True:
+        check_duplicate_elements (file_name)
+
             
 def append_data (file_name_pkl: str, data: dict)-> None:
 
