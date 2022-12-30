@@ -3,12 +3,13 @@
 # built ins
 import pickle
 import os
-from loguru import logger as log
+
 
 def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
+    from utils import string_modification
 
     with open(file_name,'wb') as handle:
         
@@ -16,11 +17,16 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                 
             if isinstance(data, dict):
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                data_from_db = read_data (file_name)
+                free_from_none_data = ( [o for o in data_from_db if isinstance(o, dict)] )
+                free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
+                pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
             if isinstance(data, list):
                 # clean up data from non=results: []
-                data = ( [o for o in data if isinstance(o, dict)] )
-                pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
+                free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
+                pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
         if data == []:
             pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)

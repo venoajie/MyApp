@@ -5,10 +5,12 @@ def remove_redundant_elements (data: list)->list:
     '''  
     # https://www.codegrepper.com/code-examples/python/remove+redundant+elements+in+list+python
     # https://python.plainenglish.io/how-to-remove-duplicate-elements-from-lists-without-using-sets-in-python-5796e93e6d43
+    # https://stackoverflow.com/questions/9427163/remove-duplicate-dict-in-list-in-python #! (hash free)
     
     '''      
+    return list({frozenset(item.items()):item for item in data}.values())  
     
-    return sorted(set(data))    
+    #return sorted(set(data))    
 
 def extract_currency_from_text (words: str) -> str:
     
