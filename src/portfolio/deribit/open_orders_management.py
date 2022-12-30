@@ -99,9 +99,6 @@ class MyOrders ():
         
         '''
         '''    
-        print (f'{label=}')
-        print (f'{self.my_orders_api_basedOn_label=}')
-        print (f'len {len ([o for o in self.my_orders_api_basedOn_label (label)])}')
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  len ([o for o in self.my_orders_api_basedOn_label (label)])
             
