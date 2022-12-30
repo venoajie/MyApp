@@ -388,7 +388,11 @@ class StreamMarketAccountData:
         
                 
         try:
+            log.error (data)
+
             free_from_duplicates_data = string_modification.remove_redundant_elements (data)
+            
+            log.error (free_from_duplicates_data)
             
             if operation == 'append_and_replace':
                 
@@ -396,7 +400,7 @@ class StreamMarketAccountData:
             
             if operation == 'replace':
 
-                pickling.replace_data (path, free_from_duplicates_data, 1000)
+                pickling.replace_data (path, free_from_duplicates_data)
             
             
         except Exception as error:
