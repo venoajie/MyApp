@@ -138,7 +138,7 @@ class SynchronizingFiles ():
         symbol_index: str = f'{self.currency}_usd'
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
         index_price: list = pickling.read_data(my_path_index) 
-        log.error (index_price) #
+
         index_price: float= index_price [0]['price']
         
         
