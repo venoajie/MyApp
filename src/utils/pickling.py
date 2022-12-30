@@ -9,7 +9,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
 
     """
     """
-    from utils import string_modification
+    #from utils import string_modification
     #from loguru import logger as log
 
     with open(file_name,'wb') as handle:
@@ -17,34 +17,20 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
             
             if data !=[]:
                 
-                    
                 if isinstance(data, dict):
                     #log.debug (data)
                     pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
-                    #data_from_db = read_data (file_name)
-                    #log.debug (data_from_db)
-                    #free_from_none_data = ( [o for o in data_from_db if isinstance(o, dict)] )
-                    #log.error (free_from_none_data)
-                    #free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
-                    #log.info (free_from_duplicates_data)
-                    #pickle.dump(data_from_db, handle, protocol=pickle.HIGHEST_PROTOCOL)
                     
                 if isinstance(data, list):
-                    #log.warning (data)
-                    # clean up data from non=results: []
                     free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
 
-                    try:
-                        free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
-                    except:
-                        free_from_duplicates_data = free_from_none_data
-
-                    pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(free_from_none_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             if data == []:
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                
         except Exception as error:
-            print (error)    
+            print (f'pickling {error}')    
             
 def append_data (file_name_pkl: str, data: dict)-> None:
 
