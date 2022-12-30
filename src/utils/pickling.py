@@ -10,23 +10,28 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     """
     """
     from utils import string_modification
+    from loguru import logger as log
 
     with open(file_name,'wb') as handle:
         
         if data !=[]:
-            print (data)
+            
                 
             if isinstance(data, dict):
+                log.debug (data)
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
                 data_from_db = read_data (file_name)
                 free_from_none_data = ( [o for o in data_from_db if isinstance(o, dict)] )
                 free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
+                log.info (free_from_duplicates_data)
                 pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
             if isinstance(data, list):
+                log.warning (data)
                 # clean up data from non=results: []
                 free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
                 free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
+                log.info (free_from_duplicates_data)
                 pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
         if data == []:
