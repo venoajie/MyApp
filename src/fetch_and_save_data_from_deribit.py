@@ -320,7 +320,7 @@ class StreamMarketAccountData:
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000)
                                     
                                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                                    log.error (f'{closed_trades_in_my_trades_open=}')
+                                    log.debug (f'{closed_trades_in_my_trades_open=}')
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                     
                                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
