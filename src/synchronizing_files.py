@@ -22,6 +22,7 @@ async def returning_data_to_db (path) -> list:
     """
     """    
     data_from_db =await read_data_from_db (path)
+    print (path)
     print (data_from_db)
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
     print (free_from_duplicates_data)
