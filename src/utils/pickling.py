@@ -27,7 +27,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                     log.error (free_from_none_data)
                     free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
                     log.info (free_from_duplicates_data)
-                    pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(data_from_db, handle, protocol=pickle.HIGHEST_PROTOCOL)
                     
                 if isinstance(data, list):
                     log.warning (data)
@@ -35,6 +35,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                     free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
                     log.error (free_from_none_data)
                     free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
+                    data = free_from_duplicates_data if free_from_duplicates_data else free_from_none_data
                     log.info (free_from_duplicates_data)
                     pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
