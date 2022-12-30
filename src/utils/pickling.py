@@ -8,12 +8,19 @@ import os
 def check_duplicate_elements (file_name: str)-> None:
 
     from utils import string_modification
-    
-    data_from_db: list = read_data (file_name)    
+    from loguru import logger as log
+
+    data_from_db: list = read_data (file_name)
+   #! 
+    log.info (f'BEFORE {data_from_db=}')
+    #!
     free_from_duplicates_data = string_modification.remove_redundant_elements (data_from_db)
     
     dump_data_as_list (file_name, free_from_duplicates_data)
-
+#! 
+    data_from_db: list = read_data (file_name)
+    
+    log.warning (f'AFTER {data_from_db=}')
 
 def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 
@@ -44,8 +51,10 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
                     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
             if check_duplicates == True:
+                
                 check_duplicate_elements (file_name)
 
+                
         except Exception as error:
             print (f'pickling {error}')    
             
@@ -94,11 +103,8 @@ def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> 
     if read == []:
         pass
     
-    dump_data_as_list (file_name, data)
+    dump_data_as_list (file_name, data, check_duplicates)
     
-    if check_duplicates == True:
-        check_duplicate_elements (file_name)
-
 def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int, check_duplicates: bool = False)-> None:
 
     """
