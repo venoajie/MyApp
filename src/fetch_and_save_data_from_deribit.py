@@ -227,7 +227,7 @@ class StreamMarketAccountData:
                                                    
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            log.error (data_orders)
+                            #log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
 
