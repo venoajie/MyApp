@@ -14,6 +14,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
     with open(file_name,'wb') as handle:
         
         if data !=[]:
+            print (data)
                 
             if isinstance(data, dict):
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
