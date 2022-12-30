@@ -5,6 +5,19 @@ import pickle
 import os
 
 
+def read_data (file_name_pkl: str)-> None:
+
+    """
+    """
+
+    try:
+        if os.path.exists(file_name_pkl):
+            with open(file_name_pkl,'rb') as handle:
+                read_pickle = pickle.load(handle)
+                return read_pickle
+    except:
+        return []
+    
 def check_duplicate_elements (file_name: str)-> None:
 
     from utils import string_modification
@@ -81,17 +94,6 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     # Now we "sync" our database
     dump_data_as_list (file_name_pkl, combined_data)
     
-def read_data (file_name_pkl: str)-> None:
-
-    """
-    """
-
-    try:
-        with open(file_name_pkl,'rb') as handle:
-            read_pickle = pickle.load(handle)
-            return read_pickle
-    except:
-        return []
             
 def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 
