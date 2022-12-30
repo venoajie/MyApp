@@ -3,7 +3,7 @@
 # installed
 import asyncio
 from utils import pickling, system_tools, string_modification
-
+from loguru import logger as log
          
 async def read_data_from_db (path) -> list:
     """
@@ -22,10 +22,10 @@ async def returning_data_to_db (path) -> list:
     """
     """    
     data_from_db =await read_data_from_db (path)
-    print (path)
+    log.error (path)
     print (data_from_db)
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
-    print (free_from_duplicates_data)
+    log.debug (free_from_duplicates_data)
     pickling.replace_data (path, free_from_duplicates_data)
     
 if __name__ == "__main__":
