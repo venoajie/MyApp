@@ -247,7 +247,8 @@ class StreamMarketAccountData:
                             
                             if order_state == 'open':
                                 #log.error ('ORDER_STATE OPEN')
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000)
+                                await self.cleanUp_data_and_save (my_path_orders_open, data_orders, 'append_and_replace', 1000)
+                                #pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000)
                                 
                             else:
                                 #log.error ('ORDER_STATE ELSE')
@@ -256,13 +257,16 @@ class StreamMarketAccountData:
                                 #log.info (f'{item_in_open_orders_open_with_same_id=}')
                                 #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
-                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000)
+                                #pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000)
+                                await self.cleanUp_data_and_save (my_path_orders_else, data_orders, 'append_and_replace', 1000)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
                                     #log.critical ('item_in_open_orders_open_with_same_id')
-                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000)
+                                    await self.cleanUp_data_and_save (my_path_orders_else, item_in_open_orders_open_with_same_id, 'append_and_replace', 1000)
+                                    #pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000)
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id)
+                                #await self.cleanUp_data_and_save (my_path_orders_else, item_in_open_orders_open_with_same_id, 'replace')
                                 
                             open_orders_open = pickling.read_data (my_path_orders_open)     
                             #log.debug (f'AFTER {open_orders_open=}')
@@ -300,9 +304,11 @@ class StreamMarketAccountData:
                                 sum_open_trading_after_new_trading = 0
                                 #!
 
+
                                 if 'open' in label_id:
                                     log.error ('LABEL ID OPEN')
-                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000)
+                                    await self.cleanUp_data_and_save (my_trades_path_open, data_order, 'append_and_replace', 1000)
+                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000)
                                     
                                     #!
                                     my_trades_open = pickling.read_data(my_trades_path_open)
@@ -315,13 +321,15 @@ class StreamMarketAccountData:
                                 if 'closed' in label_id:
                                     log.debug ('LABEL ID CLOSED')
                                     my_trades_open = pickling.read_data(my_trades_path_open)  
-                                    
+                                                                    
                                     #update mytrades db with the closed ones
-                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000)
+                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000)
+                                    await self.cleanUp_data_and_save (my_trades_path_closed, data_order, 'append_and_replace', 1000)
                                     
                                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                     log.debug (f'{closed_trades_in_my_trades_open=}')
-                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
+                                    await self.cleanUp_data_and_save (my_trades_path_closed, closed_trades_in_my_trades_open, 'append_and_replace', 1000)
+                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000)
                                     
                                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                                     #update mytrades db with the still open ones
@@ -329,6 +337,7 @@ class StreamMarketAccountData:
                                     remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
                                     
                                     #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
+                                    #await self.cleanUp_data_and_save (my_trades_path_open, remaining_open_trades, 'replace')
                                     pickling.replace_data (my_trades_path_open, remaining_open_trades )
                                         
                                     #!
@@ -350,7 +359,8 @@ class StreamMarketAccountData:
                                 if label_id == [] :
                                     my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                                     log.error ('[]')
-                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000)
+                                    await self.cleanUp_data_and_save (my_trades_path_manual, data_order, 'append_and_replace', 1000)
+                                    #pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000)
                                     
                                 
                                 #!
@@ -372,6 +382,26 @@ class StreamMarketAccountData:
                 log.info('WebSocket connection has broken.')
                 formula.log_error('WebSocket connection has broken','fetch and save ALL data from deribit ', 'error', .1)
                 
+    async def cleanUp_data_and_save (self, path, data, operation, qty: int = 1000) -> None:
+        """
+        """
+        
+                
+        try:
+            free_from_duplicates_data = string_modification.remove_redundant_elements (data)
+            
+            if operation == 'append_and_replace':
+                
+                pickling.append_and_replace_items_based_on_qty (path, free_from_duplicates_data, 1000)
+            
+            if operation == 'replace':
+
+                pickling.replace_data (path, free_from_duplicates_data, 1000)
+            
+            
+        except Exception as error:
+            log.warning (error)
+            
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
