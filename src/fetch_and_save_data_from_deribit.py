@@ -293,19 +293,15 @@ class StreamMarketAccountData:
                                     pass
 
                                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                                log.critical (label_id)
-                                log.critical (closed_label_id_int)
+                                log.info (f' {label_id=} final_sum_open: {closed_label_id_int} \n ')
 
-                                #log.debug ('open' in label_id)
-                                #log.debug ('closed' in label_id)
-                                
                                 #!
                                 sum_new_trading = [o['amount'] for o in data_order  ][0]
                                 sum_open_trading_after_new_trading = 0
                                 #!
 
                                 if 'open' in label_id:
-                                    log.critical ('LABEL ID OPEN')
+                                    log.error ('LABEL ID OPEN')
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000)
                                     
                                     #!
@@ -313,11 +309,11 @@ class StreamMarketAccountData:
                                     label_my_trades_open = [o['label'] for o in my_trades_open  ]
                                     amount_my_trades_open = [o['amount'] for o in my_trades_open  ]
                                     sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
-                                    log.warning (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
+                                    log.error (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
                                     #!
                                     
                                 if 'closed' in label_id:
-                                    log.critical ('LABEL ID CLOSED')
+                                    log.debug ('LABEL ID CLOSED')
                                     my_trades_open = pickling.read_data(my_trades_path_open)  
                                     
                                     #update mytrades db with the closed ones
