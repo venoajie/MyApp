@@ -89,7 +89,7 @@ if __name__ == "__main__":
         my_path_orders_open: str = system_tools.provide_path_for_file ('orders', 'eth', 'open')
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', 'eth', 'closed')
         
-        paths = [my_trades_open, my_path_orders_closed, my_path_orders_open]
+        paths = [my_trades_path_open, my_path_orders_closed, my_path_orders_open]
         log.error (paths)
 
         asyncio.gather(*[ SynchronizingFiles (item).remove_redundant_data() for item in paths ])  
