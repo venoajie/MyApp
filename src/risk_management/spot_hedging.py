@@ -138,7 +138,7 @@ class SpotHedging ():
             
         #log.critical (f'{open_orders_byAPI=}')        
         log.info (f'{min_hedged_size=}')        
-        log.info (f'{notional=}')        
+        #log.info (f'{notional=}')        
         log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
         log.info (f'{hedging_size_portion=}')  
         log.info (f'{remain_unhedged > 0=}')  
