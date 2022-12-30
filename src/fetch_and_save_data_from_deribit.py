@@ -273,7 +273,7 @@ class StreamMarketAccountData:
                         if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
                             #!
                             my_trades_open1 = pickling.read_data(my_trades_path_open)
-                            label_my_trades_open1 = [o['label'] for o in my_trades_open1  ]
+                            label_my_trades_open1 = [o['order_id'] for o in my_trades_open1  ]
                             amount_my_trades_open = [o['amount'] for o in my_trades_open1  ]
                             sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
                             log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {amount_my_trades_open} {label_my_trades_open1}')
