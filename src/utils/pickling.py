@@ -18,6 +18,7 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                 pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
             if isinstance(data, list):
+                # clean up data from non=results: []
                 data = ( [o for o in data if isinstance(o, dict)] )
                 pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
