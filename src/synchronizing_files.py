@@ -8,7 +8,8 @@ from utils import pickling, system_tools, string_modification
 async def read_data_from_db (path) -> list:
     """
     """    
-    return pickling.read_data (path)
+    read = pickling.read_data (path)
+    return read
  
 async def remove_redundant_data (data) -> list:
     """
