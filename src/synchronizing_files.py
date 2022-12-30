@@ -82,14 +82,15 @@ if __name__ == "__main__":
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', 'eth', 'closed')
         
         paths = [my_trades_path_open, my_path_orders_closed, my_path_orders_open]
-        log.error (paths)
-        loop = asyncio.get_event_loop()
-        all_groups = asyncio.gather(paths)
-        results = loop.run_until_complete(all_groups)
-        loop.close()
+        for path in paths:
+            log.error (paths)
+            loop = asyncio.get_event_loop()
+            loop.run_until_complete(remove_redundant_data(path))
+            
         
-        asyncio.gather(*[ remove_redundant_data(item) for item in paths ]) 
-        loop.run_until_complete(all_groups)
+        asyncio.gather(*[ remove_redundant_data(path) for path in paths ]) 
+        loop.run_until_complete(paths)
+        loop.close()
     except (KeyboardInterrupt, SystemExit):
 
         
