@@ -40,11 +40,11 @@ if __name__ == "__main__":
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', 'eth', 'closed')        
         
         paths = [my_trades_path_open, 
-                 my_path_orders_closed, 
                  my_path_orders_open, 
+                 my_path_orders_cancelled, 
                  my_path_orders_closed, 
                  my_path_orders_filled, 
-                 my_path_orders_cancelled
+                 my_trades_path_closed
                  ]
 
         for path in paths:
