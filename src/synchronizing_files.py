@@ -138,7 +138,6 @@ class SynchronizingFiles ():
         symbol_index: str = f'{self.currency}_usd'
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
         index_price: list = pickling.read_data(my_path_index) 
-
         index_price: float= index_price [0]['price']
         
         
@@ -401,7 +400,6 @@ class SynchronizingFiles ():
         log.info(f'{actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
 
         is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
-        log.error (is_over_hedged)
         
         if  is_over_hedged:
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
