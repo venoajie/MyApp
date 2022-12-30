@@ -83,13 +83,18 @@ if __name__ == "__main__":
         
         paths = [my_trades_path_open, my_path_orders_closed, my_path_orders_open]
         log.error (paths)
+        loop = asyncio.get_event_loop()
+        all_groups = asyncio.gather(paths)
+        results = loop.run_until_complete(all_groups)
+        loop.close()
         
         asyncio.gather(*[ remove_redundant_data(item) for item in paths ]) 
-        
+        loop.run_until_complete(all_groups)
     except (KeyboardInterrupt, SystemExit):
 
         
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
+        
 
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
