@@ -33,12 +33,12 @@ def dump_data_as_list (file_name: str, data: dict)-> None:
                     log.warning (data)
                     # clean up data from non=results: []
                     free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
-                    log.error (free_from_none_data)
+
                     try:
                         free_from_duplicates_data = string_modification.remove_redundant_elements (free_from_none_data)
                     except:
                         free_from_duplicates_data = free_from_none_data
-                    log.info (free_from_duplicates_data)
+
                     pickle.dump(free_from_duplicates_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
             
             if data == []:
