@@ -389,19 +389,21 @@ class StreamMarketAccountData:
                 
         try:
             log.error (data)
+            
+            if isinstance(data, list):
 
-            free_from_duplicates_data = string_modification.remove_redundant_elements (data)
-            
-            log.error (free_from_duplicates_data)
-            
-            if operation == 'append_and_replace':
+                free_from_duplicates_data = string_modification.remove_redundant_elements (data)
                 
-                pickling.append_and_replace_items_based_on_qty (path, free_from_duplicates_data, 1000)
-            
-            if operation == 'replace':
+                log.error (free_from_duplicates_data)
+                
+                if operation == 'append_and_replace':
+                    
+                    pickling.append_and_replace_items_based_on_qty (path, free_from_duplicates_data, 1000)
+                
+                if operation == 'replace':
 
-                pickling.replace_data (path, free_from_duplicates_data)
-            
+                    pickling.replace_data (path, free_from_duplicates_data)
+                
             
         except Exception as error:
             log.warning (error)
