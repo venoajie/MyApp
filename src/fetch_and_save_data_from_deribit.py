@@ -280,7 +280,7 @@ class StreamMarketAccountData:
                             
                             for data_order in data_orders:
                                 data_order = [data_order]
-                                log.error (f'DATA FROM EXC LOOP {data_order=}')
+                                log.info (f'DATA FROM EXC LOOP {data_order=}')
                                 
                                 #determine label id
                                 try:
