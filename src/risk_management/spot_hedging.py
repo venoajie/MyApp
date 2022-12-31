@@ -194,6 +194,8 @@ class SpotHedging ():
         
         log.debug(f'{myTrades_max_price_pct_minus=} {index_price=} {myTrades_max_price_pct_plus=} ')
         
+        log.debug(f'take_profit {myTrades_max_price_pct_minus < index_price} average_up {myTrades_max_price_pct_plus > index_price} ')
+        
         return {'take_profit': myTrades_max_price_pct_minus < index_price,
                 'label_take_profit':  label_to_send,
                 'size_take_profit':  my_trades_max_price_attributes_filteredBy_label ['size'],
