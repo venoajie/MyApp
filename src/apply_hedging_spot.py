@@ -244,6 +244,7 @@ class SynchronizingFiles ():
         my_trades_open: list = reading_from_database ['my_trades_open']
         # open orders data
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+        log.warning (len_open_orders_open_byAPI)
         # portfolio data
         portfolio = reading_from_database ['portfolio']
         # instruments data
