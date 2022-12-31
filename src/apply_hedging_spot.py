@@ -346,8 +346,12 @@ class SynchronizingFiles ():
                         if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
                             threshold = .025/100
                             adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
+                            bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['size_take_profit']
+                            ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['size_take_profit']
+                            
+                            log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {ask_prc_is_higher_than_sell_price=}')
                                     
-                            if adjusting_inventories ['take_profit']:
+                            if adjusting_inventories ['take_profit'] and bid_prc_is_lower_than_buy_price:
                                 label_closed_for_filter = 'hedging spot-closed'
                                         
                                 await self.send_orders (
@@ -360,7 +364,7 @@ class SynchronizingFiles ():
                                 
                                 await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
                                 
-                            if adjusting_inventories ['average_up']:
+                            if adjusting_inventories ['average_up'] and ask_prc_is_higher_than_sell_price:
                                 label_open_for_filter = 'hedging spot-open'
                                         
                                 await self.send_orders (
