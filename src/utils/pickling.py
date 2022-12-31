@@ -26,7 +26,7 @@ def check_duplicate_elements (file_name: str)-> None:
     data_from_db: list = read_data (file_name)
    #! 
    
-    if 'myTrades' in file_name:
+    if 'myTrades' in str(file_name):
         log.info (f'{file_name=}')
         sum_db = sum([o['amount'] for o in data_from_db  ])
         log.info (f'BEFORE {len(data_from_db)} {sum_db} {data_from_db=}')
