@@ -261,8 +261,9 @@ class SynchronizingFiles ():
         
         one_minute = 60000
         last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
+        log.info(f'{last_time_order_filled_exceed_threshold=}')
         
-        if last_time_order_filled_exceed_threshold > one_minute:
+        if last_time_order_filled_exceed_threshold :
             
             # obtain all instrument names
             instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
