@@ -461,8 +461,9 @@ if __name__ == "__main__":
     
     try:
         asyncio.get_event_loop().run_until_complete(main())
-        system_tools.is_current_file_running ('apply_hedging_spot.py')
-        #formula.sleep_and_restart_program (30)
+        is_running = system_tools.is_current_file_running ('apply_hedging_spot.py')
+        if is_running == False:
+            formula.sleep_and_restart_program (30)
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())

@@ -5,3 +5,4 @@ websockets
 orjson
 python-dotenv
 aiohttp
+psutil
