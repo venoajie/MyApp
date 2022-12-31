@@ -177,7 +177,7 @@ class StreamMarketAccountData:
                             server_time = await syn.current_server_time ()
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedging spot'))
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
-                            await synchronizing_files
+                            #await synchronizing_files
 
                         self.refresh_token = message['result']['refresh_token']
 
