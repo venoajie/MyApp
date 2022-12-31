@@ -255,12 +255,14 @@ class SynchronizingFiles ():
         open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
         
         open_order_filled = open_order_mgt.my_orders_status ('filled')
-        open_order_filled_latest_timeStamp = max([o['time_stamp'] for o in open_order_filled] )
-        filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
+        if open_order_filled != []: 
+            open_order_filled_latest_timeStamp = max([o['time_stamp'] for o in open_order_filled] )
+            filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
         
         one_minute = 60000
+        last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
         
-        if filled_order_deltaTime > one_minute:
+        if last_time_order_filled_exceed_threshold > one_minute:
             
             # obtain all instrument names
             instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
