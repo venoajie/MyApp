@@ -349,7 +349,7 @@ class SynchronizingFiles ():
                             bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['size_take_profit']
                             ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['size_take_profit']
                             
-                            log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {ask_prc_is_higher_than_sell_price=}')
+                            log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {best_ask_prc=}')
                                     
                             if adjusting_inventories ['take_profit'] and bid_prc_is_lower_than_buy_price:
                                 label_closed_for_filter = 'hedging spot-closed'
