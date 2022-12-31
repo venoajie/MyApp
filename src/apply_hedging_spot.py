@@ -263,7 +263,7 @@ class SynchronizingFiles ():
         open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
         log.info (open_order_filled)
         if open_order_filled != []: 
-            open_order_filled_latest_timeStamp = max([o['time_stamp'] for o in open_order_filled] )
+            open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled] )
             filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
         
         one_minute = 60000
