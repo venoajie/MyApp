@@ -169,8 +169,36 @@ class SpotHedging ():
         '''       
         return self.summing_size_open_orders (open_orders_byAPI) > minimum_hedging_size    
                 
+    def adjusting_inventories (self,
+                               index_price: float,
+                               threshold: float = .5/100,
+                               label: str = 'hedging spot-open'
+                               ) -> list:
+        
+        '''
+        ''' 
+        my_trades_mgt = myTrades_management.MyTrades (self.my_trades)
 
+        my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label (label)
+        myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
+        
+        myTrades_max_price_pct_x_threshold = myTrades_max_price * threshold
+        myTrades_max_price_pct_minus = (myTrades_max_price - myTrades_max_price_pct_x_threshold)
+        myTrades_max_price_pct_plus = (myTrades_max_price + myTrades_max_price_pct_x_threshold)
+        
 
+        myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
+        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
+        
+        label_to_send = f'hedging spot-closed-{label_int}'
+        
+        log.debug(f'{myTrades_max_price_pct_minus=} {index_price=} {myTrades_max_price_pct_plus=} ')
+        
+        return {'take_profit': myTrades_max_price_pct_minus < index_price,
+                'label_take_profit':  label_to_send,
+                'size_take_profit':  my_trades_max_price_attributes_filteredBy_label ['size'],
+                'average_up':  myTrades_max_price_pct_plus > index_price}
+        
 def my_path_myTrades (
     currency: str,
     status: str
@@ -202,7 +230,7 @@ def my_trades_api_basedOn_label (
     '''       
     my_trades = myTrades_management.MyTrades(fetch_my_trades (currency, status))    
     return  my_trades.my_trades_api_basedOn_label (label)
-
+        
 def separate_specific_label_trade (
     currency: str,
     status: str,

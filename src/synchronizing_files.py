@@ -25,6 +25,7 @@ async def returning_data_to_db (path) -> list:
     pickling.replace_data (path, free_from_duplicates_data)
     
 if __name__ == "__main__":
+    
     from time import sleep
     
     sleep (0.1)
