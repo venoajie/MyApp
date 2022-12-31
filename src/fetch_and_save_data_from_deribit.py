@@ -174,7 +174,8 @@ class StreamMarketAccountData:
                                                                            self.client_secret,
                                                                            currency
                                                                            )
-                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold('hedging spot'))
+                            server_time = await syn.current_server_time ()
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedging spot'))
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
                             await synchronizing_files ()
 
