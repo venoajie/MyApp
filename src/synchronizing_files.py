@@ -24,7 +24,7 @@ async def returning_data_to_db (path) -> list:
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
     pickling.replace_data (path, free_from_duplicates_data)
 
-async def main (path) -> list:
+async def main () -> None:
     """
     """    
             
