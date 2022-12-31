@@ -371,7 +371,7 @@ class SynchronizingFiles ():
                                                         'sell', 
                                                         instrument, 
                                                         best_ask_prc, 
-                                                        check_spot_hedging ['hedging_size'], 
+                                                        check_spot_hedging ['average_up_size'], 
                                                         label
                                                         )
                                 

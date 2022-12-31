@@ -144,7 +144,7 @@ class SpotHedging ():
         log.info (f'{remain_unhedged > 0=}')  
         return {'spot_was_unhedged': False if notional in none_data else remain_unhedged > 0,
                 'all_hedging_size': min_hedged_size,
-                'average_up': int(size_pct_qty),
+                'average_up_size': int(size_pct_qty),
                 'hedging_size': hedging_size_portion}
 
 
