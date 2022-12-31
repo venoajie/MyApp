@@ -25,6 +25,9 @@ async def returning_data_to_db (path) -> list:
     pickling.replace_data (path, free_from_duplicates_data)
     
 if __name__ == "__main__":
+    from time import sleep
+    
+    sleep (0.1)
     
     try:
                     
@@ -45,6 +48,7 @@ if __name__ == "__main__":
 
         for path in paths:
             loop = asyncio.get_event_loop()
+            
             loop.run_until_complete (returning_data_to_db (path))
                     
         loop.close()
