@@ -127,6 +127,7 @@ class SynchronizingFiles ():
         
         my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
+        my_path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
         
         my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
         #log.error (my_path_portfolio)                                                                               
@@ -144,6 +145,7 @@ class SynchronizingFiles ():
         return {'my_trades_open': my_trades_open,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
+                'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'ordBook': pickling.read_data(my_path_ordBook),
                 'portfolio': portfolio,
                 'index_price': index_price,
@@ -244,6 +246,8 @@ class SynchronizingFiles ():
         my_trades_open: list = reading_from_database ['my_trades_open']
         # open orders data
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+        open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
+        
         log.warning (open_orders_open_byAPI)
         # portfolio data
         portfolio = reading_from_database ['portfolio']
@@ -254,8 +258,9 @@ class SynchronizingFiles ():
         
         # prepare open order manipulation
         open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+        open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
         
-        open_order_filled = open_order_mgt.my_orders_status ('filled')
+        open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
         log.info (open_order_filled)
         if open_order_filled != []: 
             open_order_filled_latest_timeStamp = max([o['time_stamp'] for o in open_order_filled] )
