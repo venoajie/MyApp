@@ -68,13 +68,6 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
             print (f'pickling {error}')    
 
     if check_duplicates == True:
-
-    #! 
-        data_from_db: list = read_data (file_name)
-        print (f'{file_name=}')
-        print (f'TEST PRINT {data_from_db=}')
-    #!
-
         check_duplicate_elements (file_name)
 
             
