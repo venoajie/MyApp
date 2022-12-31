@@ -460,7 +460,9 @@ if __name__ == "__main__":
     #log.error (db_config)
     
     try:
+        import synchronizing_files
         asyncio.get_event_loop().run_until_complete(main())
+        synchronizing_files.main()
         is_running = system_tools.is_current_file_running ('apply_hedging_spot.py')
         if is_running == False:
             formula.sleep_and_restart_program (30)
