@@ -254,113 +254,121 @@ class SynchronizingFiles ():
         # prepare open order manipulation
         open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
         
-        # obtain all instrument names
-        instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+        open_order_filled = open_order_mgt.my_orders_status ('filled')
+        open_order_filled_latest_timeStamp = max([o['time_stamp'] for o in open_order_filled] )
+        filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
         
-        for instrument in instruments_name: 
+        one_minute = 60000
+        
+        if filled_order_deltaTime > one_minute:
             
-            # for instrument assigned as hedginng instrument, do the following:
-            if 'PERPETUAL' in instrument:
+            # obtain all instrument names
+            instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+            
+            for instrument in instruments_name: 
                 
-                # get ALL bids and asks
-                market_price = await self.market_price (instrument) 
-                
-                # if none of the followings = []
-                if  index_price and portfolio and market_price:
+                # for instrument assigned as hedginng instrument, do the following:
+                if 'PERPETUAL' in instrument:
                     
-                    # obtain spot equity
-                    equity = portfolio [0]['equity']
+                    # get ALL bids and asks
+                    market_price = await self.market_price (instrument) 
                     
-                    # compute notional value
-                    notional =  await self.compute_notional_value (index_price, equity)
-        
-                    #! get instrument detaila
-                    instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
-
-                    # instrument minimum order
-                    min_trade_amount = instrument_data ['min_trade_amount']
-                    # instrument contract size
-                    contract_size = instrument_data ['contract_size']
-
-                    # get bid and ask price
-                    best_bid_prc= market_price ['best_bid_prc']
-                    best_ask_prc= market_price ['best_ask_prc']
-
-                    label_hedging = 'hedging spot'
-
-                    #check under hedging
-                    spot_hedged = spot_hedging.SpotHedging (label_hedging,
-                                                            my_trades_open
-                                                            )
-                    check_spot_hedging = spot_hedged.is_spot_hedged_properly ( 
-                                                                            notional, 
-                                                                            min_trade_amount,
-                                                                            contract_size
-                                                                            ) 
-                    remain_unhedged = spot_hedged.compute_remain_unhedged (notional,
-                                                                                 min_trade_amount,
-                                                                                 contract_size
-                                                                                 ) 
-                    min_hedging_size = check_spot_hedging ['all_hedging_size']
-
-                    spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
-
-                    actual_hedging_size = spot_hedged.compute_actual_hedging_size()
-
-                    label: str = label_numbering.labelling ('open', label_hedging)
-                    
-                    label_for_filter = 'hedging'
-                    
-                    # check for any order outstanding as per label filter
-                    len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
-                    
-                    log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
-
-                    # send sell order if spot still unhedged and no current open orders 
-                    if spot_was_unhedged and len_open_orders_open_byAPI == []:
-                        log.warning(f'{instrument=} {best_ask_prc=} {label=}')
-                    
-                        await self.send_orders ('sell', 
-                                                instrument, 
-                                                best_ask_prc,
-                                                check_spot_hedging ['hedging_size'], 
-                                                label
-                                                )
+                    # if none of the followings = []
+                    if  index_price and portfolio and market_price:
                         
-                        await self.cancel_redundant_orders_in_same_labels ('hedging spot-open')
-                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
-                    
-                    # if spot has hedged properly, check also for opportunity to get additional small profit    
-                    if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
-                        threshold = .025/100
-                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
-                                
-                        if adjusting_inventories ['take_profit']:
-                            label_closed_for_filter = 'hedging spot-closed'
-                                    
-                            await self.send_orders (
-                                                    'buy', 
+                        # obtain spot equity
+                        equity = portfolio [0]['equity']
+                        
+                        # compute notional value
+                        notional =  await self.compute_notional_value (index_price, equity)
+            
+                        #! get instrument detaila
+                        instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
+
+                        # instrument minimum order
+                        min_trade_amount = instrument_data ['min_trade_amount']
+                        # instrument contract size
+                        contract_size = instrument_data ['contract_size']
+
+                        # get bid and ask price
+                        best_bid_prc= market_price ['best_bid_prc']
+                        best_ask_prc= market_price ['best_ask_prc']
+
+                        label_hedging = 'hedging spot'
+
+                        #check under hedging
+                        spot_hedged = spot_hedging.SpotHedging (label_hedging,
+                                                                my_trades_open
+                                                                )
+                        check_spot_hedging = spot_hedged.is_spot_hedged_properly ( 
+                                                                                notional, 
+                                                                                min_trade_amount,
+                                                                                contract_size
+                                                                                ) 
+                        remain_unhedged = spot_hedged.compute_remain_unhedged (notional,
+                                                                                    min_trade_amount,
+                                                                                    contract_size
+                                                                                    ) 
+                        min_hedging_size = check_spot_hedging ['all_hedging_size']
+
+                        spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
+
+                        actual_hedging_size = spot_hedged.compute_actual_hedging_size()
+
+                        label: str = label_numbering.labelling ('open', label_hedging)
+                        
+                        label_for_filter = 'hedging'
+                        
+                        # check for any order outstanding as per label filter
+                        len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+                        
+                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
+
+                        # send sell order if spot still unhedged and no current open orders 
+                        if spot_was_unhedged and len_open_orders_open_byAPI == []:
+                            log.warning(f'{instrument=} {best_ask_prc=} {label=}')
+                        
+                            await self.send_orders ('sell', 
                                                     instrument, 
-                                                    best_bid_prc, 
-                                                    adjusting_inventories ['size_take_profit'], 
-                                                    adjusting_inventories ['label_take_profit']
-                                                    )
-                            
-                            await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
-                            
-                        if adjusting_inventories ['average_up']:
-                            label_open_for_filter = 'hedging spot-open'
-                                    
-                            await self.send_orders (
-                                                    'sell', 
-                                                    instrument, 
-                                                    best_ask_prc, 
+                                                    best_ask_prc,
                                                     check_spot_hedging ['hedging_size'], 
                                                     label
                                                     )
                             
-                            await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
+                            await self.cancel_redundant_orders_in_same_labels ('hedging spot-open')
+                            await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
                         
+                        # if spot has hedged properly, check also for opportunity to get additional small profit    
+                        if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
+                            threshold = .025/100
+                            adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
+                                    
+                            if adjusting_inventories ['take_profit']:
+                                label_closed_for_filter = 'hedging spot-closed'
+                                        
+                                await self.send_orders (
+                                                        'buy', 
+                                                        instrument, 
+                                                        best_bid_prc, 
+                                                        adjusting_inventories ['size_take_profit'], 
+                                                        adjusting_inventories ['label_take_profit']
+                                                        )
+                                
+                                await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
+                                
+                            if adjusting_inventories ['average_up']:
+                                label_open_for_filter = 'hedging spot-open'
+                                        
+                                await self.send_orders (
+                                                        'sell', 
+                                                        instrument, 
+                                                        best_ask_prc, 
+                                                        check_spot_hedging ['hedging_size'], 
+                                                        label
+                                                        )
+                                
+                                await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
+                            
 
     async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  actual_hedging_size, min_hedging_size)-> None:
         
