@@ -249,6 +249,7 @@ class StreamMarketAccountData:
                                 #log.error ('ORDER_STATE OPEN')
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000, True)
+                                pickling.check_duplicate_elements (my_path_orders_open)
                                 
                             else:
                                 #log.error ('ORDER_STATE ELSE')
@@ -258,15 +259,18 @@ class StreamMarketAccountData:
                                 #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000, True)
+                                pickling.check_duplicate_elements (my_path_orders_else)
                                 
                                 if item_in_open_orders_open_with_same_id != []:
                                     #log.critical ('item_in_open_orders_open_with_same_id')
                                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000, True)
+                                    pickling.check_duplicate_elements (my_path_orders_else)
                                     
                                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
+                                pickling.check_duplicate_elements (my_path_orders_open)
 
                                 
-                            open_orders_open = pickling.read_data (my_path_orders_open)     
+                            #open_orders_open = pickling.read_data (my_path_orders_open)     
                             #log.debug (f'AFTER {open_orders_open=}')
                         
                         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
@@ -307,6 +311,7 @@ class StreamMarketAccountData:
                                     log.error ('LABEL ID OPEN')
 
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_open)
 
                                     
                                     #!
@@ -323,10 +328,12 @@ class StreamMarketAccountData:
                                                                     
                                     #update mytrades db with the closed ones
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_closed)
                                     
                                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                                     log.debug (f'{closed_trades_in_my_trades_open=}')
                                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_closed)
 
                                     
                                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
@@ -336,6 +343,7 @@ class StreamMarketAccountData:
                                     
                                     #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
                                     pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
+                                    pickling.check_duplicate_elements (my_trades_path_open)
                                         
                                     #!
                                     my_trades_open = pickling.read_data(my_trades_path_open)
