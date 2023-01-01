@@ -210,11 +210,12 @@ class StreamMarketAccountData:
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         
-                        my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
+                        
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             log.error (data_orders)
                             positions = data_orders ['positions']
                             trades = data_orders ['trades']
+                            
                             if trades:
                                     
                                 my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
@@ -228,7 +229,7 @@ class StreamMarketAccountData:
                                 sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
                                 log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {amount_my_trades_open} {label_my_trades_open1}')
                                 
-                                for data_order in data_orders:
+                                for data_order in trades:
                                     data_order = [data_order]
                                     log.info (f'DATA FROM EXC LOOP {data_order=}')
                                     
@@ -360,6 +361,7 @@ class StreamMarketAccountData:
 
                                 
                             if positions:
+                                my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
                                 pickling.replace_data(my_path_position, positions)
                             
                             my_path = system_tools.provide_path_for_file ('position',  currency) 
