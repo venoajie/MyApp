@@ -210,7 +210,6 @@ class StreamMarketAccountData:
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         
-                        
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             log.info (data_orders)
                             positions = data_orders ['positions']
@@ -221,8 +220,7 @@ class StreamMarketAccountData:
                                     
                                 my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                                 my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-                                    
-                                                                
+                                                              
                                 #!
                                 my_trades_open1 = pickling.read_data(my_trades_path_open)
                                 label_my_trades_open1 = [o['order_id'] for o in my_trades_open1  ]
@@ -252,14 +250,12 @@ class StreamMarketAccountData:
                                     sum_open_trading_after_new_trading = 0
                                     #!
 
-
                                     if 'open' in label_id:
                                         log.error ('LABEL ID OPEN')
 
                                         pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                                         pickling.check_duplicate_elements (my_trades_path_open)
 
-                                        
                                         #!
                                         my_trades_open = pickling.read_data(my_trades_path_open)
                                         label_my_trades_open = [o['label'] for o in my_trades_open  ]
@@ -306,7 +302,6 @@ class StreamMarketAccountData:
                                             sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
                                             log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
                                             
-                                            
                                     if label_id == [] :
                                         my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                                         log.error ('[]')
@@ -327,7 +322,6 @@ class StreamMarketAccountData:
                             
                             if orders:
                                 for order in orders:
-                                        
                                     
                                     log.warning (f'{orders=}')
                                     order_state = order ['order_state']
@@ -361,14 +355,13 @@ class StreamMarketAccountData:
                                             
                                         pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
                                         pickling.check_duplicate_elements (my_path_orders_open)
-
                                 
                             if positions:
                                 log.debug (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
                                 pickling.replace_data(my_path_position, positions)
                             
-                            my_path = system_tools.provide_path_for_file ('position',  currency) 
+                            #my_path = system_tools.provide_path_for_file ('position',  currency) 
                                                                           
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
                             #log.error (data_orders)
@@ -380,18 +373,14 @@ class StreamMarketAccountData:
                             except:
                                 continue        
                             
-                        #log.critical (currency)                                                   
-                                                   
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
-                            #log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
-
                             pickling.replace_data(my_path, data_orders)
-                           
-                        my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
+                                                                                                             
                         if message_channel == f'user.portfolio.{currency.lower()}':
+                            my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())
                             pickling.replace_data(my_path_portfolio, data_orders)
 
             else:
