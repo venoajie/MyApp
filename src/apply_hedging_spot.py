@@ -9,10 +9,9 @@ from loguru import logger as log
 import asyncio
 from dotenv import load_dotenv
 from os.path import join, dirname
-import requests
 
-from portfolio.deribit import open_orders_management, myTrades_management
-from utils import pickling, system_tools, telegram_app, formula, string_modification
+from portfolio.deribit import open_orders_management
+from utils import pickling, system_tools, formula
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from configuration import  label_numbering
@@ -146,9 +145,6 @@ class ApplyHedgingSpot ():
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
             
-            info= (f'SEND ORDER {label} {instrument} {size} \n ')
-            telegram_bot_sendtext(info)
-            
         except Exception as e:
             log.error (e)
             
@@ -181,12 +177,14 @@ class ApplyHedgingSpot ():
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
         index_price: list = pickling.read_data(my_path_index) 
         index_price: float= index_price [0]['price']
+        my_path_positions: str = system_tools.provide_path_for_file ('positions', 'eth') 
         
         
         return {'my_trades_open': my_trades_open,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
+                'positions': pickling.read_data(my_path_positions),
                 'ordBook': pickling.read_data(my_path_ordBook),
                 'portfolio': portfolio,
                 'index_price': index_price,
@@ -230,9 +228,6 @@ class ApplyHedgingSpot ():
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
-            
-                info= (f'CANCEL ORDER  {label_for_filter} \n ')
-                telegram_bot_sendtext(info,'failed_order')        
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
@@ -368,6 +363,17 @@ class ApplyHedgingSpot ():
                         spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
+                        actual_hedging_size_system = reading_from_database ['positions']
+                        if actual_hedging_size_system:
+                            actual_hedging_size_system =  [o for o in actual_hedging_size_system if o['instrument_name'] == instrument]  [0]
+                        
+                        if actual_hedging_size_system:
+                            if actual_hedging_size_system - actual_hedging_size != 0:
+                        
+                        #!                    
+                                info= (f'SIZE DIFFERENT {actual_hedging_size_system} {actual_hedging_size} \n ')
+                                telegram_bot_sendtext(info)
+                                 #! 
 
                         label: str = label_numbering.labelling ('open', label_hedging)
                         
@@ -376,7 +382,7 @@ class ApplyHedgingSpot ():
                         # check for any order outstanding as per label filter
                         len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
                         
-                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
+                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
 
                         # send sell order if spot still unhedged and no current open orders 
                         if spot_was_unhedged and len_open_orders_open_byAPI == []:

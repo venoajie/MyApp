@@ -17,13 +17,22 @@ async def remove_redundant_data (data) -> list:
     if isinstance(data, list):
         return  string_modification.remove_redundant_elements (data)
          
+                           
 async def returning_data_to_db (path) -> list:
     """
     """    
     data_from_db =await read_data_from_db (path)
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
     pickling.replace_data (path, free_from_duplicates_data)
-        
+               
+async def check_my_trades_consistency (path) -> list:
+    """
+    """    
+    from loguru import logger as log
+    my_path_positions: str = system_tools.provide_path_for_file ('positions', 'eth')  
+    get_positions = await read_data_from_db (path)
+    log.error (get_positions)
+
 async def check_open_orders_consistency (currency, open_orders_from_exchange: list, label: str, status: str) -> list:
     """
     db vs exchange

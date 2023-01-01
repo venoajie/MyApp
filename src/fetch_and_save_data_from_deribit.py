@@ -211,9 +211,10 @@ class StreamMarketAccountData:
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
-                            log.info (data_orders)
+                            #log.info (data_orders)
                             positions = data_orders ['positions']
                             trades = data_orders ['trades']
+                            orders = data_orders ['orders']
                             
                             if trades:
                                 log.error (trades)
@@ -317,8 +318,6 @@ class StreamMarketAccountData:
                                     log.critical (info)
                                     telegram_bot_sendtext(info)
                                     #!
-                                
-                            orders = data_orders ['orders']
                             
                             if orders:
                                 for order in orders:
