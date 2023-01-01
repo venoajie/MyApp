@@ -405,8 +405,8 @@ class ApplyHedgingSpot ():
                         if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
                             threshold = .025/100
                             adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
-                            bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['size_take_profit']
-                            ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['size_take_profit']
+                            bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_Price']
+                            ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                             
                             log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {best_ask_prc=}')
                                     
