@@ -91,6 +91,7 @@ class ApplyHedgingSpot ():
                                                                               self.currency, 
                                                                                count)
         #trades: list = trades ['result']
+        log.info (trades)
                         
         return [] if trades == [] else trades ['result'] ['trades']
         
