@@ -177,7 +177,7 @@ async def  get_open_orders_byCurrency (connection_url, client_id, client_secret,
     return result 
 
 
-async def  get_user_trades_by_currency (connection_url, client_id, client_secret, currency, count: int = 1000):
+async def  get_user_trades_by_currency (connection_url, client_id, client_secret, currency, count):
     params =  {
                 "currency": currency.upper(),
                 "kind": 'any',
