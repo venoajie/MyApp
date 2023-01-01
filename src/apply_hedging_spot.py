@@ -86,10 +86,11 @@ class ApplyHedgingSpot ():
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
-                                                                               self.client_id, 
-                                                                               self.client_secret, 
-                                                                              self.currency, 
-                                                                               count)
+                                                                      self.client_id, 
+                                                                      self.client_secret, 
+                                                                      self.currency, 
+                                                                      count
+                                                                      )
         #trades: list = trades ['result']
         log.info (trades)
                         
