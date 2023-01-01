@@ -127,6 +127,20 @@ class StreamMarketAccountData:
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
+                    ws_channel=f'user.orders.future.{currency}.raw'
+                    )
+                )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel=f'user.trades.future.{currency.upper()}.100ms'
+                    )
+                )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
                     ws_channel=f'user.changes.any.{currency.upper()}.100ms'
                     )
                 )
@@ -213,154 +227,9 @@ class StreamMarketAccountData:
                         my_path_position = system_tools.provide_path_for_file ('position', currency.lower())
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             log.error (data_orders)
-                            positions = data_orders ['positions']
-                            trades = data_orders ['trades']
-                            if trades:
-                                    
-                                my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
-                                my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-                                    
-                                                                
-                                #!
-                                my_trades_open1 = pickling.read_data(my_trades_path_open)
-                                label_my_trades_open1 = [o['order_id'] for o in my_trades_open1  ]
-                                amount_my_trades_open = [o['amount'] for o in my_trades_open1  ]
-                                sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
-                                log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {amount_my_trades_open} {label_my_trades_open1}')
-                                
-                                for data_order in data_orders:
-                                    data_order = [data_order]
-                                    log.info (f'DATA FROM EXC LOOP {data_order=}')
-                                    
-                                    #determine label id
-                                    try:
-                                        label_id= data_order [0]['label']
-                                    except:
-                                        label_id= []
-                                    
-                                    # for data with label id/ordered through API    
-                                    if label_id != []:
-                                        pass
-
-                                    closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                                    log.info (f' {label_id=}   {closed_label_id_int} \n ')
-
-                                    #!
-                                    sum_new_trading = [o['amount'] for o in data_order  ][0]
-                                    sum_open_trading_after_new_trading = 0
-                                    #!
-
-
-                                    if 'open' in label_id:
-                                        log.error ('LABEL ID OPEN')
-
-                                        pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                                        pickling.check_duplicate_elements (my_trades_path_open)
-
-                                        
-                                        #!
-                                        my_trades_open = pickling.read_data(my_trades_path_open)
-                                        label_my_trades_open = [o['label'] for o in my_trades_open  ]
-                                        amount_my_trades_open = [o['amount'] for o in my_trades_open  ]
-                                        sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
-                                        log.error (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
-                                        #!
-                                        
-                                    if 'closed' in label_id:
-                                        log.debug ('LABEL ID CLOSED')
-                                        my_trades_open = pickling.read_data(my_trades_path_open)  
-                                                                        
-                                        #update mytrades db with the closed ones
-                                        pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000, True)
-                                        pickling.check_duplicate_elements (my_trades_path_closed)
-                                        
-                                        closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                                        log.debug (f'{closed_trades_in_my_trades_open=}')
-                                        pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
-                                        pickling.check_duplicate_elements (my_trades_path_closed)
-
-                                        
-                                        # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
-                                        #update mytrades db with the still open ones
-                                        #my_trades_open = pickling.read_data(my_trades_path_open)  
-                                        remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
-                                        
-                                        #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
-                                        pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
-                                        pickling.check_duplicate_elements (my_trades_path_open)
-                                            
-                                        #!
-                                        my_trades_open = pickling.read_data(my_trades_path_open)
-                                        label_my_trades_open = [o ['label']  for o in my_trades_open  ]
-                                        amount_my_trades_open = [o ['amount']  for o in my_trades_open  ]
-                                        sum_my_trades_open = sum([o['amount'] for o in my_trades_open  ])
-                                        log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {sum_my_trades_open} {amount_my_trades_open} {label_my_trades_open=}')
-                                            
-                                        #!
-                                        my_trades_closed = pickling.read_data(my_trades_path_closed)
-                                        if my_trades_closed !=[]:
-                                            log.warning (my_trades_closed)
-                                            label_my_trades_closed = [o ['label']  for o in my_trades_closed  ]
-                                            sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
-                                            log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
-                                            
-                                            
-                                    if label_id == [] :
-                                        my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
-                                        log.error ('[]')
-                                        pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
-                                    
-                                    #!
-                                    my_trades_open = pickling.read_data(my_trades_path_open)
-                                    #log.debug (f'AFTER 2 {my_trades_open=}')
-                                    sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
-                                    
-                                    info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
-                                    
-                                    log.critical (info)
-                                    telegram_bot_sendtext(info)
-                                    #!
-                                
-                            orders = data_orders ['orders']
-                            
-                            if orders:
-                                
-                                log.warning (f'{data_orders=}')
-                                order_state = data_orders ['order_state']
-                                order_id= data_orders ['order_id']
-                                
-                                my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
-                                open_orders_open = pickling.read_data (my_path_orders_open) 
-                                #log.debug (f'BEFORE {open_orders_open=}')
-                                #log.warning (f'{order_state=}')
-                                
-                                if order_state == 'open':
-                                    #log.error ('ORDER_STATE OPEN')
-                                    
-                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000, True)
-                                    pickling.check_duplicate_elements (my_path_orders_open)
-                                    
-                                else:
-                                    #log.error ('ORDER_STATE ELSE')
-                                    item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
-                                    item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
-                                    #log.info (f'{item_in_open_orders_open_with_same_id=}')
-                                    #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
-                                    
-                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000, True)
-                                    pickling.check_duplicate_elements (my_path_orders_else)
-                                    
-                                    if item_in_open_orders_open_with_same_id != []:
-                                        #log.critical ('item_in_open_orders_open_with_same_id')
-                                        pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000, True)
-                                        pickling.check_duplicate_elements (my_path_orders_else)
-                                        
-                                    pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
-                                    pickling.check_duplicate_elements (my_path_orders_open)
-
-                                
-                            if positions:
-                                pickling.replace_data(my_path_position, positions)
+                            position = data_orders ['positions']
+                            if position:
+                                pickling.replace_data(my_path_position, position)
                             
                             my_path = system_tools.provide_path_for_file ('position',  currency) 
                                                                           
@@ -384,6 +253,150 @@ class StreamMarketAccountData:
 
                             pickling.replace_data(my_path, data_orders)
                            
+                        #log.critical (message_channel == f'user.orders.future.{currency.upper()}.raw')
+                        if message_channel == f'user.orders.future.{currency.upper()}.raw':
+                            
+                            log.warning (f'{data_orders=}')
+                            order_state = data_orders ['order_state']
+                            order_id= data_orders ['order_id']
+                            
+                            my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
+                            open_orders_open = pickling.read_data (my_path_orders_open) 
+                            #log.debug (f'BEFORE {open_orders_open=}')
+                            #log.warning (f'{order_state=}')
+                            
+                            if order_state == 'open':
+                                #log.error ('ORDER_STATE OPEN')
+                                
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_open, data_orders, 1000, True)
+                                pickling.check_duplicate_elements (my_path_orders_open)
+                                
+                            else:
+                                #log.error ('ORDER_STATE ELSE')
+                                item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
+                                item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
+                                #log.info (f'{item_in_open_orders_open_with_same_id=}')
+                                #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
+                                
+                                pickling.append_and_replace_items_based_on_qty (my_path_orders_else, data_orders, 1000, True)
+                                pickling.check_duplicate_elements (my_path_orders_else)
+                                
+                                if item_in_open_orders_open_with_same_id != []:
+                                    #log.critical ('item_in_open_orders_open_with_same_id')
+                                    pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000, True)
+                                    pickling.check_duplicate_elements (my_path_orders_else)
+                                    
+                                pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
+                                pickling.check_duplicate_elements (my_path_orders_open)
+
+                                
+                            #open_orders_open = pickling.read_data (my_path_orders_open)     
+                            #log.debug (f'AFTER {open_orders_open=}')
+                        
+                        my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+                        my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+                            
+                        if message_channel == f'user.trades.future.{currency.upper()}.100ms':                            
+                            #!
+                            my_trades_open1 = pickling.read_data(my_trades_path_open)
+                            label_my_trades_open1 = [o['order_id'] for o in my_trades_open1  ]
+                            amount_my_trades_open = [o['amount'] for o in my_trades_open1  ]
+                            sum_my_trades_open1 = sum([o['amount'] for o in my_trades_open1  ])
+                            log.info (f'DATA TRADE FROM DB {sum_my_trades_open1} {amount_my_trades_open} {label_my_trades_open1}')
+                            
+                            for data_order in data_orders:
+                                data_order = [data_order]
+                                log.info (f'DATA FROM EXC LOOP {data_order=}')
+                                
+                                #determine label id
+                                try:
+                                    label_id= data_order [0]['label']
+                                except:
+                                    label_id= []
+                                
+                                # for data with label id/ordered through API    
+                                if label_id != []:
+                                    pass
+
+                                closed_label_id_int = string_modification.extract_integers_from_text(label_id)
+                                log.info (f' {label_id=}   {closed_label_id_int} \n ')
+
+                                #!
+                                sum_new_trading = [o['amount'] for o in data_order  ][0]
+                                sum_open_trading_after_new_trading = 0
+                                #!
+
+
+                                if 'open' in label_id:
+                                    log.error ('LABEL ID OPEN')
+
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_open)
+
+                                    
+                                    #!
+                                    my_trades_open = pickling.read_data(my_trades_path_open)
+                                    label_my_trades_open = [o['label'] for o in my_trades_open  ]
+                                    amount_my_trades_open = [o['amount'] for o in my_trades_open  ]
+                                    sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
+                                    log.error (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
+                                    #!
+                                    
+                                if 'closed' in label_id:
+                                    log.debug ('LABEL ID CLOSED')
+                                    my_trades_open = pickling.read_data(my_trades_path_open)  
+                                                                    
+                                    #update mytrades db with the closed ones
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_closed)
+                                    
+                                    closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                                    log.debug (f'{closed_trades_in_my_trades_open=}')
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
+                                    pickling.check_duplicate_elements (my_trades_path_closed)
+
+                                    
+                                    # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
+                                    #update mytrades db with the still open ones
+                                    #my_trades_open = pickling.read_data(my_trades_path_open)  
+                                    remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
+                                    
+                                    #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
+                                    pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
+                                    pickling.check_duplicate_elements (my_trades_path_open)
+                                        
+                                    #!
+                                    my_trades_open = pickling.read_data(my_trades_path_open)
+                                    label_my_trades_open = [o ['label']  for o in my_trades_open  ]
+                                    amount_my_trades_open = [o ['amount']  for o in my_trades_open  ]
+                                    sum_my_trades_open = sum([o['amount'] for o in my_trades_open  ])
+                                    log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {sum_my_trades_open} {amount_my_trades_open} {label_my_trades_open=}')
+                                        
+                                    #!
+                                    my_trades_closed = pickling.read_data(my_trades_path_closed)
+                                    if my_trades_closed !=[]:
+                                        log.warning (my_trades_closed)
+                                        label_my_trades_closed = [o ['label']  for o in my_trades_closed  ]
+                                        sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
+                                        log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
+                                        
+                                        
+                                if label_id == [] :
+                                    my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
+                                    log.error ('[]')
+                                    pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
+                                
+                                #!
+                                my_trades_open = pickling.read_data(my_trades_path_open)
+                                #log.debug (f'AFTER 2 {my_trades_open=}')
+                                sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
+                                
+                                info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
+                                
+                                log.critical (info)
+                                telegram_bot_sendtext(info)
+                                #!
+                            
                         my_path_portfolio = system_tools.provide_path_for_file ('portfolio', currency.lower())                                                                                     
                         if message_channel == f'user.portfolio.{currency.lower()}':
                             pickling.replace_data(my_path_portfolio, data_orders)
