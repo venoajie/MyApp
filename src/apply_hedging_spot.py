@@ -279,7 +279,7 @@ class ApplyHedgingSpot ():
         open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
         
         open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
-        #log.info (open_order_filled)
+        log.info (open_order_filled)
         if open_order_filled != []: 
             open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled] )
             filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
