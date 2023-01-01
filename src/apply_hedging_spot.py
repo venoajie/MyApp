@@ -42,7 +42,7 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
-    async def open_orders (self) -> list:
+    async def open_orders_from_exchange (self) -> list:
         """
         """
         open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, self.client_id, self.client_secret, self.currency)
@@ -50,7 +50,7 @@ class ApplyHedgingSpot ():
                         
         return open_orders_management.MyOrders (open_ordersREST)
         
-    async def check_open_orders_consistency (self, open_orders_from_exchange: list, label: str = 'spot hedging') -> list:
+    async def check_open_orders_consistency (self, open_orders_from_exchange: list, label: str = 'spot hedging', status: str = 'open') -> list:
         """
         db vs exchange
         """
@@ -79,7 +79,30 @@ class ApplyHedgingSpot ():
                                                                                end_timestamp)
         #trades: list = trades ['result']
                         
-        return trades ['result'] ['trades']
+        return [] if trades == [] else trades ['result'] ['trades']
+        
+        
+    async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
+        """
+        """
+        trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
+                                                                               self.client_id, 
+                                                                               self.client_secret, 
+                                                                              self.currency, 
+                                                                               count)
+        #trades: list = trades ['result']
+                        
+        return [] if trades == [] else trades ['result'] ['trades']
+        
+    async def get_order_history_by_instrument (self, instrument: str, count: str = 1000) -> list:
+        """
+        """
+        order_history: list = await deribit_get.get_order_history_by_instrument (self.connection_url, 
+                                                                               self.client_id, 
+                                                                               self.client_secret, 
+                                                                               instrument,
+                                                                               count)                
+        return [] if order_history ==[] else order_history ['result']
         
         
     async def get_account_summary (self, currency: str) -> list:
@@ -201,7 +224,7 @@ class ApplyHedgingSpot ():
         """
         """
     
-        open_order_mgt = await self.open_orders ()
+        open_order_mgt = await self.open_orders_from_exchange ()
         
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
         
@@ -233,7 +256,7 @@ class ApplyHedgingSpot ():
 
         three_minute = one_minute * 3
         
-        open_order_mgt = await self.open_orders ()
+        open_order_mgt = await self.open_orders_from_exchange ()
 
         try:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
@@ -298,6 +321,11 @@ class ApplyHedgingSpot ():
                 # for instrument assigned as hedginng instrument, do the following:
                 if 'PERPETUAL' in instrument:
                     
+                    order_history  = await self. get_order_history_by_instrument (instrument)
+                    trade_history  = await self. get_my_trades_from_exchange (instrument)
+                    log.info (order_history)
+                    log.info (trade_history)
+                        
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 
                     
@@ -458,7 +486,7 @@ async def main ():
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
-        open_orders_from_exchange = await syn.open_orders ()        
+        open_orders_from_exchange = await syn.open_orders_from_exchange ()        
         await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
          
     except Exception as error:

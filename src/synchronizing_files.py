@@ -24,9 +24,10 @@ async def returning_data_to_db (path) -> list:
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
     pickling.replace_data (path, free_from_duplicates_data)
         
-async def check_open_orders_consistency (currency, open_orders_from_exchange: list, label: str) -> list:
+async def check_open_orders_consistency (currency, open_orders_from_exchange: list, label: str, status: str) -> list:
     """
     db vs exchange
+    status = open/filled/cancelled
     """
     from loguru import logger as log
     

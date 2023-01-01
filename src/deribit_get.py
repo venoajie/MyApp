@@ -176,6 +176,24 @@ async def  get_open_orders_byCurrency (connection_url, client_id, client_secret,
             )
     return result 
 
+
+async def  get_user_trades_by_currency (connection_url, client_id, client_secret, currency, count: int = 1000):
+    params =  {
+                "currency": currency.upper(),
+                "count": count,
+                }
+    
+    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency'
+    result = await main(
+            endpoint= endpoint_get_user_trades,
+            params= params,
+            connection_url= connection_url,
+            client_id= client_id,
+            client_secret= client_secret,
+            )
+    return result 
+
+
 async def  get_user_trades_by_currency_and_time (connection_url, client_id, client_secret, currency, start_timestamp: int, end_timestamp: int):
     params =  {
                 "currency": currency.upper(),
@@ -193,6 +211,27 @@ async def  get_user_trades_by_currency_and_time (connection_url, client_id, clie
             client_secret= client_secret,
             )
     return result 
+
+
+
+async def  get_order_history_by_instrument (connection_url, client_id, client_secret, instrument_name, count: int = 100):
+    params =  {
+                "instrument_name": instrument_name.upper(),
+                "include_old": True,
+                "include_unfilled": True,
+                "count": count
+                }
+    
+    endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
+    result = await main(
+            endpoint= endpoint_get_order_history,
+            params= params,
+            connection_url= connection_url,
+            client_id= client_id,
+            client_secret= client_secret,
+            )
+    return result 
+
 
 
 async def  get_cancel_order_byOrderId(connection_url: str,
