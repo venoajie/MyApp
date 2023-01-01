@@ -82,7 +82,7 @@ class ApplyHedgingSpot ():
         return [] if trades == [] else trades ['result'] ['trades']
         
         
-    async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
+    async def get_my_trades_from_exchange (self, count) -> list:
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
@@ -324,7 +324,7 @@ class ApplyHedgingSpot ():
                 if 'PERPETUAL' in instrument:
                     
                     order_history  = await self. get_order_history_by_instrument (instrument)
-                    trade_history  = await self. get_my_trades_from_exchange (instrument)
+                    trade_history  = await self. get_my_trades_from_exchange (instrument, 1000)
                     log.info (order_history)
                     log.info (trade_history)
                         
