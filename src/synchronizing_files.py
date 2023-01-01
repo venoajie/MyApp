@@ -33,10 +33,11 @@ async def check_open_orders_consistency (currency, open_orders_from_exchange: li
     my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
     fetch_open_orders_from_db = pickling.read_data(my_path_orders_open)
     log.error (fetch_open_orders_from_db)
-    open_orders_from_db = []
-    open_orders_from_exchange_with_label = []
+    len_open_orders_from_db = []
+    len_open_orders_from_exchange_with_label = []
     if fetch_open_orders_from_db:
         open_orders_from_db = fetch_open_orders_from_db ['open_orders_open_byAPI']
+        len_open_orders_from_db = len(open_orders_from_db)
         log.error (open_orders_from_db)
     
     #check item qty
@@ -44,7 +45,6 @@ async def check_open_orders_consistency (currency, open_orders_from_exchange: li
     log.error (open_orders_from_exchange_with_label)
     if open_orders_from_exchange_with_label:
         len_open_orders_from_exchange_with_label = len(open_orders_from_exchange_with_label)
-        len_open_orders_from_db = len(open_orders_from_db)
     
     log.debug (f'{len_open_orders_from_exchange_with_label=} {len_open_orders_from_db=} {len_open_orders_from_exchange_with_label != len_open_orders_from_db=}')
     
