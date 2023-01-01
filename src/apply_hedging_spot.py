@@ -91,8 +91,6 @@ class ApplyHedgingSpot ():
                                                                       self.currency, 
                                                                       count
                                                                       )
-        #trades: list = trades ['result']
-        log.info (trades)
                         
         return [] if trades == [] else trades ['result'] ['trades']
         
@@ -325,8 +323,6 @@ class ApplyHedgingSpot ():
                     
                     order_history  = await self. get_order_history_by_instrument (instrument)
                     trade_history  = await self. get_my_trades_from_exchange ()
-                    log.info (order_history)
-                    log.info (trade_history)
                         
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 

@@ -137,6 +137,13 @@ class StreamMarketAccountData:
                     ws_channel=f'user.trades.future.{currency.upper()}.100ms'
                     )
                 )
+            
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel=f'user.changes.any.{currency.upper()}.100ms'
+                    )
+                )
     
             self.loop.create_task(
                 self.ws_operation(
@@ -216,6 +223,16 @@ class StreamMarketAccountData:
                         one_minute = 60000
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
+                        
+                        my_path_position = system_tools.provide_path_for_file ('position', currency.lower())
+                        if message_channel == f'user.changes.any.{currency.upper()}.100ms':
+                            log.error (data_orders)
+                            position = data_orders ['position']
+                            if position:
+                                pickling.replace_data(my_path_position, position)
+                            
+                            my_path = system_tools.provide_path_for_file ('position',  currency) 
+                                                                          
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
                             #log.error (data_orders)
                             
