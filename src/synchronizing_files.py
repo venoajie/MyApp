@@ -36,7 +36,7 @@ async def check_open_orders_consistency (currency, open_orders_from_exchange: li
     len_open_orders_from_db = []
     len_open_orders_from_exchange_with_label = []
     if fetch_open_orders_from_db:
-        open_orders_from_db = fetch_open_orders_from_db ['open_orders_open_byAPI']
+        open_orders_from_db = [o for o in fetch_open_orders_from_db if o['label'] == label ] 
         len_open_orders_from_db = len(open_orders_from_db)
         log.error (open_orders_from_db)
     
