@@ -212,11 +212,12 @@ class StreamMarketAccountData:
                         
                         
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
-                            log.error (data_orders)
+                            log.info (data_orders)
                             positions = data_orders ['positions']
                             trades = data_orders ['trades']
                             
                             if trades:
+                                log.error (trades)
                                     
                                 my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
                                 my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
@@ -326,7 +327,7 @@ class StreamMarketAccountData:
                             
                             if orders:
                                 
-                                log.warning (f'{data_orders=}')
+                                log.warning (f'{orders=}')
                                 order_state = data_orders ['order_state']
                                 order_id= data_orders ['order_id']
                                 
@@ -361,6 +362,7 @@ class StreamMarketAccountData:
 
                                 
                             if positions:
+                                log.debug (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
                                 pickling.replace_data(my_path_position, positions)
                             
