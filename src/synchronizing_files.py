@@ -24,13 +24,13 @@ async def returning_data_to_db (path) -> list:
     free_from_duplicates_data = await  remove_redundant_data (data_from_db)
     pickling.replace_data (path, free_from_duplicates_data)
         
-async def check_open_orders_consistency (open_orders_from_exchange: list, label: str) -> list:
+async def check_open_orders_consistency (currency, open_orders_from_exchange: list, label: str) -> list:
     """
     db vs exchange
     """
     from loguru import logger as log
     
-    my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
+    my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
     fetch_open_orders_from_db = pickling.read_data(my_path_orders_open)
     open_orders_from_db = fetch_open_orders_from_db ['open_orders_open_byAPI']
     
