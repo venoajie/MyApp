@@ -32,7 +32,10 @@ async def check_open_orders_consistency (currency, open_orders_from_exchange: li
     
     my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
     fetch_open_orders_from_db = pickling.read_data(my_path_orders_open)
-    open_orders_from_db = fetch_open_orders_from_db ['open_orders_open_byAPI']
+    log.error (fetch_open_orders_from_db)
+    if open_orders_from_db:
+        open_orders_from_db = fetch_open_orders_from_db ['open_orders_open_byAPI']
+        log.error (open_orders_from_db)
     
     #check item qty
     open_orders_from_exchange_with_label = [o for o in open_orders_from_exchange if o['label'] == label ]
