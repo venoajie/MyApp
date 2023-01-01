@@ -227,7 +227,7 @@ class StreamMarketAccountData:
                         my_path_position = system_tools.provide_path_for_file ('position', currency.lower())
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             log.error (data_orders)
-                            position = data_orders ['position']
+                            position = data_orders ['positions']
                             if position:
                                 pickling.replace_data(my_path_position, position)
                             
