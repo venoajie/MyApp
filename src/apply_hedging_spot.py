@@ -371,7 +371,7 @@ class ApplyHedgingSpot ():
                         
                         if actual_hedging_size_system:
                             actual_hedging_size_system = actual_hedging_size_system ['size']
-                            if actual_hedging_size_system - actual_hedging_size != 0:
+                            if actual_hedging_size_system + actual_hedging_size != 0:
                         
                         #!                    
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
