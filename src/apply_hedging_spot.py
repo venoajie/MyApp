@@ -55,7 +55,7 @@ class ApplyHedgingSpot ():
         """
         import synchronizing_files
         #
-        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency(self.currency, open_orders_from_exchange, label)
+        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency(self.currency, open_orders_from_exchange, label, 'open')
         
         if get_id_for_cancel:
             
