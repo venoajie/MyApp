@@ -30,7 +30,7 @@ def parse_dotenv()->dict:
             'client_secret': os.environ.get('client_secret_test')
             }
 @dataclass(unsafe_hash=True, slots=True)
-class SynchronizingFiles ():
+class ApplyHedgingSpot ():
 
     
     '''
@@ -49,6 +49,24 @@ class SynchronizingFiles ():
         open_ordersREST: list = open_ordersREST ['result']
                         
         return open_orders_management.MyOrders (open_ordersREST)
+        
+    async def check_open_orders_consistency (self, open_orders_from_exchange: list, label: str = 'spot hedging') -> list:
+        """
+        db vs exchange
+        """
+        import synchronizing_files
+        
+        get_id_for_cancel = synchronizing_files.check_open_orders_consistency(open_orders_from_exchange, label)
+        
+        if get_id_for_cancel:
+            
+            for open_order_id in get_id_for_cancel:
+                                
+                await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
+                                                             self.client_id, 
+                                                             self.client_secret, 
+                                                             open_order_id
+                                                             )    
         
     async def my_trades (self, start_timestamp: int, end_timestamp: int) -> list:
         """
@@ -426,19 +444,21 @@ async def main ():
     
     try:
 
-        syn = SynchronizingFiles (
+        syn = ApplyHedgingSpot (
         connection_url=connection_url,
         client_id=client_id,
         client_secret= client_secret,
         currency = currency
         )
-        label_hedging = 'spot hedging'
+        label_hedging = 'hedging spot'
         
         
         server_time = await syn.current_server_time ()
         await syn.running_strategy (server_time)
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
-        await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, 'hedging spot')
+        open_orders_from_exchange = await syn.open_orders ()        
+        await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
+        await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
          
     except Exception as error:
