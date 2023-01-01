@@ -210,7 +210,7 @@ class StreamMarketAccountData:
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         
-                        my_path_position = system_tools.provide_path_for_file ('position', currency.lower())
+                        my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             log.error (data_orders)
                             positions = data_orders ['positions']
