@@ -96,7 +96,7 @@ class ApplyHedgingSpot ():
         filtered_data_from_my_trades_from_exchange = string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
                                                                                                my_trades_from_db
                                                                                                )
-        log.warning (f'{filtered_data_from_my_trades_from_exchange=}')
+        log.error (f'{filtered_data_from_my_trades_from_exchange=}')
         # redistribute the filtered data into db
         my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
         
