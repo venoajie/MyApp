@@ -183,7 +183,10 @@ class ApplyHedgingSpot ():
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')
-        my_trades_open: list = pickling.read_data(my_trades_path_open) 
+        my_trades_open: list = pickling.read_data(my_trades_path_open)  
+               
+        my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
+        my_trades_closed: list = pickling.read_data(my_trades_path_closed) 
         
         my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
@@ -204,6 +207,7 @@ class ApplyHedgingSpot ():
         
         
         return {'my_trades_open': my_trades_open,
+                'my_trades_closed': my_trades_closed,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
@@ -301,6 +305,11 @@ class ApplyHedgingSpot ():
         #! fetch data ALL from db
         reading_from_database = await self.reading_from_database ()
         
+        #!
+        my_trades_closed: list = reading_from_database ['my_trades_closed']
+        log.debug (my_trades_closed)
+        
+        #!
         # my trades data
         my_trades_open: list = reading_from_database ['my_trades_open']
         # open orders data
@@ -387,10 +396,10 @@ class ApplyHedgingSpot ():
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                         actual_hedging_size_system = reading_from_database ['positions']
-                        log.warning (actual_hedging_size_system)
+                        #log.warning (actual_hedging_size_system)
                         if actual_hedging_size_system:
                             actual_hedging_size_system =  [o for o in actual_hedging_size_system if o['instrument_name'] == instrument]  [0]
-                        log.error (actual_hedging_size_system)
+                        #log.error (actual_hedging_size_system)
                         
                         if actual_hedging_size_system:
                             actual_hedging_size_system = actual_hedging_size_system ['size']
