@@ -9,6 +9,16 @@ def remove_redundant_elements (data: list)->list:
     
     '''      
     return list({frozenset(item.items()):item for item in data}.values())  
+
+def find_unique_elements (data1: list, data2: list)->list:
+    
+    '''  
+    data1 = all data
+    data2 = subset of data1
+    # https://stackoverflow.com/questions/45098206/unique-values-between-2-lists
+    
+    '''      
+    return [i for i in data1 if i not in data2]
     
     #return sorted(set(data))    
 

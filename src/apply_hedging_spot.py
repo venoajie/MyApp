@@ -10,7 +10,7 @@ import asyncio
 from dotenv import load_dotenv
 from os.path import join, dirname
 
-from portfolio.deribit import open_orders_management
+from portfolio.deribit import open_orders_management, myTrades_management
 from utils import pickling, system_tools, formula
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging
@@ -79,6 +79,26 @@ class ApplyHedgingSpot ():
         #trades: list = trades ['result']
                         
         return [] if trades == [] else trades ['result'] ['trades']
+    
+    async def check_my_trades_consistency (self, my_trades_from_db, server_time: int) -> list:
+        """
+        """
+        from utils import string_modification
+        
+        # get the earliest transaction time stamp
+        my_trades_from_db_min_time_stamp = min ([o['timestamp'] for o in my_trades_from_db ])
+        
+        # use the earliest time stamp to fetch data from exchange
+        fetch_my_trades_from_system_from_min_time_stamp_to_now = self.my_trades (my_trades_from_db_min_time_stamp, server_time)
+        # compare data from exchanges. Pick only those have not recorded at system yet
+        filtered_data_from_my_trades_from_exchange = string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
+                                                                                               my_trades_from_db_min_time_stamp
+                                                                                               )
+        log.warning (f'{filtered_data_from_my_trades_from_exchange=}')
+        # redistribute the filtered data into db
+        my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
+        
+        #my_trades.distribute_trade_transaction(self.currency)
         
         
     async def get_my_trades_from_exchange (self, count = 1000) -> list:
@@ -372,6 +392,7 @@ class ApplyHedgingSpot ():
                         if actual_hedging_size_system:
                             actual_hedging_size_system = actual_hedging_size_system ['size']
                             if actual_hedging_size_system + actual_hedging_size != 0:
+                                self.check_my_trades_consistency(my_trades_open, server_time)
                         
                         #!                    
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
