@@ -307,7 +307,7 @@ class ApplyHedgingSpot ():
         
         #!
         my_trades_closed: list = reading_from_database ['my_trades_closed']
-        log.debug (my_trades_closed)
+        #log.debug (my_trades_closed)
         
         #!
         # my trades data
