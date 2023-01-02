@@ -89,7 +89,7 @@ class ApplyHedgingSpot ():
         my_trades_from_db_min_time_stamp = min ([o['timestamp'] for o in my_trades_from_db ])
         
         # use the earliest time stamp to fetch data from exchange
-        fetch_my_trades_from_system_from_min_time_stamp_to_now = self.my_trades (my_trades_from_db_min_time_stamp, server_time)
+        fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
         # compare data from exchanges. Pick only those have not recorded at system yet
         filtered_data_from_my_trades_from_exchange = string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
                                                                                                my_trades_from_db_min_time_stamp
