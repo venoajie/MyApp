@@ -118,7 +118,7 @@ class SpotHedging ():
         '''
         '''       
         # compute minimum hedging size. negative sign since the direction is expected as 'sell
-        min_hedged_size: int = - (self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size))
+        min_hedged_size: int = (self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size))
         
         # check whether current spot was hedged
         actual_hedging_size : int = self.compute_actual_hedging_size () 
