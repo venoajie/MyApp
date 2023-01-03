@@ -164,29 +164,6 @@ class SpotHedging ():
                 'average_up_size': max(1,int(size_pct_qty/3)),
                 'hedging_size': hedging_size_portion}
 
-
-    def summing_size_open_orders(self,
-        open_orders_byAPI: list,
-        ) -> int:
-        
-        '''
-        # sum current open orders with 'hedging spot' label
-        open_orders_byAPI =  open orders submitted by API/not manual (web = False)
-
-        '''       
-        return 0 if open_orders_byAPI == [] else sum ([o['amount']  for o in open_orders_byAPI if self.label in o['label'] ])
-
-
-    def is_over_hedged (self,
-        open_orders_byAPI: list,
-        minimum_hedging_size: int) -> bool:
-
-        '''
-        # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
-        '''    
-        log.info (f'is_over_hedged-- net_position {self.net_position (open_orders_byAPI)} minimum_hedging_size {minimum_hedging_size} net_position > minimum_hedging_size {self.net_position (open_orders_byAPI) > minimum_hedging_size}')    
-        return self.net_position (open_orders_byAPI) > minimum_hedging_size    
-                
     def adjusting_inventories (self,
                                index_price: float,
                                threshold: float = .5/100,
