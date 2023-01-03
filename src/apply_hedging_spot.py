@@ -103,7 +103,7 @@ class ApplyHedgingSpot ():
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
             
-            #my_trades.distribute_trade_transaction(self.currency)
+            my_trades.distribute_trade_transaction(self.currency)
             
         
     async def get_my_trades_from_exchange (self, count = 1000) -> list:
@@ -414,7 +414,7 @@ class ApplyHedgingSpot ():
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                                 telegram_bot_sendtext(info)
                                 if actual_hedging_size_system != actual_hedging_size:
-                                    formula.log_error('app','name-try2', error, 60 * 30)
+                                    formula.sleep_and_restart_program (60*30)
                                  #! 
 
                         label: str = label_numbering.labelling ('open', label_hedging)
