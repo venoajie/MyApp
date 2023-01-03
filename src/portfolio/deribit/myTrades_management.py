@@ -160,10 +160,11 @@ class MyTrades ():
             log.debug (f'AFTER 2 {my_trades_open=}')
             sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
             
+            telegram_bot_sendtext(data_order)
             info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
             
             log.critical (info)
-            #telegram_bot_sendtext(info)
+            telegram_bot_sendtext(info)
             #!
             
     def my_trades_max_price_attributes_filteredBy_label (self, trade_sources_filtering: list) -> dict:
