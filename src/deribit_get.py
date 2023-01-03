@@ -84,6 +84,7 @@ async def main(
 
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
+                print (response)
             return response
 
 
