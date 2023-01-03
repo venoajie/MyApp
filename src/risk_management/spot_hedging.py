@@ -84,19 +84,19 @@ class SpotHedging ():
         return  -(int ((notional / min_trade_amount * contract_size) + min_trade_amount))
 
 
-    def my_trades_api_net_position(self, selected_trades)-> list:
+    def net_position (self, selected_transactions: list)-> float:
         
         '''
         '''    
 
-        if selected_trades != []:
-            sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
-            sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in selected_trades if o['direction']=='buy'  ])
-            log.critical(f'sell {sum_closed_trades_in_my_trades_open_sell}')
-            log.critical(f'buy {sum_closed_trades_in_my_trades_open_buy}')
-            log.critical(f'net {sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell}')
+        if selected_transactions != []:
+            sum_sell = sum([o['amount'] for o in selected_transactions if o['direction']=='sell'  ])
+            sum_buy = sum([o['amount'] for o in selected_transactions if o['direction']=='buy'  ])
+            log.critical(f'sum_sell {sum_sell}')
+            log.critical(f'sum_buy {sum_buy}')
+            log.critical(f'sum net {sum_buy - sum_sell}')
                 
-        return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+        return [] if selected_transactions == [] else  sum_buy - sum_sell
     
     def compute_actual_hedging_size (self) -> int:
         
@@ -107,7 +107,7 @@ class SpotHedging ():
         my_trades = self.my_trades_api_basedOn_label ()
         if     my_trades != [] :
             my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
-        return [] if my_trades == [] else self.my_trades_api_net_position (my_trades_label)
+        return [] if my_trades == [] else self.net_position (my_trades_label)
 
     def compute_remain_unhedged (self,
         notional: float,
@@ -158,8 +158,8 @@ class SpotHedging ():
         #log.info (f'{notional=}')        
         log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
         log.info (f'{hedging_size_portion=}')  
-        log.info (f'{remain_unhedged > 0=}')  
-        return {'spot_was_unhedged': False if notional in none_data else remain_unhedged > 0,
+        log.info (f'{remain_unhedged < 0=}')  
+        return {'spot_was_unhedged': False if notional in none_data else remain_unhedged < 0,
                 'all_hedging_size': min_hedged_size,
                 'average_up_size': max(1,int(size_pct_qty/3)),
                 'hedging_size': hedging_size_portion}
@@ -183,8 +183,9 @@ class SpotHedging ():
 
         '''
         # check open orders related to hedging, should be less than required hedging size. If potentially over-hedged, call cancel open orders function
-        '''       
-        return self.summing_size_open_orders (open_orders_byAPI) > minimum_hedging_size    
+        '''    
+        log.info (f'is_over_hedged-- net_position {self.net_position (open_orders_byAPI)} minimum_hedging_size {minimum_hedging_size} net_position > minimum_hedging_size {self.net_position (open_orders_byAPI) > minimum_hedging_size}')    
+        return self.net_position (open_orders_byAPI) > minimum_hedging_size    
                 
     def adjusting_inventories (self,
                                index_price: float,
