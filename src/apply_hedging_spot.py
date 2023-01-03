@@ -412,6 +412,8 @@ class ApplyHedgingSpot ():
                         #!                    
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                                 telegram_bot_sendtext(info)
+                                if actual_hedging_size_system != actual_hedging_size:
+                                    formula.log_error('app','name-try2', error, 60 * 30)
                                  #! 
 
                         label: str = label_numbering.labelling ('open', label_hedging)
@@ -424,7 +426,7 @@ class ApplyHedgingSpot ():
                         log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI=}')
 
                         # send sell order if spot still unhedged and no current open orders 
-                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 :
+                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 and actual_hedging_size_system == actual_hedging_size:
                             log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                         
                             await self.send_orders ('sell', 
