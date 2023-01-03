@@ -427,7 +427,7 @@ class ApplyHedgingSpot ():
                             await self.send_orders ('sell', 
                                                     instrument, 
                                                     best_ask_prc,
-                                                    check_spot_hedging ['hedging_size'], 
+                                                    abs(check_spot_hedging ['hedging_size']), 
                                                     label
                                                     )
                             
@@ -450,7 +450,7 @@ class ApplyHedgingSpot ():
                                                         'buy', 
                                                         instrument, 
                                                         best_bid_prc, 
-                                                        adjusting_inventories ['size_take_profit'], 
+                                                        abs(adjusting_inventories ['size_take_profit']), 
                                                         adjusting_inventories ['label_take_profit']
                                                         )
                                 
@@ -485,9 +485,9 @@ class ApplyHedgingSpot ():
         label_open = 'hedging spot-open'
         current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
         current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
-        log.info(f'{actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
 
         is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
+        log.info(f'{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
         
         if  is_over_hedged:
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
