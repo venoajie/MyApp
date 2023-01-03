@@ -257,7 +257,7 @@ async def  get_cancel_order_byOrderId(connection_url: str,
     return result     
 
 
-async def get_position (connection_url: str, client_id, client_secret, currency):
+async def get_positions (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency}
     endpoint: str = 'private/get_positions'
