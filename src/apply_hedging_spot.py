@@ -399,7 +399,7 @@ class ApplyHedgingSpot ():
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                         actual_hedging_size_system = reading_from_database ['positions']
-                        #log.warning (actual_hedging_size_system)
+                        log.warning (actual_hedging_size_system)
                         if actual_hedging_size_system:
                             actual_hedging_size_system =  [o for o in actual_hedging_size_system if o['instrument_name'] == instrument]  [0]
                         #log.error (actual_hedging_size_system)
