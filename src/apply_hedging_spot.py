@@ -352,11 +352,11 @@ class ApplyHedgingSpot ():
                     
                     #order_history  = await self. get_order_history_by_instrument (instrument)
                     #trade_history  = await self. get_my_trades_from_exchange ()
-                    log.info(f'{index_price=} {market_price=} {portfolio=}')
                         
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 
                     
+                    log.info(f'{index_price=} {market_price=} {portfolio=}')
                     # if none of the followings = []
                     if  index_price and portfolio and market_price:
                         
