@@ -224,7 +224,7 @@ class StreamMarketAccountData:
                                 for order in orders:
                                     
                                     log.warning (f'{orders=}')
-                                    log.info (f'{order=}')
+                                    
                                     order_state = order ['order_state']
                                     order_id= order ['order_id']
                                     
@@ -241,6 +241,7 @@ class StreamMarketAccountData:
                                         
                                     else:
                                         #log.error ('ORDER_STATE ELSE')
+                                        log.info (f'{order=}')
                                         item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                                         item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
                                         #log.info (f'{item_in_open_orders_open_with_same_id=}')
