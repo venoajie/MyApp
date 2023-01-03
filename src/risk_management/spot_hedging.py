@@ -92,6 +92,9 @@ class SpotHedging ():
         if selected_trades != []:
             sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
             sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in selected_trades if o['direction']=='buy'  ])
+            log.critical(f'sell {sum_closed_trades_in_my_trades_open_sell}')
+            log.critical(f'buy {sum_closed_trades_in_my_trades_open_buy}')
+            log.critical(f'net {sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell}')
                 
         return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
     
