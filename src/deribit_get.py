@@ -84,7 +84,7 @@ async def main(
 
                 # RESToverHTTP Response Content
                 response: Dict = await response.json()
-                print (response)
+
             return response
 
 
@@ -111,7 +111,7 @@ async def send_order_limit (connection_url: str,
                 "amount": amount,
                 "price": price,
                 "label": label,
-                "time_in_force": time_in_force,
+                #"time_in_force": time_in_force, fik can not apply to post only
                 "type": type,
                 "reduce_only": reduce_only,
                 "post_only": post_only,
@@ -124,7 +124,7 @@ async def send_order_limit (connection_url: str,
                 "price": price,
                 "label": label,
                 "valid_until": valid_until,
-                "time_in_force": time_in_force,
+                #"time_in_force": time_in_force, fik can not apply to post only
                 "type": type,
                 "reduce_only": reduce_only,
                 "post_only": post_only,
