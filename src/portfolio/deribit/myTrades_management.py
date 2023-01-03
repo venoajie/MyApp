@@ -63,7 +63,7 @@ class MyTrades ():
             data_order = [data_order]
             log.info (f'DATA FROM EXC LOOP {data_order=}')
             
-            #determine label id
+            #determine label id. 
             try:
                 label_id= data_order [0]['label']
             except:
@@ -80,56 +80,60 @@ class MyTrades ():
             sum_new_trading = [o['amount'] for o in data_order  ][0]
             sum_open_trading_after_new_trading = 0
             #!
-
+            
+            
+            #! DISTRIBUTE trading transaction as per label id
             if 'open' in label_id:
                 log.error ('LABEL ID OPEN')
 
+                # append trade to db.check potential duplicate
                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                 pickling.check_duplicate_elements (my_trades_path_open)
 
-                #!
+                #! DELETE
                 my_trades_open = pickling.read_data(my_trades_path_open)
                 label_my_trades_open = [o['label'] for o in my_trades_open  ]
                 amount_my_trades_open = [o['amount'] for o in my_trades_open  ]
                 sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
                 log.error (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
-                #!
+                #! DELETE
                 
             if 'closed' in label_id:
                 log.debug ('LABEL ID CLOSED')
+                
+                # fetch previous open trading data from local db
                 my_trades_open = pickling.read_data(my_trades_path_open)  
                 
-                
+                # filter open trades which have the same label id with trade transaction
                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                # sum transaction with the same label id
                 sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                log.debug (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+                log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                 
+                # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                 if sum_closed_trades_in_my_trades_open_net !=0:
                     
                     # put the trading at open db until fully closed (buy = sell)
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_open)
                 
-                if sum_closed_trades_in_my_trades_open_net ==0:
+                # transaction has fully completed. move all the transactions with the same id to closed db
+                if sum_closed_trades_in_my_trades_open_net == 0:
                                                     
                     #update mytrades db with the closed ones
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000, True)
-                    pickling.check_duplicate_elements (my_trades_path_closed)
-                    
+                    #! AT CLOSED DB
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_closed)
 
-                    
+                    #! AT OPEN DB
                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                     #update mytrades db with the still open ones
                     #my_trades_open = pickling.read_data(my_trades_path_open)  
-                    remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])
-                    
-                    #log.critical (f'REMAINING OPEN TRADES {remaining_open_trades=}')
+                    remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])                    
                     pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
                     pickling.check_duplicate_elements (my_trades_path_open)
                         
-                    #!
+                    #! DELETE
                     my_trades_open = pickling.read_data(my_trades_path_open)
                     label_my_trades_open = [o ['label']  for o in my_trades_open  ]
                     amount_my_trades_open = [o ['amount']  for o in my_trades_open  ]
@@ -143,6 +147,8 @@ class MyTrades ():
                         label_my_trades_closed = [o ['label']  for o in my_trades_closed  ]
                         sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
                         log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
+                    #! DELETE
+
                         
                 if label_id == [] :
                     my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
