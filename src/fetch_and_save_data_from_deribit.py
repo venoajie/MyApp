@@ -224,6 +224,7 @@ class StreamMarketAccountData:
                                 for order in orders:
                                     
                                     log.warning (f'{orders=}')
+                                    log.info (f'{order=}')
                                     order_state = order ['order_state']
                                     order_id= order ['order_id']
                                     

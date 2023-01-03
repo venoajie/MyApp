@@ -120,7 +120,14 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
 
-    data_list = list (data [0])
+
+    if isinstance(data, dict):
+        data_list = list (data)
+        
+    if isinstance(data, list):
+        data_list = list (data [0])
+                    
+    #data_list = list (data [0])
     
     if 'change_id' in data_list:
         sorted_data: list = sorted([o['timestamp']  for o in data ])
@@ -162,7 +169,15 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
-    data_list = list (data [0])
+    
+
+    if isinstance(data, dict):
+        data_list = list (data)
+        
+    if isinstance(data, list):
+        data_list = list (data [0])
+        
+    #data_list = list (data [0])
     now_time_utc = time_modification.convert_time_to_utc()['utc_now']
     now_time_utc_in_unix = time_modification. convert_time_to_unix (now_time_utc)
 
