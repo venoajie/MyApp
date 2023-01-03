@@ -403,7 +403,7 @@ class ApplyHedgingSpot ():
                         
                         if actual_hedging_size_system:
                             actual_hedging_size_system = actual_hedging_size_system ['size']
-                            if actual_hedging_size_system + actual_hedging_size != 0:
+                            if actual_hedging_size_system - actual_hedging_size != 0:
                                 await self.check_my_trades_consistency(my_trades_open, server_time)
                         
                         #!                    

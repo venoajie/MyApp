@@ -83,14 +83,28 @@ class SpotHedging ():
         '''       
         return  int ((notional / min_trade_amount * contract_size) + min_trade_amount)
 
+
+    def my_trades_api_net_position(self, selected_trades)-> list:
+        
+        '''
+        '''    
+
+        if selected_trades != []:
+            sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
+            sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in selected_trades if o['direction']=='buy'  ])
+                
+        return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+    
     def compute_actual_hedging_size (self) -> int:
         
         '''
         compute actual hedging size
 
-        '''       
+        '''  
         my_trades = self.my_trades_api_basedOn_label ()
-        return  sum([o['amount'] for o in my_trades if self.label in o['label'] ])
+        if     my_trades != [] :
+            my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
+        return [] if my_trades == [] else self.my_trades_api_net_position (my_trades_label)
 
     def compute_remain_unhedged (self,
         notional: float,

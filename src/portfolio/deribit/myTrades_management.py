@@ -37,6 +37,17 @@ class MyTrades ():
         '''    
         return [] if self.my_trades_api () == [] else  ([o for o in self.my_trades_api () if  label in o['label'] ])
     
+    def my_trades_api_net_position(self, selected_trades)-> list:
+        
+        '''
+        '''    
+
+        if selected_trades != []:
+            sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
+            sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in selected_trades if o['direction']=='buy'  ])
+                
+        return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+    
     def distribute_trade_transaction (self, currency) -> dict:
         
         '''
@@ -90,13 +101,16 @@ class MyTrades ():
                 
                 
                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in closed_trades_in_my_trades_open if o['direction']=='sell'  ])
-                sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in closed_trades_in_my_trades_open if o['direction']=='buy'  ])
-                sum_closed_trades_in_my_trades_open_net =sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+                sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
                 log.debug (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                 
-                if sum_closed_trades_in_my_trades_open_net ==0:
+                if sum_closed_trades_in_my_trades_open_net !=0:
+                    
+                    # put the trading at open db until fully closed (buy = sell)
+                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    pickling.check_duplicate_elements (my_trades_path_open)
                 
+                if sum_closed_trades_in_my_trades_open_net ==0:
                                                     
                     #update mytrades db with the closed ones
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, data_order , 10000, True)
