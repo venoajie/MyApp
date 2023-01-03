@@ -416,12 +416,12 @@ class ApplyHedgingSpot ():
                         label_for_filter = 'hedging'
                         
                         # check for any order outstanding as per label filter
-                        len_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+                        net_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label_for_filter)
                         
-                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {len_open_orders_open_byAPI=}')
+                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI=}')
 
                         # send sell order if spot still unhedged and no current open orders 
-                        if spot_was_unhedged and len_open_orders_open_byAPI == []:
+                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 :
                             log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                         
                             await self.send_orders ('sell', 
@@ -435,7 +435,7 @@ class ApplyHedgingSpot ():
                             await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
                         
                         # if spot has hedged properly, check also for opportunity to get additional small profit    
-                        if spot_was_unhedged == False and remain_unhedged <= 0 and len_open_orders_open_byAPI == []:
+                        if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI == 0:
                             threshold = .025/100
                             adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
                             bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_Price']

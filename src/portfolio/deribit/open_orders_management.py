@@ -102,6 +102,14 @@ class MyOrders ():
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  len ([o for o in self.my_orders_api_basedOn_label (label)])
             
+    def my_orders_api_basedOn_label_items_net (self, label: str)-> list:
+        
+        '''
+        '''   
+        from utils import number_modification 
+        return 0 if self.my_orders_api_basedOn_label (label) == [] \
+            else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
+            
             
     def my_orders_api_basedOn_label_items_size (self, label: str)-> list:
         

@@ -88,15 +88,8 @@ class SpotHedging ():
         
         '''
         '''    
-
-        if selected_transactions != []:
-            sum_sell = sum([o['amount'] for o in selected_transactions if o['direction']=='sell'  ])
-            sum_buy = sum([o['amount'] for o in selected_transactions if o['direction']=='buy'  ])
-            log.critical(f'sum_sell {sum_sell}')
-            log.critical(f'sum_buy {sum_buy}')
-            log.critical(f'sum net {sum_buy - sum_sell}')
-                
-        return [] if selected_transactions == [] else  sum_buy - sum_sell
+        from utils import number_modification                
+        return number_modification (selected_transactions)
     
     def compute_actual_hedging_size (self) -> int:
         

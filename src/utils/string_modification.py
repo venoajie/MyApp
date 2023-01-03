@@ -40,7 +40,7 @@ def extract_integers_from_text (words: list) -> int:
     '''      
     
     try:
-        return int(''.join([o for o in words if o.isdigit()]))
+        return int (''.join([o for o in words if o.isdigit()]))
 
     except:
         return []
