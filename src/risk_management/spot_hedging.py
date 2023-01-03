@@ -81,7 +81,7 @@ class SpotHedging ():
         compute minimum hedging size
 
         '''       
-        return  int ((notional / min_trade_amount * contract_size) + min_trade_amount)
+        return  -(int ((notional / min_trade_amount * contract_size) + min_trade_amount))
 
 
     def my_trades_api_net_position(self, selected_trades)-> list:
