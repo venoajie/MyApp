@@ -38,6 +38,7 @@ class MyOrders ():
         
         '''
         '''    
+        print (self.my_orders_all())
         return [] if self.my_orders_all() == [] else  [o for o in self.my_orders_all() if o['order_state'] == status]
     
     
