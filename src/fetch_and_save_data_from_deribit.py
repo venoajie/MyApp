@@ -230,7 +230,7 @@ class StreamMarketAccountData:
                                     
                                     my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                                     open_orders_open = pickling.read_data (my_path_orders_open) 
-                                    #log.debug (f'BEFORE {open_orders_open=}')
+                                    log.debug (f'BEFORE {open_orders_open=}')
                                     #log.warning (f'{order_state=}')
                                     
                                     if order_state == 'open':
