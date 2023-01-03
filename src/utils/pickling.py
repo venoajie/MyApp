@@ -82,7 +82,7 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     """
     
     data_from_db = []
-    print (f"append_data data fr exc {data}")
+    #print (f"append_data data fr exc {data}")
 
     #collected_data: list = []
     if os.path.exists(file_name_pkl):
@@ -118,10 +118,10 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
 
-    print (f"data fr exc {data}")
+    #print (f"data fr exc {data}")
     append_data(file_name_pkl, data)
     data_from_db: object = read_data (file_name_pkl)
-    print (f"append_and_replace_items_based_on_qty {data_from_db}")
+    #print (f"append_and_replace_items_based_on_qty {data_from_db}")
 
 
     if isinstance(data_from_db, dict):
@@ -172,7 +172,6 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
-    
 
     if isinstance(data, dict):
         data_list = list (data)
