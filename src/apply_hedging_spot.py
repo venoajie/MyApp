@@ -206,6 +206,13 @@ class ApplyHedgingSpot ():
         index_price: list = pickling.read_data(my_path_index) 
         index_price: float= index_price [0]['price']
         my_path_positions: str = system_tools.provide_path_for_file ('positions', 'eth') 
+        positions = pickling.read_data(my_path_positions)
+        if positions == None:
+            positions = await deribit_get.get_positions (self.connection_url, 
+                                                         self.client_id,
+                                                         self.client_secret, 
+                                                         self.currency
+                                                         )
         
         
         return {'my_trades_open': my_trades_open,
@@ -213,7 +220,7 @@ class ApplyHedgingSpot ():
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
-                'positions': pickling.read_data(my_path_positions),
+                'positions': positions,
                 'ordBook': pickling.read_data(my_path_ordBook),
                 'portfolio': portfolio,
                 'index_price': index_price,
