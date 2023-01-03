@@ -213,6 +213,7 @@ class ApplyHedgingSpot ():
                                                          self.client_secret, 
                                                          self.currency
                                                          )
+        log.error (positions)
         
         
         return {'my_trades_open': my_trades_open,
