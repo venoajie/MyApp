@@ -100,7 +100,7 @@ class SpotHedging ():
         my_trades = self.my_trades_api_basedOn_label ()
         if     my_trades != [] :
             my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
-        return [] if my_trades == [] else self.net_position (my_trades_label)
+        return 0 if my_trades == [] else self.net_position (my_trades_label)
 
     def compute_remain_unhedged (self,
         notional: float,
