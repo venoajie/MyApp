@@ -119,6 +119,7 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
+    print (f"append_and_replace_items_based_on_qty {data}")
 
 
     if isinstance(data, dict):
