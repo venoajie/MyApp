@@ -157,7 +157,7 @@ class ApplyHedgingSpot ():
         """
         """
             
-        result: dict =  deribit_get.get_positions (self.connection_url, 
+        result: dict =  await deribit_get.get_positions (self.connection_url, 
                                                          self.client_id,
                                                          self.client_secret, 
                                                          self.currency
