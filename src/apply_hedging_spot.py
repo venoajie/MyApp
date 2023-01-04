@@ -153,6 +153,18 @@ class ApplyHedgingSpot ():
         
         return result ['result'] [self.currency.upper()]
     
+    async def get_positions (self) -> list:
+        """
+        """
+            
+        result: dict =  deribit_get.get_positions (self.connection_url, 
+                                                         self.client_id,
+                                                         self.client_secret, 
+                                                         self.currency
+                                                         )
+        
+        return result ['result'] 
+    
     async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
         """
         """
@@ -208,11 +220,7 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', 'eth') 
         positions = pickling.read_data(my_path_positions)
         if positions == None:
-            positions = await deribit_get.get_positions (self.connection_url, 
-                                                         self.client_id,
-                                                         self.client_secret, 
-                                                         self.currency
-                                                         )
+            positions = await self.get_positions ()
         log.error (positions)
         
         
