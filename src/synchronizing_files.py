@@ -41,6 +41,7 @@ async def check_open_orders_consistency (currency, open_orders_from_exchange: li
     from loguru import logger as log
     
     my_path_orders_open: str = system_tools.provide_path_for_file ('orders', currency, 'open')
+    pickling.check_duplicate_elements (my_path_orders_open)
     fetch_open_orders_from_db = pickling.read_data(my_path_orders_open)
     log.error (fetch_open_orders_from_db)
     len_open_orders_from_db = []
