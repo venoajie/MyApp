@@ -76,7 +76,7 @@ class MyTrades ():
                 pass
 
             closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-            log.info (f' {label_id=}   {closed_label_id_int} \n ')
+            log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
 
             #!
             sum_new_trading = [o['amount'] for o in data_order  ][0]
