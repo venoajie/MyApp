@@ -141,7 +141,8 @@ class ApplyHedgingSpot ():
             
             myorders.distribute_order_transactions (self.currency)
         else:
-            await self.open_orders_from_exchange().distribute_order_transactions (self.currency)
+            myorders = open_orders_management.MyOrders ([])
+            await myorders.distribute_order_transactions (self.currency)
         
     async def get_my_trades_from_exchange (self, count = 1000) -> list:
         """
