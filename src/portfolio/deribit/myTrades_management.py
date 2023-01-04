@@ -116,9 +116,23 @@ class MyTrades ():
                             pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                             pickling.check_duplicate_elements (my_trades_path_open)
                             
-                    if sum_mixed_trades_in_my_trades_open_net == 0: #! PENDING
-                        pass
-                                
+                    if sum_mixed_trades_in_my_trades_open_net == 0: 
+
+                        remaining_open_trades = ([o for o in self.my_trades if  str(closed_label_id_int)  not in o ])     
+                        log.critical (remaining_open_trades)               
+                        for data_order in remaining_open_trades:
+                                            
+                            try:
+                                label_id= data_order [0]['label']
+                            except:
+                                label_id= []
+                            
+                            # for data with label id/ordered through API    
+                            if label_id != []:
+                                log.critical (data_order)   
+                            
+                                pickling.replace_data (my_trades_path_open, data_order, True )
+                                pickling.check_duplicate_elements (my_trades_path_open)                                
                         
                 # transaction has fully completed. move all the transactions with the same id to closed db
                 if sum_closed_trades_in_my_trades_open_net == 0:
