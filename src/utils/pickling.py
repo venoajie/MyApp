@@ -38,7 +38,7 @@ def check_duplicate_elements (file_name: str)-> None:
     if 'myTrades' in str(file_name):
         data_from_db: list = read_data (file_name)
         sum_db = sum([o['amount'] for o in data_from_db  ])    
-        log.warning (f'AFTER {len(data_from_db)}  {sum_db} {data_from_db=}')
+        #log.warning (f'AFTER {len(data_from_db)}  {sum_db} {data_from_db=}')
 
 def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 

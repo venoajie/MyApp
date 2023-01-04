@@ -66,8 +66,10 @@ class MyTrades ():
             #determine label id. 
             try:
                 label_id= data_order [0]['label']
+                trade_seq= data_order [0]['trade_seq']
             except:
                 label_id= []
+                trade_seq= []
             
             # for data with label id/ordered through API    
             if label_id != []:
@@ -112,6 +114,7 @@ class MyTrades ():
                 
                 # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                 if sum_closed_trades_in_my_trades_open_net !=0:
+                    log.critical (trade_seq)
                     
                     # put the trading at open db until fully closed (buy = sell)
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
