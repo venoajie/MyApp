@@ -217,12 +217,12 @@ class ApplyHedgingSpot ():
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
         index_price: list = pickling.read_data(my_path_index) 
         index_price: float= index_price [0]['price']
-        my_path_positions: str = system_tools.provide_path_for_file ('positions', 'eth') 
+        my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
+        
         if positions == None:
             positions = await self.get_positions ()
-        log.error (positions)
-        
+            pickling.replace_data (my_path_positions, positions)        
         
         return {'my_trades_open': my_trades_open,
                 'my_trades_closed': my_trades_closed,
