@@ -486,10 +486,12 @@ class ApplyHedgingSpot ():
                         net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label_for_filter)
                         open_orders_from_system = await self.get_open_orders_from_exchange()
                         log.error (open_orders_from_system)
-                        open_order_mgt_system = open_orders_management.MyOrders (open_orders_from_system)
-                        net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net (label_for_filter)
-                        
-                        log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
+                        if open_orders_from_system:
+                            
+                            open_order_mgt_system = open_orders_management.MyOrders (open_orders_from_system)
+                            net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net (label_for_filter)
+                            
+                            log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
                         log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI_db=}')
 
                         # send sell order if spot still unhedged and no current open orders 
