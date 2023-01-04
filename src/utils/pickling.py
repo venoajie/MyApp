@@ -4,7 +4,6 @@
 import pickle
 import os
 
-
 def read_data (file_name_pkl: str)-> None:
 
     """
