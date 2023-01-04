@@ -377,13 +377,13 @@ class ApplyHedgingSpot ():
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         """
 
-        none_data = [[], None, 0]
-        log.critical (f'{server_time=}')
+        #none_data = [[], None, 0]
+        #log.critical (f'{server_time=}')
         #! fetch data ALL from db
         reading_from_database = await self.reading_from_database ()
         
         #!
-        my_trades_closed: list = reading_from_database ['my_trades_closed']
+       # my_trades_closed: list = reading_from_database ['my_trades_closed']
         
         #log.debug (my_trades_closed)
         
@@ -394,7 +394,7 @@ class ApplyHedgingSpot ():
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
         
-        log.warning (open_orders_open_byAPI)
+        #log.warning (open_orders_open_byAPI)
         # portfolio data
         portfolio = reading_from_database ['portfolio']
         # instruments data
