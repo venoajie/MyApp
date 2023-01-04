@@ -117,6 +117,9 @@ class ApplyHedgingSpot ():
                                                           )
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
+            log.info(f'DB {my_trades_from_db=}')
+            log.info(f'EXC {fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
+            log.info(f'FILTERED {filtered_data_from_my_trades_from_exchange=}')
             
             my_trades.distribute_trade_transaction(self.currency)
             
@@ -239,7 +242,7 @@ class ApplyHedgingSpot ():
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
         my_path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
         
-        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
+        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency)      
         
         my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
                 
@@ -311,7 +314,6 @@ class ApplyHedgingSpot ():
     async def cancel_redundant_orders_in_same_labels (self,  label_for_filter) -> None:
         """
         """
-    
         open_order_mgt = await self.open_orders_from_exchange ()
         
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
@@ -352,13 +354,14 @@ class ApplyHedgingSpot ():
             if open_orders_deltaTime > three_minute:
                 await self.cancel_by_order_id (open_order_id)    
     
-    
     async def cancel_by_order_id (self, open_order_id) -> None:
+        
         await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
                                                       self.client_id, 
                                                       self.client_secret, 
                                                       open_order_id
                                                       )  
+        
     async def running_strategy (self, server_time) -> float:
         """
         source data: loaded from database app
