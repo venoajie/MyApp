@@ -19,7 +19,6 @@ from configuration import  label_numbering
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
@@ -30,11 +29,9 @@ def parse_dotenv()->dict:
             }
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot ():
-
     
     '''
     '''       
-    
     
     connection_url: str
     client_id: str
@@ -58,14 +55,20 @@ class ApplyHedgingSpot ():
                         
         return open_orders_management.MyOrders (open_ordersREST)
         
-    async def check_open_orders_consistency (self, open_orders_from_exchange: list, label: str = 'spot hedging', status: str = 'open') -> list:
+    async def check_open_orders_consistency (self, open_orders_from_exchange: list, 
+                                             label: str = 'spot hedging', 
+                                             status: str = 'open') -> list:
         """
         db vs exchange
         will be combined with check_my_orders_consistency
         """
         import synchronizing_files
         #
-        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency(self.currency, open_orders_from_exchange, label, 'open')
+        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency (self.currency, 
+                                                                                     open_orders_from_exchange, 
+                                                                                     label, 
+                                                                                     'open'
+                                                                                     )
         
         if get_id_for_cancel:
             
@@ -77,7 +80,10 @@ class ApplyHedgingSpot ():
                                                              open_order_id
                                                              )    
         
-    async def my_trades (self, start_timestamp: int, end_timestamp: int) -> list:
+    async def my_trades (self, 
+                         start_timestamp: int, 
+                         end_timestamp: int
+                         ) -> list:
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency_and_time (self.connection_url, 
@@ -86,19 +92,16 @@ class ApplyHedgingSpot ():
                                                                               self.currency, 
                                                                                start_timestamp,
                                                                                end_timestamp)
-        #trades: list = trades ['result']
                         
         return [] if trades == [] else trades ['result'] ['trades']
     
-    async def check_my_trades_consistency (self, my_trades_from_db, server_time: int) -> list:
+    async def check_my_trades_consistency (self, 
+                                           my_trades_from_db, 
+                                           server_time: int
+                                           ) -> None:
         """
         """
         from utils import string_modification
-        
-        #log.info (my_trades_from_db)
-        
-        trades = await self.get_my_trades_from_exchange ()
-        #log.debug (f'my_order ALL {trades=}')
         
         if my_trades_from_db:
             # get the earliest transaction time stamp
@@ -106,21 +109,21 @@ class ApplyHedgingSpot ():
             
             # use the earliest time stamp to fetch data from exchange
             fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
+            
             # compare data from exchanges. Pick only those have not recorded at system yet
-            #log.debug (f'{my_trades_from_db_min_time_stamp=}')
-            #log.warning (f'{fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
-            filtered_data_from_my_trades_from_exchange = string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
-                                                                                                my_trades_from_db
-                                                                                                )
-            #log.info (f'{my_trades_from_db=}')
-            #log.error (f'{filtered_data_from_my_trades_from_exchange=}')
+            filtered_data_from_my_trades_from_exchange = \
+                string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
+                                                          my_trades_from_db
+                                                          )
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
             
             my_trades.distribute_trade_transaction(self.currency)
             
-            
-    async def check_my_orders_consistency (self, my_orders_from_db, server_time: int) -> list:
+    async def check_my_orders_consistency (self, 
+                                           my_orders_from_db, 
+                                           server_time: int
+                                           ) -> list:
         """
         """
         from utils import string_modification
@@ -178,23 +181,6 @@ class ApplyHedgingSpot ():
                         
         return account_summary ['result']
     
-    async def get_instruments (self) -> list:
-        """
-        """
-    
-        endpoint=(f'public/get_instruments?currency={self.currency}&expired=false&kind=future')
-        result: list = await deribit_get.get_unauthenticated(self.connection_url, endpoint)
-        return result ['result']
-    
-    async def get_index (self) -> float:
-        """
-        """
-            
-        endpoint: str = f'public/get_index?currency={self.currency.upper()}'
-        result: list = await deribit_get.get_unauthenticated(self.connection_url, endpoint)
-        
-        return result ['result'] [self.currency.upper()]
-    
     async def get_positions (self) -> list:
         """
         """
@@ -207,7 +193,13 @@ class ApplyHedgingSpot ():
         
         return result ['result'] 
     
-    async def send_orders (self, side: str, instrument: str, prc: float, size: float, label: str = None) -> None:
+    async def send_orders (self, 
+                           side: str,
+                           instrument: str, 
+                           prc: float, 
+                           size: float, 
+                           label: str = None
+                           ) -> None:
         """
         """
 
@@ -227,55 +219,51 @@ class ApplyHedgingSpot ():
         except Exception as e:
             log.error (e)
             
-    async def compute_notional_value (self, index_price: float, equity: float) -> float:
+    async def compute_notional_value (self, 
+                                      index_price: float, 
+                                      equity: float
+                                      ) -> float:
         """
         """
         return index_price * equity  
-    
     
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
             
-        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')
-        my_trades_open: list = pickling.read_data(my_trades_path_open)  
-               
+        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
-        my_trades_closed: list = pickling.read_data(my_trades_path_closed) 
         
         my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
         my_path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
         
         my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency.lower())      
-        #log.error (my_path_portfolio)                                                                               
-        portfolio = pickling.read_data(my_path_portfolio)
         
         my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
-        instruments = pickling.read_data (my_path_instruments)
                 
         symbol_index: str = f'{self.currency}_usd'
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
         index_price: list = pickling.read_data(my_path_index) 
-        index_price: float= index_price [0]['price']
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         
+        # at start, usually position == None
         if positions == None:
             positions = await self.get_positions ()
             pickling.replace_data (my_path_positions, positions)        
         
-        return {'my_trades_open': my_trades_open,
-                'my_trades_closed': my_trades_closed,
+        return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
+                'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'positions': positions,
                 'ordBook': pickling.read_data(my_path_ordBook),
-                'portfolio': portfolio,
-                'index_price': index_price,
-                'instruments': instruments}
+                'portfolio': pickling.read_data(my_path_portfolio),
+                'index_price': index_price [0]['price'],
+                'instruments': pickling.read_data (my_path_instruments)}
     
     async def position_per_instrument (self, positions, instrument: str) -> list:
         """
@@ -425,9 +413,6 @@ class ApplyHedgingSpot ():
                 
                 # for instrument assigned as hedginng instrument, do the following:
                 if 'PERPETUAL' in instrument:
-                    
-                    #order_history  = await self. get_order_history_by_instrument (instrument)
-                    #trade_history  = await self. get_my_trades_from_exchange ()
                         
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 
@@ -440,13 +425,16 @@ class ApplyHedgingSpot ():
                         equity = portfolio [0]['equity']
                         
                         # compute notional value
-                        notional =  await self.compute_notional_value (index_price, equity)
+                        notional =  await self.compute_notional_value (index_price, 
+                                                                       equity
+                                                                       )
             
                         #! get instrument detaila
                         instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
 
                         # instrument minimum order
                         min_trade_amount = instrument_data ['min_trade_amount']
+                        
                         # instrument contract size
                         contract_size = instrument_data ['contract_size']
 
@@ -466,25 +454,23 @@ class ApplyHedgingSpot ():
                                                                                 contract_size
                                                                                 ) 
                         remain_unhedged = spot_hedged.compute_remain_unhedged (notional,
-                                                                                    min_trade_amount,
-                                                                                    contract_size
-                                                                                    ) 
+                                                                               min_trade_amount,
+                                                                               contract_size
+                                                                               ) 
                         min_hedging_size = check_spot_hedging ['all_hedging_size']
 
                         spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                         positions = reading_from_database ['positions']
-                        #log.warning (positions)
+
                         if positions:
                             position =  await self. position_per_instrument (positions, instrument) 
-                        #log.error (actual_hedging_size_system)
                         
                         if position:
                             actual_hedging_size_system = position ['size']
                             if actual_hedging_size_system - actual_hedging_size != 0:
-                                await self.check_my_trades_consistency(my_trades_open, server_time)
-                        
+                                await self.check_my_trades_consistency(my_trades_open, server_time)                        
                         #!                    
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                                 telegram_bot_sendtext(info)
@@ -559,7 +545,10 @@ class ApplyHedgingSpot ():
                                 await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                             
 
-    async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  actual_hedging_size, min_hedging_size)-> None:
+    async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  
+                                                                         actual_hedging_size: float, 
+                                                                         min_hedging_size: float
+                                                                         )-> None:
         
         '''
         '''   
@@ -609,17 +598,16 @@ async def main ():
         )
         label_hedging = 'hedging spot'
         
-        
         server_time = await syn.current_server_time ()
         await syn.running_strategy (server_time)
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
-        open_orders_from_exchange = await syn.open_orders_from_exchange ()        
+        #open_orders_from_exchange = await syn.open_orders_from_exchange ()        
         #await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
          
     except Exception as error:
-        formula.log_error('app','name-try2', error, 10)
+        formula.log_error('apply hedging spot','main', error, 30)
     
 if __name__ == "__main__":
 
@@ -648,7 +636,7 @@ if __name__ == "__main__":
         formula.sleep_and_restart_program (30)
         
     except (KeyboardInterrupt, SystemExit):
-        asyncio.get_event_loop().run_until_complete(main().stop_ws())
+        sys.exit(1)
 
     except Exception as error:
-        formula.log_error('app','name-try2', error, 10)
+        formula.log_error('apply hedging spot','name-try2', error, 30)
