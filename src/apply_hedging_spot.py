@@ -95,10 +95,10 @@ class ApplyHedgingSpot ():
         """
         from utils import string_modification
         
-        log.info (my_trades_from_db)
+        #log.info (my_trades_from_db)
         
         trades = await self.get_my_trades_from_exchange ()
-        log.debug (f'my_order ALL {trades=}')
+        #log.debug (f'my_order ALL {trades=}')
         
         if my_trades_from_db:
             # get the earliest transaction time stamp
@@ -107,12 +107,12 @@ class ApplyHedgingSpot ():
             # use the earliest time stamp to fetch data from exchange
             fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
             # compare data from exchanges. Pick only those have not recorded at system yet
-            log.debug (f'{my_trades_from_db_min_time_stamp=}')
-            log.warning (f'{fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
+            #log.debug (f'{my_trades_from_db_min_time_stamp=}')
+            #log.warning (f'{fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
             filtered_data_from_my_trades_from_exchange = string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
                                                                                                 my_trades_from_db
                                                                                                 )
-            log.info (f'{my_trades_from_db=}')
+            #log.info (f'{my_trades_from_db=}')
             log.error (f'{filtered_data_from_my_trades_from_exchange=}')
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
