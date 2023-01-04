@@ -107,7 +107,7 @@ class MyTrades ():
                 my_trades_open = pickling.read_data(my_trades_path_open)  
                 
                 # filter open trades which have the same label id with trade transaction
-                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o])
+                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                 # sum transaction with the same label id
                 sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
                 log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
@@ -124,8 +124,9 @@ class MyTrades ():
                 if len (self.my_trades) > 1:
                     log.error (str(closed_label_id_int))
                     log.debug ((self.my_trades))
-                    mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o['label'] ])
+                    mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
+                    log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
                     if sum_mixed_trades_in_my_trades_open_net != 0:
                         for data_order in mixed_trades_with_the_same_label:
                                 
