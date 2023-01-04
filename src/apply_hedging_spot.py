@@ -122,6 +122,8 @@ class ApplyHedgingSpot ():
         from utils import string_modification
         
         log.info (my_orders_from_db)
+        positions = await self.get_positions ()
+        log.debug (f'my_order ALL {positions=}')
         if my_orders_from_db:
             # get the earliest transaction time stamp
             my_orders_from_db_min_time_stamp = min ([o['timestamp'] for o in my_orders_from_db ])
