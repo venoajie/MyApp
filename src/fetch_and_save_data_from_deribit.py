@@ -9,7 +9,6 @@ from os.path import join, dirname
 import json
 from functools import lru_cache
 
-##
 # installed
 import websockets
 import asyncio
@@ -18,11 +17,9 @@ from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, formula, system_tools, string_modification, time_modification
-from configuration import id_numbering, label_numbering
-from risk_management import spot_hedging
+from utils import pickling, formula, system_tools, string_modification
+from configuration import id_numbering
 from portfolio.deribit import open_orders_management, myTrades_management
-import apply_hedging_spot
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -32,10 +29,9 @@ def parse_dotenv()->dict:
     return {'client_id': os.environ.get('client_id_test'),
             'client_secret': os.environ.get('client_secret_test')
             }
+    
 none_data = [None, [], '0.0', 0]
-     
-     
-
+    
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)

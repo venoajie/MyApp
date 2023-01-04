@@ -41,21 +41,26 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
-    async def open_orders_from_exchange (self) -> list:
+    async def get_open_orders_from_exchange (self) -> list:
         """
         """
-        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, self.client_id, self.client_secret, self.currency)
+        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, 
+                                                                              self.client_id, 
+                                                                              self.client_secret, 
+                                                                              self.currency
+                                                                              )
         open_ordersREST: list = open_ordersREST ['result']
                         
         return open_orders_management.MyOrders (open_ordersREST)
         
-    async def check_open_orders_consistency (self, open_orders_from_exchange: list, label: str = 'spot hedging', status: str = 'open') -> list:
+    async def check_open_orders_consistency (self, get_open_orders_from_exchange: list, label: str = 'spot hedging', status: str = 'open') -> list:
         """
         db vs exchange
+        will be combined with check_my_orders_consistency
         """
         import synchronizing_files
         #
-        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency(self.currency, open_orders_from_exchange, label, 'open')
+        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency(self.currency, get_open_orders_from_exchange, label, 'open')
         
         if get_id_for_cancel:
             
@@ -105,6 +110,31 @@ class ApplyHedgingSpot ():
             
             my_trades.distribute_trade_transaction(self.currency)
             
+            
+    async def check_my_orders_consistency (self, my_orders_from_db, server_time: int) -> list:
+        """
+        """
+        from utils import string_modification
+        
+        log.info (my_orders_from_db)
+        if my_orders_from_db:
+            # get the earliest transaction time stamp
+            my_orders_from_db_min_time_stamp = min ([o['timestamp'] for o in my_orders_from_db ])
+            
+            # use the earliest time stamp to fetch data from exchange
+            fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades (my_orders_from_db_min_time_stamp, server_time)
+            # compare data from exchanges. Pick only those have not recorded at system yet
+            log.debug (f'{my_orders_from_db_min_time_stamp=}')
+            log.warning (f'{fetch_my_orders_from_system_from_min_time_stamp_to_now=}')
+            filtered_data_from_my_orders_from_exchange = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
+                                                                                                my_orders_from_db
+                                                                                                )
+            log.info (f'{my_orders_from_db=}')
+            log.error (f'{filtered_data_from_my_orders_from_exchange=}')
+            # redistribute the filtered data into db
+            myorders = open_orders_management.MyOrders (filtered_data_from_my_orders_from_exchange)
+            
+            myorders.distribute_order_transactions (self.currency)
         
     async def get_my_trades_from_exchange (self, count = 1000) -> list:
         """
@@ -282,7 +312,7 @@ class ApplyHedgingSpot ():
         """
         """
     
-        open_order_mgt = await self.open_orders_from_exchange ()
+        open_order_mgt = await self.get_open_orders_from_exchange ()
         
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
         
@@ -311,7 +341,7 @@ class ApplyHedgingSpot ():
 
         three_minute = one_minute * 3
         
-        open_order_mgt = await self.open_orders_from_exchange ()
+        open_order_mgt = await self.get_open_orders_from_exchange ()
 
         try:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
@@ -453,12 +483,16 @@ class ApplyHedgingSpot ():
                         label_for_filter = 'hedging'
                         
                         # check for any order outstanding as per label filter
-                        net_open_orders_open_byAPI: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label_for_filter)
+                        net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label_for_filter)
+                        open_orders_from_system = await self.get_open_orders_from_exchange()
+                        open_order_mgt_system = open_orders_management.MyOrders (open_orders_from_system)
+                        net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net (label_for_filter)
                         
-                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI=}')
+                        log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
+                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI_db=}')
 
                         # send sell order if spot still unhedged and no current open orders 
-                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 \
+                        if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
                             and (actual_hedging_size_system == actual_hedging_size):
                             log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                         
@@ -473,7 +507,7 @@ class ApplyHedgingSpot ():
                             await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
                         
                         # if spot has hedged properly, check also for opportunity to get additional small profit    
-                        if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI == 0:
+                        if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
                             threshold = .025/100
                             adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
                             bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_Price']
@@ -564,8 +598,8 @@ async def main ():
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
-        open_orders_from_exchange = await syn.open_orders_from_exchange ()        
-        await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
+        get_open_orders_from_exchange = await syn.get_open_orders_from_exchange ()        
+        await syn.check_open_orders_consistency (get_open_orders_from_exchange, label_hedging)
          
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
