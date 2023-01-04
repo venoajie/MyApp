@@ -423,7 +423,7 @@ class ApplyHedgingSpot ():
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 
                     
-                    log.info(f'{index_price=} {market_price=} {portfolio=}')
+                    log.info(f'{index_price=} {market_price=} ')
                     # if none of the followings = []
                     if  index_price and portfolio and market_price:
                         

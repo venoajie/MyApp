@@ -130,6 +130,7 @@ class MyOrders ():
         from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
+        log.error (self.my_orders)
         
         if self.my_orders:
             
