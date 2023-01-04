@@ -610,7 +610,7 @@ async def main ():
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
         open_orders_from_exchange = await syn.open_orders_from_exchange ()        
-        await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
+        #await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
          
     except Exception as error:
         formula.log_error('app','name-try2', error, 10)
