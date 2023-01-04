@@ -468,8 +468,7 @@ class ApplyHedgingSpot ():
                         #!                    
                                 info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                                 telegram_bot_sendtext(info)
-                                if actual_hedging_size_system != actual_hedging_size:
-                                    formula.sleep_and_restart_program (60*30)
+                                formula.sleep_and_restart_program (10)
                                  #! 
 
                         label: str = label_numbering.labelling ('open', label_hedging)
