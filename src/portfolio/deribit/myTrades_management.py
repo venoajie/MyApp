@@ -103,11 +103,19 @@ class MyTrades ():
                     pickling.check_duplicate_elements (my_trades_path_open)
                     
                 #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
-                log.debug ( len (self.my_trades))
-                if len (self.my_trades) > 1:
+                my_trades = self.my_trades
+                log.debug ( len (my_trades))
+                if len (my_trades) > 1:
                     log.error (str(closed_label_id_int))
-                    log.debug ((self.my_trades))
-                    mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o ])
+                    
+                                        
+                    label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
+                    for key in my_trades:
+                        if label not in key:
+                            key [label] = []
+       
+                    log.debug ((my_trades))
+                    mixed_trades_with_the_same_label = ([o for o in my_trades if  str(closed_label_id_int)  in o ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
                     log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
                     if sum_mixed_trades_in_my_trades_open_net != 0:
@@ -118,7 +126,7 @@ class MyTrades ():
                             
                     if sum_mixed_trades_in_my_trades_open_net == 0: 
 
-                        remaining_open_trades = ([o for o in self.my_trades if  str(closed_label_id_int)  not in o ])     
+                        remaining_open_trades = ([o for o in my_trades if  str(closed_label_id_int)  not in o ])     
                         log.critical (remaining_open_trades)               
                         for data_order in remaining_open_trades:
                                             
