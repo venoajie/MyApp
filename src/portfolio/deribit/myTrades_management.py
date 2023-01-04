@@ -119,7 +119,21 @@ class MyTrades ():
                     # put the trading at open db until fully closed (buy = sell)
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_open)
-                
+                    
+                #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
+                if len (self.my_trades) > 1:
+                    mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o['label'] ])
+                    sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
+                    if sum_mixed_trades_in_my_trades_open_net != 0:
+                        for data_order in mixed_trades_with_the_same_label:
+                                
+                            pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                            pickling.check_duplicate_elements (my_trades_path_open)
+                            
+                    if sum_mixed_trades_in_my_trades_open_net == 0: #! PENDING
+                        pass
+                                
+                        
                 # transaction has fully completed. move all the transactions with the same id to closed db
                 if sum_closed_trades_in_my_trades_open_net == 0:
                                                     
