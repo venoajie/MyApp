@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 # built ins
-from typing import Dict
 from datetime import datetime, timedelta
 import os
 from os.path import join, dirname
@@ -145,7 +144,7 @@ class StreamMarketAccountData:
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
-                message: Dict = orjson.loads(message)
+                message: dict = orjson.loads(message)
                 message_channel: str = None
                 #log.warning (message)
                 if 'id' in list(message):
@@ -211,7 +210,6 @@ class StreamMarketAccountData:
                                 my_orders.distribute_order_transactions (currency)
                                 
                             if positions:
-                                log.debug (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency)
                                 pickling.replace_data(my_path_position, positions)
                                                                                                       
@@ -244,7 +242,7 @@ class StreamMarketAccountData:
         Requests DBT's `public/set_heartbeat` to
         establish a heartbeat connection.
         """
-        msg: Dict = {
+        msg: dict = {
                     "jsonrpc": "2.0",
                     "id": 9098,
                     "method": "public/set_heartbeat",
@@ -267,7 +265,7 @@ class StreamMarketAccountData:
         Sends the required WebSocket response to
         the Deribit API Heartbeat message.
         """
-        msg: Dict = {
+        msg: dict = {
                     "jsonrpc": "2.0",
                     "id": 8212,
                     "method": "public/test",
@@ -289,7 +287,7 @@ class StreamMarketAccountData:
         Requests DBT's `public/auth` to
         authenticate the WebSocket Connection.
         """
-        msg: Dict = {
+        msg: dict = {
                     "jsonrpc": "2.0",
                     "id": 9929,
                     "method": "public/auth",
@@ -314,7 +312,7 @@ class StreamMarketAccountData:
         while True:
             if self.refresh_token_expiry_time is not None:
                 if datetime.utcnow() > self.refresh_token_expiry_time:
-                    msg: Dict = {
+                    msg: dict = {
                                 "jsonrpc": "2.0",
                                 "id": 9929,
                                 "method": "public/auth",
@@ -346,7 +344,7 @@ class StreamMarketAccountData:
 
         id = id_numbering.id(operation, ws_channel)
         
-        msg: Dict = {
+        msg: dict = {
                     "jsonrpc": "2.0",
                     "method": f"public/{operation}",
                     "id": id,
@@ -355,7 +353,6 @@ class StreamMarketAccountData:
                         }
                     }
 
-        #log.warning(id)
         log.warning(msg)
         await self.websocket_client.send(
             json.dumps(
@@ -382,30 +379,17 @@ def main ():
         )
 
     except Exception as error:
-        formula.log_error('app','name-try2', error, 10)
+        formula.log_error('fetch and save data from deribit','websocket', error, 10)
     
 if __name__ == "__main__":
 
-    # DBT Client ID
-    client_id: str = parse_dotenv() ['client_id']
-    # DBT Client Secret
-    client_secret: str = parse_dotenv() ['client_secret']
-    config = {
-    'client_id': 'client_id',
-    'client_secret': 'client_secret'
-}
-    db_config = [{k: os.environ.get(v) for k, v in config.items()}]
-    #log.error (db_config)
-    db_config = [o  for o in db_config]
-    #log.error (db_config)
-    
     try:
-            main()
+        main()
         
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
-        formula.log_error('app','name-try2', error, 10)
+        formula.log_error('fetch and save data from deribit','websocket', error, 10)
 
     
