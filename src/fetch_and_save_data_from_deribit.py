@@ -203,9 +203,7 @@ class StreamMarketAccountData:
                         currency = string_modification.extract_currency_from_text (message_channel)   
                                                       
                         my_path = system_tools.provide_path_for_file ('instruments',  currency)       
-
-                        my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
-                        
+                                                
                         one_minute = 60000
                         
                         instrument_book = "".join(list(message_channel) [5:][:-14])
@@ -221,52 +219,15 @@ class StreamMarketAccountData:
                                 my_trades.distribute_trade_transaction(currency)
                                 
                             if orders:
-                                for order in orders:
-                                    
-                                    log.warning (f'{orders=}')
-                                    
-                                    order_state = order ['order_state']
-                                    order_id= order ['order_id']
-                                    
-                                    my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
-                                    open_orders_open = pickling.read_data (my_path_orders_open) 
-                                    log.debug (f'BEFORE {open_orders_open=}')
-                                    #log.warning (f'{order_state=}')
-                                    
-                                    if order_state == 'open':
-                                        #log.error ('ORDER_STATE OPEN')
-                                        
-                                        pickling.append_and_replace_items_based_on_qty (my_path_orders_open, order, 1000, True)
-                                        pickling.check_duplicate_elements (my_path_orders_open)
-                                        
-                                    else:
-                                        #log.error ('ORDER_STATE ELSE')
-                                        log.info (f'{order=}')
-                                        item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
-                                        item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
-                                        #log.info (f'{item_in_open_orders_open_with_same_id=}')
-                                        #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
-                                        
-                                        pickling.append_and_replace_items_based_on_qty (my_path_orders_else, order, 1000, True)
-                                        pickling.check_duplicate_elements (my_path_orders_else)
-                                        
-                                        if item_in_open_orders_open_with_same_id != []:
-                                            #log.critical ('item_in_open_orders_open_with_same_id')
-                                            pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000, True)
-                                            pickling.check_duplicate_elements (my_path_orders_else)
-                                            
-                                        pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
-                                        pickling.check_duplicate_elements (my_path_orders_open)
+                                my_orders = myTrades_management.MyTrades (orders)
+                                my_orders.distribute_order_transaction (currency)
                                 
                             if positions:
                                 log.debug (positions)
-                                my_path_position = system_tools.provide_path_for_file ('positions', currency.lower())
+                                my_path_position = system_tools.provide_path_for_file ('positions', currency)
                                 pickling.replace_data(my_path_position, positions)
-                            
-                            #my_path = system_tools.provide_path_for_file ('position',  currency) 
-                                                                          
+                                                                                                      
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
-                            #log.error (data_orders)
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
                             
