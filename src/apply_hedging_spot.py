@@ -97,8 +97,8 @@ class ApplyHedgingSpot ():
         
         log.info (my_trades_from_db)
         
-        positions = await self.get_positions ()
-        log.debug (f'my_order ALL {positions=}')
+        trades = await self.get_my_trades_from_exchange ()
+        log.debug (f'my_order ALL {trades=}')
         
         if my_trades_from_db:
             # get the earliest transaction time stamp
