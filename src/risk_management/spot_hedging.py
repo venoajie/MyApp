@@ -4,9 +4,8 @@
 from dataclassy import dataclass
 from loguru import logger as log
 
-from utils import pickling, system_tools, string_modification
+from utils import string_modification
 from portfolio.deribit import myTrades_management
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class SpotHedging ():
@@ -22,7 +21,6 @@ class SpotHedging ():
         '''       
         my_trades = self.my_trades
         return   [] if my_trades  == [] else  ([o for o in my_trades if self.label in o['label']  ])
-
 
     def my_trades_api_basedOn_label_max_price_attributes (self) -> dict:
         
@@ -47,9 +45,9 @@ class SpotHedging ():
                 'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
                 'instrument':  ([o['instrument_name'] for o in trade_list_with_max_price])[0] ,
                 'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
-                'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
+                'label':  ([o['label'] for o in trade_list_with_max_price])[0]
+                }
             
-            }
         if my_trades_api ==[]:
             return []
 
@@ -79,8 +77,9 @@ class SpotHedging ():
         '''       
         return  -(int ((notional / min_trade_amount * contract_size) + min_trade_amount))
 
-
-    def net_position (self, selected_transactions: list)-> float:
+    def net_position (self, 
+                      selected_transactions: list
+                      )-> float:
         
         '''
         '''    
@@ -94,8 +93,10 @@ class SpotHedging ():
 
         '''  
         my_trades = self.my_trades_api_basedOn_label ()
+        
         if     my_trades != [] :
             my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
+            
         return 0 if my_trades == [] else self.net_position (my_trades_label)
 
     def compute_remain_unhedged (self,
@@ -119,7 +120,8 @@ class SpotHedging ():
     def is_spot_hedged_properly (self,
         notional: float,
         min_trade_amount: float,
-        contract_size: int) -> dict:
+        contract_size: int
+        ) -> dict:
 
         '''
         # check whether spot has hedged properly
@@ -127,7 +129,9 @@ class SpotHedging ():
 
         '''       
         # compute minimum hedging size
-        min_hedged_size: int = self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size)
+        min_hedged_size: int = self.compute_minimum_hedging_size (notional, 
+                                                                  min_trade_amount, 
+                                                                  contract_size)
 
         # check remaining hedging needed
         remain_unhedged: int = self.compute_remain_unhedged (
@@ -169,7 +173,6 @@ class SpotHedging ():
         myTrades_max_price_pct_x_threshold = myTrades_max_price * threshold
         myTrades_max_price_pct_minus = (myTrades_max_price - myTrades_max_price_pct_x_threshold)
         myTrades_max_price_pct_plus = (myTrades_max_price + myTrades_max_price_pct_x_threshold)
-        
 
         myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
