@@ -140,6 +140,8 @@ class ApplyHedgingSpot ():
             myorders = open_orders_management.MyOrders (filtered_data_from_my_orders_from_exchange)
             
             myorders.distribute_order_transactions (self.currency)
+        else:
+            myorders.distribute_order_transactions (self.currency)
         
     async def get_my_trades_from_exchange (self, count = 1000) -> list:
         """
