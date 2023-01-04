@@ -196,13 +196,45 @@ async def  get_user_trades_by_currency (connection_url, client_id, client_secret
             )
     return result 
 
+async def  get_user_trades_by_instrument (connection_url, 
+                                          client_id, 
+                                          client_secret, 
+                                          currency: str, 
+                                          count: int =1000
+                                          ):
+    
+    params =  {
+                "currency": currency.upper(),
+                "kind": 'any',
+                "count": count
+                }
+    
+    endpoint_get_user_trades: str = f'private/get_user_trades_by_instrument'
+    result = await main(
+            endpoint= endpoint_get_user_trades,
+            params= params,
+            connection_url= connection_url,
+            client_id= client_id,
+            client_secret= client_secret,
+            )
+    return result 
 
-async def  get_user_trades_by_currency_and_time (connection_url, client_id, client_secret, currency, start_timestamp: int, end_timestamp: int):
+async def  get_user_trades_by_currency_and_time (connection_url, 
+                                                 client_id, 
+                                                 client_secret, 
+                                                 currency: str, 
+                                                 start_timestamp: int, 
+                                                 end_timestamp: int, 
+                                                 count: int = 1000, 
+                                                 include_old: bool = True
+                                                 )-> list:
     params =  {
                 "currency": currency.upper(),
                 "kind": "any",
                 "start_timestamp": start_timestamp,
-                "end_timestamp": end_timestamp
+                "end_timestamp": end_timestamp,
+                "count": count,
+                "include_old": include_old
                 }
     
     endpoint_get_user_trades: str = f'private/get_user_trades_by_currency_and_time'
