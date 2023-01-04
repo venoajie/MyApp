@@ -49,7 +49,7 @@ class MyTrades ():
         '''
         '''       
         from utils import string_modification, pickling, system_tools
-        #from loguru import logger as log
+        from loguru import logger as log
 
         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
@@ -92,23 +92,24 @@ class MyTrades ():
                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                 # sum transaction with the same label id
                 sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                #log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+                log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                 
                 # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                 if sum_closed_trades_in_my_trades_open_net !=0:
-                    #log.critical (trade_seq)
+                    log.critical (trade_seq)
                     
                     # put the trading at open db until fully closed (buy = sell)
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_open)
                     
                 #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
+                log.debug ( len (self.my_trades))
                 if len (self.my_trades) > 1:
-                    #log.error (str(closed_label_id_int))
-                    #log.debug ((self.my_trades))
+                    log.error (str(closed_label_id_int))
+                    log.debug ((self.my_trades))
                     mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
-#                    log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
+                    log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
                     if sum_mixed_trades_in_my_trades_open_net != 0:
                         for data_order in mixed_trades_with_the_same_label:
                                 
