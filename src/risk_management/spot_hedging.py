@@ -21,10 +21,6 @@ class SpotHedging ():
         '''
         '''       
         my_trades = self.my_trades
-        #log.error (my_trades)        
-
-        #print (my_trades)
-        #print ([o for o in my_trades  ])
         return   [] if my_trades  == [] else  ([o for o in my_trades if self.label in o['label']  ])
 
 
@@ -35,7 +31,7 @@ class SpotHedging ():
         
         my_trades_api = self.my_trades_api_basedOn_label ()
 
-        if my_trades_api_basedOn_label !=[]:
+        if my_trades_api !=[]:
             max_price = max ([o['price'] for o in my_trades_api])
             trade_list_with_max_price =  ([o for o in my_trades_api if o['price'] == max_price ])
             len_trade_list_with_max_price = len(trade_list_with_max_price)
@@ -54,7 +50,7 @@ class SpotHedging ():
                 'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
             
             }
-        if my_trades_api_basedOn_label ==[]:
+        if my_trades_api ==[]:
             return []
 
     def my_trades_max_price_plus_threshold (self,
@@ -191,123 +187,3 @@ class SpotHedging ():
                 'size_take_profit':  my_trades_max_price_attributes_filteredBy_label ['size'],
                 'average_up':  index_price  > myTrades_max_price_pct_plus}
         
-def my_path_myTrades (
-    currency: str,
-    status: str
-    ) -> list:
-    
-    '''
-    status = closed/open
-    '''       
-        
-    return  system_tools.provide_path_for_file ('myTrades', currency, status)
-
-def fetch_my_trades (
-    currency: str,
-    status: str
-    ) -> list:
-    
-    '''
-    '''       
-    
-    return  pickling.read_data (my_path_myTrades(currency, status)) 
-
-def my_trades_api_basedOn_label (
-    currency: str,
-    status: str,
-    label: str
-    ) -> list:
-    
-    '''
-    '''       
-    my_trades = myTrades_management.MyTrades(fetch_my_trades (currency, status))    
-    return  my_trades.my_trades_api_basedOn_label (label)
-        
-def separate_specific_label_trade (
-    currency: str,
-    status: str,
-    label: str,
-    closed_label: str,
-    my_trades_api: list = None 
-    )-> list:
-    
-    '''
-    '''    
-    if my_trades_api == None:
-        my_trades_api = my_trades_api_basedOn_label (currency, status, label)
-
-    return [] if my_trades_api == [] else  ([o for o in my_trades_api  if  closed_label in o['label'] ])
-
-def separate_open_trades_pair_which_have_closed (
-    currency: str,
-    status: str,
-    label: str,
-    closed_label: str,
-    my_trades_api: list = None  
-    )-> list:
-    
-    '''
-    looking for pair transaction attributes which have closed previously
-    '''    
-        
-    from loguru import logger as log
-    if my_trades_api == None:
-        closed_trades = separate_specific_label_trade (currency, status,label, closed_label)
-        my_trades_api = my_trades_api_basedOn_label (currency, label)
-    else:
-        closed_trades = separate_specific_label_trade (currency, label, closed_label, my_trades_api)
-        
-    closed_trades_label =  ([o['label'] for o in closed_trades ])
-    closed_trades_label_int = ([string_modification.extract_integers_from_text(o)  for o in closed_trades_label  ])
-
-    if len (closed_trades_label_int) !=[]:
-        closed_trades_label_int = closed_trades_label_int[0] 
-    else:
-        return []
-        
-    return {'closed_trades': [] if closed_trades == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  in o['label'] ]),
-            'remaining_open_trades': [] if my_trades_api == [] else  ([o for o in my_trades_api if  str(closed_trades_label_int)  not in o['label'] ])
-                }
-
-def transfer_open_trades_pair_which_have_closed_to_closedTradingDb (
-    currency: str,
-    label: str,
-    closed_label: str,
-    my_trades_api: list = None  
-    )-> list:
-    
-    '''
-    looking for pair transaction attributes which have closed previously
-    '''    
-        
-    if my_trades_api == None:
-        open_trades = separate_open_trades_pair_which_have_closed (currency,
-                                                                     label,
-                                                                     closed_label
-                                                                     )['remaining_open_trades']
-        
-        closed_trades = separate_open_trades_pair_which_have_closed (currency,
-                                                                     label,
-                                                                     closed_label
-                                                                     )['closed_trades']
-    else:
-        open_trades = separate_open_trades_pair_which_have_closed (currency,
-                                                                     label,
-                                                                     closed_label, 
-                                                                     my_trades_api
-                                                                     )['remaining_open_trades']
-        
-        closed_trades = separate_open_trades_pair_which_have_closed (currency,
-                                                                     label,
-                                                                     closed_label, 
-                                                                     my_trades_api
-                                                                     )['closed_trades']
-    if closed_trades != []  :
-        from utils import pickling
-
-        # write new data to remaining open transactions
-        pickling.replace_data(my_path_myTrades(currency, 'open'), open_trades) 
-
-        # append new data to closed transactions
-        pickling.append_data(my_path_myTrades(currency, 'closed'), closed_trades) 
-
