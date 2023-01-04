@@ -235,6 +235,21 @@ class ApplyHedgingSpot ():
                 'index_price': index_price,
                 'instruments': instruments}
     
+    async def position_per_instrument (self, positions, instrument: str) -> list:
+        """
+        """
+
+        try:
+            position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
+        except:
+            my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
+            positions = await self.get_positions ()
+            pickling.replace_data (my_path_positions, positions)   
+            position = await self.reading_from_database ()   
+            position = position ['positions']  
+            position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
+        return position
+                
     async def market_price (self, instrument: str) -> list:
         """
         """
@@ -415,14 +430,14 @@ class ApplyHedgingSpot ():
                         spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
-                        actual_hedging_size_system = reading_from_database ['positions']
-                        log.warning (actual_hedging_size_system)
-                        if actual_hedging_size_system:
-                            actual_hedging_size_system =  [o for o in actual_hedging_size_system if o['instrument_name'] == instrument]  [0]
+                        positions = reading_from_database ['positions']
+                        log.warning (positions)
+                        if positions:
+                            position =  await self. position_per_instrument (positions, instrument) 
                         #log.error (actual_hedging_size_system)
                         
-                        if actual_hedging_size_system:
-                            actual_hedging_size_system = actual_hedging_size_system ['size']
+                        if position:
+                            actual_hedging_size_system = position ['size']
                             if actual_hedging_size_system - actual_hedging_size != 0:
                                 await self.check_my_trades_consistency(my_trades_open, server_time)
                         
