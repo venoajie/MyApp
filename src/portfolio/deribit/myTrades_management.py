@@ -107,7 +107,7 @@ class MyTrades ():
                 my_trades_open = pickling.read_data(my_trades_path_open)  
                 
                 # filter open trades which have the same label id with trade transaction
-                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+                closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o])
                 # sum transaction with the same label id
                 sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
                 log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
