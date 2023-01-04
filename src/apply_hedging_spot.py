@@ -443,7 +443,8 @@ class ApplyHedgingSpot ():
                         log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI=}')
 
                         # send sell order if spot still unhedged and no current open orders 
-                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 and actual_hedging_size_system in none_data and actual_hedging_size in none_data:
+                        if spot_was_unhedged and net_open_orders_open_byAPI == 0 \
+                            and (actual_hedging_size_system == actual_hedging_size):
                             log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                         
                             await self.send_orders ('sell', 
