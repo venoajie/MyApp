@@ -3,10 +3,6 @@
 # installed
 from dataclassy import dataclass
 
-def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
-    from utils import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
-
 @dataclass(unsafe_hash=True, slots=True)
 class MyTrades ():
 
@@ -17,13 +13,13 @@ class MyTrades ():
     '''       
     my_trades: list
             
-    def my_trades_api (self):
+    def my_trades_api (self) -> list:
         
         '''
         '''    
         return [o for o in self.my_trades if o['api'] == True]
     
-    def my_trades_manual (self):
+    def my_trades_manual (self) -> list:
         
         '''
         '''    
@@ -37,7 +33,7 @@ class MyTrades ():
         '''    
         return [] if self.my_trades_api () == [] else  ([o for o in self.my_trades_api () if  label in o['label'] ])
     
-    def my_trades_api_net_position(self, selected_trades)-> list:
+    def my_trades_api_net_position(self, selected_trades: list) -> list:
         
         '''
         '''    
@@ -48,13 +44,12 @@ class MyTrades ():
                 
         return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
     
-    def distribute_trade_transaction (self, currency) -> dict:
+    def distribute_trade_transaction (self, currency: str) -> None:
         
         '''
-        trade_sources: 'API'
         '''       
         from utils import string_modification, pickling, system_tools
-        from loguru import logger as log
+        #from loguru import logger as log
 
         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
@@ -88,7 +83,7 @@ class MyTrades ():
                 pickling.check_duplicate_elements (my_trades_path_open)
                 
             if 'closed' in label_id:
-                log.debug ('LABEL ID CLOSED')
+                #log.debug ('LABEL ID CLOSED')
                 
                 # fetch previous open trading data from local db
                 my_trades_open = pickling.read_data(my_trades_path_open)  
@@ -142,7 +137,7 @@ class MyTrades ():
                                         
                 if label_id == [] :
                     my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
-                    log.error ('[]')
+                    #log.error ('[]')
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
             
     def my_trades_max_price_attributes_filteredBy_label (self, trade_sources_filtering: list) -> dict:
