@@ -20,7 +20,6 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, formula, system_tools, string_modification, time_modification
 from configuration import id_numbering, label_numbering
-import deribit_get#,deribit_rest
 from risk_management import spot_hedging
 from portfolio.deribit import open_orders_management, myTrades_management
 import apply_hedging_spot
@@ -197,17 +196,10 @@ class StreamMarketAccountData:
                         message_channel = message['params']['channel']
                         #log.info (message_channel)
             
-                        symbol_index =  (message_channel)[-7:]
+                        one_minute = 60000
                         data_orders: list = message['params']['data']
                         currency = string_modification.extract_currency_from_text (message_channel)
-                        currency = string_modification.extract_currency_from_text (message_channel)   
-                                                      
-                        my_path = system_tools.provide_path_for_file ('instruments',  currency)       
-                                                
-                        one_minute = 60000
-                        
-                        instrument_book = "".join(list(message_channel) [5:][:-14])
-                        
+                                                                                                                              
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             #log.info (data_orders)
                             positions = data_orders ['positions']
@@ -219,14 +211,15 @@ class StreamMarketAccountData:
                                 my_trades.distribute_trade_transaction(currency)
                                 
                             if orders:
-                                my_orders = myTrades_management.MyTrades (orders)
-                                my_orders.distribute_order_transaction (currency)
+                                my_orders = open_orders_management.MyOrders (orders)
+                                my_orders.distribute_order_transactions (currency)
                                 
                             if positions:
                                 log.debug (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency)
                                 pickling.replace_data(my_path_position, positions)
                                                                                                       
+                        instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 

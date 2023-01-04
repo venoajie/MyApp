@@ -106,14 +106,13 @@ class MyOrders ():
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  len ([o for o in self.my_orders_api_basedOn_label (label)])
             
-    def my_orders_api_basedOn_label_items_net (self, label: str)-> list:
+    def my_orders_api_basedOn_label_items_net (self, label: str)-> list: #! inconsistent output comparing to other funcs.
         
         '''
         '''   
         from utils import number_modification 
         return 0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
-            
             
     def my_orders_api_basedOn_label_items_size (self, label: str)-> list:
         
@@ -122,14 +121,7 @@ class MyOrders ():
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  sum ([o['amount'] for o in self.my_orders_api_basedOn_label (label)])
             
-    def check_whether_orders_have_excecuted (self)-> list:
-        
-        '''
-        '''    
-        pass
-    
-    
-    def distribute_order_transaction (self, currency) -> dict:
+    def distribute_order_transactions (self, currency) -> None:
         
         '''
         trade_sources: 'API'
@@ -175,3 +167,11 @@ class MyOrders ():
                     
                 pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
                 pickling.check_duplicate_elements (my_path_orders_open)
+                
+    def check_whether_orders_have_excecuted (self)-> list:
+        
+        '''
+        '''    
+        pass
+    
+    
