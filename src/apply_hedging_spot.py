@@ -321,18 +321,14 @@ class ApplyHedgingSpot ():
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
-                await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                                self.client_id,
-                                                                self.client_secret, 
-                                                                open_order_id
-                                                                )
+                await self.cancel_by_order_id (open_order_id)
+                
     async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
         """
         """
         label_for_filter = 'hedging spot-closed'
     
         await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
-                    
     
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, server_time, label) -> float:
         """
@@ -354,26 +350,23 @@ class ApplyHedgingSpot ():
 
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)                        
             if open_orders_deltaTime > three_minute:
-                await deribit_get.get_cancel_order_byOrderId(self.connection_url, 
-                                                             self.client_id, 
-                                                             self.client_secret, 
-                                                             open_order_id)    
+                await self.cancel_by_order_id (open_order_id)    
     
+    
+    async def cancel_by_order_id (self, open_order_id) -> None:
+        await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
+                                                      self.client_id, 
+                                                      self.client_secret, 
+                                                      open_order_id
+                                                      )  
     async def running_strategy (self, server_time) -> float:
         """
         source data: loaded from database app
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         """
 
-        #none_data = [[], None, 0]
-        #log.critical (f'{server_time=}')
         #! fetch data ALL from db
         reading_from_database = await self.reading_from_database ()
-        
-        #!
-       # my_trades_closed: list = reading_from_database ['my_trades_closed']
-        
-        #log.debug (my_trades_closed)
         
         #!
         # my trades data
@@ -382,11 +375,12 @@ class ApplyHedgingSpot ():
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
         
-        #log.warning (open_orders_open_byAPI)
         # portfolio data
         portfolio = reading_from_database ['portfolio']
+        
         # instruments data
         instruments = reading_from_database ['instruments']
+        
         # index price
         index_price: float= reading_from_database['index_price']
         
@@ -417,7 +411,6 @@ class ApplyHedgingSpot ():
                     # get ALL bids and asks
                     market_price = await self.market_price (instrument) 
                     
-                    log.info(f'{index_price=} {market_price=} ')
                     # if none of the followings = []
                     if  index_price and portfolio and market_price:
                         
@@ -425,9 +418,7 @@ class ApplyHedgingSpot ():
                         equity = portfolio [0]['equity']
                         
                         # compute notional value
-                        notional =  await self.compute_notional_value (index_price, 
-                                                                       equity
-                                                                       )
+                        notional =  await self.compute_notional_value (index_price, equity)
             
                         #! get instrument detaila
                         instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
@@ -572,11 +563,8 @@ class ApplyHedgingSpot ():
             
             sleep (2)
             
-            await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                            self.client_id,
-                                                            self. client_secret, 
-                                                            open_order_id
-                                                            )
+            await self.cancel_by_order_id (open_order_id)
+            
 async def main ():
     
     client_id: str = parse_dotenv() ['client_id']
