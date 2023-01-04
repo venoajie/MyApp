@@ -156,15 +156,15 @@ class MyTrades ():
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
             
             #!
-            my_trades_open = pickling.read_data(my_trades_path_open)
-            log.debug (f'AFTER 2 {my_trades_open=}')
-            sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
+            #my_trades_open = pickling.read_data(my_trades_path_open)
+            #log.debug (f'AFTER 2 {my_trades_open=}')
+            #sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
             
             #telegram_bot_sendtext(data_order)
-            info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
+            #info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
             
-            log.critical (info)
-            telegram_bot_sendtext(info)
+            #log.critical (info)
+            #telegram_bot_sendtext(info)
             #!
             
     def my_trades_max_price_attributes_filteredBy_label (self, trade_sources_filtering: list) -> dict:
