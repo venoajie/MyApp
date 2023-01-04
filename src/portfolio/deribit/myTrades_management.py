@@ -122,6 +122,8 @@ class MyTrades ():
                     
                 #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
                 if len (self.my_trades) > 1:
+                    log.error (str(closed_label_id_int))
+                    log.debug ((self.my_trades))
                     mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o['label'] ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
                     if sum_mixed_trades_in_my_trades_open_net != 0:

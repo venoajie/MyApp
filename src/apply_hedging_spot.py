@@ -113,7 +113,7 @@ class ApplyHedgingSpot ():
                                                                                                 my_trades_from_db
                                                                                                 )
             #log.info (f'{my_trades_from_db=}')
-            log.error (f'{filtered_data_from_my_trades_from_exchange=}')
+            #log.error (f'{filtered_data_from_my_trades_from_exchange=}')
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
             
