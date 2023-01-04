@@ -61,7 +61,7 @@ class MyTrades ():
 
         for data_order in self.my_trades:
             data_order = [data_order]
-            log.info (f'DATA FROM EXC LOOP {data_order=}')
+            #log.info (f'DATA FROM EXC LOOP {data_order=}')
             
             #determine label id. 
             try:
@@ -76,29 +76,16 @@ class MyTrades ():
                 pass
 
             closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-            log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
+            ##log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
 
-            #!
-            sum_new_trading = [o['amount'] for o in data_order  ][0]
-            sum_open_trading_after_new_trading = 0
-            #!
-            
             
             #! DISTRIBUTE trading transaction as per label id
             if 'open' in label_id:
-                log.error ('LABEL ID OPEN')
+#                log.error ('LABEL ID OPEN')
 
                 # append trade to db.check potential duplicate
                 pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                 pickling.check_duplicate_elements (my_trades_path_open)
-
-                #! DELETE
-                my_trades_open = pickling.read_data(my_trades_path_open)
-                label_my_trades_open = [o['label'] for o in my_trades_open  ]
-                amount_my_trades_open = [o['amount'] for o in my_trades_open  ]
-                sum_open_trading_after_new_trading = sum([o['amount'] for o in my_trades_open  ])
-                log.error (f'DATA OPEN TRADE AFTER APPEND {sum_open_trading_after_new_trading}  {sum_open_trading_after_new_trading} {amount_my_trades_open=}')
-                #! DELETE
                 
             if 'closed' in label_id:
                 log.debug ('LABEL ID CLOSED')
@@ -110,11 +97,11 @@ class MyTrades ():
                 closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                 # sum transaction with the same label id
                 sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+                #log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                 
                 # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                 if sum_closed_trades_in_my_trades_open_net !=0:
-                    log.critical (trade_seq)
+                    #log.critical (trade_seq)
                     
                     # put the trading at open db until fully closed (buy = sell)
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
@@ -122,11 +109,11 @@ class MyTrades ():
                     
                 #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
                 if len (self.my_trades) > 1:
-                    log.error (str(closed_label_id_int))
-                    log.debug ((self.my_trades))
+                    #log.error (str(closed_label_id_int))
+                    #log.debug ((self.my_trades))
                     mixed_trades_with_the_same_label = ([o for o in (self.my_trades) if  str(closed_label_id_int)  in o ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
-                    log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
+#                    log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
                     if sum_mixed_trades_in_my_trades_open_net != 0:
                         for data_order in mixed_trades_with_the_same_label:
                                 
@@ -152,40 +139,11 @@ class MyTrades ():
                     remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])                    
                     pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
                     pickling.check_duplicate_elements (my_trades_path_open)
-                        
-                    #! DELETE
-                    my_trades_open = pickling.read_data(my_trades_path_open)
-                    label_my_trades_open = [o ['label']  for o in my_trades_open  ]
-                    amount_my_trades_open = [o ['amount']  for o in my_trades_open  ]
-                    sum_my_trades_open = sum([o['amount'] for o in my_trades_open  ])
-                    log.warning (f'DATA REMAINING OPEN TRADE AFTER REPLACE CLOSED TRADES {sum_my_trades_open} {amount_my_trades_open} {label_my_trades_open=}')
-                        
-                    #!
-                    my_trades_closed = pickling.read_data(my_trades_path_closed)
-                    if my_trades_closed !=[]:
-                        log.warning (my_trades_closed)
-                        label_my_trades_closed = [o ['label']  for o in my_trades_closed  ]
-                        sum_my_trades_open = sum([o['amount'] for o in my_trades_closed  ])
-                        log.warning (f'DATA CLOSED TRADE FINAL {sum_my_trades_open} {label_my_trades_closed=}')
-                    #! DELETE
-
-                        
+                                        
                 if label_id == [] :
                     my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
                     log.error ('[]')
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
-            
-            #!
-            #my_trades_open = pickling.read_data(my_trades_path_open)
-            #log.debug (f'AFTER 2 {my_trades_open=}')
-            #sum_open_trading_after_new_closed_trading = sum([o['amount'] for o in my_trades_open  ])
-            
-            #telegram_bot_sendtext(data_order)
-            #info= (f'CHECK TRADING SUM {label_id=} sum_new_trading: {sum_new_trading} sum_open_trading_after_new_trading: {sum_open_trading_after_new_trading} final_sum_open: {sum_open_trading_after_new_closed_trading} \n ')
-            
-            #log.critical (info)
-            #telegram_bot_sendtext(info)
-            #!
             
     def my_trades_max_price_attributes_filteredBy_label (self, trade_sources_filtering: list) -> dict:
         
