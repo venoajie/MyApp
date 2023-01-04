@@ -1,13 +1,3 @@
-"""
-Description:
-    Deribit RESToverHTTP [POST] Asyncio Example.
-    - Authenticated request.
-Usage:
-    python3.9 dbt-post-authenticated-example.py
-Requirements:
-    - aiohttp >= 3.8.1
-"""
-
 # built ins
 from typing import Dict
 # installed
@@ -87,7 +77,6 @@ async def main(
 
             return response
 
-
 async def send_order_limit (connection_url: str,
                             client_id,
                             client_secret,
@@ -131,7 +120,6 @@ async def send_order_limit (connection_url: str,
                 "reject_post_only": reject_post_only
                 }
 
-    #print (params)    
     if side == 'buy':
         endpoint: str = 'private/buy'
     if side == 'sell'  :
@@ -162,8 +150,11 @@ async def  get_open_orders_byInstruments (connection_url, client_id, client_secr
             )
     return result 
 
-
-async def  get_open_orders_byCurrency (connection_url, client_id, client_secret, currency):
+async def  get_open_orders_byCurrency (connection_url, 
+                                       client_id, 
+                                       client_secret, 
+                                       currency: str
+                                       )-> list:
     params =  {
                 "currency": currency
                 }
@@ -178,8 +169,12 @@ async def  get_open_orders_byCurrency (connection_url, client_id, client_secret,
             )
     return result 
 
-
-async def  get_user_trades_by_currency (connection_url, client_id, client_secret, currency: str, count: int =1000):
+async def  get_user_trades_by_currency (connection_url, 
+                                        client_id, 
+                                        client_secret, 
+                                        currency: str, 
+                                        count: int =1000
+                                        )-> list:
     params =  {
                 "currency": currency.upper(),
                 "kind": 'any',
@@ -247,8 +242,6 @@ async def  get_user_trades_by_currency_and_time (connection_url,
             )
     return result 
 
-
-
 async def  get_order_history_by_instrument (connection_url, client_id, client_secret, instrument_name, count: int = 100):
     params =  {
                 "instrument_name": instrument_name.upper(),
@@ -266,8 +259,6 @@ async def  get_order_history_by_instrument (connection_url, client_id, client_se
             client_secret= client_secret,
             )
     return result 
-
-
 
 async def  get_cancel_order_byOrderId(connection_url: str,
                                       client_id: str, 
@@ -287,7 +278,6 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             client_secret=client_secret,
             )
     return result     
-
 
 async def get_positions (connection_url: str, client_id, client_secret, currency):
         
@@ -344,16 +334,12 @@ async def  get_index (connection_url: str, currency):
             )
     return result     
 
-
-
 async def  get_instruments (connection_url: str, currency):
     
     endpoint: str = 'public/get_instruments'
     params =  {"currency": 'ETH',
     "kind": "future",
     "expired": False}
-    print (endpoint)
-    print (params)
     
     result = await main(
             endpoint=endpoint,
