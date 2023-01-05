@@ -193,9 +193,10 @@ class SpotHedging ():
         
         label_to_send = f'hedging spot-closed-{label_int}'
         
-        log.debug(f'{myTrades_max_price_pct_minus=} {index_price=} {avoid_over_bought=} {sum_closed_trades_in_my_trades_open_net=}  {myTrades_max_price_pct_plus=} ')
+        log.debug(f'trans.price {myTrades_max_price}   {index_price=}  {avoid_over_bought=} ')
+        log.debug(f'take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
+        log.debug(f'{myTrades_max_price_pct_minus=}  {myTrades_max_price_pct_plus=} {sum_closed_trades_in_my_trades_open_net=} ')
         
-        log.debug(f'trans.price {myTrades_max_price} take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
         
         return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
                 'buy_Price':  myTrades_max_price_pct_minus,
