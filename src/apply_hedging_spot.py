@@ -407,7 +407,7 @@ class ApplyHedgingSpot ():
             one_minute = 60000
             last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
             last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] else filled_order_deltaTime_sell > one_minute
-            log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
+            #log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
             
             if last_time_order_filled_exceed_threshold :
                 
