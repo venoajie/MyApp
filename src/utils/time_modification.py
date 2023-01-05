@@ -4,7 +4,7 @@
 import calendar
 from datetime import datetime, timedelta, timezone
 
-none_data=[None, 0, []]
+
 
 def convert_time_to_utc (transaction_time: str= None, hours_diff_with_utc: float= None):
 
@@ -96,7 +96,7 @@ def convert_time_to_unix (time)-> int:
     except Exception as error:
         import traceback
         from loguru import logger as log
-        print (f"{error}")
+        log.critical (f"{error}")
         print (traceback.format_exc())
                 
     return int((calendar.timegm(time.timetuple())*1000000+microsecs)/1000) 
@@ -108,6 +108,8 @@ def time_delta_between_now_and_transaction_time_both_in_utc (transaction_time: s
             waktu saat transaksi 
 
     """
+    none_data=[None, 0, []]
+    
     now_time_utc = convert_time_to_utc ()['utc_now']
     transaction_time_utc = convert_time_to_utc (transaction_time)['transaction_time']
     
@@ -132,9 +134,3 @@ def time_delta_between_two_times (start_time: str, end_time: str)-> float:
     return {'seconds': time_delta,
             'hours': time_delta/3600,
             'days': time_delta/3600/24}
-
-
-
-if __name__ == '__main__':
-    transaction_time = '2022-12-14 15:33:29.858518'
-    print (convert_time_to_unix(transaction_time))

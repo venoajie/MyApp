@@ -11,35 +11,12 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
-run-test:
-	git pull
-	clear
-	python3 src/strategyDeribit.py 
-
-start:
-	python3 src/synchronizing_files.py
-	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
-
-fetch-save-data:
-	nohup python3 src/fetch_and_save_market_data.py >/dev/null 2>&1 &  
-	sleep 5 
-	nohup python3 src/fetch_and_save_data_from_deribit.py >/dev/null 2>&1 &  
-
-kill-running-file:
-	nohup sh src/checkEvents.sh >/dev/null 2>&1 & 
-
-ram-disk:
-#https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
-	sudo mount -t tmpfs -o rw,size=2G tmpfs src/market_data
-	sudo mount -t tmpfs -o rw,size=2G tmpfs market_data
-	sudo chmod 777 market_data
-
 install:
+	sudo apt-get install inotify-tools
+	sudo apt-get install python3-psutil
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
 	pip3 install --upgrade -r requirements.txt
 	pip3 install --upgrade requests
-	sudo apt-get install inotify-tools
-	sudo apt-get install python3-psutil
 
 clean: clean-build clean-pyc clean-test
 
