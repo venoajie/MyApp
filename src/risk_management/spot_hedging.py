@@ -159,6 +159,7 @@ class SpotHedging ():
 
     def adjusting_inventories (self,
                                index_price: float,
+                               currency: str,
                                threshold: float = .5/100,
                                label: str = 'hedging spot-open'
                                ) -> list:
@@ -188,7 +189,7 @@ class SpotHedging ():
         
         if avoid_over_bought == False:        
             my_trades = myTrades_management.MyTrades (trades_to_close)
-            my_trades.distribute_trade_transaction(self.currency)
+            my_trades.distribute_trade_transaction(currency)
         
         label_to_send = f'hedging spot-closed-{label_int}'
         
