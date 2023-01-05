@@ -196,5 +196,5 @@ class SpotHedging ():
                 'sell_price':  myTrades_max_price_pct_plus,
                 'label_take_profit':  label_to_send,
                 'size_take_profit':  size_take_profit,
-                'average_up':  index_price  > myTrades_max_price_pct_plus}
+                'average_up':  index_price  > myTrades_max_price_pct_plus}#
         
