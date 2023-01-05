@@ -11,7 +11,7 @@ from dataclassy import dataclass
 
 # user defined formula
 from utils import time_modification, formula
-
+#
 @dataclass(unsafe_hash=True, slots=True)
 class MarketData ():
                 
