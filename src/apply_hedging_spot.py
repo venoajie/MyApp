@@ -424,8 +424,6 @@ class ApplyHedgingSpot ():
                     market_price = await self.market_price (instrument) 
                     
                     # if none of the followings = []
-                    log.info(f'{index_price=}')
-                    log.info(f'{market_price=}')
                     if  index_price and portfolio and market_price:
                         
                         # obtain spot equity
@@ -468,6 +466,8 @@ class ApplyHedgingSpot ():
 
                         actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                         positions = reading_from_database ['positions']
+                            
+                        log.info(f'{positions=}')
 
                         if positions:
                             position =  await self. position_per_instrument (positions, instrument) 
@@ -482,6 +482,7 @@ class ApplyHedgingSpot ():
                                 formula.sleep_and_restart_program (10)
                                  #! 
 
+                        log.info(f'{positions=}')
                         label: str = label_numbering.labelling ('open', label_hedging)
                         
                         label_for_filter = 'hedging'
