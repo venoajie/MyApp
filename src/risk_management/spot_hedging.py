@@ -180,9 +180,9 @@ class SpotHedging ():
         trades_to_close = ([o for o in (self.my_trades) if  str(label_int)  in o['label'] ])
         # sum transaction with the same label id
         log.debug(f'{trades_to_close=} ')
-        log.debug(f'{str(label_int) =} ')
+        #log.debug(f'{str(label_int) =} ')
         size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
-        log.debug(f'{size_take_profit=} ')
+        #log.debug(f'{size_take_profit=} ')
         sum_closed_trades_in_my_trades_open_net = my_trades_mgt.my_trades_api_net_position (trades_to_close)
         avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
         
