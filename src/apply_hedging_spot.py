@@ -415,7 +415,7 @@ class ApplyHedgingSpot ():
             instruments_name: list = f'{self.currency.upper()}-PERPETUAL'#! TOO MUCH: options + future
             
             for instrument in [instruments_name]: 
-                log.info(f'{instrument=}')
+                
                 
                 # for instrument assigned as hedginng instrument, do the following:
                 if 'PERPETUAL' in instrument:
@@ -424,6 +424,8 @@ class ApplyHedgingSpot ():
                     market_price = await self.market_price (instrument) 
                     
                     # if none of the followings = []
+                    log.info(f'{index_price=}')
+                    log.info(f'{market_price=}')
                     if  index_price and portfolio and market_price:
                         
                         # obtain spot equity
