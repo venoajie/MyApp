@@ -494,7 +494,7 @@ class ApplyHedgingSpot ():
                             open_order_mgt_system = await self.open_orders_from_exchange()
                             my_orders_from_db = await self.get_open_orders_from_exchange()
                             net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net (label_for_filter)
-                            log.error (net_open_orders_open_byAPI_system)
+                            #log.error (net_open_orders_open_byAPI_system)
                             if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
                                 await self.check_my_orders_consistency (my_orders_from_db, server_time)
                                 
