@@ -392,13 +392,19 @@ class ApplyHedgingSpot ():
         open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
         
         open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
+        open_order_filled_sell = ([o['last_update_timestamp'] for o in open_order_filled if ['direction'] == 'sell'] )
         #log.info (open_order_filled)
         if open_order_filled != []: 
             open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled] )
             filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
+            
+        if open_order_filled_sell != []: 
+            open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
+            filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
         
         one_minute = 60000
         last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
+        last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] else filled_order_deltaTime_sell > one_minute
         log.info(f'{last_time_order_filled_exceed_threshold=}')
         
         if last_time_order_filled_exceed_threshold :
@@ -485,11 +491,11 @@ class ApplyHedgingSpot ():
                             await self.check_my_orders_consistency (my_orders_from_db, server_time)
                             
                             log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
-                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI_db=}')
+                        log.info(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI_db=} {last_time_order_filled_sell_exceed_threshold > one_minute=}')
 
                         # send sell order if spot still unhedged and no current open orders 
                         if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                            and (actual_hedging_size_system == actual_hedging_size):
+                            and (actual_hedging_size_system == actual_hedging_size) and last_time_order_filled_sell_exceed_threshold > one_minute:
                             log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                         
                             await self.send_orders ('sell', 
