@@ -519,7 +519,7 @@ class ApplyHedgingSpot ():
                             # if spot has hedged properly, check also for opportunity to get additional small profit    
                             if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
                                 threshold = .025/100
-                                adjusting_inventories = spot_hedged.adjusting_inventories (index_price, threshold, 'hedging spot-open')
+                                adjusting_inventories = spot_hedged.adjusting_inventories (index_price, self.currency, threshold, 'hedging spot-open')
                                 bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_Price']
                                 ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                                 
