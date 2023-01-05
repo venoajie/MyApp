@@ -551,7 +551,9 @@ class ApplyHedgingSpot ():
                                     
                                     await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
         except Exception as error:
+            import traceback
             log.critical (error)
+            print (traceback.format_exc())
                                 
 
     async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  
