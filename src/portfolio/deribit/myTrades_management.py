@@ -120,7 +120,7 @@ class MyTrades ():
                             key [label] = []
        
                     #log.debug ((my_trades))
-                    mixed_trades_with_the_same_label = ([o for o in my_trades if  str(closed_label_id_int)  in o['label'] ])
+                    mixed_trades_with_the_same_label = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                     sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
                     log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
                     if sum_mixed_trades_in_my_trades_open_net != 0:
@@ -131,7 +131,7 @@ class MyTrades ():
                             
                     if sum_mixed_trades_in_my_trades_open_net == 0: 
 
-                        remaining_open_trades = ([o for o in my_trades if  str(closed_label_id_int)  not in o['label']  ])     
+                        remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ])     
                         log.critical (remaining_open_trades)               
                         for data_order in remaining_open_trades:
                                             
@@ -155,7 +155,7 @@ class MyTrades ():
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_closed)
 
-                    #! AT OPEN DB
+                    #! AT OPEN DB, MASIH GAGAL TANGKAP YANG CLOSE
                     # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
                     #update mytrades db with the still open ones
                     #my_trades_open = pickling.read_data(my_trades_path_open)  
