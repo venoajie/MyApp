@@ -410,8 +410,9 @@ class ApplyHedgingSpot ():
         if last_time_order_filled_exceed_threshold :
             
             # obtain all instrument names
-            instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+            #instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] #! TOO MUCH: options + future
             log.info(f'{instruments_name=}')
+            instruments_name: list = f"""['{self.currency.upper()}-PERPETUAL']""" #! TOO MUCH: options + future
             
             for instrument in instruments_name: 
                 log.info(f'{instrument=}')
