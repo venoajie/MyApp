@@ -411,8 +411,10 @@ class ApplyHedgingSpot ():
             
             # obtain all instrument names
             instruments_name: list = [] if instruments == [] else [o['instrument_name'] for o in instruments] 
+            log.info(f'{instruments_name=}')
             
             for instrument in instruments_name: 
+                log.info(f'{instrument=}')
                 
                 # for instrument assigned as hedginng instrument, do the following:
                 if 'PERPETUAL' in instrument:
