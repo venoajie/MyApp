@@ -32,6 +32,7 @@ ram-disk:
 #https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
 	sudo mount -t tmpfs -o rw,size=2G tmpfs src/market_data
 	sudo mount -t tmpfs -o rw,size=2G tmpfs market_data
+	sudo chmod 777 market_data
 
 install:
 	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
