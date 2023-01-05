@@ -186,6 +186,9 @@ class SpotHedging ():
         sum_closed_trades_in_my_trades_open_net = my_trades_mgt.my_trades_api_net_position (trades_to_close)
         avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
         
+        if avoid_over_bought == False:        
+            my_trades = myTrades_management.MyTrades (trades_to_close)
+            my_trades.distribute_trade_transaction(self.currency)
         
         label_to_send = f'hedging spot-closed-{label_int}'
         
