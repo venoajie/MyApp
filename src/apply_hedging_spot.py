@@ -374,7 +374,6 @@ class ApplyHedgingSpot ():
         #!
         # my trades data
         my_trades_open: list = reading_from_database ['my_trades_open']
-        log.error (my_trades_open)
         # open orders data
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
