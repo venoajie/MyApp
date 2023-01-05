@@ -175,10 +175,9 @@ class SpotHedging ():
         myTrades_max_price_pct_plus = (myTrades_max_price + myTrades_max_price_pct_x_threshold)
 
         myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
-        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
-        
+        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)        
 
-        trades_to_close = ([o for o in my_trades_mgt if  str(label_int)  in o['label'] ])
+        trades_to_close = ([o for o in (self.my_trades) if  str(label_int)  in o['label'] ])
         # sum transaction with the same label id
         size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
         sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (trades_to_close)
