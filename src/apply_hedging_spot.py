@@ -499,7 +499,7 @@ class ApplyHedgingSpot ():
                                 await self.check_my_orders_consistency (my_orders_from_db, server_time)
                                 
                                 log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
-                            log.error(f'{spot_was_unhedged=} {min_hedging_size=} {actual_hedging_size=} {actual_hedging_size_system=} {remain_unhedged=} {remain_unhedged>=0 =}  {net_open_orders_open_byAPI_db=} ')
+                            log.error(f' {net_open_orders_open_byAPI_db=} ')
 
                             # send sell order if spot still unhedged and no current open orders 
                             if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
