@@ -469,7 +469,7 @@ class ApplyHedgingSpot ():
                             actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                             positions = reading_from_database ['positions']
                                 
-                            log.info(f'{positions=}')
+                            #log.info(f'{positions=}')
 
                             if positions:
                                 position =  await self. position_per_instrument (positions, instrument) 
@@ -484,7 +484,7 @@ class ApplyHedgingSpot ():
                                     formula.sleep_and_restart_program (10)
                                     #! 
 
-                            log.info(f'{positions=}')
+                            #log.info(f'{positions=}')
                             label: str = label_numbering.labelling ('open', label_hedging)
                             
                             label_for_filter = 'hedging'
