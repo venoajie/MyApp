@@ -67,7 +67,7 @@ class ApplyHedgingSpot ():
         get_id_for_cancel = await synchronizing_files.check_open_orders_consistency (self.currency, 
                                                                                      open_orders_from_exchange, 
                                                                                      label, 
-                                                                                     'open'
+                                                                                     status
                                                                                      )
         
         if get_id_for_cancel:
@@ -96,7 +96,7 @@ class ApplyHedgingSpot ():
         return [] if trades == [] else trades ['result'] ['trades']
     
     async def check_my_trades_consistency (self, 
-                                           my_trades_from_db, 
+                                           my_trades_from_db: list, 
                                            server_time: int
                                            ) -> None:
         """
@@ -124,7 +124,7 @@ class ApplyHedgingSpot ():
             my_trades.distribute_trade_transaction(self.currency)
             
     async def check_my_orders_consistency (self, 
-                                           my_orders_from_db, 
+                                           my_orders_from_db: list, 
                                            server_time: int
                                            ) -> list:
         """
@@ -154,7 +154,7 @@ class ApplyHedgingSpot ():
             myorders = open_orders_management.MyOrders ([])
             await myorders.distribute_order_transactions (self.currency)
         
-    async def get_my_trades_from_exchange (self, count = 1000) -> list:
+    async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
@@ -374,7 +374,6 @@ class ApplyHedgingSpot ():
         #!
         # my trades data
         my_trades_open: list = reading_from_database ['my_trades_open']
-        log.debug (my_trades_open)
         # open orders data
         open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
         open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']

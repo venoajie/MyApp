@@ -191,9 +191,9 @@ class StreamMarketAccountData:
                         message_channel = message['params']['channel']
                         #log.info (message_channel)
             
-                        one_minute = 60000
+                        one_minute: int = 60000
                         data_orders: list = message['params']['data']
-                        currency = string_modification.extract_currency_from_text (message_channel)
+                        currency: str = string_modification.extract_currency_from_text (message_channel)
                                                                                                                               
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
                             #log.info (data_orders)

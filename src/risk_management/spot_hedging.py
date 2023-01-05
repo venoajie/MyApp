@@ -177,16 +177,24 @@ class SpotHedging ():
         myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)
         
+
+        trades_to_close = ([o for o in my_trades_mgt if  str(label_int)  in o['label'] ])
+        # sum transaction with the same label id
+        size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
+        sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (trades_to_close)
+        avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
+        
+        
         label_to_send = f'hedging spot-closed-{label_int}'
         
-        log.debug(f'{myTrades_max_price_pct_minus=} {index_price=} {myTrades_max_price_pct_plus=} ')
+        log.debug(f'{myTrades_max_price_pct_minus=} {index_price=} {avoid_over_bought=}  {myTrades_max_price_pct_plus=} ')
         
         log.debug(f'trans.price {myTrades_max_price} take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
         
-        return {'take_profit':  index_price <  myTrades_max_price_pct_minus,
+        return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
                 'buy_Price':  myTrades_max_price_pct_minus,
                 'sell_price':  myTrades_max_price_pct_plus,
                 'label_take_profit':  label_to_send,
-                'size_take_profit':  my_trades_max_price_attributes_filteredBy_label ['size'],
+                'size_take_profit':  size_take_profit,
                 'average_up':  index_price  > myTrades_max_price_pct_plus}
         

@@ -39,8 +39,10 @@ class MyTrades ():
         '''    
 
         if selected_trades != []:
-            sum_closed_trades_in_my_trades_open_sell = sum([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
+            sum_closed_trades_in_my_trades_open_sell = ([o['amount'] for o in selected_trades if o['direction']=='sell'  ])
+            sum_closed_trades_in_my_trades_open_sell = 0 if sum_closed_trades_in_my_trades_open_sell == [] else sum(sum_closed_trades_in_my_trades_open_sell)
             sum_closed_trades_in_my_trades_open_buy = sum([o['amount'] for o in selected_trades if o['direction']=='buy'  ])
+            sum_closed_trades_in_my_trades_open_buy = 0 if sum_closed_trades_in_my_trades_open_buy == [] else sum(sum_closed_trades_in_my_trades_open_buy)
                 
         return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
     
