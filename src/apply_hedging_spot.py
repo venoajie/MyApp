@@ -336,18 +336,17 @@ class ApplyHedgingSpot ():
         """
         """
         instruments_with_rebates = [o for o in instruments if o['maker_commission'] < 0 ]
-        log.info (instruments_with_rebates)
+
         instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'week' ]
-        log.info (instruments_with_rebates_weekly)
+
         instruments_with_rebates_weekly_longest_expiration = max([o['expiration_timestamp'] for o in instruments_with_rebates_weekly ])
         instruments_with_rebates_weekly_longest_expiration_ms_before_expiration = instruments_with_rebates_weekly_longest_expiration - server_time 
         instruments_with_rebates_weekly_longest_expiration_hours_before_expiration = (instruments_with_rebates_weekly_longest_expiration_ms_before_expiration/(60000))/60
         instruments_with_rebates_longest_expiration_days_before_expiration = instruments_with_rebates_weekly_longest_expiration_hours_before_expiration/24
-        log.info (instruments_with_rebates_longest_expiration_days_before_expiration)
-        log.info ( [o for o in instruments_with_rebates if o['expiration_timestamp'] == instruments_with_rebates_weekly_longest_expiration ])
     
         return {'instruments_with_rebates': instruments_with_rebates,
                 'instruments_with_rebates_weekly': instruments_with_rebates_weekly,
+                'instruments_with_rebates_weekly_longets_exp_days_before_expiration': instruments_with_rebates_longest_expiration_days_before_expiration,
                 'instruments_with_rebates_weekly_longets_exp': [o for o in instruments_with_rebates if o['expiration_timestamp'] == instruments_with_rebates_weekly_longest_expiration ],
                 }
 
