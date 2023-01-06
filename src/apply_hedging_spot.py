@@ -105,6 +105,16 @@ class ApplyHedgingSpot ():
         
         if my_trades_from_db:
             # get the earliest transaction time stamp
+            
+            log.info(f'DB {my_trades_from_db=}')
+            # clean up current local db before any synchronization attempts
+            my_trades_from_db = myTrades_management.MyTrades (my_trades_from_db)
+            my_trades_from_db.distribute_trade_transaction(self.currency)
+            
+            reread_from_db = await self.reading_from_database ()
+            my_trades_from_db = reread_from_db ['my_trades_open']
+            log.error(f'DB {my_trades_from_db=}')
+
             my_trades_from_db_min_time_stamp = min ([o['timestamp'] for o in my_trades_from_db ])-1
             
             # use the earliest time stamp to fetch data from exchange
@@ -116,12 +126,11 @@ class ApplyHedgingSpot ():
                                                           my_trades_from_db
                                                           )
             # redistribute the filtered data into db
-            my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
-            log.info(f'DB {my_trades_from_db=}')
+            my_trades_from_exchange = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
             #log.info(f'EXC {fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
             #log.info(f'FILTERED {filtered_data_from_my_trades_from_exchange=}')
             
-            my_trades.distribute_trade_transaction(self.currency)
+            my_trades_from_exchange.distribute_trade_transaction(self.currency)
             
     async def check_my_orders_consistency (self, 
                                            my_orders_from_db: list, 
