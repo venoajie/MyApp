@@ -17,4 +17,4 @@ apps:
 	sleep 1
 	nohup sh checkEvents.sh >/dev/null 2>&1 &
 	sleep 5m
-	nohup sh upload_to_remote.sh >/dev/null 2>&1 &
+	nohup sh sync_with_remote.sh >/dev/null 2>&1 &
