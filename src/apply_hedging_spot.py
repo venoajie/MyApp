@@ -480,7 +480,7 @@ class ApplyHedgingSpot ():
                                                                                           my_trades_open
                                                                                           )
                                 await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
-                                difference = await data_integrity.compare_inventory_per_db_vs_system ()
+                                difference =  data_integrity.compare_inventory_per_db_vs_system ()
                                 log.info(f'{difference=}')
                                 
                                 if difference !=0:                    
