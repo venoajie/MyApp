@@ -473,7 +473,7 @@ class ApplyHedgingSpot ():
                             
                             if position:
                                 actual_hedging_size_system = position ['size']
-                                data_integrity = check_data_integrity.CheckDataIntegrity (label_hedging, 
+                                data_integrity = await check_data_integrity.CheckDataIntegrity (label_hedging, 
                                                                                           self.currency,
                                                                                           position,
                                                                                           my_trades_open
