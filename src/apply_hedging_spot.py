@@ -632,9 +632,8 @@ if __name__ == "__main__":
         
         # only one file is allowed to running
         is_running = system_tools.is_current_file_running ('apply_hedging_spot.py')
+        
         if is_running:
-            #import sys
-            #sys.exit()
             catch_error (is_running)
         
         system_tools.sleep_and_restart_program (30)

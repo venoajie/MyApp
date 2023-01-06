@@ -140,12 +140,7 @@ def catch_error_message (error: str,
     if message !=None:
         info =  (f'{message} \n \n {error} \n \n {traceback.format_exc()}')
         
-    log.add ("error.log", 
-             backtrace=True, 
-             diagnose=True
-             )  # Caution, may leak sensitive data in prod
-        
-    if error == True: # to respond 'is_current_file_running' function result
+    if error == True: # to respond 'def is_current_file_running'  result
         sys.exit (1)
         
     log.critical (f'{error}')
@@ -156,6 +151,11 @@ def catch_error_message (error: str,
         sleep_and_restart_program (idle)
     else:
         sys.exit (1)
+        
+    log.add ("error.log", 
+             backtrace=True, 
+             diagnose=True
+             )  # Caution, may leak sensitive data in prod
     
     telegram_app.telegram_bot_sendtext (info)
     
