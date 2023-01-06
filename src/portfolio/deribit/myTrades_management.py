@@ -53,10 +53,12 @@ class MyTrades ():
         '''
         '''       
         from utils import string_modification, pickling, system_tools
+        from loguru import logger as log
         
 
         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
+        log.debug (my_trades_path_closed)
 
         for data_order in self.my_trades:
             data_order = [data_order]
@@ -87,7 +89,7 @@ class MyTrades ():
                 pickling.check_duplicate_elements (my_trades_path_open)
                 
             if 'closed' in label_id:
-                from loguru import logger as log
+                
                 #log.debug ('LABEL ID CLOSED')
                 
                 # fetch previous open trading data from local db
