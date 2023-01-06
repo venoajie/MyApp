@@ -43,6 +43,7 @@ class CheckDataIntegrity ():
             my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
             #log.error (my_trades_from_db_regular)
             return {'db_recover': my_trades_from_db_recovery,
+                    'path_regular': my_trades_path_open,
                     'db_regular': my_trades_from_db_regular}
         
         except Exception as error:
@@ -113,8 +114,10 @@ class CheckDataIntegrity ():
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
-                my_trades_path_open_reguler = my_trades_path_open ['db_regular']            
-                pickling.replace_data (my_trades_path_open_reguler, True)
+                pickling.replace_data (my_trades_path_open ['path_regular'] , 
+                                       my_trades_path_open ['db_regular'] , 
+                                       True
+                                       )
             
             if size_difference != 0:
                 await self.rearrange_my_trades_consistency (server_time)
