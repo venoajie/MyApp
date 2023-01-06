@@ -58,7 +58,7 @@ class MyTrades ():
 
         my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
         my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-        log.debug (my_trades_path_closed)
+        log.debug (self.my_trades)
 
         for data_order in self.my_trades:
             data_order = [data_order]
