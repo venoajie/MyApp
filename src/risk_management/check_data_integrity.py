@@ -111,7 +111,7 @@ class CheckDataIntegrity ():
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
-                my_trades_path_open_reguler = my_trades_path_open ['reguler']            
+                my_trades_path_open_reguler = my_trades_path_open ['db_regular']            
                 pickling.replace_data (my_trades_path_open_reguler, True)
             
             if size_difference != 0:
