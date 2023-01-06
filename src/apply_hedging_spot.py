@@ -466,11 +466,11 @@ class ApplyHedgingSpot ():
                             actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                             positions = reading_from_database ['positions']
                                 
-                            log.info(f'{positions=}')
+                            #log.info(f'{positions=}')
 
                             if positions:
                                 position =  await self. position_per_instrument (positions, instrument) 
-                            log.info(f'{position=}')
+                            #log.info(f'{position=}')
                             
                             if position:
                                 actual_hedging_size_system = position ['size']
@@ -479,7 +479,7 @@ class ApplyHedgingSpot ():
                                                                                           position,
                                                                                           my_trades_open
                                                                                           )
-                                difference = data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+                                difference = await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
                                 log.info(f'{difference=}')
                                 
                                 if difference !=0:                    
