@@ -4,4 +4,4 @@
 
 
 echo "Moving local  files to remote..."
-rclone sync  src/portfolio/deribit b2:MyAppDeribitTradingBAK
+rclone sync  portfolio/deribit b2:MyAppDeribitTradingBAK
