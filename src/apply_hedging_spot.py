@@ -11,9 +11,9 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 
 from portfolio.deribit import open_orders_management, myTrades_management
-from utils import pickling, system_tools, formula
+from utils import pickling, system_tools
 import deribit_get#,deribit_rest
-from risk_management import spot_hedging
+from risk_management import spot_hedging, check_data_integrity
 from configuration import  label_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -22,6 +22,11 @@ load_dotenv(dotenv_path)
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
+def catch_error (error, idle: int = None) -> list:
+    """
+    """
+    system_tools.catch_error_message(error, idle)
 
 def parse_dotenv()->dict:    
     return {'client_id': os.environ.get('client_id_test'),
@@ -95,43 +100,6 @@ class ApplyHedgingSpot ():
                         
         return [] if trades == [] else trades ['result'] ['trades']
     
-    async def check_my_trades_consistency (self, 
-                                           my_trades_from_db: list, 
-                                           server_time: int
-                                           ) -> None:
-        """
-        """
-        from utils import string_modification
-        
-        if my_trades_from_db:
-            # get the earliest transaction time stamp
-            
-            log.info(f'DB {my_trades_from_db=}')
-            # clean up current local db before any synchronization attempts
-            my_trades_from_db = myTrades_management.MyTrades (my_trades_from_db)
-            my_trades_from_db.distribute_trade_transaction(self.currency)
-            
-            reread_from_db = await self.reading_from_database ()
-            my_trades_from_db = reread_from_db ['my_trades_open']
-            log.error(f'DB {my_trades_from_db=}')
-
-            my_trades_from_db_min_time_stamp = 1672904588984#min ([o['timestamp'] for o in my_trades_from_db ])-1
-            
-            # use the earliest time stamp to fetch data from exchange
-            fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
-            
-            # compare data from exchanges. Pick only those have not recorded at system yet
-            filtered_data_from_my_trades_from_exchange = \
-                string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
-                                                          my_trades_from_db
-                                                          )
-            # redistribute the filtered data into db
-            my_trades_from_exchange = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
-            #log.info(f'EXC {fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
-            #log.info(f'FILTERED {filtered_data_from_my_trades_from_exchange=}')
-            
-            my_trades_from_exchange.distribute_trade_transaction(self.currency)
-            
     async def check_my_orders_consistency (self, 
                                            my_orders_from_db: list, 
                                            server_time: int
@@ -505,12 +473,18 @@ class ApplyHedgingSpot ():
                             
                             if position:
                                 actual_hedging_size_system = position ['size']
-                                if actual_hedging_size_system - actual_hedging_size != 0:
-                                    await self.check_my_trades_consistency(my_trades_open, server_time)                        
+                                data_integrity = check_data_integrity.CheckDataIntegrity (label_hedging, 
+                                                                                          self.currency,
+                                                                                          position,
+                                                                                          my_trades_open
+                                                                                          )
+                                data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+                                
+                                if data_integrity.compare_inventory_per_db_vs_system() !=0:                    
                             #!                    
                                     info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
-                                    telegram_bot_sendtext(info)
-                                    formula.sleep_and_restart_program (10)
+                                    telegram_bot_sendtext(info) 
+                                    system_tools.sleep_and_restart_program (10)
                                     #! 
 
                             #log.info(f'{positions=}')
@@ -580,9 +554,7 @@ class ApplyHedgingSpot ():
                                     
                                     await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
         except Exception as error:
-            import traceback
-            log.critical (error)
-            print (traceback.format_exc())
+            catch_error (error)
                                 
 
     async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  
@@ -595,24 +567,29 @@ class ApplyHedgingSpot ():
         
         from time import sleep
         
-        #refresh open orders
-        reading_from_database = await self.reading_from_database ()
-        open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
-        log.info(f'{open_orders_open_byAPI=}')
-        open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
-        label_open = 'hedging spot-open'
-        current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
-        current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
+        try:
+            
+            #refresh open orders
+            reading_from_database = await self.reading_from_database ()
+            open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+            log.info(f'{open_orders_open_byAPI=}')
+            open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
+            label_open = 'hedging spot-open'
+            current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
+            current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
 
-        is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
-        log.info(f'{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
-        
-        if  is_over_hedged:
-            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
+            is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
+            log.info(f'{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
             
-            sleep (2)
+            if  is_over_hedged:
+                open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
+                
+                sleep (2)
+                
+                await self.cancel_by_order_id (open_order_id)
             
-            await self.cancel_by_order_id (open_order_id)
+        except Exception as error:
+            catch_error (error)
             
 async def main ():
     
@@ -644,36 +621,28 @@ async def main ():
         #await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
          
     except Exception as error:
-        formula.log_error('apply hedging spot','main', error, 30)
+        catch_error (error, 30)
     
 if __name__ == "__main__":
 
-    # DBT Client ID
-    client_id: str = parse_dotenv() ['client_id']
-    # DBT Client Secret
-    client_secret: str = parse_dotenv() ['client_secret']
-    config = {
-    'client_id': 'client_id',
-    'client_secret': 'client_secret'
-}
-    db_config = [{k: os.environ.get(v) for k, v in config.items()}]
-    #log.error (db_config)
-    db_config = [o  for o in db_config]
-    #log.error (db_config)
-    
     try:
         import synchronizing_files
+        
         asyncio.get_event_loop().run_until_complete(main())
+        
         synchronizing_files.main()
+        
+        # only one file is allowed to running
         is_running = system_tools.is_current_file_running ('apply_hedging_spot.py')
         if is_running:
-            import sys
-            sys.exit()
+            #import sys
+            #sys.exit()
+            catch_error (is_running)
         
-        formula.sleep_and_restart_program (30)
+        system_tools.sleep_and_restart_program (30)
         
     except (KeyboardInterrupt, SystemExit):
-        sys.exit(1)
+        catch_error (KeyboardInterrupt)
 
     except Exception as error:
-        formula.log_error('apply hedging spot','name-try2', error, 30)
+        catch_error (error, 30)

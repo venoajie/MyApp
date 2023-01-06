@@ -2,206 +2,108 @@
 
 # installed
 from dataclassy import dataclass
-from loguru import logger as log
-
-from utils import string_modification
+from utils import system_tools, pickling, string_modification
+from risk_management import spot_hedging
 from portfolio.deribit import myTrades_management
+import asyncio
 
+def catch_error (error) -> list:
+    """
+    """
+    system_tools.catch_error_message(error)
+    
 @dataclass(unsafe_hash=True, slots=True)
-class SpotHedging ():
+class CheckDataIntegrity ():
 
     '''
     '''       
     label: str 
-    my_trades: list = []
+    currency: str 
+    position_per_instrument: list
+    my_trades_open: list
+            
+        
+    async def myTrades_from_recovery (self) -> list:
+        """
+        """
+
+        try:
+            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+                                                                           self.currency,'open-recovery-point'
+                                                                           )
+            my_trades_from_db = pickling.read_data (my_trades_path_open_recovery)
+            return my_trades_from_db 
+        
+        except Exception as error:
+            catch_error (error)
+                             
+    async def rearrange_my_trades_consistency (self, 
+                                           server_time: int
+                                           ) -> None:
+        """
+        """
                 
-    def my_trades_api_basedOn_label (self) -> list:
-        
-        '''
-        '''       
-        my_trades = self.my_trades
-        return   [] if my_trades  == [] else  ([o for o in my_trades if self.label in o['label']  ])
-
-    def my_trades_api_basedOn_label_max_price_attributes (self) -> dict:
-        
-        '''
-        '''       
-        
-        my_trades_api = self.my_trades_api_basedOn_label ()
-
-        if my_trades_api !=[]:
-            max_price = max ([o['price'] for o in my_trades_api])
-            trade_list_with_max_price =  ([o for o in my_trades_api if o['price'] == max_price ])
-            len_trade_list_with_max_price = len(trade_list_with_max_price)
+        try:
+            my_trades_from_db = await self.myTrades_from_recovery ()
             
-            # if multiple items, select only the oldest one
-            if len_trade_list_with_max_price > 0:
-                trade_list_with_max_price_min_timestamp = min([o['timestamp'] for o in trade_list_with_max_price])
-                trade_list_with_max_price =  ([o for o in trade_list_with_max_price if o['timestamp'] == trade_list_with_max_price_min_timestamp ])
+            if my_trades_from_db:
+                # get the earliest transaction time stamp
+                
+                my_trades_from_db_min_time_stamp =  min ([o['timestamp'] for o in my_trades_from_db ])-1
+                
+                # use the earliest time stamp to fetch data from exchange
+                fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
+                
+                # compare data from exchanges. Pick only those have not recorded at system yet
+                filtered_data_from_my_trades_from_exchange = \
+                    string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
+                                                            my_trades_from_db
+                                                            )
+                # redistribute the filtered data into db
+                my_trades_from_exchange = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
+                my_trades_from_exchange.distribute_trade_transaction(self.currency)
             
-            return  {
-                'max_price': max_price,
-                'trade_id':  ([o['trade_id'] for o in trade_list_with_max_price])[0] ,
-                'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
-                'instrument':  ([o['instrument_name'] for o in trade_list_with_max_price])[0] ,
-                'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
-                'label':  ([o['label'] for o in trade_list_with_max_price])[0]
-                }
+        except Exception as error:
+            catch_error (error)
+                                 
+    async def compare_inventory_per_db_vs_system (self) -> int:
+        
+        '''
+        #! MULTI LABEL?
+        ''' 
+        try:
+            position_per_instrument = self.position_per_instrument
+
+            spot_hedged = spot_hedging.SpotHedging (self.label,
+                                                    self.my_trades_open
+                                                    )
+                
+            actual_hedging_size = spot_hedged.compute_actual_hedging_size()
             
-        if my_trades_api ==[]:
-            return []
-
-    def my_trades_max_price_plus_threshold (self,
-        threshold: float, 
-        index_price: float, 
-        ) -> float:
-        
-        '''
-        '''       
-
-        myTrades_max_price =  self.my_trades_api_basedOn_label_max_price_attributes () ['max_price']
-        myTrades_max_price_plus_pct = myTrades_max_price * threshold
-                                        
-        return  {'index_price_higher_than_threshold': index_price > myTrades_max_price  + myTrades_max_price_plus_pct,
-                'index_price_lower_than_threshold': index_price < myTrades_max_price - myTrades_max_price_plus_pct}
-
-    def compute_minimum_hedging_size (self,
-        notional: float,
-        min_trade_amount: float,
-        contract_size: int
-        ) -> int:
-        
-        '''
-        compute minimum hedging size
-
-        '''       
-        return  -(int ((notional / min_trade_amount * contract_size) + min_trade_amount))
-
-    def net_position (self, 
-                      selected_transactions: list
-                      )-> float:
-        
-        '''
-        '''    
-        from utils import number_modification                
-        return number_modification.net_position (selected_transactions)
-    
-    def compute_actual_hedging_size (self) -> int:
-        
-        '''
-        compute actual hedging size
-
-        '''  
-        my_trades = self.my_trades_api_basedOn_label ()
-        
-        if     my_trades != [] :
-            my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
+            if position_per_instrument:
+                actual_hedging_size_system = position_per_instrument ['size']
+                
+                return  actual_hedging_size_system - actual_hedging_size 
+            else:
+                return  0 - actual_hedging_size 
             
-        return 0 if my_trades == [] else self.net_position (my_trades_label)
-
-    def compute_remain_unhedged (self,
-        notional: float,
-        min_trade_amount: float,
-        contract_size: int
-        ) -> int:
-
-        '''
-        '''       
-        # compute minimum hedging size. negative sign since the direction is expected as 'sell
-        min_hedged_size: int = (self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size))
-        
-        # check whether current spot was hedged
-        actual_hedging_size : int = self.compute_actual_hedging_size () 
-        log.warning (f'{actual_hedging_size=}')
-
-        # check remaining hedging needed
-        return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
-        
-    def is_spot_hedged_properly (self,
-        notional: float,
-        min_trade_amount: float,
-        contract_size: int
-        ) -> dict:
-
-        '''
-        # check whether spot has hedged properly
-        notional =  index_price * equity
-
-        '''       
-        # compute minimum hedging size
-        min_hedged_size: int = self.compute_minimum_hedging_size (notional, 
-                                                                  min_trade_amount, 
-                                                                  contract_size)
-
-        # check remaining hedging needed
-        remain_unhedged: int = self.compute_remain_unhedged (
-                                                        notional,
-                                                        min_trade_amount,
-                                                        contract_size
-                                                        )
-        # check open orders related to hedging, to ensure previous open orders has completely consumed
-        
-        size_pct_qty = int ((30/100 * min_hedged_size ))
-        hedging_size_portion = int(size_pct_qty if remain_unhedged < size_pct_qty else remain_unhedged)
-
-        none_data = [None, [], '0.0', 0]
-            
-        #log.critical (f'{open_orders_byAPI=}')        
-        log.info (f'{min_hedged_size=}')        
-        #log.info (f'{notional=}')        
-        log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
-        log.info (f'{hedging_size_portion=}')  
-        log.info (f'{remain_unhedged < 0=}')  
-        return {'spot_was_unhedged': False if notional in none_data else remain_unhedged < 0,
-                'all_hedging_size': min_hedged_size,
-                'average_up_size': max(1,int(size_pct_qty/3)),
-                'hedging_size': hedging_size_portion}
-
-    def adjusting_inventories (self,
-                               index_price: float,
-                               currency: str,
-                               threshold: float = .5/100,
-                               label: str = 'hedging spot-open'
-                               ) -> list:
+        except Exception as error:
+            catch_error (error)
+                                 
+    async def update_myTrades_file_as_per_comparation_result (self, server_time: int) -> list:
         
         '''
         ''' 
-        my_trades_mgt = myTrades_management.MyTrades (self.my_trades)
+        try:
+            size_difference = await self.compare_inventory_per_db_vs_system()
+            
+            if size_difference == 0:
+                my_trades_path_open_recovery = await self.myTrades_from_recovery ()            
+                pickling.replace_data (my_trades_path_open_recovery, True)
+            
+            if size_difference != 0:
+                await self.rearrange_my_trades_consistency (server_time)
 
-        my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label (label)
-        myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
-        
-        myTrades_max_price_pct_x_threshold = myTrades_max_price * threshold
-        myTrades_max_price_pct_minus = (myTrades_max_price - myTrades_max_price_pct_x_threshold)
-        myTrades_max_price_pct_plus = (myTrades_max_price + myTrades_max_price_pct_x_threshold)
-
-        myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
-        label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)        
-
-        trades_to_close = ([o for o in (self.my_trades) if  str(label_int)  in o['label'] ])
-        # sum transaction with the same label id
-        log.debug(f'{trades_to_close=} ')
-        #log.debug(f'{str(label_int) =} ')
-        size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
-        #log.debug(f'{size_take_profit=} ')
-        sum_closed_trades_in_my_trades_open_net = my_trades_mgt.my_trades_api_net_position (trades_to_close)
-        avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
-        
-        if avoid_over_bought == False:        
-            my_trades = myTrades_management.MyTrades (trades_to_close)
-            my_trades.distribute_trade_transaction(currency)
-        
-        label_to_send = f'hedging spot-closed-{label_int}'
-        
-        log.debug(f'trans.price {myTrades_max_price}   {index_price=}  {avoid_over_bought=} ')
-        log.debug(f'take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
-        log.debug(f'{myTrades_max_price_pct_minus=}  {myTrades_max_price_pct_plus=} {sum_closed_trades_in_my_trades_open_net=} ')
-        
-        
-        return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
-                'buy_Price':  myTrades_max_price_pct_minus,
-                'sell_price':  myTrades_max_price_pct_plus,
-                'label_take_profit':  label_to_send,
-                'size_take_profit':  size_take_profit,
-                'average_up':  index_price  > myTrades_max_price_pct_plus}#
-        
+        except Exception as error:
+            catch_error (error)
+                             

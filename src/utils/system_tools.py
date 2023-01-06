@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os,sys
+import os, sys
 from time import sleep
 
 none_data=[None, 0, []]
@@ -119,3 +119,32 @@ def is_current_file_running (script)->bool:
 
     return False
             
+        
+def catch_error_message (error: str, idle: float = None, message: str = None)->None:
+
+    '''  
+        # Capture & emit error message
+        # Send error message to telegram server
+        # https://medium.com/pipeline-a-data-engineering-resource/prettify-your-python-logs-with-loguru-a7630ef48d87
+
+    '''        
+    import traceback
+    from utils import telegram_app
+    from loguru import logger as log
+    
+    info = (f'{error} \n \n {traceback.format_exc()}')
+    
+    if message !=None:
+        
+        info =  (f'{message} {error} \n \n {traceback.format_exc()}')
+        
+    telegram_app.telegram_bot_sendtext (info)
+    log.add("error.log", backtrace=True, diagnose=True)  # Caution, may leak sensitive data in prod
+    log.debug (f'{error}')
+    log.error (traceback.format_exc())
+    
+    if idle != None:
+        log.critical (f"restart {idle} seconds after error")
+        sleep_and_restart_program (idle)
+    else:
+        sys.exit (1)
