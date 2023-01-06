@@ -480,10 +480,8 @@ class ApplyHedgingSpot ():
                                                                                           my_trades_open
                                                                                           )
                                 await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
-                                difference = await data_integrity.compare_inventory_per_db_vs_system ()
-                                log.info(f'{difference=}')
-                                difference =  data_integrity.compare_inventory_per_db_vs_system ()
-                                log.info(f'{difference=}')
+                                #difference = await data_integrity.compare_inventory_per_db_vs_system ()
+                                #log.info(f'{difference=}')
 
                             #log.info(f'{positions=}')
                             label: str = label_numbering.labelling ('open', label_hedging)
