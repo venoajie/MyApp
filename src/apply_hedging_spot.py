@@ -347,7 +347,7 @@ class ApplyHedgingSpot ():
     
         return {'instruments_with_rebates': instruments_with_rebates,
                 'instruments_with_rebates_weekly': instruments_with_rebates_weekly,
-                'instruments_with_rebates_weekly': [o for o in instruments_with_rebates if o['settlement_period'] == instruments_with_rebates_weekly_longest_expiration ],
+                'instruments_with_rebates_weekly_longets_exp': [o for o in instruments_with_rebates if o['settlement_period'] == instruments_with_rebates_weekly_longest_expiration ],
                 }
 
     
