@@ -332,13 +332,18 @@ class ApplyHedgingSpot ():
     
         await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
         
-    async def get_instruments_with_rebates (self, instruments) -> None:
+    async def get_instruments_with_rebates (self, instruments, server_time) -> None:
         """
         """
         instruments_with_rebates = [o for o in instruments if o['maker_commission'] < 0 ]
         instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'weekly' ]
         instruments_with_rebates_longest_expiration = max([o['expiration_timestamp'] for o in instruments ])
+        instruments_with_rebates_longest_expiration_ms_before_expiration = instruments_with_rebates_longest_expiration - server_time 
+        instruments_with_rebates_longest_expiration_hours_before_expiration = (instruments_with_rebates_longest_expiration_ms_before_expiration/60000)/60
+        instruments_with_rebates_longest_expiration_days_before_expiration = (instruments_with_rebates_longest_expiration_ms_before_expiration/60000)/60/24
         log.info (instruments_with_rebates)
+        log.info (instruments_with_rebates_longest_expiration_hours_before_expiration)
+        log.info (instruments_with_rebates_longest_expiration_days_before_expiration)
     
         return {'instruments_with_rebates': instruments_with_rebates,
                 'instruments_with_rebates_weekly': instruments_with_rebates_weekly,
@@ -399,7 +404,7 @@ class ApplyHedgingSpot ():
             
             # instruments data
             instruments = reading_from_database ['instruments']
-            rebates = await self.get_instruments_with_rebates (instruments)
+            rebates = await self.get_instruments_with_rebates (instruments, server_time)
             
             # index price
             index_price: float= reading_from_database['index_price']
