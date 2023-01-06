@@ -331,6 +331,20 @@ class ApplyHedgingSpot ():
         label_for_filter = 'hedging spot-closed'
     
         await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
+        
+    async def get_instruments_with_rebates (self, instruments) -> None:
+        """
+        """
+        instruments_with_rebates = [o for o in instruments if o['maker_commission'] < 0 ]
+        instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'weekly' ]
+        instruments_with_rebates_longest_expiration = max([o['expiration_timestamp'] for o in instruments ])
+        log.info (instruments_with_rebates)
+    
+        return {'instruments_with_rebates': instruments_with_rebates,
+                'instruments_with_rebates_weekly': instruments_with_rebates_weekly,
+                'instruments_with_rebates_weekly': [o for o in instruments_with_rebates if o['settlement_period'] == instruments_with_rebates_longest_expiration ],
+                }
+
     
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, server_time, label) -> float:
         """
@@ -385,6 +399,7 @@ class ApplyHedgingSpot ():
             
             # instruments data
             instruments = reading_from_database ['instruments']
+            rebates = await self.get_instruments_with_rebates (instruments)
             
             # index price
             index_price: float= reading_from_database['index_price']
