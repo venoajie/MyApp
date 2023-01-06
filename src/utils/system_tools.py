@@ -141,7 +141,7 @@ def catch_error_message (error: str, idle: float = None, message: str = None)->N
     telegram_app.telegram_bot_sendtext (info)
     log.add("error.log", backtrace=True, diagnose=True)  # Caution, may leak sensitive data in prod
     log.debug (f'{error}')
-    if error == None:
+    if error == True:
         sys.exit (1)
     log.error (traceback.format_exc())
     
