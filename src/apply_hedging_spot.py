@@ -480,15 +480,10 @@ class ApplyHedgingSpot ():
                                                                                           my_trades_open
                                                                                           )
                                 await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+                                difference = await data_integrity.compare_inventory_per_db_vs_system ()
+                                log.info(f'{difference=}')
                                 difference =  data_integrity.compare_inventory_per_db_vs_system ()
                                 log.info(f'{difference=}')
-                                
-                                if difference !=0:                    
-                            #!                    
-                                    info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
-                                    telegram_bot_sendtext(info) 
-                                    system_tools.sleep_and_restart_program (10)
-                                    #! 
 
                             #log.info(f'{positions=}')
                             label: str = label_numbering.labelling ('open', label_hedging)

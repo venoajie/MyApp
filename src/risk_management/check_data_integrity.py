@@ -12,7 +12,11 @@ def catch_error (error) -> list:
     """
     """
     system_tools.catch_error_message(error)
-    
+        
+def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
+    from utils import telegram_app
+    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
 @dataclass(unsafe_hash=True, slots=True)
 class CheckDataIntegrity ():
 
@@ -96,7 +100,13 @@ class CheckDataIntegrity ():
             if position_per_instrument:
                 actual_hedging_size_system = position_per_instrument ['size']
                 
-                return  actual_hedging_size_system - actual_hedging_size 
+                difference = actual_hedging_size_system - actual_hedging_size 
+                
+                if difference !=0:
+                    info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
+                    telegram_bot_sendtext(info) 
+                
+                return  difference
             else:
                 return  0 - actual_hedging_size 
             
@@ -110,7 +120,6 @@ class CheckDataIntegrity ():
         try:
             size_difference = await self.compare_inventory_per_db_vs_system()
             log.debug (f'{size_difference=}')
-            
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
