@@ -14,8 +14,8 @@ while true; do
                 
             
     fi
-        echo "sleep 10 seconds"
-        sleep 10
+        echo "sleep 30 minutes"
+        sleep 30m
 done
 
 
