@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+# built ins
 import os
 from os.path import join, dirname
 
@@ -10,6 +11,7 @@ import asyncio
 from dotenv import load_dotenv
 from os.path import join, dirname
 
+# user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
 from utils import pickling, system_tools
 import deribit_get#,deribit_rest

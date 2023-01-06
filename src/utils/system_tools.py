@@ -120,7 +120,10 @@ def is_current_file_running (script)->bool:
     return False
             
         
-def catch_error_message (error: str, idle: float = None, message: str = None)->None:
+def catch_error_message (error: str, 
+                         idle: float = None,
+                         message: str = None
+                         )->None:
 
     '''  
         # Capture & emit error message
@@ -135,18 +138,24 @@ def catch_error_message (error: str, idle: float = None, message: str = None)->N
     info = (f'{error} \n \n {traceback.format_exc()}')
     
     if message !=None:
+        info =  (f'{message} \n \n {error} \n \n {traceback.format_exc()}')
         
-        info =  (f'{message} {error} \n \n {traceback.format_exc()}')
+    log.add ("error.log", 
+             backtrace=True, 
+             diagnose=True
+             )  # Caution, may leak sensitive data in prod
         
-    telegram_app.telegram_bot_sendtext (info)
-    log.add("error.log", backtrace=True, diagnose=True)  # Caution, may leak sensitive data in prod
-    log.debug (f'{error}')
-    if error == True:
+    if error == True: # to respond 'is_current_file_running' function result
         sys.exit (1)
-    log.error (traceback.format_exc())
+        
+    log.critical (f'{error}')
+    log.debug (traceback.format_exc())
     
     if idle != None:
-        log.critical (f"restart {idle} seconds after error")
+        log.info (f"restart {idle} seconds after error")
         sleep_and_restart_program (idle)
     else:
         sys.exit (1)
+    
+    telegram_app.telegram_bot_sendtext (info)
+    

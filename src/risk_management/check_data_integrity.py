@@ -2,18 +2,21 @@
 
 # installed
 from dataclassy import dataclass
+import asyncio
+
+# user defined formula 
 from utils import system_tools, pickling, string_modification
 from risk_management import spot_hedging
 from portfolio.deribit import myTrades_management
-import asyncio
-from loguru import logger as log
 
 def catch_error (error) -> list:
     """
     """
     system_tools.catch_error_message(error)
         
-def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
+def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
@@ -27,36 +30,36 @@ class CheckDataIntegrity ():
     position_per_instrument: list
     my_trades_open: list
             
-        
     async def myTrades_from_db (self) -> list:
         """
         """
 
         try:
             my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
-                                                                           self.currency,
-                                                                           'open-recovery-point'
-                                                                           )
+                                                                               self.currency,
+                                                                               'open-recovery-point'
+                                                                               )
             
             my_trades_path_open  = system_tools.provide_path_for_file ('myTrades', 
-                                                                           self.currency,
-                                                                           'open'
-                                                                           )
-            #log.error (my_trades_path_open)
+                                                                       self.currency,
+                                                                       'open'
+                                                                       )
+
             my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
             my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
-            #log.error (my_trades_from_db_regular)
+
             return {'db_recover': my_trades_from_db_recovery,
                     'path_recover': my_trades_path_open_recovery,
                     'path_regular': my_trades_path_open,
-                    'db_regular': my_trades_from_db_regular}
+                    'db_regular': my_trades_from_db_regular
+                    }
         
         except Exception as error:
             catch_error (error)
                              
     async def rearrange_my_trades_consistency (self, 
-                                           server_time: int
-                                           ) -> None:
+                                               server_time: int
+                                               ) -> None:
         """
         """
                 
@@ -65,12 +68,14 @@ class CheckDataIntegrity ():
             my_trades_from_db_recovery = my_trades_from_db['db_recover']
             
             if my_trades_from_db_recovery:
-                # get the earliest transaction time stamp
                 
+                # get the earliest transaction time stamp
                 my_trades_from_db_min_time_stamp =  min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1
                 
                 # use the earliest time stamp to fetch data from exchange
-                fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
+                fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, 
+                                                                                               server_time
+                                                                                               )
                 
                 # compare data from exchanges. Pick only those have not recorded at system yet
                 filtered_data_from_my_trades_from_exchange = \
@@ -114,13 +119,14 @@ class CheckDataIntegrity ():
         except Exception as error:
             catch_error (error)
                                  
-    async def update_myTrades_file_as_per_comparation_result (self, server_time: int) -> list:
+    async def update_myTrades_file_as_per_comparation_result (self, 
+                                                              server_time: int
+                                                              ) -> list:
         
         '''
         ''' 
         try:
             size_difference = await self.compare_inventory_per_db_vs_system()
-            log.debug (f'{size_difference=}')
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
