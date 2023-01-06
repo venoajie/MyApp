@@ -38,8 +38,10 @@ class CheckDataIntegrity ():
                                                                            self.currency,
                                                                            'open'
                                                                            )
+            log.error (my_trades_path_open)
             my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
             my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
+            log.error (my_trades_from_db_regular)
             return {'db_recover': my_trades_from_db_recovery,
                     'db_regular': my_trades_from_db_regular}
         
