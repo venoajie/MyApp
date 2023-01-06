@@ -637,9 +637,10 @@ if __name__ == "__main__":
         
         system_tools.sleep_and_restart_program (30)
 
-    except Exception as error:
-        catch_error (error, 30)
                 
     except (KeyboardInterrupt, SystemExit):
-        catch_error (KeyboardInterrupt)
+        import sys
+        sys.exit(1)
 
+    except Exception as error:
+        catch_error (error, 30)
