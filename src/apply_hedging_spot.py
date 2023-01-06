@@ -337,7 +337,7 @@ class ApplyHedgingSpot ():
         """
         instruments_with_rebates = [o for o in instruments if o['maker_commission'] < 0 ]
         log.info (instruments_with_rebates)
-        instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'weekly' ]
+        instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'week' ]
         log.info (instruments_with_rebates_weekly)
         instruments_with_rebates_weekly_longest_expiration = max([o['expiration_timestamp'] for o in instruments_with_rebates_weekly ])
         instruments_with_rebates_weekly_longest_expiration_ms_before_expiration = instruments_with_rebates_weekly_longest_expiration - server_time 
