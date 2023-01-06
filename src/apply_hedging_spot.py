@@ -117,7 +117,7 @@ class ApplyHedgingSpot ():
                                                           )
             # redistribute the filtered data into db
             my_trades = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
-            #log.info(f'DB {my_trades_from_db=}')
+            log.info(f'DB {my_trades_from_db=}')
             #log.info(f'EXC {fetch_my_trades_from_system_from_min_time_stamp_to_now=}')
             #log.info(f'FILTERED {filtered_data_from_my_trades_from_exchange=}')
             
