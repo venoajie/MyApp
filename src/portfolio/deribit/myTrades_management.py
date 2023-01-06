@@ -134,7 +134,7 @@ class MyTrades ():
                     if sum_mixed_trades_in_my_trades_open_net == 0: 
 
                         remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ])     
-                        log.critical (remaining_open_trades)               
+                        #log.critical (remaining_open_trades)               
                         for data_order in remaining_open_trades:
                                             
                             try:
