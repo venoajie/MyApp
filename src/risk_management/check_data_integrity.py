@@ -6,6 +6,7 @@ from utils import system_tools, pickling, string_modification
 from risk_management import spot_hedging
 from portfolio.deribit import myTrades_management
 import asyncio
+from loguru import logger as log
 
 def catch_error (error) -> list:
     """
@@ -96,6 +97,8 @@ class CheckDataIntegrity ():
         ''' 
         try:
             size_difference = await self.compare_inventory_per_db_vs_system()
+            log.debug (f'{size_difference=}')
+            
             
             if size_difference == 0:
                 my_trades_path_open_recovery = await self.myTrades_from_recovery ()            

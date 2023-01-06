@@ -473,14 +473,14 @@ class ApplyHedgingSpot ():
                             
                             if position:
                                 actual_hedging_size_system = position ['size']
-                                data_integrity = await check_data_integrity.CheckDataIntegrity (label_hedging, 
+                                data_integrity =  check_data_integrity.CheckDataIntegrity (label_hedging, 
                                                                                           self.currency,
                                                                                           position,
                                                                                           my_trades_open
                                                                                           )
-                                data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+                                difference = data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
                                 
-                                if data_integrity.compare_inventory_per_db_vs_system() !=0:                    
+                                if difference !=0:                    
                             #!                    
                                     info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                                     telegram_bot_sendtext(info) 
