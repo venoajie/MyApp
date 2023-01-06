@@ -8,6 +8,7 @@ ram-disk:
 	sudo chmod 777 market_data
 	sudo mount -t tmpfs -o rw,size=2G tmpfs portfolio
 	sudo chmod 777 portfolio
+	git pull
 
 apps:
 	nohup python3 fetch_and_save_market_data.py >/dev/null 2>&1 &
