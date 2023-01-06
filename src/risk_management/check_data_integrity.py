@@ -24,16 +24,24 @@ class CheckDataIntegrity ():
     my_trades_open: list
             
         
-    async def myTrades_from_recovery (self) -> list:
+    async def myTrades_from_db (self) -> list:
         """
         """
 
         try:
             my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
-                                                                           self.currency,'open-recovery-point'
+                                                                           self.currency,
+                                                                           'open-recovery-point'
                                                                            )
-            my_trades_from_db = pickling.read_data (my_trades_path_open_recovery)
-            return my_trades_from_db 
+            
+            my_trades_path_open  = system_tools.provide_path_for_file ('myTrades', 
+                                                                           self.currency,
+                                                                           'open'
+                                                                           )
+            my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
+            my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
+            return {'db_recover': my_trades_from_db_recovery,
+                    'db_regular': my_trades_from_db_regular}
         
         except Exception as error:
             catch_error (error)
@@ -45,12 +53,13 @@ class CheckDataIntegrity ():
         """
                 
         try:
-            my_trades_from_db = await self.myTrades_from_recovery ()
+            my_trades_from_db = await self.myTrades_from_db ()
+            my_trades_from_db_recovery = my_trades_from_db['db_recover']
             
-            if my_trades_from_db:
+            if my_trades_from_db_recovery:
                 # get the earliest transaction time stamp
                 
-                my_trades_from_db_min_time_stamp =  min ([o['timestamp'] for o in my_trades_from_db ])-1
+                my_trades_from_db_min_time_stamp =  min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1
                 
                 # use the earliest time stamp to fetch data from exchange
                 fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, server_time)
@@ -58,7 +67,7 @@ class CheckDataIntegrity ():
                 # compare data from exchanges. Pick only those have not recorded at system yet
                 filtered_data_from_my_trades_from_exchange = \
                     string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
-                                                            my_trades_from_db
+                                                            my_trades_from_db_recovery
                                                             )
                 # redistribute the filtered data into db
                 my_trades_from_exchange = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
@@ -101,8 +110,9 @@ class CheckDataIntegrity ():
             
             
             if size_difference == 0:
-                my_trades_path_open_recovery = await self.myTrades_from_recovery ()            
-                pickling.replace_data (my_trades_path_open_recovery, True)
+                my_trades_path_open = await self.myTrades_from_db ()            
+                my_trades_path_open_reguler = my_trades_path_open ['reguler']            
+                pickling.replace_data (my_trades_path_open_reguler, True)
             
             if size_difference != 0:
                 await self.rearrange_my_trades_consistency (server_time)
