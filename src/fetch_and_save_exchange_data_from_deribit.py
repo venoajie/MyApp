@@ -28,7 +28,9 @@ def parse_dotenv()->dict:
             'client_secret': os.environ.get('client_secret_test')
             }
     
-def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
+def telegram_bot_sendtext(bot_message, 
+                          purpose: str = 'general_error'
+                          ) -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
     
