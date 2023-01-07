@@ -8,6 +8,8 @@ while true; do
                 echo "file exists"
                 echo "Moving local  files to remote..."
                 rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
+                rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
+                
                         
                 echo "sleep 30 minutes"
                 sleep 30m
@@ -15,6 +17,7 @@ while true; do
         else
                 echo "file does not exist"
                 rclone copy  portfolio/deribit/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
+                rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
                 
     fi
 done
