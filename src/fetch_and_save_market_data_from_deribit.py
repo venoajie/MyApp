@@ -59,7 +59,8 @@ class StreamMarketData:
         else:
             raise Exception('live must be a bool, True=real, False=paper')
         
-        self.connection_url: str = 'https://www.deribit.com/api/v2/' if 'test' not in self.ws_connection_url else 'https://test.deribit.com/api/v2/'
+        self.connection_url: str = 'https://www.deribit.com/api/v2/' \
+            if 'test' not in self.ws_connection_url else 'https://test.deribit.com/api/v2/'
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
@@ -281,9 +282,10 @@ class StreamMarketData:
                 )
             )
                 
-def main ():
+def main (currency):
     
     try:
+        log.info (currency)
 
         StreamMarketData ()
 
