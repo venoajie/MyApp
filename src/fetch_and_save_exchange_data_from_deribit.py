@@ -3,23 +3,36 @@
 
 # built ins
 from datetime import datetime, timedelta
+import os
+from os.path import join, dirname
 import json
+from functools import lru_cache
 
 # installed
 import websockets
 import asyncio
 import orjson
 from loguru import logger as log
+from dotenv import load_dotenv
 
 # user defined formula 
 from utils import pickling, system_tools, string_modification
 from configuration import id_numbering
+
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+@lru_cache(maxsize=None)
+def parse_dotenv()->dict:    
+    return {'client_id': os.environ.get('client_id_test'),
+            'client_secret': os.environ.get('client_secret_test')
+            }
     
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
-
-class StreamMarketData:
+    
+class StreamAccountData:
     
     '''
         
@@ -45,13 +58,14 @@ class StreamMarketData:
     '''       
     def __init__(
         self,
+        client_id: str,
+        client_secret: str,
         live=False
-            ) -> None:
+        ) -> None:
+        
         # Async Event Loop
         self.loop = asyncio.get_event_loop() # https://stackoverflow.com/questions/65206110/when-to-use-asyncio-get-running-loop-or-asyncio-get-event-loop-in-python
 
-        # Instance Variables
-        
         if not live:
             self.ws_connection_url: str = 'wss://test.deribit.com/ws/api/v2'
         elif live:
@@ -59,7 +73,10 @@ class StreamMarketData:
         else:
             raise Exception('live must be a bool, True=real, False=paper')
         
+        # Instance Variables
         self.connection_url: str = 'https://www.deribit.com/api/v2/' if 'test' not in self.ws_connection_url else 'https://test.deribit.com/api/v2/'
+        self.client_id: str = client_id
+        self.client_secret: str = client_secret
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
@@ -69,6 +86,7 @@ class StreamMarketData:
             self.ws_manager()
             )             
                 
+    #@lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
             self.ws_connection_url,
@@ -76,7 +94,9 @@ class StreamMarketData:
             compression=None,
             close_timeout=60
             ) as self.websocket_client:
-            
+
+            # Authenticate WebSocket Connection
+            await self.ws_auth()
 
             # Establish Heartbeat
             await self.establish_heartbeat()
@@ -97,19 +117,16 @@ class StreamMarketData:
             self.loop.create_task(
                 self.ws_operation(
                     operation='subscribe',
-                    ws_channel=f'deribit_price_index.{currency.lower()}_usd'
+                    ws_channel=f'user.portfolio.{currency}'
                     )
                 )
             
-            for instrument in instruments_name:
-                
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'book.{instrument}.none.20.100ms'
-                        )
+            self.loop.create_task(
+                self.ws_operation(
+                    operation='subscribe',
+                    ws_channel=f'user.changes.any.{currency.upper()}.100ms'
                     )
-                
+                )
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -124,6 +141,16 @@ class StreamMarketData:
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
+                            import apply_hedging_spot
+                            syn = apply_hedging_spot. ApplyHedgingSpot (self.connection_url,
+                                                                           self.client_id,
+                                                                           self.client_secret,
+                                                                           currency
+                                                                           )
+                            server_time = await syn.current_server_time ()
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedging spot'))
+                            await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
+                            #await synchronizing_files
 
                         self.refresh_token = message['result']['refresh_token']
 
@@ -153,7 +180,7 @@ class StreamMarketData:
                         one_minute: int = 60000
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
-                                           
+                                                           
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
                             
@@ -169,10 +196,10 @@ class StreamMarketData:
                             
                             my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
                             pickling.replace_data(my_path, data_orders)
-                                                                     
+                                                                              
             else:
                 log.info('WebSocket connection has broken.')
-                system_tools.catch_error_message (error, .1, 'WebSocket connection MARKET has broken')
+                system_tools.catch_error_message (error, .1, 'WebSocket connection EXCHANGE has broken')
                 
     async def establish_heartbeat(self) -> None:
         """
@@ -219,6 +246,22 @@ class StreamMarketData:
         except Exception as error:
             log.warning (error)
             
+    async def ws_auth(self) -> None:
+        """
+        Requests DBT's `public/auth` to
+        authenticate the WebSocket Connection.
+        """
+        msg: dict = {
+                    "jsonrpc": "2.0",
+                    "id": 9929,
+                    "method": "public/auth",
+                    "params": {
+                              "grant_type": "client_credentials",
+                              "client_id": self.client_id,
+                              "client_secret": self.client_secret
+                               }
+                    }
+
         await self.websocket_client.send(
             json.dumps(
                 msg
@@ -283,12 +326,21 @@ class StreamMarketData:
                 
 def main ():
     
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
+    
+    client_id: str = parse_dotenv() ['client_id']
+    client_secret: str = parse_dotenv() ['client_secret']
+    
     try:
 
-        StreamMarketData ()
+        StreamAccountData (
+        client_id=client_id,
+        client_secret= client_secret
+        )
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save MARKET data from deribit')
+        system_tools.catch_error_message (error, 10, 'fetch and save EXCHANGE data from deribit')
     
 if __name__ == "__main__":
 
@@ -299,6 +351,6 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save MARKET data from deribit')
+        system_tools.catch_error_message (error, 10, 'fetch and save EXCHANGE data from deribit')
 
     
