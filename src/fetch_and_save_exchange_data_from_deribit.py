@@ -129,14 +129,14 @@ class StreamAccountData:
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
-                            import apply_hedging_spot
-                            syn = apply_hedging_spot. ApplyHedgingSpot (self.connection_url,
+                            import apply_strategies
+                            syn = apply_strategies. ApplyHedgingSpot (self.connection_url,
                                                                            self.client_id,
                                                                            self.client_secret,
                                                                            currency
                                                                            )
                             server_time = await syn.current_server_time ()
-                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedging spot'))
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedgingSpot'))
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
                             #await synchronizing_files
 

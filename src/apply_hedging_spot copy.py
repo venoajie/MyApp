@@ -17,6 +17,7 @@ from utils import pickling, system_tools
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging, check_data_integrity
 from configuration import  label_numbering
+from strategies import entries_exits
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -407,6 +408,19 @@ class ApplyHedgingSpot ():
             last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
             last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] else filled_order_deltaTime_sell > one_minute
             #log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
+            
+            strategies = entries_exits.strategies
+            strategy_names = [o['strategy'] for o in strategies]
+            for strategy in strategy_names:
+                label_strategy = label_numbering.labelling('open', strategy)
+                print (label_strategy)
+                if 'hedgingSpot' in strategy:
+                    print (instrument)
+                    for instrument in instruments:
+                        if 'PERPETUAL' in instrument:
+                                        
+                                    # get ALL bids and asks
+                                    market_price = await self.market_price (instrument) 
             
             if last_time_order_filled_exceed_threshold :
                 

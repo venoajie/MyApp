@@ -150,7 +150,7 @@ def catch_error_message (error: str,
         log.info (f"restart {idle} seconds after error")
         sleep_and_restart_program (idle)
     else:
-        sys.exit (1)
+        sys.exit ()
         
     log.add ("error.log", 
              backtrace=True, 

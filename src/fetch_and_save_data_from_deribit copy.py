@@ -155,8 +155,8 @@ class StreamMarketAccountData:
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
-                            import apply_hedging_spot
-                            syn = apply_hedging_spot. ApplyHedgingSpot (self.connection_url,
+                            import apply_strategies
+                            syn = apply_strategies. ApplyHedgingSpot (self.connection_url,
                                                                            self.client_id,
                                                                            self.client_secret,
                                                                            currency

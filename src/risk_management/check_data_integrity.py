@@ -6,7 +6,6 @@ import asyncio
 
 # user defined formula 
 from utils import system_tools, pickling, string_modification
-from risk_management import spot_hedging
 from portfolio.deribit import myTrades_management
 
 def catch_error (error) -> list:
@@ -20,39 +19,52 @@ def telegram_bot_sendtext (bot_message,
     from utils import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
+
+async def myTrades_originally_from_db (currency) -> list:
+    """
+    """
+
+    try:
+        my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+                                                                            currency,
+                                                                            'open-recovery-point'
+                                                                            )
+        
+        my_trades_path_open  = system_tools.provide_path_for_file ('myTrades', 
+                                                                    currency,
+                                                                    'open'
+                                                                    )
+
+        my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
+        my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
+
+        return {'db_recover': my_trades_from_db_recovery,
+                'time_stamp_to_recover': min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1,
+                'path_recover': my_trades_path_open_recovery,
+                'path_regular': my_trades_path_open,
+                'db_regular': my_trades_from_db_regular
+                }
+    
+    except Exception as error:
+        catch_error (error)
+        
 @dataclass(unsafe_hash=True, slots=True)
 class CheckDataIntegrity ():
 
     '''
     '''       
-    label: str 
     currency: str 
     position_per_instrument: list
-    my_trades_open: list
+    my_trades_open_from_db: list
+    my_selected_trades_open_from_system: list
             
     async def myTrades_from_db (self) -> list:
         """
         """
 
         try:
-            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
-                                                                               self.currency,
-                                                                               'open-recovery-point'
-                                                                               )
             
-            my_trades_path_open  = system_tools.provide_path_for_file ('myTrades', 
-                                                                       self.currency,
-                                                                       'open'
-                                                                       )
-
-            my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
-            my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
-
-            return {'db_recover': my_trades_from_db_recovery,
-                    'path_recover': my_trades_path_open_recovery,
-                    'path_regular': my_trades_path_open,
-                    'db_regular': my_trades_from_db_regular
-                    }
+            return await myTrades_originally_from_db (self.currency)
         
         except Exception as error:
             catch_error (error)
@@ -69,17 +81,9 @@ class CheckDataIntegrity ():
             
             if my_trades_from_db_recovery:
                 
-                # get the earliest transaction time stamp
-                my_trades_from_db_min_time_stamp =  min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1
-                
-                # use the earliest time stamp to fetch data from exchange
-                fetch_my_trades_from_system_from_min_time_stamp_to_now = await self.my_trades (my_trades_from_db_min_time_stamp, 
-                                                                                               server_time
-                                                                                               )
-                
                 # compare data from exchanges. Pick only those have not recorded at system yet
                 filtered_data_from_my_trades_from_exchange = \
-                    string_modification.find_unique_elements (fetch_my_trades_from_system_from_min_time_stamp_to_now, 
+                    string_modification.find_unique_elements (self.my_selected_trades_open_from_system, 
                                                             my_trades_from_db_recovery
                                                             )
                 # redistribute the filtered data into db
@@ -89,19 +93,26 @@ class CheckDataIntegrity ():
         except Exception as error:
             catch_error (error)
                                  
+    def net_position (self, 
+                      selected_transactions: list
+                      )-> float:
+        
+        '''
+        '''    
+        from utils import number_modification                
+        return number_modification.net_position (selected_transactions)
+                                 
     async def compare_inventory_per_db_vs_system (self) -> int:
         
         '''
         #! MULTI LABEL?
         ''' 
+        from loguru import logger as log
         try:
             position_per_instrument = self.position_per_instrument
-
-            spot_hedged = spot_hedging.SpotHedging (self.label,
-                                                    self.my_trades_open
-                                                    )
-                
-            actual_hedging_size = spot_hedged.compute_actual_hedging_size()
+            
+            actual_hedging_size = self.net_position (self.my_trades_open_from_db)
+            log.info (f'{actual_hedging_size=}')
             
             if position_per_instrument:
                 actual_hedging_size_system = position_per_instrument ['size']

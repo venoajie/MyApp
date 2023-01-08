@@ -11,6 +11,8 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
+start: install ram-disk
+
 install:
 	sudo apt-get install inotify-tools
 	sudo apt-get install python3-psutil
