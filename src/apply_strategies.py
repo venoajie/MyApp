@@ -242,7 +242,7 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
-        account_summary = self.get_account_summary(self.currency)
+        account_summary = await self.get_account_summary(self.currency)
         
         log.info (portfolio)
         log.info (account_summary)
