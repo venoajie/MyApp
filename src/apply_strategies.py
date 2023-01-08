@@ -136,7 +136,7 @@ class ApplyHedgingSpot ():
         log.info (my_orders_from_db)
         if my_orders_from_db:
             # get the earliest transaction time stamp
-            my_orders_from_db_min_time_stamp = min ([o['timestamp'] for o in my_orders_from_db ])
+            my_orders_from_db_min_time_stamp = min ([o['creation_timestamp'] for o in my_orders_from_db ])
             
             # use the earliest time stamp to fetch data from exchange
             fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, server_time)
