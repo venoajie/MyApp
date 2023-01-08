@@ -199,7 +199,7 @@ class SpotHedging ():
         
         
         return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
-                'buy_Price':  myTrades_max_price_pct_minus,
+                'buy_price':  myTrades_max_price_pct_minus,
                 'sell_price':  myTrades_max_price_pct_plus,
                 'label_take_profit':  label_to_send,
                 'size_take_profit':  size_take_profit,

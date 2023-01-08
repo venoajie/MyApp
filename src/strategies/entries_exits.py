@@ -3,22 +3,43 @@
 
 strategies = [
     {
-    'strategy': 'supplyDemand15',
+    'strategy': 'supplyDemandShort15',
     'instrument': ['PERPETUAL'],
     'time_frame': 900,
-    'take_profit': 15,
+    'side': 'sell',
+    'entry_price': 1000,
+    'take_profit': 900,
     'quantity_discrete': 15,
+    'cut_loss': 1200,
+    'averaging': 15,
+    'halt_minute_before_reorder': 60, 
+    'equity_risked': 1/100
+    },
+    {
+    'strategy': 'supplyDemandLong15',
+    'instrument': ['PERPETUAL'],
+    'time_frame': 900,
+    'side': 'buy',
+    'entry_price': 1000,
+    'take_profit': 1100,
+    'quantity_discrete': 900,
     'cut_loss': 15,
     'averaging': 15,
-    'halt_time_before_reorder': 15,
-    'risk': 1/100},
+    'halt_minute_before_reorder': 60, 
+    'equity_risked': 1/100
+    },
+    
     {
     'strategy': 'hedgingSpot',
     'instrument': ['PERPETUAL'],
+    'time_frame': 900,
+    'side': 900,
+    'entry_price': 'sell',
     'take_profit': 15,
     'quantity_discrete': 15,
-    'averaging': 15,
+    'averaging': (1/100)/2,
     'cut_loss': 15,
-    'halt_time_before_reorder': 15,
-    'risk': 1/100},
+    'halt_minute_before_reorder': 1, 
+    'equity_risked': 1/100
+    },
     ]

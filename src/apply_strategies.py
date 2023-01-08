@@ -15,7 +15,7 @@ from os.path import join, dirname
 from portfolio.deribit import open_orders_management, myTrades_management
 from utils import pickling, system_tools, number_modification
 import deribit_get#,deribit_rest
-from risk_management import spot_hedging, check_data_integrity
+from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import  label_numbering
 from strategies import entries_exits
 
@@ -449,14 +449,14 @@ class ApplyHedgingSpot ():
                 open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
                 filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
             
-            one_minute = 60000
-            last_time_order_filled_exceed_threshold = True if open_order_filled == [] else filled_order_deltaTime > one_minute
-            last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] else filled_order_deltaTime_sell > one_minute
             #log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
             
             strategies = entries_exits.strategies
             strategy_names = [o['strategy'] for o in strategies]
             positions = reading_from_database ['positions']
+            
+            one_minute = 60000
+            
             for strategy in strategy_names:
                 #label_strategy = label_numbering.labelling('open', strategy)
                 #print (label_strategy)
@@ -469,24 +469,61 @@ class ApplyHedgingSpot ():
                 rebates = await self.get_instruments_with_rebates (instruments, server_time)
                 rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
 
+                instrument_transactions = [o['instrument_name'] for o in instruments_future \
+                    if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
                 # obtain spot equity
                 equity = portfolio [0]['equity']
                 
+                strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
+        
+                equity_risked = strategy_variables ['equity_risked'] 
+                pct_threshold = strategy_variables ['averaging']  
+                time_threshold = strategy_variables ['halt_minute_before_reorder']  * one_minute 
+
+                log.critical (f'{strategy=} {pct_threshold=} {time_threshold=}')
+                        
                 if  index_price and portfolio :
                     
                     # compute notional value
                     notional =  await self.compute_notional_value (index_price, equity)
                                                                         
-                    if 'supplyDemand' in strategy:
-                                            
-                        log.critical ('supplyDemand')
-                    
+                    if 'supplyDemand' in strategy:  
+                        target_price_loss = strategy_variables ['cut_loss'] 
+                        side = strategy_variables ['side']  
+                        entry_price = strategy_variables ['entry_price']  
+                        label = strategy_variables ['strategy']
+                        size = position_sizing.pos_sizing (target_price_loss,
+                                                           entry_price, 
+                                                           notional, 
+                                                           equity_risked
+                                                           )                                          
+                        log.critical (f'{target_price_loss=} {side=} {entry_price=} {size=} {label=}')
+
+                        for instrument in instrument_transactions:
+                            await self.send_orders (
+                                                    side, 
+                                                    instrument, 
+                                                    best_bid_prc, 
+                                                    size, 
+                                                    adjusting_inventories ['label_take_profit']
+                                                    )
+                                    
+                            await self.send_orders (
+                                                    side, 
+                                                    instrument, 
+                                                    best_ask_prc, 
+                                                    check_spot_hedging ['average_up_size'], 
+                                                    label
+                                                    )  
+                                              
                     if 'hedgingSpot' in strategy:
-                                            
-                        instrument_transactions = [o['instrument_name'] for o in instruments_future \
-                            if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
-                        #log.critical (instrument_transactions)
-                        
+                                                                    
+                        last_time_order_filled_exceed_threshold = True if open_order_filled == [] \
+                            else filled_order_deltaTime > time_threshold
+                            
+                        last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] \
+                            else filled_order_deltaTime_sell > time_threshold
+                            
                         for instrument in instrument_transactions:
                             my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                             size_db = []  
@@ -501,7 +538,6 @@ class ApplyHedgingSpot ():
                             
                             if position:
                                 size_system = position ['size']
-                                        
                             
                             #log.critical (f'{position=}')
                             log.critical (f'{size_db=}')
@@ -559,8 +595,6 @@ class ApplyHedgingSpot ():
 
                                     actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                                     
-                                        
-
                                     #log.info(f'{positions=}')
                                     label: str = label_numbering.labelling ('open', label_hedging)
                                     
@@ -581,7 +615,8 @@ class ApplyHedgingSpot ():
 
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                                        and (size_system == actual_hedging_size) and last_time_order_filled_sell_exceed_threshold :
+                                        and (size_system == actual_hedging_size) \
+                                            and last_time_order_filled_sell_exceed_threshold :
                                         log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                                     
                                         await self.send_orders ('sell', 
@@ -596,9 +631,9 @@ class ApplyHedgingSpot ():
                                     
                                     # if spot has hedged properly, check also for opportunity to get additional small profit    
                                     if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
-                                        threshold = .025/100
-                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, self.currency, threshold, 'hedgingSpot-open')
-                                        bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_Price']
+
+                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, self.currency, pct_threshold, 'hedgingSpot-open')
+                                        bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']
                                         ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                                         
                                         log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {best_ask_prc=}')
