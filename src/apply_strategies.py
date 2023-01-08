@@ -13,7 +13,7 @@ from os.path import join, dirname
 
 # user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
-from utils import pickling, system_tools
+from utils import pickling, system_tools, number_modification
 import deribit_get#,deribit_rest
 from risk_management import spot_hedging, check_data_integrity
 from configuration import  label_numbering
@@ -46,6 +46,14 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
+    def net_position (self, 
+                      selected_transactions: list
+                      )-> float:
+        
+        '''
+        '''    
+        return number_modification.net_position (selected_transactions)
+    
     async def get_open_orders_from_exchange (self) -> list:
         """
         """
@@ -470,15 +478,21 @@ class ApplyHedgingSpot ():
                         #log.critical (instrument_transactions)
                         
                         for instrument in instrument_transactions:
+                            my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
+                            size_per_instrument = []  
+                            if my_trades_open_instrument:
+                                size_per_instrument = await self.net_position(my_trades_open_instrument)
                             
                             if positions:
                                 position =  await self. position_per_instrument (positions, instrument) 
                             
                             if position:
-                                actual_hedging_size_system = position ['size']
+                                actual_position_size_system = position ['size']
                                         
+                            log.critical (f'{my_trades_open_instrument=}')
                             log.critical (f'{position=}')
-                            log.critical (f'{actual_hedging_size_system=}')
+                            log.critical (f'{size_per_instrument=}')
+                            log.critical (f'{actual_position_size_system=}')
                             await self.check_integrity (positions, 
                                                     instrument,
                                                     my_trades_open, 
