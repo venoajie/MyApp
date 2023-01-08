@@ -500,6 +500,12 @@ class ApplyHedgingSpot ():
                         log.critical (f'{target_price_loss=} {side=} {entry_price=} {size=} {label=}')
 
                         for instrument in instrument_transactions:
+                            
+                            # get bid and ask price
+                            market_price = await self.market_price (instrument) 
+                            best_bid_prc= market_price ['best_bid_prc']
+                            best_ask_prc= market_price ['best_ask_prc']
+                            
                             await self.send_orders (
                                                     side, 
                                                     instrument, 
@@ -525,6 +531,8 @@ class ApplyHedgingSpot ():
                             else filled_order_deltaTime_sell > time_threshold
                             
                         for instrument in instrument_transactions:
+                            market_price = await self.market_price (instrument) 
+                            
                             my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                             size_db = []  
                             size_system = []  
