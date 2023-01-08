@@ -423,7 +423,7 @@ class ApplyHedgingSpot ():
             #!
             # my trades data
             my_trades_open: list = reading_from_database ['my_trades_open']
-            log.debug (my_trades_open)
+            #log.debug (my_trades_open)
             # open orders data
             open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
             open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
@@ -458,13 +458,13 @@ class ApplyHedgingSpot ():
             strategy_names = [o['strategy'] for o in strategies]
             positions = reading_from_database ['positions']
             for strategy in strategy_names:
-                label_strategy = label_numbering.labelling('open', strategy)
-                print (label_strategy)
+                #label_strategy = label_numbering.labelling('open', strategy)
+                #print (label_strategy)
             
                 # instruments data
                 instruments = reading_from_database ['instruments']
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
-                instruments_future_name = [o['instrument_name'] for o in instruments_future  ]
+                #instruments_future_name = [o['instrument_name'] for o in instruments_future  ]
                 #log.critical (instruments_future_name)
                 rebates = await self.get_instruments_with_rebates (instruments, server_time)
                 rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
@@ -641,7 +641,7 @@ class ApplyHedgingSpot ():
             #refresh open orders
             reading_from_database = await self.reading_from_database ()
             open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
-            log.info(f'{open_orders_open_byAPI=}')
+            #log.info(f'{open_orders_open_byAPI=}')
             open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
             label_open = 'hedgingSpot-open'
             current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
