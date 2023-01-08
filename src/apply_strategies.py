@@ -476,7 +476,11 @@ class ApplyHedgingSpot ():
                     
                     # compute notional value
                     notional =  await self.compute_notional_value (index_price, equity)
-                                                            
+                                                                        
+                    if 'supplyDemand' in strategy:
+                                            
+                        log.critical ('supplyDemand')
+                    
                     if 'hedgingSpot' in strategy:
                                             
                         instrument_transactions = [o['instrument_name'] for o in instruments_future \
