@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 # user defined formula 
 from utils import pickling, system_tools, string_modification
 from configuration import id_numbering
+from portfolio.deribit import open_orders_management, myTrades_management
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -165,25 +166,26 @@ class StreamAccountData:
                         message_channel = message['params']['channel']
                         #log.info (message_channel)
             
-                        one_minute: int = 60000
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
-                                                           
-                        instrument_book = "".join(list(message_channel) [5:][:-14])
-                        if message_channel == f'book.{instrument_book}.none.20.100ms':
+                                                                                                                
+                        if message_channel == f'user.changes.any.{currency.upper()}.100ms':
+                            #log.info (data_orders)
+                            positions = data_orders ['positions']
+                            trades = data_orders ['trades']
+                            orders = data_orders ['orders']
                             
-                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
-                            
-                            try:
-                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
-                            except:
-                                continue        
-                            
-                        symbol_index =  (message_channel)[-7:]
-                        if message_channel == f'deribit_price_index.{symbol_index}':
-                            
-                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
-                            pickling.replace_data(my_path, data_orders)
+                            if trades:
+                                my_trades = myTrades_management.MyTrades (trades)
+                                my_trades.distribute_trade_transaction(currency)
+                                
+                            if orders:
+                                my_orders = open_orders_management.MyOrders (orders)
+                                my_orders.distribute_order_transactions (currency)
+                                
+                            if positions:
+                                my_path_position = system_tools.provide_path_for_file ('positions', currency)
+                                pickling.replace_data(my_path_position, positions)
                                                                               
             else:
                 log.info('WebSocket connection has broken.')
