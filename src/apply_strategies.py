@@ -450,7 +450,7 @@ class ApplyHedgingSpot ():
                 instruments = reading_from_database ['instruments']
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
                 instruments_future_name = [o['instrument_name'] for o in instruments_future  ]
-                log.critical (instruments_future_name)
+                #log.critical (instruments_future_name)
                 rebates = await self.get_instruments_with_rebates (instruments, server_time)
                 rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
 
@@ -466,7 +466,7 @@ class ApplyHedgingSpot ():
                                             
                         instrument_transactions = [o['instrument_name'] for o in instruments_future \
                             if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
-                        log.critical (instrument_transactions)
+                        #log.critical (instrument_transactions)
                         
                         for instrument in instrument_transactions:
                                     
