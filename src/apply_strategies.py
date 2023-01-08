@@ -479,6 +479,7 @@ class ApplyHedgingSpot ():
                 equity_risked = strategy_variables ['equity_risked'] 
                 pct_threshold = strategy_variables ['averaging']  
                 time_threshold = strategy_variables ['halt_minute_before_reorder']  * one_minute 
+                label = strategy_variables ['strategy']
 
                 log.critical (f'{strategy=} {pct_threshold=} {time_threshold=}')
                         
@@ -488,15 +489,17 @@ class ApplyHedgingSpot ():
                     notional =  await self.compute_notional_value (index_price, equity)
                                                                         
                     if 'supplyDemand' in strategy:  
+                        label: str = label_numbering.labelling ('open', label)
                         target_price_loss = strategy_variables ['cut_loss'] 
                         side = strategy_variables ['side']  
                         entry_price = strategy_variables ['entry_price']  
-                        label = strategy_variables ['strategy']
+                        
                         size = position_sizing.pos_sizing (target_price_loss,
                                                            entry_price, 
                                                            notional, 
                                                            equity_risked
-                                                           )                                          
+                                                           )      
+                                                            
                         log.critical (f'{target_price_loss=} {side=} {entry_price=} {size=} {label=}')
 
                         for instrument in instrument_transactions:
@@ -506,22 +509,24 @@ class ApplyHedgingSpot ():
                             best_bid_prc= market_price ['best_bid_prc']
                             best_ask_prc= market_price ['best_ask_prc']
                             
-                            await self.send_orders (
-                                                    side, 
-                                                    instrument, 
-                                                    best_bid_prc, 
-                                                    size, 
-                                                    adjusting_inventories ['label_take_profit']
-                                                    )
-                                    
-                            await self.send_orders (
-                                                    side, 
-                                                    instrument, 
-                                                    best_ask_prc, 
-                                                    check_spot_hedging ['average_up_size'], 
-                                                    label
-                                                    )  
-                                              
+                            if 'PERPETUAL' in instrument and market_price:
+                                
+                                await self.send_orders (
+                                                        side, 
+                                                        instrument, 
+                                                        best_bid_prc, 
+                                                        size, 
+                                                        label
+                                                        )
+                                        
+                                await self.send_orders (
+                                                        side, 
+                                                        instrument, 
+                                                        best_ask_prc, 
+                                                        size, 
+                                                        label
+                                                        )  
+                        
                     if 'hedgingSpot' in strategy:
                                                                     
                         last_time_order_filled_exceed_threshold = True if open_order_filled == [] \
@@ -582,10 +587,8 @@ class ApplyHedgingSpot ():
                                     best_bid_prc= market_price ['best_bid_prc']
                                     best_ask_prc= market_price ['best_ask_prc']
 
-                                    label_hedging = 'hedgingSpot'
-
                                     #check under hedging
-                                    spot_hedged = spot_hedging.SpotHedging (label_hedging,
+                                    spot_hedged = spot_hedging.SpotHedging (label,
                                                                             my_trades_open
                                                                             )
                                     check_spot_hedging = spot_hedged.is_spot_hedged_properly ( 
@@ -604,7 +607,10 @@ class ApplyHedgingSpot ():
                                     actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                                     
                                     #log.info(f'{positions=}')
-                                    label: str = label_numbering.labelling ('open', label_hedging)
+                                    label: str = label_numbering.labelling ('open', label)
+                                    label_open_for_filter = f'{label}-open'
+                                    log.debug(f'{label=} {label_open_for_filter=}')
+                                    
                                     
                                     label_for_filter = 'hedging'
                                     
@@ -624,7 +630,7 @@ class ApplyHedgingSpot ():
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
                                         and (size_system == actual_hedging_size) \
-                                            and last_time_order_filled_sell_exceed_threshold :
+                                            and last_time_order_filled_sell_exceed_threshold:
                                         log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                                     
                                         await self.send_orders ('sell', 
@@ -634,20 +640,26 @@ class ApplyHedgingSpot ():
                                                                 label
                                                                 )
                                         
-                                        await self.cancel_redundant_orders_in_same_labels ('hedgingSpot-open')
-                                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, min_hedging_size)
+                                        await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
+                                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, 
+                                                                                                              min_hedging_size
+                                                                                                              )
                                     
                                     # if spot has hedged properly, check also for opportunity to get additional small profit    
                                     if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
 
-                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, self.currency, pct_threshold, 'hedgingSpot-open')
+                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, 
+                                                                                                   self.currency, 
+                                                                                                   pct_threshold, 
+                                                                                                   label_open_for_filter
+                                                                                                   )
                                         bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']
                                         ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                                         
                                         log.info(f'{bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {best_ask_prc=}')
                                                 
                                         if adjusting_inventories ['take_profit'] and bid_prc_is_lower_than_buy_price:
-                                            label_closed_for_filter = 'hedgingSpot-closed'
+                                            label_closed_for_filter = f'{label}-closed'
                                                     
                                             await self.send_orders (
                                                                     'buy', 
@@ -660,7 +672,7 @@ class ApplyHedgingSpot ():
                                             await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
                                             
                                         if adjusting_inventories ['average_up'] and ask_prc_is_higher_than_sell_price:
-                                            label_open_for_filter = 'hedgingSpot-open'
+                                            
                                                     
                                             await self.send_orders (
                                                                     'sell', 
