@@ -105,14 +105,12 @@ class CheckDataIntegrity ():
     async def compare_inventory_per_db_vs_system (self) -> int:
         
         '''
-        #! MULTI LABEL?
         ''' 
-        from loguru import logger as log
+
         try:
             position_per_instrument = self.position_per_instrument
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
-            log.info (f'{actual_hedging_size=}')
             
             if position_per_instrument:
                 actual_hedging_size_system = position_per_instrument ['size']
