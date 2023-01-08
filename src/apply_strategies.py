@@ -242,10 +242,6 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
-        account_summary = await self.get_account_summary(self.currency)
-        
-        log.info (portfolio)
-        log.info (account_summary)
         
         # at start, usually position == None
         if positions == None:
@@ -253,8 +249,8 @@ class ApplyHedgingSpot ():
             pickling.replace_data (my_path_positions, positions)  
             
         if portfolio == None:
-            positions = await self.get_positions ()
-            pickling.replace_data (my_path_positions, positions)        
+            portfolio = await self.get_account_summary(self.currency)
+            pickling.replace_data (my_path_portfolio, portfolio)        
         
         return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
                 'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
