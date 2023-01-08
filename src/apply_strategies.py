@@ -46,7 +46,7 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
-    def net_position (self, 
+    async def net_position (self, 
                       selected_transactions: list
                       )-> float:
         
@@ -486,6 +486,7 @@ class ApplyHedgingSpot ():
                             my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                             size_db = []  
                             size_system = []  
+                            log.critical (f'{instrument=}') 
                             log.critical (f'{my_trades_open_instrument=}') 
                             if my_trades_open_instrument:
                                 size_db = await self.net_position(my_trades_open_instrument)
