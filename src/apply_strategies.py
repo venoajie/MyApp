@@ -510,6 +510,9 @@ class ApplyHedgingSpot ():
                                                             my_trades_open, 
                                                             server_time
                                                         )
+                                else:
+                                    my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open-recovery-point')  
+                                    pickling.replace_data (my_trades_path_open, my_trades_open)
                             log.critical (instrument)
                             
                             # get ALL bids and asks
