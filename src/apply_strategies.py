@@ -270,7 +270,7 @@ class ApplyHedgingSpot ():
             position  = [o for o in positions if o['instrument_name'] == instrument] 
             if position:
                 position  = position  [0]
-            log.warning (position)
+            #log.warning (position)
         except:
             my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
             log.debug (my_path_positions)
