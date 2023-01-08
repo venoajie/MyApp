@@ -241,9 +241,18 @@ class ApplyHedgingSpot ():
         index_price: list = pickling.read_data(my_path_index) 
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
+        portfolio = pickling.read_data(my_path_portfolio)
+        account_summary = self.get_account_summary(self.currency)
+        
+        log.info (portfolio)
+        log.info (account_summary)
         
         # at start, usually position == None
         if positions == None:
+            positions = await self.get_positions ()
+            pickling.replace_data (my_path_positions, positions)  
+            
+        if portfolio == None:
             positions = await self.get_positions ()
             pickling.replace_data (my_path_positions, positions)        
         
@@ -254,7 +263,7 @@ class ApplyHedgingSpot ():
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'positions': positions,
                 'ordBook': pickling.read_data(my_path_ordBook),
-                'portfolio': pickling.read_data(my_path_portfolio),
+                'portfolio': portfolio,
                 'index_price': index_price [0]['price'],
                 'instruments': pickling.read_data (my_path_instruments)}
     
