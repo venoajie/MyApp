@@ -487,7 +487,7 @@ class ApplyHedgingSpot ():
                             size_db = []  
                             size_system = []  
                             log.critical (f'{instrument=}') 
-                            log.critical (f'{my_trades_open_instrument=}') 
+                            #log.critical (f'{my_trades_open_instrument=}') 
                             if my_trades_open_instrument:
                                 size_db = await self.net_position(my_trades_open_instrument)
                             
@@ -498,7 +498,7 @@ class ApplyHedgingSpot ():
                                 size_system = position ['size']
                                         
                             
-                            log.critical (f'{position=}')
+                            #log.critical (f'{position=}')
                             log.critical (f'{size_db=}')
                             log.critical (f'{size_system=}')
                             none_data = [0, None, []]
