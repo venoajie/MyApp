@@ -479,25 +479,27 @@ class ApplyHedgingSpot ():
                         
                         for instrument in instrument_transactions:
                             my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
-                            size_per_instrument = []  
+                            size_db = []  
+                            size_system = []  
                             if my_trades_open_instrument:
-                                size_per_instrument = await self.net_position(my_trades_open_instrument)
+                                size_db = await self.net_position(my_trades_open_instrument)
                             
                             if positions:
                                 position =  await self. position_per_instrument (positions, instrument) 
                             
                             if position:
-                                actual_position_size_system = position ['size']
+                                size_system = position ['size']
                                         
                             log.critical (f'{my_trades_open_instrument=}')
                             log.critical (f'{position=}')
-                            log.critical (f'{size_per_instrument=}')
-                            log.critical (f'{actual_position_size_system=}')
-                            await self.check_integrity (positions, 
-                                                    instrument,
-                                                    my_trades_open, 
-                                                    server_time
-                                                )
+                            log.critical (f'{size_db=}')
+                            log.critical (f'{size_system=}')
+                            if size_db != size_system:
+                                await self.check_integrity (positions, 
+                                                        instrument,
+                                                        my_trades_open, 
+                                                        server_time
+                                                    )
                             log.critical (instrument)
                             
                             # get ALL bids and asks
@@ -557,11 +559,11 @@ class ApplyHedgingSpot ():
                                         await self.check_my_orders_consistency (my_orders_from_db, server_time)
                                         
                                         log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
-                                    log.error(f' {net_open_orders_open_byAPI_db=} {actual_hedging_size_system=} ')
+                                    log.error(f' {net_open_orders_open_byAPI_db=} {size_system=} ')
 
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                                        and (actual_hedging_size_system == actual_hedging_size) and last_time_order_filled_sell_exceed_threshold :
+                                        and (size_system == actual_hedging_size) and last_time_order_filled_sell_exceed_threshold :
                                         log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                                     
                                         await self.send_orders ('sell', 
