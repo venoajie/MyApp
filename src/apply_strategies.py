@@ -265,6 +265,7 @@ class ApplyHedgingSpot ():
             pickling.replace_data (my_path_positions, positions)   
             position = await self.reading_from_database ()   
             position = position ['positions']  
+            log.warning (position)
             position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
         return position
                 
@@ -469,7 +470,15 @@ class ApplyHedgingSpot ():
                         #log.critical (instrument_transactions)
                         
                         for instrument in instrument_transactions:
-                                    
+                            
+                            if positions:
+                                position =  await self. position_per_instrument (positions, instrument) 
+                            
+                            if position:
+                                actual_hedging_size_system = position ['size']
+                                        
+                            log.critical (f'{position=}')
+                            log.critical (f'{actual_hedging_size_system=}')
                             await self.check_integrity (positions, 
                                                     instrument,
                                                     my_trades_open, 
@@ -518,11 +527,6 @@ class ApplyHedgingSpot ():
                                     actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                                     
                                         
-                                    if positions:
-                                        position =  await self. position_per_instrument (positions, instrument) 
-                                    
-                                    if position:
-                                        actual_hedging_size_system = position ['size']
 
                                     #log.info(f'{positions=}')
                                     label: str = label_numbering.labelling ('open', label_hedging)
