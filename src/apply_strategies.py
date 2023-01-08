@@ -494,12 +494,14 @@ class ApplyHedgingSpot ():
                             log.critical (f'{position=}')
                             log.critical (f'{size_db=}')
                             log.critical (f'{size_system=}')
-                            if size_db != size_system:
-                                await self.check_integrity (positions, 
-                                                        instrument,
-                                                        my_trades_open, 
-                                                        server_time
-                                                    )
+                            none_data = [0, None, []]
+                            if size_db  not in none_data and size_system not in none_data:
+                                if size_db != size_system:
+                                    await self.check_integrity (positions, 
+                                                            instrument,
+                                                            my_trades_open, 
+                                                            server_time
+                                                        )
                             log.critical (instrument)
                             
                             # get ALL bids and asks
