@@ -486,6 +486,7 @@ class ApplyHedgingSpot ():
                             my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                             size_db = []  
                             size_system = []  
+                            log.critical (f'{my_trades_open_instrument=}') 
                             if my_trades_open_instrument:
                                 size_db = await self.net_position(my_trades_open_instrument)
                             
@@ -495,7 +496,7 @@ class ApplyHedgingSpot ():
                             if position:
                                 size_system = position ['size']
                                         
-                            log.critical (f'{my_trades_open_instrument=}')
+                            
                             log.critical (f'{position=}')
                             log.critical (f'{size_db=}')
                             log.critical (f'{size_system=}')
