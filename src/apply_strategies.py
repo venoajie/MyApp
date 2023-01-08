@@ -133,7 +133,7 @@ class ApplyHedgingSpot ():
         """
         from utils import string_modification
         
-        log.info (my_orders_from_db)
+        #log.info (my_orders_from_db)
         if my_orders_from_db:
             # get the earliest transaction time stamp
             my_orders_from_db_min_time_stamp = min ([o['creation_timestamp'] for o in my_orders_from_db ])
@@ -141,13 +141,13 @@ class ApplyHedgingSpot ():
             # use the earliest time stamp to fetch data from exchange
             fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, server_time)
             # compare data from exchanges. Pick only those have not recorded at system yet
-            log.debug (f'{my_orders_from_db_min_time_stamp=}')
-            log.warning (f'{fetch_my_orders_from_system_from_min_time_stamp_to_now=}')
+            #log.debug (f'{my_orders_from_db_min_time_stamp=}')
+            #log.warning (f'{fetch_my_orders_from_system_from_min_time_stamp_to_now=}')
             filtered_data_from_my_orders_from_exchange = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
                                                                                                 my_orders_from_db
                                                                                                 )
-            log.info (f'{my_orders_from_db=}')
-            log.error (f'{filtered_data_from_my_orders_from_exchange=}')
+           # log.info (f'{my_orders_from_db=}')
+            #log.error (f'{filtered_data_from_my_orders_from_exchange=}')
             # redistribute the filtered data into db
             myorders = open_orders_management.MyOrders (filtered_data_from_my_orders_from_exchange)
             
@@ -639,7 +639,7 @@ class ApplyHedgingSpot ():
             current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
             current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
 
-            is_over_hedged = actual_hedging_size + current_open_orders_size > min_hedging_size
+            is_over_hedged = actual_hedging_size + current_open_orders_size < min_hedging_size
             log.info(f'{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
             
             if  is_over_hedged:

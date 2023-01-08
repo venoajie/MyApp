@@ -114,12 +114,21 @@ class MyOrders ():
         return 0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
             
+    def net_position (self, 
+                      selected_transactions: list
+                      )-> float:
+        
+        '''
+        '''    
+        from utils import number_modification
+        return number_modification.net_position (selected_transactions)
+    
     def my_orders_api_basedOn_label_items_size (self, label: str)-> list:
         
         '''
         '''    
         return [] if self.my_orders_api_basedOn_label (label) == [] \
-            else  sum ([o['amount'] for o in self.my_orders_api_basedOn_label (label)])
+            else  self.net_position  (self.my_orders_api_basedOn_label (label))
             
     def distribute_order_transactions (self, currency) -> None:
         
