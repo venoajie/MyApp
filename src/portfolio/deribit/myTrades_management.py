@@ -112,7 +112,7 @@ class MyTrades ():
                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                     # sum transaction with the same label id
                     sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                    log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+                    #log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                     
                     # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                     if sum_closed_trades_in_my_trades_open_net !=0:

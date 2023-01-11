@@ -109,7 +109,7 @@ class ApplyHedgingSpot ():
                                                                                start_timestamp,
                                                                                end_timestamp)
                   
-        log.critical(trades)
+        #log.critical(trades)
         try:
             result = [] if trades == [] else trades ['result'] ['trades']
         except:
@@ -117,7 +117,7 @@ class ApplyHedgingSpot ():
             if result  == 'timestamp_of_archived_trade':
                 log.critical(result)
             
-        log.error (trades)
+        #log.error (trades)
         return result
     
     async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
@@ -409,7 +409,7 @@ class ApplyHedgingSpot ():
             
             # use the earliest time stamp to fetch data from exchange
             my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
-            log.error (my_trades_time_constrd)
+            #log.error (my_trades_time_constrd)
 
             data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
                                                                     positions_from_get,
@@ -635,9 +635,7 @@ class ApplyHedgingSpot ():
                             my_trades_open_SD = my_trades_open. my_trades_api_basedOn_label (label)
                             net_my_trades_open_SD = my_trades_open. my_trades_api_net_position (my_trades_open_SD)                          
                             
-                            
                         if 'hedgingSpot' in strategy:
-                                         
                                                                    
                             last_time_order_filled_exceed_threshold = True if open_order_filled == [] \
                                 else filled_order_deltaTime > time_threshold
@@ -645,24 +643,24 @@ class ApplyHedgingSpot ():
                             last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] \
                                 else filled_order_deltaTime_sell > time_threshold
                             
-                            
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
-                                            
 
                                     #check under hedging
                                     spot_hedged = spot_hedging.SpotHedging (label,
                                                                             my_trades_open
                                                                             )
-                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly ( 
-                                                                                            notional, 
-                                                                                            min_trade_amount,
-                                                                                            contract_size
-                                                                                            ) 
+                                    
+                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly (notional, 
+                                                                                              min_trade_amount,
+                                                                                              contract_size
+                                                                                              ) 
+                                    
                                     remain_unhedged = spot_hedged.compute_remain_unhedged (notional,
-                                                                                        min_trade_amount,
-                                                                                        contract_size
-                                                                                        ) 
+                                                                                           min_trade_amount,
+                                                                                           contract_size
+                                                                                           ) 
+                                    
                                     min_hedging_size = check_spot_hedging ['all_hedging_size']
 
                                     spot_was_unhedged = check_spot_hedging ['spot_was_unhedged']
@@ -677,10 +675,12 @@ class ApplyHedgingSpot ():
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
+                                    
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
                                         and (size_system == actual_hedging_size) \
                                             and last_time_order_filled_sell_exceed_threshold:
+                                                
                                         log.warning(f'{instrument=} {best_ask_prc=} {label=}')
                                     
                                         await self.send_orders ('sell', 
@@ -692,17 +692,17 @@ class ApplyHedgingSpot ():
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                                         await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, 
-                                                                                                            min_hedging_size
-                                                                                                            )
+                                                                                                              min_hedging_size
+                                                                                                              )
                                     
                                     # if spot has hedged properly, check also for opportunity to get additional small profit    
                                     if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
 
                                         adjusting_inventories = spot_hedged.adjusting_inventories (index_price, 
-                                                                                                self.currency, 
-                                                                                                pct_threshold, 
-                                                                                                label_open_for_filter
-                                                                                                )
+                                                                                                   self.currency, 
+                                                                                                   pct_threshold, 
+                                                                                                   label_open_for_filter
+                                                                                                   )
                                         bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']
                                         ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                                         

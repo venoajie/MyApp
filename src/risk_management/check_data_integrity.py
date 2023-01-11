@@ -39,7 +39,7 @@ async def myTrades_originally_from_db (currency) -> list:
 
         my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
         my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
-        log.debug (f'my_trades_from_db_recovery {my_trades_from_db_recovery}')
+        #log.debug (f'my_trades_from_db_recovery {my_trades_from_db_recovery}')
 
         return {'db_recover': my_trades_from_db_recovery,
                 'time_stamp_to_recover': [] if my_trades_from_db_recovery in none_data\
