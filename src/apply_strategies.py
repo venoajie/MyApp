@@ -396,11 +396,11 @@ class ApplyHedgingSpot ():
         #log.error (positions_from_get)
         log.error (my_trades_open_from_db)
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
-        log.error (myTrades_from_db)
+        #log.error (myTrades_from_db)
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
-        log.error (start_timestamp)
+        #log.error (start_timestamp)
         ####
         if start_timestamp:
             
@@ -638,7 +638,7 @@ class ApplyHedgingSpot ():
                                 else filled_order_deltaTime_sell > time_threshold
                             
                             
-                            if 'PERPETUAL' in instrument and market_price:
+                            if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
                                             
 
