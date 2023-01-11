@@ -143,7 +143,7 @@ class CheckDataIntegrity ():
         ''' 
         try:
             size_difference = await self.compare_inventory_per_db_vs_system()
-            log.critical (f'size_difference {self.size_difference=}')
+            log.critical (f'size_difference {size_difference=}')
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
