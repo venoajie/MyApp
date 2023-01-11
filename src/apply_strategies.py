@@ -392,7 +392,7 @@ class ApplyHedgingSpot ():
                                server_time
                                ) -> None:
         
-        log.error (positions_from_get)
+        #log.error (positions_from_get)
         log.error (my_trades_open_from_db)
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
         log.error (myTrades_from_db)
