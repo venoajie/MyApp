@@ -478,6 +478,8 @@ class ApplyHedgingSpot ():
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 
+                log.info(f'{open_orders_open_byAPI=}')
+                log.info(f'{open_orders_filled_byAPI=}')
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
                 open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
