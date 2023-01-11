@@ -397,7 +397,7 @@ class ApplyHedgingSpot ():
                                ) -> None:
         
         #log.error (positions_from_get)
-        log.error (my_trades_open_from_db)
+        #log.error (my_trades_open_from_db)
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
         #log.error (myTrades_from_db)
         
@@ -478,8 +478,8 @@ class ApplyHedgingSpot ():
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 
-                log.info(f'{open_orders_open_byAPI=}')
-                log.info(f'{open_orders_filled_byAPI=}')
+                #log.info(f'{open_orders_open_byAPI=}')
+                #log.info(f'{open_orders_filled_byAPI=}')
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
                 open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
@@ -504,7 +504,7 @@ class ApplyHedgingSpot ():
 
                     log.critical (f'{instrument}') 
                     market_price = await self.market_price (instrument) 
-                    log.critical (f'{my_trades_open}') 
+                    #log.critical (f'{my_trades_open}') 
                     
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
