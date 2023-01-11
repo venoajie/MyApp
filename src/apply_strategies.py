@@ -504,7 +504,7 @@ class ApplyHedgingSpot ():
 
                     log.critical (f'{instrument}') 
                     market_price = await self.market_price (instrument) 
-                    log.critical (f'{market_price}') 
+                    log.critical (f'{my_trades_open}') 
                     
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
