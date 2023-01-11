@@ -112,8 +112,8 @@ class CheckDataIntegrity ():
         ''' 
 
         try:
-            log.warning (f'positions_from_get {self.positions_from_get=}')
-            log.warning (f'positions_from_get_net {self.net_position (self.my_trades_open_from_db)=}')
+            #log.warning (f'positions_from_get {self.positions_from_get=}')
+            #log.warning (f'positions_from_get_net {self.net_position (self.my_trades_open_from_db)=}')
             positions_from_get = self.positions_from_get
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
@@ -126,7 +126,7 @@ class CheckDataIntegrity ():
                 if difference !=0:
                     info= (f'SIZE DIFFERENT size per get {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                     telegram_bot_sendtext(info) 
-                log.warning (f'difference {difference=}')
+                log.warning (f'difference {difference}')
                 
                 return  difference
             else:
@@ -143,7 +143,7 @@ class CheckDataIntegrity ():
         ''' 
         try:
             size_difference = await self.compare_inventory_per_db_vs_system()
-            log.critical (f'size_difference {size_difference=}')
+            #log.critical (f'size_difference {size_difference}')
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            

@@ -109,6 +109,7 @@ class ApplyHedgingSpot ():
                                                                                start_timestamp,
                                                                                end_timestamp)
                   
+        log.critical(trades)
         try:
             result = [] if trades == [] else trades ['result'] ['trades']
         except:
