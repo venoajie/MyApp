@@ -482,7 +482,10 @@ class ApplyHedgingSpot ():
                     filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
                 
                 #log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
-                
+                await self.check_integrity (positions,
+                                            my_trades_open, 
+                                            server_time
+                                            )
                 for instrument in instrument_transactions:
 
                     log.critical (f'{instrument}') 
