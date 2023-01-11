@@ -138,7 +138,7 @@ class ApplyHedgingSpot ():
                                            ) -> list:
         """
         """
-        from utils import string_modification
+        from utilities import string_modification
         
         #log.info (my_orders_from_db)
         if my_orders_from_db:
