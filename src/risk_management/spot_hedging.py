@@ -83,7 +83,7 @@ class SpotHedging ():
         
         '''
         '''    
-        from utils import number_modification                
+        from utilities import number_modification                
         return number_modification.net_position (selected_transactions)
     
     def compute_actual_hedging_size (self) -> int:
