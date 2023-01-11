@@ -588,7 +588,7 @@ class ApplyHedgingSpot ():
                         label = strategy_variables ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
 
-                        log.critical (f'{strategy=} {label=} {pct_threshold=} {time_threshold=} {target_price_loss=} {entry_price=} {notional=} {equity_risked=}')
+                        log.critical (f'{strategy=} {label=} {pct_threshold=} {time_threshold=} {target_price_loss=} {notional=} ')
                         size = position_sizing.pos_sizing (target_price_loss,
                                                             entry_price, 
                                                             notional, 
