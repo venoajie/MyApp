@@ -103,7 +103,7 @@ class CheckDataIntegrity ():
         
         '''
         '''    
-        from utils import number_modification                
+        from utilities import number_modification                
         return number_modification.net_position (selected_transactions)
                                  
     async def compare_inventory_per_db_vs_system_ (self) -> int:
