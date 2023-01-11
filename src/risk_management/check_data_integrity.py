@@ -146,12 +146,13 @@ class CheckDataIntegrity ():
 
         try:
             log.warning (f'positions_from_get {self.positions_from_get=}')
+            log.warning (f'positions_from_get_net {self.net_position (self.my_trades_open_from_db)=}')
             positions_from_get = self.positions_from_get
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
             
             if positions_from_get:
-                actual_hedging_size_system = positions_from_get ['size']
+                actual_hedging_size_system = self.net_position (self.my_trades_open_from_db)
                 
                 difference = actual_hedging_size_system - actual_hedging_size 
                 
