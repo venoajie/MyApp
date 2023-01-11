@@ -460,7 +460,8 @@ class ApplyHedgingSpot ():
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [o['instrument_name'] for o in instruments_future \
                     if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
-                
+                instrument_transactions = [f'{self.currency.upper()}-PERPETUAL']
+
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
