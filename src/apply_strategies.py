@@ -247,14 +247,15 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
-        log.error (portfolio)
+        #log.error (portfolio)
+        none_data = [None, [], 0]
         
         # at start, usually position == None
-        if positions == None:
+        if positions in none_data:
             positions = await self.get_positions ()
             pickling.replace_data (my_path_positions, positions)  
             
-        if portfolio == None:
+        if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
             pickling.replace_data (my_path_portfolio, portfolio)        
         
@@ -483,7 +484,9 @@ class ApplyHedgingSpot ():
                 
                 for instrument in instrument_transactions:
 
+                    log.critical (f'{instrument}') 
                     market_price = await self.market_price (instrument) 
+                    log.critical (f'{market_price}') 
                     
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
@@ -493,7 +496,6 @@ class ApplyHedgingSpot ():
                     
                     size_db = []  
                     size_system = []  
-                    log.critical (f'{instrument}') 
                     #log.critical (f'{my_trades_open_instrument=}') 
                     if my_trades_open_instrument:
                         size_db = await self.net_position(my_trades_open_instrument)
