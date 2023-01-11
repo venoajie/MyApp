@@ -150,13 +150,13 @@ class ApplyHedgingSpot ():
             # compare data from exchanges. Pick only those have not recorded at system yet
             #log.debug (f'{my_orders_from_db_min_time_stamp=}')
             #log.warning (f'{fetch_my_orders_from_system_from_min_time_stamp_to_now=}')
-            filtered_data_from_my_orders_from_exchange = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
+            filtered_data_from_ = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
                                                                                                 my_orders_from_db
                                                                                                 )
            # log.info (f'{my_orders_from_db=}')
-            #log.error (f'{filtered_data_from_my_orders_from_exchange=}')
+            #log.error (f'{filtered_data_from_=}')
             # redistribute the filtered data into db
-            myorders = open_orders_management.MyOrders (filtered_data_from_my_orders_from_exchange)
+            myorders = open_orders_management.MyOrders (filtered_data_from_)
             
             myorders.distribute_order_transactions (self.currency)
         else:
@@ -528,12 +528,12 @@ class ApplyHedgingSpot ():
                     # instrument contract size
                     contract_size = instrument_data ['contract_size']
                     
-                    open_order_mgt_system = await self.open_orders_from_exchange()
-                    #log.warning (f'open_order_mgt_system {open_order_mgt_system}') 
-                    my_orders_from_db = await self.get_open_orders_from_exchange()
-                    log.debug (f'my_orders_from_db {my_orders_from_db}') 
+                    open_order_mgt_from_exchange = await self.open_orders_from_exchange()
+                    #log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
+                    my_orders_from_exchange = await self.get_open_orders_from_exchange()
+                    log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
 
-                    net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net ()
+                    net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.my_orders_api_basedOn_label_items_net ()
                     log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
                     
                     # check for any order outstanding as per label filter
@@ -541,9 +541,9 @@ class ApplyHedgingSpot ():
                     log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                 
                     if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
-                        await self.check_my_orders_consistency (my_orders_from_db, server_time)
+                        await self.check_my_orders_consistency (my_orders_from_exchange, server_time)
                         
-                        log.debug(f'{net_open_orders_open_byAPI_system=} {open_order_mgt_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
+                        log.debug(f'{net_open_orders_open_byAPI_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
                                         
                     # fetch strategies 
                     strategies = entries_exits.strategies
