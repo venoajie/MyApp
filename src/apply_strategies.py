@@ -256,13 +256,13 @@ class ApplyHedgingSpot ():
             positions = await self.get_positions ()
             pickling.replace_data (my_path_positions, positions)  
             
-        log.debug (portfolio)
+        #log.debug (portfolio)
         if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
             pickling.replace_data (my_path_portfolio, portfolio) 
             portfolio = pickling.read_data(my_path_portfolio)       
         
-        log.error (portfolio)
+        #log.error (portfolio)
         return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
                 'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
@@ -434,7 +434,7 @@ class ApplyHedgingSpot ():
             #!
             # portfolio data
             portfolio = reading_from_database ['portfolio']
-            log.warning (portfolio)
+            #log.warning (portfolio)
             
             # obtain spot equity
             equity = portfolio [0]['equity']
