@@ -396,20 +396,15 @@ class ApplyHedgingSpot ():
                                server_time
                                ) -> None:
         
-        #log.error (positions_from_get)
-        #log.error (my_trades_open_from_db)
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
-        #log.error (myTrades_from_db)
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
-        #log.error (start_timestamp)
-        ####
+        
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
             my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
-            #log.error (my_trades_time_constrd)
 
             data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
                                                                     positions_from_get,
@@ -452,18 +447,15 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions = reading_from_database ['positions']
-                #log.critical (f'{positions=}')
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                #log.debug (my_trades_open)
+                
                 # fetch instruments data
                 instruments = reading_from_database ['instruments']
 
                 # instruments future
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
-                #instruments_future_name = [o['instrument_name'] for o in instruments_future  ]
-                #log.critical (instruments_future_name)
                 
                 # obtain instruments future with rebates
                 rebates = await self.get_instruments_with_rebates (instruments, server_time)
@@ -478,8 +470,6 @@ class ApplyHedgingSpot ():
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 
-                #log.info(f'{open_orders_open_byAPI=}')
-                #log.info(f'{open_orders_filled_byAPI=}')
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
                 open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
@@ -495,16 +485,15 @@ class ApplyHedgingSpot ():
                     open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
                     filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
                 
-                #log.info(f'{positions=} {my_trades_open=} {server_time=}')
                 await self.check_integrity (positions,
                                             my_trades_open, 
                                             server_time
                                             )
+                
                 for instrument in instrument_transactions:
 
                     log.critical (f'{instrument}') 
                     market_price = await self.market_price (instrument) 
-                    #log.critical (f'{my_trades_open}') 
                     
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
@@ -514,7 +503,7 @@ class ApplyHedgingSpot ():
                     
                     size_db = []  
                     size_system = []  
-                    #log.critical (f'{my_trades_open_instrument=}') 
+
                     if my_trades_open:
                         my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                         size_db = await self.net_position(my_trades_open_instrument)
@@ -527,20 +516,6 @@ class ApplyHedgingSpot ():
                     
                     #log.critical (f'{position=}')
                     log.critical (f'{size_db=} {size_system=} {size_db  not in none_data and size_system not in none_data=}')
-                    await self.check_integrity (positions, 
-                                                    my_trades_open, 
-                                                    server_time
-                                                )
-                    
-                    if size_db  not in none_data and size_system not in none_data:
-                        if size_db != size_system:
-                            await self.check_integrity (positions, 
-                                                        my_trades_open, 
-                                                        server_time
-                                                        )
-                        else:
-                            my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open-recovery-point')  
-                            pickling.replace_data (my_trades_path_open, my_trades_open)
                     
                     notional =  await self.compute_notional_value (index_price, equity)
     
@@ -605,7 +580,7 @@ class ApplyHedgingSpot ():
                         len_open_orders_open_byAPI_db_sell: int = open_order_mgt_strategy_sell.my_orders_api_basedOn_label_items_qty (label)
                         len_open_orders_open_byAPI_db_buy: int = open_order_mgt_strategy_buy.my_orders_api_basedOn_label_items_qty (label)
                                              
-                        if 'supplyDemand' in strategy and False:  
+                        if 'supplyDemand' in strategy:  
                               
                             if 'PERPETUAL' in instrument and market_price :
                                 if side == 'sell':
