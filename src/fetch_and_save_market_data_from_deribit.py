@@ -285,7 +285,6 @@ class StreamMarketData:
 def main ():
     
     try:
-        log.info (currency)
 
         StreamMarketData ()
 
