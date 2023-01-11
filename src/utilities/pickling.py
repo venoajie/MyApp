@@ -19,7 +19,7 @@ def read_data (file_name_pkl: str)-> None:
     
 def check_duplicate_elements (file_name: str)-> None:
 
-    from utils import string_modification
+    from utilities import string_modification
     from loguru import logger as log
 
     data_from_db: list = read_data (file_name)
@@ -168,7 +168,7 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
     """
     append_and_replace_items_based_on_time_expiration in minute
     """
-    from utils import time_modification
+    from utilities import time_modification
 
     append_data(file_name_pkl, data)
     data: object = read_data (file_name_pkl)
