@@ -114,8 +114,9 @@ class CheckDataIntegrity ():
         
 
         try:
-            size_from_my_trades_open = self.net_position (self.my_trades_open_from_db)
             log.warning (f'{self.positions_from_get=}')
+            log.warning (f'{self.my_trades_open_from_db=}')
+            size_from_my_trades_open = self.net_position (self.my_trades_open_from_db)
             log.warning (f'{size_from_my_trades_open=}')
             
             
@@ -144,7 +145,7 @@ class CheckDataIntegrity ():
         ''' 
 
         try:
-            print (f'positions_from_get {self.positions_from_get=}')
+            log.warning (f'positions_from_get {self.positions_from_get=}')
             positions_from_get = self.positions_from_get
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
