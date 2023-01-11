@@ -450,6 +450,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
+                log.info (my_trades_open)
                 
                 # fetch instruments data
                 instruments = reading_from_database ['instruments']
