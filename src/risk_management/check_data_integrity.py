@@ -7,6 +7,7 @@ import asyncio
 # user defined formula 
 from utilities import system_tools, pickling, string_modification
 from portfolio.deribit import myTrades_management
+from loguru import  logger as log
 
 def catch_error (error) -> list:
     """
@@ -25,6 +26,7 @@ async def myTrades_originally_from_db (currency) -> list:
     """
 
     try:
+        none_data = [None,[]]
         my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             currency,
                                                                             'open-recovery-point'
@@ -37,10 +39,11 @@ async def myTrades_originally_from_db (currency) -> list:
 
         my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
         my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
-        print (f'my_trades_from_db_recovery {my_trades_from_db_recovery}')
+        log.debug (f'my_trades_from_db_recovery {my_trades_from_db_recovery}')
 
         return {'db_recover': my_trades_from_db_recovery,
-                'time_stamp_to_recover': min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1,
+                'time_stamp_to_recover': [] if my_trades_from_db_recovery in none_data\
+                    else min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1,
                 'path_recover': my_trades_path_open_recovery,
                 'path_regular': my_trades_path_open,
                 'db_regular': my_trades_from_db_regular
@@ -141,7 +144,7 @@ class CheckDataIntegrity ():
         ''' 
 
         try:
-            print (f'positions_from_get {self.positions_from_get}')
+            print (f'positions_from_get {self.positions_from_get=}')
             positions_from_get = self.positions_from_get
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
