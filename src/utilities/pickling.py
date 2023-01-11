@@ -46,12 +46,12 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
 
     with open(file_name,'wb') as handle:
         try:
-            print (f'dump_data_as_list {data}')
+            #print (f'dump_data_as_list {data}')
             
             if data !=[]:
                 
-                print (f'isinstance(data, dict) {isinstance(data, dict)}')
-                print (f'isinstance(data, list) {isinstance(data, list)}')
+            #    print (f'isinstance(data, dict) {isinstance(data, dict)}')
+            #    print (f'isinstance(data, list) {isinstance(data, list)}')
                 
                 if isinstance(data, dict):
                     pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)

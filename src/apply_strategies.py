@@ -259,7 +259,8 @@ class ApplyHedgingSpot ():
         log.debug (portfolio)
         if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
-            pickling.replace_data (my_path_portfolio, portfolio)        
+            pickling.replace_data (my_path_portfolio, portfolio) 
+            portfolio = pickling.read_data(my_path_portfolio)       
         
         log.error (portfolio)
         return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
