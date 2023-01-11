@@ -112,6 +112,7 @@ class MyOrders ():
         '''
         '''   
         from utilities import number_modification 
+        
         return 0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position (self.my_orders_api ()) if label == None \
                 else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
