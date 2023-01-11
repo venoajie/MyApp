@@ -401,7 +401,7 @@ class ApplyHedgingSpot ():
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         log.error (start_timestamp)
-        
+        ####
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
