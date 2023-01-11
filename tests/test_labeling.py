@@ -1,5 +1,6 @@
-from configuration import label_numbering
-from utils import time_modification
+#from configuration import label_numbering
+from src.configuration import label_numbering
+from src.utilities import time_modification
 
 def test_label_numbering  ():
         

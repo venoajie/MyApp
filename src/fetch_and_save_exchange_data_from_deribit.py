@@ -16,7 +16,7 @@ from loguru import logger as log
 from dotenv import load_dotenv
 
 # user defined formula 
-from utils import pickling, system_tools, string_modification
+from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
 from portfolio.deribit import open_orders_management, myTrades_management
 

@@ -106,13 +106,14 @@ class MyOrders ():
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  len ([o for o in self.my_orders_api_basedOn_label (label)])
             
-    def my_orders_api_basedOn_label_items_net (self, label: str)-> list: #! inconsistent output comparing to other funcs.
+    def my_orders_api_basedOn_label_items_net (self, label: str = None)-> list: #! inconsistent output comparing to other funcs.
         
         '''
         '''   
-        from utils import number_modification 
+        from utilities import number_modification 
         return 0 if self.my_orders_api_basedOn_label (label) == [] \
-            else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
+            else  number_modification.net_position (self.my_orders_api ()) if label == None \
+                else  number_modification.net_position ( ([o for o in self.my_orders_api_basedOn_label (label)]))
             
     def net_position (self, 
                       selected_transactions: list
@@ -135,7 +136,7 @@ class MyOrders ():
         '''
         trade_sources: 'API'
         '''       
-        from utils import pickling, system_tools
+        from utilities import pickling, system_tools
         from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')

@@ -34,7 +34,7 @@ strategies = [
     'instrument': ['PERPETUAL'],
     'time_frame': 900,
     'side': 900,
-    'entry_price': 'sell',
+    'entry_price': 1000,
     'take_profit': 15,
     'quantity_discrete': 15,
     'averaging': (1/100)/2,

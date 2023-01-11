@@ -132,7 +132,7 @@ def catch_error_message (error: str,
 
     '''        
     import traceback
-    from utils import telegram_app
+    from utilities import telegram_app
     from loguru import logger as log
     
     info = (f'{error} \n \n {traceback.format_exc()}')

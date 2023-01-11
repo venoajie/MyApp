@@ -12,7 +12,7 @@ from loguru import logger as log
 import requests
 
 # user defined formula
-from utils import pickling, formula, system_tools
+from utilities import pickling, formula, system_tools
 from market_data import get_market_data
 
 symbol = 'ETH-PERPETUAL'

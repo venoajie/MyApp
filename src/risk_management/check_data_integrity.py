@@ -5,7 +5,7 @@ from dataclassy import dataclass
 import asyncio
 
 # user defined formula 
-from utils import system_tools, pickling, string_modification
+from utilities import system_tools, pickling, string_modification
 from portfolio.deribit import myTrades_management
 
 def catch_error (error) -> list:
@@ -54,7 +54,7 @@ class CheckDataIntegrity ():
     '''
     '''       
     currency: str 
-    position_per_instrument: list
+    positions_from_get: list
     my_trades_open_from_db: list
     my_selected_trades_open_from_system: list
             
@@ -102,12 +102,45 @@ class CheckDataIntegrity ():
         from utils import number_modification                
         return number_modification.net_position (selected_transactions)
                                  
+    async def compare_inventory_per_db_vs_system_ (self) -> int:
+        
+        '''
+        ''' 
+        from loguru import logger as log
+        
+
+        try:
+            size_from_my_trades_open = self.net_position (self.my_trades_open_from_db)
+            log.warning (f'{self.positions_from_get=}')
+            log.warning (f'{size_from_my_trades_open=}')
+            
+            
+            size_from_get_position = 0
+            if self.positions_from_get:
+                size_from_get_position = sum([o['size'] for o in self.positions_from_get ] )
+                log.critical (f'{size_from_my_trades_open=}')
+                
+                difference = size_from_get_position - size_from_my_trades_open 
+                log.critical (f'{difference=}')
+                
+                if difference !=0:
+                    info= (f'SIZE DIFFERENT size per sistem {size_from_get_position} size per db {size_from_my_trades_open} \n ')
+                    telegram_bot_sendtext(info) 
+                
+                return  difference
+            else:
+                return  0 - size_from_my_trades_open 
+            
+        except Exception as error:
+            catch_error (error)
+            
     async def compare_inventory_per_db_vs_system (self) -> int:
         
         '''
         ''' 
 
         try:
+            print (f'compare_inventory_per_db_vs_system {self.position_per_instrument}')
             position_per_instrument = self.position_per_instrument
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)

@@ -12,7 +12,7 @@ import orjson
 from loguru import logger as log
 
 # user defined formula 
-from utils import pickling, system_tools, string_modification
+from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
     
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:

@@ -1,4 +1,5 @@
-from utils import string_modification
+from src.utilities import string_modification
+#from utils import string_modification
 
 def test_extract_currency_from_text  ():
     websocket_message_channel_user_portfolio_BTC = 'user.portfolio.BTC'

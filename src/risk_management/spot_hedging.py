@@ -4,7 +4,7 @@
 from dataclassy import dataclass
 from loguru import logger as log
 
-from utils import string_modification
+from utilities import string_modification
 from portfolio.deribit import myTrades_management
 
 @dataclass(unsafe_hash=True, slots=True)
