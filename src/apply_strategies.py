@@ -444,7 +444,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions = reading_from_database ['positions']
-                log.critical (f'{positions=}')
+                #log.critical (f'{positions=}')
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
@@ -485,7 +485,7 @@ class ApplyHedgingSpot ():
                     open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
                     filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
                 
-                log.info(f'{positions=} {my_trades_open=} {server_time=}')
+                #log.info(f'{positions=} {my_trades_open=} {server_time=}')
                 await self.check_integrity (positions,
                                             my_trades_open, 
                                             server_time

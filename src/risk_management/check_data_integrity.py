@@ -141,18 +141,18 @@ class CheckDataIntegrity ():
         ''' 
 
         try:
-            print (f'compare_inventory_per_db_vs_system {self.position_per_instrument}')
-            position_per_instrument = self.position_per_instrument
+            print (f'positions_from_get {self.positions_from_get}')
+            positions_from_get = self.positions_from_get
             
             actual_hedging_size = self.net_position (self.my_trades_open_from_db)
             
-            if position_per_instrument:
-                actual_hedging_size_system = position_per_instrument ['size']
+            if positions_from_get:
+                actual_hedging_size_system = positions_from_get ['size']
                 
                 difference = actual_hedging_size_system - actual_hedging_size 
                 
                 if difference !=0:
-                    info= (f'SIZE DIFFERENT size per sistem {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
+                    info= (f'SIZE DIFFERENT size per get {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                     telegram_bot_sendtext(info) 
                 
                 return  difference
