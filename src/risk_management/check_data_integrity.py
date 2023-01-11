@@ -37,6 +37,7 @@ async def myTrades_originally_from_db (currency) -> list:
 
         my_trades_from_db_recovery = pickling.read_data (my_trades_path_open_recovery)
         my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
+        print (f'my_trades_from_db_recovery {my_trades_from_db_recovery}')
 
         return {'db_recover': my_trades_from_db_recovery,
                 'time_stamp_to_recover': min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1,
