@@ -510,12 +510,13 @@ class ApplyHedgingSpot ():
                     best_bid_prc= market_price ['best_bid_prc']
                     best_ask_prc= market_price ['best_ask_prc']
                                     
-                    my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
+                    my_trades_open_instrument = []
                     
                     size_db = []  
                     size_system = []  
                     #log.critical (f'{my_trades_open_instrument=}') 
-                    if my_trades_open_instrument:
+                    if my_trades_open:
+                        my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                         size_db = await self.net_position(my_trades_open_instrument)
                     
                     if positions:
