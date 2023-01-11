@@ -393,12 +393,14 @@ class ApplyHedgingSpot ():
                                ) -> None:
         
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
+        log.error (my_trades_open_from_db)
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         
         # use the earliest time stamp to fetch data from exchange
         my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
+        log.error (my_trades_time_constrd)
 
         data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
                                                                 positions_from_get,
