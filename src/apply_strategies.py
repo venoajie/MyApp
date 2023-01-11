@@ -513,7 +513,7 @@ class ApplyHedgingSpot ():
                         size_system = position ['size']
                     
                     #log.critical (f'{position=}')
-                    log.critical (f'{size_db=} {size_system=}')
+                    log.critical (f'{size_db=} {size_system=} {size_db  not in none_data and size_system not in none_data=}')
                     await self.check_integrity (positions, 
                                                     my_trades_open, 
                                                     server_time
