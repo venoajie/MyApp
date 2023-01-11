@@ -483,7 +483,7 @@ class ApplyHedgingSpot ():
                     open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
                     filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
                 
-                #log.info(f'{last_time_order_filled_exceed_threshold=} {last_time_order_filled_sell_exceed_threshold=} {last_time_order_filled_exceed_threshold=}')
+                log.info(f'{positions=} {my_trades_open=} {server_time=}')
                 await self.check_integrity (positions,
                                             my_trades_open, 
                                             server_time
