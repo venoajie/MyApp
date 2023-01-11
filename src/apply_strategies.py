@@ -392,8 +392,10 @@ class ApplyHedgingSpot ():
                                server_time
                                ) -> None:
         
-        myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
+        log.error (positions_from_get)
         log.error (my_trades_open_from_db)
+        myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
+        log.error (myTrades_from_db)
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
