@@ -580,7 +580,7 @@ class ApplyHedgingSpot ():
                         len_open_orders_open_byAPI_db_sell: int = open_order_mgt_strategy_sell.my_orders_api_basedOn_label_items_qty (label)
                         len_open_orders_open_byAPI_db_buy: int = open_order_mgt_strategy_buy.my_orders_api_basedOn_label_items_qty (label)
                                              
-                        if 'supplyDemand' in strategy:  
+                        if 'supplyDemand' in strategy and False:  
                               
                             if 'PERPETUAL' in instrument and market_price :
                                 if side == 'sell':
@@ -650,13 +650,14 @@ class ApplyHedgingSpot ():
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
+                                    log.warning(f'{spot_was_unhedged=} {net_open_orders_open_byAPI_db=} {last_time_order_filled_sell_exceed_threshold=}')
                                     
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
                                         and (size_system == actual_hedging_size) \
                                             and last_time_order_filled_sell_exceed_threshold:
                                                 
-                                        log.warning(f'{instrument=} {best_ask_prc=} {label=}')
+                                        
                                     
                                         await self.send_orders ('sell', 
                                                                 instrument, 
