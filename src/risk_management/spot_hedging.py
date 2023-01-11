@@ -181,7 +181,7 @@ class SpotHedging ():
 
         trades_to_close = ([o for o in (self.my_trades) if  str(label_int)  in o['label'] ])
         # sum transaction with the same label id
-        log.debug(f'{trades_to_close=} ')
+        #log.debug(f'{trades_to_close=} ')
         #log.debug(f'{str(label_int) =} ')
         size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
         #log.debug(f'{size_take_profit=} ')

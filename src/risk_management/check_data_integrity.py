@@ -126,7 +126,7 @@ class CheckDataIntegrity ():
                 if difference !=0:
                     info= (f'SIZE DIFFERENT size per get {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
                     telegram_bot_sendtext(info) 
-                log.warning (f'difference {difference}')
+                #log.warning (f'difference {difference}')
                 
                 return  difference
             else:
