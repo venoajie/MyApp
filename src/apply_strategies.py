@@ -535,9 +535,9 @@ class ApplyHedgingSpot ():
                     if size_db  not in none_data and size_system not in none_data:
                         if size_db != size_system:
                             await self.check_integrity (positions, 
-                                                    my_trades_open, 
-                                                    server_time
-                                                )
+                                                        my_trades_open, 
+                                                        server_time
+                                                        )
                         else:
                             my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open-recovery-point')  
                             pickling.replace_data (my_trades_path_open, my_trades_open)
@@ -554,18 +554,17 @@ class ApplyHedgingSpot ():
                     contract_size = instrument_data ['contract_size']
                     
                     open_order_mgt_system = await self.open_orders_from_exchange()
-                    log.warning (f'{open_order_mgt_system}') 
+                    log.warning (f'open_order_mgt_system {open_order_mgt_system}') 
                     my_orders_from_db = await self.get_open_orders_from_exchange()
-                    log.debug (f'{open_order_mgt_system}') 
+                    log.debug (f'my_orders_from_db {my_orders_from_db}') 
 
                     net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net ()
+                    log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
                     
                     # check for any order outstanding as per label filter
                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net ()
+                    log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                 
-                    #log.error (net_open_orders_open_byAPI_system)
-                    log.debug(f'{net_open_orders_open_byAPI_system=} {net_open_orders_open_byAPI_db=}')
-                    
                     if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
                         await self.check_my_orders_consistency (my_orders_from_db, server_time)
                         
@@ -589,7 +588,7 @@ class ApplyHedgingSpot ():
                         label = strategy_variables ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
 
-                        log.critical (f'{strategy=} {pct_threshold=} {time_threshold=} {target_price_loss=} {entry_price=} {notional=} {equity_risked=}')
+                        log.critical (f'{strategy=} {label=} {pct_threshold=} {time_threshold=} {target_price_loss=} {entry_price=} {notional=} {equity_risked=}')
                         size = position_sizing.pos_sizing (target_price_loss,
                                                             entry_price, 
                                                             notional, 
