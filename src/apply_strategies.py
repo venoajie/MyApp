@@ -554,7 +554,9 @@ class ApplyHedgingSpot ():
                     contract_size = instrument_data ['contract_size']
                     
                     open_order_mgt_system = await self.open_orders_from_exchange()
+                    log.warning (f'{open_order_mgt_system}') 
                     my_orders_from_db = await self.get_open_orders_from_exchange()
+                    log.debug (f'{open_order_mgt_system}') 
 
                     net_open_orders_open_byAPI_system: int = open_order_mgt_system.my_orders_api_basedOn_label_items_net ()
                     
