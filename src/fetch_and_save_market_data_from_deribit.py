@@ -282,7 +282,7 @@ class StreamMarketData:
                 )
             )
                 
-def main (currency):
+def main ():
     
     try:
         log.info (currency)
