@@ -433,6 +433,7 @@ class ApplyHedgingSpot ():
             #!
             # portfolio data
             portfolio = reading_from_database ['portfolio']
+            log.warning (portfolio)
             
             # obtain spot equity
             equity = portfolio [0]['equity']
