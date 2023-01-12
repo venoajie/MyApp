@@ -14,7 +14,7 @@ from os.path import join, dirname
 # user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, number_modification
-import deribit_get#,deribit_rest
+import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import  label_numbering
 from strategies import entries_exits
@@ -140,21 +140,17 @@ class ApplyHedgingSpot ():
         """
         from utilities import string_modification
         
-        #log.info (my_orders_from_db)
         if my_orders_from_db:
             # get the earliest transaction time stamp
             my_orders_from_db_min_time_stamp = min ([o['creation_timestamp'] for o in my_orders_from_db ])
             
             # use the earliest time stamp to fetch data from exchange
             fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, server_time)
+            
             # compare data from exchanges. Pick only those have not recorded at system yet
-            #log.debug (f'{my_orders_from_db_min_time_stamp=}')
-            #log.warning (f'{fetch_my_orders_from_system_from_min_time_stamp_to_now=}')
             filtered_data_from_ = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
                                                                                                 my_orders_from_db
                                                                                                 )
-           # log.info (f'{my_orders_from_db=}')
-            #log.error (f'{filtered_data_from_=}')
             # redistribute the filtered data into db
             myorders = open_orders_management.MyOrders (filtered_data_from_)
             
@@ -413,7 +409,6 @@ class ApplyHedgingSpot ():
                                                                        )
             
             await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
-    
         
     async def running_strategy (self, server_time) -> float:
         """
@@ -477,15 +472,6 @@ class ApplyHedgingSpot ():
                 open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 
                 open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
-                open_order_filled_sell = ([o['last_update_timestamp'] for o in open_order_filled if ['direction'] == 'sell'] )
-
-                if open_order_filled != []: 
-                    open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled] )
-                    filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
-                    
-                if open_order_filled_sell != []: 
-                    open_order_filled_sell_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_sell] )
-                    filled_order_deltaTime_sell: int = server_time - open_order_filled_sell_latest_timeStamp  
                 
                 await self.check_integrity (positions,
                                             my_trades_open, 
@@ -500,15 +486,7 @@ class ApplyHedgingSpot ():
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
                     best_ask_prc= market_price ['best_ask_prc']
-                    
-                    #if positions:
-                    #    position =  await self. position_per_instrument (positions, instrument) 
-                    
-                   # if position:
-                    #    size_system = position ['size']
-                    
-                    #log.critical (f'{position=}')
-                    
+                                        
                     notional =  await self.compute_notional_value (index_price, equity)
     
                     #! get instrument detaila
@@ -555,7 +533,6 @@ class ApplyHedgingSpot ():
                         label = strategy_variables ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
 
-                        #log.critical (f'{strategy=} {label=}')
                         size = position_sizing.pos_sizing (target_price_loss,
                                                             entry_price, 
                                                             notional, 
@@ -596,7 +573,6 @@ class ApplyHedgingSpot ():
                                                                 label_numbered
                                                                 )   
                             
-                                                                
                             log.critical (f'{target_price_loss=} {side=} {entry_price=} {size=} {label_numbered=}')
                             
                             my_trades_open_SD = my_trades_open. my_trades_api_basedOn_label (label)
@@ -640,21 +616,17 @@ class ApplyHedgingSpot ():
 
                                     actual_hedging_size = spot_hedged.compute_actual_hedging_size()
                                     
-                                    #log.info(f'{positions=}')
-                                    #label: str = label_numbering.labelling ('open', label)
                                     label_open_for_filter = f'{label}-open'
-                                    #label_open_with_time_server: str = label_numbering.labelling ('open', label)
+
                                     log.debug(f'{label=} {label_open_for_filter=}')
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
-                                    log.warning(f'{spot_was_unhedged=} {net_open_orders_open_byAPI_db=} {last_time_order_filled_sell_exceed_threshold=}')
+                                    log.warning(f'{spot_was_unhedged=} {net_open_orders_open_byAPI_db=} {last_time_order_filled_exceed_threshold=}')
                                     
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                                        and  last_time_order_filled_sell_exceed_threshold:
-                                                
-                                        
+                                        and  last_time_order_filled_exceed_threshold:
                                     
                                         await self.send_orders ('sell', 
                                                                 instrument, 
@@ -664,7 +636,8 @@ class ApplyHedgingSpot ():
                                                                 )
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
-                                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (actual_hedging_size, 
+                                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (label,
+                                                                                                              actual_hedging_size, 
                                                                                                               min_hedging_size
                                                                                                               )
                                     
@@ -679,13 +652,14 @@ class ApplyHedgingSpot ():
                                         bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']
                                         ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
                                         
-                                        log.info(f' {label_numbered=} {bid_prc_is_lower_than_buy_price=} {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} {best_ask_prc=}')
+                                        log.info(f' {label_numbered=} {bid_prc_is_lower_than_buy_price=} \
+                                            {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
+                                                {best_ask_prc=}')
                                                 
                                         if adjusting_inventories ['take_profit'] and bid_prc_is_lower_than_buy_price:
                                             label_closed_for_filter = f'{label}-closed'
                                                     
-                                            await self.send_orders (
-                                                                    'buy', 
+                                            await self.send_orders ('buy', 
                                                                     instrument, 
                                                                     best_bid_prc, 
                                                                     abs(adjusting_inventories ['size_take_profit']), 
@@ -696,7 +670,6 @@ class ApplyHedgingSpot ():
                                             
                                         if adjusting_inventories ['average_up'] and ask_prc_is_higher_than_sell_price:
                                             
-                                                    
                                             await self.send_orders (
                                                                     'sell', 
                                                                     instrument, 
@@ -709,9 +682,9 @@ class ApplyHedgingSpot ():
                                 
         except Exception as error:
             catch_error (error, 30)
-                                
 
     async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  
+                                                                         label,
                                                                          actual_hedging_size: float, 
                                                                          min_hedging_size: float
                                                                          )-> None:
@@ -726,9 +699,10 @@ class ApplyHedgingSpot ():
             #refresh open orders
             reading_from_database = await self.reading_from_database ()
             open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+            
             #log.info(f'{open_orders_open_byAPI=}')
             open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
-            label_open = 'hedgingSpot-open'
+            label_open = f'{label}-open'
             current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
             current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
 
