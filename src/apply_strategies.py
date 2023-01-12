@@ -447,7 +447,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions = reading_from_database ['positions']
-                log.error (positions)
+                #log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
