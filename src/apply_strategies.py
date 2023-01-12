@@ -649,6 +649,7 @@ class ApplyHedgingSpot ():
                                     label_open_for_filter = f'{label}-open'
                                     #label_open_with_time_server: str = label_numbering.labelling ('open', label)
                                     log.debug(f'{label=} {label_open_for_filter=}')
+                                    log.debug(f'{size_system=} {actual_hedging_size=}')
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
