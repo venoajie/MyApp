@@ -594,6 +594,7 @@ class ApplyHedgingSpot ():
                             
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
+                                    log.debug (my_trades_open)
 
                                     #check under hedging
                                     spot_hedged = spot_hedging.SpotHedging (label,
@@ -697,7 +698,7 @@ class ApplyHedgingSpot ():
         try:
             
             #refresh open orders
-            reading_from_database = await self.reading_from_database ()
+            reading_from_database: dict = await self.reading_from_database ()
             open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
             
             #log.info(f'{open_orders_open_byAPI=}')
