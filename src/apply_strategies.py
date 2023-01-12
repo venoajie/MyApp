@@ -248,7 +248,7 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
-        #log.error (portfolio)
+        log.error (positions)
         none_data = [None, [], 0]
         
         # at start, usually position == None
