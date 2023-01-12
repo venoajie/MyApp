@@ -19,7 +19,8 @@ class MyOrders ():
         
         '''
         '''    
-        return [] if self.my_orders == [] else self.my_orders 
+        none_data = [None, []]
+        return [] if self.my_orders in none_data else self.my_orders 
     
     def my_orders_api (self)-> list:
         
