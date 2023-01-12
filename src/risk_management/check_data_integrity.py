@@ -119,6 +119,8 @@ class CheckDataIntegrity ():
             
             if self.positions_from_get:
                 actual_hedging_size_system = self.net_position (self.my_trades_open_from_db)
+                log.warning (f'my_trades_open_from_db {self.my_trades_open_from_db}')
+                log.warning (f'actual_hedging_size_system {actual_hedging_size_system}')
                 
                 difference = actual_hedging_size_system - actual_hedging_size 
                 
