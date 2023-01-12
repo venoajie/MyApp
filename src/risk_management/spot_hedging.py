@@ -19,8 +19,9 @@ class SpotHedging ():
         
         '''
         '''       
-        my_trades = self.my_trades
-        return   [] if my_trades  == [] else  ([o for o in my_trades if self.label in o['label']  ])
+        none_data = [None, []]
+    
+        return   [] if self.my_trades  in none_data  else  ([o for o in self.my_trades if self.label in o['label']  ])
 
     def my_trades_api_basedOn_label_max_price_attributes (self) -> dict:
         
