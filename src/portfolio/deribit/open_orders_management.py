@@ -25,6 +25,7 @@ class MyOrders ():
         
         '''
         '''    
+        print (f'self.my_orders_all() {self.my_orders_all()=}')
         return [] if self.my_orders_all() == [] else [o for o in self.my_orders_all() if o['api'] == True]
     
     def my_orders_manual (self)->list:
