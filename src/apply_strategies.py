@@ -258,7 +258,10 @@ class ApplyHedgingSpot ():
             pickling.replace_data (my_path_portfolio, portfolio) 
             portfolio = pickling.read_data(my_path_portfolio)       
         
-        #log.error (portfolio)
+        #! delete
+        my_trades_closed = pickling.read_data(my_trades_path_closed)
+        log.info (my_trades_closed)
+        #! delete
         return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
                 'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
@@ -396,8 +399,8 @@ class ApplyHedgingSpot ():
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
-        log.critical (positions_from_get)
-        log.info (myTrades_from_db)
+        #log.critical (positions_from_get)
+        #log.info (myTrades_from_db)
         log.critical (start_timestamp)
         
         my_trades_time_constrd =[]
@@ -457,7 +460,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                log.info (my_trades_open)
+                #log.info (my_trades_open)
                 
                 # fetch instruments data
                 instruments = reading_from_database ['instruments']
