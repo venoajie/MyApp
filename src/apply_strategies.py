@@ -603,12 +603,18 @@ class ApplyHedgingSpot ():
                             net_my_trades_open_SD = my_trades_open. my_trades_api_net_position (my_trades_open_SD)                          
                             
                         if 'hedgingSpot' in strategy:
+                            
+                            open_order_filled_labelHedgingSpot = [o for o in open_order_filled if label in o['label']  ] 
+                            log.info (f'{open_order_filled_labelHedgingSpot=}')
+                                        
+                            if open_order_filled_labelHedgingSpot != []: 
+                                open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_labelHedgingSpot] )
+                                filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
                                                                    
-                            last_time_order_filled_exceed_threshold = True if open_order_filled == [] \
+                            last_time_order_filled_exceed_threshold = True if open_order_filled_labelHedgingSpot == [] \
                                 else filled_order_deltaTime > time_threshold
-                                
-                            last_time_order_filled_sell_exceed_threshold = True if open_order_filled_sell == [] \
-                                else filled_order_deltaTime_sell > time_threshold
+
+                            log.info (f'{filled_order_deltaTime=}')
                             
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
