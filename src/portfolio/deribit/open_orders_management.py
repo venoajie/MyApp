@@ -146,25 +146,23 @@ class MyOrders ():
         trade_sources: 'API'
         '''       
         from utilities import pickling, system_tools
-        from loguru import logger as log
+        #from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
-        log.error (self.my_orders)
+        #log.error (self.my_orders)
         
         if self.my_orders:
             
-
             for order in self.my_orders:
                 
-                log.warning (f'{self.my_orders=}')
+                #log.warning (f'{self.my_orders=}')
                 
                 order_state = order ['order_state']
                 order_id= order ['order_id']
                 
-                
                 my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                 open_orders_open = pickling.read_data (my_path_orders_open) 
-                log.debug (f'BEFORE {open_orders_open=}')
+                #log.debug (f'BEFORE {open_orders_open=}')
                 #log.warning (f'{order_state=}')
                 
                 if order_state == 'open':
@@ -175,7 +173,7 @@ class MyOrders ():
                     
                 else:
                     #log.error ('ORDER_STATE ELSE')
-                    log.info (f'{order=}')
+                    #log.info (f'{order=}')
                     item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                     item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
                     #log.info (f'{item_in_open_orders_open_with_same_id=}')
