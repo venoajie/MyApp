@@ -170,7 +170,7 @@ class StreamAccountData:
                         currency: str = string_modification.extract_currency_from_text (message_channel)
                                                                                                                 
                         if message_channel == f'user.changes.any.{currency.upper()}.100ms':
-                            log.info (data_orders)
+                            #log.info (data_orders)
                             positions = data_orders ['positions']
                             trades = data_orders ['trades']
                             orders = data_orders ['orders']
