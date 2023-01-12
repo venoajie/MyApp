@@ -27,6 +27,7 @@ class MyOrders ():
         '''    
         print (f'self.my_orders_all() {self.my_orders_all()=}')
         print (f'self.my_orders_all() {self.my_orders_all() == []=}')
+        print ( [] if self.my_orders_all() == [] else 'AAA')
         print (  [o for o in self.my_orders_all() if o['api'] == True])
         return [] if self.my_orders_all() == [] else [o for o in self.my_orders_all() if o['api'] == True]
     
