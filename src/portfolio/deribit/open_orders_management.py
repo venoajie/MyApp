@@ -25,11 +25,7 @@ class MyOrders ():
     def my_orders_api (self)-> list:
         
         '''
-        '''    
-        print (f'self.my_orders_all() {self.my_orders_all()=}')
-        print (f'self.my_orders_all() {self.my_orders_all() == []=}')
-        print ( [] if self.my_orders_all() == [] else 'AAA')
-        print (  [o for o in self.my_orders_all() if o['api'] == True])
+        '''     
         return [] if self.my_orders_all() == [] else [o for o in self.my_orders_all() if o['api'] == True]
     
     def my_orders_manual (self)->list:
@@ -116,9 +112,7 @@ class MyOrders ():
         
         '''
         '''   
-        from utilities import number_modification 
-        print (f'label {label=}')
-        print (f'self.my_orders_api {self.my_orders_api ()=} {self.my_orders_api ()== [] =}')
+        from utilities import number_modification  
         
         if label == None:
             result =  0 if self.my_orders_api () == [] else  number_modification.net_position (self.my_orders_api ()) 
