@@ -115,23 +115,23 @@ class CheckDataIntegrity ():
             log.warning (f'positions_from_get {self.positions_from_get=}')
             log.warning (f'positions_from_get_net {self.net_position (self.my_trades_open_from_db)=}')
             
-            actual_hedging_size = self.net_position (self.my_trades_open_from_db)
+            size_from_get_db = self.net_position (self.positions_from_get)
             
             if self.positions_from_get:
-                actual_hedging_size_system = self.net_position (self.my_trades_open_from_db)
+                size_from_trading_db = self.net_position (self.my_trades_open_from_db)
                 log.warning (f'my_trades_open_from_db {self.my_trades_open_from_db}')
-                log.warning (f'actual_hedging_size_system {actual_hedging_size_system}')
+                log.warning (f'size_from_trading_db {size_from_trading_db}')
                 
-                difference = actual_hedging_size_system - actual_hedging_size 
+                difference = size_from_trading_db - size_from_get_db 
                 
                 if difference !=0:
-                    info= (f'SIZE DIFFERENT size per get {actual_hedging_size_system} size per db {actual_hedging_size} \n ')
+                    info= (f'SIZE DIFFERENT size per get {size_from_trading_db} size per db {size_from_get_db} \n ')
                     telegram_bot_sendtext(info) 
                 #log.warning (f'difference {difference}')
                 
                 return  difference
             else:
-                return  0 - actual_hedging_size 
+                return  0 - size_from_get_db 
             
         except Exception as error:
             catch_error (error)
