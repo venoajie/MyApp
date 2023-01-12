@@ -447,6 +447,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions = reading_from_database ['positions']
+                log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
@@ -509,11 +510,11 @@ class ApplyHedgingSpot ():
                         my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
                         size_db = await self.net_position(my_trades_open_instrument)
                     
-                    if positions:
-                        position =  await self. position_per_instrument (positions, instrument) 
+                    #if positions:
+                    #    position =  await self. position_per_instrument (positions, instrument) 
                     
-                    if position:
-                        size_system = position ['size']
+                   # if position:
+                    #    size_system = position ['size']
                     
                     #log.critical (f'{position=}')
                     log.critical (f'{size_db=} {size_system=} {size_db  not in none_data and size_system not in none_data=}')
