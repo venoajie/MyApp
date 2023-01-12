@@ -112,7 +112,8 @@ class MyOrders ():
         '''
         '''   
         from utilities import number_modification 
-        print (f'self.my_orders_api {self.my_orders_api ()=}')
+        print (f'label {label=}')
+        print (f'self.my_orders_api {self.my_orders_api ()=} {self.my_orders_api ()== [] =}')
         
         if label == None:
             result =  0 if self.my_orders_api () == [] else  number_modification.net_position (self.my_orders_api ()) 
