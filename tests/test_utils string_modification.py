@@ -45,7 +45,7 @@ def test_extract_integers_from_text  ():
     assert string_modification.extract_integers_from_text ('hedging spot-open') == []    
     assert string_modification.extract_integers_from_text ('1671189554374') == 1671189554374
     
-def test_unique_elelments  ():
+def test_unique_elements  ():
     
     data1= [
         {

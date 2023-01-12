@@ -34,17 +34,17 @@ spot_hedging = spot_hedging.SpotHedging (label_hedging,
                                         myTrades)
                             
 def test_summing_size_open_orders  ():
-    assert spot_hedging.summing_size_open_orders (open_orders) == 27     
+    assert spot_hedging.net_position (open_orders) == -27     
     
 def test_compute_minimum_hedging_size  ():
     notional = 107.38056472000001
     min_trade_amount = 1
     contract_size = 1
-    assert spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size) == 108
+    assert spot_hedging.compute_minimum_hedging_size (notional, min_trade_amount, contract_size) == -108
     
 def test_compute_actual_hedging_size  ():
     
-    assert spot_hedging.compute_actual_hedging_size () == 297 
+    assert spot_hedging.compute_actual_hedging_size () == -297 
     
 def  is_over_hedged  ():
     minimum_hedging_size = 108
@@ -61,7 +61,7 @@ def test_compute_remain_unhedged ():
     min_trade_amount = 1
     contract_size = 1
     
-    assert spot_hedging.compute_remain_unhedged (notional, min_trade_amount, contract_size) == -189 
+    assert spot_hedging.compute_remain_unhedged (notional, min_trade_amount, contract_size) == 189 
     
     
 def test_myTrades_max_price_plus_threshold  ():
