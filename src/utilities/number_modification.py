@@ -15,6 +15,6 @@ def net_position (selected_transactions: list)-> float:
             return 0 if selected_transactions == [] else  sum_buy - sum_sell
         
         except:
-            return ([o['size'] for o in selected_transactions ])  # sell = (-) sign
+            return 0 if selected_transactions == [] else ([o['size'] for o in selected_transactions ]) [0] # sell = (-) sign
     
 
