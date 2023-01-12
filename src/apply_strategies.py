@@ -400,16 +400,18 @@ class ApplyHedgingSpot ():
         log.info (myTrades_from_db)
         log.critical (start_timestamp)
         
-        if start_timestamp:
-            
-            # use the earliest time stamp to fetch data from exchange
-            my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
-
-            data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
+        data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
                                                                        positions_from_get,
                                                                        my_trades_open_from_db,
                                                                        my_trades_time_constrd
                                                                        )
+        
+        inventory_per_db_vs_system_comparation = await data_integrity.compare_inventory_per_db_vs_system ()
+        log.warning (inventory_per_db_vs_system_comparation)
+        if start_timestamp:
+            
+            # use the earliest time stamp to fetch data from exchange
+            my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
             
             await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
         
