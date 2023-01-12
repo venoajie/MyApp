@@ -500,15 +500,6 @@ class ApplyHedgingSpot ():
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
                     best_ask_prc= market_price ['best_ask_prc']
-                                    
-                    my_trades_open_instrument = []
-                    
-                    size_db = []  
-                    size_system = []  
-
-                    if my_trades_open:
-                        my_trades_open_instrument = [o for o in my_trades_open if o['instrument_name'] == instrument]
-                        size_db = await self.net_position(my_trades_open_instrument)
                     
                     #if positions:
                     #    position =  await self. position_per_instrument (positions, instrument) 
@@ -517,7 +508,6 @@ class ApplyHedgingSpot ():
                     #    size_system = position ['size']
                     
                     #log.critical (f'{position=}')
-                    log.critical (f'{size_db=} {size_system=} {size_db  not in none_data and size_system not in none_data=}')
                     
                     notional =  await self.compute_notional_value (index_price, equity)
     
@@ -649,7 +639,6 @@ class ApplyHedgingSpot ():
                                     label_open_for_filter = f'{label}-open'
                                     #label_open_with_time_server: str = label_numbering.labelling ('open', label)
                                     log.debug(f'{label=} {label_open_for_filter=}')
-                                    log.debug(f'{size_system=} {actual_hedging_size=}')
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
@@ -657,8 +646,7 @@ class ApplyHedgingSpot ():
                                     
                                     # send sell order if spot still unhedged and no current open orders 
                                     if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                                        and (size_system == actual_hedging_size) \
-                                            and last_time_order_filled_sell_exceed_threshold:
+                                        and  last_time_order_filled_sell_exceed_threshold:
                                                 
                                         
                                     
