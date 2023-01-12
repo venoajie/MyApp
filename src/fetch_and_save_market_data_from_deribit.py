@@ -16,7 +16,7 @@ from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
     
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
-    from utils import telegram_app
+    from utilities import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
 class StreamMarketData:
