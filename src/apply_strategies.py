@@ -407,10 +407,10 @@ class ApplyHedgingSpot ():
             my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
 
             data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
-                                                                    positions_from_get,
-                                                                    my_trades_open_from_db,
-                                                                    my_trades_time_constrd
-                                                                    )
+                                                                       positions_from_get,
+                                                                       my_trades_open_from_db,
+                                                                       my_trades_time_constrd
+                                                                       )
             
             await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
     
@@ -424,29 +424,29 @@ class ApplyHedgingSpot ():
         #! fetch data ALL from db
         try:
 
-            reading_from_database = await self.reading_from_database ()
+            reading_from_database: dict = await self.reading_from_database ()
             
             #!
             # portfolio data
-            portfolio = reading_from_database ['portfolio']
+            portfolio: list = reading_from_database ['portfolio']
             #log.warning (portfolio)
             
             # obtain spot equity
-            equity = portfolio [0]['equity']
+            equity: float = portfolio [0]['equity']
             
             # index price
             index_price: float= reading_from_database['index_price']
         
             # compute notional value
-            notional =  await self.compute_notional_value (index_price, equity)
+            notional: float =  await self.compute_notional_value (index_price, equity)
                                
             if  index_price and portfolio :                
                 
-                one_minute = 60000 # one minute in millisecond
-                none_data = [0, None, []] # to capture none 
+                one_minute: int = 60000 # one minute in millisecond
+                none_data: None = [0, None, []] # to capture none 
                 
                 # fetch positions for all instruments
-                positions = reading_from_database ['positions']
+                positions: list = reading_from_database ['positions']
                 #log.error (positions)
             
                 # my trades data

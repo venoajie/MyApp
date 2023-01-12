@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from src.risk_management import spot_hedging
+import pytest
 #from risk_management import spot_hedging
 
 open_orders = [
