@@ -20,24 +20,13 @@ def read_data (file_name_pkl: str)-> None:
 def check_duplicate_elements (file_name: str)-> None:
 
     from utilities import string_modification
-    from loguru import logger as log
+    #from loguru import logger as log
 
     data_from_db: list = read_data (file_name)
-   #! 
-   
-    if 'myTrades' in str(file_name):
-        #log.info (f'{file_name=}')
-        sum_db = sum([o['amount'] for o in data_from_db  ])
-        #log.info (f'BEFORE {len(data_from_db)} {sum_db} {data_from_db=}')
-    #!
+    
     free_from_duplicates_data = string_modification.remove_redundant_elements (data_from_db)
     
     dump_data_as_list (file_name, free_from_duplicates_data)
-#! 
-    if 'myTrades' in str(file_name):
-        data_from_db: list = read_data (file_name)
-        sum_db = sum([o['amount'] for o in data_from_db  ])    
-        #log.warning (f'AFTER {len(data_from_db)}  {sum_db} {data_from_db=}')
 
 def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = False)-> None:
 
@@ -65,10 +54,10 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
                 data_from_db: list = read_data (file_name)
                 
                 # to avoid record [] in db with valid contents
-                if data_from_db:
-                    pass
-                
                 if data_from_db ==[]:
+                    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    
+                if data_from_db ==None:
                     pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
                 
         except Exception as error:
