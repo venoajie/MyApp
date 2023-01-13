@@ -10,12 +10,11 @@ while true; do
                 rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
                 rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
-                        
-                echo "sleep 30 minutes"
+                echo "sync_with_remote: sleep 30 minutes"
                 sleep 30m
 
         else
-                echo "file does not exist"
+                echo "sync_with_remote: file does not exist"
                 rclone sync  portfolio/deribit/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
                 rclone copy  portfolio/deribit/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
