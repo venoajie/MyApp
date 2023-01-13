@@ -427,7 +427,8 @@ class ApplyHedgingSpot ():
                                                                        )
         
         inventory_per_db_vs_system_comparation = await data_integrity.compare_inventory_per_db_vs_system ()
-        log.warning (inventory_per_db_vs_system_comparation)
+        log.critical (inventory_per_db_vs_system_comparation)
+        log.warning (my_trades_open_from_db)
         
         if inventory_per_db_vs_system_comparation != 0:
             await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
