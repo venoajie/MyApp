@@ -620,7 +620,7 @@ class ApplyHedgingSpot ():
                             
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
-                                    log.debug (my_trades_open)
+                                    #log.debug (my_trades_open)
 
                                     #check under hedging
                                     spot_hedged = spot_hedging.SpotHedging (label,
