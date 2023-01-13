@@ -269,7 +269,7 @@ class ApplyHedgingSpot ():
         
         #! delete
         my_trades_closed = pickling.read_data(my_trades_path_closed)
-        log.info (my_trades_closed)
+        #log.info (my_trades_closed)
         #! delete
         return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
                 'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
@@ -410,7 +410,7 @@ class ApplyHedgingSpot ():
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
         #log.info (myTrades_from_db)
-        log.critical (start_timestamp)
+        #log.critical (start_timestamp)
         
         my_trades_time_constrd =[]
         if start_timestamp:
