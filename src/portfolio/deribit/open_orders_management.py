@@ -158,7 +158,10 @@ class MyOrders ():
                 log.warning (f'{self.my_orders=}')
                 log.error (f'{order=}')
                 
-                order_state = order ['order_state']
+                try:
+                    order_state = order ['order_state']
+                except:
+                    order_state = order ['state']
                 order_id= order ['order_id']
                 
                 my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
