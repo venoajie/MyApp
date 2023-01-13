@@ -271,7 +271,7 @@ class ApplyHedgingSpot ():
         
         #! delete
         my_trades_closed = pickling.read_data(my_trades_path_closed)
-        #log.info (my_trades_closed)
+        log.info (my_trades_open)
         #! delete
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
                 'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
