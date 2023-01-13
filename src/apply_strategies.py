@@ -237,7 +237,9 @@ class ApplyHedgingSpot ():
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
+        my_trades_open: str = pickling.read_data(my_trades_path_open)               
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
+        my_trades_closed: str = pickling.read_data(my_trades_path_closed)             
         
         my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
         my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
@@ -271,8 +273,8 @@ class ApplyHedgingSpot ():
         my_trades_closed = pickling.read_data(my_trades_path_closed)
         #log.info (my_trades_closed)
         #! delete
-        return {'my_trades_open': pickling.read_data(my_trades_path_open) ,
-                'my_trades_closed':  pickling.read_data(my_trades_path_closed) ,
+        return {'my_trades_open': 0 if my_trades_open in none_data else my_trades_open,
+                'my_trades_closed': 0 if my_trades_closed in none_data else my_trades_closed,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
