@@ -271,7 +271,7 @@ class ApplyHedgingSpot ():
         
         #! delete
         my_trades_closed = pickling.read_data(my_trades_path_closed)
-        log.info (my_trades_open)
+        #log.info (my_trades_open)
         #! delete
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
                 'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
@@ -411,19 +411,19 @@ class ApplyHedgingSpot ():
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
-        #log.info (myTrades_from_db)
+        log.info (my_trades_open_from_db)
         #log.critical (start_timestamp)
         
-        my_trades_time_constrd =[]
+        my_selected_trades_open_from_system =[]
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
-            my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
+            my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, server_time)
         
         data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
                                                                        positions_from_get,
                                                                        my_trades_open_from_db,
-                                                                       my_trades_time_constrd
+                                                                       my_selected_trades_open_from_system
                                                                        )
         
         inventory_per_db_vs_system_comparation = await data_integrity.compare_inventory_per_db_vs_system ()
