@@ -432,7 +432,8 @@ class ApplyHedgingSpot ():
         
         
         if inventory_per_db_vs_system_comparation != 0:
-            await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+            log.info (inventory_per_db_vs_system_comparation)
+            await data_integrity.rearrange_my_trades_consistency (server_time)
             
         if inventory_per_db_vs_system_comparation == 0:          
             
