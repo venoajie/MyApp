@@ -116,8 +116,8 @@ class CheckDataIntegrity ():
             #log.warning (f'positions_from_get_net {self.net_position (self.my_trades_open_from_db)=}')
             
             
-            log.warning (f'positions_from_get {self.positions_from_get}')
-            log.warning (f'my_trades_open_from_db {self.my_trades_open_from_db}')
+            #log.warning (f'positions_from_get {self.positions_from_get}')
+            #log.warning (f'my_trades_open_from_db {self.my_trades_open_from_db}')
             
             size_from_get_db = self.net_position (self.positions_from_get)
             size_from_trading_db = self.net_position (self.my_trades_open_from_db)
