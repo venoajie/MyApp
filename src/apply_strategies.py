@@ -101,23 +101,32 @@ class ApplyHedgingSpot ():
                          end_timestamp: int
                          ) -> list:
         """
+        basis to recover data
         """
         trades: list = await deribit_get.get_user_trades_by_currency_and_time (self.connection_url, 
                                                                                self.client_id, 
                                                                                self.client_secret, 
                                                                               self.currency, 
                                                                                start_timestamp,
-                                                                               end_timestamp)
-                  
-        #log.critical(trades)
+                                                                               end_timestamp
+                                                                               )     
+                     
         try:
             result = [] if trades == [] else trades ['result'] ['trades']
+        
+            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+                                                                            self.currency,
+                                                                            'all-recovery-point'
+                                                                            )          
+            pickling.replace_data (my_trades_path_open_recovery, 
+                                    result, 
+                                    True
+                                    )
         except:
             result =   trades ['error'] ['data'] ['reason']
             if result  == 'timestamp_of_archived_trade':
                 log.critical(result)
             
-        #log.error (trades)
         return result
     
     async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
@@ -417,12 +426,15 @@ class ApplyHedgingSpot ():
         
         inventory_per_db_vs_system_comparation = await data_integrity.compare_inventory_per_db_vs_system ()
         log.warning (inventory_per_db_vs_system_comparation)
+        
+        if inventory_per_db_vs_system_comparation != 0:
+            await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+            
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
             my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
             
-            await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
         
     async def running_strategy (self, server_time) -> float:
         """
