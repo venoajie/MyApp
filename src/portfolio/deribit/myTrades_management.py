@@ -7,7 +7,7 @@ from dataclassy import dataclass
 def catch_error (error, idle: int = None) -> list:
     """
     """
-    from utils import system_tools
+    from utilities import system_tools
     system_tools.catch_error_message(error, idle)
 
 @dataclass(unsafe_hash=True, slots=True)
