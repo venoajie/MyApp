@@ -430,8 +430,20 @@ class ApplyHedgingSpot ():
         log.critical (inventory_per_db_vs_system_comparation)
         log.warning (my_trades_open_from_db)
         
+        
         if inventory_per_db_vs_system_comparation != 0:
             await data_integrity.update_myTrades_file_as_per_comparation_result (server_time)
+            
+        if inventory_per_db_vs_system_comparation == 0:          
+            
+            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+                                                                            self.currency,
+                                                                            'recovery-point'
+                                                                            )          
+            pickling.replace_data (my_trades_path_open_recovery, 
+                                    my_trades_open_from_db, 
+                                    True
+                                    )
             
         if start_timestamp:
             
