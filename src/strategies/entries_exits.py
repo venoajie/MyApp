@@ -40,6 +40,6 @@ strategies = [
     'averaging': (1/100)/2,
     'cut_loss': 15,
     'halt_minute_before_reorder': 1/10, 
-    'equity_risked': 1/100
+    'equity_risked': (1/100)/10
     },
     ]
