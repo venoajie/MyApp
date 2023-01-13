@@ -68,7 +68,6 @@ class MyTrades ():
         
         try:
         
-
             my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
             my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
             #log.debug (self.my_trades)
@@ -92,14 +91,20 @@ class MyTrades ():
                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
                 ##log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
 
-                
                 #! DISTRIBUTE trading transaction as per label id
                 if 'open' in label_id:
-    #                log.error ('LABEL ID OPEN')
+                    log.error ('LABEL ID OPEN')
+                    log.error (data_order)
 
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     pickling.check_duplicate_elements (my_trades_path_open)
+                    
+                    
+                    #!HAPUS
+                    my_trades_open = pickling.read_data(my_trades_path_open)  
+                    log.error (my_trades_open)
+                    #!HAPUS
                     
                 if 'closed' in label_id:
                     
