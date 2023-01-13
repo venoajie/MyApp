@@ -146,7 +146,7 @@ class MyOrders ():
         trade_sources: 'API'
         '''       
         from utilities import pickling, system_tools
-        from loguru import logger as log
+        #from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
         #log.error (self.my_orders)
@@ -155,8 +155,8 @@ class MyOrders ():
             
             for order in self.my_orders:
                 
-                log.warning (f'{self.my_orders=}')
-                log.error (f'{order=}')
+                #log.warning (f'{self.my_orders=}')
+                #og.error (f'{order=}')
                 
                 try:
                     order_state = order ['order_state']
