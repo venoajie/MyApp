@@ -39,7 +39,7 @@ class MyOrders ():
         
         '''
         '''    
-        #print (f'my_orders_status {self.my_orders_all()}')
+        print (f'my_orders_status {self.my_orders_all()}')
         none_data = [None, []]
         try:
             orders_status = [o for o in self.my_orders_all() if o['order_state'] == status]
