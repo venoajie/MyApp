@@ -110,11 +110,11 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
     append_and_replace_items_based_on_qty (file_name, resp, 3)
     """
 
-    print (f"data fr exc {data}")
+    print (f"pickle data fr exc {data}")
     
     append_data(file_name_pkl, data)
     data_from_db: list = read_data (file_name_pkl)
-    print (f" isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
+    print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
 
 
     if isinstance(data_from_db, dict):
