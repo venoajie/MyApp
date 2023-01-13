@@ -438,7 +438,7 @@ class ApplyHedgingSpot ():
             
             my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             self.currency,
-                                                                            'recovery-point'
+                                                                            'open-recovery-point'
                                                                             )          
             pickling.replace_data (my_trades_path_open_recovery, 
                                     my_trades_open_from_db, 
