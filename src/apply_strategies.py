@@ -512,9 +512,10 @@ class ApplyHedgingSpot ():
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
                 open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
-                log.warning (open_order_mgt_flled)
+                #log.warning (open_order_mgt_flled)
                 
-                open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
+                #open_order_filled = open_order_mgt_flled.my_orders_status ('filled')
+                
                 
                 await self.check_integrity (positions,
                                             my_trades_open, 
@@ -583,6 +584,8 @@ class ApplyHedgingSpot ():
                                                             )   
                         
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
+                        my_orders_api_basedOn_label_strategy_filled = open_order_mgt_flled.my_orders_api_basedOn_label (label)
+                        log.warning (my_orders_api_basedOn_label_strategy_filled)
                         open_order_mgt_strategy: object = open_orders_management.MyOrders (my_orders_api_basedOn_label_strategy)
                     
                         open_orders_open_byAPI_db_sell: int = ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'sell'] )
@@ -623,14 +626,14 @@ class ApplyHedgingSpot ():
                             
                         if 'hedgingSpot' in strategy:
                             
-                            open_order_filled_labelHedgingSpot = [o for o in open_order_filled if label in o['label']  ] 
+                            #open_order_filled_labelHedgingSpot = [o for o in open_order_filled if label in o['label']  ] 
                             #log.info (f'{open_order_filled_labelHedgingSpot=}')
                                         
-                            if open_order_filled_labelHedgingSpot != []: 
-                                open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_filled_labelHedgingSpot] )
+                            if my_orders_api_basedOn_label_strategy_filled != []: 
+                                open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in my_orders_api_basedOn_label_strategy_filled] )
                                 filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
                                                                    
-                            last_time_order_filled_exceed_threshold = True if open_order_filled_labelHedgingSpot == [] \
+                            last_time_order_filled_exceed_threshold = True if my_orders_api_basedOn_label_strategy_filled == [] \
                                 else filled_order_deltaTime > time_threshold
 
                             #log.info (f'{filled_order_deltaTime=}')
