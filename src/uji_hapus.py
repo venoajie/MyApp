@@ -1,13 +1,16 @@
-from portfolio.deribit import myTrades_management
 
-result_from_exchange_filtered = [
-    {'trade_seq': 12054253, 'trade_id': 'ETH-17360296', 'timestamp': 1673492292226, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1399.25, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3239058777', 'mmp': False, 'matching_id': None, 'mark_price': 1399.3, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673492259', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1398.54, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 42.0}, 
-    {'trade_seq': 12054271, 'trade_id': 'ETH-17360596', 'timestamp': 1673492402248, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1399.4, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3239064235', 'mmp': False, 'matching_id': None, 'mark_price': 1400.35, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673492357', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1399.24, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 42.0}, {'trade_seq': 12054286, 'trade_id': 'ETH-17360798', 'timestamp': 1673492477278, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1400.25, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3239070861', 'mmp': False, 'matching_id': None, 'mark_price': 1401.47, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673492472', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1399.76, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 42.0}, {'trade_seq': 12054297, 'trade_id': 'ETH-17361009', 'timestamp': 1673492557303, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1401.5, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3239074811', 'mmp': False, 'matching_id': None, 'mark_price': 1401.57, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673492539', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1400.76, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 15.0}]
 
-label = 'label'
-for key in result:
-    if label not in key:
-       key [label] = []
-print (result)
-mixed_trades_with_the_same_label = ([o for o in result if  str('1672904517021')  not in o['label']  ])
-print (mixed_trades_with_the_same_label)
+my_orders_status=  [
+    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1412.55, 'post_only': True, 'order_type': 'limit', 'order_state': 'filled', 'order_id': 'ETH-3244292314', 'mmp': False, 'max_show': 17.0, 'last_update_timestamp': 1673581879756, 'label': 'hedgingSpot-open-1673581794', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 17.0, 'direction': 'sell', 'creation_timestamp': 1673581795330, 'commission': 0.0, 'average_price': 1412.55, 'api': True, 'amount': 17.0}, 
+    {'trade_seq': 12069054, 'trade_id': 'ETH-17583474', 'timestamp': 1673625135822, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 8.68e-06, 'price': 1421.1, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3246703485', 'mmp': False, 'matching_id': None, 'mark_price': 1421.4, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673625134', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1420.9, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}
+    ]
+
+for order in my_orders_status:
+
+    try:
+        trade_seq = order ['trade_seq']
+        order_state = order ['state']
+    except:
+        order_state = order ['order_state']
+    
+print (order_state)    
