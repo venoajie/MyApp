@@ -120,11 +120,14 @@ class MyOrders ():
         '''
         '''   
         from utilities import number_modification  
+        from loguru import logger as log
         
         if label == None:
             result =  0 if self.my_orders_api () == [] else  number_modification.net_position (self.my_orders_api ()) 
         
         else:
+            log.debug (label)
+            log.debug (self.my_orders_api_basedOn_label (label))
             result =  0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position (
                 ([o for o in self.my_orders_api_basedOn_label (label)]))
