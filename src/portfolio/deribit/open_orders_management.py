@@ -163,16 +163,17 @@ class MyOrders ():
             for order in self.my_orders:
                 
                 #log.warning (f'{self.my_orders=}')
-                #og.error (f'{order=}')
+                log.error (f'{order=}')
                 
-                try:
-                    # because order return diff for order still open and has filled
-                    trade_seq = order ['trade_seq']
-                    order_state = order ['state']
-                except:
-                    order_state = order ['order_state']
+                #try:
+                #    # because order return diff for order still open and has filled
+                #    trade_seq = order ['trade_seq']
+                #    order_state = order ['state']
+                #except:
+                #    order_state = order ['order_state']
                     
                 order_id= order ['order_id']
+                order_state = order ['order_state']
                 
                 my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                 open_orders_open = pickling.read_data (my_path_orders_open) 
@@ -180,14 +181,15 @@ class MyOrders ():
                 #log.warning (f'{order_state=}')
                 
                 if order_state == 'open':
-                    #log.error ('ORDER_STATE OPEN')
+                    log.error ('ORDER_STATE OPEN')
+                    log.info (f'{order=}')
                     
                     pickling.append_and_replace_items_based_on_qty (my_path_orders_open, order, 1000, True)
                     pickling.check_duplicate_elements (my_path_orders_open)
                     
                 else:
-                    #log.error ('ORDER_STATE ELSE')
-                    #log.info (f'{order=}')
+                    log.critical ('ORDER_STATE ELSE')
+                    log.info (f'{order=}')
                     item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                     item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
                     #log.info (f'{item_in_open_orders_open_with_same_id=}')
