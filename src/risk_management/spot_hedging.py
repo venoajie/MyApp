@@ -163,7 +163,7 @@ class SpotHedging ():
                                index_price: float,
                                currency: str,
                                threshold: float = .5/100,
-                               label: str = f'{label}-open'
+                               label: str = f'{self.label}-open'
                                ) -> list:
         
         '''
