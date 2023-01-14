@@ -110,6 +110,10 @@ class MyTrades ():
                     
                     #log.debug ('LABEL ID CLOSED')
                     
+                    # append trade to db.check potential duplicate
+                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    pickling.check_duplicate_elements (my_trades_path_open)
+                    
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)  
                     
@@ -120,12 +124,12 @@ class MyTrades ():
                     log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                     
                     # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
-                    if sum_closed_trades_in_my_trades_open_net !=0:
-                        log.critical (trade_seq)
+                    #if sum_closed_trades_in_my_trades_open_net !=0:
+                    #    log.critical (trade_seq)
                         
                         # put the trading at open db until fully closed (buy = sell)
-                        pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                        pickling.check_duplicate_elements (my_trades_path_open)
+                    #    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    #    pickling.check_duplicate_elements (my_trades_path_open)
                         
                     #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
                     my_trades = self.my_trades
@@ -171,10 +175,10 @@ class MyTrades ():
                     if sum_closed_trades_in_my_trades_open_net == 0:
                                                         
                         #update mytrades db with the closed ones
-                        #! AT CLOSED DB
-                        log.info(closed_trades_in_my_trades_open)
-                        pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
-                        pickling.check_duplicate_elements (my_trades_path_closed)
+                        # AT CLOSED DB
+                        #log.info(closed_trades_in_my_trades_open)
+                        #pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
+                        #pickling.check_duplicate_elements (my_trades_path_closed)
 
                         #! AT OPEN DB, MASIH GAGAL TANGKAP YANG CLOSE
                         # SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
