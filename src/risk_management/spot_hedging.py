@@ -162,7 +162,8 @@ class SpotHedging ():
     def adjusting_inventories (self,
                                index_price: float,
                                currency: str,
-                               threshold: float = .5/100,
+                               threshold_tp: float,
+                               threshold_avg: float,
                                label: str = f'hedgingSpot-open'
                                ) -> list:
         
@@ -173,9 +174,8 @@ class SpotHedging ():
         my_trades_max_price_attributes_filteredBy_label = my_trades_mgt.my_trades_max_price_attributes_filteredBy_label (label)
         myTrades_max_price = my_trades_max_price_attributes_filteredBy_label ['max_price']
         
-        myTrades_max_price_pct_x_threshold = myTrades_max_price * threshold
-        myTrades_max_price_pct_minus = (myTrades_max_price - myTrades_max_price_pct_x_threshold)
-        myTrades_max_price_pct_plus = (myTrades_max_price + myTrades_max_price_pct_x_threshold)
+        myTrades_max_price_pct_minus = (myTrades_max_price - ( myTrades_max_price * threshold_tp))
+        myTrades_max_price_pct_plus = (myTrades_max_price + ( myTrades_max_price * threshold_avg))
 
         myTrades_max_price_attributes_label = my_trades_max_price_attributes_filteredBy_label ['label']
         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)        

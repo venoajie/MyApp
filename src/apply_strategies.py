@@ -568,7 +568,8 @@ class ApplyHedgingSpot ():
                         strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
                         equity_risked = strategy_variables ['equity_risked'] 
-                        pct_threshold = strategy_variables ['averaging']  
+                        pct_threshold_TP = strategy_variables ['take_profit']  
+                        pct_threshold_avg = strategy_variables ['averaging']  
                         time_threshold = strategy_variables ['halt_minute_before_reorder']  * one_minute 
                 
                         target_price_loss = strategy_variables ['cut_loss'] 
@@ -694,7 +695,8 @@ class ApplyHedgingSpot ():
 
                                         adjusting_inventories = spot_hedged.adjusting_inventories (index_price, 
                                                                                                    self.currency, 
-                                                                                                   pct_threshold, 
+                                                                                                   pct_threshold_TP, 
+                                                                                                   pct_threshold_avg, 
                                                                                                    label_open_for_filter
                                                                                                    )
                                         bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']

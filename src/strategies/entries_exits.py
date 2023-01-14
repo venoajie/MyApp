@@ -35,7 +35,7 @@ strategies = [
     'time_frame': 900,
     'side': 900,
     'entry_price': 1000,
-    'take_profit': 15,
+    'take_profit': (1/100)/5,
     'quantity_discrete': 15,
     'averaging': (1/100)/2,
     'cut_loss': 15,
