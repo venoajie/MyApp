@@ -164,9 +164,12 @@ class MyOrders ():
                 #og.error (f'{order=}')
                 
                 try:
-                    order_state = order ['order_state']
-                except:
+                    # because order return diff for order still open and has filled
+                    trade_seq = order ['trade_seq']
                     order_state = order ['state']
+                except:
+                    order_state = order ['order_state']
+                    
                 order_id= order ['order_id']
                 
                 my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
