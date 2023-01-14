@@ -70,7 +70,7 @@ class MyTrades ():
         
             my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
             my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-            #log.debug (self.my_trades)
+            log.debug (self.my_trades)
 
             for data_order in self.my_trades:
                 data_order = [data_order]
@@ -89,7 +89,7 @@ class MyTrades ():
                     pass
 
                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                ##log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
+                log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
 
                 #! DISTRIBUTE trading transaction as per label id
                 if 'open' in label_id:
@@ -117,7 +117,7 @@ class MyTrades ():
                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
                     # sum transaction with the same label id
                     sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                    #log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+                    log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
                     
                     # if net transaction != 0: transaction closing process not completed yet. all transaction with the same id stay in open db
                     if sum_closed_trades_in_my_trades_open_net !=0:
@@ -172,6 +172,7 @@ class MyTrades ():
                                                         
                         #update mytrades db with the closed ones
                         #! AT CLOSED DB
+                        log.info(closed_trades_in_my_trades_open)
                         pickling.append_and_replace_items_based_on_qty (my_trades_path_closed, closed_trades_in_my_trades_open , 10000, True)
                         pickling.check_duplicate_elements (my_trades_path_closed)
 
