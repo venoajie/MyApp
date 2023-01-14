@@ -103,7 +103,7 @@ class MyTrades ():
                     
                     #!HAPUS
                     my_trades_open = pickling.read_data(my_trades_path_open)  
-                    log.error (my_trades_open)
+                    log.debug (my_trades_open)
                     #!HAPUS
                     
                 if 'closed' in label_id:
