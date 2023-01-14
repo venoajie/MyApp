@@ -1,15 +1,18 @@
-
-
-my_orders_status=  [
-    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1412.55, 'post_only': True, 'order_type': 'limit', 'order_state': 'filled', 'order_id': 'ETH-3244292314', 'mmp': False, 'max_show': 17.0, 'last_update_timestamp': 1673581879756, 'label': 'hedgingSpot-open-1673581794', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 17.0, 'direction': 'sell', 'creation_timestamp': 1673581795330, 'commission': 0.0, 'average_price': 1412.55, 'api': True, 'amount': 17.0}, 
-    {'trade_seq': 12069054, 'trade_id': 'ETH-17583474', 'timestamp': 1673625135822, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 8.68e-06, 'price': 1421.1, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3246703485', 'mmp': False, 'matching_id': None, 'mark_price': 1421.4, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673625134', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1420.9, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}
-    ]
-for order in my_orders_status:
-
-    try:
-        trade_seq = order ['trade_seq']
-        order_state = order ['state']
-    except:
-        order_state = order ['order_state']
+from utilities import number_modification 
+ 
+my_orders_status=    [
+    {'trade_seq': 12076935, 'trade_id': 'ETH-17744479', 'timestamp': 1673687591981, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1552.35, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250159833', 'mmp': False, 'matching_id': None, 'mark_price': 1552.74, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673687548',
+     
+     'instrument_name': 'ETH-PERPETUAL', 'index_price': 1551.78, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 52.0},
     
-print (order_state)    
+    {'trade_seq': 12077021, 'trade_id': 'ETH-17745057', 'timestamp': 1673687777022, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.00021273, 'price': 1548.75, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250166707', 'mmp': False, 'matching_id': None, 'mark_price': 1550.31, 'liquidity': 'M', 'label': 'hedging spot-closed-1673684653', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1548.49, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 53.0}, 
+    
+    {'trade_seq': 12078000, 'trade_id': 'ETH-17751683', 'timestamp': 1673689937569, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1520.3, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250291625', 'mmp': False, 'matching_id': None, 'mark_price': 1520.8, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673689928', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1518.85, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 49.0}, 
+    {'trade_seq': 12078003, 'trade_id': 'ETH-17751883', 'timestamp': 1673690022587, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1518.5, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250296424', 'mmp': False, 'matching_id': None, 'mark_price': 1518.81, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673690019', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1517.56, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 20.0}, {'trade_seq': 12078019, 'trade_id': 'ETH-17752137', 'timestamp': 1673690122620, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1519.2, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250301319', 'mmp': False, 'matching_id': None, 'mark_price': 1519.83, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673690111', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1517.84, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 52.0}, {'trade_seq': 12078020, 'trade_id': 'ETH-17752220', 'timestamp': 1673690152632, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1520.2, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-3250302963', 'mmp': False, 'matching_id': None, 'mark_price': 1520.48, 'liquidity': 'M', 'label': 'hedgingSpot-open-1673690141', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1518.74, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}
+    ]
+label = 'hedgingSpot'
+my_trades_label = ([o for o in my_orders_status if label in o['label'] ])
+result = number_modification.net_position (my_trades_label)
+print(result)
+print(result)
+

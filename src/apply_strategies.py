@@ -488,7 +488,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                #log.info (my_trades_open)
+                log.info (my_trades_open)
                 
                 # fetch instruments data
                 instruments = reading_from_database ['instruments']
@@ -585,7 +585,7 @@ class ApplyHedgingSpot ():
                         
                         #my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         #my_orders_api_basedOn_label_strategy_filled = open_order_mgt_flled.my_orders_api_basedOn_label (label)
-                        log.warning (open_order_mgt_flled_status_filed)
+                        #log.warning (open_order_mgt_flled_status_filed)
                         #open_order_mgt_strategy: object = open_orders_management.MyOrders (my_orders_api_basedOn_label_strategy)
                     
                         #open_orders_open_byAPI_db_sell: int = ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'sell'] )
@@ -666,7 +666,7 @@ class ApplyHedgingSpot ():
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
-                                    log.warning(f'{spot_was_unhedged=} {net_open_orders_open_byAPI_db=} {last_time_order_filled_exceed_threshold=}')
+                                    log.warning(f'{spot_was_unhedged=} {actual_hedging_size=}  {net_open_orders_open_byAPI_db=} {last_time_order_filled_exceed_threshold=}')
                                     await self.check_if_new_opened_hedging_order_will_create_over_hedged (label,
                                                                                                           actual_hedging_size, 
                                                                                                           min_hedging_size

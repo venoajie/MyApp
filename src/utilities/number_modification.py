@@ -13,6 +13,7 @@ def net_position (selected_transactions: list)-> float:
 
             sum_sell = sum([o['amount'] for o in selected_transactions if o['direction']=='sell'  ]) # sell = + sign
             sum_buy = sum([o['amount'] for o in selected_transactions if o['direction']=='buy'  ])
+            
             #! -1 + 1 = 0, -10+10 = 0, [] = 0, None = 0. [] = No transcations, diff with net = 0 (could affect to leverage)
             #! solution = made another controls for leverage/modify output/preventive
             return  sum_buy - sum_sell

@@ -94,11 +94,10 @@ class SpotHedging ():
 
         '''  
         my_trades = self.my_trades_api_basedOn_label ()
-        #log.error (my_trades)
         
         if     my_trades != [] :
             my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
-            #log.error (my_trades_label)
+
         return 0 if my_trades == [] else self.net_position (my_trades_label)
 
     def compute_remain_unhedged (self,
@@ -182,11 +181,9 @@ class SpotHedging ():
         label_int = string_modification.extract_integers_from_text (myTrades_max_price_attributes_label)        
 
         trades_to_close = ([o for o in (self.my_trades) if  str(label_int)  in o['label'] ])
-        # sum transaction with the same label id
-        #log.debug(f'{trades_to_close=} ')
-        #log.debug(f'{str(label_int) =} ')
+        
         size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
-        #log.debug(f'{size_take_profit=} ')
+
         sum_closed_trades_in_my_trades_open_net = my_trades_mgt.my_trades_api_net_position (trades_to_close)
         avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
         
@@ -194,7 +191,7 @@ class SpotHedging ():
             my_trades = myTrades_management.MyTrades (trades_to_close)
             my_trades.distribute_trade_transaction(currency)
         
-        label_to_send = f'hedging spot-closed-{label_int}'
+        label_to_send = f'{self.label}-closed-{label_int}'
         
         log.debug(f'trans.price {myTrades_max_price}   {index_price=}  {avoid_over_bought=} ')
         log.debug(f'take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
