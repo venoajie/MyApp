@@ -102,7 +102,7 @@ class RunningStrategies ():
                         
                 log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                 
-                return {'closed_order': send_order,
+                return {'send_order': send_order,
                         'instrument': instrument,
                         'side': side, 
                         'size': size, 
