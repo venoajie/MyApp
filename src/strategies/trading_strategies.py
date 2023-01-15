@@ -155,7 +155,7 @@ class RunningStrategies ():
                 'label_numbered': label_numbered
                 }
     
-def main (strategies,
+def main (strategy,
           index_price,
           my_trades_open,
           my_orders_api_basedOn_label_strategy,
@@ -165,17 +165,13 @@ def main (strategies,
     
     '''
     '''
-    strategies = ([o  for o in strategies if 'hedgingSpot' not in o['strategy'] ] )
-      
-    for strategy in strategies:
-        log.warning (strategy)
-        strategies = RunningStrategies (strategy,
-                                        index_price,
-                                        my_trades_open,
-                                        my_orders_api_basedOn_label_strategy,
-                                        notional,
-                                        instrument
-                                        )
-        strategies. closed_strategy ()
-        strategies. open_strategy ()
-    
+
+    strategies = RunningStrategies (strategy,
+                                    index_price,
+                                    my_trades_open,
+                                    my_orders_api_basedOn_label_strategy,
+                                    notional,
+                                    instrument
+                                    )
+    strategies. closed_strategy ()
+    strategies. open_strategy ()
