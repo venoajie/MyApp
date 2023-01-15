@@ -589,7 +589,7 @@ class ApplyHedgingSpot ():
                             
                             log.warning (closed_str)
                             
-                            if open_str ['send_order']:
+                            if open_str!= None and open_str ['send_order']:
                                 side = open_str['side']
                                 await self.send_orders (side, 
                                                         open_str['instrument'],
@@ -598,7 +598,7 @@ class ApplyHedgingSpot ():
                                                         open_str['label_numbered']
                                                         )
                             
-                            if closed_str ['send_order']:
+                            if closed_str!= None and closed_str ['send_order']:
                                 side = open_str['side']
                                 await self.send_orders  (side, 
                                                         closed_str['instrument'],
