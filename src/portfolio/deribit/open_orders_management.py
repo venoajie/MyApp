@@ -166,7 +166,8 @@ class MyOrders ():
             
             for order in self.my_orders:
                 
-#                log.error (f'{order=}')
+                log.error (f'{self.my_orders=}')
+                log.warning (f'{order=}')
                     
                 order_id= order ['order_id']
                 order_state = order ['order_state']
