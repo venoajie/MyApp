@@ -586,7 +586,7 @@ class ApplyHedgingSpot ():
                                                 notional,
                                                 instrument
                                                 )
-                        log.warning (strategy['strategy']).upper()
+                        log.warning (strategy['strategy'])
                         #log.warning ('hedgingSpot' in strategy['strategy'])
                             
                         if 'hedgingSpot' in strategy['strategy']:
