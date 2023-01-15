@@ -81,7 +81,7 @@ class RunningStrategies ():
                         
                 #! CLOSED ORDER SELL
                 if len (my_trades_sell) != 0 \
-                    and len (open_orders_buy)==0\
+                    and len (open_orders_buy)==0 \
                         and direction == 'sell':
                             
                     tp_price = price - (price * self.strategy_attributes ['pct_threshold_TP'])
@@ -154,7 +154,7 @@ class RunningStrategies ():
                 'label_numbered': label_numbered
                 }
     
-def main (strategy,
+def main (strategies,
           index_price,
           my_trades_open,
           my_orders_api_basedOn_label_strategy,
@@ -164,13 +164,14 @@ def main (strategy,
     
     '''
     '''  
-    strategies = RunningStrategies (strategy,
-                                    index_price,
-                                    my_trades_open,
-                                    my_orders_api_basedOn_label_strategy,
-                                    notional,
-                                    instrument
-                                    )
-    strategies. closed_strategy ()
-    strategies. open_strategy ()
+    for strategy in strategies:
+        strategies = RunningStrategies (strategy,
+                                        index_price,
+                                        my_trades_open,
+                                        my_orders_api_basedOn_label_strategy,
+                                        notional,
+                                        instrument
+                                        )
+        strategies. closed_strategy ()
+        strategies. open_strategy ()
     
