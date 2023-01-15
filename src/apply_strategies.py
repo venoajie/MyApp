@@ -269,10 +269,6 @@ class ApplyHedgingSpot ():
             pickling.replace_data (my_path_portfolio, portfolio) 
             portfolio = pickling.read_data(my_path_portfolio)       
         
-        #! delete
-        my_trades_closed = pickling.read_data(my_trades_path_closed)
-        #log.info (my_trades_open)
-        #! delete
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
                 'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
                 'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
@@ -488,6 +484,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
+                my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
                 log.info (my_trades_open)
                 
                 # fetch instruments data
@@ -603,15 +600,15 @@ class ApplyHedgingSpot ():
                         #len_open_orders_open_byAPI_db_buy: int = open_order_mgt_strategy_buy.my_orders_api_basedOn_label_items_qty (label)
                                              
                         # SD: supplyDemand
-                        my_trades_open_SD = my_trades_open. my_trades_api_basedOn_label (label)
-                        net_my_trades_open_SD = my_trades_open. my_trades_api_net_position (my_trades_open_SD) 
-                        log.critical (f'{net_my_trades_open_SD=} {target_price_loss=} {side=} {entry_price=} {size=} {label_numbered=}')
+                        my_trades_open_label_strategy = my_trades_open_mgt. my_trades_api_basedOn_label (label)
+                        net_my_trades_open_label_strategy = my_trades_open_mgt. my_trades_api_net_position (my_trades_open_label_strategy) 
+                        log.critical (f'{net_my_trades_open_label_strategy=} {target_price_loss=} {side=} {entry_price=} {size=} {label_numbered=}')
                         
                         if 'supplyDemand' in strategy :  
                               
                             if 'PERPETUAL' in instrument \
                                 and market_price \
-                                    and net_my_trades_open_SD == 0:
+                                    and net_my_trades_open_label_strategy == 0:
                                         
                                 if side == 'sell':
                                     if open_orders_open_byAPI_db_sell in none_data \
