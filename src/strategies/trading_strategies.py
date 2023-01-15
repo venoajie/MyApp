@@ -118,7 +118,7 @@ class RunningStrategies ():
 
         open_orders_buy = self.my_orders_direction () ['buy'] 
         open_orders_sell = self.my_orders_direction () ['sell'] 
-        label_strategy:str = self.my_trades_direction ['label_strategy']
+        label_strategy:str = self.strategy ['label_strategy']
         
         my_trades_buy = self.my_trades_direction () ['buy'] 
         my_trades_sell = self.my_trades_direction () ['sell'] 
