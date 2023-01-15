@@ -24,7 +24,7 @@ class MyTrades ():
         
         '''
         '''    
-        return set ([o for o in self.my_trades if o['api'] == True])
+        return  ([o for o in self.my_trades if o['api'] == True])
     
     def my_trades_manual (self) -> list:
         
