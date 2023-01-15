@@ -575,6 +575,7 @@ class ApplyHedgingSpot ():
                         
                         #! hedging spot: part of risk management, not strategies
                         if 'hedgingSpot' not in strategy['strategy']:
+                            log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
                                                 my_trades_open,
