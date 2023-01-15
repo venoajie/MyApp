@@ -178,5 +178,6 @@ def main (strategy,
                                     notional,
                                     instrument
                                     )
-    strategies. closed_strategy ()
-    strategies. open_strategy ()
+    
+    return {'open_strategy': strategies. open_strategy (),
+            'closed_strategy': strategies. closed_strategy ()}
