@@ -131,6 +131,7 @@ class RunningStrategies ():
         #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
         log.debug (f'OPEN  {my_trades_buy ==[]=} {my_trades_sell ==[]=}')
         log.warning (f'OPEN  {open_orders_buy=} {open_orders_sell=}')
+        log.warning (f'OPEN  {open_orders_buy ==[]=} { open_orders_sell ==[]=}')
         
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
                                                   entry_price, 
