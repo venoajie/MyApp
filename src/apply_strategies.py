@@ -559,7 +559,7 @@ class ApplyHedgingSpot ():
                     strategies = entries_exits.strategies
                     strategy_names = [o['strategy'] for o in strategies]
             
-                    for strategy in strategy_names:
+                    for strategy in strategies:
                                                 
                         strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
@@ -574,15 +574,17 @@ class ApplyHedgingSpot ():
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
-                        trading_strategies.main (strategies,
+                        trading_strategies.main (strategy,
                                                 index_price,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
                                                 notional,
                                                 instrument
                                                 )
+                        log.warning (strategy['strategy'])
+                        log.warning ('hedgingSpot' in strategy['strategy'])
                             
-                        if 'hedgingSpot' in strategy:
+                        if 'hedgingSpot' in strategy['strategy']:
                                         
                             if open_order_mgt_filed_status_filed != []: 
                                 open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_filed_status_filed] )
