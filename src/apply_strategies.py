@@ -17,7 +17,7 @@ from utilities import pickling, system_tools, number_modification, string_modifi
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import  label_numbering
-from strategies import entries_exits
+from strategies import entries_exits, trading_strategies
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -513,7 +513,6 @@ class ApplyHedgingSpot ():
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.my_orders_status ('filled')
                 
-                
                 await self.check_integrity (positions,
                                             my_trades_open, 
                                             server_time
@@ -564,127 +563,27 @@ class ApplyHedgingSpot ():
                                                 
                         strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
-                        equity_risked: float = strategy_variables ['equity_risked'] 
                         pct_threshold_TP: float = strategy_variables ['take_profit']  
-                        pct_threshold_CL: float = strategy_variables ['cut_loss']  
                         pct_threshold_avg: float = strategy_variables ['averaging']  
                         time_threshold: float = strategy_variables ['halt_minute_before_reorder']  * one_minute 
-                
-                        side:str = strategy_variables ['side']  
-                        entry_price: float = strategy_variables ['entry_price']  
+                        
                         label:str = strategy_variables ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
                         label_closed:str = f'{label}-closed'
-
-                        size: float = position_sizing.pos_sizing (pct_threshold_CL,
-                                                            entry_price, 
-                                                            notional, 
-                                                            equity_risked
-                                                            )   
+                        
                         # create my order mgt template based on strategies
-                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
+                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label) 
                         
-                        #my_orders_api_basedOn_label_strategy_filled = open_order_mgt_filed.my_orders_api_basedOn_label (label)
-                        #log.warning (open_order_mgt_filed_status_filed)
-                        #open_order_mgt_strategy: object = open_orders_management.MyOrders (my_orders_api_basedOn_label_strategy)
-                    
-                        open_orders_open_byAPI_db_sell: int = []  if my_orders_api_basedOn_label_strategy == [] \
-                            else ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'sell'])
-                    
-                        open_orders_open_byAPI_db_buy: int = []  if my_orders_api_basedOn_label_strategy == [] \
-                            else ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'buy'] )
-                        
-                        my_trades_open_label_strategy = my_trades_open_mgt. my_trades_api_basedOn_label (label)
-                        
-                        #my trades based on label, net
-                        net_my_trades_open_label_strategy = my_trades_open_mgt. my_trades_api_net_position (my_trades_open_label_strategy) 
-                        log.critical (f'{net_my_trades_open_label_strategy=} {pct_threshold_CL=} {side=} {entry_price=} {size=} {label_numbered=}')
-                        
-                        if 'supplyDemand' in strategy :  
-                            # any outstanding trading with label supplyDemand?
-
-                            my_trades_supply_demand_sell = [o  for o in my_trades_open_label_strategy if o['direction'] == 'sell'] 
-                            my_trades_supply_demand_buy = [o  for o in my_trades_open_label_strategy if o['direction'] == 'buy'] 
-                            
-                              
-                            if len (my_trades_supply_demand_sell) != 0 \
-                                and len (open_orders_open_byAPI_db_buy)==0:
-                                
-                                # just in case there are more than 1 open trade
-                                for my_trades in my_trades_supply_demand_sell:
-                                            
-                                    instrument  = [o['instrument_name']  for o in my_trades][0]
-                                    price  = [o['price']  for o in my_trades] [0]
-                                    tp_price = price - (price * pct_threshold_TP)
-                                    cl_price = price + (price * pct_threshold_CL)
-                                    size  = [o['amount']  for o in my_trades] [0]
-                                    label_open_numbered =  [o['label'] for o in my_trades]
-                                    label_int = string_modification.extract_integers_from_text (label_open_numbered)      
-                                    label_closed_numbered  = f'{label}-closed-{label_int}'
-                                    log.critical (f'CLOSE SD SELL {instrument=} {size=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
-                                    #! TAKE PROFIT/CUT LOSS?
-                                    if tp_price < index_price:
-                                        await self.send_orders (
-                                                                'buy', 
-                                                                instrument, 
-                                                                best_bid_prc, 
-                                                                size, 
-                                                                label_closed_numbered
-                                                                    )
-                                    if cl_price > index_price:
-                                        await self.send_orders (
-                                                                'buy', 
-                                                                instrument, 
-                                                                best_bid_prc, 
-                                                                size, 
-                                                                label_closed_numbered
-                                                                    )
-                            
-                            if len (my_trades_supply_demand_buy) != 0:
-                                pass
-                            
-                            if 'PERPETUAL' in instrument \
-                                and market_price:
-                                        
-                                if side == 'sell':
-                                    if open_orders_open_byAPI_db_sell in none_data \
-                                        and net_my_trades_open_label_strategy == 0:
-                                        
-                                        await self.send_orders (
-                                                                side, 
-                                                                instrument, 
-                                                                entry_price, 
-                                                                size, 
-                                                                label_numbered
-                                                                )
-                                    if open_orders_open_byAPI_db_sell !=[] \
-                                        :
-                                        
-                                        await self.send_orders (
-                                                                side, 
-                                                                instrument, 
-                                                                entry_price, 
-                                                                size, 
-                                                                label_numbered
-                                                                )
-                                            
-                                if side == 'buy':
-                                    if open_orders_open_byAPI_db_buy in none_data:
-                                        await self.send_orders (
-                                                                side, 
-                                                                instrument, 
-                                                                entry_price, 
-                                                                size, 
-                                                                label_numbered
-                                                                )   
-                            
-                            
-                                               
+                        trading_strategies = trading_strategies.main (strategy,
+                                                index_price,
+                                                my_trades_open,
+                                                my_orders_api_basedOn_label_strategy,
+                                                notional,
+                                                instrument
+                                                )
+                        trading_strategies
                             
                         if 'hedgingSpot' in strategy:
-                            
-                            #open_order_filled_labelHedgingSpot = [o for o in open_order_filled if label in o['label']  ] 
-                            #log.info (f'{open_order_filled_labelHedgingSpot=}')
                                         
                             if open_order_mgt_filed_status_filed != []: 
                                 open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_filed_status_filed] )
@@ -692,12 +591,9 @@ class ApplyHedgingSpot ():
                                                                    
                             last_time_order_filled_exceed_threshold = True if open_order_mgt_filed_status_filed == [] \
                                 else filled_order_deltaTime > time_threshold
-
-                            #log.info (f'{filled_order_deltaTime=}')
                             
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
-                                    #log.debug (my_trades_open)
 
                                     #check under hedging
                                     spot_hedged = spot_hedging.SpotHedging (label,
