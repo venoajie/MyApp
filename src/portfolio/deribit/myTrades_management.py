@@ -3,7 +3,6 @@
 # installed
 from dataclassy import dataclass
 
-
 def catch_error (error, idle: int = None) -> list:
     """
     """
@@ -32,15 +31,13 @@ class MyTrades ():
         '''    
         return [o for o in self.my_trades if o['api'] == False]
     
-    
-    
     def my_trades_api_basedOn_label (self, label: str)-> list:
         
         '''
         '''    
         return [] if self.my_trades_api () == [] else   ([o for o in self.my_trades_api () if  label in o['label'] ])
     
-    def my_trades_api_net_position(self, selected_trades: list) -> list:
+    def my_trades_api_net_position(self, selected_trades: list) -> float:
         
         '''
         '''    
@@ -55,7 +52,7 @@ class MyTrades ():
                 sum_closed_trades_in_my_trades_open_buy = ([o['amount'] for o in selected_trades if o['direction']=='buy'])
                 sum_closed_trades_in_my_trades_open_buy = 0 if sum_closed_trades_in_my_trades_open_buy == [] else sum(sum_closed_trades_in_my_trades_open_buy)
                     
-            return [] if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+            return selected_trades if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
         
         except Exception as error:
             catch_error(error)

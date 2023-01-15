@@ -55,9 +55,7 @@ class MyOrders ():
         
         '''
         '''    
-        #print (f'label {label}')
-        #print (f'my_orders_api_basedOn_label {self.my_orders_api()}')
-        none_data = [None, []]
+        
         return [] if self.my_orders_api () == [] else  ([o for o in self.my_orders_api () if  label in o['label'] ])
     
     def my_orders_api_last_update_timestamps (self)-> list:
@@ -120,14 +118,14 @@ class MyOrders ():
         '''
         '''   
         from utilities import number_modification  
-        from loguru import logger as log
+        #from loguru import logger as log
         
         if label == None:
             result =  0 if self.my_orders_api () == [] else  number_modification.net_position (self.my_orders_api ()) 
         
         else:
-            log.debug (label)
-            log.debug (self.my_orders_api_basedOn_label (label))
+            #log.debug (label)
+            #log.debug (self.my_orders_api_basedOn_label (label))
             result =  0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position (
                 ([o for o in self.my_orders_api_basedOn_label (label)]))
@@ -153,7 +151,6 @@ class MyOrders ():
     def distribute_order_transactions (self, currency) -> None:
         
         '''
-        trade_sources: 'API'
         '''       
         from utilities import pickling, system_tools
         from loguru import logger as log
@@ -165,60 +162,40 @@ class MyOrders ():
             
             for order in self.my_orders:
                 
-                #log.warning (f'{self.my_orders=}')
-                log.error (f'{order=}')
-                
-                #try:
-                #    # because order return diff for order still open and has filled
-                #    trade_seq = order ['trade_seq']
-                #    order_state = order ['state']
-                #except:
-                #    order_state = order ['order_state']
+#                log.error (f'{order=}')
                     
                 order_id= order ['order_id']
                 order_state = order ['order_state']
                 
                 my_path_orders_else = system_tools.provide_path_for_file ('orders', currency, order_state)
                 open_orders_open = pickling.read_data (my_path_orders_open) 
-                #log.debug (f'BEFORE {open_orders_open=}')
-                #log.warning (f'{order_state=}')
                 
                 if order_state == 'open':
                     log.error ('ORDER_STATE OPEN')
                     log.info (f'{order=}')
                     
                     pickling.append_and_replace_items_based_on_qty (my_path_orders_open, order, 1000, True)
-                    #pickling.check_duplicate_elements (my_path_orders_open)
                     
                 else:
                     log.critical ('ORDER_STATE ELSE')
                     log.info (f'{order=}')
                     item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                     item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
-                    #log.info (f'{item_in_open_orders_open_with_same_id=}')
-                    #log.warning (f'{item_in_open_orders_open_with_diff_id=}')
                     
                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, order, 1000, True)
                     #result_example = [
                     #    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, #'reduce_only': False, 'profit_loss': 0.0, 'price': 1547.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'filled', #'order_id': 'ETH-3249516850', 'mmp': False, 'max_show': 53.0, 'last_update_timestamp': 1673675558839, 'label': #'hedgingSpot-open-1673675540', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 53.0, 'direction': #'sell', 'creation_timestamp': 1673675541623, 'commission': 0.0, 'average_price': 1547.6, 'api': True, 'amount': 53.0}, 
                     #    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, #'reduce_only': False, 'profit_loss': 0.0, 'price': 1547.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', #'order_id': 'ETH-3249516850', 'mmp': False, 'max_show': 53.0, 'last_update_timestamp': 1673675541623, 'label': #'hedgingSpot-open-1673675540', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', #'creation_timestamp': 1673675541623, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 53.0}
                     #    ]
-                    #pickling.check_duplicate_elements (my_path_orders_else)
                     
                     if item_in_open_orders_open_with_same_id != []:
-                        #log.critical ('item_in_open_orders_open_with_same_id')
+
                         pickling.append_and_replace_items_based_on_qty (my_path_orders_else, item_in_open_orders_open_with_same_id, 100000, True)
-                        #pickling.check_duplicate_elements (my_path_orders_else)
                         
                     pickling.replace_data (my_path_orders_open, item_in_open_orders_open_with_diff_id, True)
-                    #pickling.check_duplicate_elements (my_path_orders_open)
+
         else:
             pickling.replace_data (my_path_orders_open, [], True)
                     
-    def check_whether_orders_have_excecuted (self)-> list:
-        
-        '''
-        '''    
-        pass
     
     

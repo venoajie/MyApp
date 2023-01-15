@@ -95,7 +95,6 @@ async def send_order_limit (connection_url: str,
                             reject_post_only: bool =False
                             ):
         
-        
     if valid_until == False:
         if trigger_price == None:
             params =  {

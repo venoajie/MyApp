@@ -197,7 +197,6 @@ class SpotHedging ():
         log.debug(f'take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
         log.debug(f'{myTrades_max_price_pct_minus=}  {myTrades_max_price_pct_plus=} {sum_closed_trades_in_my_trades_open_net=} ')
         
-        
         return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
                 'buy_price':  myTrades_max_price_pct_minus,
                 'sell_price':  myTrades_max_price_pct_plus,
