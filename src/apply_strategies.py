@@ -574,7 +574,7 @@ class ApplyHedgingSpot ():
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
-                        trading_strategies.main (strategy,
+                        trading_strategies.main (strategies,
                                                 index_price,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
