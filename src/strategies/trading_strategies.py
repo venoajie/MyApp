@@ -106,7 +106,6 @@ class RunningStrategies ():
                         'size': size, 
                         'label_numbered': label_closed_numbered
                         }
-                    
                      
     def open_strategy (self) -> list:
         
@@ -134,10 +133,12 @@ class RunningStrategies ():
         
         if my_trades_buy ==[] \
             and open_orders_buy ==[]:
+                
             send_order:bool =  True
         
         if my_trades_sell ==[] \
             and open_orders_sell ==[]:
+                
             send_order:bool =  True
             
                 
@@ -151,3 +152,24 @@ class RunningStrategies ():
                 'size': size, 
                 'label_numbered': label_numbered
                 }
+    
+def main (strategy,
+          index_price,
+          my_trades_open,
+          my_orders_api_basedOn_label_strategy,
+          notional,
+          instrument
+          ) -> None:
+    
+    '''
+    '''  
+    strategies = RunningStrategies (strategy,
+                                    index_price,
+                                    my_trades_open,
+                                    my_orders_api_basedOn_label_strategy,
+                                    notional,
+                                    instrument
+                                    )
+    strategies. closed_strategy ()
+    strategies. open_strategy ()
+    
