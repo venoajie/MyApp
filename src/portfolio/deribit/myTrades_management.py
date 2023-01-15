@@ -38,7 +38,7 @@ class MyTrades ():
         
         '''
         '''    
-        return [] if self.my_trades_api () == [] else  set ([o for o in self.my_trades_api () if  label in o['label'] ])
+        return [] if self.my_trades_api () == [] else   ([o for o in self.my_trades_api () if  label in o['label'] ])
     
     def my_trades_api_net_position(self, selected_trades: list) -> list:
         
