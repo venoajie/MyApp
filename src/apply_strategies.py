@@ -573,7 +573,7 @@ class ApplyHedgingSpot ():
                         
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
-                        log.critical (strategy)
+                        #log.critical (strategy)
                         #my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
                         #log.critical (my_trades_open_strategy)
                         
@@ -586,8 +586,8 @@ class ApplyHedgingSpot ():
                                                 notional,
                                                 instrument
                                                 )
-                        log.warning (strategy['strategy'])
-                        log.warning ('hedgingSpot' in strategy['strategy'])
+                        log.warning (strategy['strategy']).upper()
+                        #log.warning ('hedgingSpot' in strategy['strategy'])
                             
                         if 'hedgingSpot' in strategy['strategy']:
                                         
