@@ -561,13 +561,13 @@ class ApplyHedgingSpot ():
             
                     for strategy in strategies:
                                                 
-                        strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
+                        #strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
-                        pct_threshold_TP: float = strategy_variables ['take_profit']  
-                        pct_threshold_avg: float = strategy_variables ['averaging']  
-                        time_threshold: float = strategy_variables ['halt_minute_before_reorder']  * one_minute 
+                        pct_threshold_TP: float = strategy ['take_profit']  
+                        pct_threshold_avg: float = strategy ['averaging']  
+                        time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
                         
-                        label:str = strategy_variables ['strategy']
+                        label:str = strategy ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
                         label_closed:str = f'{label}-closed'
                         
