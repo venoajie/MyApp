@@ -164,8 +164,11 @@ def main (strategies,
           ) -> None:
     
     '''
-    '''  
+    '''
+    strategies = ([o  for o in strategies if 'hedgingSpot' not in o['strategy'] ] )
+      
     for strategy in strategies:
+        log.warning (strategy)
         strategies = RunningStrategies (strategy,
                                         index_price,
                                         my_trades_open,
