@@ -68,7 +68,7 @@ class RunningStrategies ():
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
             for my_trades in self.my_trades_open:
-                log.warning (self.strategy_attributes () )
+                #log.warning (self.strategy_attributes () )
                 log.warning (my_trades )
                 
                 price  = my_trades ['price']  
@@ -76,7 +76,7 @@ class RunningStrategies ():
                 size  = my_trades['amount']  
                 direction  = my_trades ['direction']  
                 instrument  = my_trades ['instrument_name'] 
-                label_open_numbered =  my_trades [0]['label'] 
+                label_open_numbered =  my_trades ['label'] 
                 label_closed_numbered  = f'{label}-closed-{label_int}'
                 label_int = string_modification.extract_integers_from_text (label_open_numbered)      
                         
