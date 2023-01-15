@@ -557,7 +557,6 @@ class ApplyHedgingSpot ():
                                         
                     # fetch strategies 
                     strategies = entries_exits.strategies
-                    strategy_names = [o['strategy'] for o in strategies]
             
                     for strategy in strategies:
                                                 
@@ -573,19 +572,22 @@ class ApplyHedgingSpot ():
                         
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
-                        #log.critical (strategy)
-                        #my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
-                        #log.critical (my_trades_open_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
                         if 'hedgingSpot' not in strategy['strategy']:
-                            trading_strategies.main (strategy,
+                            str = trading_strategies.main (strategy,
                                                 index_price,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
                                                 notional,
                                                 instrument
                                                 )
+                            open_str = str ['open_strategy']
+                            closed_str = str ['closed_strategy']
+                                
+                            log.warning (open_str)
+                            log.warning (closed_str)
+                            
                         log.warning (strategy['strategy'])
                         #log.warning ('hedgingSpot' in strategy['strategy'])
                             
