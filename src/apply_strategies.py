@@ -572,16 +572,15 @@ class ApplyHedgingSpot ():
                         label_closed:str = f'{label}-closed'
                         
                         # create my order mgt template based on strategies
-                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label) 
+                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
-                        trading_strategies = trading_strategies.main (strategy,
+                        trading_strategies.main (strategy,
                                                 index_price,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
                                                 notional,
                                                 instrument
                                                 )
-                        trading_strategies
                             
                         if 'hedgingSpot' in strategy:
                                         
