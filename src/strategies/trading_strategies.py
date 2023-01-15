@@ -128,7 +128,7 @@ class RunningStrategies ():
         pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
         
-        log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
+        #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
         log.debug (f'OPEN  {my_trades_buy ==[]=} {my_trades_sell ==[]=}')
         log.warning (f'OPEN  {open_orders_buy=} {open_orders_sell=}')
         
@@ -172,7 +172,7 @@ def main (strategy,
     #my_trades_open =  [o  for o in my_trades_open if o['direction'] == 'sell']
     my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
     my_orders_open_strategy = ([o  for o in my_orders_api_basedOn_label_strategy if strategy['strategy'] in o['label']])
-    log.critical (my_trades_open_strategy)
+    #log.critical (my_trades_open_strategy)
     log.critical (my_orders_open_strategy)
 
     strategies = RunningStrategies (strategy,
