@@ -508,6 +508,7 @@ class ApplyHedgingSpot ():
                 
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+                log.info (open_order_mgt)
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 #log.warning (open_order_mgt_filed)
                 
