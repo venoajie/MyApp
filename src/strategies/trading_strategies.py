@@ -70,11 +70,11 @@ class RunningStrategies ():
             for my_trades in self.my_trades_open:
                 log.warning (my_trades)
                 
-                price  = [o['price']  for o in my_trades] [0]
+                price  = my_trades ['price']  
                 label = self.strategy_attributes ['label_strategy']      
-                size  = [o['amount']  for o in my_trades] [0]
-                direction  = [o['direction']  for o in my_trades] [0]
-                instrument  = my_trades [0]['instrument_name'] 
+                size  = my_trades['amount']  
+                direction  = my_trades ['direction']  
+                instrument  = my_trades ['instrument_name'] 
                 label_open_numbered =  my_trades [0]['label'] 
                 label_closed_numbered  = f'{label}-closed-{label_int}'
                 label_int = string_modification.extract_integers_from_text (label_open_numbered)      
