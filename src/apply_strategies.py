@@ -577,8 +577,9 @@ class ApplyHedgingSpot ():
                         #my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
                         #log.critical (my_trades_open_strategy)
                         
-                        
-                        trading_strategies.main (strategy,
+                        #! hedging spot: part of risk management, not strategies
+                        if 'hedgingSpot' not in strategy['strategy']:
+                            trading_strategies.main (strategy,
                                                 index_price,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
