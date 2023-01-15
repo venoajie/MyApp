@@ -77,8 +77,8 @@ class RunningStrategies ():
                 direction  = my_trades ['direction']  
                 instrument  = my_trades ['instrument_name'] 
                 label_open_numbered =  my_trades ['label'] 
-                label_closed_numbered  = f'{label}-closed-{label_int}'
                 label_int = string_modification.extract_integers_from_text (label_open_numbered)      
+                label_closed_numbered  = f'{label}-closed-{label_int}'
                         
                 #! CLOSED ORDER SELL
                 if len (my_trades_sell) != 0 \
