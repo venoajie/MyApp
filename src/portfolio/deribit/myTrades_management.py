@@ -48,7 +48,7 @@ class MyTrades ():
         try:
             if selected_trades != []:
             # sum sell
-                selected_trades = set (selected_trades)
+                #selected_trades = set (selected_trades)
                 sum_closed_trades_in_my_trades_open_sell = ([o['amount'] for o in selected_trades if o['direction']=='sell'])
                 sum_closed_trades_in_my_trades_open_sell = 0 if sum_closed_trades_in_my_trades_open_sell == [] else sum(sum_closed_trades_in_my_trades_open_sell)
                 # sum buy
