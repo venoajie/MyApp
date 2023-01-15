@@ -586,7 +586,28 @@ class ApplyHedgingSpot ():
                             closed_str = str ['closed_strategy']
                                 
                             log.warning (open_str)
+                            log.warning (open_str ['send_order'])
+                            
                             log.warning (closed_str)
+                            log.warning (closed_str ['send_order'])
+                            
+                            if open_str ['send_order']:
+                                side = open_str['side']
+                                await self.send_orders (side, 
+                                                        open_str['instrument'],
+                                                        best_ask_prc if side == 'sell' else best_bid_prc,
+                                                        open_str['size'], 
+                                                        open_str['label_numbered']
+                                                        )
+                            
+                            if closed_str ['send_order']:
+                                side = open_str['side']
+                                await self.send_orders  (side, 
+                                                        closed_str['instrument'],
+                                                        best_ask_prc if side == 'sell' else best_bid_prc,
+                                                        closed_str['size'], 
+                                                        closed_str['label_numbered']
+                                                        )
                             
                         log.warning (strategy['strategy'])
                         #log.warning ('hedgingSpot' in strategy['strategy'])
