@@ -68,10 +68,10 @@ class RunningStrategies ():
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
             for my_trades in self.my_trades_open:
-                log.warning (self.strategy_attributes )
+                log.warning (self.strategy_attributes () )
                 
                 price  = my_trades ['price']  
-                label = self.strategy_attributes ['label_strategy']      
+                label = self.strategy_attributes  () ['label_strategy']      
                 size  = my_trades['amount']  
                 direction  = my_trades ['direction']  
                 instrument  = my_trades ['instrument_name'] 
@@ -84,8 +84,8 @@ class RunningStrategies ():
                     and len (open_orders_buy)==0 \
                         and direction == 'sell':
                             
-                    tp_price = price - (price * self.strategy_attributes ['pct_threshold_TP'])
-                    cl_price = price + (price * self.strategy_attributes ['pct_threshold_CL'])
+                    tp_price = price - (price * self.strategy_attributes  ()['pct_threshold_TP'])
+                    cl_price = price + (price * self.strategy_attributes  () ['pct_threshold_CL'])
                     send_order = tp_price < self.index_price or cl_price > self.index_price
                     side = 'buy'
                     
@@ -94,8 +94,8 @@ class RunningStrategies ():
                     and len (open_orders_sell)==0 \
                         and direction == 'buy':
                             
-                    tp_price = price + (price * self.strategy_attributes ['pct_threshold_TP'])
-                    cl_price = price - (price * self.strategy_attributes ['pct_threshold_CL'])
+                    tp_price = price + (price * self.strategy_attributes  () ['pct_threshold_TP'])
+                    cl_price = price - (price * self.strategy_attributes  () ['pct_threshold_CL'])
                     send_order = tp_price > self.index_price or cl_price < self.index_price   
                     side = 'sell'          
                         
@@ -121,10 +121,10 @@ class RunningStrategies ():
         
         my_trades_buy = self.my_trades_direction () ['buy'] 
         my_trades_sell = self.my_trades_direction () ['sell'] 
-        side:str =  self.strategy_attributes ['side']
-        entry_price:str =  self.strategy_attributes ['entry_price']
-        equity_risked:str =  self.strategy_attributes ['equity_risked']
-        pct_threshold_CL:str =  self.strategy_attributes ['pct_threshold_CL']
+        side:str =  self.strategy_attributes  () ['side']
+        entry_price:str =  self.strategy_attributes  () ['entry_price']
+        equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+        pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
         
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
