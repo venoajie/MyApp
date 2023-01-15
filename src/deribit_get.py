@@ -87,6 +87,8 @@ async def send_order_limit (connection_url: str,
                             label: str, 
                             type: str ='limit',
                             time_in_force: str ='fill_or_kill',
+                            trigger: str = 'last_price', 
+                            trigger_price: float = None, 
                             reduce_only: bool = False, 
                             valid_until: int = False,
                             post_only: bool = True, 
@@ -95,17 +97,32 @@ async def send_order_limit (connection_url: str,
         
         
     if valid_until == False:
-        params =  {
-                "instrument_name": instrument,
-                "amount": amount,
-                "price": price,
-                "label": label,
-                #"time_in_force": time_in_force, fik can not apply to post only
-                "type": type,
-                "reduce_only": reduce_only,
-                "post_only": post_only,
-                "reject_post_only": reject_post_only,
-                }
+        if trigger_price == None:
+            params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
+                    "price": price,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
+        else:
+            params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
+                    "price": price,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "trigger": trigger,
+                    "trigger_price": trigger_price,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
     else:
         params =  {
                 "instrument_name": instrument,

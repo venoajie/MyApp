@@ -511,10 +511,10 @@ class ApplyHedgingSpot ():
                 
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-                open_order_mgt_flled = open_orders_management.MyOrders (open_orders_filled_byAPI)
-                #log.warning (open_order_mgt_flled)
+                open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
+                #log.warning (open_order_mgt_filed)
                 
-                open_order_mgt_flled_status_filed = open_order_mgt_flled.my_orders_status ('filled')
+                open_order_mgt_filed_status_filed = open_order_mgt_filed.my_orders_status ('filled')
                 
                 
                 await self.check_integrity (positions,
@@ -567,40 +567,65 @@ class ApplyHedgingSpot ():
                                                 
                         strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
-                        equity_risked = strategy_variables ['equity_risked'] 
-                        pct_threshold_TP = strategy_variables ['take_profit']  
-                        pct_threshold_avg = strategy_variables ['averaging']  
-                        time_threshold = strategy_variables ['halt_minute_before_reorder']  * one_minute 
+                        equity_risked: float = strategy_variables ['equity_risked'] 
+                        pct_threshold_TP: float = strategy_variables ['take_profit']  
+                        pct_threshold_avg: float = strategy_variables ['averaging']  
+                        time_threshold: float = strategy_variables ['halt_minute_before_reorder']  * one_minute 
                 
-                        target_price_loss = strategy_variables ['cut_loss'] 
-                        side = strategy_variables ['side']  
-                        entry_price = strategy_variables ['entry_price']  
-                        label = strategy_variables ['strategy']
+                        target_price_loss: float = strategy_variables ['cut_loss'] 
+                        side:str = strategy_variables ['side']  
+                        entry_price: float = strategy_variables ['entry_price']  
+                        label:str = strategy_variables ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
+                        label_closed:str = f'{label}-closed'
 
-                        size = position_sizing.pos_sizing (target_price_loss,
+                        size: float = position_sizing.pos_sizing (target_price_loss,
                                                             entry_price, 
                                                             notional, 
                                                             equity_risked
                                                             )   
+                        # create my order mgt template based on strategies
+                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
-                        #my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
-                        #my_orders_api_basedOn_label_strategy_filled = open_order_mgt_flled.my_orders_api_basedOn_label (label)
-                        #log.warning (open_order_mgt_flled_status_filed)
+                        #my_orders_api_basedOn_label_strategy_filled = open_order_mgt_filed.my_orders_api_basedOn_label (label)
+                        #log.warning (open_order_mgt_filed_status_filed)
                         #open_order_mgt_strategy: object = open_orders_management.MyOrders (my_orders_api_basedOn_label_strategy)
                     
-                        #open_orders_open_byAPI_db_sell: int = ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'sell'] )
+                        open_orders_open_byAPI_db_sell: int = []  if my_orders_api_basedOn_label_strategy == [] \
+                            else ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'sell'])
+                    
+                        open_orders_open_byAPI_db_buy: int = []  if my_orders_api_basedOn_label_strategy == [] \
+                            else ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'buy'] )
                         #open_orders_open_byAPI_db_buy: int = ([o  for o in my_orders_api_basedOn_label_strategy if o['direction'] == 'buy'] )
                         #open_order_mgt_strategy_sell: object = open_orders_management.MyOrders (open_orders_open_byAPI_db_sell)
                         #open_order_mgt_strategy_buy: object = open_orders_management.MyOrders (open_orders_open_byAPI_db_buy)
-                        #len_open_orders_open_byAPI_db_sell: int = open_order_mgt_strategy_sell.my_orders_api_basedOn_label_items_qty (label)
+                        #len_open_orders_open_byAPI_sell: int = open_order_mgt_strategy_sell.my_orders_api_basedOn_label_items_qty (label)
                         #len_open_orders_open_byAPI_db_buy: int = open_order_mgt_strategy_buy.my_orders_api_basedOn_label_items_qty (label)
                                              
-                        if 'supplyDemand' in strategy and False:  
+                        # SD: supplyDemand
+                        my_trades_open_SD = my_trades_open. my_trades_api_basedOn_label (label)
+                        net_my_trades_open_SD = my_trades_open. my_trades_api_net_position (my_trades_open_SD) 
+                        log.critical (f'{net_my_trades_open_SD=} {target_price_loss=} {side=} {entry_price=} {size=} {label_numbered=}')
+                        
+                        if 'supplyDemand' in strategy :  
                               
-                            if 'PERPETUAL' in instrument and market_price :
+                            if 'PERPETUAL' in instrument \
+                                and market_price \
+                                    and net_my_trades_open_SD == 0:
+                                        
                                 if side == 'sell':
-                                    if len_open_orders_open_byAPI_db in none_data and net_my_trades_open_SD == 0:
+                                    if open_orders_open_byAPI_db_sell in none_data \
+                                        :
+                                        
+                                        await self.send_orders (
+                                                                side, 
+                                                                instrument, 
+                                                                entry_price, 
+                                                                size, 
+                                                                label_numbered
+                                                                )
+                                    if open_orders_open_byAPI_db_sell !=[] \
+                                        :
                                         
                                         await self.send_orders (
                                                                 side, 
@@ -611,7 +636,7 @@ class ApplyHedgingSpot ():
                                                                 )
                                             
                                 if side == 'buy':
-                                    if len_open_orders_open_byAPI_db in none_data and net_my_trades_open_SD == 0:
+                                    if open_orders_open_byAPI_db_buy in none_data:
                                         await self.send_orders (
                                                                 side, 
                                                                 instrument, 
@@ -620,21 +645,19 @@ class ApplyHedgingSpot ():
                                                                 label_numbered
                                                                 )   
                             
-                            log.critical (f'{target_price_loss=} {side=} {entry_price=} {size=} {label_numbered=}')
                             
-                            my_trades_open_SD = my_trades_open. my_trades_api_basedOn_label (label)
-                            net_my_trades_open_SD = my_trades_open. my_trades_api_net_position (my_trades_open_SD)                          
+                                               
                             
                         if 'hedgingSpot' in strategy:
                             
                             #open_order_filled_labelHedgingSpot = [o for o in open_order_filled if label in o['label']  ] 
                             #log.info (f'{open_order_filled_labelHedgingSpot=}')
                                         
-                            if open_order_mgt_flled_status_filed != []: 
-                                open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_flled_status_filed] )
+                            if open_order_mgt_filed_status_filed != []: 
+                                open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_filed_status_filed] )
                                 filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
                                                                    
-                            last_time_order_filled_exceed_threshold = True if open_order_mgt_flled_status_filed == [] \
+                            last_time_order_filled_exceed_threshold = True if open_order_mgt_filed_status_filed == [] \
                                 else filled_order_deltaTime > time_threshold
 
                             #log.info (f'{filled_order_deltaTime=}')
@@ -668,14 +691,16 @@ class ApplyHedgingSpot ():
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
                                     log.warning(f'{spot_was_unhedged=} {actual_hedging_size=}  {net_open_orders_open_byAPI_db=} {last_time_order_filled_exceed_threshold=}')
-                                    await self.check_if_new_opened_hedging_order_will_create_over_hedged (label,
-                                                                                                          actual_hedging_size, 
-                                                                                                          min_hedging_size
-                                                                                                          )
+                                    
+                                    await self.will_new_open_order_create_over_hedge (label,
+                                                                                      actual_hedging_size,
+                                                                                      min_hedging_size
+                                                                                      )
                                     
                                     # send sell order if spot still unhedged and no current open orders 
-                                    if spot_was_unhedged and net_open_orders_open_byAPI_db == 0 \
-                                        and  last_time_order_filled_exceed_threshold:
+                                    if spot_was_unhedged \
+                                        and net_open_orders_open_byAPI_db == 0 \
+                                            and  last_time_order_filled_exceed_threshold:
                                     
                                         await self.send_orders ('sell', 
                                                                 instrument, 
@@ -685,13 +710,16 @@ class ApplyHedgingSpot ():
                                                                 )
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
-                                        await self.check_if_new_opened_hedging_order_will_create_over_hedged (label,
-                                                                                                              actual_hedging_size, 
-                                                                                                              min_hedging_size
-                                                                                                              )
+                                        
+                                        await self.will_new_open_order_create_over_hedge (label,
+                                                                                          actual_hedging_size,
+                                                                                          min_hedging_size
+                                                                                          )
                                     
                                     # if spot has hedged properly, check also for opportunity to get additional small profit    
-                                    if spot_was_unhedged == False and remain_unhedged >= 0 and net_open_orders_open_byAPI_db == 0:
+                                    if spot_was_unhedged == False \
+                                        and remain_unhedged >= 0 \
+                                            and net_open_orders_open_byAPI_db == 0:
 
                                         adjusting_inventories = spot_hedged.adjusting_inventories (index_price, 
                                                                                                    self.currency, 
@@ -706,8 +734,8 @@ class ApplyHedgingSpot ():
                                             {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
                                                 {best_ask_prc=}')
                                                 
-                                        if adjusting_inventories ['take_profit'] and bid_prc_is_lower_than_buy_price:
-                                            label_closed_for_filter = f'{label}-closed'
+                                        if adjusting_inventories ['take_profit'] \
+                                            and bid_prc_is_lower_than_buy_price:                                            
                                                     
                                             await self.send_orders ('buy', 
                                                                     instrument, 
@@ -716,9 +744,10 @@ class ApplyHedgingSpot ():
                                                                     adjusting_inventories ['label_take_profit']
                                                                     )
                                             
-                                            await self.cancel_redundant_orders_in_same_labels (label_closed_for_filter)
+                                            await self.cancel_redundant_orders_in_same_labels (label_closed)
                                             
-                                        if adjusting_inventories ['average_up'] and ask_prc_is_higher_than_sell_price:
+                                        if adjusting_inventories ['average_up'] \
+                                            and ask_prc_is_higher_than_sell_price:
                                             
                                             await self.send_orders (
                                                                     'sell', 
@@ -733,7 +762,7 @@ class ApplyHedgingSpot ():
         except Exception as error:
             catch_error (error, 30)
 
-    async def check_if_new_opened_hedging_order_will_create_over_hedged (self,  
+    async def will_new_open_order_create_over_hedge (self,  
                                                                          label,
                                                                          actual_hedging_size: float, 
                                                                          min_hedging_size: float
