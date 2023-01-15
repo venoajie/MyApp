@@ -125,11 +125,12 @@ class RunningStrategies ():
         equity_risked:str =  self.strategy_attributes ['equity_risked']
         pct_threshold_CL:str =  self.strategy_attributes ['pct_threshold_CL']
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
+        
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
-                                                            entry_price, 
-                                                            self.notional, 
-                                                            equity_risked
-                                                            )   
+                                                  entry_price, 
+                                                  self.notional, 
+                                                  equity_risked
+                                                  )   
         
         if my_trades_buy ==[] \
             and open_orders_buy ==[]:
@@ -141,7 +142,6 @@ class RunningStrategies ():
                 
             send_order:bool =  True
             
-                
         log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
         log.debug (f' {my_trades_buy=} {my_trades_sell=}')
         log.debug (f' {open_orders_buy=} {open_orders_sell=}')
