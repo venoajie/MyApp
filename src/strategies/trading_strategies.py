@@ -165,6 +165,7 @@ def main (strategy,
     
     '''
     '''
+    #my_trades_open =  [o  for o in my_trades_open if o['direction'] == 'sell']
 
     strategies = RunningStrategies (strategy,
                                     index_price,
