@@ -552,10 +552,6 @@ class ApplyHedgingSpot ():
                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net ()
                     log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                 
-                    if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
-                        await self.check_my_orders_consistency (my_orders_from_exchange, server_time)
-                        
-                        log.debug(f'{net_open_orders_open_byAPI_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
                                         
                     # fetch strategies 
                     strategies = entries_exits.strategies
@@ -614,7 +610,12 @@ class ApplyHedgingSpot ():
                         #log.warning ('hedgingSpot' in strategy['strategy'])
                             
                         if 'hedgingSpot' in strategy['strategy']:
-                                        
+                                                
+                            if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
+                                await self.check_my_orders_consistency (my_orders_from_exchange, server_time)
+                                
+                                log.debug(f'{net_open_orders_open_byAPI_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
+                        
                             if open_order_mgt_filed_status_filed != []: 
                                 open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_filed_status_filed] )
                                 filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
