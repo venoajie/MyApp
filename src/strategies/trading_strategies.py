@@ -212,6 +212,6 @@ def main (strategy,
                                     instrument
                                     )
     
-    return {'open_strategy_buy': strategies. open_strategy (),
-            'open_strategy_sell': strategies. open_strategy (),
+    return {'open_strategy_buy': strategies. open_strategy_buy (),
+            'open_strategy_sell': strategies. open_strategy_sell (),
             'closed_strategy': strategies. closed_strategy ()}
