@@ -123,12 +123,14 @@ class RunningStrategies ():
         
         '''
         '''  
+        side:str =  self.strategy_attributes  () ['side']
+        
         if side == 'buy':
             open_orders_buy = self.my_orders_direction () ['buy'] 
             label_strategy:str = self.strategy_attributes () ['label_strategy']
             
             my_trades_buy = self.my_trades_direction () ['buy'] 
-            side:str =  self.strategy_attributes  () ['side']
+            
             entry_price:str =  self.strategy_attributes  () ['entry_price']
             equity_risked:str =  self.strategy_attributes  () ['equity_risked']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
@@ -162,12 +164,14 @@ class RunningStrategies ():
         
         '''
         '''
+        side:str =  self.strategy_attributes  () ['side']
+        
         if side == 'sell':  
             open_orders_sell = self.my_orders_direction () ['sell'] 
             label_strategy:str = self.strategy_attributes () ['label_strategy']
 
             my_trades_sell = self.my_trades_direction () ['sell'] 
-            side:str =  self.strategy_attributes  () ['side']
+            
             entry_price:str =  self.strategy_attributes  () ['entry_price']
             equity_risked:str =  self.strategy_attributes  () ['equity_risked']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
