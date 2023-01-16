@@ -184,8 +184,10 @@ class MyOrders ():
                 else:
                     log.critical ('ORDER_STATE ELSE')
                     log.info (f'{order=}')
+                    log.info (f'{open_orders_open=}')
                     item_in_open_orders_open_with_same_id =  [o for o in open_orders_open if o['order_id'] == order_id ] 
                     item_in_open_orders_open_with_diff_id =  [o for o in open_orders_open if o['order_id'] != order_id ] 
+                    log.debug (f'{item_in_open_orders_open_with_same_id=}')
                     
                     pickling.append_and_replace_items_based_on_qty (my_path_orders_else, order, 1000, True)
                     #result_example = [
