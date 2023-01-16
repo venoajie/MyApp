@@ -173,6 +173,7 @@ class RunningStrategies ():
             label_strategy:str = self.strategy_attributes () ['label_strategy']
 
             my_trades_sell = self.my_trades_direction () ['sell'] 
+            target_price:str =  self.strategy_attributes  () ['take_profit_usd']
             
             entry_price:str =  self.strategy_attributes  () ['entry_price']
             equity_risked:str =  self.strategy_attributes  () ['equity_risked_pct']
@@ -181,7 +182,7 @@ class RunningStrategies ():
             
             log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
             
-            size: float = position_sizing.pos_sizing (pct_threshold_CL,
+            size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
                                                     self.notional, 
                                                     equity_risked
