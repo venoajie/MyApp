@@ -92,6 +92,7 @@ class RunningStrategies ():
                     side = 'buy'
                     
                 #! CLOSED ORDER BUY
+                send_order = False
                 if len (my_trades_buy) != 0 \
                     and len (open_orders_sell)==0 \
                         and direction == 'buy':
