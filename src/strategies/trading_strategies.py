@@ -150,7 +150,7 @@ class RunningStrategies ():
                 'label_numbered': label_numbered
                 }
         
-    def open_strateg_sell (self) -> list:
+    def open_strategy_sell (self) -> list:
         
         '''
         '''  
