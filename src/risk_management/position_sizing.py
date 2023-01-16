@@ -24,6 +24,12 @@ def pos_sizing (target_price: float,
                 capital: float, 
                 pct_loss: float=1/10
                 )-> float:
+    log.critical (f'{target_price=}')
+    log.warning (f'{entry_price=}')
+    log.warning (f'{capital=}')
+    log.warning (f'{max_loss_allowed (capital, pct_loss)=}')
+    log.warning (f'{price_difference (entry_price, target_price)=}')
+    log.warning (f'{abs((max_loss_allowed (capital, pct_loss) / price_difference (entry_price, target_price)))=}')
     
     return int(abs((max_loss_allowed (capital, pct_loss) / price_difference (entry_price, target_price))))
 
