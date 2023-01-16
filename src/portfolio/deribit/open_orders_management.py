@@ -160,13 +160,13 @@ class MyOrders ():
         from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', currency, 'open')
-        log.error (self.my_orders)
+        #log.error (self.my_orders)
         
         if self.my_orders:
             
             for order in self.my_orders:
                 
-                log.error (f'{self.my_orders=}')
+                #log.error (f'{self.my_orders=}')
                 log.warning (f'{order=}')
                     
                 order_id= order ['order_id']
