@@ -184,6 +184,7 @@ class StreamAccountData:
                                 my_orders.distribute_order_transactions (currency)
                                 
                             if positions:
+                                log.error (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency)
                                 pickling.replace_data(my_path_position, positions)
                                                                               
