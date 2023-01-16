@@ -560,7 +560,7 @@ class ApplyHedgingSpot ():
                                                 
                         #strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
                 
-                        pct_threshold_TP: float = strategy ['take_profit']  
+                        pct_threshold_TP: float = strategy ['take_profit_pct']  
                         pct_threshold_avg: float = strategy ['averaging']  
                         time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
                         
