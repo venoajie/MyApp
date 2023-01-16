@@ -123,79 +123,79 @@ class RunningStrategies ():
         
         '''
         '''  
-        open_orders_buy = self.my_orders_direction () ['buy'] 
-        label_strategy:str = self.strategy_attributes () ['label_strategy']
-        
-        my_trades_buy = self.my_trades_direction () ['buy'] 
-        side:str =  self.strategy_attributes  () ['side']
-        entry_price:str =  self.strategy_attributes  () ['entry_price']
-        equity_risked:str =  self.strategy_attributes  () ['equity_risked']
-        pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
-        label_numbered: str = label_numbering.labelling ('open', label_strategy)
-        
-        log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
-        
-        size: float = position_sizing.pos_sizing (pct_threshold_CL,
-                                                  entry_price, 
-                                                  self.notional, 
-                                                  equity_risked
-                                                  )   
-        send_order: bool =  False
-        if my_trades_buy ==[] \
-            and open_orders_buy ==[]\
-                and side == 'buy':
-                
-            send_order: bool =  True
-        
-        log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
-        #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
-        log.debug (f' {open_orders_buy=} ')
-        
-        return {'send_order': send_order,
-                'instrument': self.instrument,
-                'side': side, 
-                'size': size, 
-                'label_numbered': label_numbered
-                }
-        
+        if side == 'buy':
+            open_orders_buy = self.my_orders_direction () ['buy'] 
+            label_strategy:str = self.strategy_attributes () ['label_strategy']
+            
+            my_trades_buy = self.my_trades_direction () ['buy'] 
+            side:str =  self.strategy_attributes  () ['side']
+            entry_price:str =  self.strategy_attributes  () ['entry_price']
+            equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+            pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
+            label_numbered: str = label_numbering.labelling ('open', label_strategy)
+            
+            log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
+            
+            size: float = position_sizing.pos_sizing (pct_threshold_CL,
+                                                    entry_price, 
+                                                    self.notional, 
+                                                    equity_risked
+                                                    )   
+            send_order: bool =  False
+            if my_trades_buy ==[] \
+                and open_orders_buy ==[]:
+                    
+                send_order: bool =  True
+            
+            log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
+            #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
+            log.debug (f' {open_orders_buy=} ')
+            
+            return {'send_order': send_order,
+                    'instrument': self.instrument,
+                    'side': side, 
+                    'size': size, 
+                    'label_numbered': label_numbered
+                    }
+            
     def open_strategy_sell (self) -> list:
         
         '''
-        '''  
-        open_orders_sell = self.my_orders_direction () ['sell'] 
-        label_strategy:str = self.strategy_attributes () ['label_strategy']
+        '''
+        if side == 'sell':  
+            open_orders_sell = self.my_orders_direction () ['sell'] 
+            label_strategy:str = self.strategy_attributes () ['label_strategy']
 
-        my_trades_sell = self.my_trades_direction () ['sell'] 
-        side:str =  self.strategy_attributes  () ['side']
-        entry_price:str =  self.strategy_attributes  () ['entry_price']
-        equity_risked:str =  self.strategy_attributes  () ['equity_risked']
-        pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
-        label_numbered: str = label_numbering.labelling ('open', label_strategy)
-        
-        log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
-        
-        size: float = position_sizing.pos_sizing (pct_threshold_CL,
-                                                  entry_price, 
-                                                  self.notional, 
-                                                  equity_risked
-                                                  )   
-        
-        send_order:bool =  False
-        if my_trades_sell ==[] \
-            and open_orders_sell ==[]\
-                and side == 'sell':
-                
-            send_order:bool =  True
+            my_trades_sell = self.my_trades_direction () ['sell'] 
+            side:str =  self.strategy_attributes  () ['side']
+            entry_price:str =  self.strategy_attributes  () ['entry_price']
+            equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+            pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
+            label_numbered: str = label_numbering.labelling ('open', label_strategy)
             
-        log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
-        #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
-        
-        return {'send_order': send_order,
-                'instrument': self.instrument,
-                'side': side, 
-                'size': size, 
-                'label_numbered': label_numbered
-                }
+            log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
+            
+            size: float = position_sizing.pos_sizing (pct_threshold_CL,
+                                                    entry_price, 
+                                                    self.notional, 
+                                                    equity_risked
+                                                    )   
+            
+            send_order:bool =  False
+            if my_trades_sell ==[] \
+                and open_orders_sell ==[]:
+                    
+                send_order:bool =  True
+                
+            log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
+            #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
+            
+            return {'send_order': send_order,
+                    'instrument': self.instrument,
+                    'side': side, 
+                    'size': size, 
+                    'label_numbered': label_numbered
+                    }
     
 def main (strategy,
           index_price,
