@@ -123,7 +123,6 @@ class RunningStrategies ():
         
         '''
         '''  
-
         open_orders_buy = self.my_orders_direction () ['buy'] 
         label_strategy:str = self.strategy_attributes () ['label_strategy']
         
@@ -134,7 +133,6 @@ class RunningStrategies ():
         pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
         
-        #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
         log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
         
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
@@ -142,10 +140,10 @@ class RunningStrategies ():
                                                   self.notional, 
                                                   equity_risked
                                                   )   
-        
         send_order: bool =  False
         if my_trades_buy ==[] \
-            and open_orders_buy ==[]:
+            and open_orders_buy ==[]\
+                and side == 'buy':
                 
             send_order: bool =  True
         
@@ -164,10 +162,9 @@ class RunningStrategies ():
         
         '''
         '''  
-
         open_orders_sell = self.my_orders_direction () ['sell'] 
         label_strategy:str = self.strategy_attributes () ['label_strategy']
-        
+
         my_trades_sell = self.my_trades_direction () ['sell'] 
         side:str =  self.strategy_attributes  () ['side']
         entry_price:str =  self.strategy_attributes  () ['entry_price']
@@ -185,7 +182,8 @@ class RunningStrategies ():
         
         send_order:bool =  False
         if my_trades_sell ==[] \
-            and open_orders_sell ==[]:
+            and open_orders_sell ==[]\
+                and side == 'sell':
                 
             send_order:bool =  True
             
