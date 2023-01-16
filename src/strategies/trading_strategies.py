@@ -25,7 +25,7 @@ class RunningStrategies ():
         '''
         '''  
         one_minute =  60000                
-        return {'equity_risked': self.strategy ['equity_risked'] ,
+        return {'equity_risked': self.strategy ['equity_risked_pct'] ,
                 'take_profit_usd': self.strategy ['take_profit_usd'],
                 'pct_threshold_TP': self.strategy ['take_profit_pct'],
                 'pct_threshold_CL': self.strategy ['cut_loss_pct'],
@@ -132,14 +132,15 @@ class RunningStrategies ():
             
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
-            entry_price:str =  self.strategy_attributes  () ['take_profit_usd']
-            equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+            target_price:str =  self.strategy_attributes  () ['take_profit_usd']
+            entry_price:str =  self.strategy_attributes  () ['entry_price']
+            equity_risked:str =  self.strategy_attributes  () ['equity_risked_pct']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
             
             log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
             
-            size: float = position_sizing.pos_sizing (pct_threshold_CL,
+            size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
                                                     self.notional, 
                                                     equity_risked
@@ -174,7 +175,7 @@ class RunningStrategies ():
             my_trades_sell = self.my_trades_direction () ['sell'] 
             
             entry_price:str =  self.strategy_attributes  () ['entry_price']
-            equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+            equity_risked:str =  self.strategy_attributes  () ['equity_risked_pct']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
             
