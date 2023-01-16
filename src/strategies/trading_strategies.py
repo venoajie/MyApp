@@ -5,7 +5,8 @@ from dataclassy import dataclass
 from loguru import logger as log
 
 from utilities import string_modification
-from portfolio.deribit import myTrades_management
+from configuration import  label_numbering
+from risk_management import position_sizing
 
 @dataclass(unsafe_hash=True, slots=True)
 class RunningStrategies ():
@@ -109,19 +110,15 @@ class RunningStrategies ():
                         'label_numbered': label_closed_numbered
                         }
                      
-    def open_strategy (self) -> list:
+    def open_strategy_buy (self) -> list:
         
         '''
         '''  
-        from configuration import  label_numbering
-        from risk_management import position_sizing
 
         open_orders_buy = self.my_orders_direction () ['buy'] 
-        open_orders_sell = self.my_orders_direction () ['sell'] 
         label_strategy:str = self.strategy_attributes () ['label_strategy']
         
         my_trades_buy = self.my_trades_direction () ['buy'] 
-        my_trades_sell = self.my_trades_direction () ['sell'] 
         side:str =  self.strategy_attributes  () ['side']
         entry_price:str =  self.strategy_attributes  () ['entry_price']
         equity_risked:str =  self.strategy_attributes  () ['equity_risked']
@@ -129,9 +126,7 @@ class RunningStrategies ():
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
         
         #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
-        log.debug (f'OPEN  {my_trades_buy ==[]=} {my_trades_sell ==[]=}')
-        log.warning (f'OPEN  {open_orders_buy=} {open_orders_sell=}')
-        log.warning (f'OPEN  {open_orders_buy ==[]=} { open_orders_sell ==[]=}')
+        log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
         
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
                                                   entry_price, 
@@ -144,6 +139,41 @@ class RunningStrategies ():
                 
             send_order:bool =  True
         
+        log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
+        #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
+        log.debug (f' {open_orders_buy=} ')
+        
+        return {'send_order': send_order,
+                'instrument': self.instrument,
+                'side': side, 
+                'size': size, 
+                'label_numbered': label_numbered
+                }
+        
+    def open_strateg_sell (self) -> list:
+        
+        '''
+        '''  
+
+        open_orders_sell = self.my_orders_direction () ['sell'] 
+        label_strategy:str = self.strategy_attributes () ['label_strategy']
+        
+        my_trades_sell = self.my_trades_direction () ['sell'] 
+        side:str =  self.strategy_attributes  () ['side']
+        entry_price:str =  self.strategy_attributes  () ['entry_price']
+        equity_risked:str =  self.strategy_attributes  () ['equity_risked']
+        pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
+        label_numbered: str = label_numbering.labelling ('open', label_strategy)
+        
+        #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
+        log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
+        
+        size: float = position_sizing.pos_sizing (pct_threshold_CL,
+                                                  entry_price, 
+                                                  self.notional, 
+                                                  equity_risked
+                                                  )   
+        
         if my_trades_sell ==[] \
             and open_orders_sell ==[]:
                 
@@ -151,7 +181,6 @@ class RunningStrategies ():
             
         log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
         #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
-        log.debug (f' {open_orders_buy=} {open_orders_sell=}')
         
         return {'send_order': send_order,
                 'instrument': self.instrument,
