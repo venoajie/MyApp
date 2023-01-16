@@ -26,6 +26,7 @@ class RunningStrategies ():
         '''  
         one_minute =  60000                
         return {'equity_risked': self.strategy ['equity_risked'] ,
+                'take_profit_usd': self.strategy ['take_profit_usd'],
                 'pct_threshold_TP': self.strategy ['take_profit_pct'],
                 'pct_threshold_CL': self.strategy ['cut_loss_pct'],
                 'side': self.strategy ['side'],
@@ -91,7 +92,7 @@ class RunningStrategies ():
                     send_order = tp_price < self.index_price or cl_price > self.index_price
                     side = 'buy'
                         
-                    log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
+                    #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                     
                     return {'send_order': send_order,
                             'instrument': instrument,
@@ -110,7 +111,7 @@ class RunningStrategies ():
                     send_order = tp_price > self.index_price or cl_price < self.index_price   
                     side = 'sell'          
                             
-                    log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
+                    #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                     
                     return {'send_order': send_order,
                             'instrument': instrument,
@@ -131,7 +132,7 @@ class RunningStrategies ():
             
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
-            entry_price:str =  self.strategy_attributes  () ['entry_price']
+            entry_price:str =  self.strategy_attributes  () ['take_profit_usd']
             equity_risked:str =  self.strategy_attributes  () ['equity_risked']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
