@@ -134,10 +134,11 @@ class RunningStrategies ():
                                                   equity_risked
                                                   )   
         
+        send_order: bool =  False
         if my_trades_buy ==[] \
             and open_orders_buy ==[]:
                 
-            send_order:bool =  True
+            send_order: bool =  True
         
         log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
         #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
@@ -173,6 +174,7 @@ class RunningStrategies ():
                                                   equity_risked
                                                   )   
         
+        send_order:bool =  False
         if my_trades_sell ==[] \
             and open_orders_sell ==[]:
                 
