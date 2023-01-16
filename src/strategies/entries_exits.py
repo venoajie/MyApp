@@ -15,6 +15,7 @@ strategies = [
     'cut_loss_pct': (1/100)/2,
     'averaging': 15,
     'halt_minute_before_reorder': 60, 
+    'equity_risked_usd': 60, 
     'equity_risked_pct': 1/100
     },
     
@@ -31,6 +32,7 @@ strategies = [
     'cut_loss_pct': (1/100)/2,
     'averaging': 15,
     'halt_minute_before_reorder': 60, 
+    'equity_risked_usd': 60, 
     'equity_risked': 1/100
     },
     
@@ -47,6 +49,7 @@ strategies = [
     'cut_loss_usd': 15,
     'cut_loss_pct': (1/100)/2,
     'halt_minute_before_reorder': 1/10, 
+    'equity_risked_usd': 60, 
     'equity_risked': (1/100)/10
-    },
+    }
     ]

@@ -25,7 +25,7 @@ class RunningStrategies ():
         '''
         '''  
         one_minute =  60000                
-        return {'equity_risked': self.strategy ['equity_risked_pct'] ,
+        return {'equity_risked_pct': self.strategy ['equity_risked_pct'] ,
                 'take_profit_usd': self.strategy ['take_profit_usd'],
                 'pct_threshold_TP': self.strategy ['take_profit_pct'],
                 'pct_threshold_CL': self.strategy ['cut_loss_pct'],
