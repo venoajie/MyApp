@@ -56,9 +56,9 @@ class MyOrders ():
         
         '''
         '''    
-        log.warning (label)
-        log.warning (self.my_orders_api ())
-        log.critical (([o for o in self.my_orders_api () if  label in o['label'] ]))
+        #log.warning (label)
+        #log.warning (self.my_orders_api ())
+        #log.critical (([o for o in self.my_orders_api () if  label in o['label'] ]))
         
         return [] if self.my_orders_api () == [] else  ([o for o in self.my_orders_api () if  label in o['label'] ])
     

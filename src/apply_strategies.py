@@ -750,7 +750,7 @@ class ApplyHedgingSpot ():
             reading_from_database: dict = await self.reading_from_database ()
             open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
             
-            log.info(f'{open_orders_open_byAPI=}')
+            #log.info(f'{open_orders_open_byAPI=}')
             open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
             label_open = f'{label}-open'
             current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
