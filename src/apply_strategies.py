@@ -256,7 +256,7 @@ class ApplyHedgingSpot ():
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
         open_order = pickling.read_data(my_path_orders_open)
-        log.error (open_order)
+        #log.error (open_order)
         none_data = [None, [], 0]
         
         # at start, usually position == None
@@ -408,7 +408,7 @@ class ApplyHedgingSpot ():
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
-        #log.info (my_trades_open_from_db)
+        log.info (my_trades_open_from_db)
         #log.critical (start_timestamp)
         
         my_selected_trades_open_from_system =[]
