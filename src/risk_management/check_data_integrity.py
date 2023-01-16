@@ -114,7 +114,7 @@ class CheckDataIntegrity ():
             
             size_from_get_db = self.net_position (self.positions_from_get)
             size_from_trading_db = self.net_position (self.my_trades_open_from_db)
-            #log.warning (f'size_from_get_db {size_from_get_db} size_from_trading_db {size_from_trading_db}')
+            log.critical (f'size_from_get_db {size_from_get_db} size_from_trading_db {size_from_trading_db}')
             
             if size_from_get_db and size_from_trading_db:
                 
