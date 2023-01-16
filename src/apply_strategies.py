@@ -581,24 +581,35 @@ class ApplyHedgingSpot ():
                                                 notional,
                                                 instrument
                                                 )
-                            open_str = str ['open_strategy']
+                            open_str_buy = str ['open_strategy_buy']
+                            open_str_sell = str ['open_strategy_sell']
                             closed_str = str ['closed_strategy']
                                 
-                            log.warning (open_str)
+                            log.warning (open_str_sell)
+                            log.warning (open_str_buy)
                             
                             log.warning (closed_str)
                             
-                            if open_str!= None and open_str ['send_order']:
-                                side = open_str['side']
+                            if open_str_sell!= None and open_str_sell ['send_order']:
+                                side = open_str_sell['side']
                                 await self.send_orders (side, 
-                                                        open_str['instrument'],
-                                                        best_ask_prc if side == 'sell' else best_bid_prc,
-                                                        open_str['size'], 
-                                                        open_str['label_numbered']
+                                                        open_str_sell['instrument'],
+                                                        best_ask_prc,
+                                                        open_str_sell['size'], 
+                                                        open_str_sell['label_numbered']
+                                                        )
+                                
+                            if open_str_buy!= None and open_str_buy ['send_order']:
+                                side = open_str_buy['side']
+                                await self.send_orders (side, 
+                                                        open_str_buy['instrument'],
+                                                        best_bid_prc,
+                                                        open_str_buy['size'], 
+                                                        open_str_buy['label_numbered']
                                                         )
                             
                             if closed_str!= None and closed_str ['send_order']:
-                                side = open_str['side']
+                                side = closed_str['side']
                                 await self.send_orders  (side, 
                                                         closed_str['instrument'],
                                                         best_ask_prc if side == 'sell' else best_bid_prc,
