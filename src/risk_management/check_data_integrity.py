@@ -121,7 +121,7 @@ class CheckDataIntegrity ():
                 difference = size_from_trading_db - size_from_get_db 
                 
                 if difference !=0:
-                    info= (f'SIZE DIFFERENT size per get {size_from_trading_db} size per db {size_from_get_db} \n ')
+                    info= (f'SIZE DIFFERENT size per trading db {size_from_trading_db} size from get db {size_from_get_db} \n ')
                     telegram_bot_sendtext(info) 
                 #log.warning (f'difference {difference}')
                 
