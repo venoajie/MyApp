@@ -165,7 +165,6 @@ class RunningStrategies ():
         pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
         label_numbered: str = label_numbering.labelling ('open', label_strategy)
         
-        #log.debug (f'OPEN  {my_trades_buy=} {my_trades_sell=}')
         log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
         
         size: float = position_sizing.pos_sizing (pct_threshold_CL,
@@ -213,5 +212,6 @@ def main (strategy,
                                     instrument
                                     )
     
-    return {'open_strategy': strategies. open_strategy (),
+    return {'open_strategy_buy': strategies. open_strategy (),
+            'open_strategy_sell': strategies. open_strategy (),
             'closed_strategy': strategies. closed_strategy ()}
