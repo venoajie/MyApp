@@ -102,6 +102,8 @@ class MyOrders ():
         
         '''
         '''    
+        log.critical ((label))
+        log.critical (self.my_orders_api_basedOn_label_last_update_timestamps (label))
         
         return [] if self.my_orders_api_basedOn_label_last_update_timestamps (label) == [] \
             else  ([o['order_id'] for o in self.my_orders_api_basedOn_label (label) \
