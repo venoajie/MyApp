@@ -632,11 +632,11 @@ class ApplyHedgingSpot ():
                                                         )
                                 
                                 await self.send_orders ('sell', 
-                                                        open_str_sell['instrument'],
-                                                        open_str_sell['size'], 
-                                                        open_str_sell['label_closed_numbered'],
+                                                        open_str_buy['instrument'],
+                                                        open_str_buy['size'], 
+                                                        open_str_buy['label_closed_numbered'],
                                                         'stop_market',
-                                                        open_str_sell['cl_price']
+                                                        open_str_buy['cl_price']
                                                         )
                             
                             if closed_str!= None and closed_str ['send_order']:
