@@ -121,7 +121,11 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_q
         data_list = list (data_from_db)
         
     if isinstance(data_from_db, list):
-        data_list = list (data_from_db [0])
+        try:
+            data_list = list (data_from_db [0])
+        except:
+            print (f"except because of dict type. WEIRD. RECHECK) {data_from_db}")
+            data_list = list (data_from_db)
                     
     #print (f"append_and_replace_items_based_on_qty {data_from_db}")
     #data_list = list (data [0])
