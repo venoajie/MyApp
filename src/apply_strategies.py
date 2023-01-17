@@ -792,7 +792,7 @@ async def main ():
         label_hedging = 'hedgingSpot'
         
         server_time = await syn.current_server_time ()
-        log.error (server_time+15000)
+        log.error (server_time+60000)
         await syn.running_strategy (server_time)
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
