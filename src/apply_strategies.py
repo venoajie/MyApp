@@ -413,6 +413,8 @@ class ApplyHedgingSpot ():
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)                        
             if open_orders_deltaTime > three_minute:
                 log.critical (open_orders_deltaTime)
+                log.critical (f'{server_time}')
+                log.critical (f'{open_orders_lastUpdateTStamp_min}')
                 log.critical (f'{open_orders_deltaTime=} {server_time=} {open_orders_lastUpdateTStamp_min=}')
                 
                 await self.cancel_by_order_id (open_order_id)    
