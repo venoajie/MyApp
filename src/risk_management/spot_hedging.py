@@ -148,11 +148,11 @@ class SpotHedging ():
         none_data = [None, [], '0.0', 0]
             
         #log.critical (f'{open_orders_byAPI=}')        
-        log.info (f'{min_hedged_size=}')        
+        #log.info (f'{min_hedged_size=}')        
         #log.info (f'{notional=}')        
-        log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
-        log.info (f'{hedging_size_portion=}')  
-        log.info (f'{remain_unhedged < 0=}')  
+        #log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
+        #log.info (f'{hedging_size_portion=}')  
+        #log.info (f'{remain_unhedged < 0=}')  
         return {'spot_was_unhedged': False if notional in none_data else remain_unhedged < 0,
                 'remain_unhedged_size': remain_unhedged,
                 'all_hedging_size': min_hedged_size,
