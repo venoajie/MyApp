@@ -155,7 +155,8 @@ class RunningStrategies ():
                                                     )   
             send_order: bool =  False
             if my_trades_buy ==[] \
-                and open_orders_buy ==[]:
+                and open_orders_buy ==[] \
+                    and entry_price < self.index_price:
                     
                 send_order: bool =  True
             
@@ -203,7 +204,8 @@ class RunningStrategies ():
             
             send_order:bool =  False
             if my_trades_sell ==[] \
-                and open_orders_sell ==[]:
+                and open_orders_sell ==[] \
+                    and entry_price > self.index_price:
                     
                 send_order:bool =  True
                 
