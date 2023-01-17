@@ -613,6 +613,7 @@ class ApplyHedgingSpot ():
                             
                             if open_str_sell!= None and open_str_sell ['send_order']:
                                 side = open_str_sell['side']
+                                log.info (open_str_sell['cl_price'])
                                 await self.send_orders (side, 
                                                         open_str_sell['instrument'],
                                                         best_ask_prc,
@@ -632,6 +633,7 @@ class ApplyHedgingSpot ():
                                 
                             if open_str_buy!= None and open_str_buy ['send_order']:
                                 side = open_str_buy['side']
+                                log.info (open_str_sell['open_str_buy'])
                                 await self.send_orders (side, 
                                                         open_str_buy['instrument'],
                                                         best_bid_prc,
