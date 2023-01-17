@@ -407,6 +407,7 @@ class ApplyHedgingSpot ():
             open_orders_lastUpdateTStamps: list = []    
         if open_orders_lastUpdateTStamps !=[]:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+            log.critical (open_orders_lastUpdateTStamps)
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min                       
 
