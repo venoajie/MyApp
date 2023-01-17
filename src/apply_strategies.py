@@ -200,9 +200,9 @@ class ApplyHedgingSpot ():
     async def send_orders (self, 
                            side: str,
                            instrument: str, 
-                           prc: float = None, 
                            size: float = None, 
                            label: str = None,
+                           prc: float = None, 
                            type: str = None,
                            trigger_price: float = None
                            ) -> None:
