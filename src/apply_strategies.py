@@ -617,7 +617,10 @@ class ApplyHedgingSpot ():
                                                         )
                                 log.info (order_result)
                                 log.info ('error' not in order_result)
-                                if 'error' not in order_result:   
+                                order_result_id = order_result['order_id']
+                                if 'error'  in order_result:   
+                                    await self.cancel_by_order_id (order_result_id)
+                                else:   
                                     order_result = await self.send_orders ('buy', 
                                                         open_str_sell['instrument'],
                                                         open_str_sell['size'], 
@@ -626,6 +629,8 @@ class ApplyHedgingSpot ():
                                                         'stop_market',
                                                         open_str_sell['cl_price']                                                        
                                                         )
+                                    if 'error'  in order_result:   
+                                        await self.cancel_by_order_id (order_result_id)
                                 log.info (order_result)
                                 
                             if open_str_buy!= None and open_str_buy ['send_order']:
@@ -638,6 +643,9 @@ class ApplyHedgingSpot ():
                                                         open_str_buy['entry_price']
                                                         )
                                 log.info (order_result)
+                                order_result_id = order_result['order_id']
+                                if 'error'  in order_result:   
+                                    await self.cancel_by_order_id (order_result_id)
                                 
                                 if 'error' not in order_result:
                                     order_result = await self.send_orders ('sell', 
@@ -648,6 +656,8 @@ class ApplyHedgingSpot ():
                                                         'stop_market',
                                                         open_str_buy['cl_price']
                                                         )
+                                    if 'error'  in order_result:   
+                                        await self.cancel_by_order_id (order_result_id)
                                     log.info (order_result)
 
                             if closed_str!= None and closed_str ['send_order']:
