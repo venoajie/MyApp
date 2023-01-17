@@ -210,9 +210,9 @@ class ApplyHedgingSpot ():
         """
         log.warning(side)
         log.warning(instrument)
-        log.warning(prc)
         log.warning(size)
         log.warning(label)
+        log.warning(prc)
         log.warning(type)
         log.warning(trigger_price)
 
@@ -634,7 +634,7 @@ class ApplyHedgingSpot ():
                                 
                             if open_str_buy!= None and open_str_buy ['send_order']:
                                 side = open_str_buy['side']
-                                log.info (open_str_sell['open_str_buy'])
+                                log.info (open_str_buy['open_str_buy'])
                                 await self.send_orders (side, 
                                                         open_str_buy['instrument'],
                                                         open_str_buy['size'], 
