@@ -350,7 +350,9 @@ class ApplyHedgingSpot ():
         open_order_mgt = await self.open_orders_from_exchange ()
         
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
+        log.debug(f'{open_order_mgt=}')
         log.debug(f'{len_current_open_orders=}')
+        log.debug(f'{len_current_open_orders > 1=}')
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
