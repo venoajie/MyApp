@@ -225,6 +225,7 @@ class ApplyHedgingSpot ():
                                                 instrument, 
                                                 size, 
                                                 label,
+                                                None,
                                                 type,
                                                 trigger_price
                                                 )
