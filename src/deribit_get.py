@@ -129,6 +129,7 @@ async def send_order  (connection_url: str,
                     "instrument_name": instrument,
                     "amount": amount,
                     "label": label,
+                    "price": price,
                     #"time_in_force": time_in_force, fik can not apply to post only
                     "type": type,
                     "reduce_only": reduce_only,
@@ -151,8 +152,8 @@ async def send_order  (connection_url: str,
                 params =  {
                     "instrument_name": instrument,
                     "amount": amount,
-                    "price": price,
                     "label": label,
+                    "price": price,
                     #"time_in_force": time_in_force, fik can not apply to post only
                     "type": type,
                     "trigger": trigger,
