@@ -208,13 +208,22 @@ class ApplyHedgingSpot ():
                            ) -> None:
         """
         """
-        log.warning(f'{side=}')
-        log.warning(f'{instrument=}')
-        log.warning(f'{size=}')
-        log.warning(f'{label=}')
-        log.warning(f'{prc=}')
-        log.warning(f'{type=}')
-        log.warning(f'{trigger_price=}')
+        if type =='limit':
+            log.warning(f'{side=}')
+            log.warning(f'{instrument=}')
+            log.warning(f'{size=}')
+            log.warning(f'{label=}')
+            log.warning(f'{prc=}')
+            log.warning(f'{type=}')
+            log.warning(f'{trigger_price=}')
+        else:
+            log.debug(f'{side=}')
+            log.debug(f'{instrument=}')
+            log.debug(f'{size=}')
+            log.debug(f'{label=}')
+            log.debug(f'{prc=}')
+            log.debug(f'{type=}')
+            log.debug(f'{trigger_price=}')
 
         try:
             if 'market' in type:
