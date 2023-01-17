@@ -94,24 +94,6 @@ async def send_order  (connection_url: str,
                             post_only: bool = True, 
                             reject_post_only: bool =False
                             ):
-    from loguru import logger as log
-
-    if type =='limit':
-        log.warning(f'{side=}')
-        log.warning(f'{instrument=}')
-        log.warning(f'{amount=}')
-        log.warning(f'{label=}')
-        log.warning(f'{price=}')
-        log.warning(f'{type=}')
-        log.warning(f'{trigger_price=}')
-    else:
-        log.debug(f'{side=}')
-        log.debug(f'{instrument=}')
-        log.debug(f'{amount=}')
-        log.debug(f'{label=}')
-        log.debug(f'{price=}')
-        log.debug(f'{type=}')
-        log.debug(f'{trigger_price=}')
         
     if valid_until == False:
         if trigger_price == None:
