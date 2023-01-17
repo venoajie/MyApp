@@ -9,6 +9,12 @@ def catch_error (error, idle: int = None) -> list:
     from utilities import system_tools
     system_tools.catch_error_message(error, idle)
 
+def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
+    from utilities import telegram_app
+    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
 @dataclass(unsafe_hash=True, slots=True)
 class MyTrades ():
 
@@ -68,7 +74,7 @@ class MyTrades ():
         
             my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
             #my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-            log.debug (self.my_trades)
+            #log.debug (self.my_trades)
 
             for data_order in self.my_trades:
                 data_order = [data_order]
@@ -76,20 +82,34 @@ class MyTrades ():
                 
                 #determine label id. 
                 try:
-                    label_id= data_order [0]['label']
-                    trade_seq= data_order [0]['trade_seq']
+                    label_id = data_order [0]['label']
+                    trade_seq = data_order [0]['trade_seq']
+                    order_type = data_order [0]['order_type']
+                    
                 except:
-                    label_id= []
-                    trade_seq= []
+                    label_id = []
+                    trade_seq = []
+                    order_type = []
                 
                 # for data with label id/ordered through API    
                 if label_id != []:
                     pass
 
                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                log.info (f' {label_id=}  {trade_seq=}  {closed_label_id_int} \n ')
+                log.info (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
 
                 #! DISTRIBUTE trading transaction as per label id
+                if 'liquidation' in order_type:
+                    log.error ('LIQUIDATION')
+                    log.error (data_order)
+                    
+                    info= (f'LIQUIDATION {data_order} \n ')
+                    telegram_bot_sendtext(info) 
+
+                    # append trade to db.check potential duplicate
+                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    #pickling.check_duplicate_elements (my_trades_path_open)
+                    
                 if 'open' in label_id:
                     log.error ('LABEL ID OPEN')
                     log.error (data_order)
@@ -108,7 +128,7 @@ class MyTrades ():
                     
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)  
-                    log.error ('LABEL ID OPEN-SHOULD BE LESS THAN 10 ITEMS')
+                    log.critical ('LABEL ID OPEN-SHOULD BE LESS THAN 10 ITEMS')
                     log.warning (my_trades_open)
                     
                     # filter open trades which have the same label id with trade transaction
