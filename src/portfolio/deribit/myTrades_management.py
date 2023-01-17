@@ -98,11 +98,6 @@ class MyTrades ():
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     #pickling.check_duplicate_elements (my_trades_path_open)
                     
-                    #!HAPUS
-                    my_trades_open = pickling.read_data(my_trades_path_open)  
-                    log.warning (my_trades_open)
-                    #!HAPUS
-                    
                 if 'closed' in label_id:
                     
                     #log.debug ('LABEL ID CLOSED')
@@ -113,6 +108,8 @@ class MyTrades ():
                     
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)  
+                    log.error ('LABEL ID OPEN-SHOULD BE LESS THAN 10 ITEMS')
+                    log.warning (my_trades_open)
                     
                     # filter open trades which have the same label id with trade transaction
                     closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
