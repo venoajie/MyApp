@@ -402,7 +402,7 @@ class ApplyHedgingSpot ():
         
         open_orders_from_exch = await self.get_open_orders_from_exchange ()
         open_order_mgt = open_orders_management.MyOrders (open_orders_from_exch)
-        open_order_label = open_orders_management.my_orders_api_basedOn_label_items_qty(label)
+        open_order_label = open_orders_management.my_orders_api_basedOn_label(label)
         open_order_mgt = open_orders_management.MyOrders (open_order_label)
 
         try:
