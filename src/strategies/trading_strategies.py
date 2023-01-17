@@ -160,7 +160,7 @@ class RunningStrategies ():
                     
                 send_order: bool =  True
             
-            log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
+            #log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
             #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
             #log.debug (f' {open_orders_buy=} ')
             

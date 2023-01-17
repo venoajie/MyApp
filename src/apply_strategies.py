@@ -545,7 +545,7 @@ class ApplyHedgingSpot ():
                 
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-                log.info (open_order_mgt)
+                #log.info (open_order_mgt)
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 #log.warning (open_order_mgt_filed)
                 
@@ -579,7 +579,7 @@ class ApplyHedgingSpot ():
                     open_order_mgt_from_exchange = await self.open_orders_from_exchange()
                     #log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
                     my_orders_from_exchange = await self.get_open_orders_from_exchange()
-                    log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
+                    #log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
 
                     net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.my_orders_api_basedOn_label_items_net ()
                     log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
