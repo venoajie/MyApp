@@ -350,18 +350,18 @@ class ApplyHedgingSpot ():
         open_order_mgt = await self.open_orders_from_exchange ()
         
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
-        log.debug(f'{open_order_mgt=}')
-        log.debug(f'{len_current_open_orders=}')
+        #log.debug(f'{open_order_mgt=}')
+        #log.debug(f'{len_current_open_orders=}')
         
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
-                log.critical(f'{len_current_open_orders > 1=}')
+                #log.critical(f'{len_current_open_orders > 1=}')
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
                 cancel = await self.cancel_by_order_id (open_order_id)
-                log.critical(f'{cancel=}')
+                #log.critical(f'{cancel=}')
                 return (cancel)
                 
     async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
@@ -370,7 +370,7 @@ class ApplyHedgingSpot ():
         label_for_filter = 'hedgingSpot-closed'
     
         cancel = await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
-        log.critical(f'{cancel=}')
+        #log.critical(f'{cancel=}')
         return (cancel)
         
     async def get_instruments_with_rebates (self, instruments, server_time) -> None:
@@ -412,7 +412,9 @@ class ApplyHedgingSpot ():
 
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)                        
             if open_orders_deltaTime > three_minute:
-                log.critical (open_orders_deltaTime > three_minute)
+                log.critical (open_orders_deltaTime)
+                log.critical (f'{open_orders_deltaTime=} {server_time=} {open_orders_lastUpdateTStamp_min=}')
+                
                 await self.cancel_by_order_id (open_order_id)    
     
     async def cancel_by_order_id (self, open_order_id) -> None:
@@ -738,13 +740,13 @@ class ApplyHedgingSpot ():
                                         and net_open_orders_open_byAPI_db == 0 \
                                             and  last_time_order_filled_exceed_threshold:
                                     
-                                        order_result = await self.send_orders ('sell', 
+                                        await self.send_orders ('sell', 
                                                                 instrument, 
                                                                 abs(check_spot_hedging ['hedging_size']), 
                                                                 label_numbered,
                                                                 best_ask_prc
                                                                 )
-                                        log.warning (order_result)
+                                        #log.warning (order_result)
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                                         
