@@ -235,8 +235,8 @@ class ApplyHedgingSpot ():
                                                 side, 
                                                 instrument, 
                                                 size, 
+                                                label,
                                                 prc,
-                                                label
                                                 )
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
