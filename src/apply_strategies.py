@@ -624,9 +624,9 @@ class ApplyHedgingSpot ():
                                 
                                 await self.send_orders ('buy', 
                                                         open_str_sell['instrument'],
-                                                        None,
                                                         open_str_sell['size'], 
                                                         open_str_sell['label_closed_numbered'],
+                                                        None,
                                                         'stop_market',
                                                         open_str_sell['cl_price']
                                                         
@@ -644,9 +644,9 @@ class ApplyHedgingSpot ():
                                 
                                 await self.send_orders ('sell', 
                                                         open_str_buy['instrument'],
-                                                        None,
                                                         open_str_buy['size'], 
                                                         open_str_buy['label_closed_numbered'],
+                                                        None,
                                                         'stop_market',
                                                         open_str_buy['cl_price']
                                                         )
