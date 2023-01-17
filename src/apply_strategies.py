@@ -208,26 +208,10 @@ class ApplyHedgingSpot ():
                            ) -> None:
         """
         """
-        if type =='limit':
-            log.warning(f'{side=}')
-            log.warning(f'{instrument=}')
-            log.warning(f'{size=}')
-            log.warning(f'{label=}')
-            log.warning(f'{prc=}')
-            log.warning(f'{type=}')
-            log.warning(f'{trigger_price=}')
-        else:
-            log.debug(f'{side=}')
-            log.debug(f'{instrument=}')
-            log.debug(f'{size=}')
-            log.debug(f'{label=}')
-            log.debug(f'{prc=}')
-            log.debug(f'{type=}')
-            log.debug(f'{trigger_price=}')
 
         try:
             if 'market' in type:
-                log.info (await deribit_get.send_order (self.connection_url,
+                result =  (await deribit_get.send_order (self.connection_url,
                                                 self.client_id, 
                                                 self.client_secret, 
                                                 side, 
@@ -239,7 +223,7 @@ class ApplyHedgingSpot ():
                                                 trigger_price
                                                 ))
             else:
-                log.info (await deribit_get.send_order (self.connection_url,
+                result =  (await deribit_get.send_order (self.connection_url,
                                                 self.client_id, 
                                                 self.client_secret, 
                                                 side, 
@@ -250,6 +234,7 @@ class ApplyHedgingSpot ():
                                                 ))
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
+            return result
             
         except Exception as e:
             log.error (e)
