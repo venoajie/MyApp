@@ -617,7 +617,7 @@ class ApplyHedgingSpot ():
                                                         )
                                 log.info (order_result)
                                 log.info ('error' not in order_result)
-                                order_result_id = order_result['order_id']
+                                order_result_id = order_result['result']['order_id']
                                 if 'error'  in order_result:   
                                     await self.cancel_by_order_id (order_result_id)
                                 else:   
@@ -643,7 +643,7 @@ class ApplyHedgingSpot ():
                                                         open_str_buy['entry_price']
                                                         )
                                 log.info (order_result)
-                                order_result_id = order_result['order_id']
+                                order_result_id = order_result['result']['order_id']
                                 if 'error'  in order_result:   
                                     await self.cancel_by_order_id (order_result_id)
                                 
