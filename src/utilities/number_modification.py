@@ -23,4 +23,13 @@ def net_position (selected_transactions: list)-> float:
     
     else:    
         return selected_transactions
+    
+def get_nearest_tick (price: float, tick: float)-> float:
+    
+    '''
+    
+    '''    
+    len_tick = len(str(tick))-2
+
+    return round((int (price/tick))*tick, len_tick)
 

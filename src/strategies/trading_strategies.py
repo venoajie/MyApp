@@ -26,6 +26,7 @@ class RunningStrategies ():
         '''  
         one_minute =  60000                
         return {'equity_risked_pct': self.strategy ['equity_risked_pct'] ,
+                'cut_loss_usd': self.strategy ['cut_loss_usd'],
                 'take_profit_usd': self.strategy ['take_profit_usd'],
                 'pct_threshold_TP': self.strategy ['take_profit_pct'],
                 'pct_threshold_CL': self.strategy ['cut_loss_pct'],
@@ -142,6 +143,8 @@ class RunningStrategies ():
             equity_risked:str =  self.strategy_attributes  () ['equity_risked_pct']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
+            cl_price = self.strategy_attributes  () ['cut_loss_usd']
+            label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             
             log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
             
@@ -164,6 +167,8 @@ class RunningStrategies ():
                     'instrument': self.instrument,
                     'side': side, 
                     'size': size, 
+                    'cl_price': cl_price, 
+                    'label_closed_numbered': label_closed_numbered, 
                     'label_numbered': label_numbered
                     }
             
@@ -184,6 +189,8 @@ class RunningStrategies ():
             equity_risked:str =  self.strategy_attributes  () ['equity_risked_pct']
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
+            label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
+            cl_price = self.strategy_attributes  () ['cut_loss_usd']
             
             log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
             
@@ -204,8 +211,10 @@ class RunningStrategies ():
             
             return {'send_order': send_order,
                     'instrument': self.instrument,
+                    'cl_price': cl_price, 
                     'side': side, 
                     'size': size, 
+                    'label_closed_numbered': label_closed_numbered, 
                     'label_numbered': label_numbered
                     }
     
