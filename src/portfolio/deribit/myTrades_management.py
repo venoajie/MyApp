@@ -12,6 +12,7 @@ def catch_error (error, idle: int = None) -> list:
 def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
                            ) -> None:
+    
     from utilities import telegram_app
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
