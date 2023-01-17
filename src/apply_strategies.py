@@ -227,7 +227,7 @@ class ApplyHedgingSpot ():
 
         try:
             if 'market' in type:
-                await deribit_get.send_order (self.connection_url,
+                log.info (await deribit_get.send_order (self.connection_url,
                                                 self.client_id, 
                                                 self.client_secret, 
                                                 side, 
@@ -237,9 +237,9 @@ class ApplyHedgingSpot ():
                                                 None,
                                                 type,
                                                 trigger_price
-                                                )
+                                                ))
             else:
-                await deribit_get.send_order (self.connection_url,
+                log.info (await deribit_get.send_order (self.connection_url,
                                                 self.client_id, 
                                                 self.client_secret, 
                                                 side, 
@@ -247,7 +247,7 @@ class ApplyHedgingSpot ():
                                                 size, 
                                                 label,
                                                 prc
-                                                )
+                                                ))
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
             
