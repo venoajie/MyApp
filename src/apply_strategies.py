@@ -200,15 +200,28 @@ class ApplyHedgingSpot ():
     async def send_orders (self, 
                            side: str,
                            instrument: str, 
-                           prc: float, 
-                           size: float, 
-                           label: str = None
+                           prc: float = None, 
+                           size: float = None, 
+                           label: str = None,
+                           type: str = None
                            ) -> None:
         """
         """
 
         try:
-            await deribit_get.send_order_limit (self.connection_url,
+            if type == 'market':
+                await deribit_get.send_order (self.connection_url,
+                                                self.client_id, 
+                                                self.client_secret, 
+                                                side, 
+                                                instrument, 
+                                                size, 
+                                                prc,
+                                                label,
+                                                type
+                                                )
+            else:
+                await deribit_get.send_order (self.connection_url,
                                                 self.client_id, 
                                                 self.client_secret, 
                                                 side, 
@@ -610,7 +623,19 @@ class ApplyHedgingSpot ():
                             
                             if closed_str!= None and closed_str ['send_order']:
                                 side = closed_str['side']
-                                await self.send_orders  (side, 
+                                cut_loss = closed_str['cut_loss']
+                                if cut_loss == True:
+                                    #use market_order if cut loss
+                                    await self.send_orders  (side, 
+                                                        closed_str['instrument'],
+                                                        None,
+                                                        closed_str['size'], 
+                                                        closed_str['label_numbered'],
+                                                        'market'
+                                                        )
+                                    telegram_bot_sendtext ('CUT LOSS')
+                                else:
+                                    await self.send_orders  (side, 
                                                         closed_str['instrument'],
                                                         best_ask_prc if side == 'sell' else best_bid_prc,
                                                         closed_str['size'], 

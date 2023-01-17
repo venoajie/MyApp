@@ -89,7 +89,8 @@ class RunningStrategies ():
                             
                     tp_price = price - (price * self.strategy_attributes  ()['pct_threshold_TP'])
                     cl_price = price + (price * self.strategy_attributes  () ['pct_threshold_CL'])
-                    send_order = tp_price < self.index_price or cl_price > self.index_price
+                    cut_loss = cl_price > self.index_price
+                    send_order = tp_price < self.index_price or cut_loss
                     side = 'buy'
                         
                     #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
@@ -97,9 +98,11 @@ class RunningStrategies ():
                     return {'send_order': send_order,
                             'instrument': instrument,
                             'side': side, 
+                            'cut_loss': cut_loss, 
                             'size': size, 
                             'label_numbered': label_closed_numbered
                             }
+                    
                 #! CLOSED ORDER BUY
                 send_order = False
                 if len (my_trades_buy) != 0 \
@@ -108,7 +111,8 @@ class RunningStrategies ():
                             
                     tp_price = price + (price * self.strategy_attributes  () ['pct_threshold_TP'])
                     cl_price = price - (price * self.strategy_attributes  () ['pct_threshold_CL'])
-                    send_order = tp_price > self.index_price or cl_price < self.index_price   
+                    cut_loss = cl_price < self.index_price   
+                    send_order = tp_price > self.index_price or cut_loss  
                     side = 'sell'          
                             
                     #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
@@ -116,6 +120,7 @@ class RunningStrategies ():
                     return {'send_order': send_order,
                             'instrument': instrument,
                             'side': side, 
+                            'cut_loss': cut_loss, 
                             'size': size, 
                             'label_numbered': label_closed_numbered
                             }

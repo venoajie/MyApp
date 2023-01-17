@@ -77,14 +77,14 @@ async def main(
 
             return response
 
-async def send_order_limit (connection_url: str,
+async def send_order  (connection_url: str,
                             client_id,
                             client_secret,
                             side: str, 
                             instrument, 
                             amount, 
-                            price, 
-                            label: str, 
+                            price: float = None, 
+                            label: str = None, 
                             type: str ='limit',
                             time_in_force: str ='fill_or_kill',
                             trigger: str = 'last_price', 
@@ -97,10 +97,21 @@ async def send_order_limit (connection_url: str,
         
     if valid_until == False:
         if trigger_price == None:
-            params =  {
+            if 'market' in type:
+                params =  {
                     "instrument_name": instrument,
                     "amount": amount,
-                    "price": price,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
+            else:
+                params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
                     "label": label,
                     #"time_in_force": time_in_force, fik can not apply to post only
                     "type": type,
@@ -109,7 +120,21 @@ async def send_order_limit (connection_url: str,
                     "reject_post_only": reject_post_only,
                     }
         else:
-            params =  {
+            if 'market' in type :
+                params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "trigger": trigger,
+                    "trigger_price": trigger_price,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
+            else:
+                params =  {
                     "instrument_name": instrument,
                     "amount": amount,
                     "price": price,
@@ -151,6 +176,77 @@ async def send_order_limit (connection_url: str,
 
     return result 
     
+    
+async def send_order_markett (connection_url: str,
+                            client_id,
+                            client_secret,
+                            side: str, 
+                            instrument, 
+                            amount, 
+                            label: str, 
+                            type: str ='market',
+                            time_in_force: str ='fill_or_kill',
+                            trigger: str = 'last_price', 
+                            trigger_price: float = None, 
+                            reduce_only: bool = False, 
+                            valid_until: int = False,
+                            post_only: bool = True, 
+                            reject_post_only: bool =False
+                            ):
+        
+    if valid_until == False:
+        if trigger_price == None:
+            params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
+        else:
+            params =  {
+                    "instrument_name": instrument,
+                    "amount": amount,
+                    "label": label,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "trigger": trigger,
+                    "trigger_price": trigger_price,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only,
+                    }
+    else:
+        params =  {
+                "instrument_name": instrument,
+                "amount": amount,
+                "label": label,
+                "valid_until": valid_until,
+                #"time_in_force": time_in_force, fik can not apply to post only
+                "type": type,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only
+                }
+
+    if side == 'buy':
+        endpoint: str = 'private/buy'
+    if side == 'sell'  :
+        endpoint: str = 'private/sell'
+        
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            connection_url=connection_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+
+    return result 
+
 async def  get_open_orders_byInstruments (connection_url, client_id, client_secret, endpoint, instrument, type):
     params =  {
                 "instrument_name": instrument,
