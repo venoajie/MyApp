@@ -356,18 +356,22 @@ class ApplyHedgingSpot ():
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
-                log.debug(f'{len_current_open_orders > 1=}')
+                log.critical(f'{len_current_open_orders > 1=}')
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
-                await self.cancel_by_order_id (open_order_id)
+                cancel = await self.cancel_by_order_id (open_order_id)
+                log.critical(f'{cancel=}')
+                return (cancel)
                 
     async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
         """
         """
         label_for_filter = 'hedgingSpot-closed'
     
-        await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
+        cancel = await self.cancel_redundant_orders_in_same_labels (label_for_filter) 
+        log.critical(f'{cancel=}')
+        return (cancel)
         
     async def get_instruments_with_rebates (self, instruments, server_time) -> None:
         """
