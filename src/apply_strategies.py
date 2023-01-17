@@ -399,7 +399,6 @@ class ApplyHedgingSpot ():
 
         three_minute = one_minute * 3
         
-        
         open_orders_from_exch = await self.get_open_orders_from_exchange ()
         open_order_mgt = open_orders_management.MyOrders (open_orders_from_exch)
         open_order_label = open_order_mgt.my_orders_api_basedOn_label(label)
@@ -409,19 +408,21 @@ class ApplyHedgingSpot ():
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
         except:
             open_orders_lastUpdateTStamps: list = []    
+            
         if open_orders_lastUpdateTStamps !=[]:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
-            log.critical (open_orders_lastUpdateTStamps)
+            #log.critical (open_orders_lastUpdateTStamps)
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min                       
 
-            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)                        
+            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)    
+                                
             if open_orders_deltaTime > three_minute:
-                log.critical (label)
-                log.critical (open_orders_deltaTime)
-                log.critical (f'{server_time}')
-                log.critical (f'{open_orders_lastUpdateTStamp_min}')
-                log.critical (f'{open_orders_deltaTime=} {server_time=} {open_orders_lastUpdateTStamp_min=}')
+                #log.critical (label)
+                #log.critical (open_orders_deltaTime)
+                #log.critical (f'{server_time}')
+                #log.critical (f'{open_orders_lastUpdateTStamp_min}')
+                #log.critical (f'{open_orders_deltaTime=} {server_time=} {open_orders_lastUpdateTStamp_min=}')
                 
                 await self.cancel_by_order_id (open_order_id)    
     
