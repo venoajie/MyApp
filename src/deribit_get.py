@@ -83,26 +83,26 @@ async def send_order  (connection_url: str,
                             side: str, 
                             instrument, 
                             amount, 
-                            price: float = None, 
                             label: str = None, 
+                            price: float = None, 
                             type: str ='limit',
                             trigger_price: float = None, 
-                            time_in_force: str ='fill_or_kill',
                             trigger: str = 'last_price', 
+                            time_in_force: str ='fill_or_kill',
                             reduce_only: bool = False, 
                             valid_until: int = False,
                             post_only: bool = True, 
                             reject_post_only: bool =False
                             ):
-    print (instrument)
-    print (amount)
-    print (price)
-    print (label)
-    print (type)
-    print (time_in_force)
-    print (trigger)
-    print (trigger_price)
-    print (reduce_only)
+    print (f'{side=}')
+    print (f'{instrument=}')
+    print (f'{amount=}')
+    print (f'{label=}')
+    print (f'{price=}')
+    print (f'{type=}')
+    print (f'{time_in_force=}')
+    print (f'{trigger=}')
+    print (f'{reduce_only=}')
         
     if valid_until == False:
         if trigger_price == None:
