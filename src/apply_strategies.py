@@ -208,13 +208,13 @@ class ApplyHedgingSpot ():
                            ) -> None:
         """
         """
-        log.warning(side)
-        log.warning(instrument)
-        log.warning(size)
-        log.warning(label)
-        log.warning(prc)
-        log.warning(type)
-        log.warning(trigger_price)
+        log.warning(f'{side=}')
+        log.warning(f'{instrument=}')
+        log.warning(f'{size=}')
+        log.warning(f'{label=}')
+        log.warning(f'{prc=}')
+        log.warning(f'{type=}')
+        log.warning(f'{trigger_price=}')
 
         try:
             if 'market' in type:
@@ -237,7 +237,7 @@ class ApplyHedgingSpot ():
                                                 instrument, 
                                                 size, 
                                                 label,
-                                                prc,
+                                                prc
                                                 )
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
