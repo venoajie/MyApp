@@ -616,6 +616,7 @@ class ApplyHedgingSpot ():
                                                         open_str_sell['entry_price']
                                                         )
                                 log.info (order_result)
+                                log.info ('error' not in order_result)
                                 if 'error' not in order_result:   
                                     await self.send_orders ('buy', 
                                                         open_str_sell['instrument'],
