@@ -94,6 +94,15 @@ async def send_order  (connection_url: str,
                             post_only: bool = True, 
                             reject_post_only: bool =False
                             ):
+    print (instrument)
+    print (amount)
+    print (price)
+    print (label)
+    print (type)
+    print (time_in_force)
+    print (trigger)
+    print (trigger_price)
+    print (reduce_only)
         
     if valid_until == False:
         if trigger_price == None:
@@ -105,8 +114,6 @@ async def send_order  (connection_url: str,
                     #"time_in_force": time_in_force, fik can not apply to post only
                     "type": type,
                     "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only,
                     }
             else:
                 params =  {
@@ -129,9 +136,7 @@ async def send_order  (connection_url: str,
                     "type": type,
                     "trigger": trigger,
                     "trigger_price": trigger_price,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only,
+                    "reduce_only": reduce_only
                     }
             else:
                 params =  {
