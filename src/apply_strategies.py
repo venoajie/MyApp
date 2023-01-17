@@ -203,7 +203,7 @@ class ApplyHedgingSpot ():
                            size: float = None, 
                            label: str = None,
                            prc: float = None, 
-                           type: str = None,
+                           type: str = 'limit',
                            trigger_price: float = None
                            ) -> None:
         """
