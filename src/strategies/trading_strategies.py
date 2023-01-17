@@ -146,7 +146,7 @@ class RunningStrategies ():
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
             label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             
-            log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
+            #log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
             
             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
@@ -162,7 +162,7 @@ class RunningStrategies ():
             
             log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
             #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
-            log.debug (f' {open_orders_buy=} ')
+            #log.debug (f' {open_orders_buy=} ')
             
             return {'send_order': send_order,
                     'instrument': self.instrument,
@@ -194,7 +194,7 @@ class RunningStrategies ():
             label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
             
-            log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
+            #log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
             
             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
@@ -209,7 +209,7 @@ class RunningStrategies ():
                     
                 send_order:bool =  True
                 
-            log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
+            #log.critical (f'OPEN  {send_order=} {self.instrument=} {side=} {size=} {label_numbered=}')
             #log.debug (f' {my_trades_buy=} {my_trades_sell=}')
             
             return {'send_order': send_order,
