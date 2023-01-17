@@ -616,9 +616,9 @@ class ApplyHedgingSpot ():
                                 log.info (open_str_sell['cl_price'])
                                 await self.send_orders (side, 
                                                         open_str_sell['instrument'],
-                                                        best_ask_prc,
                                                         open_str_sell['size'], 
-                                                        open_str_sell['label_numbered']
+                                                        open_str_sell['label_numbered'],
+                                                        best_ask_prc,
                                                         )
                                 
                                 await self.send_orders ('buy', 
@@ -636,9 +636,9 @@ class ApplyHedgingSpot ():
                                 log.info (open_str_sell['open_str_buy'])
                                 await self.send_orders (side, 
                                                         open_str_buy['instrument'],
-                                                        best_bid_prc,
                                                         open_str_buy['size'], 
-                                                        open_str_buy['label_numbered']
+                                                        open_str_buy['label_numbered'],
+                                                        best_bid_prc,
                                                         )
                                 
                                 await self.send_orders ('sell', 
@@ -658,9 +658,9 @@ class ApplyHedgingSpot ():
                                 else:
                                     await self.send_orders  (side, 
                                                         closed_str['instrument'],
-                                                        best_ask_prc if side == 'sell' else best_bid_prc,
                                                         closed_str['size'], 
-                                                        closed_str['label_numbered']
+                                                        closed_str['label_numbered'],
+                                                        best_ask_prc if side == 'sell' else best_bid_prc
                                                         )
                             
                         log.warning (strategy['strategy'])
@@ -721,9 +721,9 @@ class ApplyHedgingSpot ():
                                     
                                         await self.send_orders ('sell', 
                                                                 instrument, 
-                                                                best_ask_prc,
                                                                 abs(check_spot_hedging ['hedging_size']), 
-                                                                label_numbered
+                                                                label_numbered,
+                                                                best_ask_prc
                                                                 )
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
@@ -756,9 +756,9 @@ class ApplyHedgingSpot ():
                                                     
                                             await self.send_orders ('buy', 
                                                                     instrument, 
-                                                                    best_bid_prc, 
                                                                     abs(adjusting_inventories ['size_take_profit']), 
-                                                                    adjusting_inventories ['label_take_profit']
+                                                                    adjusting_inventories ['label_take_profit'],
+                                                                    best_bid_prc
                                                                     )
                                             
                                             await self.cancel_redundant_orders_in_same_labels (label_closed)
@@ -768,10 +768,10 @@ class ApplyHedgingSpot ():
                                             
                                             await self.send_orders (
                                                                     'sell', 
-                                                                    instrument, 
-                                                                    best_ask_prc, 
+                                                                    instrument,
                                                                     check_spot_hedging ['average_up_size'], 
-                                                                    label_numbered
+                                                                    label_numbered,
+                                                                    best_ask_prc
                                                                     )
                                             
                                             await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
@@ -780,10 +780,10 @@ class ApplyHedgingSpot ():
             catch_error (error, 30)
 
     async def will_new_open_order_create_over_hedge (self,  
-                                                                         label,
-                                                                         actual_hedging_size: float, 
-                                                                         min_hedging_size: float
-                                                                         )-> None:
+                                                    label,
+                                                    actual_hedging_size: float, 
+                                                    min_hedging_size: float
+                                                    )-> None:
         
         '''
         '''   
