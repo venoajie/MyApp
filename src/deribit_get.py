@@ -94,16 +94,6 @@ async def send_order  (connection_url: str,
                             post_only: bool = True, 
                             reject_post_only: bool =False
                             ):
-    print (f'{side=}')
-    print (f'{instrument=}')
-    print (f'{amount=}')
-    print (f'{label=}')
-    print (f'{price=}')
-    print (f'{type=}')
-    print (f'{time_in_force=}')
-    print (f'{trigger=}')
-    print (f'{reduce_only=}')
-        
     if valid_until == False:
         if trigger_price == None:
             if 'market' in type:
