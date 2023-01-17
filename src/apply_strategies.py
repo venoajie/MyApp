@@ -352,10 +352,11 @@ class ApplyHedgingSpot ():
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
         log.debug(f'{open_order_mgt=}')
         log.debug(f'{len_current_open_orders=}')
-        log.debug(f'{len_current_open_orders > 1=}')
+        
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
+                log.debug(f'{len_current_open_orders > 1=}')
                 
                 open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
