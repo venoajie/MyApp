@@ -399,7 +399,11 @@ class ApplyHedgingSpot ():
 
         three_minute = one_minute * 3
         
-        open_order_mgt = await self.open_orders_from_exchange ()
+        
+        open_orders_from_exch = await self.get_open_orders_from_exchange ()
+        open_order_mgt = open_orders_management.MyOrders (open_orders_from_exch)
+        open_order_label = open_orders_management.my_orders_api_basedOn_label_items_qty(label)
+        open_order_mgt = open_orders_management.MyOrders (open_order_label)
 
         try:
             open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
