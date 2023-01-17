@@ -208,6 +208,13 @@ class ApplyHedgingSpot ():
                            ) -> None:
         """
         """
+        log.warning(side)
+        log.warning(instrument)
+        log.warning(prc)
+        log.warning(size)
+        log.warning(label)
+        log.warning(type)
+        log.warning(trigger_price)
 
         try:
             if 'market' in type:
