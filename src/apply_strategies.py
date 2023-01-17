@@ -729,12 +729,13 @@ class ApplyHedgingSpot ():
                                         and net_open_orders_open_byAPI_db == 0 \
                                             and  last_time_order_filled_exceed_threshold:
                                     
-                                        await self.send_orders ('sell', 
+                                        order_result = await self.send_orders ('sell', 
                                                                 instrument, 
                                                                 abs(check_spot_hedging ['hedging_size']), 
                                                                 label_numbered,
                                                                 best_ask_prc
                                                                 )
+                                        log.warning (order_result)
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                                         
@@ -764,25 +765,27 @@ class ApplyHedgingSpot ():
                                         if adjusting_inventories ['take_profit'] \
                                             and bid_prc_is_lower_than_buy_price:                                            
                                                     
-                                            await self.send_orders ('buy', 
+                                            order_result = await self.send_orders ('buy', 
                                                                     instrument, 
                                                                     abs(adjusting_inventories ['size_take_profit']), 
                                                                     adjusting_inventories ['label_take_profit'],
                                                                     best_bid_prc
                                                                     )
+                                            log.warning (order_result)
                                             
                                             await self.cancel_redundant_orders_in_same_labels (label_closed)
                                             
                                         if adjusting_inventories ['average_up'] \
                                             and ask_prc_is_higher_than_sell_price:
                                             
-                                            await self.send_orders (
+                                            order_result = await self.send_orders (
                                                                     'sell', 
                                                                     instrument,
                                                                     check_spot_hedging ['average_up_size'], 
                                                                     label_numbered,
                                                                     best_ask_prc
                                                                     )
+                                            log.warning (order_result)
                                             
                                             await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                                 
