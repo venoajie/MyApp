@@ -72,7 +72,7 @@ class MyTrades ():
 
             for data_order in self.my_trades:
                 data_order = [data_order]
-                #log.info (f'DATA FROM EXC LOOP {data_order=}')
+                log.info (f'DATA FROM EXC LOOP {data_order=}')
                 
                 #determine label id. 
                 try:
