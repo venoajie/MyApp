@@ -236,7 +236,7 @@ def main (strategy,
     my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
     my_orders_open_strategy = ([o  for o in my_orders_api_basedOn_label_strategy if strategy['strategy'] in o['label']])
     #log.critical (my_trades_open_strategy)
-    log.critical (my_orders_open_strategy)
+    #log.critical (my_orders_open_strategy)
 
     strategies = RunningStrategies (strategy,
                                     index_price,
