@@ -167,6 +167,7 @@ class RunningStrategies ():
                     'instrument': self.instrument,
                     'side': side, 
                     'size': size, 
+                    'entry_price': cl_price, 
                     'cl_price': cl_price, 
                     'label_closed_numbered': label_closed_numbered, 
                     'label_numbered': label_numbered
@@ -211,6 +212,7 @@ class RunningStrategies ():
             
             return {'send_order': send_order,
                     'instrument': self.instrument,
+                    'entry_price': entry_price, 
                     'cl_price': cl_price, 
                     'side': side, 
                     'size': size, 
