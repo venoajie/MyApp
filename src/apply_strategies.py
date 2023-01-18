@@ -18,6 +18,7 @@ import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import  label_numbering
 from strategies import entries_exits, trading_strategies
+from market_understanding import futures_analysis
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -522,11 +523,17 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
+                #my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
                 log.info (my_trades_open)
                 
                 # fetch instruments data
                 instruments = reading_from_database ['instruments']
+                instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
+                
+                futures_analysis = await self.futures_analysis(index_price, instruments_kind)
+                #my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
+                #pickling.replace_data(my_path_futs, futures_analysis)
+                log.warning (futures_analysis)
 
                 # instruments future
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
