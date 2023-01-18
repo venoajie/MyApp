@@ -14,7 +14,6 @@ from loguru import logger as log
 # user defined formula 
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
-
     
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utilities import telegram_app
@@ -172,10 +171,6 @@ class StreamMarketData:
                             
                             my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
                             pickling.replace_data(my_path, data_orders)
-                            index_price = data_orders [0]['price']
-                            futures_analysis = await self.futures_analysis(index_price, instruments_kind)
-                            my_path_futs = system_tools.provide_path_for_file ('futures_analysis', symbol_index.lower()) 
-                            pickling.replace_data(my_path_futs, futures_analysis)
                                                                      
             else:
                 log.info('WebSocket connection has broken.')
