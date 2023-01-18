@@ -392,9 +392,6 @@ async def get_positions (connection_url: str, client_id, client_secret, currency
         
     params =  {"currency": currency}
     endpoint: str = 'private/get_positions'
-    print (connection_url)
-    print (client_id)
-    print (client_secret)
     result = await main(
             endpoint=endpoint,
             params=params,
