@@ -530,13 +530,13 @@ class ApplyHedgingSpot ():
                 instruments = reading_from_database ['instruments']
                 instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
-                futs_analysis = futures_analysis.combining_futures_analysis(index_price, 
-                                                                               instruments_kind, 
-                                                                               server_time
-                                                                               )
+                #futs_analysis = futures_analysis.combining_futures_analysis(index_price, 
+                #                                                               instruments_kind, 
+                #                                                               server_time
+                #                                                               )
                 #my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
                 #pickling.replace_data(my_path_futs, futures_analysis)
-                log.warning (futs_analysis)
+                #log.warning (futs_analysis)
 
                 # instruments future
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
