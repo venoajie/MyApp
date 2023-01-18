@@ -859,7 +859,7 @@ async def main ():
     
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
-    connection_url: str = 'https://www.deribit.com/api/v2/'
+    connection_url: str = 'https://www.deribit.com/api/v2'
     #
     try:
 
