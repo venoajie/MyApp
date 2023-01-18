@@ -599,6 +599,7 @@ class ApplyHedgingSpot ():
                 
                         pct_threshold_TP: float = strategy ['take_profit_pct']  
                         pct_threshold_avg: float = strategy ['averaging']  
+                        quantity_discrete: float = strategy ['quantity_discrete']  
                         time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
                         log.error (f'time_threshold {time_threshold}') 
                         
@@ -723,7 +724,8 @@ class ApplyHedgingSpot ():
                                     
                                     check_spot_hedging = spot_hedged.is_spot_hedged_properly (notional, 
                                                                                               min_trade_amount,
-                                                                                              contract_size
+                                                                                              contract_size,
+                                                                                              quantity_discrete
                                                                                               ) 
                                     
                                     remain_unhedged = check_spot_hedging ['remain_unhedged_size']
