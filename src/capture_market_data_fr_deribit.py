@@ -45,7 +45,7 @@ class StreamMarketData:
     '''       
     def __init__(
         self,
-        live=False
+        live=True
             ) -> None:
         # Async Event Loop
         self.loop = asyncio.get_event_loop() # https://stackoverflow.com/questions/65206110/when-to-use-asyncio-get-running-loop-or-asyncio-get-event-loop-in-python
