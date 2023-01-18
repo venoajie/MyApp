@@ -12,7 +12,7 @@ def combining_futures_analysis (index_price: float,
     
     for future in list_instruments:
         print (list_instruments)
-        future = future [0]
+        future = future
         print (futures)
         print (index_price)
         
