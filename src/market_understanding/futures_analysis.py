@@ -11,13 +11,16 @@ def combining_futures_analysis (index_price: float,
     futures =[]
     
     for future in list_instruments:
+        future = future [0]
+        print (futures)
+        print (index_price)
         
         # obtain funding next rate based on individual coin
         margin: float  = future - index_price  
         margin_pct: float  =  margin / index_price
-        instruments_with_rebates: float = future [0]['maker_commission'] < 0
+        instruments_with_rebates: float = future ['maker_commission'] < 0
         
-        future: int = future [0]['expiration_timestamp']
+        future: int = future ['expiration_timestamp']
         remaining_active_time: int = future - server_time 
         remaining_active_time_hours: float = (remaining_active_time/(60000))/60
 
