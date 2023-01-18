@@ -195,7 +195,6 @@ class ApplyHedgingSpot ():
                                                          self.client_secret, 
                                                          self.currency
                                                          )
-        log.error(result)
         return result ['result'] 
     
     async def send_orders (self, 
