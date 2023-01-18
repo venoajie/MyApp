@@ -32,8 +32,8 @@ def catch_error (error, idle: int = None) -> list:
     system_tools.catch_error_message(error, idle)
 
 def parse_dotenv()->dict:    
-    return {'client_id': os.environ.get('client_id_test'),
-            'client_secret': os.environ.get('client_secret_test')
+    return {'client_id': os.environ.get('client_id'),
+            'client_secret': os.environ.get('client_secret')
             }
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot ():
