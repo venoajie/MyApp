@@ -601,7 +601,8 @@ class ApplyHedgingSpot ():
                         pct_threshold_avg: float = strategy ['averaging']  
                         quantity_discrete: float = strategy ['quantity_discrete']  
                         time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
-                        log.error (f'time_threshold {time_threshold}') 
+                        time_threshold_avg_up: float = strategy ['halt_minute_before_reorder']  * one_minute * 12 * 4
+                        #log.error (f'time_threshold {time_threshold}') 
                         
                         
                         label:str = strategy ['strategy']
@@ -712,7 +713,7 @@ class ApplyHedgingSpot ():
                                 filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
                                                                    
                             last_time_order_filled_exceed_threshold = True if open_order_mgt_filed_status_filed == [] \
-                                else filled_order_deltaTime > time_threshold
+                                else filled_order_deltaTime > time_threshold   
                             
                             if 'PERPETUAL' in instrument :
                                 if last_time_order_filled_exceed_threshold:
@@ -782,10 +783,14 @@ class ApplyHedgingSpot ():
                                                                                                    )
                                         bid_prc_is_lower_than_buy_price = best_bid_prc < adjusting_inventories ['buy_price']
                                         ask_prc_is_higher_than_sell_price = best_ask_prc > adjusting_inventories ['sell_price']
-                                        
+                                        last_time_order_filled_exceed_threshold_avg_up = True if open_order_mgt_filed_status_filed == [] \
+                                            else filled_order_deltaTime > time_threshold_avg_up
+                                            
                                         log.info(f' {label_numbered=} {bid_prc_is_lower_than_buy_price=} \
                                             {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
                                                 {best_ask_prc=}')
+                                            
+                                        log.warning(f' {last_time_order_filled_exceed_threshold_avg_up=}')
                                                 
                                         if adjusting_inventories ['take_profit'] \
                                             and bid_prc_is_lower_than_buy_price:                                            
@@ -801,7 +806,8 @@ class ApplyHedgingSpot ():
                                             await self.cancel_redundant_orders_in_same_labels (label_closed)
                                             
                                         if adjusting_inventories ['average_up'] \
-                                            and ask_prc_is_higher_than_sell_price:
+                                            and ask_prc_is_higher_than_sell_price\
+                                                and last_time_order_filled_exceed_threshold_avg_up:
                                             
                                             order_result = await self.send_orders (
                                                                     'sell', 
