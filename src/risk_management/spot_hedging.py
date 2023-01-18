@@ -121,7 +121,8 @@ class SpotHedging ():
     def is_spot_hedged_properly (self,
         notional: float,
         min_trade_amount: float,
-        contract_size: int
+        contract_size: int,
+        quantity_discrete: float = 10/100
         ) -> dict:
 
         '''
@@ -142,7 +143,7 @@ class SpotHedging ():
                                                         )
         # check open orders related to hedging, to ensure previous open orders has completely consumed
         
-        size_pct_qty = int ((10/100 * min_hedged_size ))
+        size_pct_qty = int ((quantity_discrete * min_hedged_size ))
         hedging_size_portion = int(size_pct_qty if remain_unhedged < size_pct_qty else remain_unhedged)
 
         none_data = [None, [], '0.0', 0]
