@@ -600,6 +600,8 @@ class ApplyHedgingSpot ():
                         pct_threshold_TP: float = strategy ['take_profit_pct']  
                         pct_threshold_avg: float = strategy ['averaging']  
                         time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
+                        log.error (f'time_threshold {time_threshold}') 
+                        
                         
                         label:str = strategy ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
