@@ -25,8 +25,8 @@ load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
 def parse_dotenv()->dict:    
-    return {'client_id': os.environ.get('client_id_test'),
-            'client_secret': os.environ.get('client_secret_test')
+    return {'client_id': os.environ.get('client_id'),
+            'client_secret': os.environ.get('client_id')
             }
     
 def telegram_bot_sendtext(bot_message, 
