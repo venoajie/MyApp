@@ -47,7 +47,7 @@ class StreamAccountData:
         self,
         client_id: str,
         client_secret: str,
-        live=False
+        live=True
         ) -> None:
         
         # Async Event Loop
