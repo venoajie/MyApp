@@ -459,7 +459,7 @@ async def  get_instruments (connection_url: str, currency):
 
 from utilities import system_tools, pickling
 async def call_api(currency, msg):
-   async with websockets.connect('wss://test.deribit.com/ws/api/v2') as websocket:
+   async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
        await websocket.send(msg)
        while websocket.open:
             response = await websocket.recv()
