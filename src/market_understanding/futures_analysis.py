@@ -12,8 +12,7 @@ def combining_futures_analysis (index_price: float,
     
     for future in list_instruments:
         print (list_instruments)
-        future = future
-        print (futures)
+        print (future)
         print (index_price)
         
         # obtain funding next rate based on individual coin
