@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from utilities import pickling, system_tools, time_modification
+from loguru import logger as log
 
 def combining_individual_futures_analysis (index_price: float, 
                                 future: dict,
@@ -11,6 +12,9 @@ def combining_individual_futures_analysis (index_price: float,
     futures =[]
     try:
 
+        log.error (index_price)
+        log.error (future)
+        log.error (ticker)
         instrument = future ['instrument_name']
         
         ticker =  ticker [0]
