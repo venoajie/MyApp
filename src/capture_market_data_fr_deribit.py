@@ -199,6 +199,7 @@ class StreamMarketData:
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
                                 index_price: list = pickling.read_data(my_path_index) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
+                                log.error(ticker_instrument)
                                 instrument_name = ticker_instrument [0]['instrument_name']
                                 instrument: list = [o for o in instruments_kind if o['instrument_name'] == instrument_name] [0]
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
