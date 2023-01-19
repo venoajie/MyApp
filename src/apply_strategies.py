@@ -576,8 +576,9 @@ class ApplyHedgingSpot ():
                     market_price = await self.market_price (instrument) 
                     
                     # get bid and ask price
-                    best_bid_prc= ticker [0]['best_bid_prc']
-                    best_ask_prc= ticker [0] ['best_ask_prc']
+                    log.critical (f'{ticker[0]}') 
+                    best_bid_prc= ticker [0]['best_bid_price']
+                    best_ask_prc= ticker [0] ['best_ask_price']
                     log.critical (f'{best_bid_prc} {best_ask_prc}') 
                                         
                     notional =  await self.compute_notional_value (index_price, equity)
