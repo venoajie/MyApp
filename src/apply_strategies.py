@@ -573,13 +573,13 @@ class ApplyHedgingSpot ():
                     log.critical (f'{instrument}') 
                     reading_from_database_instrument = await self.reading_from_database (instrument)
                     ticker = reading_from_database_instrument ['ticker'] 
-                    market_price = await self.market_price (instrument) 
+                    #market_price = await self.market_price (instrument) 
                     
                     # get bid and ask price
-                    log.critical (f'{ticker[0]}') 
+                    #log.critical (f'{ticker[0]}') 
                     best_bid_prc= ticker [0]['best_bid_price']
                     best_ask_prc= ticker [0] ['best_ask_price']
-                    log.critical (f'{best_bid_prc} {best_ask_prc}') 
+                    #log.critical (f'{best_bid_prc} {best_ask_prc}') 
                                         
                     notional =  await self.compute_notional_value (index_price, equity)
     
