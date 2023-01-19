@@ -597,15 +597,16 @@ class ApplyHedgingSpot ():
                     contract_size = instrument_data ['contract_size']
                     
                     open_order_mgt_from_exchange = await self.open_orders_from_exchange()
-                    #log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
+                    log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
                     my_orders_from_exchange = await self.get_open_orders_from_exchange()
-                    #log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
+                    log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
 
                     net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.my_orders_api_basedOn_label_items_net ()
                     log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
                     
                     # check for any order outstanding as per label filter
                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net ()
+                    log.debug (f'open_order_mgt  {open_order_mgt}') 
                     log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                 
                                         
