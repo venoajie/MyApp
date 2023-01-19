@@ -177,6 +177,7 @@ class StreamMarketData:
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
+                            log.info (instrument_ticker)
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
