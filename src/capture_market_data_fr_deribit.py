@@ -205,6 +205,8 @@ class StreamMarketData:
                                                                                                   ticker_instrument[0])
                                 ticker_all: list = pickling.read_data(my_path_ticker_all)
                                 ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
+                                
+                                #! double file operation. could be further improved
                                 pickling.replace_data(my_path_ticker_all, ticker_all) 
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_ticker_all, 
