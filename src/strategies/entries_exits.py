@@ -8,7 +8,7 @@ strategies = [
     'time_frame': 900,
     'side': 'sell',
     'entry_price': 1538,
-    'take_profit_usd': 1508.5,
+    'take_profit_usd': 1528.5,
     'take_profit_pct': 1/100,
     'quantity_discrete': 15,
     'cut_loss_usd': 1565.5,
