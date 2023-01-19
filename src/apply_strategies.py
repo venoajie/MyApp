@@ -253,7 +253,7 @@ class ApplyHedgingSpot ():
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
+        my_path_ticker: str = system_tools.provide_path_for_file ('ticker-all', self.currency) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
         my_trades_open: str = pickling.read_data(my_trades_path_open)               
@@ -296,7 +296,7 @@ class ApplyHedgingSpot ():
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'positions': positions,
                 'ordBook': pickling.read_data(my_path_ordBook),
-                'ticker': pickling.read_data(my_path_ticker),
+                'tickers': pickling.read_data(my_path_ticker),
                 'portfolio': portfolio,
                 'index_price': index_price [0]['price'],
                 'instruments': pickling.read_data (my_path_instruments)}
@@ -395,7 +395,6 @@ class ApplyHedgingSpot ():
                 'instruments_with_rebates_weekly_longest_exp': [o for o in instruments_with_rebates if o['expiration_timestamp'] == instruments_with_rebates_weekly_longest_expiration ],
                 }
 
-    
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, server_time, label) -> float:
         """
         """
@@ -488,7 +487,6 @@ class ApplyHedgingSpot ():
             # use the earliest time stamp to fetch data from exchange
             my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
             
-        
     async def running_strategy (self, server_time) -> float:
         """
         source data: loaded from database app
@@ -510,6 +508,8 @@ class ApplyHedgingSpot ():
             
             # index price
             index_price: float= reading_from_database['index_price']
+            
+            
         
             # compute notional value
             notional: float =  await self.compute_notional_value (index_price, equity)
@@ -532,10 +532,7 @@ class ApplyHedgingSpot ():
                 instruments = reading_from_database ['instruments']
                 instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
-                futs_analysis = futures_analysis.combining_futures_analysis(index_price, 
-                                                                               instruments_kind, 
-                                                                               server_time
-                                                                               )
+                futs_analysis = reading_from_database ['tickers'] 
                 #my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
                 #pickling.replace_data(my_path_futs, futures_analysis)
                 log.warning (futs_analysis)
