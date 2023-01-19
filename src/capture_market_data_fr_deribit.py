@@ -183,7 +183,7 @@ class StreamMarketData:
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
-                                    log.debug (data_orders)
+                                    #log.debug (data_orders)
                                     pickling.replace_data(my_path_ticker, data_orders)
                                 else:
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
@@ -204,12 +204,15 @@ class StreamMarketData:
                                     
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                                 
-                                if 'PERPETUAL' in instrument_ticker:
-                                    ticker_all: list = pickling.read_data(my_path_ticker_all) 
-                                    log.critical (ticker_all) 
                             except:
                                 continue        
-                            
+                        
+                        
+                            if 'PERPETUAL' in instrument_ticker:
+                                ticker_all: list = pickling.read_data(my_path_ticker_all) 
+                                log.critical (ticker_all) 
+                                
+                                
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             
