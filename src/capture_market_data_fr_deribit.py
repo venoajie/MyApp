@@ -211,9 +211,9 @@ class StreamMarketData:
                                                                                 tickers, 
                                                                                 100)
 
-                                ticker_all: list = pickling.read_data(my_path_ticker_all) 
+                                #ticker_all: list = pickling.read_data(my_path_ticker_all) 
                                 
-                                log.critical (ticker_all) 
+                                #log.critical (ticker_all) 
                                         
                             except:
                                 continue        
