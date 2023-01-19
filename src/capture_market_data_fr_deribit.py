@@ -112,6 +112,13 @@ class StreamMarketData:
                         )
                     )
                 
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation='subscribe',
+                        ws_channel=f'incremental_ticker.{instrument}'
+                        )
+                    )
+                
             while self.websocket_client.open:
                 # Receive WebSocket messages
                 message: bytes = await self.websocket_client.recv()
@@ -163,6 +170,21 @@ class StreamMarketData:
                             
                             try:
                                 pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
+                            except:
+                                continue        
+                            
+                        instrument_ticker = (message_channel)[19:]
+                        if message_channel == f'incremental_ticker.{instrument_ticker}':
+                            
+                            my_path = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
+                            
+                            try:
+                                if data_orders['type'] == 'snapshot':
+                                    log.debug (data_orders)
+                                    pickling.replace_data(my_path, data_orders)
+                                else:
+                                    log.info (data_orders)
+                                    #pickling.replace_data(my_path, data_orders)
                             except:
                                 continue        
                             
