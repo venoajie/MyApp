@@ -184,6 +184,7 @@ class StreamMarketData:
                                     pickling.replace_data(my_path_ticker, data_orders)
                                 else:
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                    log.warning (ticker_fr_snapshot)
                                     log.error (data_orders)
                                     ticker =[]
                                     for item in data_orders:
