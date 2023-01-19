@@ -39,4 +39,4 @@ def combining_futures_analysis (index_price: float,
         
         data_future = futures.append(dicttemp.copy())        
                 
-    return [futures]
+    return futures
