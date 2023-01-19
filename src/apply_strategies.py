@@ -536,7 +536,7 @@ class ApplyHedgingSpot ():
                                                                                instruments_kind, 
                                                                                server_time
                                                                                )
-                my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
+                #my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
                 #pickling.replace_data(my_path_futs, futures_analysis)
                 log.warning (futs_analysis)
 
