@@ -180,10 +180,11 @@ class StreamMarketData:
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
-                                    log.debug (data_orders)
+                                    #log.debug (data_orders)
                                     pickling.replace_data(my_path, data_orders)
                                 else:
-                                    log.info (data_orders)
+                                    for item in data_orders:
+                                        log.debug (item)
                                     #pickling.replace_data(my_path, data_orders)
                             except:
                                 continue        
