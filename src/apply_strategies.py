@@ -253,7 +253,7 @@ class ApplyHedgingSpot ():
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        my_path_ticker: str = system_tools.provide_path_for_file ('ticker-all', self.currency) 
+        my_path_ticker: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
         my_trades_open: str = pickling.read_data(my_trades_path_open)               

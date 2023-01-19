@@ -163,7 +163,7 @@ class StreamMarketData:
                         one_minute: int = 60000
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
-                        log.error(currency)
+                        #log.error(currency)
                                            
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
@@ -179,7 +179,7 @@ class StreamMarketData:
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
-                            my_path_ticker_all = system_tools.provide_path_for_file ('ticker-all', currency) 
+                            my_path_ticker_futures_analysis = system_tools.provide_path_for_file ('futures_analysis', currency) 
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
@@ -204,13 +204,13 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
-                                ticker_all: list = pickling.read_data(my_path_ticker_all)
+                                ticker_all: list = pickling.read_data(my_path_ticker_futures_analysis)
                                 ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
                                 
                                 #! double file operation. could be further improved
-                                pickling.replace_data(my_path_ticker_all, ticker_all) 
+                                pickling.replace_data(my_path_ticker_futures_analysis, ticker_all) 
                                 
-                                pickling.append_and_replace_items_based_on_qty (my_path_ticker_all, 
+                                pickling.append_and_replace_items_based_on_qty (my_path_ticker_futures_analysis, 
                                                                                 tickers, 
                                                                                 100)
 

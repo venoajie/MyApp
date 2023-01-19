@@ -59,7 +59,7 @@ def provide_path_for_file (end_point: str, marker: str = None, status: str =None
         sub_folder = 'portfolio'
         exchange = 'deribit'
         
-    if bool([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc', 'futures_analysis', 'ticker']  if (o in end_point)])  :
+    if bool([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc', 'futures_analysis', 'ticker-all','ticker']  if (o in end_point)])  :
         sub_folder = 'market_data'
         exchange = 'deribit'
         
