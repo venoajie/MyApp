@@ -543,8 +543,6 @@ class ApplyHedgingSpot ():
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
                 futs_analysis = reading_from_database ['my_path_futures_analysis'] 
-                #my_path_futs = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
-                #pickling.replace_data(my_path_futs, futures_analysis)
                 #log.warning (futs_analysis)
 
                 # instruments future
@@ -584,10 +582,8 @@ class ApplyHedgingSpot ():
                     #market_price = await self.market_price (instrument) 
                     
                     # get bid and ask price
-                    #log.critical (f'{ticker[0]}') 
                     best_bid_prc= ticker [0]['best_bid_price']
                     best_ask_prc= ticker [0] ['best_ask_price']
-                    #log.critical (f'{best_bid_prc} {best_ask_prc}') 
                                         
                     notional =  await self.compute_notional_value (index_price, equity)
     
@@ -617,17 +613,14 @@ class ApplyHedgingSpot ():
                     strategies = entries_exits.strategies
             
                     for strategy in strategies:
-                                                
-                        #strategy_variables = [o for o in strategies if o['strategy'] == strategy] [0] 
-                
+                                                                
                         pct_threshold_TP: float = strategy ['take_profit_pct']  
                         pct_threshold_avg: float = strategy ['averaging']  
                         quantity_discrete: float = strategy ['quantity_discrete']  
                         time_threshold: float = strategy ['halt_minute_before_reorder']  * one_minute 
                         time_threshold_avg_up: float = strategy ['halt_minute_before_reorder']  * one_minute * 12 * 4
                         #log.error (f'time_threshold {time_threshold}') 
-                        
-                        
+                                              
                         label:str = strategy ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
                         label_closed:str = f'{label}-closed'
@@ -636,7 +629,7 @@ class ApplyHedgingSpot ():
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] and False:
+                        if 'hedgingSpot' not in strategy['strategy']:
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -681,7 +674,7 @@ class ApplyHedgingSpot ():
                                         await self.cancel_by_order_id (order_result_id)
                                 log.info (order_result)
                                 
-                            if open_str_buy!= None and open_str_buy ['send_order']:
+                            if open_str_buy!= None and open_str_buy ['send_order'] and False:
                                 side = open_str_buy['side']
                                 log.info (open_str_buy['cl_price'])
                                 order_result = await self.send_orders (side, 
