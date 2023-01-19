@@ -629,7 +629,7 @@ class ApplyHedgingSpot ():
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] and False:
+                        if 'hedgingSpot' not in strategy['strategy'] :
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -642,10 +642,10 @@ class ApplyHedgingSpot ():
                             open_str_sell = str ['open_strategy_sell']
                             closed_str = str ['closed_strategy']
                                 
-                            #log.warning (open_str_sell)
-                            #log.warning (open_str_buy)
+                            log.warning (open_str_sell)
+                            log.warning (open_str_buy)
                             
-                            #log.warning (closed_str)
+                            log.warning (closed_str)
                             
                             if open_str_sell!= None and open_str_sell ['send_order']:
                                 side = open_str_sell['side']
