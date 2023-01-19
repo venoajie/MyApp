@@ -17,7 +17,6 @@ def combining_individual_futures_analysis (index_price: float,
         log.error (ticker)
         instrument = future ['instrument_name']
         
-        ticker =  ticker [0]
         mark_price = ticker ['mark_price']
         now_time = time_modification.convert_time_to_utc()['utc_now']
         now_time_unix = time_modification.convert_time_to_unix (now_time) 
