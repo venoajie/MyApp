@@ -281,7 +281,7 @@ class ApplyHedgingSpot ():
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
         open_order = pickling.read_data(my_path_orders_open)
-        #log.error (open_order)
+        log.error (open_order)
         none_data = [None, [], 0]
         
         # at start, usually position == None
