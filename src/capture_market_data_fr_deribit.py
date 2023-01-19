@@ -191,10 +191,10 @@ class StreamMarketData:
                                         ticker_fr_snapshot [item] = data_orders [item]
                                         log.debug (item)
                                     
-                                pickling.replace_data(my_path_ticker, ticker)  
-                                
-                                ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                log.critical (ticker_fr_snapshot) 
+                                    pickling.replace_data(my_path_ticker, ticker)  
+                                    
+                                    ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                    log.critical (ticker_fr_snapshot) 
                             except:
                                 continue        
                             
