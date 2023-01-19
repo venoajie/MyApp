@@ -203,6 +203,7 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
+                                log.debug (tickers)
                                 ticker_all: list = pickling.read_data(my_path_ticker_all)
                                 ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
                                 pickling.replace_data(my_path_ticker_all, ticker_all) 
