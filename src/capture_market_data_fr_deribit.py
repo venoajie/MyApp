@@ -176,16 +176,20 @@ class StreamMarketData:
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
-                            my_path = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
+                            my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
                                     #log.debug (data_orders)
-                                    pickling.replace_data(my_path, data_orders)
+                                    pickling.replace_data(my_path_ticker, data_orders)
                                 else:
+                                    ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                    ticker =[]
                                     for item in data_orders:
+                                        ticker_fr_snapshot [item] = data_orders [item]
                                         log.debug (item)
-                                    #pickling.replace_data(my_path, data_orders)
+                                    
+                                pickling.replace_data(my_path_ticker, ticker)    
                             except:
                                 continue        
                             
