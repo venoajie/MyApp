@@ -11,14 +11,14 @@ def combining_futures_analysis (index_price: float,
     futures =[]
     
     for future in list_instruments:
-        print (future)
+        #print (future)
         instrument = future ['instrument_name']
         print (instrument)
         my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
         ticker =  pickling.read_data(my_path_ticker)
-        #print (list_instruments)
-        print (future)
-        print (index_price)
+        print (ticker)
+        #print (future)
+        #print (index_price)
         
         # obtain funding next rate based on individual coin
         margin: float  = future - index_price  
