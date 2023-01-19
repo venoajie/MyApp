@@ -242,18 +242,19 @@ class ApplyHedgingSpot ():
             log.error (e)
             
     async def compute_notional_value (self, 
-                                      index_price: float, 
+                                      index_price_perpetual: float, 
                                       equity: float
                                       ) -> float:
         """
         """
-        return index_price * equity  
+        return index_price_perpetual * equity  
     
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
         my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
+        my_path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', f'{(self.currency).upper()}-PERPETUAL') 
         my_path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
@@ -271,7 +272,7 @@ class ApplyHedgingSpot ():
                 
         symbol_index: str = f'{self.currency}_usd'
         my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
-        index_price: list = pickling.read_data(my_path_index) 
+        ticker_perpetual: list = pickling.read_data(my_path_ticker_perpetual)
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         portfolio = pickling.read_data(my_path_portfolio)
@@ -300,7 +301,7 @@ class ApplyHedgingSpot ():
                 'ticker': pickling.read_data(my_path_ticker),
                 'my_path_futures_analysis': pickling.read_data(my_path_futures_analysis),
                 'portfolio': portfolio,
-                'index_price': index_price [0]['price'],
+                'ticker_perpetual': ticker_perpetual[0],
                 'instruments': pickling.read_data (my_path_instruments)}
     
     async def position_per_instrument (self, positions, instrument: str) -> list:
@@ -509,14 +510,15 @@ class ApplyHedgingSpot ():
             equity: float = portfolio [0]['equity']
             
             # index price
-            index_price: float= reading_from_database['index_price']
+            index_price_perpetual: float= reading_from_database['ticker_perpetual']['index_price']
+            log.critical (index_price_perpetual)
             
             
         
             # compute notional value
-            notional: float =  await self.compute_notional_value (index_price, equity)
+            notional: float =  await self.compute_notional_value (index_price_perpetual, equity)
                                
-            if  index_price and portfolio :                
+            if  index_price_perpetual and portfolio :                
                 
                 one_minute: int = 60000 # one minute in millisecond
                 none_data: None = [0, None, []] # to capture none 
@@ -581,7 +583,7 @@ class ApplyHedgingSpot ():
                     best_ask_prc= ticker [0] ['best_ask_price']
                     #log.critical (f'{best_bid_prc} {best_ask_prc}') 
                                         
-                    notional =  await self.compute_notional_value (index_price, equity)
+                    notional =  await self.compute_notional_value (index_price_perpetual, equity)
     
                     #! get instrument detaila
                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
@@ -631,7 +633,7 @@ class ApplyHedgingSpot ():
                         if 'hedgingSpot' not in strategy['strategy'] and False:
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
-                                                index_price,
+                                                index_price_perpetual,
                                                 my_trades_open,
                                                 my_orders_api_basedOn_label_strategy,
                                                 notional,
@@ -790,7 +792,7 @@ class ApplyHedgingSpot ():
                                         and remain_unhedged >= 0 \
                                             and net_open_orders_open_byAPI_db == 0:
 
-                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price, 
+                                        adjusting_inventories = spot_hedged.adjusting_inventories (index_price_perpetual, 
                                                                                                    self.currency, 
                                                                                                    pct_threshold_TP, 
                                                                                                    pct_threshold_avg, 
