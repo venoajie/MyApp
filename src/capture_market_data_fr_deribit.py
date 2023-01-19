@@ -179,52 +179,32 @@ class StreamMarketData:
                             
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
                             my_path_ticker_all = system_tools.provide_path_for_file ('ticker-all') 
-                            #log.info (instrument_ticker)
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
-                                    #log.debug (data_orders)
+
                                     pickling.replace_data(my_path_ticker, data_orders)
+                                    
                                 else:
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    if 'PERPETUAL' in instrument_ticker:
-                                        log.warning (ticker_fr_snapshot)
-                                        log.error (data_orders)
-                                    #ticker =[]
+                                    
                                     for item in data_orders:
-                                        if 'PERPETUAL' in instrument_ticker:
-                                            log.info (item)
-                                            log.info (ticker_fr_snapshot [0][item])
-                                            log.critical (data_orders [item])
-                                        ticker_fr_snapshot [0][item] = data_orders [item]
-                                        
-                                        if 'PERPETUAL' in instrument_ticker:
                                             
-                                            log.debug (ticker_fr_snapshot)
+                                        ticker_fr_snapshot [0][item] = data_orders [item]
                                     
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                         
-                            
                                 symbol_index: str = f'{currency}_usd'
-                                log.critical (symbol_index) 
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
-                                log.critical (my_path_ticker_all) 
-                                log.critical (my_path_index) 
-                                log.critical (my_path_ticker) 
                                 index_price: list = pickling.read_data(my_path_index) 
-                                log.critical (index_price [0]['price']) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
-                                log.critical (ticker_instrument) 
                                 instrument_name = ticker_instrument [0]['instrument_name']
                                 instrument: list = [o for o in instruments_kind if o['instrument_name'] == instrument_name] [0]
-                                log.critical (instrument) 
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
-                                log.warning (tickers) 
-                                #pickling.replace_data(my_path_ticker_all, tickers)
-                                pickling.append_and_replace_items_based_on_qty (my_path_ticker_all, tickers, 100)
                                 
+                                pickling.append_and_replace_items_based_on_qty (my_path_ticker_all, tickers, 100)
 
                                 ticker_all: list = pickling.read_data(my_path_ticker_all) 
                                 
