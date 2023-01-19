@@ -13,15 +13,10 @@ def combining_futures_analysis (index_price: float,
     for future in list_instruments:
         #print (future)
         instrument = future ['instrument_name']
-        print (instrument)
         my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
         ticker =  pickling.read_data(my_path_ticker)
         ticker =  ticker [0]
-        print (ticker)
         mark_price = ticker ['mark_price']
-        print (mark_price)
-        #print (future)
-        #print (index_price)
         
         # obtain funding next rate based on individual coin
         margin: float  = mark_price - index_price  
@@ -34,12 +29,13 @@ def combining_futures_analysis (index_price: float,
 
         # combining current and next coins rate
         dicttemp = {}                
-        dicttemp = {'margin_usd': margin,
+        dicttemp = {'instrument_name': instrument,
+                    'margin_usd': mark_price,
                     'mark_price': mark_price,
                     'margin_pct': margin_pct,
                     'with_rebates': instruments_with_rebates,
                     'remaining_active_time_in_hours': remaining_active_time_hours,
-                    'expectation': 'contango' if margin > 0 else ('backwardation ' if margin < 0 else 'neutral')}                    
+                    'market_expectation': 'contango' if margin > 0 else ('backwardation' if margin < 0 else 'neutral')}                    
         
         data_future = futures.append(dicttemp.copy())        
                 
