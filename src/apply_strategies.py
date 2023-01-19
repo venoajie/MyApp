@@ -703,7 +703,7 @@ class ApplyHedgingSpot ():
                                         await self.cancel_by_order_id (order_result_id)
                                     log.info (order_result)
 
-                            if closed_str!= None and closed_str ['send_order']:
+                            if closed_str!= None and closed_str ['send_order'] and False:
                                 side = closed_str['side']
                                 cut_loss = closed_str['cut_loss']
                                 if cut_loss == True:
