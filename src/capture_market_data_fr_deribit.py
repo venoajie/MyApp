@@ -180,10 +180,11 @@ class StreamMarketData:
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
-                                    #log.debug (data_orders)
+                                    log.debug (data_orders)
                                     pickling.replace_data(my_path_ticker, data_orders)
                                 else:
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                    log.error (data_orders)
                                     ticker =[]
                                     for item in data_orders:
                                         ticker_fr_snapshot [item] = data_orders [item]
