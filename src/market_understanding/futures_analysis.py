@@ -30,10 +30,10 @@ def combining_futures_analysis (index_price: float,
         # combining current and next coins rate
         dicttemp = {}                
         dicttemp = {'instrument_name': instrument,
-                    'margin_usd': mark_price,
                     'mark_price': mark_price,
-                    'margin_pct': margin_pct,
                     'with_rebates': instruments_with_rebates,
+                    'margin_usd': margin,
+                    'margin_pct': margin_pct,
                     'remaining_active_time_in_hours': remaining_active_time_hours,
                     'market_expectation': 'contango' if margin > 0 else ('backwardation' if margin < 0 else 'neutral')}                    
         
