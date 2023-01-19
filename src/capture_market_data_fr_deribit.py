@@ -189,6 +189,8 @@ class StreamMarketData:
                                     ticker =[]
                                     for item in data_orders:
                                         log.info (item)
+                                        log.info (ticker_fr_snapshot [item])
+                                        log.info (data_orders [item])
                                         ticker_fr_snapshot [item] = data_orders [item]
                                         log.debug (item)
                                     
