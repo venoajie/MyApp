@@ -205,7 +205,18 @@ class StreamMarketData:
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                         
                             
+                                my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
+                                log.critical (my_path_index) 
+                                index_price: list = pickling.read_data(my_path_index) 
+                                log.critical (index_price) 
+                                ticker_instrument: list = pickling.read_data(my_path_ticker) 
+                                log.critical (ticker_instrument) 
+                                tickers = futures_analysis.combining_individual_futures_analysis (instrument_ticker, ticker_instrument)
+                                pickling.replace_data(index_price [0]['price'], my_path_ticker_all, tickers)
+                                
+
                                 ticker_all: list = pickling.read_data(my_path_ticker_all) 
+                                
                                 log.critical (ticker_all) 
                                         
                             except:
