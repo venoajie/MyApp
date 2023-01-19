@@ -214,8 +214,10 @@ class StreamMarketData:
                                 log.critical (index_price [0]['price']) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
                                 log.critical (ticker_instrument) 
-                                tickers = futures_analysis.combining_individual_futures_analysis (instrument_ticker, ticker_instrument)
-                                pickling.replace_data(index_price [0]['price'], my_path_ticker_all, tickers)
+                                tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
+                                                                                                  instrument_ticker, 
+                                                                                                  ticker_instrument[0])
+                                pickling.replace_data(my_path_ticker_all, tickers)
                                 
 
                                 ticker_all: list = pickling.read_data(my_path_ticker_all) 
