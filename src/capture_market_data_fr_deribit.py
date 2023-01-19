@@ -208,6 +208,7 @@ class StreamMarketData:
                                 symbol_index: str = f'{currency}_usd'
                                 log.critical (symbol_index) 
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
+                                log.critical (my_path_ticker_all) 
                                 log.critical (my_path_index) 
                                 log.critical (my_path_ticker) 
                                 index_price: list = pickling.read_data(my_path_index) 
