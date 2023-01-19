@@ -104,7 +104,9 @@ def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> 
     
     dump_data_as_list (file_name, data, check_duplicates)
     
-def append_and_replace_items_based_on_qty (file_name_pkl: str, data: dict, max_qty: int, check_duplicates: bool = False)-> None:
+def append_and_replace_items_based_on_qty (file_name_pkl: str, 
+                                           data: dict, max_qty: int, 
+                                           check_duplicates: bool = False)-> None:
 
     """
     append_and_replace_items_based_on_qty (file_name, resp, 3)
@@ -186,7 +188,7 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
     if 'change_id' in data_list:
         result: list =  ([o for o in data if  o['timestamp'] > one_hour_ago]) 
         dump_data_as_list (file_name_pkl, result, check_duplicates)
-                
+    
     if 'params' in data_list:
 
         data = [o['params']  for o in data ]
@@ -196,3 +198,8 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
         result: list =  ([o for o in data if  o['tick'] < one_hour_ago])    
         dump_data_as_list (file_name_pkl, result)
         
+
+    if 'with_rebates' in data_list and False:
+        result: list =  ([o for o in data if  o['remaining_active_time_in_hours'] ==  one_hour_ago]) 
+        dump_data_as_list (file_name_pkl, result, check_duplicates)
+                
