@@ -15,7 +15,7 @@ from os.path import join, dirname
 from portfolio.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, number_modification, string_modification
 import deribit_get
-from risk_management import spot_hedging, check_data_integrity, position_sizing
+from risk_management import spot_hedging, check_data_integrity#, position_sizing
 from configuration import  label_numbering
 from strategies import entries_exits, trading_strategies
 from market_understanding import futures_analysis
