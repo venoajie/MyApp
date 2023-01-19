@@ -165,15 +165,6 @@ class StreamMarketData:
                         currency: str = string_modification.extract_currency_from_text (message_channel)
                         #log.error(currency)
                                            
-                        instrument_book = "".join(list(message_channel) [5:][:-14])
-                        if message_channel == f'book.{instrument_book}.none.20.100ms':
-                            
-                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
-                            
-                            try:
-                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
-                            except:
-                                continue        
                             
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
@@ -223,6 +214,15 @@ class StreamMarketData:
                                 continue        
                         
                                 
+                        instrument_book = "".join(list(message_channel) [5:][:-14])
+                        if False and message_channel == f'book.{instrument_book}.none.20.100ms':
+                            
+                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
+                            
+                            try:
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
+                            except:
+                                continue        
                                 
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
