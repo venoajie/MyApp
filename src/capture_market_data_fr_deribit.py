@@ -218,6 +218,7 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument_ticker, 
                                                                                                   ticker_instrument[0])
+                                log.warning (tickers) 
                                 pickling.replace_data(my_path_ticker_all, tickers)
                                 
 
