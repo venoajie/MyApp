@@ -253,6 +253,7 @@ class ApplyHedgingSpot ():
         """
         """
         my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
+        my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
         my_path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
             
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
@@ -296,6 +297,7 @@ class ApplyHedgingSpot ():
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'positions': positions,
                 'ordBook': pickling.read_data(my_path_ordBook),
+                'ticker': pickling.read_data(my_path_ticker),
                 'my_path_futures_analysis': pickling.read_data(my_path_futures_analysis),
                 'portfolio': portfolio,
                 'index_price': index_price [0]['price'],
@@ -569,7 +571,9 @@ class ApplyHedgingSpot ():
                 for instrument in instrument_transactions:
 
                     log.critical (f'{instrument}') 
+                    ticker = reading_from_database ['ticker'] 
                     market_price = await self.market_price (instrument) 
+                    log.critical (f'{ticker}') 
                     
                     # get bid and ask price
                     best_bid_prc= market_price ['best_bid_prc']
