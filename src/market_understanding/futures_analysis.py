@@ -16,8 +16,9 @@ def combining_futures_analysis (index_price: float,
         print (instrument)
         my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
         ticker =  pickling.read_data(my_path_ticker)
-        mark_price = ticker ['mark_price']
         print (ticker)
+        mark_price = ticker ['mark_price']
+        print (mark_price)
         #print (future)
         #print (index_price)
         
