@@ -222,7 +222,8 @@ class StreamMarketData:
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
                                 log.warning (tickers) 
-                                pickling.replace_data(my_path_ticker_all, tickers)
+                                #pickling.replace_data(my_path_ticker_all, tickers)
+                                pickling.append_and_replace_items_based_on_qty (my_path_ticker_all, tickers, 100)
                                 
 
                                 ticker_all: list = pickling.read_data(my_path_ticker_all) 
