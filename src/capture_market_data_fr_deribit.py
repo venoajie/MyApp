@@ -205,7 +205,7 @@ class StreamMarketData:
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                         
                             
-                                symbol_index: str = f'{self.currency}_usd'
+                                symbol_index: str = f'{currency}_usd'
                                 log.critical (symbol_index) 
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
                                 log.critical (my_path_index) 
