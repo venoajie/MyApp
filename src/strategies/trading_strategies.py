@@ -194,7 +194,8 @@ class RunningStrategies ():
             label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
             
-            #log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
+            log.debug (f'my_trades_sell  {my_trades_sell=}')
+            log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
             
             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
