@@ -163,6 +163,7 @@ class StreamMarketData:
                         one_minute: int = 60000
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
+                        log.error(currency)
                                            
                         instrument_book = "".join(list(message_channel) [5:][:-14])
                         if message_channel == f'book.{instrument_book}.none.20.100ms':
