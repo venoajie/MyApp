@@ -14,6 +14,7 @@ from loguru import logger as log
 # user defined formula 
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
+from market_understanding import futures_analysis
     
 def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
     from utilities import telegram_app
@@ -177,6 +178,7 @@ class StreamMarketData:
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
+                            my_path_ticker_all = system_tools.provide_path_for_file ('ticker-all') 
                             #log.info (instrument_ticker)
                             
                             try:
