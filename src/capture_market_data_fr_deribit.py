@@ -203,10 +203,10 @@ class StreamMarketData:
                                             log.debug (ticker_fr_snapshot)
                                     
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
-                                    
-                                    if 'PERPETUAL' in instrument_ticker:
-                                        ticker_all: list = pickling.read_data(my_path_ticker_all) 
-                                        log.critical (ticker_all) 
+                                
+                                if 'PERPETUAL' in instrument_ticker:
+                                    ticker_all: list = pickling.read_data(my_path_ticker_all) 
+                                    log.critical (ticker_all) 
                             except:
                                 continue        
                             
