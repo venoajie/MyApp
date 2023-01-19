@@ -106,12 +106,12 @@ class StreamMarketData:
             
             for instrument in instruments_name:
                 
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation='subscribe',
-                        ws_channel=f'book.{instrument}.none.20.100ms'
-                        )
-                    )
+                #self.loop.create_task(
+                #    self.ws_operation(
+                #        operation='subscribe',
+                #        ws_channel=f'book.{instrument}.none.20.100ms'
+                #        )
+                #    )
                 
                 self.loop.create_task(
                     self.ws_operation(
