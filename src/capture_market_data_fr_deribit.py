@@ -188,7 +188,7 @@ class StreamMarketData:
                                     if 'PERPETUAL' in instrument_ticker:
                                         log.warning (ticker_fr_snapshot)
                                         log.error (data_orders)
-                                    ticker =[]
+                                    #ticker =[]
                                     for item in data_orders:
                                         if 'PERPETUAL' in instrument_ticker:
                                             log.info (item)
