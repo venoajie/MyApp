@@ -26,6 +26,8 @@ def combining_individual_futures_analysis (index_price: float,
         future: int = future ['expiration_timestamp']
         remaining_active_time: int = future - now_time_unix 
         remaining_active_time_hours: float = (remaining_active_time/(60000))/60
+        delta_price: float = (mark_price - index_price)
+        ratio_price_to_perp: float = delta_price / index_price
 
         # combining current and next coins rate
         dicttemp = {}                
@@ -33,6 +35,7 @@ def combining_individual_futures_analysis (index_price: float,
                     'mark_price': mark_price,
                     'with_rebates': instruments_with_rebates,
                     'margin_usd': margin,
+                    'ratio_to_perpetual': 0 if 'PERPETUAL' in instrument else ratio_price_to_perp,
                     'margin_pct': margin_pct,
                     'remaining_active_time_in_hours': remaining_active_time_hours,
                     'market_expectation': 'contango' if margin > 0 else ('backwardation' if margin < 0 else 'neutral')}                    
