@@ -2,6 +2,8 @@
 
 # installed
 from dataclassy import dataclass
+from loguru import logger as log
+from utilities import pickling, system_tools
 
 def catch_error (error, idle: int = None) -> list:
     """
@@ -64,134 +66,165 @@ class MyTrades ():
         except Exception as error:
             catch_error(error)
             
+            
+    def recognize_trade_transactions (self, trade_order) -> dict:
+        
+        '''
+        '''       
+        from utilities import string_modification
+        
+        log.info (f'DATA FROM EXC LOOP {trade_order=}')
+
+        try:
+            
+            
+            try:
+                label_id = trade_order [0]['label']
+                trade_seq = trade_order [0]['trade_seq']
+                order_type = trade_order [0]['order_type']
+                closed_label_id_int = string_modification.extract_integers_from_text(label_id)
+                
+            except:
+                label_id = []
+                trade_seq = []
+                order_type = []
+                closed_label_id_int = []
+            
+            # for data with label id/ordered through API    
+            if label_id != []:
+                
+                pass  
+            
+            liquidation_event = 'liquidation' in order_type
+            if liquidation_event:
+                
+                log.error ('LIQUIDATION')
+                log.error (trade_order)
+                
+                info= (f'LIQUIDATION {trade_order} \n ')
+                telegram_bot_sendtext(info) 
+            
+        except Exception as error:
+            catch_error (error)
+
+        log.info (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
+        
+        return {'liquidation_event': liquidation_event,
+                'label_id': label_id,
+                'closed_label_id_int': closed_label_id_int,
+                'opening_position': 'open' in label_id,
+                'closing_position': 'closed' in label_id}
+        
+    def synchronizing_closed_tradings (self, closed_label_id_int: str, my_trades_path_open) -> None:
+        
+        '''
+        '''       
+
+        # fetch previous open trading data from local db
+        my_trades_open = pickling.read_data(my_trades_path_open)
+        
+        # filter open trades which have the same label id with trade transaction
+        closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+        # sum transaction with the same label id
+        sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
+        log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+
+        #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
+        my_trades = self.my_trades
+        
+        log.debug (len (my_trades))
+        
+        if len (my_trades) > 1:
+            log.error (str(closed_label_id_int))
+                                
+            label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
+            for key in my_trades:
+                if label not in key:
+                    key [label] = []
+
+            #log.debug ((my_trades))
+            mixed_trades_with_the_same_label = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+            sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
+            log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
+            if sum_mixed_trades_in_my_trades_open_net != 0:
+                for data_order in mixed_trades_with_the_same_label:
+                        
+                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    #pickling.check_duplicate_elements (my_trades_path_open)
+                    
+            if sum_mixed_trades_in_my_trades_open_net == 0: 
+
+                remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ])     
+                #log.critical (remaining_open_trades)               
+                for data_order in remaining_open_trades:
+                                    
+                    try:
+                        label_id= data_order [0]['label']
+                    except:
+                        label_id= []
+                    
+                    # for data with label id/ordered through API    
+                    if label_id != []:
+                        log.critical (data_order)   
+                    
+                        pickling.replace_data (my_trades_path_open, data_order, True )
+                        #pickling.check_duplicate_elements (my_trades_path_open)                                
+                
+        # transaction has fully completed. move all the transactions with the same id to closed db
+        if sum_closed_trades_in_my_trades_open_net == 0:
+            
+            #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
+            # update mytrades db with the still open ones
+            remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])                    
+            pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
+            #pickling.check_duplicate_elements (my_trades_path_open)
+                            
+
     def distribute_trade_transaction (self, currency: str) -> None:
         
         '''
         '''       
-        from utilities import string_modification, pickling, system_tools
-        from loguru import logger as log
         
         try:
         
             my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
-            #my_trades_path_closed = system_tools.provide_path_for_file ('myTrades', currency, 'closed')
-            #log.debug (self.my_trades)
 
             for data_order in self.my_trades:
                 data_order = [data_order]
-                log.info (f'DATA FROM EXC LOOP {data_order=}')
+
+                trade_transactions = self.recognize_trade_transactions (data_order)
                 
                 #determine label id. 
-                try:
-                    label_id = data_order [0]['label']
-                    trade_seq = data_order [0]['trade_seq']
-                    order_type = data_order [0]['order_type']
-                    
-                except:
-                    label_id = []
-                    trade_seq = []
-                    order_type = []
+                label_id = trade_transactions['label_id']
                 
-                # for data with label id/ordered through API    
-                if label_id != []:
-                    pass
-
-                closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                log.info (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
-
                 #! DISTRIBUTE trading transaction as per label id
-                if 'liquidation' in order_type:
-                    log.error ('LIQUIDATION')
-                    log.error (data_order)
-                    
-                    info= (f'LIQUIDATION {data_order} \n ')
-                    telegram_bot_sendtext(info) 
+                if label_id == [] :
+                    my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
+                    pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                
+                        
+                if trade_transactions['liquidation_event']:
 
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                    #pickling.check_duplicate_elements (my_trades_path_open)
                     
-                if 'open' in label_id:
+                if trade_transactions['opening_position']:
                     log.error ('LABEL ID OPEN')
                     log.error (data_order)
 
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                    #pickling.check_duplicate_elements (my_trades_path_open)
                     
-                if 'closed' in label_id:
+                if trade_transactions['closing_position']:
+                    
+                    closed_label_id_int = trade_transactions['closed_label_id_int']
                     
                     #log.debug ('LABEL ID CLOSED')
                     
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                    #pickling.check_duplicate_elements (my_trades_path_open)
                     
-                    # fetch previous open trading data from local db
-                    my_trades_open = pickling.read_data(my_trades_path_open)  
-                    log.critical ('LABEL ID OPEN-SHOULD BE LESS THAN 10 ITEMS')
-                    log.warning (my_trades_open)
-                    
-                    # filter open trades which have the same label id with trade transaction
-                    closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                    # sum transaction with the same label id
-                    sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-                    log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
-                        
-                    #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
-                    my_trades = self.my_trades
-                    log.debug ( len (my_trades))
-                    if len (my_trades) > 1:
-                        log.error (str(closed_label_id_int))
-                        
-                                            
-                        label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
-                        for key in my_trades:
-                            if label not in key:
-                                key [label] = []
-        
-                        #log.debug ((my_trades))
-                        mixed_trades_with_the_same_label = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-                        sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
-                        log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
-                        if sum_mixed_trades_in_my_trades_open_net != 0:
-                            for data_order in mixed_trades_with_the_same_label:
-                                    
-                                pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                                #pickling.check_duplicate_elements (my_trades_path_open)
-                                
-                        if sum_mixed_trades_in_my_trades_open_net == 0: 
-
-                            remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ])     
-                            #log.critical (remaining_open_trades)               
-                            for data_order in remaining_open_trades:
-                                                
-                                try:
-                                    label_id= data_order [0]['label']
-                                except:
-                                    label_id= []
-                                
-                                # for data with label id/ordered through API    
-                                if label_id != []:
-                                    log.critical (data_order)   
-                                
-                                    pickling.replace_data (my_trades_path_open, data_order, True )
-                                    #pickling.check_duplicate_elements (my_trades_path_open)                                
-                            
-                    # transaction has fully completed. move all the transactions with the same id to closed db
-                    if sum_closed_trades_in_my_trades_open_net == 0:
-                        
-                        #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
-                        # update mytrades db with the still open ones
-                        remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])                    
-                        pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
-                        #pickling.check_duplicate_elements (my_trades_path_open)
-                                            
-                    if label_id == [] :
-                        my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', currency, 'manual')
-                        #log.error ('[]')
-                        pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, data_order, 10000, True)                                    
-            
+                    self. synchronizing_closed_tradings(closed_label_id_int, my_trades_path_open)
+                                                                
         except Exception as error:
             catch_error(error)
             
