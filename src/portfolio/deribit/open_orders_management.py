@@ -162,11 +162,14 @@ class MyOrders ():
             # filter out trading (somehow, they mixed into order transactions)
             if 'trade_seq' not in order:
                 
-                #log.error (f'{self.my_orders=}')
-                log.warning (f'{order=}')
-                    
                 order_id= order ['order_id']
                 order_state = order ['order_state']
+                
+            # filter out trading (somehow, they mixed into order transactions)
+            if 'trade_seq' in order:
+                                   
+                order_id= order ['order_id']
+                order_state = order ['state']
                 
         except Exception as error:
             catch_error (error)
