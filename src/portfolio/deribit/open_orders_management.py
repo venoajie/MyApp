@@ -157,6 +157,7 @@ class MyOrders ():
         '''       
 
         try:
+            log.info (order)
                 
             # filter out trading (somehow, they mixed into order transactions)
             if 'trade_seq' not in order:
