@@ -531,7 +531,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions: list = reading_from_database ['positions']
-                #log.error (positions)
+                log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
@@ -763,7 +763,10 @@ class ApplyHedgingSpot ():
                                     
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
-                                    log.warning(f'{spot_was_unhedged=} {actual_hedging_size=}  {net_open_orders_open_byAPI_db=} {last_time_order_filled_exceed_threshold=}')
+                                    log.warning(f'{spot_was_unhedged=} \
+                                        {actual_hedging_size=}  \
+                                            {net_open_orders_open_byAPI_db=} \
+                                                {last_time_order_filled_exceed_threshold=}')
                                     
                                     await self.will_new_open_order_create_over_hedge (label,
                                                                                       actual_hedging_size,
