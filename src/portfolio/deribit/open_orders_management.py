@@ -33,6 +33,8 @@ class MyOrders ():
         
         '''
         '''     
+        log.warning (self.my_orders_all() )
+        log.warning ([o for o in self.my_orders_all() if o['api'] == True])
         return [] if self.my_orders_all() == [] else [o for o in self.my_orders_all() if o['api'] == True]
     
     def my_orders_manual (self)->list:

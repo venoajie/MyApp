@@ -46,7 +46,9 @@ class MyTrades ():
         '''    
         return [] if self.my_trades_api () == [] else   ([o for o in self.my_trades_api () if  label in o['label'] ])
     
-    def my_trades_api_net_position(self, selected_trades: list) -> float:
+    def my_trades_api_net_position(self, 
+                                   selected_trades: list
+                                   ) -> float:
         
         '''
         '''    
@@ -55,17 +57,25 @@ class MyTrades ():
             if selected_trades != []:
             # sum sell
                 #selected_trades = set (selected_trades)
-                sum_closed_trades_in_my_trades_open_sell = ([o['amount'] for o in selected_trades if o['direction']=='sell'])
-                sum_closed_trades_in_my_trades_open_sell = 0 if sum_closed_trades_in_my_trades_open_sell == [] else sum(sum_closed_trades_in_my_trades_open_sell)
+                sum_closed_trades_in_my_trades_open_sell = ([o['amount'] for o in selected_trades \
+                    if o['direction']=='sell'])
+                
+                sum_closed_trades_in_my_trades_open_sell = 0 \
+                    if sum_closed_trades_in_my_trades_open_sell == [] \
+                        else sum(sum_closed_trades_in_my_trades_open_sell)
                 # sum buy
-                sum_closed_trades_in_my_trades_open_buy = ([o['amount'] for o in selected_trades if o['direction']=='buy'])
-                sum_closed_trades_in_my_trades_open_buy = 0 if sum_closed_trades_in_my_trades_open_buy == [] else sum(sum_closed_trades_in_my_trades_open_buy)
+                sum_closed_trades_in_my_trades_open_buy = ([o['amount'] for o in selected_trades \
+                    if o['direction']=='buy'])
+                
+                sum_closed_trades_in_my_trades_open_buy = 0 \
+                    if sum_closed_trades_in_my_trades_open_buy == [] \
+                        else sum(sum_closed_trades_in_my_trades_open_buy)
                     
-            return selected_trades if selected_trades == [] else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+            return selected_trades if selected_trades == [] \
+                else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
         
         except Exception as error:
             catch_error(error)
-            
             
     def recognize_trade_transactions (self, trade_order) -> dict:
         
@@ -92,16 +102,12 @@ class MyTrades ():
             
             # for data with label id/ordered through API    
             if label_id != []:
-                
                 pass  
             
             liquidation_event = 'liquidation' in order_type
             if liquidation_event:
-                
-                log.error ('LIQUIDATION')
-                log.error (trade_order)
-                
                 info= (f'LIQUIDATION {trade_order} \n ')
+                log.error (info)
                 telegram_bot_sendtext(info) 
             
         except Exception as error:
@@ -115,19 +121,46 @@ class MyTrades ():
                 'opening_position': 'open' in label_id,
                 'closing_position': 'closed' in label_id}
         
-    def synchronizing_closed_tradings (self, closed_label_id_int: str, my_trades_path_open) -> None:
+    def gather_transactions_under_the_same_id_int (self, 
+                                                   closed_label_id_int: str, 
+                                                   my_trades_open: list
+                                                   ) -> dict:
+        
+        '''
+        my_trades_open = re-read from db after previous closed transaction appended
+        '''       
+        
+        # filter open trades which have the same label id with trade transaction
+        transactions_same_id = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+        
+        #! DELETE ###########################################################################################
+        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']                                          ]
+        log.critical (f'  transactions_same_id {transactions_same_id=} \
+            transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}\
+                remaining_open_trades {remaining_open_trades}')
+        #! DELETE ###########################################################################################
+        
+        return {'transactions_same_id':transactions_same_id,
+                # summing transaction under the same label id
+                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_same_id),
+                'remaining_open_trades': [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']
+                                          ]
+                }
+        
+    def synchronizing_closed_tradings (self, 
+                                       closed_label_id_int: str, 
+                                       my_trades_open: list, 
+                                       my_trades_path_open: str) -> None:
         
         '''
         '''       
-
-        # fetch previous open trading data from local db
-        my_trades_open = pickling.read_data(my_trades_path_open)
+        gather_transactions_under_the_same_id_int = self.gather_transactions_under_the_same_id_int (closed_label_id_int, my_trades_open)
         
         # filter open trades which have the same label id with trade transaction
-        closed_trades_in_my_trades_open = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+        closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
         # sum transaction with the same label id
-        sum_closed_trades_in_my_trades_open_net = self.my_trades_api_net_position (closed_trades_in_my_trades_open)
-        log.critical (f'{sum_closed_trades_in_my_trades_open_net=} {closed_trades_in_my_trades_open=}')
+        sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
+        remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
         my_trades = self.my_trades
@@ -141,21 +174,16 @@ class MyTrades ():
             for key in my_trades:
                 if label not in key:
                     key [label] = []
-
-            #log.debug ((my_trades))
-            mixed_trades_with_the_same_label = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-            sum_mixed_trades_in_my_trades_open_net = self.my_trades_api_net_position (mixed_trades_with_the_same_label)
-            log.critical (f'{sum_mixed_trades_in_my_trades_open_net=} {mixed_trades_with_the_same_label=}')
-            if sum_mixed_trades_in_my_trades_open_net != 0:
-                for data_order in mixed_trades_with_the_same_label:
+            
+            # the transaction did not make the respective label to be closed
+            if sum_closed_trades_in_my_trades_open_net != 0:
+                for data_order in closed_trades_in_my_trades_open:
                         
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
-                    #pickling.check_duplicate_elements (my_trades_path_open)
                     
-            if sum_mixed_trades_in_my_trades_open_net == 0: 
-
-                remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ])     
-                #log.critical (remaining_open_trades)               
+            # the transaction closed the respective label
+            if sum_closed_trades_in_my_trades_open_net == 0: 
+                
                 for data_order in remaining_open_trades:
                                     
                     try:
@@ -168,16 +196,13 @@ class MyTrades ():
                         log.critical (data_order)   
                     
                         pickling.replace_data (my_trades_path_open, data_order, True )
-                        #pickling.check_duplicate_elements (my_trades_path_open)                                
                 
         # transaction has fully completed. move all the transactions with the same id to closed db
         if sum_closed_trades_in_my_trades_open_net == 0:
             
             #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
             # update mytrades db with the still open ones
-            remaining_open_trades = ([o for o in my_trades_open if  str(closed_label_id_int)  not in o['label'] ])                    
             pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
-            #pickling.check_duplicate_elements (my_trades_path_open)
                             
 
     def distribute_trade_transaction (self, currency: str) -> None:
@@ -215,16 +240,19 @@ class MyTrades ():
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     
                 if trade_transactions['closing_position']:
-                    
-                    closed_label_id_int = trade_transactions['closed_label_id_int']
-                    
                     #log.debug ('LABEL ID CLOSED')
                     
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                                
+                    # fetch previous open trading data from local db
+                    my_trades_open = pickling.read_data(my_trades_path_open)
                     
-                    self. synchronizing_closed_tradings(closed_label_id_int, my_trades_path_open)
-                                                                
+                    self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
+                                                        my_trades_open, 
+                                                        my_trades_path_open
+                                                        )
+                                                            
         except Exception as error:
             catch_error(error)
             

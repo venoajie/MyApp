@@ -8,9 +8,17 @@ def remove_redundant_elements (data: list)->list:
     # https://stackoverflow.com/questions/9427163/remove-duplicate-dict-in-list-in-python #! (hash free)
     
     '''      
-    return list({frozenset(item.items()):item for item in data}.values())  
+    return list(
+        {
+            frozenset(
+                item.items()
+                ):item for item in data
+            }.values()
+        )  
 
-def find_unique_elements (data1: list, data2: list)->list:
+def find_unique_elements (data1: list, 
+                          data2: list
+                          )->list:
     
     '''  
     data1 = all data
