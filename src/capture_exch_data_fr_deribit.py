@@ -199,24 +199,28 @@ class StreamAccountData:
                 
     async def get_sub_accounts(self,
                                currency
-                               ) -> None:
+                               ) -> list:
         """
         """
         
         
         try:
             
-            result: dict =  await deribit_get.get_subaccounts (self.connection_url, 
+            result: dict =  await deribit_get.get_subaccounts (
+                                                            self.connection_url, 
                                                             self.client_id,
                                                             self.client_secret, 
                                                             currency
                                                             )
-            log.warning(result)
+            #log.warning(result)
             result_sub_account =  result ['result'] 
-            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', currency)
-            pickling.replace_data(my_path_sub_account, result_sub_account)
-            return result ['result'] 
-    
+            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
+                                                                      currency
+                                                                      )
+            pickling.replace_data(my_path_sub_account, 
+                                  result_sub_account
+                                  )
+            return result_sub_account
     
         except Exception as error:
             log.warning (error)
