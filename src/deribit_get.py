@@ -401,6 +401,25 @@ async def get_positions (connection_url: str, client_id, client_secret, currency
             )
     return result #['result']
 
+async def get_subaccounts (connection_url: str, 
+                           client_id, 
+                           client_secret, 
+                           currency
+                           ):
+        
+    params =  {"currency": currency,
+               "with_open_orders": True}
+    
+    endpoint: str = 'private/get_subaccounts_details'
+    result = await main(
+            endpoint=endpoint,
+            params=params,
+            connection_url=connection_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            )
+    return result #['result']
+
 async def get_account_summary (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency,
@@ -432,8 +451,6 @@ async def  get_index (connection_url: str, currency):
     
     endpoint: str = 'public/get_index'
     params =  {"currency": 'ETH'}
-    print (endpoint)
-    print (params)
     
     result = await main(
             endpoint=endpoint,

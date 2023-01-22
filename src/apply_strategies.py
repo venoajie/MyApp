@@ -183,7 +183,11 @@ class ApplyHedgingSpot ():
     async def get_account_summary (self, currency: str) -> list:
         """
         """
-        account_summary: list = await deribit_get.get_account_summary (self.connection_url, self.client_id, self.client_secret, currency)
+        account_summary: list = await deribit_get.get_account_summary (self.connection_url, 
+                                                                       self.client_id, 
+                                                                       self.client_secret, 
+                                                                       currency
+                                                                       )
                         
         return account_summary ['result']
     
@@ -258,6 +262,7 @@ class ApplyHedgingSpot ():
         my_path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
         my_path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
             
+        path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', self.currency)               
         my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
         my_trades_open: str = pickling.read_data(my_trades_path_open)               
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
@@ -279,6 +284,9 @@ class ApplyHedgingSpot ():
         index_price: list = pickling.read_data(my_path_index)
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
+        sub_account = pickling.read_data(path_sub_accounts)
+        positions_from_sub_account = sub_account ['result'] ['positions']
+        open_orders_from_sub_account = sub_account ['result'] ['open_order']
         portfolio = pickling.read_data(my_path_portfolio)
         open_order = pickling.read_data(my_path_orders_open)
         log.error (open_order)
@@ -301,10 +309,12 @@ class ApplyHedgingSpot ():
                 'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
                 'positions': positions,
+                'positions_from_sub_account': positions_from_sub_account,
+                'open_orders_from_sub_account': open_orders_from_sub_account,
+                'portfolio': portfolio,
                 'ordBook': pickling.read_data(my_path_ordBook),
                 'ticker': pickling.read_data(my_path_ticker),
                 'my_path_futures_analysis': pickling.read_data(my_path_futures_analysis),
-                'portfolio': portfolio,
                 'index_price': index_price [0]['price'],
                 'ticker_perpetual': ticker_perpetual[0],
                 'price_index': ticker_perpetual[0],
@@ -531,7 +541,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions: list = reading_from_database ['positions']
-                log.error (positions)
+                #log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
@@ -549,12 +559,12 @@ class ApplyHedgingSpot ():
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
                 
                 # obtain instruments future with rebates
-                rebates = await self.get_instruments_with_rebates (instruments, server_time)
-                rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
+                #rebates = await self.get_instruments_with_rebates (instruments, server_time)
+                #rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
 
                 # obtain instruments future relevant to strategies
-                instrument_transactions = [o['instrument_name'] for o in instruments_future \
-                    if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
+                #instrument_transactions = [o['instrument_name'] for o in instruments_future \
+                #    if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
                 instrument_transactions = [f'{self.currency.upper()}-PERPETUAL']
 
                 # open orders data

@@ -13,12 +13,12 @@ def get_platform ()-> str:
     https://stackoverflow.com/questions/1325581/how-do-i-check-if-im-running-on-windows-in-python
     '''   
     
-    platforms:dict = {
+    platforms: dict = {
         'linux1' : 'linux',
         'linux2' : 'linux',
         'darwin' : 'OS X',
         'win32' : 'win'
-    }
+        }
     
     if sys.platform not in platforms:
         return sys.platform
@@ -39,7 +39,12 @@ def sleep_and_restart_program (idle: float)-> None:
     python = sys.executable
     os.execl(python, python, * sys.argv)
     
-def provide_path_for_file (end_point: str, marker: str = None, status: str =None, method: str =None)-> str:
+def provide_path_for_file (
+                            end_point: str, 
+                            marker: str = None, 
+                            status: str =None, 
+                            method: str =None
+                           )-> str:
     '''
     marker: currency, instrument, other
     end_point: orders, myTrades
@@ -55,16 +60,49 @@ def provide_path_for_file (end_point: str, marker: str = None, status: str =None
     
     exchange = None
     
-    if  bool([o for o in ['orders', 'myTrades', 'portfolio','positions'] if (o in end_point)])  :
-        sub_folder = 'portfolio'
-        exchange = 'deribit'
+    if  bool(
+        [
+            o for o in [
+                'orders', 
+                'myTrades', 
+                'portfolio',
+                'positions', 
+                'sub_accounts'
+                ] if (o in end_point)
+            ]
+        )  :
         
-    if bool([o for o in ['ordBook', 'index', 'instruments','currencies','ohlc', 'futures_analysis', 'ticker-all','ticker']  if (o in end_point)])  :
+        sub_folder: str = 'portfolio'
+        exchange: str = 'deribit'
+        
+    if bool(
+        [
+            o for o in [
+                'ordBook', 
+                'index', 
+                'instruments',
+                'currencies',
+                'ohlc', 
+                'futures_analysis', 
+                'ticker-all',
+                'ticker'
+                         ]  if (o in end_point)
+            ]
+        ):
+        
         sub_folder = 'market_data'
         exchange = 'deribit'
         
-    if bool([o for o in ['openInterestHistorical', 'openInterestHistorical', 'openInterestAggregated']  if (o in end_point)])  :
-        sub_folder = 'market_data'
+    if bool(
+        [
+            o for o in [
+                'openInterestHistorical', 
+                'openInterestHistorical', 
+                'openInterestAggregated'
+                         ]  if (o in end_point)
+            ]
+        )  :
+        sub_folder: str = 'market_data'
     
     if  marker != None:
         

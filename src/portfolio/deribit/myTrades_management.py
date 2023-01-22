@@ -158,6 +158,7 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
+        
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
@@ -195,7 +196,7 @@ class MyTrades ():
                     if label_id != []:
                         log.critical (data_order)   
                     
-                        pickling.replace_data (my_trades_path_open, data_order, True )
+                        pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
                 
         # transaction has fully completed. move all the transactions with the same id to closed db
         if sum_closed_trades_in_my_trades_open_net == 0:

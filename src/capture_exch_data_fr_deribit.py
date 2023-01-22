@@ -19,6 +19,8 @@ from dotenv import load_dotenv
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
 from portfolio.deribit import open_orders_management, myTrades_management
+import deribit_get
+import apply_strategies
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -126,11 +128,12 @@ class StreamAccountData:
                     
                     if message['id'] == 9929:
                         if self.refresh_token is None:
+                            await self.get_sub_accounts(currency)
                             log.debug('Successfully authenticated WebSocket Connection')
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
-                            import apply_strategies
+                            
                             syn = apply_strategies. ApplyHedgingSpot (self.connection_url,
                                                                            self.client_id,
                                                                            self.client_secret,
@@ -139,6 +142,7 @@ class StreamAccountData:
                             server_time = await syn.current_server_time ()
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedgingSpot'))
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
+                            await self.get_sub_accounts(currency)
                             #await synchronizing_files
 
                         self.refresh_token = message['result']['refresh_token']
@@ -187,11 +191,36 @@ class StreamAccountData:
                                 #log.error (positions)
                                 my_path_position = system_tools.provide_path_for_file ('positions', currency)
                                 pickling.replace_data(my_path_position, positions)
-                                                                              
+                                
+                        await self.get_sub_accounts(currency)                                                      
             else:
                 log.info('WebSocket connection has broken.')
                 system_tools.catch_error_message (error, .1, 'WebSocket connection EXCHANGE has broken')
                 
+    async def get_sub_accounts(self,
+                               currency
+                               ) -> None:
+        """
+        """
+        
+        
+        try:
+            
+            result: dict =  await deribit_get.get_subaccounts (self.connection_url, 
+                                                            self.client_id,
+                                                            self.client_secret, 
+                                                            currency
+                                                            )
+            log.warning(result)
+            result_sub_account =  result ['result'] 
+            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', currency)
+            pickling.replace_data(my_path_sub_account, result_sub_account)
+            return result ['result'] 
+    
+    
+        except Exception as error:
+            log.warning (error)
+
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
@@ -214,6 +243,7 @@ class StreamAccountData:
                 )
         except Exception as error:
             log.warning (error)
+
 
     async def heartbeat_response(self) -> None:
         """
