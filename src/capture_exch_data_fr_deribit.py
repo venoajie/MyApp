@@ -100,10 +100,12 @@ class StreamAccountData:
             #for currency in currencies: isu, multiple currency could interfere each other in the calculation function
             currency = 'ETH'
 
-            my_path_instruments = system_tools.provide_path_for_file('instruments',  
-                                                                     currency) 
+            my_path_instruments = system_tools.provide_path_for_file(
+                                                                    'instruments',  
+                                                                     currency
+                                                                     ) 
             instruments = pickling.read_data (my_path_instruments)
-            instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
+            #instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
             
             self.loop.create_task(
                 self.ws_operation(
@@ -134,13 +136,17 @@ class StreamAccountData:
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
                             
-                            syn = apply_strategies. ApplyHedgingSpot (self.connection_url,
-                                                                           self.client_id,
-                                                                           self.client_secret,
-                                                                           currency
+                            syn = apply_strategies. ApplyHedgingSpot (
+                                                                    self.connection_url,
+                                                                    self.client_id,
+                                                                    self.client_secret,
+                                                                    currency
                                                                            )
                             server_time = await syn.current_server_time ()
-                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 'hedgingSpot'))
+                            await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 
+                                                                                          'hedgingSpot'
+                                                                                          )
+                                   )
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
                             await self.get_sub_accounts(currency)
                             #await synchronizing_files
@@ -189,13 +195,22 @@ class StreamAccountData:
                                 
                             if positions:
                                 #log.error (positions)
-                                my_path_position = system_tools.provide_path_for_file ('positions', currency)
-                                pickling.replace_data(my_path_position, positions)
+                                my_path_position = system_tools.provide_path_for_file (
+                                                                                        'positions', 
+                                                                                        currency
+                                                                                        )
+                                pickling.replace_data(
+                                                        my_path_position, 
+                                                        positions
+                                                        )
                                 
                         await self.get_sub_accounts(currency)                                                      
             else:
                 log.info('WebSocket connection has broken.')
-                system_tools.catch_error_message (error, .1, 'WebSocket connection EXCHANGE has broken')
+                system_tools.catch_error_message (error, 
+                                                    .1, 
+                                                    'WebSocket connection EXCHANGE has broken'
+                                                    )
                 
     async def get_sub_accounts(self,
                                currency
@@ -203,14 +218,13 @@ class StreamAccountData:
         """
         """
         
-        
         try:
             
             result: dict =  await deribit_get.get_subaccounts (
-                                                            self.connection_url, 
-                                                            self.client_id,
-                                                            self.client_secret, 
-                                                            currency
+                                                                self.connection_url, 
+                                                                self.client_id,
+                                                                self.client_secret, 
+                                                                currency
                                                             )
             #log.warning(result)
             result_sub_account =  result ['result'] 
