@@ -176,7 +176,7 @@ class MyOrders ():
         except Exception as error:
             catch_error (error)
 
-        return {'order_state_open': order_state == 'open',
+        return {'order_state_open': order_state == 'open' or order_state == 'triggered',
                 'order_state_else': order_state != 'open',
                 'order_id': order_id}
     
