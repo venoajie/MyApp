@@ -285,8 +285,8 @@ class ApplyHedgingSpot ():
         my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(my_path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        positions_from_sub_account = sub_account ['result'] ['positions']
-        open_orders_from_sub_account = sub_account ['result'] ['open_order']
+        positions_from_sub_account = sub_account ['positions']
+        open_orders_from_sub_account = sub_account ['open_order']
         portfolio = pickling.read_data(my_path_portfolio)
         open_order = pickling.read_data(my_path_orders_open)
         log.error (open_order)
@@ -294,7 +294,7 @@ class ApplyHedgingSpot ():
         
         # at start, usually position == None
         if positions in none_data:
-            positions = await self.get_positions ()
+            positions = positions_from_sub_account#await self.get_positions ()
             pickling.replace_data (my_path_positions, positions)  
             
         #log.debug (portfolio)
