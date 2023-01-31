@@ -62,6 +62,7 @@ class StreamMarketData:
         
         self.connection_url: str = 'https://www.deribit.com/api/v2/' \
             if 'test' not in self.ws_connection_url else 'https://test.deribit.com/api/v2/'
+            
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
@@ -160,7 +161,7 @@ class StreamMarketData:
                         message_channel = message['params']['channel']
                         #log.info (message_channel)
             
-                        one_minute: int = 60000
+                        #one_minute: int = 60000
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
                         #log.error(currency)
@@ -213,8 +214,8 @@ class StreamMarketData:
                             except:
                                 continue        
                         
-                                
-                        instrument_book = "".join(list(message_channel) [5:][:-14])
+                        #! freezed        
+                        #instrument_book = "".join(list(message_channel) [5:][:-14])
                         if False and message_channel == f'book.{instrument_book}.none.20.100ms':
                             
                             my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
@@ -349,17 +350,26 @@ def main ():
         StreamMarketData ()
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save MARKET data from deribit')
+        system_tools.catch_error_message (error, 
+                                          10, 
+                                          'fetch and save MARKET data from deribit'
+                                          )
     
 if __name__ == "__main__":
 
     try:
         main()
         
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt, 
+            SystemExit
+            ):
+        
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save MARKET data from deribit')
+        system_tools.catch_error_message (error, 
+                                          10, 
+                                          'fetch and save MARKET data from deribit'
+                                          )
 
     

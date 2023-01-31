@@ -15,6 +15,7 @@ def db_ops(db_name: str = 'trading.db')->None:
             Return and rtype: None
             #https://stackoverflow.com/questions/67436362/decorator-for-sqlite3/67436763#67436763
             # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
+            https://code-kamran.medium.com/python-convert-json-to-sqlite-d6fa8952a319
     ''' 
 
     #conn.execute('BEGIN')

@@ -10,6 +10,13 @@ def catch_error (error, idle: int = None) -> list:
     from utilities import system_tools
     system_tools.catch_error_message(error, idle)
 
+
+def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
+    from utilities import telegram_app
+    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
 @dataclass(unsafe_hash=True, slots=True)
 class MyOrders ():
 
@@ -20,14 +27,14 @@ class MyOrders ():
     #  clean up open orders data 
     '''       
     
-    my_orders: list
+    open_orders_from_db: list
             
     def my_orders_all (self)-> list:
         
         '''
         '''    
         none_data = [None, []]
-        return [] if self.my_orders in none_data else self.my_orders 
+        return [] if self.open_orders_from_db in none_data else self.open_orders_from_db 
     
     def my_orders_api (self)-> list:
         
@@ -132,7 +139,11 @@ class MyOrders ():
         else:
             result =  0 if self.my_orders_api_basedOn_label (label) == [] \
             else  number_modification.net_position (
-                ([o for o in self.my_orders_api_basedOn_label (label)]))
+                [o for o in self.my_orders_api_basedOn_label (
+                    label
+                    )
+                 ]
+                )
                 
         return result
             
@@ -146,29 +157,35 @@ class MyOrders ():
         
         return number_modification.net_position (selected_transactions)
     
-    def my_orders_api_basedOn_label_items_size (self, label: str)-> list:
+    def my_orders_api_basedOn_label_items_size (self, 
+                                                label: str
+                                                )-> list:
         
         '''
         '''    
         return [] if self.my_orders_api_basedOn_label (label) == [] \
             else  self.net_position  (self.my_orders_api_basedOn_label (label))
             
-    def recognize_order_transactions (self, order) -> dict:
+    def recognize_order_transactions (self, 
+                                      order: dict
+                                      ) -> dict:
         
+        
+        ''' 
         '''
-        '''       
 
-        try:
-            log.info (order)
+        try: 
+            
+            log.info (order) # log the order
                 
             # filter out trading (somehow, they mixed into order transactions)
-            if 'trade_seq' not in order:
+            if 'trade_seq' not in order: # if the order does not have a trade sequence
                 
                 order_id= order ['order_id']
                 order_state = order ['order_state']
                 
-            # filter out trading (somehow, they mixed into order transactions)
-            if 'trade_seq' in order:
+            # filter out trading (somehow, they mixed into order transactions)  
+            if 'trade_seq' in order:  
                                    
                 order_id= order ['order_id']
                 order_state = order ['state']
@@ -176,13 +193,14 @@ class MyOrders ():
         except Exception as error:
             catch_error (error)
 
-        return {'order_state_open': order_state == 'open' or order_state == 'triggered',
+        return {'order_state_open': order_state == 'open',
                 'order_state_else': order_state != 'open',
                 'order_id': order_id}
+
     
     def combine_open_orders_based_on_id (self, 
-                                         open_orders_open, 
-                                         order_id) -> dict:
+                                         open_orders_open: list, 
+                                         order_id: str) -> dict:
         
         '''
         '''                   
@@ -201,9 +219,9 @@ class MyOrders ():
 
         try:
             
-            if self.my_orders:
+            if self.open_orders_from_db:
                 
-                for order in self.my_orders:
+                for order in self.open_orders_from_db:
                             
                     order_state = self.recognize_order_transactions (order)
             
@@ -211,7 +229,10 @@ class MyOrders ():
                         log.error ('ORDER_STATE OPEN')
                         log.info (f'{order=}')
                         
-                        pickling.append_and_replace_items_based_on_qty (my_path_orders_open, order, 1000, True)
+                        pickling.append_and_replace_items_based_on_qty (my_path_orders_open, 
+                                                                        order, 
+                                                                        1000, 
+                                                                        True)
                         
                     if order_state ['order_state_else']:
                         log.critical ('ORDER_STATE ELSE')
@@ -244,6 +265,29 @@ class MyOrders ():
             else:
                 pickling.replace_data (my_path_orders_open, [], True)
                         
+        except Exception as error:
+            catch_error (error)
+            
+            
+    def compare_open_order_per_db_vs_get(self,
+                                         open_orders_from_sub_account_get: list) -> int:
+        
+        '''
+        ''' 
+
+        try:
+            
+            both_sources_are_equivalent =  open_orders_from_sub_account_get == self. open_orders_from_db
+            log.critical (f'both_sources_are_equivalent {both_sources_are_equivalent} open_order_from_get {open_orders_from_sub_account_get} open_order_from_db {self. open_orders_from_db}')
+            
+            if both_sources_are_equivalent == False:
+                    info= (f'OPEN ORDER DIFFERENT open_order_from_get {open_orders_from_sub_account_get}  open_order_from_db {self. open_orders_from_db} \n ')
+                    telegram_bot_sendtext(info) 
+                #log.warning (f'difference {difference}')
+                
+            return  both_sources_are_equivalent
+                
+            
         except Exception as error:
             catch_error (error)
             

@@ -1,5 +1,6 @@
 # built ins
 from typing import Dict
+
 # installed
 import asyncio
 import websockets
@@ -41,13 +42,17 @@ async def main(
     client_secret: str=None,
         ) -> None:
 
-    id = id_numbering.id(endpoint, endpoint)
+    id = id_numbering.id(endpoint, 
+                         endpoint
+                         )
+    
     payload: Dict = {
                     "jsonrpc": "2.0",
                     "id": id,
                     "method": f"{endpoint}",
                     "params": params
                     }  
+    
     if client_id == None:
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -78,22 +83,22 @@ async def main(
             return response
 
 async def send_order  (connection_url: str,
-                            client_id,
-                            client_secret,
-                            side: str, 
-                            instrument, 
-                            amount, 
-                            label: str = None, 
-                            price: float = None, 
-                            type: str ='limit',
-                            trigger_price: float = None, 
-                            trigger: str = 'last_price', 
-                            time_in_force: str ='fill_or_kill',
-                            reduce_only: bool = False, 
-                            valid_until: int = False,
-                            post_only: bool = True, 
-                            reject_post_only: bool =False
-                            ):
+                        client_id,
+                        client_secret,
+                        side: str, 
+                        instrument, 
+                        amount, 
+                        label: str = None, 
+                        price: float = None, 
+                        type: str ='limit',
+                        trigger_price: float = None, 
+                        trigger: str = 'last_price', 
+                        time_in_force: str ='fill_or_kill',
+                        reduce_only: bool = False, 
+                        valid_until: int = False,
+                        post_only: bool = True, 
+                        reject_post_only: bool =False
+                        ):
         
     if valid_until == False:
         if trigger_price == None:
@@ -229,6 +234,7 @@ async def send_order_markett (connection_url: str,
                 "reject_post_only": reject_post_only
                 }
 
+    # Set endpoint based on side
     if side == 'buy':
         endpoint: str = 'private/buy'
     if side == 'sell'  :
@@ -244,7 +250,12 @@ async def send_order_markett (connection_url: str,
 
     return result 
 
-async def  get_open_orders_byInstruments (connection_url, client_id, client_secret, endpoint, instrument, type):
+async def  get_open_orders_byInstruments (connection_url, 
+                                          client_id, client_secret,
+                                          endpoint, 
+                                          instrument, 
+                                          type
+                                          ):
     params =  {
                 "instrument_name": instrument,
                 "type": type,
@@ -268,7 +279,9 @@ async def  get_open_orders_byCurrency (connection_url,
                 "currency": currency
                 }
     
+    # Set endpoint
     endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
+
     result = await main(
             endpoint=endpoint_open_orders_currency,
             params=params,
@@ -284,13 +297,16 @@ async def  get_user_trades_by_currency (connection_url,
                                         currency: str, 
                                         count: int =1000
                                         )-> list:
+    
+    # Set endpoint
+    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency'
+
     params =  {
                 "currency": currency.upper(),
                 "kind": 'any',
                 "count": count
                 }
     
-    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency'
     result = await main(
             endpoint= endpoint_get_user_trades,
             params= params,
@@ -307,13 +323,15 @@ async def  get_user_trades_by_instrument (connection_url,
                                           count: int =1000
                                           ):
     
+    # Set endpoint
+    endpoint_get_user_trades: str = f'private/get_user_trades_by_instrument'
+    
     params =  {
                 "currency": currency.upper(),
                 "kind": 'any',
                 "count": count
                 }
-    
-    endpoint_get_user_trades: str = f'private/get_user_trades_by_instrument'
+
     result = await main(
             endpoint= endpoint_get_user_trades,
             params= params,
@@ -332,6 +350,10 @@ async def  get_user_trades_by_currency_and_time (connection_url,
                                                  count: int = 1000, 
                                                  include_old: bool = True
                                                  )-> list:
+    
+    # Set endpoint
+    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency_and_time'
+
     params =  {
                 "currency": currency.upper(),
                 "kind": "any",
@@ -340,8 +362,7 @@ async def  get_user_trades_by_currency_and_time (connection_url,
                 "count": count,
                 "include_old": include_old
                 }
-    
-    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency_and_time'
+
     result = await main(
             endpoint= endpoint_get_user_trades,
             params= params,
@@ -349,17 +370,22 @@ async def  get_user_trades_by_currency_and_time (connection_url,
             client_id= client_id,
             client_secret= client_secret,
             )
+
     return result 
 
 async def  get_order_history_by_instrument (connection_url, client_id, client_secret, instrument_name, count: int = 100):
+
+    
+    # Set endpoint
+    endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
+
     params =  {
                 "instrument_name": instrument_name.upper(),
                 "include_old": True,
                 "include_unfilled": True,
                 "count": count
                 }
-    
-    endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
+
     result = await main(
             endpoint= endpoint_get_order_history,
             params= params,
@@ -373,12 +399,13 @@ async def  get_cancel_order_byOrderId(connection_url: str,
                                       client_id: str, 
                                       client_secret: str, 
                                       order_id: int):
+    # Set endpoint
+    endpoint: str = 'private/cancel'
+
     params =  {
                 "order_id": order_id
                 }
-    
-    endpoint: str = 'private/cancel'
-    
+        
     result = await main(
             endpoint=endpoint,
             params=params,
@@ -389,9 +416,12 @@ async def  get_cancel_order_byOrderId(connection_url: str,
     return result     
 
 async def get_positions (connection_url: str, client_id, client_secret, currency):
+
+    # Set endpoint
+    endpoint: str = 'private/get_positions'
         
     params =  {"currency": currency}
-    endpoint: str = 'private/get_positions'
+
     result = await main(
             endpoint=endpoint,
             params=params,
@@ -407,10 +437,12 @@ async def get_subaccounts (connection_url: str,
                            currency
                            ):
         
+    # Set endpoint
+    endpoint: str = 'private/get_subaccounts_details'
+
     params =  {"currency": currency,
                "with_open_orders": True}
     
-    endpoint: str = 'private/get_subaccounts_details'
     result = await main(
             endpoint=endpoint,
             params=params,
@@ -418,12 +450,15 @@ async def get_subaccounts (connection_url: str,
             client_id=client_id,
             client_secret=client_secret,
             )
+    
     return result #['result']
 
 async def get_account_summary (connection_url: str, client_id, client_secret, currency):
         
     params =  {"currency": currency,
     "extended": True}
+
+    # Set endpoint
     endpoint: str = 'private/get_account_summary'
     
     result = await main(
@@ -434,21 +469,30 @@ async def get_account_summary (connection_url: str, client_id, client_secret, cu
             client_secret=client_secret,
             )
     return result #['result']
-        
+
 async def  get_server_time (connection_url: str):
-    
+
+    """
+    Returning server time
+    """
+    # Set endpoint
     endpoint: str = 'public/get_time?'
+    
+    # Set the parameters  
     params = {}
     
+    # Get result
     result = await main(
             endpoint=endpoint,
             params=params,
             connection_url=connection_url
             )
+    
     return result  
 
 async def  get_index (connection_url: str, currency):
     
+    # Set endpoint
     endpoint: str = 'public/get_index'
     params =  {"currency": 'ETH'}
     
@@ -461,6 +505,7 @@ async def  get_index (connection_url: str, currency):
 
 async def  get_instruments (connection_url: str, currency):
     
+    # Set endpoint
     endpoint: str = 'public/get_instruments'
     params =  {"currency": 'ETH',
     "kind": "future",

@@ -115,11 +115,11 @@ class ApplyHedgingSpot ():
         try:
             result = [] if trades == [] else trades ['result'] ['trades']
         
-            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+            path_trades_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             self.currency,
                                                                             'all-recovery-point'
                                                                             )          
-            pickling.replace_data (my_trades_path_open_recovery, 
+            pickling.replace_data (path_trades_open_recovery, 
                                     result, 
                                     True
                                     )
@@ -256,69 +256,70 @@ class ApplyHedgingSpot ():
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
-        my_path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        my_path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
-        my_path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', f'{(self.currency).upper()}-PERPETUAL') 
-        my_path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
-        my_path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
+        path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
+        path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
+        path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', f'{(self.currency).upper()}-PERPETUAL') 
+        path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
+        path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
             
         path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', self.currency)               
-        my_trades_path_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
-        my_trades_open: str = pickling.read_data(my_trades_path_open)               
+        path_trades_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
+        my_trades_open: str = pickling.read_data(path_trades_open)               
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
         my_trades_closed: str = pickling.read_data(my_trades_path_closed)             
         
-        my_path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
-        my_path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
-        my_path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
+        path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
+        path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
+        path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
         
-        my_path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency)      
+        path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency)      
         
-        my_path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
+        path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
                 
         symbol_index: str = f'{self.currency}_usd'
-        my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
-        ticker_perpetual: list = pickling.read_data(my_path_ticker_perpetual)
+        path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        ticker_perpetual: list = pickling.read_data(path_ticker_perpetual)
         symbol_index: str = f'{self.currency}_usd'
-        my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
-        index_price: list = pickling.read_data(my_path_index)
-        my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
-        positions = pickling.read_data(my_path_positions)
+        path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        index_price: list = pickling.read_data(path_index)
+        path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
+        positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        positions_from_sub_account = sub_account ['positions']
-        open_orders_from_sub_account = sub_account ['open_order']
-        portfolio = pickling.read_data(my_path_portfolio)
-        open_order = pickling.read_data(my_path_orders_open)
+        log.error (sub_account)
+        positions_from_sub_account = sub_account [0] ['positions']
+        open_orders_from_sub_account = sub_account [0] ['open_orders']
+        portfolio = pickling.read_data(path_portfolio)
+        open_order = pickling.read_data(path_orders_open)
         log.error (open_order)
         none_data = [None, [], 0]
         
         # at start, usually position == None
         if positions in none_data:
             positions = positions_from_sub_account#await self.get_positions ()
-            pickling.replace_data (my_path_positions, positions)  
+            pickling.replace_data (path_positions, positions)  
             
         #log.debug (portfolio)
         if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
-            pickling.replace_data (my_path_portfolio, portfolio) 
-            portfolio = pickling.read_data(my_path_portfolio)       
+            pickling.replace_data (path_portfolio, portfolio) 
+            portfolio = pickling.read_data(path_portfolio)       
         
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
                 'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
-                'open_orders_open_byAPI': pickling.read_data(my_path_orders_open),
-                'open_orders_closed_byAPI': pickling.read_data(my_path_orders_closed),
-                'open_orders_filled_byAPI': pickling.read_data(my_path_orders_filled),
+                'open_orders_open_byAPI': pickling.read_data(path_orders_open),
+                'open_orders_closed_byAPI': pickling.read_data(path_orders_closed),
+                'open_orders_filled_byAPI': pickling.read_data(path_orders_filled),
                 'positions': positions,
                 'positions_from_sub_account': positions_from_sub_account,
                 'open_orders_from_sub_account': open_orders_from_sub_account,
                 'portfolio': portfolio,
-                'ordBook': pickling.read_data(my_path_ordBook),
-                'ticker': pickling.read_data(my_path_ticker),
-                'my_path_futures_analysis': pickling.read_data(my_path_futures_analysis),
+                'ordBook': pickling.read_data(path_ordBook),
+                'ticker': pickling.read_data(path_ticker),
+                'path_futures_analysis': pickling.read_data(path_futures_analysis),
                 'index_price': index_price [0]['price'],
                 'ticker_perpetual': ticker_perpetual[0],
                 'price_index': ticker_perpetual[0],
-                'instruments': pickling.read_data (my_path_instruments)}
+                'instruments': pickling.read_data (path_instruments)}
     
     async def position_per_instrument (self, positions, instrument: str) -> list:
         """
@@ -329,10 +330,10 @@ class ApplyHedgingSpot ():
                 position  = position  [0]
             #log.warning (position)
         except:
-            my_path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
-            log.debug (my_path_positions)
+            path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
+            log.debug (path_positions)
             positions = await self.get_positions ()
-            pickling.replace_data (my_path_positions, positions)   
+            pickling.replace_data (path_positions, positions)   
             position = await self.reading_from_database ()   
             position = position ['positions']  
             log.warning (position)
@@ -455,7 +456,7 @@ class ApplyHedgingSpot ():
                                                       self.client_secret, 
                                                       open_order_id
                                                       )  
-    async def check_integrity (self, 
+    async def check_myTrade_integrity (self, 
                                positions_from_get, 
                                my_trades_open_from_db, 
                                server_time
@@ -475,28 +476,28 @@ class ApplyHedgingSpot ():
             # use the earliest time stamp to fetch data from exchange
             my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, server_time)
         
-        data_integrity =  check_data_integrity.CheckDataIntegrity (self.currency,
+        data_integrity =  check_data_integrity.CheckTradeIntegrity (self.currency,
                                                                        positions_from_get,
                                                                        my_trades_open_from_db,
                                                                        my_selected_trades_open_from_system
                                                                        )
         
-        inventory_per_db_vs_system_comparation = await data_integrity.compare_inventory_per_db_vs_system ()
-        log.critical (inventory_per_db_vs_system_comparation)
+        inventory_per_db_vs_get_comparation = await data_integrity.compare_inventory_per_db_vs_get ()
+        log.critical (inventory_per_db_vs_get_comparation)
         #log.warning (my_trades_open_from_db)
         
         
-        if inventory_per_db_vs_system_comparation != 0:
-            log.info (inventory_per_db_vs_system_comparation)
+        if inventory_per_db_vs_get_comparation != 0:
+            log.info (inventory_per_db_vs_get_comparation)
             await data_integrity.rearrange_my_trades_consistency (server_time)
             
-        if inventory_per_db_vs_system_comparation == 0:          
+        if inventory_per_db_vs_get_comparation == 0:          
             
-            my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
+            path_trades_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             self.currency,
                                                                             'open-recovery-point'
                                                                             )          
-            pickling.replace_data (my_trades_path_open_recovery, 
+            pickling.replace_data (path_trades_open_recovery, 
                                     my_trades_open_from_db, 
                                     True
                                     )
@@ -528,9 +529,7 @@ class ApplyHedgingSpot ():
             # index price
             index_price: float= reading_from_database ['index_price']
             #log.critical (index_price)
-            
-            
-        
+                    
             # compute notional value
             notional: float =  await self.compute_notional_value (index_price, equity)
                                
@@ -552,7 +551,7 @@ class ApplyHedgingSpot ():
                 instruments = reading_from_database ['instruments']
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
-                futs_analysis = reading_from_database ['my_path_futures_analysis'] 
+                futs_analysis = reading_from_database ['path_futures_analysis'] 
                 #log.warning (futs_analysis)
 
                 # instruments future
@@ -569,19 +568,24 @@ class ApplyHedgingSpot ():
 
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+                open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
                 log.warning (open_orders_open_byAPI)
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 log.debug (open_orders_filled_byAPI)
-                
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-                #log.info (open_order_mgt)
+
+
+                orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt.compare_open_order_per_db_vs_get(open_orders_from_sub_account_get)
+                if orders_per_db_equivalent_orders_fr_sub_account == False:
+                    pass
+                log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 #log.warning (open_order_mgt_filed)
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.my_orders_status ('filled')
                 
-                await self.check_integrity (positions,
+                await self.check_myTrade_integrity (positions,
                                             my_trades_open, 
                                             server_time
                                             )
@@ -619,6 +623,7 @@ class ApplyHedgingSpot ():
                     # check for any order outstanding as per label filter
                     net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net ()
                     log.debug (f'open_order_mgt  {open_order_mgt}') 
+                    log.debug (f'open_order_mgt  {open_order_mgt}') 
                     log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                 
                                         
@@ -643,7 +648,7 @@ class ApplyHedgingSpot ():
                         log.warning (my_orders_api_basedOn_label_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] :
+                        if 'hedgingSpot' not in strategy['strategy'] and orders_per_db_equivalent_orders_fr_sub_account:
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -661,7 +666,7 @@ class ApplyHedgingSpot ():
                             
                             log.warning (closed_str)
                             
-                            if open_str_sell!= None and open_str_sell ['send_order'] and False:
+                            if open_str_sell!= None and open_str_sell ['send_order'] :
                                 side = open_str_sell['side']
                                 log.info (open_str_sell['cl_price'])
                                 order_result = await self.send_orders (side, 
@@ -892,7 +897,14 @@ class ApplyHedgingSpot ():
             
         except Exception as error:
             catch_error (error)
-            
+                
+    async def read_data_from_db (self, path) -> list:
+        """
+        """    
+        read = pickling.read_data (self, path)
+        return read
+    
+
 async def main ():
 
     connection_url: str = 'https://test.deribit.com/api/v2/'
@@ -929,14 +941,11 @@ async def main ():
 if __name__ == "__main__":
 
     try:
-        import synchronizing_files
         
         asyncio.get_event_loop().run_until_complete(main())
         
-        synchronizing_files.main()
-        
         # only one file is allowed to running
-        is_running = system_tools.is_current_file_running ('apply_hedging_spot.py')
+        is_running = system_tools.is_current_file_running ('apply_strategies.py')
         
         if is_running:
             catch_error (is_running)

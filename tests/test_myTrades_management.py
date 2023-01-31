@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 #from portfolio.deribit import myTrades_management
-import pytest
 from src.portfolio.deribit import myTrades_management
 
 my_trades_all = [

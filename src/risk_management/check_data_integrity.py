@@ -18,7 +18,9 @@ def telegram_bot_sendtext (bot_message,
                            purpose: str = 'general_error'
                            ) -> None:
     from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+    return telegram_app.telegram_bot_sendtext(bot_message, 
+                                              purpose
+                                              )
 
 
 async def myTrades_originally_from_db (currency) -> list:
@@ -52,7 +54,7 @@ async def myTrades_originally_from_db (currency) -> list:
         catch_error (error)
         
 @dataclass(unsafe_hash=True, slots=True)
-class CheckDataIntegrity ():
+class CheckTradeIntegrity ():
 
     '''
     '''       
@@ -105,7 +107,7 @@ class CheckDataIntegrity ():
         from utilities import number_modification                
         return number_modification.net_position (selected_transactions)
                                  
-    async def compare_inventory_per_db_vs_system (self) -> int:
+    async def compare_inventory_per_db_vs_get (self) -> int:
         
         '''
         ''' 
@@ -144,7 +146,7 @@ class CheckDataIntegrity ():
         '''
         ''' 
         try:
-            size_difference = await self.compare_inventory_per_db_vs_system()
+            size_difference = await self.compare_inventory_per_db_vs_get()
             #log.critical (f'size_difference {size_difference}')
             
             if size_difference == 0:
@@ -159,4 +161,35 @@ class CheckDataIntegrity ():
 
         except Exception as error:
             catch_error (error)
+
                              
+                             
+@dataclass(unsafe_hash=True, slots=True)
+class CheckOrderIntegrity ():
+
+    '''
+    '''       
+    currency: str 
+    open_order_from_get: list
+    open_order_from_db: list
+            
+    async def compare_open_order_per_db_vs_get(self) -> int:
+        
+        '''
+        ''' 
+
+        try:
+            
+            both_sources_are_equivalent =  self.open_order_from_get == self. open_order_from_db
+            log.critical (f'both_sources_are_equivalent {both_sources_are_equivalent} open_order_from_get {self.open_order_from_get} open_order_from_db {self. open_order_from_db}')
+            
+            if both_sources_are_equivalent == False:
+                    info= (f'OPEN ORDER DIFFERENT open_order_from_get {self.open_order_from_get}  open_order_from_db {self. open_order_from_db} \n ')
+                    telegram_bot_sendtext(info) 
+                #log.warning (f'difference {difference}')
+                
+            return  both_sources_are_equivalent
+                
+            
+        except Exception as error:
+            catch_error (error)

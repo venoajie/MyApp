@@ -3,4 +3,20 @@
 # https://docs.google.com/spreadsheets/d/1T_waRdhiS0eC0sd5ykPT31cuKPKhzhj6de_w2NXabK4/edit#gid=409096513
 # https://docs.google.com/spreadsheets/d/1T_waRdhiS0eC0sd5ykPT31cuKPKhzhj6de_w2NXabK4/edit#gid=409096513
 # https://christopher-siewert.github.io/bitcoin%20futures%20series/2019/05/24/bitcoin-futures-arbitrage-part-4.html
+# https://venali.medium.com/trend-following-and-mean-reversion-in-bitcoin-5d659709d5a9
+# https://medium.datadriveninvestor.com/demand-and-supply-trading-strategy-22dab838e581
+# https://medium.com/@kurrysamir/dbt-data-build-tool-with-a-real-world-example-69d937dd111d
+# https://smartlever.medium.com/smartbots-basktesting-is-only-the-tip-of-the-iceberg-ce23b56e6427
+An end-to-end Platform.
+Data Feed: Services that connect to real-time data and feed the strategy portfolio.
+Historical Data: Download historical data for research and testing purposes.
+DataBase: Database to store everything and access it at any time.
+Broker: Trading connections to any broker.
+Portfolio: Strategies that we combine with one another and between assets to control the profit-risk binomial.
+ETLs: Processes for downloading daily data and training models.
+Dashboards: Monitors that provide us with information about our models’ behavior.
+Basktesting: Library to simulate the portfolio with historical data.
+Alert-system: Real-time alert system. Do we want to know when an operation is completed or if a service is unavailable due to an unforeseen event?
+Event-driven: Event-driven architecture, it is similar to a video game in which the character moves and triggers events that cause reactions from other characters or the appearance of new scenarios; in this case, we model and generate buy and sell signals based on the events that come to us from various data sources. To make them a reality, we must orchestrate a number of necessary components.
+Statistical-edge: Most importantly, there is little we can do without a mathematical edge of the model we want to implement.
 

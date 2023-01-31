@@ -1,12 +1,47 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import calendar
 from datetime import datetime, timedelta, timezone
 
+def get_current_local_date_time ():
 
+    '''
+    '''       
+    return datetime.now()
 
-def convert_time_to_utc (transaction_time: str= None, hours_diff_with_utc: float= None):
+def translate_current_local_date_time_to_utc ():
+
+    '''
+    '''       
+    return get_current_local_date_time().astimezone().astimezone(
+        timezone.utc
+        ).replace(
+            tzinfo=None
+            )
+
+def time_format_standardization (time_input, 
+                                 time_format: str = '%Y-%m-%d %H:%M:%S.%f'
+                                 ):
+
+    '''
+    Standardize the time format.
+    '''
+    # If the input is a string, then convert it to datetime format.
+    strptime = None if isinstance(time_input, str) == False \
+        else datetime.strptime(time_input, time_format)
+
+    # If the input is a datetime, then convert it to string format.
+    strftime = None if isinstance(time_input, datetime) == False \
+        else time_input.strftime(time_format)
+
+    # Return a dictionary with two keys: strptime and strftime.
+    return {'strptime': strptime, 
+            'strftime': strftime
+            }
+    
+def convert_time_to_utc (transaction_time: str= None,
+                         hours_diff_with_utc: float= None
+                         ):
 
     '''
         # Mendapatkan waktu UTC/JKT saat ini (now) dengan UTC sebagai patokan
@@ -20,30 +55,22 @@ def convert_time_to_utc (transaction_time: str= None, hours_diff_with_utc: float
             Referensi: 
                 https://stackoverflow.com/questions/3327946/how-can-i-get-the-current-time-now-in-utc    
     '''        
-
-    # menarik waktu lokal saat ini
-    local_datetime = datetime.now()
     
-    # waktu lokal saat ini ditranslasi ke utc
-    utc= local_datetime.astimezone().astimezone(timezone.utc).replace(tzinfo=None)
+    utc= translate_current_local_date_time_to_utc()
+    
     if transaction_time != None:
         transaction_time_ = datetime.fromisoformat(transaction_time)
-        transaction_time = transaction_time_.astimezone().astimezone(timezone.utc).replace(tzinfo=None)
-        utc_f_transaction_time = (transaction_time+timedelta( hours= 0 if hours_diff_with_utc == None else hours_diff_with_utc )).strftime('%Y-%m-%d %H:%M:%S.%f')
-        utc_p_transaction = datetime.strptime(utc_f_transaction_time,'%Y-%m-%d %H:%M:%S.%f')
+        transaction_time = transaction_time_.astimezone().astimezone(timezone.utc).replace(tzinfo = None)
+        utc_f_transaction_time = (transaction_time+timedelta( hours= 0 \
+            if hours_diff_with_utc == None \
+                else hours_diff_with_utc )).strftime('%Y-%m-%d %H:%M:%S.%f')
     
-    # diformat text
-    utc_f = utc.strftime('%Y-%m-%d %H:%M:%S.%f')    
-    #print(f'H {utc_f=}')
-    utc_f_jkt = (utc+timedelta( hours=7 )).strftime('%Y-%m-%d %H:%M:%S.%f') #JKT selisih 7 jam dengan utc
+    utc_f = time_format_standardization(utc) ['strftime'] 
+    utc_f_jkt = time_format_standardization((utc+timedelta( hours=7 ))) ['strftime'] 
     
-    # diformat waktu agar bisa diolah lebih lanjut di fungsi berikutnya 
-    utc_p = datetime.strptime(utc_f,'%Y-%m-%d %H:%M:%S.%f')
-    utc_p_jkt = datetime.strptime(utc_f_jkt,'%Y-%m-%d %H:%M:%S.%f')
-
-    return {'utc_now':utc_p,
-            'jkt_now':utc_p_jkt,
-            'transaction_time':None if transaction_time == None else utc_p_transaction}
+    return {'utc_now':time_format_standardization(utc_f) ['strptime'],
+            'jkt_now':time_format_standardization(utc_f_jkt)['strptime'],
+            'transaction_time':None if transaction_time == None else time_format_standardization(utc_f_transaction_time)['strptime']}
 
 def check_day_name (time: datetime)->str:
 
@@ -58,7 +85,7 @@ def check_day_name (time: datetime)->str:
     # time in text format
     except:
         # convert string to time format
-        time_in_time_format = datetime.strptime(time,'%Y-%m-%d %H:%M:%S.%f')
+        time_in_time_format = time_format_standardization(time)['strptime'] 
         return time_in_time_format.strftime("%A")
             
     
@@ -84,7 +111,6 @@ def convert_time_to_unix (time)-> int:
     try:
 
         try:
-                
             time_= 0 if time == 0 else  datetime.fromisoformat(time)  
             time =0 if time == 0 else time_.strftime('%Y-%m-%d %H:%M:%S.%f')
             time = 0 if time == 0 else datetime.strptime(time,'%Y-%m-%d %H:%M:%S.%f') 
@@ -120,17 +146,40 @@ def time_delta_between_now_and_transaction_time_both_in_utc (transaction_time: s
             'hours': time_delta/3600,
             'days': time_delta/3600/24}
             
-def time_delta_between_two_times (start_time: str, end_time: str)-> float:
+def time_delta_between_two_times (time_format,
+                                  start_time: str, 
+                                  end_time: str = None
+                                  )-> float:
 
     """Menghitung selisih  antara waktu 2 waktu
+    time format: utc/unix
 
     """
-    transaction_time_start_utc = convert_time_to_utc (start_time)['transaction_time']
-    transaction_time_end_utc = convert_time_to_utc (end_time)['transaction_time']
+    # end time = now
+    transaction_time_end_utc = convert_time_to_utc ()['utc_now'] 
+    transaction_time_end_unix = convert_time_to_unix (transaction_time_end_utc)
     
-    #time_delta in seconds
-    time_delta =  ((transaction_time_end_utc - transaction_time_start_utc ).total_seconds())
+    if time_format == 'utc':
+        
+        if end_time != None:
+            transaction_time_end_utc = convert_time_to_utc (end_time)['transaction_time']
+            transaction_time_end_unix = convert_time_to_unix (transaction_time_end_utc)
+        
+        transaction_time_start_utc = convert_time_to_utc (start_time)['transaction_time']
+        transaction_time_start_unix = convert_time_to_unix (transaction_time_start_utc)
+        #transaction_time_end_utc = convert_time_to_utc (end_time)['transaction_time']
+        
+        #time_delta in seconds
+        time_delta_utc =  ((transaction_time_end_utc - transaction_time_start_utc ).total_seconds())
+        time_delta_unix =  (transaction_time_end_unix - transaction_time_start_unix ) 
+        
+    if  'unix' in time_format:
+        seconds_divider = 1000 if 'ms' in time_format else 1000
+        transaction_time_end_unix = transaction_time_end_unix if end_time == None else end_time
+        
+        #time_delta in seconds
+        time_delta_unix =  (transaction_time_end_unix - start_time ) 
     
-    return {'seconds': time_delta,
-            'hours': time_delta/3600,
-            'days': time_delta/3600/24}
+    return {'seconds': time_delta_unix/seconds_divider if  'unix' in time_format else time_delta_utc,
+            'hours': time_delta_unix/3600/seconds_divider if 'unix' in time_format  else time_delta_utc/3600,
+            'days': time_delta_unix/3600/seconds_divider/24 if 'unix' in time_format  else time_delta_utc/3600/24}
