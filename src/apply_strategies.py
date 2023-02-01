@@ -608,11 +608,11 @@ class ApplyHedgingSpot ():
                     my_orders_from_exchange = await self.get_open_orders_from_exchange()
                     log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
 
-                    net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.my_orders_api_basedOn_label_items_net ()
+                    net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label ()
                     log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
                     
                     # check for any order outstanding as per label filter
-                    net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net ()
+                    net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net ()
                     log.debug (f'open_order_mgt  {open_order_mgt}') 
                     log.debug (f'open_order_mgt  {open_order_mgt}') 
                     log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
@@ -635,7 +635,7 @@ class ApplyHedgingSpot ():
                         label_closed:str = f'{label}-closed'
                         
                         # create my order mgt template based on strategies
-                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.my_orders_api_basedOn_label (label)
+                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.open_orders_api_basedOn_label (label)
                         log.warning (my_orders_api_basedOn_label_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
