@@ -157,7 +157,7 @@ class MyOrders ():
                 else  self.net_sum_order_size (self.open_orders_api ()) 
         
         else:
-            log.debug (self.open_orders_api () )
+            #log.debug (self.open_orders_api () )
             result =  0 if self.open_orders_api_basedOn_label (label) == [] \
             else  self.net_sum_order_size (
                 [o for o in self.open_orders_api_basedOn_label (
