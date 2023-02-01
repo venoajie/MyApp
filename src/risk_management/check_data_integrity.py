@@ -83,6 +83,7 @@ class CheckTradeIntegrity ():
         try:
             my_trades_from_db = await self.myTrades_from_db ()
             my_trades_from_db_recovery = my_trades_from_db['db_recover']
+            log.warning(my_trades_from_db_recovery)
             
             if my_trades_from_db_recovery:
                 
