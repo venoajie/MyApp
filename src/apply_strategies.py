@@ -569,7 +569,7 @@ class ApplyHedgingSpot ():
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 #log.warning (open_order_mgt_filed)
                 
-                open_order_mgt_filed_status_filed = open_order_mgt_filed.my_orders_status ('filled')
+                open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status ('filled')
                 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
                 await self.check_open_orders_integrity (open_orders_open_byAPI,
