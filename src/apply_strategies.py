@@ -482,7 +482,9 @@ class ApplyHedgingSpot ():
             log.info (inventory_per_db_vs_get_comparation)
             await data_integrity.rearrange_my_trades_consistency (server_time)
             
-        if inventory_per_db_vs_get_comparation == 0:          
+        if inventory_per_db_vs_get_comparation == 0:     
+            my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
+            my_trades_open_mgt.distribute_trade_transaction (self.currency)
             
             path_trades_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             self.currency,
