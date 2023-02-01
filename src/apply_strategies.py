@@ -626,7 +626,7 @@ class ApplyHedgingSpot ():
                         label_closed:str = f'{label}-closed'
                         
 
-                        net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label (label_numbered)
+                        net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label_items_net (label_numbered)
                         log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
                         
                         # check for any order outstanding as per label filter
