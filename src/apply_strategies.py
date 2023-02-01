@@ -350,13 +350,13 @@ class ApplyHedgingSpot ():
         """
         open_order_mgt = await self.open_orders_from_exchange ()
         
-        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
+        len_current_open_orders = open_order_mgt.open_orders_api_basedOn_label_items_qty(label_for_filter)
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
                 #log.critical(f'{len_current_open_orders > 1=}')
                 
-                open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
+                open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
                 cancel = await self.cancel_by_order_id (open_order_id)
                 #log.critical(f'{cancel=}')
@@ -400,21 +400,21 @@ class ApplyHedgingSpot ():
         
         open_orders_from_exch = await self.get_open_orders_from_exchange ()
         open_order_mgt = open_orders_management.MyOrders (open_orders_from_exch)
-        open_order_label = open_order_mgt.my_orders_api_basedOn_label(label)
+        open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
         open_order_mgt = open_orders_management.MyOrders (open_order_label)
 
         try:
-            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+            open_orders_lastUpdateTStamps: list = open_order_mgt.open_orders_api_last_update_timestamps()
         except:
             open_orders_lastUpdateTStamps: list = []    
             
         if open_orders_lastUpdateTStamps !=[]:
-            open_orders_lastUpdateTStamps: list = open_order_mgt.my_orders_api_last_update_timestamps()
+            open_orders_lastUpdateTStamps: list = open_order_mgt.open_orders_api_last_update_timestamps()
             #log.critical (open_orders_lastUpdateTStamps)
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min                       
 
-            open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)    
+            open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_min_id (label)    
                                 
             if open_orders_deltaTime > three_minute:
                 await self.cancel_by_order_id (open_order_id)    
@@ -768,7 +768,7 @@ class ApplyHedgingSpot ():
                                     log.debug(f'{label=} {label_open_for_filter=}')
                                     
                                     # check for any order outstanding as per label filter
-                                    net_open_orders_open_byAPI_db: int = open_order_mgt.my_orders_api_basedOn_label_items_net (label)
+                                    net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net (label)
                                     log.warning(f'{spot_was_unhedged=} \
                                         {actual_hedging_size=}  \
                                             {net_open_orders_open_byAPI_db=} \
@@ -872,14 +872,14 @@ class ApplyHedgingSpot ():
             #log.info(f'{open_orders_open_byAPI=}')
             open_order_mgt =  open_orders_management.MyOrders (open_orders_open_byAPI)
             label_open = f'{label}-open'
-            current_open_orders_size = open_order_mgt.my_orders_api_basedOn_label_items_size(label_open)
+            current_open_orders_size = open_order_mgt.open_orders_api_basedOn_label_items_size(label_open)
             current_open_orders_size = 0 if current_open_orders_size ==[] else current_open_orders_size
 
             is_over_hedged = actual_hedging_size + current_open_orders_size < min_hedging_size
             log.info(f'{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}')
             
             if  is_over_hedged:
-                open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
+                open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_max_id (label_open)
                 log.critical(f'{open_order_id=}')
                 
                 sleep (2)
