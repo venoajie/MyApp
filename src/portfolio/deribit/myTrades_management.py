@@ -241,7 +241,7 @@ class MyTrades ():
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
                     
                 if trade_transactions['closing_position']:
-                    #log.debug ('LABEL ID CLOSED')
+                    log.debug ('LABEL ID CLOSED')
                     
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
