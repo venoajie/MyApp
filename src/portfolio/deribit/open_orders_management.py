@@ -150,15 +150,14 @@ class MyOrders ():
         
         '''
         '''   
-        from utilities import number_modification  
         
         if label == None:
             result =  0 if self.open_orders_api () == [] \
-                else  number_modification.net_sum_order_size (self.open_orders_api ()) 
+                else  self.net_sum_order_size (self.open_orders_api ()) 
         
         else:
             result =  0 if self.open_orders_api_basedOn_label (label) == [] \
-            else  number_modification.net_sum_order_size (
+            else  self.net_sum_order_size (
                 [o for o in self.open_orders_api_basedOn_label (
                     label
                     )
