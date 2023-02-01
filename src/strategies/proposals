@@ -6,6 +6,8 @@
 # https://venali.medium.com/trend-following-and-mean-reversion-in-bitcoin-5d659709d5a9
 # https://medium.datadriveninvestor.com/demand-and-supply-trading-strategy-22dab838e581
 # https://medium.com/@kurrysamir/dbt-data-build-tool-with-a-real-world-example-69d937dd111d
+# https://medium.com/@pjseoane/quantlib-libray-en-python-for-options-ff557d565e74
+# https://github.com/CyberPunkMetalHead
 # https://smartlever.medium.com/smartbots-basktesting-is-only-the-tip-of-the-iceberg-ce23b56e6427
 An end-to-end Platform.
 Data Feed: Services that connect to real-time data and feed the strategy portfolio.

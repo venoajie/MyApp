@@ -72,31 +72,6 @@ class ApplyHedgingSpot ():
                         
         return open_orders_management.MyOrders (open_ordersREST)
         
-    async def check_open_orders_consistency (self, open_orders_from_exchange: list, 
-                                             label: str = 'spot hedging', 
-                                             status: str = 'open') -> list:
-        """
-        db vs exchange
-        will be combined with check_my_orders_consistency
-        """
-        import synchronizing_files
-        #
-        get_id_for_cancel = await synchronizing_files.check_open_orders_consistency (self.currency, 
-                                                                                     open_orders_from_exchange, 
-                                                                                     label, 
-                                                                                     status
-                                                                                     )
-        
-        if get_id_for_cancel:
-            
-            for open_order_id in get_id_for_cancel:
-                                
-                await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                             self.client_id, 
-                                                             self.client_secret, 
-                                                             open_order_id
-                                                             )    
-        
     async def my_trades_time_constrained (self, 
                          start_timestamp: int, 
                          end_timestamp: int
@@ -368,15 +343,14 @@ class ApplyHedgingSpot ():
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time   ['result']
     
-    async def cancel_redundant_orders_in_same_labels (self,  label_for_filter) -> None:
+    async def cancel_redundant_orders_in_same_labels (self,  
+                                                      label_for_filter
+                                                      ) -> None:
         """
         """
         open_order_mgt = await self.open_orders_from_exchange ()
         
-        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty( label_for_filter)
-        #log.debug(f'{open_order_mgt=}')
-        #log.debug(f'{len_current_open_orders=}')
-        
+        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
@@ -415,7 +389,9 @@ class ApplyHedgingSpot ():
                 'instruments_with_rebates_weekly_longest_exp': [o for o in instruments_with_rebates if o['expiration_timestamp'] == instruments_with_rebates_weekly_longest_expiration ],
                 }
 
-    async def cancel_orders_hedging_spot_based_on_time_threshold (self, server_time, label) -> float:
+    async def cancel_orders_hedging_spot_based_on_time_threshold (self, 
+                                                                  server_time, label
+                                                                  ) -> float:
         """
         """
         one_minute = 60000
@@ -441,12 +417,6 @@ class ApplyHedgingSpot ():
             open_order_id: list = open_order_mgt.my_orders_api_basedOn_label_last_update_timestamps_min_id (label)    
                                 
             if open_orders_deltaTime > three_minute:
-                #log.critical (label)
-                #log.critical (open_orders_deltaTime)
-                #log.critical (f'{server_time}')
-                #log.critical (f'{open_orders_lastUpdateTStamp_min}')
-                #log.critical (f'{open_orders_deltaTime=} {server_time=} {open_orders_lastUpdateTStamp_min=}')
-                
                 await self.cancel_by_order_id (open_order_id)    
     
     async def cancel_by_order_id (self, open_order_id) -> None:
@@ -456,6 +426,27 @@ class ApplyHedgingSpot ():
                                                       self.client_secret, 
                                                       open_order_id
                                                       )  
+
+    async def check_open_orders_integrity (self, 
+                                           open_orders_open_byAPI,
+                                           open_orders_from_sub_account_get
+                                           ) -> None:
+
+        #open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+        open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
+        orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
+        
+        log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
+
+        if orders_per_db_equivalent_orders_fr_sub_account == False:
+            # update open order at db with open orders at sub account
+            
+            open_order_mgt_sub_account. distribute_order_transactions (self.currency)
+                       
+            catch_error ('update open order at db with open orders at sub account', 
+                         idle = .1
+                         ) 
+       
     async def check_myTrade_integrity (self, 
                                positions_from_get, 
                                my_trades_open_from_db, 
@@ -539,8 +530,8 @@ class ApplyHedgingSpot ():
                 none_data: None = [0, None, []] # to capture none 
                 
                 # fetch positions for all instruments
-                positions: list = reading_from_database ['positions']
-                #log.error (positions)
+                positions: list = reading_from_database ['positions_from_sub_account']
+                log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
@@ -575,20 +566,20 @@ class ApplyHedgingSpot ():
                 # prepare open order manipulation
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
 
-
-                orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt.compare_open_order_per_db_vs_get(open_orders_from_sub_account_get)
-                if orders_per_db_equivalent_orders_fr_sub_account == False:
-                    pass
-                log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 #log.warning (open_order_mgt_filed)
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.my_orders_status ('filled')
                 
+                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
+                await self.check_open_orders_integrity (open_orders_open_byAPI,
+                                                        open_orders_from_sub_account_get
+                                                        )
+
                 await self.check_myTrade_integrity (positions,
-                                            my_trades_open, 
-                                            server_time
-                                            )
+                                                    my_trades_open, 
+                                                    server_time
+                                                    )
                 
                 for instrument in instrument_transactions:
 
@@ -648,7 +639,7 @@ class ApplyHedgingSpot ():
                         log.warning (my_orders_api_basedOn_label_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] and orders_per_db_equivalent_orders_fr_sub_account:
+                        if 'hedgingSpot' not in strategy['strategy'] :
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -933,7 +924,6 @@ async def main ():
         await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
         #open_orders_from_exchange = await syn.open_orders_from_exchange ()        
-        #await syn.check_open_orders_consistency (open_orders_from_exchange, label_hedging)
          
     except Exception as error:
         catch_error (error, 30)
