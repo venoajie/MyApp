@@ -82,7 +82,7 @@ def check_and_save_every_30_seconds ():
 def check_and_save_every_5_minutes ():
         
     try:
-               
+        # https://towardsdatascience.com/understand-async-await-with-asyncio-for-asynchronous-programming-in-python-e0bc4d25808e       
         open_interest_historical = market_data. open_interest_historical ()
         my_path = system_tools.provide_path_for_file ('openInterestHistorical', currency.lower()) 
         pickling.replace_data(my_path, open_interest_historical)

@@ -38,34 +38,36 @@ open_orders = open_orders_management.MyOrders (my_orders_all)
 open_orders_blank = open_orders_management.MyOrders (my_orders_none)
     
 def test_my_orders_api  ():
-    assert open_orders.my_orders_api () == my_orders_with_api_true
-    assert open_orders_blank.my_orders_api () == []
+    assert open_orders.open_orders_api () == my_orders_with_api_true
+    assert open_orders_blank.open_orders_api () == []
     
 def test_my_orders_manual  ():
     
-    assert open_orders.my_orders_manual () == my_orders_with_manual
-    assert open_orders_blank.my_orders_manual () == []
+    assert open_orders.open_orders_manual () == my_orders_with_manual
+    assert open_orders_blank.open_orders_manual () == []
     
 def test_my_orders_api_basedOn_label ():
     
-    assert open_orders.my_orders_api_basedOn_label ("hedgingSpot") == my_orders_with_api_true
-    assert open_orders_blank.my_orders_api_basedOn_label ("hedgingSpot") == []
+    assert open_orders.open_orders_api_basedOn_label ("hedgingSpot") == my_orders_with_api_true
+    assert open_orders_blank.open_orders_api_basedOn_label ("hedgingSpot") == []
     
 def test_my_orders_api_last_update_timestamp  ():
-    assert open_orders.my_orders_api_last_update_timestamps () == [1671093368895, 1671095068918]
-    assert open_orders_blank.my_orders_api_last_update_timestamps () == []
+    assert open_orders.open_orders_api_last_update_timestamps () == [1671093368895, 1671095068918]
+    assert open_orders_blank.open_orders_api_last_update_timestamps () == []
     
 def test_my_orders_api_basedOn_label_items_qty  ():
-    assert open_orders.my_orders_api_basedOn_label_items_qty ("hedgingSpot") == 2
+    assert open_orders.open_orders_api_basedOn_label_items_qty ("hedgingSpot") == 2
 
 def test_combine_open_orders_based_on_id ():
 
     open_orders_open = [{'order_id': 1}, {'order_id': 2}, {'order_id': 3}]
     order_id = 2
-    expected_result = {'item_in_open_orders_open_with_same_id': [{'order_id': 2}],
-                           'item_in_open_orders_open_with_diff_id': [{'order_id': 1}, {'order_id': 3}]
+    expected_result = {'item_with_same_id': [{'order_id': 2}],
+                           'item_with_diff_id': [{'order_id': 1}, {'order_id': 3}]
                            }
-    assert open_orders.combine_open_orders_based_on_id (open_orders_open, order_id) == expected_result
+    assert open_orders.combine_open_orders_based_on_id (open_orders_open, 
+                                                        order_id
+                                                        ) == expected_result
     
 def test_recognize_order_transactions ():
 

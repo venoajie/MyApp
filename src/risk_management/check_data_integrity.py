@@ -10,8 +10,17 @@ from portfolio.deribit import myTrades_management
 from loguru import  logger as log
 
 def catch_error (error) -> list:
-    """
-    """
+    ''' 
+        
+    Fetch error handling
+    
+    Args:
+        error (dict): error message from system.
+        
+    Returns:
+        list: error message.
+
+    '''
     system_tools.catch_error_message(error)
         
 def telegram_bot_sendtext (bot_message, 
@@ -21,7 +30,6 @@ def telegram_bot_sendtext (bot_message,
     return telegram_app.telegram_bot_sendtext(bot_message, 
                                               purpose
                                               )
-
 
 async def myTrades_originally_from_db (currency) -> list:
     """
@@ -68,7 +76,6 @@ class CheckTradeIntegrity ():
         """
 
         try:
-            
             return await myTrades_originally_from_db (self.currency)
         
         except Exception as error:
@@ -87,13 +94,18 @@ class CheckTradeIntegrity ():
             
             if my_trades_from_db_recovery:
                 
-                # compare data from exchanges. Pick only those have not recorded at system yet
-                filtered_data_from_my_trades_from_exchange = \
-                    string_modification.find_unique_elements (self.my_selected_trades_open_from_system, 
-                                                            my_trades_from_db_recovery
-                                                            )
+                # compare data from exchanges. 
+                # Pick only those have not recorded at system yet
+                filtered_data_from_my_trades_from_exchange =  string_modification.find_unique_elements (
+                    self.my_selected_trades_open_from_system,  
+                        my_trades_from_db_recovery
+                        )
+                
                 # redistribute the filtered data into db
-                my_trades_from_exchange = myTrades_management.MyTrades (filtered_data_from_my_trades_from_exchange)
+                my_trades_from_exchange = myTrades_management.MyTrades (
+                    filtered_data_from_my_trades_from_exchange
+                    )
+                
                 my_trades_from_exchange.distribute_trade_transaction(self.currency)
             
         except Exception as error:

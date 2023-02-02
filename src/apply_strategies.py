@@ -51,8 +51,17 @@ class ApplyHedgingSpot ():
                       selected_transactions: list
                       )-> float:
         
+        ''' 
+            
+        Captured some order attributes
+        
+        Args:
+            order (dict): Order from exchange.
+            
+        Returns:
+            dict: explaining order state and order id.
+    
         '''
-        '''    
         return number_modification.net_position (selected_transactions)
     
     async def get_open_orders_from_exchange (self) -> list:

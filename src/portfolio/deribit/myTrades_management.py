@@ -213,7 +213,10 @@ class MyTrades ():
         
         try:
         
-            my_trades_path_open = system_tools.provide_path_for_file ('myTrades', currency, 'open')
+            my_trades_path_open = system_tools.provide_path_for_file ('myTrades', 
+                                                                      currency, 
+                                                                      'open'
+                                                                      )
 
             for data_order in self.my_trades:
                 data_order = [data_order]
@@ -229,6 +232,7 @@ class MyTrades ():
                                                                                 currency,
                                                                                 'manual'
                                                                                 )
+                    
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, 
                                                                     data_order, 
                                                                     10000, 
@@ -250,7 +254,7 @@ class MyTrades ():
 
                     # append trade to db.check potential duplicate
                     pickling.append_and_replace_items_based_on_qty (my_trades_path_open, 
-                                                                    data_order , 
+                                                                    data_order, 
                                                                     10000, 
                                                                     True
                                                                     )
@@ -302,11 +306,11 @@ class MyTrades ():
                 return  {
                     'max_price': max_price,
                     'trade_id':  ([o['trade_id'] for o in trade_list_with_max_price])[0] ,
-                    'timestamp':  ([o['timestamp'] for o in trade_list_with_max_price])[0] ,
-                    'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0] ,
-                    'instrument':  ([o['instrument_name'] for o in trade_list_with_max_price])[0] ,
-                    'size':  ([o['amount'] for o in trade_list_with_max_price])[0] ,
-                    'label':  ([o['label'] for o in trade_list_with_max_price])[0] ,
+                    'timestamp':  ([o['timestamp'] for o in trade_list_with_max_price])[0],
+                    'order_id':  ([o['order_id'] for o in trade_list_with_max_price])[0],
+                    'instrument':  ([o['instrument_name'] for o in trade_list_with_max_price])[0],
+                    'size':  ([o['amount'] for o in trade_list_with_max_price])[0],
+                    'label':  ([o['label'] for o in trade_list_with_max_price])[0],
                 
                 }
             if my_trades ==[]:

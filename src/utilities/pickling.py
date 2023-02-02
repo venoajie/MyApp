@@ -26,9 +26,14 @@ def check_duplicate_elements (file_name: str)-> None:
     
     free_from_duplicates_data = string_modification.remove_redundant_elements (data_from_db)
     
-    dump_data_as_list (file_name, free_from_duplicates_data)
+    dump_data_as_list (file_name, 
+                       free_from_duplicates_data
+                       )
 
-def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = False)-> None:
+def dump_data_as_list (file_name: str, 
+                       data: dict, 
+                       check_duplicates: bool = False
+                       )-> None:
 
     """
     """    
@@ -43,22 +48,34 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
             #    print (f'isinstance(data, list) {isinstance(data, list)}')
                 
                 if isinstance(data, dict):
-                    pickle.dump([data], handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump([data], 
+                                handle, 
+                                protocol=pickle.HIGHEST_PROTOCOL
+                                )
                     
                 if isinstance(data, list):
                     free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
 
-                    pickle.dump(free_from_none_data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(free_from_none_data, 
+                                handle, 
+                                protocol=pickle.HIGHEST_PROTOCOL
+                                )
             
             if data == []:
                 data_from_db: list = read_data (file_name)
                 
                 # to avoid record [] in db with valid contents
                 if data_from_db ==[]:
-                    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(data, 
+                                handle, 
+                                protocol=pickle.HIGHEST_PROTOCOL
+                                )
                     
                 if data_from_db ==None:
-                    pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                    pickle.dump(data, 
+                                handle, 
+                                protocol=pickle.HIGHEST_PROTOCOL
+                                )
                 
         except Exception as error:
             print (f'pickling {error}')    
@@ -67,7 +84,9 @@ def dump_data_as_list (file_name: str, data: dict, check_duplicates: bool = Fals
         check_duplicate_elements (file_name)
 
             
-def append_data (file_name_pkl: str, data: dict)-> None:
+def append_data (file_name_pkl: str, 
+                 data: dict
+                 )-> None:
 
     """
     https://stackoverflow.com/questions/28077573/python-appending-to-a-pickled-list
@@ -92,7 +111,10 @@ def append_data (file_name_pkl: str, data: dict)-> None:
     dump_data_as_list (file_name_pkl, combined_data)
     
             
-def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> None:
+def replace_data (file_name: str, 
+                  data: dict, 
+                  check_duplicates: bool = False
+                  )-> None:
 
     """
     """
@@ -104,9 +126,11 @@ def replace_data (file_name: str, data: dict, check_duplicates: bool = False)-> 
     
     dump_data_as_list (file_name, data, check_duplicates)
     
-def append_and_replace_items_based_on_qty (file_name_pkl: str, 
-                                           data: dict, max_qty: int, 
-                                           check_duplicates: bool = False)-> None:
+    
+def append_and_replace_items (file_name_pkl: str, 
+                              data: dict, 
+                              check_duplicates: bool = False
+                              )-> None:
 
     """
     append_and_replace_items_based_on_qty (file_name, resp, 3)
@@ -119,10 +143,51 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str,
     #print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
 
 
-    if isinstance(data_from_db, dict):
+    if isinstance(data_from_db, 
+                  dict
+                  ):
         data_list = list (data_from_db)
         
-    if isinstance(data_from_db, list):
+    if isinstance(data_from_db, 
+                  list
+                  ):
+        try:
+            data_list = list (data_from_db [0])
+        except:
+            print (f"except because of dict type. WEIRD. RECHECK) {data_from_db}")
+            data_list = list (data_from_db)
+                
+        dump_data_as_list (file_name_pkl, 
+                            data_list, 
+                            check_duplicates
+                            )
+            
+            
+def append_and_replace_items_based_on_qty (file_name_pkl: str, 
+                                           data: dict, 
+                                           max_qty: int, 
+                                           check_duplicates: bool = False
+                                           )-> None:
+
+    """
+    append_and_replace_items_based_on_qty (file_name, resp, 3)
+    """
+
+    #print (f"pickle data fr exc {data}")
+    
+    append_data(file_name_pkl, data)
+    data_from_db: list = read_data (file_name_pkl)
+    #print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
+
+
+    if isinstance(data_from_db, 
+                  dict
+                  ):
+        data_list = list (data_from_db)
+        
+    if isinstance(data_from_db, 
+                  list
+                  ):
         try:
             data_list = list (data_from_db [0])
         except:
@@ -142,7 +207,10 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str,
 
             result: list = [o for o in data_from_db if o['timestamp'] not in filtered_timestamps ]
             
-            dump_data_as_list (file_name_pkl, result, check_duplicates)
+            dump_data_as_list (file_name_pkl, 
+                               result, 
+                               check_duplicates
+                               )
                 
     if 'params' in data_list:
 
