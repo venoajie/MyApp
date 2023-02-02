@@ -90,6 +90,7 @@ class CheckTradeIntegrity ():
         try:
             my_trades_from_db = await self.myTrades_from_db ()
             my_trades_from_db_recovery = my_trades_from_db['db_recover']
+            log.warning(my_trades_from_db_recovery)
             
             if my_trades_from_db_recovery:
                 
@@ -99,7 +100,7 @@ class CheckTradeIntegrity ():
                     self.my_selected_trades_open_from_system,  
                         my_trades_from_db_recovery
                         )
-                log.warning(filtered_data_from_my_trades_from_exchange)
+                log.error(filtered_data_from_my_trades_from_exchange)
                 
                 # redistribute the filtered data into db
                 my_trades_from_exchange = myTrades_management.MyTrades (
