@@ -463,7 +463,10 @@ class ApplyHedgingSpot ():
                                ) -> None:
         
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
-        
+    
+        my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
+        my_trades_open_mgt.distribute_trade_transaction (self.currency)
+            
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
@@ -492,8 +495,6 @@ class ApplyHedgingSpot ():
             await data_integrity.rearrange_my_trades_consistency (server_time)
             
         if inventory_per_db_vs_get_comparation == 0:     
-            my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
-            my_trades_open_mgt.distribute_trade_transaction (self.currency)
             
             path_trades_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             self.currency,
@@ -546,6 +547,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
+                
                 #my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
                 #log.info (my_trades_open)
                 
