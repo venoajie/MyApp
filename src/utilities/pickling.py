@@ -38,7 +38,10 @@ def dump_data_as_list (file_name: str,
     """
     """    
 
-    with open(file_name,'wb') as handle:
+    with open(file_name,
+              'wb'
+              ) as handle:
+        
         try:
             #print (f'dump_data_as_list {data}')
             
@@ -47,14 +50,25 @@ def dump_data_as_list (file_name: str,
             #    print (f'isinstance(data, dict) {isinstance(data, dict)}')
             #    print (f'isinstance(data, list) {isinstance(data, list)}')
                 
-                if isinstance(data, dict):
+                if isinstance(data, 
+                              dict
+                              ):
+                    
                     pickle.dump([data], 
                                 handle, 
                                 protocol=pickle.HIGHEST_PROTOCOL
                                 )
                     
-                if isinstance(data, list):
-                    free_from_none_data = ( [o for o in data if isinstance(o, dict)] )
+                if isinstance(data, 
+                              list
+                              ):
+                    
+                    free_from_none_data = ( 
+                                           [o for o in data if isinstance(o, 
+                                                                           dict
+                                                                           )
+                                            ] 
+                                           )
 
                     pickle.dump(free_from_none_data, 
                                 handle, 
@@ -85,7 +99,8 @@ def dump_data_as_list (file_name: str,
 
             
 def append_data (file_name_pkl: str, 
-                 data: dict
+                 data: dict, 
+                 check_duplicates: bool = False
                  )-> None:
 
     """
@@ -108,9 +123,11 @@ def append_data (file_name_pkl: str,
     combined_data = [data] if data_from_db == [] else data_from_db
     
     # Now we "sync" our database
-    dump_data_as_list (file_name_pkl, combined_data)
-    
-            
+    dump_data_as_list (file_name_pkl, 
+                       combined_data, 
+                       check_duplicates
+                       )
+        
 def replace_data (file_name: str, 
                   data: dict, 
                   check_duplicates: bool = False
@@ -124,7 +141,10 @@ def replace_data (file_name: str,
     if read == []:
         pass
     
-    dump_data_as_list (file_name, data, check_duplicates)
+    dump_data_as_list (file_name, 
+                       data, 
+                       check_duplicates
+                       )
     
     
 def append_and_replace_items (file_name_pkl: str, 
@@ -133,15 +153,15 @@ def append_and_replace_items (file_name_pkl: str,
                               )-> None:
 
     """
-    append_and_replace_items_based_on_qty (file_name, resp, 3)
+    append_and_replace_items (file_name, resp, 3)
     """
-
-    #print (f"pickle data fr exc {data}")
     
-    append_data(file_name_pkl, data)
+    append_data(file_name_pkl, 
+                data
+                )
+    
     data_from_db: list = read_data (file_name_pkl)
     #print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
-
 
     if isinstance(data_from_db, 
                   dict
@@ -156,12 +176,11 @@ def append_and_replace_items (file_name_pkl: str,
         except:
             print (f"except because of dict type. WEIRD. RECHECK) {data_from_db}")
             data_list = list (data_from_db)
-                
-        dump_data_as_list (file_name_pkl, 
-                            data_list, 
-                            check_duplicates
-                            )
             
+    dump_data_as_list (file_name_pkl, 
+                       data_list, 
+                       check_duplicates
+                       )
             
 def append_and_replace_items_based_on_qty (file_name_pkl: str, 
                                            data: dict, 
@@ -226,7 +245,10 @@ def append_and_replace_items_based_on_qty (file_name_pkl: str,
 
             result: list = [o for o in data_from_db if o['tick'] not in filtered_timestamps ]
 
-            dump_data_as_list (file_name_pkl, result, check_duplicates)
+            dump_data_as_list (file_name_pkl, 
+                               result, 
+                               check_duplicates
+                               )
             
 def append_and_replace_items_based_on_time_expiration (file_name_pkl: str, 
                                                        data: dict, time_expiration: int, 
@@ -255,7 +277,11 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
     
     if 'change_id' in data_list:
         result: list =  ([o for o in data if  o['timestamp'] > one_hour_ago]) 
-        dump_data_as_list (file_name_pkl, result, check_duplicates)
+        
+        dump_data_as_list (file_name_pkl, 
+                           result,
+                           check_duplicates
+                           )
     
     if 'params' in data_list:
 
@@ -264,9 +290,11 @@ def append_and_replace_items_based_on_time_expiration (file_name_pkl: str,
         data = [o['data']  for o in data ]
         
         result: list =  ([o for o in data if  o['tick'] < one_hour_ago])    
-        dump_data_as_list (file_name_pkl, result)
         
-
+        dump_data_as_list (file_name_pkl, 
+                           result
+                           )
+        
     if 'with_rebates' in data_list and False:
         result: list =  ([o for o in data if  o['remaining_active_time_in_hours'] ==  one_hour_ago]) 
         dump_data_as_list (file_name_pkl, result, check_duplicates)

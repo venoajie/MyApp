@@ -199,10 +199,9 @@ class StreamAccountData:
                                                                                         'positions', 
                                                                                         currency
                                                                                         )
-                                pickling.replace_data(
-                                                        my_path_position, 
-                                                        positions
-                                                        )
+                                pickling.replace_data(my_path_position, 
+                                                      positions
+                                                      )
                                 
                         await self.get_sub_accounts(currency)                                                      
             else:

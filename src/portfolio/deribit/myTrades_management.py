@@ -180,7 +180,10 @@ class MyTrades ():
             if sum_closed_trades_in_my_trades_open_net != 0:
                 for data_order in closed_trades_in_my_trades_open:
                         
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, data_order , 10000, True)
+                    pickling.append_data (my_trades_path_open, 
+                                          data_order , 
+                                          True
+                                          )
                     
             # the transaction closed the respective label
             if sum_closed_trades_in_my_trades_open_net == 0: 
@@ -227,48 +230,45 @@ class MyTrades ():
                 label_id = trade_transactions['label_id']
                 
                 #! DISTRIBUTE trading transaction as per label id
+                # for no label id trading (usually manual trade)
                 if label_id == [] :
                     my_trades_path_manual = system_tools.provide_path_for_file ('myTrades', 
                                                                                 currency,
                                                                                 'manual'
                                                                                 )
                     
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_manual, 
-                                                                    data_order, 
-                                                                    10000, 
-                                                                    True
-                                                                    )                
+                    pickling.append_data (my_trades_path_manual, 
+                                          data_order, 
+                                          True
+                                          )                
                         
                 if trade_transactions['liquidation_event']:
 
                     # append trade to db.check potential duplicate
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, 
-                                                                    data_order , 
-                                                                    10000, 
-                                                                    True
-                                                                    )
+                    pickling.append_data (my_trades_path_open, 
+                                          data_order,
+                                          True
+                                          )
                     
                 if trade_transactions['opening_position']:
                     log.error ('LABEL ID OPEN')
                     #log.error (data_order)
 
                     # append trade to db.check potential duplicate
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, 
-                                                                    data_order, 
-                                                                    10000, 
-                                                                    True
-                                                                    )
+                    pickling.append_data (my_trades_path_open, 
+                                          data_order, 
+                                          True
+                                          )
                     
                 if trade_transactions['closing_position']:
                     log.debug ('LABEL ID CLOSED')
                     #log.error (data_order)
                     
                     # append trade to db.check potential duplicate
-                    pickling.append_and_replace_items_based_on_qty (my_trades_path_open, 
-                                                                    data_order , 
-                                                                    10000, 
-                                                                    True
-                                                                    )
+                    pickling.append_data (my_trades_path_open, 
+                                                       data_order, 
+                                                       True
+                                                       )
                                 
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
