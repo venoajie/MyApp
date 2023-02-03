@@ -3,7 +3,7 @@
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
-from utilities import pickling, system_tools
+from utilities import pickling, system_tools, string_modification
 
 def catch_error (error, idle: int = None) -> list:
     """
@@ -132,19 +132,19 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         transactions_same_id = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
+        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  
         
         #! DELETE ###########################################################################################
-        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']                                          ]
+                                                ]
         log.critical (f'  transactions_same_id {transactions_same_id=} \
             transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}\
-                remaining_open_trades {remaining_open_trades}')
+                remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
         #! DELETE ###########################################################################################
         
         return {'transactions_same_id':transactions_same_id,
                 # summing transaction under the same label id
                 'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_same_id),
-                'remaining_open_trades': [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']
-                                          ]
+                'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
                 }
         
     def synchronizing_closed_tradings (self, 
@@ -166,7 +166,8 @@ class MyTrades ():
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
         my_trades = self.my_trades
         
-        log.debug (len (my_trades))
+        log. critical (len (my_trades))
+        log. critical ((sum_closed_trades_in_my_trades_open_net))
         
         if len (my_trades) > 1:
             log.error (str(closed_label_id_int))
@@ -199,7 +200,10 @@ class MyTrades ():
                     if label_id != []:
                         log.critical (data_order)   
                     
-                        pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
+                        pickling.replace_data (my_trades_path_open, 
+                                               remaining_open_trades, 
+                                               True
+                                               )
                 
         # transaction has fully completed. move all the transactions with the same id to closed db
         if sum_closed_trades_in_my_trades_open_net == 0:
