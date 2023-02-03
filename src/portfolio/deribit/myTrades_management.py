@@ -131,13 +131,15 @@ class MyTrades ():
         '''       
         
         # filter open trades which have the same label id with trade transaction
-        transactions_same_id = [o for o in my_trades_open if  (closed_label_id_int)  in o['label'] ]
-        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ]
+        label = str(closed_label_id_int)
+        transactions_same_id = [o for o in my_trades_open if label in o['label'] ]
+        
+        remaining_open_trades = [o for o in my_trades_open if  label not in o['label']  ]
         
         #! DELETE ###########################################################################################
                                                 
         #log.info (my_trades_open)
-        log.critical (f' closed_label_id_int {closed_label_id_int} transactions_same_id {transactions_same_id} \
+        log.critical (f' closed_label_id_int {label} transactions_same_id {transactions_same_id} \
             transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}')\
                 #remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
         #! DELETE ###########################################################################################
