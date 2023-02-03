@@ -136,9 +136,9 @@ class MyTrades ():
         
         #! DELETE ###########################################################################################
                                                 ]
-        log.critical (f'  transactions_same_id {transactions_same_id=} \
-            transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}\
-                remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
+        log.critical (f' closed_label_id_int {closed_label_id_int} transactions_same_id {transactions_same_id} \
+            transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}')\
+                #remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
         #! DELETE ###########################################################################################
         
         return {'transactions_same_id':transactions_same_id,
