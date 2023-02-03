@@ -131,11 +131,12 @@ class MyTrades ():
         '''       
         
         # filter open trades which have the same label id with trade transaction
-        transactions_same_id = ([o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ])
-        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  
+        transactions_same_id = [o for o in my_trades_open if  str(closed_label_id_int)  in o['label'] ]
+        remaining_open_trades = [o for o in my_trades_open if  str(closed_label_id_int)  not in o['label']  ]
         
         #! DELETE ###########################################################################################
-                                                ]
+                                                
+        log.info (my_trades_open)
         log.critical (f' closed_label_id_int {closed_label_id_int} transactions_same_id {transactions_same_id} \
             transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}')\
                 #remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
@@ -153,14 +154,18 @@ class MyTrades ():
                                        my_trades_path_open: str) -> None:
         
         '''
-        '''       
-        gather_transactions_under_the_same_id_int = self.gather_transactions_under_the_same_id_int (closed_label_id_int, my_trades_open)
+        '''  
+             
+        gather_transactions_under_the_same_id_int = self.gather_transactions_under_the_same_id_int (closed_label_id_int, 
+                                                                                                    my_trades_open
+                                                                                                    )
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
+        
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
