@@ -196,7 +196,7 @@ async def main_enforce_my_trade_db_integrity (
                                            my_trades_open_from_db,
                                            my_selected_trades_open_from_system
                                            )
-    trade_integrity.update_myTrades_file_as_per_comparation_result ()
+    await trade_integrity.update_myTrades_file_as_per_comparation_result ()
     
                                      
 @dataclass(unsafe_hash=True, slots=True)
