@@ -81,9 +81,7 @@ class CheckTradeIntegrity ():
         except Exception as error:
             catch_error (error)
                              
-    async def rebuilt_db_myTrades_open (self, 
-                                               server_time: int
-                                               ) -> None:
+    async def rebuilt_db_myTrades_open (self) -> None:
         """
         
         """
