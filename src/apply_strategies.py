@@ -500,7 +500,7 @@ class ApplyHedgingSpot ():
             my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, 
                                                                                          server_time)
         
-        check_data_integrity.main_enforce_my_trade_db_integrity (self.currency,
+        await check_data_integrity.main_enforce_my_trade_db_integrity (self.currency,
                                                                 positions_from_get,
                                                                 my_trades_open_from_db,
                                                                 my_selected_trades_open_from_system
