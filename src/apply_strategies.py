@@ -240,28 +240,62 @@ class ApplyHedgingSpot ():
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
-        path_ordBook: str = system_tools.provide_path_for_file ('ordBook', instrument) 
-        path_ticker: str = system_tools.provide_path_for_file ('ticker', instrument) 
-        path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', f'{(self.currency).upper()}-PERPETUAL') 
-        path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
-        path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', self.currency) 
+        path_ordBook: str = system_tools.provide_path_for_file ('ordBook',
+                                                                instrument
+                                                                ) 
+        path_ticker: str = system_tools.provide_path_for_file ('ticker', 
+                                                               instrument
+                                                               ) 
+        path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', 
+                                                                         f'{(self.currency).upper()}-PERPETUAL'
+                                                                         ) 
+        path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', 
+                                                                         self.currency
+                                                                         ) 
+        path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', 
+                                                                    self.currency
+                                                                    ) 
             
-        path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', self.currency)               
-        path_trades_open: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'open')               
+        path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', 
+                                                                     self.currency
+                                                                     )               
+        path_trades_open: str = system_tools.provide_path_for_file ('myTrades', 
+                                                                    self.currency, 
+                                                                    'open'
+                                                                    )               
         my_trades_open: str = pickling.read_data(path_trades_open)               
-        my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', self.currency, 'closed')
+        my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', 
+                                                                         self.currency, 
+                                                                         'closed'
+                                                                         )
+        
         my_trades_closed: str = pickling.read_data(my_trades_path_closed)             
         
-        path_orders_open: str = system_tools.provide_path_for_file ('orders', self.currency, 'open')
-        path_orders_closed: str = system_tools.provide_path_for_file ('orders', self.currency, 'closed')
-        path_orders_filled: str = system_tools.provide_path_for_file ('orders', self.currency, 'filled')
+        path_orders_open: str = system_tools.provide_path_for_file ('orders', 
+                                                                    self.currency, 
+                                                                    'open'
+                                                                    )
         
-        path_portfolio: str = system_tools.provide_path_for_file ('portfolio', self.currency)      
+        path_orders_closed: str = system_tools.provide_path_for_file ('orders', 
+                                                                      self.currency, 
+                                                                      'closed')
+        path_orders_filled: str = system_tools.provide_path_for_file ('orders', 
+                                                                      self.currency, 
+                                                                      'filled'
+                                                                      )
         
-        path_instruments: str = system_tools.provide_path_for_file ('instruments',  self.currency)          
+        path_portfolio: str = system_tools.provide_path_for_file ('portfolio', 
+                                                                  self.currency
+                                                                  )      
+        
+        path_instruments: str = system_tools.provide_path_for_file ('instruments', 
+                                                                    self.currency
+                                                                    )          
                 
         symbol_index: str = f'{self.currency}_usd'
-        path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        path_index: str = system_tools.provide_path_for_file ('index',  
+                                                              symbol_index
+                                                              )  
         ticker_perpetual: list = pickling.read_data(path_ticker_perpetual)
         symbol_index: str = f'{self.currency}_usd'
         path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
@@ -324,7 +358,9 @@ class ApplyHedgingSpot ():
             position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
         return position
                 
-    async def market_price (self, instrument: str) -> list:
+    async def market_price (self, 
+                            instrument: str
+                            ) -> dict:
         """
         """
 
@@ -336,14 +372,16 @@ class ApplyHedgingSpot ():
         
         if ordBook :
                 
-            max_time_stamp_ordBook = max ([o['timestamp'] for o in ordBook ])
+            max_time_stamp_ordBook = max (
+                                        [
+                                            o['timestamp'] for o in ordBook 
+                                            ]
+                                        )
+            
             most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
-
-            best_bid_prc= most_current_ordBook[0]['bids'][0][0]
-            best_ask_prc= most_current_ordBook[0]['asks'][0][0]
-
-            return {'best_bid_prc': best_bid_prc,
-                    'best_ask_prc': best_ask_prc
+            
+            return {'best_bid_prc': most_current_ordBook[0]['bids'][0][0],
+                    'best_ask_prc':  most_current_ordBook[0]['asks'][0][0]
                     }
     
     async def current_server_time (self) -> float:
@@ -380,24 +418,6 @@ class ApplyHedgingSpot ():
         #log.critical(f'{cancel=}')
         return (cancel)
         
-    async def get_instruments_with_rebates (self, instruments, server_time) -> None:
-        """
-        """
-        instruments_with_rebates = [o for o in instruments if o['maker_commission'] < 0 ]
-
-        instruments_with_rebates_weekly = [o for o in instruments_with_rebates if o['settlement_period'] == 'week' ]
-
-        instruments_with_rebates_weekly_longest_expiration = max([o['expiration_timestamp'] for o in instruments_with_rebates_weekly ])
-        instruments_with_rebates_weekly_longest_expiration_ms_before_expiration = instruments_with_rebates_weekly_longest_expiration - server_time 
-        instruments_with_rebates_weekly_longest_expiration_hours_before_expiration = (instruments_with_rebates_weekly_longest_expiration_ms_before_expiration/(60000))/60
-        instruments_with_rebates_longest_expiration_days_before_expiration = instruments_with_rebates_weekly_longest_expiration_hours_before_expiration/24
-    
-        return {'instruments_with_rebates': instruments_with_rebates,
-                'instruments_with_rebates_weekly': instruments_with_rebates_weekly,
-                'instruments_with_rebates_weekly_longest_exp_days_before_expiration': instruments_with_rebates_longest_expiration_days_before_expiration,
-                'instruments_with_rebates_weekly_longest_exp': [o for o in instruments_with_rebates if o['expiration_timestamp'] == instruments_with_rebates_weekly_longest_expiration ],
-                }
-
     async def cancel_orders_hedging_spot_based_on_time_threshold (self, 
                                                                   server_time, label
                                                                   ) -> float:
@@ -430,15 +450,17 @@ class ApplyHedgingSpot ():
     
     async def cancel_by_order_id (self, open_order_id) -> None:
         
-        await deribit_get.get_cancel_order_byOrderId (self.connection_url, 
-                                                      self.client_id, 
-                                                      self.client_secret, 
-                                                      open_order_id
+        await deribit_get.get_cancel_order_byOrderId (
+                                                        self.connection_url, 
+                                                        self.client_id, 
+                                                        self.client_secret, 
+                                                        open_order_id
                                                       )  
 
-    async def check_open_orders_integrity (self, 
-                                           open_orders_open_byAPI,
-                                           open_orders_from_sub_account_get
+    async def check_open_orders_integrity (
+                                            self, 
+                                            open_orders_open_byAPI,
+                                            open_orders_from_sub_account_get
                                            ) -> None:
 
         #open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
@@ -456,17 +478,15 @@ class ApplyHedgingSpot ():
                          idle = .1
                          ) 
        
-    async def check_myTrade_integrity (self, 
-                               positions_from_get, 
-                               my_trades_open_from_db, 
-                               server_time
-                               ) -> None:
+    async def check_myTrade_integrity (
+                                        self, 
+                                        positions_from_get, 
+                                        my_trades_open_from_db, 
+                                        server_time
+                                        ) -> None:
+                    
+        myTrades_from_db = await check_data_integrity.myTrades_originally_from_db (self.currency)
         
-        myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(self.currency)
-    
-        my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
-        my_trades_open_mgt.distribute_trade_transaction (self.currency)
-            
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
@@ -477,40 +497,19 @@ class ApplyHedgingSpot ():
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
-            my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, server_time)
+            my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, 
+                                                                                         server_time)
         
-        data_integrity =  check_data_integrity.CheckTradeIntegrity (self.currency,
-                                                                       positions_from_get,
-                                                                       my_trades_open_from_db,
-                                                                       my_selected_trades_open_from_system
-                                                                       )
+        check_data_integrity.main_enforce_my_trade_db_integrity (self.currency,
+                                                                positions_from_get,
+                                                                my_trades_open_from_db,
+                                                                my_selected_trades_open_from_system
+                                                                )
         
-        inventory_per_db_vs_get_comparation = await data_integrity.compare_inventory_per_db_vs_get ()
-        log.critical (inventory_per_db_vs_get_comparation)
-        #log.warning (my_trades_open_from_db)
-        
-        
-        if inventory_per_db_vs_get_comparation != 0:
-            log.info (inventory_per_db_vs_get_comparation)
-            await data_integrity.rearrange_my_trades_consistency (server_time)
             
-        if inventory_per_db_vs_get_comparation == 0:     
-            
-            path_trades_open_recovery = system_tools.provide_path_for_file ('myTrades', 
-                                                                            self.currency,
-                                                                            'open-recovery-point'
-                                                                            )          
-            pickling.replace_data (path_trades_open_recovery, 
-                                    my_trades_open_from_db, 
-                                    True
-                                    )
-            
-        if start_timestamp:
-            
-            # use the earliest time stamp to fetch data from exchange
-            my_trades_time_constrd = await self.my_trades_time_constrained (start_timestamp, server_time)
-            
-    async def running_strategy (self, server_time) -> float:
+    async def running_strategy (self, 
+                                server_time
+                                ) -> float:
         """
         source data: loaded from database app
         len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
@@ -534,7 +533,9 @@ class ApplyHedgingSpot ():
             #log.critical (index_price)
                     
             # compute notional value
-            notional: float =  await self.compute_notional_value (index_price, equity)
+            notional: float =  await self.compute_notional_value (index_price, 
+                                                                  equity
+                                                                  )
                                
             if  index_price and portfolio :                
                 

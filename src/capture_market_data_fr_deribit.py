@@ -38,6 +38,13 @@ class StreamMarketData:
         + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
         + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
         
+        Multiprocessing:
+        + https://towardsdatascience.com/applying-python-multiprocessing-in-2-lines-of-code-3ced521bac8f
+        + https://blog.devgenius.io/running-multiple-functions-at-once-in-python-using-the-multiprocessing-module-4c1fe3ed9878
+        + https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio
+        + https://stackoverflow.com/questions/61351844/difference-between-multiprocessing-asyncio-threading-and-concurrency-futures-i
+        + https://medium.com/analytics-vidhya/asyncio-threading-and-multiprocessing-in-python-4f5ff6ca75e8
+        
         Basic:
         + https://websockets.readthedocs.io/en/6.0/intro.html
         + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
@@ -165,13 +172,16 @@ class StreamMarketData:
                         data_orders: list = message['params']['data']
                         currency: str = string_modification.extract_currency_from_text (message_channel)
                         #log.error(currency)
-                                           
-                            
+                                                                       
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
-                            my_path_ticker = system_tools.provide_path_for_file ('ticker',  instrument_ticker) 
-                            my_path_futures_analysis = system_tools.provide_path_for_file ('futures_analysis', currency) 
+                            my_path_ticker = system_tools.provide_path_for_file ('ticker',  
+                                                                                 instrument_ticker
+                                                                                 ) 
+                            my_path_futures_analysis = system_tools.provide_path_for_file ('futures_analysis', 
+                                                                                           currency
+                                                                                           ) 
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
@@ -188,7 +198,9 @@ class StreamMarketData:
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                         
                                 symbol_index: str = f'{currency}_usd'
-                                my_path_index: str = system_tools.provide_path_for_file ('index',  symbol_index) 
+                                my_path_index: str = system_tools.provide_path_for_file ('index',  
+                                                                                         symbol_index
+                                                                                         ) 
                                 index_price: list = pickling.read_data(my_path_index) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
                                 #log.error(ticker_instrument)
@@ -201,7 +213,9 @@ class StreamMarketData:
                                 ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
                                 
                                 #! double file operation. could be further improved
-                                pickling.replace_data(my_path_futures_analysis, ticker_all) 
+                                pickling.replace_data(my_path_futures_analysis, 
+                                                      ticker_all
+                                                      ) 
                                 
                                 pickling.append_and_replace_items_based_on_qty (my_path_futures_analysis, 
                                                                                 tickers, 
@@ -218,22 +232,37 @@ class StreamMarketData:
                         #instrument_book = "".join(list(message_channel) [5:][:-14])
                         if False and message_channel == f'book.{instrument_book}.none.20.100ms':
                             
-                            my_path = system_tools.provide_path_for_file ('ordBook',  instrument_book) 
+                            my_path = system_tools.provide_path_for_file ('ordBook',  
+                                                                          instrument_book
+                                                                          ) 
                             
                             try:
-                                pickling.append_and_replace_items_based_on_time_expiration (my_path, data_orders, one_minute)
+                                pickling.append_and_replace_items_based_on_time_expiration (my_path, 
+                                                                                            data_orders,
+                                                                                            one_minute
+                                                                                            )
                             except:
                                 continue        
                                 
                         symbol_index =  (message_channel)[-7:]
                         if message_channel == f'deribit_price_index.{symbol_index}':
                             
-                            my_path = system_tools.provide_path_for_file ('index', symbol_index.lower()) 
-                            pickling.replace_data(my_path, data_orders)
+                            my_path = system_tools.provide_path_for_file ('index', 
+                                                                          symbol_index.lower()
+                                                                          )
+                             
+                            pickling.replace_data (
+                                                  my_path, 
+                                                  data_orders
+                                                  )
                                                                      
             else:
                 log.info('WebSocket connection has broken.')
-                system_tools.catch_error_message (error, .1, 'WebSocket connection MARKET has broken')
+                system_tools.catch_error_message (
+                                                  error, 
+                                                  .1, 
+                                                  'WebSocket connection MARKET has broken'
+                                                  )
                 
     async def establish_heartbeat(self) -> None:
         """

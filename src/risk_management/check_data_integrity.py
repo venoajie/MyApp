@@ -81,10 +81,11 @@ class CheckTradeIntegrity ():
         except Exception as error:
             catch_error (error)
                              
-    async def rearrange_my_trades_consistency (self, 
+    async def rebuilt_db_myTrades_open (self, 
                                                server_time: int
                                                ) -> None:
         """
+        
         """
                 
         try:
@@ -153,8 +154,7 @@ class CheckTradeIntegrity ():
         except Exception as error:
             catch_error (error)
                                  
-    async def update_myTrades_file_as_per_comparation_result (self, 
-                                                              server_time: int
+    async def update_myTrades_file_as_per_comparation_result (self
                                                               ) -> list:
         
         '''
@@ -171,13 +171,34 @@ class CheckTradeIntegrity ():
                                        )
             
             if size_difference != 0:
-                await self.rearrange_my_trades_consistency (server_time)
+                await self.rebuilt_myTrades_open ()
 
         except Exception as error:
             catch_error (error)
 
                              
                              
+async def main_enforce_my_trade_db_integrity (
+                                            currency,
+                                            positions_from_get,
+                                            my_trades_open_from_db,
+                                            my_selected_trades_open_from_system
+                                            ):
+
+    '''
+    '''       
+    
+    my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
+    my_trades_open_mgt.distribute_trade_transaction (currency)
+            
+    trade_integrity =  CheckTradeIntegrity (currency,
+                                           positions_from_get,
+                                           my_trades_open_from_db,
+                                           my_selected_trades_open_from_system
+                                           )
+    trade_integrity.update_myTrades_file_as_per_comparation_result ()
+    
+                                     
 @dataclass(unsafe_hash=True, slots=True)
 class CheckOrderIntegrity ():
 
