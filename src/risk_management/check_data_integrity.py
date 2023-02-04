@@ -171,7 +171,7 @@ class CheckTradeIntegrity ():
                                        )
             
             if size_difference != 0:
-                await self.rebuilt_myTrades_open ()
+                await self.rebuilt_db_myTrades_open ()
 
         except Exception as error:
             catch_error (error)
