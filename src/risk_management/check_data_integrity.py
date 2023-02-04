@@ -80,37 +80,7 @@ class CheckTradeIntegrity ():
         
         except Exception as error:
             catch_error (error)
-                             
-    async def rebuilt_db_myTrades_open (self) -> None:
-        """
-        
-        """
-                
-        try:
-            my_trades_from_db = await self.myTrades_from_db ()
-            my_trades_from_db_recovery = my_trades_from_db['db_recover']
-            log.warning(my_trades_from_db_recovery)
-            
-            if my_trades_from_db_recovery:
-                
-                # compare data from exchanges. 
-                # Pick only those have not recorded at system yet
-                filtered_data_from_my_trades_from_exchange =  string_modification.find_unique_elements (
-                    self.my_selected_trades_open_from_system,  
-                        my_trades_from_db_recovery
-                        )
-                log.error(filtered_data_from_my_trades_from_exchange)
-                
-                # redistribute the filtered data into db
-                my_trades_from_exchange = myTrades_management.MyTrades (
-                    filtered_data_from_my_trades_from_exchange
-                    )
-                
-                my_trades_from_exchange.distribute_trade_transaction(self.currency)
-            
-        except Exception as error:
-            catch_error (error)
-                                 
+                   
     def net_position (self, 
                       selected_transactions: list
                       )-> float:
@@ -151,6 +121,36 @@ class CheckTradeIntegrity ():
             
         except Exception as error:
             catch_error (error)
+                                           
+    async def rebuilt_db_myTrades_open (self) -> None:
+        """
+        
+        """
+                
+        try:
+            my_trades_from_db = await self.myTrades_from_db ()
+            my_trades_from_db_recovery = my_trades_from_db['db_recover']
+            log.warning(my_trades_from_db_recovery)
+            
+            if my_trades_from_db_recovery:
+                
+                # compare data from exchanges. 
+                # Pick only those have not recorded at system yet
+                filtered_data_from_my_trades_from_exchange =  string_modification.find_unique_elements (
+                    self.my_selected_trades_open_from_system,  
+                        my_trades_from_db_recovery
+                        )
+                log.error(filtered_data_from_my_trades_from_exchange)
+                
+                # redistribute the filtered data into db
+                my_trades_from_exchange = myTrades_management.MyTrades (
+                    filtered_data_from_my_trades_from_exchange
+                    )
+                
+                my_trades_from_exchange.distribute_trade_transaction(self.currency)
+            
+        except Exception as error:
+            catch_error (error)
                                  
     async def update_myTrades_file_as_per_comparation_result (self
                                                               ) -> list:
@@ -159,7 +159,7 @@ class CheckTradeIntegrity ():
         ''' 
         try:
             size_difference = await self.compare_inventory_per_db_vs_get()
-            #log.critical (f'size_difference {size_difference}')
+            log.critical (f'size_difference {size_difference}')
             
             if size_difference == 0:
                 my_trades_path_open = await self.myTrades_from_db ()            
