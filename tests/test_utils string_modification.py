@@ -89,9 +89,7 @@ def test_unique_elements  ():
     data_B = [2, 4]
 
     assert string_modification.find_unique_elements (data_A, data_B) == [1, 3, 5]  
-    assert string_modification.find_unique_elements (data1, data2) == result  
-    #assert string_modification.find_unique_elements (data_A, data_B) == string_modification.remove_redundant_elements (data_A + data_B)
-    
+    assert string_modification.find_unique_elements (data1, data2) == result      
     
 def test_extract_currency_from_text  ():
     websocket_message_channel_user_portfolio_BTC = 'user.portfolio.BTC'
