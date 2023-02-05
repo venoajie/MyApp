@@ -164,6 +164,7 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
+        log.info (my_trades_open)
         log.critical (closed_label_id_int)
         log.critical (closed_trades_in_my_trades_open)
         
