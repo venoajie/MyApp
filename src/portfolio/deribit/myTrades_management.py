@@ -114,6 +114,9 @@ class MyTrades ():
             catch_error (error)
 
         #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
+        if closed_label_id_int == 1674134456:
+            log.critical (f' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
         
         return {'liquidation_event': liquidation_event,
                 'label_id': label_id,
