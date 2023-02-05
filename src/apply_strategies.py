@@ -304,7 +304,7 @@ class ApplyHedgingSpot ():
         path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        log.error (sub_account)
+        #log.error (sub_account)
         positions_from_sub_account = sub_account [0] ['positions']
         open_orders_from_sub_account = sub_account [0] ['open_orders']
         portfolio = pickling.read_data(path_portfolio)
@@ -545,7 +545,7 @@ class ApplyHedgingSpot ():
                 
                 # fetch positions for all instruments
                 positions: list = reading_from_database ['positions_from_sub_account']
-                log.error (positions)
+                #log.error (positions)
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']

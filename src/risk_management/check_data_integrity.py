@@ -59,7 +59,7 @@ async def myTrades_originally_from_db (currency) -> list:
         my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
 
         return {'db_recover': my_trades_from_db_recovery,
-                'time_stamp_to_recover': time_stamp_to_recover (my_trades_from_db_recovery),
+                'time_stamp_to_recover': await time_stamp_to_recover (my_trades_from_db_recovery),
                 'path_recover': my_trades_path_open_recovery,
                 'path_regular': my_trades_path_open,
                 'db_regular': my_trades_from_db_regular
