@@ -113,10 +113,6 @@ class MyTrades ():
         except Exception as error:
             catch_error (error)
 
-        #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
-        if closed_label_id_int == 1674134456 or trade_seq == 115457369:
-            log.critical (f' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-            log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
         
         return {'liquidation_event': liquidation_event,
                 'label_id': label_id,
@@ -168,7 +164,11 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
-        #log.info (my_trades_open)
+
+        #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
+        if closed_label_id_int == 1674134456 :
+            log.critical (f' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+            log.info (my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
@@ -246,7 +246,7 @@ class MyTrades ():
                                                                       'open'
                                                                       )
 
-            log.error (self.my_trades)
+            #log.error (self.my_trades)
             for data_order in self.my_trades:
                 data_order = [data_order]
                 log.error (data_order)
