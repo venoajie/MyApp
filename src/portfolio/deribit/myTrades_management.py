@@ -156,7 +156,8 @@ class MyTrades ():
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
                                        my_trades_open: list, 
-                                       my_trades_path_open: str) -> None:
+                                       my_trades_path_open: str
+                                       ) -> None:
         
         '''
         '''  
@@ -178,16 +179,16 @@ class MyTrades ():
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
-        my_trades = self.my_trades
+        #my_trades = self.my_trades
         
-        log. critical (len (my_trades))
+        log. critical (len (my_trades_open))
         log. critical ((sum_closed_trades_in_my_trades_open_net))
         
-        if len (my_trades) > 1:
+        if len (my_trades_open) > 1:
             #log.error (str(closed_label_id_int))
                                 
             label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
-            for key in my_trades:
+            for key in my_trades_open:
                 if label not in key:
                     key [label] = []
             
@@ -224,10 +225,15 @@ class MyTrades ():
             
             #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
             # update mytrades db with the still open ones
-            pickling.replace_data (my_trades_path_open, remaining_open_trades, True )
+            pickling.replace_data (my_trades_path_open, 
+                                   remaining_open_trades, 
+                                   True 
+                                   )
                             
 
-    def distribute_trade_transaction (self, currency: str) -> None:
+    def distribute_trade_transaction (self, 
+                                      currency: str
+                                      ) -> None:
         
         '''
         '''       
