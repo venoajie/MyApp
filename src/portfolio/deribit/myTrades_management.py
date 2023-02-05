@@ -164,10 +164,12 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
-        #log.critical (closed_trades_in_my_trades_open)
+        log.critical (closed_label_id_int)
+        log.critical (closed_trades_in_my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
+        log.critical (sum_closed_trades_in_my_trades_open_net)
         
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
@@ -178,7 +180,7 @@ class MyTrades ():
         log. critical ((sum_closed_trades_in_my_trades_open_net))
         
         if len (my_trades) > 1:
-            log.error (str(closed_label_id_int))
+            #log.error (str(closed_label_id_int))
                                 
             label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
             for key in my_trades:
@@ -233,6 +235,7 @@ class MyTrades ():
                                                                       'open'
                                                                       )
 
+            log.error (self.my_trades)
             for data_order in self.my_trades:
                 data_order = [data_order]
 
