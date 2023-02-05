@@ -168,7 +168,7 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
-        log.info (my_trades_open)
+        #log.info (my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
