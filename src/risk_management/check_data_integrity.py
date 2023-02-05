@@ -139,6 +139,7 @@ class CheckTradeIntegrity ():
             my_trades_from_db = await self.myTrades_from_db ()
             my_trades_from_db_recovery = my_trades_from_db['db_recover']
             log.warning(self.my_selected_trades_open_from_system)
+            log.debug(self.my_trades_from_db_recovery)
             
             if my_trades_from_db_recovery:
                 
