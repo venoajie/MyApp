@@ -138,6 +138,7 @@ class ApplyHedgingSpot ():
             # get the earliest transaction time stamp
             my_orders_from_db_min_time_stamp = min ([o['creation_timestamp'] for o in my_orders_from_db ])
             
+            #! why trade?
             # use the earliest time stamp to fetch data from exchange
             fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, server_time)
             
@@ -491,7 +492,7 @@ class ApplyHedgingSpot ():
         start_timestamp = myTrades_from_db['time_stamp_to_recover']
         #log.critical (positions_from_get)
         #log.info (my_trades_open_from_db)
-        #log.critical (start_timestamp)
+        log.critical (start_timestamp)
         
         my_selected_trades_open_from_system =[]
         if start_timestamp:
