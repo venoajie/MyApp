@@ -168,20 +168,25 @@ class MyTrades ():
         #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
         if closed_label_id_int == 1674134456 :
             log.critical (f' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-            log.info (my_trades_open)
+            #log.info (my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
-        log.debug (f'closed_label_id_int {closed_label_id_int}')
-        log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
-        log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
+        #log.debug (f'closed_label_id_int {closed_label_id_int}')
+        #log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
+        #log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
         #my_trades = self.my_trades
         
-        log. critical (len (my_trades_open))
+        log. info ( ( self.my_trades))
+        log. debug ( (my_trades_open))
+        log. critical ( (string_modification.find_unique_elements (
+                    my_trades_open,  
+                        self.my_trades
+                        )))
         log. critical ((sum_closed_trades_in_my_trades_open_net))
         
         if len (my_trades_open) > 1:
@@ -249,7 +254,7 @@ class MyTrades ():
             #log.error (self.my_trades)
             for data_order in self.my_trades:
                 data_order = [data_order]
-                log.error (data_order)
+                #log.error (data_order)
                 #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
