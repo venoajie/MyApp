@@ -31,12 +31,20 @@ def telegram_bot_sendtext (bot_message,
                                               purpose
                                               )
 
+async def time_stamp_to_recover (my_trades_from_db_recovery) -> list:
+    """
+    """
+    none_data = [None, []]
+
+    return [] if my_trades_from_db_recovery in none_data\
+                    else min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1
+        
 async def myTrades_originally_from_db (currency) -> list:
     """
     """
 
     try:
-        none_data = [None,[]]
+        
         my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             currency,
                                                                             'open-recovery-point'
@@ -51,8 +59,7 @@ async def myTrades_originally_from_db (currency) -> list:
         my_trades_from_db_regular = pickling.read_data (my_trades_path_open)
 
         return {'db_recover': my_trades_from_db_recovery,
-                'time_stamp_to_recover': [] if my_trades_from_db_recovery in none_data\
-                    else min ([o['timestamp'] for o in my_trades_from_db_recovery ])-1,
+                'time_stamp_to_recover': time_stamp_to_recover (my_trades_from_db_recovery),
                 'path_recover': my_trades_path_open_recovery,
                 'path_regular': my_trades_path_open,
                 'db_regular': my_trades_from_db_regular
@@ -96,7 +103,6 @@ class CheckTradeIntegrity ():
         ''' 
 
         try:
-            
             size_from_get_db = self.net_position (self.positions_from_get)
             size_from_trading_db = self.net_position (self.my_trades_open_from_db)
             log.critical (f'size_from_get_db {size_from_get_db} size_from_trading_db {size_from_trading_db}')
@@ -114,8 +120,10 @@ class CheckTradeIntegrity ():
             else:
                 if size_from_get_db == []  and size_from_trading_db == [] :
                     return 0
+                
                 if size_from_get_db == []:
                     return size_from_trading_db  
+                
                 if size_from_trading_db == []:
                     return  0 - size_from_get_db 
             
@@ -130,7 +138,7 @@ class CheckTradeIntegrity ():
         try:
             my_trades_from_db = await self.myTrades_from_db ()
             my_trades_from_db_recovery = my_trades_from_db['db_recover']
-            log.warning(my_trades_from_db_recovery)
+            log.warning(self.my_selected_trades_open_from_system)
             
             if my_trades_from_db_recovery:
                 

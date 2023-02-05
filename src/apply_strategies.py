@@ -308,7 +308,7 @@ class ApplyHedgingSpot ():
         open_orders_from_sub_account = sub_account [0] ['open_orders']
         portfolio = pickling.read_data(path_portfolio)
         open_order = pickling.read_data(path_orders_open)
-        log.error (open_order)
+        #log.error (open_order)
         none_data = [None, [], 0]
         
         # at start, usually position == None

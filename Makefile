@@ -16,7 +16,7 @@ start: install ram-disk
 install:
 	sudo apt-get install inotify-tools
 	sudo apt-get install python3-psutil
-	pip3 install black coverage flake8 mypy pylint pytest tox python-dotenv
+	pip3 install black coverage flake8 mypy pylint pytest pytest-asyncio tox python-dotenv
 	pip3 install --upgrade -r requirements.txt
 	pip3 install --upgrade requests
 
