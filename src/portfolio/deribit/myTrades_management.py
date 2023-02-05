@@ -237,7 +237,7 @@ class MyTrades ():
         
         '''
         '''       
-        from time import sleep
+        #from time import sleep
         
         try:
         
@@ -250,7 +250,7 @@ class MyTrades ():
             for data_order in self.my_trades:
                 data_order = [data_order]
                 log.error (data_order)
-                sleep (5)
+                #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
                 
