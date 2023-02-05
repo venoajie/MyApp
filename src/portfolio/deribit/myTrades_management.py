@@ -113,7 +113,7 @@ class MyTrades ():
         except Exception as error:
             catch_error (error)
 
-        log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
+        #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
         
         return {'liquidation_event': liquidation_event,
                 'label_id': label_id,
@@ -165,12 +165,12 @@ class MyTrades ():
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
         log.info (my_trades_open)
-        log.critical (closed_label_id_int)
-        log.critical (closed_trades_in_my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
-        log.critical (sum_closed_trades_in_my_trades_open_net)
+        log.debug (f'closed_label_id_int {closed_label_id_int}')
+        log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
+        log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
@@ -267,7 +267,7 @@ class MyTrades ():
                                           )
                     
                 if trade_transactions['opening_position']:
-                    log.error ('LABEL ID OPEN')
+                    #log.error ('LABEL ID OPEN')
                     #log.error (data_order)
 
                     # append trade to db.check potential duplicate

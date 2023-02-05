@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from utilities import time_modification
+# https://medium.com/@config.json/about-funding-rates-fa18b2de767f
 
 def get_now_unix_time ()-> int:
     
