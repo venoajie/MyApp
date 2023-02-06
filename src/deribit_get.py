@@ -16,24 +16,6 @@ from configuration import id_numbering
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-async def get_unauthenticated(
-    connection_url: str,
-    endpoint: str
-        ) -> None:
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(
-            connection_url+endpoint
-                ) as response:
-            # RESToverHTTP Status Code
-            status_code: int = response.status
-
-
-            # RESToverHTTP Response Content
-            response: Dict = await response.json()
-
-            return response
-
 async def main(
     endpoint: str,
     params: str,
@@ -179,7 +161,7 @@ async def send_order  (connection_url: str,
     return result 
     
     
-async def send_order_markett (connection_url: str,
+async def send_order_market (connection_url: str,
                             client_id,
                             client_secret,
                             side: str, 
@@ -453,7 +435,11 @@ async def get_subaccounts (connection_url: str,
     
     return result #['result']
 
-async def get_account_summary (connection_url: str, client_id, client_secret, currency):
+async def get_account_summary (connection_url: str, 
+                               client_id, 
+                               client_secret, 
+                               currency
+                               ):
         
     params =  {"currency": currency,
     "extended": True}
@@ -490,67 +476,44 @@ async def  get_server_time (connection_url: str):
     
     return result  
 
-async def  get_index (connection_url: str, currency):
+async def  get_index (connection_url: str,
+                      currency
+                      ):
     
     # Set endpoint
-    endpoint: str = 'public/get_index'
-    params =  {"currency": 'ETH'}
+    endpoint: str = f'public/get_index?currency={currency.upper()}'
+    params =  {}
     
-    result = await main(
+    return await main(
             endpoint=endpoint,
             params=params,
             connection_url=connection_url
-            )
-    return result     
-
-async def  get_instruments (connection_url: str, currency):
+            )     
+    
+async def  get_instruments (connection_url: str,
+                      currency
+                      ):
     
     # Set endpoint
-    endpoint: str = 'public/get_instruments'
-    params =  {"currency": 'ETH',
-    "kind": "future",
-    "expired": False}
+    endpoint: str = f'public/get_instruments?currency={currency.upper()}'
+    params =  {}
     
-    result = await main(
+    return await main(
             endpoint=endpoint,
             params=params,
             connection_url=connection_url
-            )
-    return result     
-
-from utilities import system_tools, pickling
-async def call_api(currency, msg):
-   async with websockets.connect('wss://www.deribit.com/ws/api/v2') as websocket:
-       await websocket.send(msg)
-       while websocket.open:
-            response = await websocket.recv()
-            response: dict = orjson.loads(response)
-            response_data: dict = response ['result']
-            
-            if response['id'] == 7617:
-                my_path = system_tools.provide_path_for_file ('instruments', 'replace', currency.lower()) 
-                print (my_path)
-                pickling.replace_data(my_path, response_data)
-
-if __name__ == "__main__":
-    # Logging
-
-    currencies = ['BTC', 'ETH']
-
-    for curr in currencies:
-                
-        msg = \
-        {
-        "jsonrpc" : "2.0",
-        "id" : 7617,
-        "method" : "public/get_instruments",
-        "params" : {
-            "currency" : f"{curr}",
-            "kind" : "future",
-            "expired" : False
-        }
-        }
-
-       
-        asyncio.get_event_loop().run_until_complete(call_api(curr, json.dumps(msg)))
-        
+            )     
+    
+async def  get_currencies (
+                            connection_url: str
+                           )->list:
+    
+    # Set endpoint
+    endpoint: str = f'public/get_currencies?'
+    params =  {}
+    
+    return await main (
+                        endpoint=endpoint,
+                        params=params,
+                        connection_url=connection_url
+                        )     
