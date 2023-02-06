@@ -15,6 +15,54 @@ client_id: str = parse_dotenv() ['client_id']
 client_secret: str = parse_dotenv() ['client_secret']
 
 @pytest.mark.asyncio
+async def test_get_user_trades_by_instrument():
+    user_trades_by_instrument = await get_dbt.get_user_trades_by_instrument(connection_url,
+                                                                            client_id,
+                                                                            client_secret,
+                                                                            'eth-perpetual'
+                                                                            )    
+    assert list(user_trades_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+
+@pytest.mark.asyncio
+async def test_get_open_orders_byInstruments():
+    open_orders_byInstruments = await (get_dbt.get_open_orders_byInstruments(connection_url,
+                                                     client_id,
+                                                     client_secret,
+                                                     'eth-perpetual',
+                                                     'all'))
+    
+    assert list(open_orders_byInstruments) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+
+@pytest.mark.asyncio
+async def test_get_order_history_by_instrument():
+    order_history_by_instrument = await (get_dbt.get_order_history_by_instrument(connection_url,
+                                                     client_id,
+                                                     client_secret,
+                                                     'eth-perpetual'))
+    
+    assert list(order_history_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+@pytest.mark.asyncio
+async def test_get_open_orders_byCurrency():
+    open_orders_byCurrency = await (get_dbt.get_open_orders_byCurrency(connection_url,
+                                                     client_id,
+                                                     client_secret,
+                                                     'eth'))
+    
+    assert list(open_orders_byCurrency) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+@pytest.mark.asyncio
+async def test_get_user_trades_by_currency():
+    user_trades_by_currency = await (get_dbt.get_user_trades_by_currency(connection_url,
+                                                     client_id,
+                                                     client_secret,
+                                                     'eth'))
+    
+    assert list(user_trades_by_currency) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+@pytest.mark.asyncio
 async def test_get_account_summary():
     account_summary = await (get_dbt.get_account_summary(connection_url,
                                                      client_id,
@@ -64,3 +112,54 @@ async def test_get_get_instruments():
     get_instruments = await (get_dbt.get_instruments(connection_url, 'eth'))
     
     assert   list(get_instruments) ==  ['jsonrpc', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+@pytest.mark.asyncio
+async def test_ohlc():
+    
+    resolution= 15
+    qty_candles = 100
+    ohlc = await (get_dbt.get_ohlc(connection_url, 
+                                   'eth-perpetual', 
+                                   resolution,
+                                   qty_candles)
+                  )
+    
+    assert   list(ohlc) == ['usOut', 'usIn', 'usDiff', 'testnet', 'result', 'jsonrpc']
+    
+@pytest.mark.asyncio
+async def test_get_open_interest_aggregated_ohlc():
+    
+    resolution= 'm5'
+    connection_url: str = 'https://open-api.coinglass.com/public/v2/'
+    
+    ohlc = await (get_dbt.get_open_interest_aggregated_ohlc(connection_url, 
+                                   'eth-perpetual', 
+                                   resolution)
+                  )
+    
+    assert   list(ohlc) == ['code', 'msg', 'success'] 
+    
+    
+@pytest.mark.asyncio
+async def test_get_open_interest_historical():
+    
+    resolution= 'm5'
+    connection_url: str = 'https://open-api.coinglass.com/public/v2/'
+    
+    ohlc = await (get_dbt.get_open_interest_historical(connection_url, 
+                                   'eth', 
+                                   resolution)
+                  )
+    
+    assert   list(ohlc) == ['code', 'msg', 'success'] 
+    
+@pytest.mark.asyncio
+async def test_get_open_interest_symbol():
+    
+    connection_url: str = 'https://open-api.coinglass.com/public/v2/'
+    
+    open_interest = await (get_dbt.get_open_interest_symbol(connection_url, 
+                                   'eth')
+                  )
+    
+    assert   list(open_interest) == ['code', 'msg', 'success'] 

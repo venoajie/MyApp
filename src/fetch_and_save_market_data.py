@@ -25,6 +25,12 @@ app = Rocketry(config={'task_execution': 'async',
 
 root = Path(".")
 
+def catch_error (error, 
+                 idle: int = None
+                 ) -> list:
+    """
+    """
+    system_tools.catch_error_message(error, idle)
 
 def get_currencies () -> float:
     """
@@ -57,9 +63,7 @@ def check_and_save_every_60_minutes ():
         pickling.replace_data(my_path_cur, currencies)
         
     except Exception as error:
-        import traceback
-        log.error(f"{error}")
-        log.error(traceback.format_exc())
+        catch_error (error)
         
 #@app.task(every("5 seconds"))
 def check_and_save_every_30_seconds ():
@@ -74,9 +78,7 @@ def check_and_save_every_30_seconds ():
         
                 
     except Exception as error:
-        import traceback
-        log.error(f"{error}")
-        log.error(traceback.format_exc())
+        catch_error (error)
 
 @app.task(every("300 seconds"))
 def check_and_save_every_5_minutes ():
@@ -97,9 +99,7 @@ def check_and_save_every_5_minutes ():
         pickling.replace_data(my_path, open_interest_aggregated_ohlc)
         
     except Exception as error:
-        import traceback
-        log.error(f"{error}")
-        log.error(traceback.format_exc())
+        catch_error (error)
 
 if __name__ == "__main__":
     
@@ -108,11 +108,11 @@ if __name__ == "__main__":
         app.run()
 #        check_and_save_every_30_seconds ()
         
-    except (KeyboardInterrupt, SystemExit):
-        import sys
-        sys.exit()
+    except (KeyboardInterrupt):
+        catch_error (KeyboardInterrupt)
 
     except Exception as error:
+        catch_error (error, 10)
         
-        formula.log_error('open interest','open interest main', error, 10)
+        #formula.log_error('open interest','open interest main', error, 10)
         

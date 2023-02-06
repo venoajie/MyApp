@@ -6,12 +6,21 @@ import requests
 from datetime import datetime
 
 # installed
-from loguru import logger as log
 from dataclassy import dataclass
 
 # user defined formula
 from utilities import time_modification
 #
+
+def catch_error (error, 
+                 idle: int = None
+                 ) -> list:
+    """
+    """
+    from utilities import system_tools
+    system_tools.catch_error_message(error, idle)
+    
+        
 @dataclass(unsafe_hash=True, slots=True)
 class MarketData ():
                 
@@ -26,10 +35,17 @@ class MarketData ():
             "coinglassSecret": "877ad9af931048aab7e468bda134942e"
         }
     
-    def ohlc_endPoint(self, resolution: int, start_timestamp: int, end_timestamp: int):
+    def ohlc_endPoint(self, 
+                      resolution: int, 
+                      start_timestamp: int, 
+                      end_timestamp: int
+                      ):
         return  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={end_timestamp}&instrument_name={self.symbol}&resolution={resolution}&start_timestamp={start_timestamp}')
         
-    def ohlc(self, resolution, qty_candles):
+    def ohlc(self, 
+             resolution, 
+             qty_candles
+             ):
             
         now_utc = datetime.now()
         now_unix = time_modification.convert_time_to_unix (now_utc)
@@ -39,9 +55,7 @@ class MarketData ():
             return requests.get(self.ohlc_endPoint(resolution, start_timestamp, now_unix)).json()['result']
 
         except Exception as error:
-            import traceback
-            log.error(f"{error}")
-            log.error(traceback.format_exc())
+            catch_error (error)
 
     def open_interest_symbol_endPoint(self):
         return  (f' https://open-api.coinglass.com/public/v2/open_interest?symbol={self.currency}')
@@ -55,14 +69,18 @@ class MarketData ():
                 return requests.get(self.open_interest_symbol_endPoint(), headers=self.headers).json()['data']
 
         except Exception as error:
-            import traceback
-            log.error(f"{error}")
-            log.error(traceback.format_exc())
+            catch_error (error)
 
-    def open_interest_historical_endPoint(self, time_frame: str, currency: str):
+    def open_interest_historical_endPoint(self, 
+                                          time_frame: str, 
+                                          currency: str
+                                          ):
         return  (f' https://open-api.coinglass.com/public/v2/open_interest_history?symbol={self.currency}&time_type={time_frame}&currency={currency}')
     
-    def open_interest_historical(self, time_frame: str = 'm5', currency: str = 'USD'):
+    def open_interest_historical(self, 
+                                 time_frame: str = 'm5', 
+                                 currency: str = 'USD'
+                                 ):
         
                     
         '''
@@ -78,11 +96,11 @@ class MarketData ():
                 return requests.get(self.open_interest_historical_endPoint(time_frame, currency), headers=self.headers).json()['data']
 
         except Exception as error:
-            import traceback
-            log.error(f"{error}")
-            log.error(traceback.format_exc())
+            catch_error (error)
 
-    def open_interest_aggregated_ohlc_endPoint(self, time_frame: str):
+    def open_interest_aggregated_ohlc_endPoint(self, 
+                                               time_frame: str
+                                               ):
                     
         '''
         interval = m1 m5 m15 h1 h4 h12 all
@@ -91,7 +109,9 @@ class MarketData ():
         return  (f' https://open-api.coinglass.com/public/v2/indicator/open_interest_aggregated_ohlc?symbol={self.currency}&interval={time_frame}')
     
     
-    def open_interest_aggregated_ohlc(self, time_frame: str = 'm5'):
+    def open_interest_aggregated_ohlc(self, 
+                                      time_frame: str = 'm5'
+                                      ):
                     
         '''
         interval = m1 m5 m15 h1 h4 h12 all
@@ -100,12 +120,15 @@ class MarketData ():
 
         try:
             try:
-                return requests.get(self.open_interest_aggregated_ohlc_endPoint(time_frame)).json()['data']
+                return requests.get(
+                                    self.open_interest_aggregated_ohlc_endPoint(time_frame)
+                                    ).json()['data']
             except:
-                return requests.get(self.open_interest_aggregated_ohlc_endPoint(time_frame), headers=self.headers).json()['data']
+                return requests.get(
+                                    self.open_interest_aggregated_ohlc_endPoint(time_frame), 
+                                    headers=self.headers
+                                    ).json()['data']
             
         except Exception as error:
-            import traceback
-            log.error(f"{error}")
-            log.error(traceback.format_exc())
+            catch_error (error)
         

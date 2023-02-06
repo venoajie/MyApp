@@ -4,7 +4,7 @@ from typing import Dict
 # installed
 import asyncio
 #import websockets
-import json, orjson
+#import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
 from dotenv import load_dotenv
@@ -15,6 +15,12 @@ from configuration import id_numbering
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
+
+params_coinGlass = {
+            "accept": "application/json",
+            "coinglassSecret": "877ad9af931048aab7e468bda134942e"
+        }
+
 
 async def main(
     endpoint: str,
@@ -234,17 +240,17 @@ async def send_order_market (connection_url: str,
 
 async def  get_open_orders_byInstruments (connection_url, 
                                           client_id, client_secret,
-                                          endpoint, 
                                           instrument, 
                                           type
                                           ):
+    endpoint_open_orders: str = f'private/get_open_orders_by_instrument'
     params =  {
-                "instrument_name": instrument,
+                "instrument_name": instrument.upper(),
                 "type": type,
                 }
     
     result = await main(
-            endpoint=endpoint,
+            endpoint=endpoint_open_orders,
             params=params,
             connection_url=connection_url,
             client_id=client_id,
@@ -301,7 +307,7 @@ async def  get_user_trades_by_currency (connection_url,
 async def  get_user_trades_by_instrument (connection_url, 
                                           client_id, 
                                           client_secret, 
-                                          currency: str, 
+                                          instrument_name: str, 
                                           count: int =1000
                                           ):
     
@@ -309,8 +315,7 @@ async def  get_user_trades_by_instrument (connection_url,
     endpoint_get_user_trades: str = f'private/get_user_trades_by_instrument'
     
     params =  {
-                "currency": currency.upper(),
-                "kind": 'any',
+                "instrument_name": instrument_name.upper(),
                 "count": count
                 }
 
@@ -355,7 +360,12 @@ async def  get_user_trades_by_currency_and_time (connection_url,
 
     return result 
 
-async def  get_order_history_by_instrument (connection_url, client_id, client_secret, instrument_name, count: int = 100):
+async def  get_order_history_by_instrument (connection_url, 
+                                            client_id, 
+                                            client_secret, 
+                                            instrument_name,
+                                            count: int = 100
+                                            ):
 
     
     # Set endpoint
@@ -520,3 +530,107 @@ async def  get_currencies (
                         params=params,
                         connection_url=connection_url
                         )     
+    
+    
+async def  get_ohlc (
+                    connection_url: str,
+                    instrument_name,
+                    resolution,
+                    qty_candles,
+                           )->list:
+    
+    from datetime import datetime
+    from utilities import time_modification
+    
+    now_utc = datetime.now()
+    now_unix = time_modification.convert_time_to_unix (now_utc)
+    start_timestamp = now_unix - 60000 * qty_candles
+    params = {}
+
+    # Set endpoint
+    endpoint: str = f'public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}'
+
+    return await main (
+                        endpoint=endpoint,
+                        params=params,
+                        connection_url=connection_url
+                        )     
+
+async def  get_open_interest_aggregated_ohlc (
+                                            connection_url: str,
+                                            currency,
+                                            resolution
+                                            )->list:
+    
+    '''
+    interval = m1 m5 m15 h1 h4 h12 all
+
+    '''       
+    # Set endpoint
+    endpoint: str = f'indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}'
+
+    try:
+        return await main (
+                        endpoint=endpoint,
+                        params={},
+                        connection_url=connection_url
+                        )     
+    
+    except:
+        return await main (
+                        endpoint=endpoint,
+                        params=params_coinGlass,
+                        connection_url=connection_url
+                        )     
+    
+
+async def  get_open_interest_historical (
+                                            connection_url: str,
+                                            currency,
+                                            resolution
+                                            )->list:
+
+    '''
+    time_frame = m1 m5 m15 h1 h4 h12 all
+    currency = USD or symbol
+
+    '''       
+    # Set endpoint
+    endpoint: str = f'open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}'
+
+    try:
+        return await main (
+                        endpoint=endpoint,
+                        params={},
+                        connection_url=connection_url
+                        )     
+    
+    except:
+        return await main (
+                        endpoint=endpoint,
+                        params=params_coinGlass,
+                        connection_url=connection_url
+                        )     
+    
+
+async def  get_open_interest_symbol (
+                                            connection_url: str,
+                                            currency
+                                            )->list:
+
+    # Set endpoint
+    endpoint: str = f'open_interest?symbol={currency}'
+    try:
+        return await main (
+                        endpoint=endpoint,
+                        params={},
+                        connection_url=connection_url
+                        )     
+    
+    except:
+        return await main (
+                        endpoint=endpoint,
+                        params=params_coinGlass,
+                        connection_url=connection_url
+                        )     
+    
