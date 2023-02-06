@@ -181,8 +181,8 @@ class MyTrades ():
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
         #my_trades = self.my_trades
         
-        log. info ( ( self.my_trades))
-        log. debug ( (my_trades_open))
+        #log. info ( ( self.my_trades))
+        #log. debug ( (my_trades_open))
         log. critical ( (string_modification.find_unique_elements (
                     my_trades_open,  
                         self.my_trades
