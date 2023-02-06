@@ -149,7 +149,7 @@ class CheckTradeIntegrity ():
                     self.my_selected_trades_open_from_system,  
                         my_trades_from_db_recovery
                         )
-                #log.error(filtered_data_from_my_trades_from_exchange)
+                log.error(f'filtered_data_from_my_trades_from_exchange {filtered_data_from_my_trades_from_exchange}')
                 
                 # redistribute the filtered data into db
                 my_trades_from_exchange = myTrades_management.MyTrades (
