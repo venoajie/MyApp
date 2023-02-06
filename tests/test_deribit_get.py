@@ -24,6 +24,15 @@ async def test_get_account_summary():
     assert list(account_summary) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
 @pytest.mark.asyncio
+async def test_get_positions():
+    positions = await (get_dbt.get_positions(connection_url,
+                                                     client_id,
+                                                     client_secret,
+                                                     'eth'))
+    
+    assert list(positions) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+    
+@pytest.mark.asyncio
 async def test_get_subaccounts():
     subaccounts = await (get_dbt.get_subaccounts(connection_url,
                                                      client_id,
