@@ -251,7 +251,7 @@ class MyTrades ():
                                                                       'open'
                                                                       )
 
-            #log.error (self.my_trades)
+            log.error (self.my_trades)
             for data_order in self.my_trades:
                 data_order = [data_order]
                 #log.error (data_order)
@@ -299,13 +299,14 @@ class MyTrades ():
                     
                     # append trade to db.check potential duplicate
                     pickling.append_data (my_trades_path_open, 
-                                                       data_order, 
-                                                       True
-                                                       )
+                                          data_order,
+                                          True
+                                          )
                                 
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
-                    #log.warning (my_trades_open)
+                    log.critical ('source for distribute_trade_transaction')
+                    log.warning (my_trades_open)
                     log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
