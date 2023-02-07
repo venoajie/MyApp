@@ -165,7 +165,7 @@ class MyTrades ():
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
 
-        #log.debug (f' {label_id=}  {trade_seq=} {order_type=}  {closed_label_id_int} \n ')
+        log.debug (f' {label_id=} {closed_label_id_int} \n ')
         if closed_label_id_int == 1674134456 :
             log.critical (f' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
             #log.info (my_trades_open)
@@ -295,7 +295,7 @@ class MyTrades ():
                     
                 if trade_transactions['closing_position']:
                     log.debug ('LABEL ID CLOSED')
-                    #log.error (data_order)
+                    log.error (data_order)
                     
                     # append trade to db.check potential duplicate
                     pickling.append_data (my_trades_path_open, 
@@ -305,6 +305,8 @@ class MyTrades ():
                                 
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
+                    log.warning (my_trades_open)
+                    log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
                                                         my_trades_open, 
