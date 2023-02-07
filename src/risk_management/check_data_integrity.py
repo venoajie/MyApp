@@ -194,7 +194,8 @@ async def main_enforce_my_trade_db_integrity (
 
     '''
     '''       
-    
+    log.critical ('source for distribute_trade_transaction')
+    log.warning (my_trades_open_from_db)
     my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
     my_trades_open_mgt.distribute_trade_transaction (currency)
             
