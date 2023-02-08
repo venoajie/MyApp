@@ -253,10 +253,11 @@ class MyTrades ():
 
             log.error (self.my_trades) 
             log.critical (len((self.my_trades) ))
-            numb = 1
+            numb = 0
             for data_order in self.my_trades:
                 data_order = [data_order]
-                log.error (numb + len(data_order))
+                numb = numb + len(data_order)
+                log.error (numb)
                 log.error (data_order)
                 #sleep (5)
 
