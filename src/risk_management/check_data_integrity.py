@@ -152,11 +152,11 @@ class CheckTradeIntegrity ():
                 log.error(f'filtered_data_from_my_trades_from_exchange {filtered_data_from_my_trades_from_exchange}')
                 
                 # redistribute the filtered data into db
-                my_trades_from_exchange = myTrades_management.MyTrades (
+                my_trades_from_exchange_filtered = myTrades_management.MyTrades (
                     filtered_data_from_my_trades_from_exchange
                     )
                 
-                my_trades_from_exchange.distribute_trade_transaction(self.currency)
+                #my_trades_from_exchange_filtered.distribute_trade_transaction(self.currency)
             
         except Exception as error:
             catch_error (error)

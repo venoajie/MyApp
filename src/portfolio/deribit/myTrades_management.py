@@ -77,13 +77,15 @@ class MyTrades ():
         except Exception as error:
             catch_error(error)
             
-    def recognize_trade_transactions (self, trade_order) -> dict:
+    def recognize_trade_transactions (self, 
+                                      trade_order
+                                      ) -> dict:
         
         '''
         '''       
         from utilities import string_modification
         
-        #log.info (f'DATA FROM EXC LOOP {trade_order=}')
+        log.critical (f'DATA FROM EXC LOOP {trade_order=}')
 
         try:
             
@@ -257,7 +259,7 @@ class MyTrades ():
             for data_order in self.my_trades:
                 lbl = data_order['label']
                 data_order = [data_order]
-                numb = numb + len(data_order[0])
+                numb = numb + len(data_order)
                 log.warning (f'{numb}  {lbl} ')
                 log.info (data_order)
                 #sleep (5)
