@@ -176,7 +176,7 @@ class MyOrders ():
         '''    
         from utilities import number_modification
         
-        return number_modification.net_sum_order_size (selected_transactions)
+        return number_modification.net_position (selected_transactions)
     
     def open_orders_api_basedOn_label_items_size (self, 
                                                 label: str
