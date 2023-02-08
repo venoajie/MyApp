@@ -162,6 +162,10 @@ def test_gather_transactions_under_the_same_id_int  ():
             'remaining_open_trades': my_trades_open_still_open
             }
     
+def test_transactions_same_id  ():
+    assert my_trades.transactions_same_id (label,
+                                           my_trades_open) == my_trades_with_api_true
+    
 def test_myTrades_api  ():
     assert my_trades.my_trades_api () == my_trades_with_api_true
     

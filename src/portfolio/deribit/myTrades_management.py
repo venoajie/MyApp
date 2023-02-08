@@ -135,7 +135,9 @@ class MyTrades ():
         
         # filter open trades which have the same label id with trade transaction
         label = str(closed_label_id_int)
-        transactions_same_id = [o for o in my_trades_open if label in o['label'] ]
+        transactions_same_id = self.transactions_same_id (label,
+                                                          my_trades_open
+                                                          )
         
         remaining_open_trades = [o for o in my_trades_open if  label not in o['label']  ]
         
@@ -153,6 +155,18 @@ class MyTrades ():
                 'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
                 }
         
+    def transactions_same_id (self,
+                              label: str,
+                              my_trades_open: list
+                                      ) -> None:
+        
+        '''
+        '''       
+        #from time import sleep
+        log.error (label)
+        
+        return [o for o in my_trades_open if label in o['label'] ]
+            
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
                                        my_trades_open: list, 
