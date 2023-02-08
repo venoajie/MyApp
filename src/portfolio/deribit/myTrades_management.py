@@ -183,10 +183,10 @@ class MyTrades ():
         
         #log. info ( ( self.my_trades))
         #log. debug ( (my_trades_open))
-        log. critical ( (string_modification.find_unique_elements (
-                    my_trades_open,  
-                        self.my_trades
-                        )))
+        #log. critical ( (string_modification.find_unique_elements (
+        #            my_trades_open,  
+        #                self.my_trades
+        #                )))
         log. critical ((sum_closed_trades_in_my_trades_open_net))
         
         if len (my_trades_open) > 1:
