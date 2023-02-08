@@ -92,9 +92,11 @@ class MyTrades ():
             
             try:
                 label_id = trade_order [0]['label']
+                log.critical (f'label_id {label_id=}')
                 trade_seq = trade_order [0]['trade_seq']
                 order_type = trade_order [0]['order_type']
                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
+                log.critical (f'closed_label_id_int {closed_label_id_int=}')
                 
             except:
                 label_id = []
@@ -170,7 +172,7 @@ class MyTrades ():
         log.debug (f'{closed_label_id_int} \n ')
         if closed_label_id_int == 151674134456 :
             log.critical (f' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
-            log.info (my_trades_open)
+            #log.info (my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
@@ -313,7 +315,7 @@ class MyTrades ():
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
                     log.critical ('source for distribute_trade_transaction')
-                    #log.warning (my_trades_open)
+                    log.warning (trade_transactions['closed_label_id_int'])
                     log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
