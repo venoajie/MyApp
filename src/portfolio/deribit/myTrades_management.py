@@ -168,9 +168,9 @@ class MyTrades ():
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
 
         log.debug (f'{closed_label_id_int} \n ')
-        if closed_label_id_int == 1674134456 :
+        if closed_label_id_int == 151674134456 :
             log.critical (f' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
-            #log.info (my_trades_open)
+            log.info (my_trades_open)
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
