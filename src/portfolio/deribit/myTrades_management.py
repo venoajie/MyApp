@@ -251,10 +251,13 @@ class MyTrades ():
                                                                       'open'
                                                                       )
 
-            log.error (self.my_trades)
+            log.error (self.my_trades) 
+            log.critical (len((self.my_trades) ))
+            numb = 1
             for data_order in self.my_trades:
                 data_order = [data_order]
-                #log.error (data_order)
+                log.error (numb + len(data_order))
+                log.error (data_order)
                 #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
@@ -306,7 +309,7 @@ class MyTrades ():
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
                     log.critical ('source for distribute_trade_transaction')
-                    log.warning (my_trades_open)
+                    #log.warning (my_trades_open)
                     log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
