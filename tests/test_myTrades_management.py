@@ -154,6 +154,13 @@ def test_gather_transactions_under_the_same_id_int  ():
             'transactions_same_id_net_qty': 0,
             'remaining_open_trades': my_trades_open_still_open
             }
+    closed_label_id_int = 1674134456
+    assert my_trades.gather_transactions_under_the_same_id_int (
+        closed_label_id_int, my_trades_open) == {
+            'transactions_same_id': my_trades_open_has_closed,
+            'transactions_same_id_net_qty': 0,
+            'remaining_open_trades': my_trades_open_still_open
+            }
     
 def test_myTrades_api  ():
     assert my_trades.my_trades_api () == my_trades_with_api_true
