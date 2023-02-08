@@ -255,10 +255,10 @@ class MyTrades ():
             log.critical (len((self.my_trades) ))
             numb = 0
             for data_order in self.my_trades:
-                numb = numb + len(data_order)
+                data_order = [data_order]
+                numb = numb + len(data_order[0])
                 lbl = data_order['label']
                 log.warning (f'{numb}  {lbl} ')
-                data_order = [data_order]
                 log.info (data_order)
                 #sleep (5)
 
