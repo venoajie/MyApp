@@ -85,18 +85,18 @@ class MyTrades ():
         '''       
         
         
-        log.critical (f'DATA FROM EXC LOOP {trade_order=}')
+        #log.critical (f'DATA FROM EXC LOOP {trade_order=}')
 
         try:
             
             
             try:
                 label_id = trade_order [0]['label']
-                log.critical (f'label_id {label_id=}')
+                #log.critical (f'label_id {label_id=}')
                 trade_seq = trade_order [0]['trade_seq']
                 order_type = trade_order [0]['order_type']
                 closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                log.critical (f'closed_label_id_int {closed_label_id_int=}')
+                #log.critical (f'closed_label_id_int {closed_label_id_int=}')
                 
             except:
                 label_id = []
@@ -188,15 +188,12 @@ class MyTrades ():
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
 
-        log.debug (f'{closed_label_id_int} \n ')
-        if closed_label_id_int == 151674134456 :
-            log.critical (f' CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
-            #log.info (my_trades_open)
+        #log.debug (f'{closed_label_id_int} \n ')
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
-        transactions_same_id_len = gather_transactions_under_the_same_id_int ['transactions_same_id_len']
-        log.debug (f'transactions_same_id_len {transactions_same_id_len}')
+        #transactions_same_id_len = gather_transactions_under_the_same_id_int ['transactions_same_id_len']
+        #log.debug (f'transactions_same_id_len {transactions_same_id_len}')
         #log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
         #log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
@@ -211,9 +208,9 @@ class MyTrades ():
         #            my_trades_open,  
         #                self.my_trades
         #                )))
-        log. critical ((sum_closed_trades_in_my_trades_open_net))
+        #log. critical ((sum_closed_trades_in_my_trades_open_net))
         if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label']:
-            log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
+            #log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
         
          # orphan closed orders:
             
@@ -266,8 +263,8 @@ class MyTrades ():
                                     )
                             
         else:
-            log. critical (remaining_open_trades)
-            log. critical (self.my_trades_api_net_position (remaining_open_trades))
+            #log. critical (remaining_open_trades)
+            #log. critical (self.my_trades_api_net_position (remaining_open_trades))
             pickling.replace_data (my_trades_path_open, 
                                     remaining_open_trades, 
                                     True 
@@ -291,14 +288,14 @@ class MyTrades ():
                                                                       )
 
             log.error (self.my_trades) 
-            log.critical (len((self.my_trades) ))
+            #log.critical (len((self.my_trades) ))
             numb = 0
             for data_order in self.my_trades:
                 lbl = data_order['label']
                 data_order = [data_order]
                 numb = numb + len(data_order)
-                log.warning (f'{numb}  {lbl} ')
-                log.info (data_order)
+                #log.warning (f'{numb}  {lbl} ')
+                #log.info (data_order)
                 #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
@@ -338,8 +335,8 @@ class MyTrades ():
                                           )
                     
                 if trade_transactions['closing_position']:
-                    log.debug ('LABEL ID CLOSED')
-                    log.error (data_order)
+                    #log.debug ('LABEL ID CLOSED')
+                    #log.error (data_order)
                     
                     # append trade to db.check potential duplicate
                     pickling.append_data (my_trades_path_open, 
@@ -349,9 +346,9 @@ class MyTrades ():
                                 
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
-                    log.critical ('source for distribute_trade_transaction')
-                    log.warning (trade_transactions['closed_label_id_int'])
-                    log.critical (len(my_trades_open))
+                    #log.critical ('source for distribute_trade_transaction')
+                    #log.warning (trade_transactions['closed_label_id_int'])
+                    #log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
                                                         my_trades_open, 
