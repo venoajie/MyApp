@@ -111,11 +111,28 @@ my_trades_open =   [
     ]
 
 my_trades_open_has_closed = [
-    {'trade_seq': 115446013, 'trade_id': 'ETH-157539723', 'timestamp': 1674139209708, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1538.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269847666', 'mmp': False, 'matching_id': None, 'mark_price': 1535.96, 'liquidity': 'M', 'label': 'supplyDemandShort15-open-1674134456', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.56, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 37.0},  
-    {'trade_seq': 115457369, 'trade_id': 'ETH-157553296', 'timestamp': 1674150736302, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': True, 'profit_loss': 1.92e-05, 'price': 1528.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31271624875', 'mmp': False, 'matching_id': None, 'mark_price': 1527.79, 'liquidity': 'M', 'label': 'supplyDemandShort15-closed-1674134456', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.41, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 10.0}, 
-    {'trade_seq': 115457373, 'trade_id': 'ETH-157553300', 'timestamp': 1674150736302, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': True, 'profit_loss': 5.185e-05, 'price': 1528.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31271624875', 'mmp': False, 'matching_id': None, 'mark_price': 1527.79, 'liquidity': 'T', 'label': 'supplyDemandShort15-closed-1674134456', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.41, 'fee_currency': 'ETH', 'fee': 8.83e-06, 'direction': 'buy', 'api': True, 'amount': 27.0}
+    {'trade_seq': 115446013, 'trade_id': 'ETH-157539723', 'timestamp': 1674139209708, 'tick_direction': 1,
+     'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 
+     'price': 1538.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269847666', 'mmp': False, 
+     'matching_id': None, 'mark_price': 1535.96, 'liquidity': 'M', 'label': 'supplyDemandShort15-open-1674134456', 
+     'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.56, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 
+     'api': True, 'amount': 37.0
+     },  
+    {'trade_seq': 115457369, 'trade_id': 'ETH-157553296', 'timestamp': 1674150736302, 'tick_direction': 3, 
+     'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': True, 'profit_loss': 1.92e-05, 
+     'price': 1528.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31271624875', 'mmp': False, 
+     'matching_id': None, 'mark_price': 1527.79, 'liquidity': 'M', 'label': 'supplyDemandShort15-closed-1674134456', 
+     'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.41, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 
+     'api': True, 'amount': 10.0
+     }, 
+    {'trade_seq': 115457373, 'trade_id': 'ETH-157553300', 'timestamp': 1674150736302, 'tick_direction': 3, 
+     'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': True, 'profit_loss': 5.185e-05, 
+     'price': 1528.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31271624875', 'mmp': False, 
+     'matching_id': None, 'mark_price': 1527.79, 'liquidity': 'T', 'label': 'supplyDemandShort15-closed-1674134456', 
+     'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.41, 'fee_currency': 'ETH', 'fee': 8.83e-06, 'direction': 'buy', 
+     'api': True, 'amount': 27.0
+     }
     ]
-
 
 my_trades_open_still_open = [
     {'trade_seq': 115425899, 'trade_id': 'ETH-157512749', 'timestamp': 1674106201607, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1528.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266368853', 'mmp': False, 'matching_id': None, 'mark_price': 1528.33, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674106085', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.78, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 7.0}, 
@@ -168,21 +185,34 @@ def test_gather_transactions_under_the_same_id_int  ():
                                                                         my_trades_open
                                                                         ) == {
                                                                             'transactions_same_id': my_trades_open_has_closed,
+                                                                            'transactions_same_id_contain_open_label': True,
                                                                             'transactions_same_id_net_qty': 0,
                                                                             'transactions_same_id_len': 3,
                                                                             'remaining_open_trades': my_trades_open_still_open
                                                                             }
     
-def test_transactions_same_id  ():                  
-    assert my_trades_open_cls.transactions_same_id (closed_label_id_int,
+def test_transactions_same_id  ():    
+    case_1 = my_trades_open_cls.transactions_same_id (closed_label_id_int,
                                                     my_trades_open
-                                                    ) == my_trades_open_has_closed
+                                                    )              
+    assert case_1 ['transactions_same_id'] == my_trades_open_has_closed
+    assert case_1 ['transactions_same_id_contain_open_label'] == True
                                            
+    case_2 = my_trades_open_cls.transactions_same_id (151674134451,
+                                           my_trades_open) 
                                            
-    assert my_trades_open_cls.transactions_same_id (151674134451,
-                                           my_trades_open) == [ 
-                                                               {'trade_seq': 115446012, 'trade_id': 'ETH-157539722', 'timestamp': 1674139209708, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1538.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269845803', 'mmp': False, 'matching_id': None, 'mark_price': 1535.96, 'liquidity': 'M', 'label': 'supplyDemandShort15-open-1674134451', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.56, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 37.0}
+    assert case_2  ['transactions_same_id'] == [
+        {
+            'trade_seq': 115446012, 'trade_id': 'ETH-157539722', 'timestamp': 1674139209708, 
+            'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 
+            'reduce_only': False, 'profit_loss': 0.0, 'price': 1538.0, 'post_only': True,
+            'order_type': 'limit', 'order_id': 'ETH-31269845803', 'mmp': False, 'matching_id': None, 
+            'mark_price': 1535.96, 'liquidity': 'M', 'label': 'supplyDemandShort15-open-1674134451', 
+            'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.56, 'fee_currency': 'ETH', 'fee': 0.0, 
+            'direction': 'sell', 'api': True, 'amount': 37.0
+            }
                                                                ]
+    assert case_2 ['transactions_same_id_contain_open_label'] == True
                                            
                          
 def test_remaining_open_trades  ():

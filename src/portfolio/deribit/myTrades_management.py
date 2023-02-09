@@ -141,10 +141,11 @@ class MyTrades ():
                                                           my_trades_open
                                                           )
         
-        return {'transactions_same_id':transactions_under_same_id,
+        return {'transactions_same_id':transactions_under_same_id['transactions_same_id'],
                 # summing transaction under the same label id
-                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id),
-                'transactions_same_id_len': len (transactions_under_same_id),
+                'transactions_same_id_contain_open_label': transactions_under_same_id['transactions_same_id_contain_open_label'],
+                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id['transactions_same_id']),
+                'transactions_same_id_len': len (transactions_under_same_id['transactions_same_id']),
                 'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
                 }
         
@@ -155,7 +156,11 @@ class MyTrades ():
         
         '''
         '''       
-        return [o for o in my_trades_open if (label) == string_modification.extract_integers_from_text (o['label']) ]
+        transactions_under_same_id = [o for o in my_trades_open if (label) == string_modification.extract_integers_from_text (o['label']) ]
+        return {'transactions_same_id': transactions_under_same_id,
+                'transactions_same_id_contain_open_label': False if transactions_under_same_id == [] \
+                    else 'open' in [o['label'] for o in transactions_under_same_id][0],
+                }
     
     def remaining_open_trades (self,
                               label: str,
@@ -207,6 +212,10 @@ class MyTrades ():
         #                self.my_trades
         #                )))
         log. critical ((sum_closed_trades_in_my_trades_open_net))
+        if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] == False:
+            log. debug ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
+        
+         # orphan closed orders:
         
         if len (my_trades_open) > 1:
             #log.error (str(closed_label_id_int))
@@ -220,7 +229,7 @@ class MyTrades ():
             if sum_closed_trades_in_my_trades_open_net != 0:
                 for data_order in closed_trades_in_my_trades_open:
                     
-                    # orphan closed orders:
+                   
                         
                     pickling.append_data (my_trades_path_open, 
                                           data_order , 
