@@ -212,59 +212,62 @@ class MyTrades ():
         #                self.my_trades
         #                )))
         log. critical ((sum_closed_trades_in_my_trades_open_net))
-        if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] == False:
-            log. debug ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
+        if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label']:
+            log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
         
          # orphan closed orders:
-        
-        if len (my_trades_open) > 1:
-            #log.error (str(closed_label_id_int))
-                                
-            label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
-            for key in my_trades_open:
-                if label not in key:
-                    key [label] = []
             
-            # the transaction did not make the respective label to be closed
-            if sum_closed_trades_in_my_trades_open_net != 0:
-                for data_order in closed_trades_in_my_trades_open:
-                    
-                   
-                        
-                    pickling.append_data (my_trades_path_open, 
-                                          data_order , 
-                                          True
-                                          )
-                    
-            # the transaction closed the respective label
-            if sum_closed_trades_in_my_trades_open_net == 0: 
-                
-                for data_order in remaining_open_trades:
+            if len (my_trades_open) > 1:
+                #log.error (str(closed_label_id_int))
                                     
-                    try:
-                        label_id= data_order [0]['label']
-                    except:
-                        label_id= []
-                    
-                    # for data with label id/ordered through API    
-                    if label_id != []:
-                        log.critical (data_order)   
-                    
-                        pickling.replace_data (my_trades_path_open, 
-                                               remaining_open_trades, 
-                                               True
-                                               )
+                label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
+                for key in my_trades_open:
+                    if label not in key:
+                        key [label] = []
                 
-        # transaction has fully completed. move all the transactions with the same id to closed db
-        if sum_closed_trades_in_my_trades_open_net == 0:
-            
-            #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
-            # update mytrades db with the still open ones
-            pickling.replace_data (my_trades_path_open, 
-                                   remaining_open_trades, 
-                                   True 
-                                   )
+                # the transaction did not make the respective label to be closed
+                if sum_closed_trades_in_my_trades_open_net != 0:
+                    for data_order in closed_trades_in_my_trades_open:
+                        
+                    
                             
+                        pickling.append_data (my_trades_path_open, 
+                                            data_order , 
+                                            True
+                                            )
+                        
+                # the transaction closed the respective label
+                if sum_closed_trades_in_my_trades_open_net == 0: 
+                    
+                    for data_order in remaining_open_trades:
+                                        
+                        try:
+                            label_id= data_order [0]['label']
+                        except:
+                            label_id= []
+                        
+                        # for data with label id/ordered through API    
+                        if label_id != []:
+                            log.critical (data_order)   
+                        
+                            pickling.replace_data (my_trades_path_open, 
+                                                remaining_open_trades, 
+                                                True
+                                                )
+                    
+            # transaction has fully completed. move all the transactions with the same id to closed db
+            if sum_closed_trades_in_my_trades_open_net == 0:
+                
+                #! SEPARATE OPEN AND CLOSED TRANSACTIONS IN OPEN DB
+                # update mytrades db with the still open ones
+                pickling.replace_data (my_trades_path_open, 
+                                    remaining_open_trades, 
+                                    True 
+                                    )
+                            
+        else:
+            log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
+        
 
     def distribute_trade_transaction (self, 
                                       currency: str
