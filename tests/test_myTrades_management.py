@@ -169,6 +169,7 @@ def test_gather_transactions_under_the_same_id_int  ():
                                                                         ) == {
                                                                             'transactions_same_id': my_trades_open_has_closed,
                                                                             'transactions_same_id_net_qty': 0,
+                                                                            'transactions_same_id_len': 3,
                                                                             'remaining_open_trades': my_trades_open_still_open
                                                                             }
     

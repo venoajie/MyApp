@@ -144,6 +144,7 @@ class MyTrades ():
         return {'transactions_same_id':transactions_under_same_id,
                 # summing transaction under the same label id
                 'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id),
+                'transactions_same_id_len': len (transactions_under_same_id),
                 'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
                 }
         
@@ -189,7 +190,8 @@ class MyTrades ():
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
-        #log.debug (f'closed_label_id_int {closed_label_id_int}')
+        transactions_same_id_len = gather_transactions_under_the_same_id_int ['transactions_same_id_len']
+        log.debug (f'transactions_same_id_len {transactions_same_id_len}')
         #log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
         #log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
@@ -217,6 +219,8 @@ class MyTrades ():
             # the transaction did not make the respective label to be closed
             if sum_closed_trades_in_my_trades_open_net != 0:
                 for data_order in closed_trades_in_my_trades_open:
+                    
+                    # orphan closed orders:
                         
                     pickling.append_data (my_trades_path_open, 
                                           data_order , 
