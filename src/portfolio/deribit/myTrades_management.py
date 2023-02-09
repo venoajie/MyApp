@@ -287,7 +287,7 @@ class MyTrades ():
                                                                       'open'
                                                                       )
 
-            log.error (self.my_trades) 
+            #log.error (self.my_trades) 
             #log.critical (len((self.my_trades) ))
             numb = 0
             for data_order in self.my_trades:
