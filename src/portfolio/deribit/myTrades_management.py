@@ -266,7 +266,9 @@ class MyTrades ():
                                     )
                             
         else:
-            log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
+            log. critical (remaining_open_trades)
+            log. critical (self.my_trades_api_net_position (remaining_open_trades))
+            
         
 
     def distribute_trade_transaction (self, 
