@@ -83,7 +83,7 @@ class MyTrades ():
         
         '''
         '''       
-        from utilities import string_modification
+        
         
         log.critical (f'DATA FROM EXC LOOP {trade_order=}')
 
@@ -139,7 +139,9 @@ class MyTrades ():
                                                           my_trades_open
                                                           )
         
-        remaining_open_trades = [o for o in my_trades_open if  label not in o['label']  ]
+        remaining_open_trades = self.remaining_open_trades (label,
+                                                          my_trades_open
+                                                          )
         
         #! DELETE ###########################################################################################
                                                 
@@ -162,10 +164,18 @@ class MyTrades ():
         
         '''
         '''       
-        #from time import sleep
-        log.error (label)
+        #
+        return [o for o in my_trades_open if (label) == string_modification.extract_integers_from_text (o['label']) ]
+    
+    def remaining_open_trades (self,
+                              label: str,
+                              my_trades_open: list
+                                      ) -> None:
         
-        return [o for o in my_trades_open if label in o['label'] ]
+        '''
+        '''       
+        #
+        return [o for o in my_trades_open if (label) != string_modification.extract_integers_from_text (o['label']) ]
             
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
