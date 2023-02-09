@@ -78,7 +78,7 @@ class MyTrades ():
             catch_error(error)
             
     def recognize_trade_transactions (self, 
-                                      trade_order
+                                      trade_order: list
                                       ) -> dict:
         
         '''
@@ -125,7 +125,7 @@ class MyTrades ():
                 'closing_position': 'closed' in label_id}
         
     def gather_transactions_under_the_same_id_int (self, 
-                                                   closed_label_id_int: str, 
+                                                   label: str, 
                                                    my_trades_open: list
                                                    ) -> dict:
         
@@ -133,9 +133,7 @@ class MyTrades ():
         my_trades_open = re-read from db after previous closed transaction appended
         '''       
         
-        # filter open trades which have the same label id with trade transaction
-        label = str(closed_label_id_int)
-        transactions_same_id = self.transactions_same_id (label,
+        transactions_under_same_id = self.transactions_same_id (label,
                                                           my_trades_open
                                                           )
         
@@ -143,17 +141,9 @@ class MyTrades ():
                                                           my_trades_open
                                                           )
         
-        #! DELETE ###########################################################################################
-                                                
-        #log.info (my_trades_open)
-        log.critical (f' closed_label_id_int {label} transactions_same_id {transactions_same_id} \
-            transactions_same_id_net_qty {self.my_trades_api_net_position (transactions_same_id)}')\
-                #remaining_open_trades {string_modification.remove_redundant_elements (remaining_open_trades)}')
-        #! DELETE ###########################################################################################
-        
-        return {'transactions_same_id':transactions_same_id,
+        return {'transactions_same_id':transactions_under_same_id,
                 # summing transaction under the same label id
-                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_same_id),
+                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id),
                 'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
                 }
         
@@ -164,7 +154,6 @@ class MyTrades ():
         
         '''
         '''       
-        #
         return [o for o in my_trades_open if (label) == string_modification.extract_integers_from_text (o['label']) ]
     
     def remaining_open_trades (self,
