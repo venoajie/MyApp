@@ -188,14 +188,14 @@ class MyTrades ():
         # filter open trades which have the same label id with trade transaction
         closed_trades_in_my_trades_open = gather_transactions_under_the_same_id_int ['transactions_same_id']
 
-        #log.debug (f'{closed_label_id_int} \n ')
+        log.debug (f'{closed_label_id_int} \n ')
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
         #transactions_same_id_len = gather_transactions_under_the_same_id_int ['transactions_same_id_len']
         #log.debug (f'transactions_same_id_len {transactions_same_id_len}')
         #log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
-        #log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
+        log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
@@ -209,10 +209,10 @@ class MyTrades ():
         #                self.my_trades
         #                )))
         #log. critical ((sum_closed_trades_in_my_trades_open_net))
+        log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
         if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label']:
             #log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
         
-         # orphan closed orders:
             
             if len (my_trades_open) > 1:
                 #log.error (str(closed_label_id_int))
@@ -261,9 +261,10 @@ class MyTrades ():
                                     remaining_open_trades, 
                                     True 
                                     )
-                            
+        
+         # orphan closed orders:                    
         else:
-            #log. critical (remaining_open_trades)
+            log. critical (remaining_open_trades)
             #log. critical (self.my_trades_api_net_position (remaining_open_trades))
             pickling.replace_data (my_trades_path_open, 
                                     remaining_open_trades, 
@@ -295,7 +296,7 @@ class MyTrades ():
                 data_order = [data_order]
                 numb = numb + len(data_order)
                 #log.warning (f'{numb}  {lbl} ')
-                #log.info (data_order)
+                log.info (data_order)
                 #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
@@ -325,7 +326,7 @@ class MyTrades ():
                                           )
                     
                 if trade_transactions['opening_position']:
-                    #log.error ('LABEL ID OPEN')
+                    log.error ('LABEL ID OPEN')
                     #log.error (data_order)
 
                     # append trade to db.check potential duplicate
@@ -335,7 +336,7 @@ class MyTrades ():
                                           )
                     
                 if trade_transactions['closing_position']:
-                    #log.debug ('LABEL ID CLOSED')
+                    log.debug ('LABEL ID CLOSED')
                     #log.error (data_order)
                     
                     # append trade to db.check potential duplicate
