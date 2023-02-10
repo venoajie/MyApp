@@ -156,7 +156,7 @@ class CheckTradeIntegrity ():
                     filtered_data_from_my_trades_from_exchange
                     )
                 
-                #my_trades_from_exchange_filtered.distribute_trade_transaction(self.currency)
+                my_trades_from_exchange_filtered.distribute_trade_transaction(self.currency)
             
         except Exception as error:
             catch_error (error)
