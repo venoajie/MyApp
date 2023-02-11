@@ -1,6 +1,5 @@
 dataclassy==0.11.1
 rocketry==2.4.1
-requests
 websockets
 orjson
 python-dotenv
