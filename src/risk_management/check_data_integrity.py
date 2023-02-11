@@ -72,6 +72,8 @@ async def myTrades_originally_from_db (currency) -> list:
 class CheckTradeIntegrity ():
 
     '''
+    Sometimes the trading transactions were recorded improperly, and should be fixed.
+    How we know if the records in DB were wrong? If the net positions fetched from exchange <> DB net size
     '''       
     currency: str 
     positions_from_get: list
@@ -156,7 +158,7 @@ class CheckTradeIntegrity ():
                     filtered_data_from_my_trades_from_exchange
                     )
                 
-                my_trades_from_exchange_filtered.distribute_trade_transaction(self.currency)
+                my_trades_from_exchange_filtered.distribute_trade_transactions(self.currency)
             
         except Exception as error:
             catch_error (error)

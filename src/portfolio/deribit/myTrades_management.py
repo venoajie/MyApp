@@ -269,17 +269,19 @@ class MyTrades ():
             pickling.replace_data (my_trades_path_open, 
                                     remaining_open_trades, 
                                     True 
-                                    )
-            
-        
+                                    )          
 
-    def distribute_trade_transaction (self, 
-                                      currency: str
+    def distribute_trade_transactions (self, 
+                                      currency: str,
+                                      rebuilt: bool = False
                                       ) -> None:
         
         '''
+        rebuilt: False = population consist of ALL trade transactions
+        rebulit: True = population consist of ONLY label numbers in all transactions 
+            (same label numbers will be consider as one transactions) --> to avoid 
+                double counting on transactions loop
         '''       
-        #from time import sleep
         
         try:
         
@@ -287,17 +289,22 @@ class MyTrades ():
                                                                       currency, 
                                                                       'open'
                                                                       )
-
-            #log.error (self.my_trades) 
-            #log.critical (len((self.my_trades) ))
             numb = 0
-            for data_order in self.my_trades:
-                lbl = data_order['label']
+            my_trades = self.my_trades
+            if rebuilt == True:
+                for data_order in my_trades:
+                    pickling.append_data (my_trades_path_open, 
+                                            data_order, 
+                                            True
+                                            ) 
+                my_trades = self.my_trades
+            
+            for data_order in my_trades:
+
                 data_order = [data_order]
                 numb = numb + len(data_order)
-                #log.warning (f'{numb}  {lbl} ')
+
                 log.info (data_order)
-                #sleep (5)
 
                 trade_transactions = self.recognize_trade_transactions (data_order)
                 

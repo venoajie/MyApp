@@ -5,8 +5,9 @@ V
 
 ### Todo
 
-- [ ] Add integration tests
-- [ ] Fully implementing asynchronous 
+- [ ] Create multiple environments (for production and testing)  
+- [ ] Add integration tests  
+- [ ] Fully implementing asynchronous  
   - [ ] Using task  
   - [ ] Scheduling  
 
@@ -17,4 +18,5 @@ V
 
 ### Done ✓
 
-- [x] Automatic **hedging** for equity balance in crypto spot
+- [x] Automatic **hedging** for equity balance in crypto spot  
+

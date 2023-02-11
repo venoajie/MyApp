@@ -187,7 +187,7 @@ class StreamAccountData:
                             
                             if trades:
                                 my_trades = myTrades_management.MyTrades (trades)
-                                my_trades.distribute_trade_transaction(currency)
+                                my_trades.distribute_trade_transactions(currency)
                                 
                             if orders:
                                 my_orders = open_orders_management.MyOrders (orders)
