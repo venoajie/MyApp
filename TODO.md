@@ -1,19 +1,18 @@
-# Example of TODO.md
+# MyApp TODO.md
 
-This is an example of TODO.md
 
-View the raw content of this file to understand the format.
+V
 
 ### Todo
 
-- [ ] Work on the website ~3d #feat @john 2020-03-20  
-- [ ] Fix the homepage ~1d #bug @jane  
-  - [ ] Sub-task or description  
+- [ ] Fully implement asynchronous  
+  - [ ] Using task  
+  - [ ] Scheduling  
 
 ### In Progress
 
-- [ ] Work on Github Repo [JIRA-345]  
+- [ ] Categorised trade and open orders based on their labels  
 
 ### Done ✓
 
-- [x] Create my first TODO.md 
+- [x] Automatic hedging for equity balance in crypto 
