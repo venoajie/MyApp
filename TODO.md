@@ -17,4 +17,4 @@ V
 
 ### Done ✓
 
-- [x] Automatic hedging for equity balance in crypto 
+- [x] Automatic hedging for equity balance in crypto spot
