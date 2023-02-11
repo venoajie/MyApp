@@ -5,13 +5,15 @@ V
 
 ### Todo
 
-- [ ] Fully implement asynchronous  
+- [ ] Add integration tests
+- [ ] Fully implementing asynchronous 
   - [ ] Using task  
   - [ ] Scheduling  
 
 ### In Progress
 
 - [ ] Categorised trade and open orders based on their labels  
+- [ ] Add unit test  
 
 ### Done ✓
 
