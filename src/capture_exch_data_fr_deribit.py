@@ -206,7 +206,7 @@ class StreamAccountData:
                         await self.get_sub_accounts(currency)                                                      
             else:
                 log.info('WebSocket connection has broken.')
-                system_tools.catch_error_message (error, 
+                system_tools.catch_error_message ('error-WebSocket connection EXCHANGE has broken', 
                                                     .1, 
                                                     'WebSocket connection EXCHANGE has broken'
                                                     )
