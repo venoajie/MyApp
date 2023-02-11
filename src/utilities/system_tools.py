@@ -4,7 +4,7 @@
 import os, sys
 from time import sleep
 
-none_data=[None, 0, []]
+#none_data=[None, 0, []]
 
 def get_platform ()-> str:
 

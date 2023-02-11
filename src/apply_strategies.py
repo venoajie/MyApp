@@ -489,7 +489,7 @@ class ApplyHedgingSpot ():
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db (self.currency)
         
         # get the earliest transaction time stamp
-        start_timestamp = myTrades_from_db['time_stamp_to_recover']
+        start_timestamp = myTrades_from_db ['time_stamp_to_recover']
         #log.critical (positions_from_get)
         #log.info (my_trades_open_from_db)
         log.critical (start_timestamp)
@@ -498,14 +498,17 @@ class ApplyHedgingSpot ():
         if start_timestamp:
             
             # use the earliest time stamp to fetch data from exchange
-            my_selected_trades_open_from_system = await self.my_trades_time_constrained (start_timestamp, 
-                                                                                         server_time)
+            my_selected_trades_open_from_system = await self.my_trades_time_constrained (
+                                                                                        start_timestamp, 
+                                                                                         server_time
+                                                                                         )
         
-        await check_data_integrity.main_enforce_my_trade_db_integrity (self.currency,
-                                                                positions_from_get,
-                                                                my_trades_open_from_db,
-                                                                my_selected_trades_open_from_system
-                                                                )
+        await check_data_integrity.main_enforce_my_trade_db_integrity (
+                                                                        self.currency,
+                                                                        positions_from_get,
+                                                                        my_trades_open_from_db,
+                                                                        my_selected_trades_open_from_system
+                                                                        )
         
             
     async def running_strategy (self, 
