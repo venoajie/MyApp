@@ -20,3 +20,21 @@ V
 
 - [x] Automatic **hedging** for equity balance in crypto spot  
 
+
+
+### Reading Material/to be implemented 
+- Programming related  
+
+| Subject         | Link       | Summary        | Status       | Action         | Note         |
+| :---         |     :---:      |    :---:      | :---         | :---         | :---         |
+Python | @jim19930609 |  | | 
+Technical Analysis | @strongoier |  | |
+
+
+- Technical Analysis  
+
+| Subject         | Link       | Summary        | Status       | Action         | Note         |
+| :---         |     :---:      |    :---:      | :---         | :---         | :---         |
+Python | @jim19930609 |  | | 
+Technical Analysis | @strongoier |  | |
+
