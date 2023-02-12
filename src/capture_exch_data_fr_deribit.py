@@ -253,10 +253,10 @@ class StreamAccountData:
                     }
                 
         try:
-            await self.websocket_client.send(
-            json.dumps(
-                msg
-                )
+            await self.websocket_client.send (
+                json.dumps (
+                    msg
+                    )
                 )
         except Exception as error:
             log.warning (error)
@@ -276,7 +276,7 @@ class StreamAccountData:
 
         try:
             await self.websocket_client.send(
-            json.dumps(
+            json.dumps (
                 msg
                 )
                 )
