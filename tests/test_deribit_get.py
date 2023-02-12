@@ -7,11 +7,11 @@ connection_url: str = 'https://www.deribit.com/api/v2/'
 
 def parse_dotenv()->dict:    
     from src.utilities import system_tools
-    parse = system_tools.parse_dotenv
+    parse_env = system_tools.parse_dotenv ()
     
     return {
-        'client_id': parse ('client_id'),
-        'client_secret': parse ('client_secret')
+        'client_id': parse_env ['client_id'],
+        'client_secret': parse_env ['client_secret']
         }                                                                
                                                   
 client_id: str = parse_dotenv() ['client_id']
