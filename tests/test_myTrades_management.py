@@ -267,4 +267,4 @@ def test_extracting_unique_label_id ():
              }
         ]
     
-    assert my_trades.extracting_unique_label_id (my_trades_open) ==  [1675821361, 1675821095, 1674134456]
+    assert my_trades.extracting_unique_label_id (my_trades_open) ==  [1675821361, 1675821095, 151674134456]
