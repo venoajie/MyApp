@@ -6,6 +6,33 @@ from time import sleep
 
 #none_data=[None, 0, []]
 
+
+def parse_dotenv()->dict:    
+    
+    """
+    https://www.python-engineer.com/posts/run-python-github-actions/
+    """
+    
+    from os.path import join, dirname
+    from dotenv import load_dotenv
+    
+    dotenv_path = join(dirname(__file__), '.env')
+    load_dotenv(dotenv_path)
+    
+        
+    try:
+        client_id = os.environ.get ('client_id')
+        client_secret =  os.environ.get ('client_secret')
+        
+    except KeyError:
+
+        client_id = os.environ ('client_id')
+        client_secret =  os.environ ('client_secret')
+            
+    return {'client_id': client_id,
+            'client_secret': client_secret
+            }
+            
 def get_platform ()-> str:
 
     '''
