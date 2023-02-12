@@ -166,6 +166,21 @@ class MyTrades ():
                     else 'open' in [o['label'] for o in transactions_under_same_id][0],
                 }
     
+    
+    def extracting_unique_label_id (self,
+                                    my_trades_open: list
+                                      ) -> None:
+        
+        '''
+        '''       
+
+        return string_modification.remove_redundant_elements (
+            [string_modification.extract_integers_from_text (
+                        o['label']
+                        ) for o in my_trades_open
+             ]
+                    )
+        
     def remaining_open_trades (self,
                               label: str,
                               my_trades_open: list
