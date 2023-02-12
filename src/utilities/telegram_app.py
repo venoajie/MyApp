@@ -2,26 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # installed
-import asyncio
 
-async def telegram_bot_sendtext (
-                            bot_message: str, 
-                            purpose: str = 'general_error'
-                            ) -> str:
-    
-    """
-    # simple telegram
-    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
-    """
-    
-    from deribit_get import telegram_bot_sendtext 
-    
-    await telegram_bot_sendtext (bot_message,
-                                 purpose
-                                 )
-
-
-def telegram_bot_sendtext_ (
+def telegram_bot_sendtext (
                             bot_message: str, 
                             purpose: str = 'general_error'
                             ) -> str:

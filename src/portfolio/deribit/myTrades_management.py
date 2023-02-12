@@ -11,12 +11,17 @@ def catch_error (error, idle: int = None) -> list:
     from utilities import system_tools
     system_tools.catch_error_message(error, idle)
 
-def telegram_bot_sendtext (bot_message, 
-                           purpose: str = 'general_error'
-                           ) -> None:
+async def telegram_bot_sendtext (bot_message, 
+                                 purpose: str = 'general_error'
+                                 ) -> None:
     
-    from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+    import deribit_get 
+    
+    result = await deribit_get.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
+    
+    return result
 
 @dataclass(unsafe_hash=True, slots=True)
 class MyTrades ():
@@ -116,7 +121,7 @@ class MyTrades ():
             if liquidation_event:
                 info= (f'LIQUIDATION {trade_order} \n ')
                 log.error (info)
-                telegram_bot_sendtext(info) 
+                #await telegram_bot_sendtext(info) 
             
         except Exception as error:
             catch_error (error)

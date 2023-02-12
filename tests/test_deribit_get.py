@@ -166,3 +166,14 @@ async def test_get_open_interest_symbol():
                   )
     
     assert   list(open_interest) == ['code', 'msg', 'success'] 
+    
+@pytest.mark.asyncio
+async def test_telegram_bot_sendtext():
+    bot_message = 'test'
+    purpose = 'general_error'
+    
+    result = await get_dbt.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
+    
+    assert   list(result) == ['ok', 'result'] 
