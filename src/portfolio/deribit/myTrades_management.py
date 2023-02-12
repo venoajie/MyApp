@@ -313,16 +313,21 @@ class MyTrades ():
             my_trades = self.my_trades
             if rebuilt == True:
                 for data_order in my_trades:
-                    pickling.append_data (my_trades_path_open, 
-                                            data_order, 
-                                            True
-                                            ) 
+                    
+                    pickling.append_data (
+                        my_trades_path_open, 
+                        data_order, 
+                        True
+                        ) 
+                    
                 my_trades_open = pickling.read_data(my_trades_path_open)
+                
                 log.warning (my_trades_open)
-                my_trades_open_label = string_modification.remove_redundant_elements(
-                    [string_modification.extract_integers_from_text (
-                        o['label']) for o in my_trades_open]
+                
+                my_trades_open_label = self.extracting_unique_label_id (
+                    my_trades_open
                     )
+                
                 log.warning (my_trades_open_label)
             
             for data_order in my_trades:
