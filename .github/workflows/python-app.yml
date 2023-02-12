@@ -32,4 +32,4 @@ jobs:
         pip install pytest
         pip install pytest-cov
         pip install pytest-asyncio 
-        pip pytest -svv
+        pytest tests -svv
