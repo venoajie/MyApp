@@ -2,14 +2,17 @@
 import src.deribit_get as get_dbt
 import asyncio
 import pytest
-import os
                       
 connection_url: str = 'https://www.deribit.com/api/v2/'
 
 def parse_dotenv()->dict:    
-    return {'client_id': os.environ.get('client_id'),
-            'client_secret': os.environ.get('client_secret')
-            }                                                                
+    from src.utilities import system_tools
+    parse = system_tools.parse_dotenv
+    
+    return {
+        'client_id': parse ('client_id'),
+        'client_secret': parse ('client_secret')
+        }                                                                
                                                   
 client_id: str = parse_dotenv() ['client_id']
 client_secret: str = parse_dotenv() ['client_secret']
