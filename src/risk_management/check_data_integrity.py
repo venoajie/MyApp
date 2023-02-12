@@ -23,13 +23,13 @@ def catch_error (error) -> list:
     '''
     system_tools.catch_error_message(error)
         
-def telegram_bot_sendtext (bot_message, 
+async def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
                            ) -> None:
-    from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, 
-                                              purpose
-                                              )
+    import deribit_get
+    return await deribit_get.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
 
 async def time_stamp_to_recover (my_trades_from_db_recovery) -> list:
     """
@@ -115,7 +115,7 @@ class CheckTradeIntegrity ():
                 
                 if difference !=0:
                     info= (f'SIZE DIFFERENT size per trading db {size_from_trading_db} size from get db {size_from_get_db} \n ')
-                    telegram_bot_sendtext(info) 
+                    await telegram_bot_sendtext(info) 
                 #log.warning (f'difference {difference}')
                 
                 return  difference
