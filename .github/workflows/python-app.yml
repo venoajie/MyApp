@@ -31,5 +31,5 @@ jobs:
         pip install loguru
         pip install pytest
         pip install pytest-cov
-        pytest-asyncio 
-        pytest -svv
+        pip pytest-asyncio 
+        pip pytest -svv
