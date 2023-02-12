@@ -277,10 +277,11 @@ class MyTrades ():
                                       ) -> None:
         
         '''
-        rebuilt: False = population consist of ALL trade transactions
-        rebulit: True = population consist of ONLY label numbers in all transactions 
-            (same label numbers will be consider as one transactions) --> to avoid 
-                double counting on transactions loop
+        rebuilt: False = population consist of ALL NEW trade transactions
+        rebulit: True = population consist of EXISTING trade transactions represente by/
+            ONLY label numbers in all transactions 
+                (same label numbers will be consider as one transactions) --> to avoid 
+                    double counting on transactions loop
         '''       
         
         try:
