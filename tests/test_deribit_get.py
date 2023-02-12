@@ -169,11 +169,25 @@ async def test_get_open_interest_symbol():
     
 @pytest.mark.asyncio
 async def test_telegram_bot_sendtext():
-    bot_message = 'test'
+    bot_message = 'test with purpose-general error'
     purpose = 'general_error'
     
     result = await get_dbt.telegram_bot_sendtext (bot_message,
                                  purpose
                                  )
     
+    assert   list(result) == ['ok', 'result'] 
+    
+    bot_message = 'test with None purpose'
+
+    result = await get_dbt.telegram_bot_sendtext (bot_message)
+    
+    assert   list(result) == ['ok', 'result'] 
+        
+    bot_message = 'test with purpose-failed order'
+    purpose = 'failed_order'
+
+    result = await get_dbt.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
     assert   list(result) == ['ok', 'result'] 

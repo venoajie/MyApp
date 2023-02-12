@@ -31,11 +31,13 @@ def parse_dotenv()->dict:
             'client_secret': os.environ.get('client_secret')
             }
     
-def telegram_bot_sendtext(bot_message, 
-                          purpose: str = 'general_error'
-                          ) -> None:
-    from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+async def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
+    import deribit_get
+    return await deribit_get.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
     
 class StreamAccountData:
     

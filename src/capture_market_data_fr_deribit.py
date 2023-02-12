@@ -16,10 +16,13 @@ from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
 from market_understanding import futures_analysis
     
-def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
-    from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
-
+async def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
+    import deribit_get
+    return await deribit_get.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
 class StreamMarketData:
     
     '''

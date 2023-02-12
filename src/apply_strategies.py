@@ -23,10 +23,13 @@ from market_understanding import futures_analysis
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-def telegram_bot_sendtext(bot_message, purpose: str = 'general_error') -> None:
-    from utilities import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+async def telegram_bot_sendtext (bot_message, 
+                           purpose: str = 'general_error'
+                           ) -> None:
 
+    return await deribit_get.telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
 def catch_error (error, idle: int = None) -> list:
     """
     """
