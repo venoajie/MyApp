@@ -1,8 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+# installed
+import asyncio
 
-def telegram_bot_sendtext(bot_message: str, purpose: str = 'general_error') -> str:
+async def telegram_bot_sendtext (
+                            bot_message: str, 
+                            purpose: str = 'general_error'
+                            ) -> str:
+    
+    """
+    # simple telegram
+    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+    """
+    
+    from deribit_get import telegram_bot_sendtext 
+    
+    await telegram_bot_sendtext (bot_message,
+                                 purpose
+                                 )
+
+
+def telegram_bot_sendtext_ (
+                            bot_message: str, 
+                            purpose: str = 'general_error'
+                            ) -> str:
     
     """
     # simple telegram
@@ -10,6 +32,7 @@ def telegram_bot_sendtext(bot_message: str, purpose: str = 'general_error') -> s
     """
     
     import requests
+    
     if purpose == 'failed_order':
         bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
         bot_chatID  = '-722130131'
@@ -19,6 +42,6 @@ def telegram_bot_sendtext(bot_message: str, purpose: str = 'general_error') -> s
         bot_chatID  = '-439743060'
     send_text   = 'https://api.telegram.org/bot' + bot_token + (
 								'/sendMessage?chat_id=') + bot_chatID + (
-							'&parse_mode=HTML&text=') + bot_message
+							        '&parse_mode=HTML&text=') + bot_message
     response    = requests.get(send_text)
     return response.json()

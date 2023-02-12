@@ -634,3 +634,45 @@ async def  get_open_interest_symbol (
                         connection_url=connection_url
                         )     
     
+
+async def  telegram_bot_sendtext (
+                            bot_message: str, 
+                            purpose: str = 'general_error'
+                            ) -> str:
+    
+    """
+    # simple telegram
+    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+    """
+
+    # Set endpoint
+    
+    
+    import requests
+    
+    if purpose == 'failed_order':
+        bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
+        bot_chatID  = '-722130131'
+        
+    if purpose == 'general_error':
+        bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
+        bot_chatID  = '-439743060'
+    connection_url   = 'https://api.telegram.org/bot'
+    endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
+							        '&parse_mode=HTML&text=') + bot_message
+        
+
+    try:
+        return await main (
+                        endpoint=endpoint,
+                        params={},
+                        connection_url=connection_url
+                        )     
+    
+    except:
+        return await main (
+                        endpoint=endpoint,
+                        params=params_coinGlass,
+                        connection_url=connection_url
+                        )     
+    
