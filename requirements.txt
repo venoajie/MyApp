@@ -5,6 +5,3 @@ orjson
 python-dotenv
 aiohttp
 psutil
-loguru
-pytest-asyncio 
-python-dotenv
