@@ -7,7 +7,7 @@ from time import sleep
 #none_data=[None, 0, []]
 
 
-def parse_dotenv()->dict:    
+def parse_dotenv()-> dict:    
     
     """
     https://www.python-engineer.com/posts/run-python-github-actions/
@@ -18,14 +18,15 @@ def parse_dotenv()->dict:
     
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
-    
-        
+            
     try:
+        # linux/win env
         client_id = os.environ.get ('client_id')
         client_secret =  os.environ.get ('client_secret')
         
     except KeyError:
-
+        
+        # github env
         client_id = os.environ ('client_id')
         client_secret =  os.environ ('client_secret')
             

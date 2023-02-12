@@ -44,7 +44,8 @@ class MyTrades ():
         
         '''
         '''    
-        return [] if self.my_trades_api () == [] else   ([o for o in self.my_trades_api () if  label in o['label'] ])
+        return [] if self.my_trades_api () == [] \
+            else [o for o in self.my_trades_api () if  label in o['label'] ]
     
     def my_trades_api_net_position(self, 
                                    selected_trades: list
@@ -62,10 +63,13 @@ class MyTrades ():
                 
                 sum_closed_trades_in_my_trades_open_sell = 0 \
                     if sum_closed_trades_in_my_trades_open_sell == [] \
-                        else sum(sum_closed_trades_in_my_trades_open_sell)
+                        else sum (
+                            sum_closed_trades_in_my_trades_open_sell
+                            )
                 # sum buy
-                sum_closed_trades_in_my_trades_open_buy = ([o['amount'] for o in selected_trades \
-                    if o['direction']=='buy'])
+                sum_closed_trades_in_my_trades_open_buy = [
+                    o['amount'] for o in selected_trades if o['direction']=='buy'
+                    ]
                 
                 sum_closed_trades_in_my_trades_open_buy = 0 \
                     if sum_closed_trades_in_my_trades_open_buy == [] \
@@ -298,7 +302,13 @@ class MyTrades ():
                                             data_order, 
                                             True
                                             ) 
-                my_trades = self.my_trades
+                my_trades_open = pickling.read_data(my_trades_path_open)
+                log.warning (my_trades_open)
+                my_trades_open_label = string_modification.remove_redundant_elements(
+                    [string_modification.extract_integers_from_text (
+                        o['label']) for o in my_trades_open]
+                    )
+                log.warning (my_trades_open_label)
             
             for data_order in my_trades:
 
