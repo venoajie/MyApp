@@ -56,9 +56,17 @@ def convert_str_to_float (data_json: list)->object:
             
             if isinstance(i, dict):
                 data_json=[data_json]
-                position = {k: float(v) if (is_floatable(v) and (k) not in excluded) else v for k, v in i.items()}
+                position = {
+                    k: float(v) if (is_floatable(v) \
+                    and (k) not in excluded) \
+                        else v for k, v in i.items()
+                    }
             if isinstance(i, list):
-                position = {k: float(v) if (is_floatable(v) and (k) not in excluded) else v for k, v in i.items()}
+                position = {
+                    k: float(v) if (is_floatable(v) \
+                    and (k) not in excluded) \
+                        else v for k, v in i.items()
+                    }
             list_combination.append(position)
         
         return list_combination

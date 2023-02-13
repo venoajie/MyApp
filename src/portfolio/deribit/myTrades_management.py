@@ -3,7 +3,7 @@
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
-from utilities import pickling, system_tools, string_modification
+from utilities import pickling, system_tools, string_modification as str_mod
 
 def catch_error (error, idle: int = None) -> list:
     """
@@ -45,7 +45,10 @@ class MyTrades ():
         '''    
         return [o for o in self.my_trades if o['api'] == False]
     
-    def my_trades_api_basedOn_label (self, label: str)-> list:
+    def my_trades_api_basedOn_label (
+                                     self, 
+                                     label: str
+                                     )-> list:
         
         '''
         '''    
@@ -61,27 +64,24 @@ class MyTrades ():
 
         try:
             if selected_trades != []:
-            # sum sell
-                #selected_trades = set (selected_trades)
-                sum_closed_trades_in_my_trades_open_sell = ([o['amount'] for o in selected_trades \
+                # sum sell
+                sum_sell = ([o['amount'] for o in selected_trades \
                     if o['direction']=='sell'])
                 
-                sum_closed_trades_in_my_trades_open_sell = 0 \
-                    if sum_closed_trades_in_my_trades_open_sell == [] \
+                sum_sell = 0 if sum_sell == [] \
                         else sum (
-                            sum_closed_trades_in_my_trades_open_sell
+                            sum_sell
                             )
                 # sum buy
-                sum_closed_trades_in_my_trades_open_buy = [
-                    o['amount'] for o in selected_trades if o['direction']=='buy'
+                sum_buy = [
+                    o['amount'] for o in selected_trades if o['direction'] == 'buy'
                     ]
                 
-                sum_closed_trades_in_my_trades_open_buy = 0 \
-                    if sum_closed_trades_in_my_trades_open_buy == [] \
-                        else sum(sum_closed_trades_in_my_trades_open_buy)
+                sum_buy = 0  if sum_buy == [] \
+                        else sum(sum_buy)
                     
             return selected_trades if selected_trades == [] \
-                else  sum_closed_trades_in_my_trades_open_buy - sum_closed_trades_in_my_trades_open_sell
+                else  sum_buy - sum_sell
         
         except Exception as error:
             catch_error(error)
@@ -96,16 +96,13 @@ class MyTrades ():
         
         #log.critical (f'DATA FROM EXC LOOP {trade_order=}')
 
-        try:
-            
+        try:            
             
             try:
                 label_id = trade_order [0]['label']
-                #log.critical (f'label_id {label_id=}')
                 trade_seq = trade_order [0]['trade_seq']
                 order_type = trade_order [0]['order_type']
-                closed_label_id_int = string_modification.extract_integers_from_text(label_id)
-                #log.critical (f'closed_label_id_int {closed_label_id_int=}')
+                closed_label_id_int = str_mod.extract_integers_from_text(label_id)
                 
             except:
                 label_id = []
@@ -126,12 +123,13 @@ class MyTrades ():
         except Exception as error:
             catch_error (error)
 
-        
-        return {'liquidation_event': liquidation_event,
+        return {
+                'liquidation_event': liquidation_event,
                 'label_id': label_id,
                 'closed_label_id_int': closed_label_id_int,
                 'opening_position': 'open' in label_id,
-                'closing_position': 'closed' in label_id}
+                'closing_position': 'closed' in label_id
+                }
         
     def gather_transactions_under_the_same_id_int (self, 
                                                    label: str, 
@@ -139,7 +137,7 @@ class MyTrades ():
                                                    ) -> dict:
         
         '''
-        my_trades_open = re-read from db after previous closed transaction appended
+        my_trades_open = re-read from db after previous closed transaction was appended
         '''       
         
         transactions_under_same_id = self.transactions_same_id (label,
@@ -155,7 +153,7 @@ class MyTrades ():
                 'transactions_same_id_contain_open_label': transactions_under_same_id['transactions_same_id_contain_open_label'],
                 'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id['transactions_same_id']),
                 'transactions_same_id_len': len (transactions_under_same_id['transactions_same_id']),
-                'remaining_open_trades': string_modification.remove_redundant_elements (remaining_open_trades)
+                'remaining_open_trades': str_mod.remove_redundant_elements (remaining_open_trades)
                 }
         
     def transactions_same_id (self,
@@ -165,7 +163,8 @@ class MyTrades ():
         
         '''
         '''       
-        transactions_under_same_id = [o for o in my_trades_open if (label) == string_modification.extract_integers_from_text (o['label']) ]
+        transactions_under_same_id = [o for o in my_trades_open \
+            if (label) == str_mod.extract_integers_from_text (o['label']) ]
         return {'transactions_same_id': transactions_under_same_id,
                 'transactions_same_id_contain_open_label': False if transactions_under_same_id == [] \
                     else 'open' in [o['label'] for o in transactions_under_same_id][0],
@@ -179,8 +178,9 @@ class MyTrades ():
         '''
         '''       
 
-        return string_modification.remove_redundant_elements (
-            [string_modification.extract_integers_from_text (
+        return str_mod.remove_redundant_elements (
+            [
+                str_mod.extract_integers_from_text (
                         o['label']
                         ) for o in my_trades_open
              ]
@@ -194,7 +194,7 @@ class MyTrades ():
         '''
         '''       
         #
-        return [o for o in my_trades_open if (label) != string_modification.extract_integers_from_text (o['label']) ]
+        return [o for o in my_trades_open if (label) != str_mod.extract_integers_from_text (o['label']) ]
             
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
@@ -216,30 +216,17 @@ class MyTrades ():
         
         # sum transaction with the same label id
         sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int ['transactions_same_id_net_qty']
-        #transactions_same_id_len = gather_transactions_under_the_same_id_int ['transactions_same_id_len']
-        #log.debug (f'transactions_same_id_len {transactions_same_id_len}')
-        #log.critical (f'closed_trades_in_my_trades_open {closed_trades_in_my_trades_open}')
+        
         log.critical (f'sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}')
         
         remaining_open_trades =  gather_transactions_under_the_same_id_int ['remaining_open_trades']  
 
         #! SYNCHRONIZATION (DIFF SYSTEM VS DB)
-        #my_trades = self.my_trades
         
-        #log. info ( ( self.my_trades))
-        #log. debug ( (my_trades_open))
-        #log. critical ( (string_modification.find_unique_elements (
-        #            my_trades_open,  
-        #                self.my_trades
-        #                )))
-        #log. critical ((sum_closed_trades_in_my_trades_open_net))
         log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
-        if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label']:
-            #log. critical ( (gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label'] ))
-        
+        if gather_transactions_under_the_same_id_int ['transactions_same_id_contain_open_label']:       
             
             if len (my_trades_open) > 1:
-                #log.error (str(closed_label_id_int))
                                     
                 label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
                 for key in my_trades_open:
@@ -249,8 +236,6 @@ class MyTrades ():
                 # the transaction did not make the respective label to be closed
                 if sum_closed_trades_in_my_trades_open_net != 0:
                     for data_order in closed_trades_in_my_trades_open:
-                        
-                    
                             
                         pickling.append_data (my_trades_path_open, 
                                             data_order , 
@@ -289,7 +274,7 @@ class MyTrades ():
          # orphan closed orders:                    
         else:
             log. critical (remaining_open_trades)
-            #log. critical (self.my_trades_api_net_position (remaining_open_trades))
+
             pickling.replace_data (my_trades_path_open, 
                                     remaining_open_trades, 
                                     True 
@@ -390,9 +375,6 @@ class MyTrades ():
                                 
                     # fetch previous open trading data from local db
                     my_trades_open = pickling.read_data(my_trades_path_open)
-                    #log.critical ('source for distribute_trade_transaction')
-                    #log.warning (trade_transactions['closed_label_id_int'])
-                    #log.critical (len(my_trades_open))
                     
                     self. synchronizing_closed_tradings(trade_transactions['closed_label_id_int'], 
                                                         my_trades_open, 

@@ -17,11 +17,11 @@ from configuration import id_numbering
 from market_understanding import futures_analysis
     
 async def telegram_bot_sendtext (bot_message, 
-                           purpose: str = 'general_error'
-                           ) -> None:
+                                 purpose: str = 'general_error'
+                                 ) -> None:
     import deribit_get
     return await deribit_get.telegram_bot_sendtext (bot_message,
-                                 purpose
+                                                    purpose
                                  )
 class StreamMarketData:
     
