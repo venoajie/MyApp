@@ -182,7 +182,7 @@ class MyTrades ():
             [
                 str_mod.extract_integers_from_text (
                         o['label']
-                        ) for o in my_trades_open
+                        ) for o in my_trades_open if 'closed' in o['label']
              ]
                     )
         
@@ -314,11 +314,17 @@ class MyTrades ():
                 
                 log.warning (my_trades_open)
                 
-                my_trades_open_label = self.extracting_unique_label_id (
+                my_trades_closed_label = self.extracting_unique_label_id (
                     my_trades_open
                     )
                 
-                log.warning (my_trades_open_label)
+                log.warning (my_trades_closed_label)
+                for id in my_trades_closed_label:
+                    log.warning (id)
+                    self. synchronizing_closed_tradings(id, 
+                                                        my_trades_open, 
+                                                        my_trades_path_open
+                                                        )
             
             for data_order in my_trades:
 
