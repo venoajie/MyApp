@@ -273,7 +273,8 @@ class ApplyHedgingSpot ():
                                                                          'closed'
                                                                          )
         
-        my_trades_closed: str = pickling.read_data(my_trades_path_closed)             
+        my_trades_closed: str = pickling.read_data(my_trades_path_closed)           
+        log.warning (my_trades_closed)  
         
         path_orders_open: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
