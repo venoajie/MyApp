@@ -274,6 +274,8 @@ class MyTrades ():
          # orphan closed orders:                    
         else:
             log. critical (remaining_open_trades)
+            log. critical (self.my_trades_api_net_position (remaining_open_trades))
+            
 
             pickling.replace_data (my_trades_path_open, 
                                     remaining_open_trades, 
