@@ -143,7 +143,9 @@ class ApplyHedgingSpot ():
             
             #! why trade?
             # use the earliest time stamp to fetch data from exchange
-            fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, server_time)
+            fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, 
+                                                                                                            server_time
+                                                                                                            )
             
             # compare data from exchanges. Pick only those have not recorded at system yet
             filtered_data_from_ = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
@@ -274,7 +276,7 @@ class ApplyHedgingSpot ():
                                                                          )
         
         my_trades_closed: str = pickling.read_data(my_trades_path_closed)           
-        log.warning (my_trades_closed)  
+        #log.warning (my_trades_closed)  
         
         path_orders_open: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
@@ -506,6 +508,7 @@ class ApplyHedgingSpot ():
                                                                                         start_timestamp, 
                                                                                          server_time
                                                                                          )
+            log.warning (my_selected_trades_open_from_system)
         
         await check_data_integrity.main_enforce_my_trade_db_integrity (
                                                                         self.currency,
