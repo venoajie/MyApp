@@ -3,7 +3,8 @@ from typing import Dict
 
 # installed
 import asyncio
-#import websockets
+
+from dataclassy import dataclass#import websockets
 #import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
@@ -70,6 +71,29 @@ async def main(
 
             return response
 
+@dataclass(unsafe_hash=True, slots=True)
+class GetPrivateData ():
+    
+    '''
+    '''       
+    
+    connection_url: str
+    client_id: str
+    client_secret: str
+    currency: str
+       
+    async def get_credentials (self, open_order_id) -> None:
+        
+        await deribit_get.get_cancel_order_byOrderId (
+                                                        self.connection_url, 
+                                                        self.client_id, 
+                                                        self.client_secret, 
+                                                        open_order_id
+                                                      )  
+
+
+
+        
 async def send_order  (connection_url: str,
                         client_id,
                         client_secret,
