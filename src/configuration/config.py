@@ -70,7 +70,7 @@ def main_dotenv (header: str = 'None')-> dict:
         credentials =  Connection.config (filename,
                                           header
                                           )
-        log.warning (credentials)
+        #log.warning (credentials)
 
     # github env
     except Exception as error:
