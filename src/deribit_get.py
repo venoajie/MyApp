@@ -670,7 +670,11 @@ async def  telegram_bot_sendtext (
     """
     print (config.main_dotenv ('telegram-failed_order'))
     print (config.main_dotenv ('telegram-general_error'))
-    bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
+    try:
+        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
+    
+    except:
+        bot_token   = config.main_dotenv ('telegram-failed_order')['BOT_TOKEN']
     
     if purpose == 'failed_order':
         
