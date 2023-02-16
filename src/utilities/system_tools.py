@@ -6,44 +6,7 @@ from time import sleep
 
 #none_data=[None, 0, []]
 
-def parse_dotenv()-> dict:    
-    
-    """
-    https://www.python-engineer.com/posts/run-python-github-actions/
-    """
-    import configparser as conf
-
-    # Config the env reader
-    env = conf.ConfigParser()
-    env.read(".env") #.env is the name of the file
-
-    # Getting/Reading a value from the .env file
-    redis_host = env.get('redis','host')
-    redis_port = env.get('redis','port')
-    
-    try:
-        # linux/win env
-        client_id = os.environ.get ('client_id')
-        client_secret =  os.environ.get ('client_secret')
-        
-    except KeyError:
-        
-        from os.path import join, dirname
-        from dotenv import load_dotenv
-        
-        dotenv_path = join(dirname(__file__), '.env')
-        load_dotenv(dotenv_path)
-                
-        # github env
-        client_id = os.environ ('client_id')
-        client_secret =  os.environ ('client_secret')
-            
-    return {'client_id': client_id,
-            'client_secret': client_secret
-            }
-        
-
-def parse_dotenv_()-> dict:    
+def parse_dotenv (domain_app: str = 'None')-> dict:    
     
     """
     https://www.python-engineer.com/posts/run-python-github-actions/
@@ -54,6 +17,10 @@ def parse_dotenv_()-> dict:
     
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
+    client_id = None
+    client_secret = None
+    bot_token = None
+    bot_chatid = None
             
     try:
         # linux/win env
@@ -67,7 +34,9 @@ def parse_dotenv_()-> dict:
         client_secret =  os.environ ('client_secret')
             
     return {'client_id': client_id,
-            'client_secret': client_secret
+            'client_secret': client_secret,
+            'bot_token': bot_token,
+            'bot_chatid': bot_chatid
             }
             
 def get_platform ()-> str:

@@ -14,4 +14,5 @@ label =  [{'trade_seq': 115425899, 'trade_id': 'ETH-157512749', 'timestamp': 167
 
 
 
-config.main_dotenv ('deribit')
+tel = config.parse_dotenv ('telegram-failed_order')
+print (tel)

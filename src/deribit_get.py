@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from os.path import join, dirname
 
 # user defined formula
-from configuration import id_numbering
+from configuration import id_numbering, config
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -675,12 +675,12 @@ async def  telegram_bot_sendtext (
     import requests
     
     if purpose == 'failed_order':
-        bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
-        bot_chatID  = '-722130131'
+        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
+        bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
         
     if purpose == 'general_error':
-        bot_token   = '1297409216:AAEYu9r7FNd_GQWnxQdM-K6PUSYSQsKuBgE'
-        bot_chatID  = '-439743060'
+        bot_token   = config.main_dotenv ('telegram-general_error')['bot_token']
+        bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
     connection_url   = 'https://api.telegram.org/bot'
     endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
 							        '&parse_mode=HTML&text=') + bot_message

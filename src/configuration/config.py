@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from configparser import ConfigParser
-from loguru import logger as log
 
-def catch_error (error, idle: int = None) -> list:
+def catch_error (error,
+                 idle: int = None
+                 ) -> list:
     """
     """
     from utilities import system_tools
@@ -11,8 +12,10 @@ def catch_error (error, idle: int = None) -> list:
     system_tools.catch_error_message(error, idle)
 
 class Read_Configuration:
-    """Menyiapkan koneksi ke exchange, database, telegram, atau aplikasi lainnya"""
 
+    '''
+    # Read .env file
+    '''    
     def __init__(self):
         self.params = None
         self.conn = None
@@ -22,52 +25,77 @@ class Read_Configuration:
                section: str
                )-> dict: 
         
-        # buat parser 
+        # create parser 
         parser = ConfigParser() 
-        log.error(parser.read(filename) )
 
-        # baca file config  
+        # read file config  
         parser.read(filename) 
 
-        # siapkan tempat untuk hasil bacaan file config  
+        # prepare place holder for file config read result 
         parameters = {} 
 
         if self.params is None:
 
-        # detailkan parameters berdasarkan seksi
+        # check file section
             if parser.has_section(section): 
                 params = parser.items(section) 
                 for param in params: 
                     parameters[param[0]] = param[1] 
 
-        # bila seksi yang dicari tidak ada
+        # if section is not provided
             else: 
                 raise Exception('Section {0} not found in the {1} file'.format(section, filename)) 
     
-        log.warning (parameters)
         return parameters
 
-def main_dotenv (header: str
-          ):
+def main_dotenv (header: str = 'None')-> dict:    
     
-    '''
-    # Menyiapkan kredensial exchange dan akun/sub akun
-            Return and rtype: kredensial (str)
-    '''    
+    """
+    https://www.python-engineer.com/posts/run-python-github-actions/
+    """
+    # Initialize credentials to None
+    credentials = None 
+            
+    try: 
+            
+        # Set the filename
+        filename = "src/configuration/.env" 
+        
+        # Create a Read_Configuration object
+        Connection = Read_Configuration () 
+        
+        credentials =  Connection.config (filename,
+                                header
+                                )
 
-    filename = "src/configuration/.env"  # ? Mengakses file konfigurasi (api)
-    Connection = Read_Configuration ()  # ? Menyiapkan koneksi ke masing-masing exchange
-    
-    return Connection.config (filename,
-                              header
-                              )
+    # github env
+    except KeyError:
+        from loguru import logger as log
+        log.warning (KeyError)
+        log.warning (header)
+        import os
+        from os.path import join, dirname
+        from dotenv import load_dotenv
+        
+        dotenv_path = join(dirname(__file__), '.env')
+        load_dotenv(dotenv_path)
+        
+        # github env
+        credentials = os.environ
+        log.warning (credentials)
+            
+    return credentials
+                          
 
-    
 if __name__ == "__main__":
 
     try:
         
-        main_dotenv ('deribit')
+        test = main_dotenv ('telegram-failed_order')
+        print (test)
+        
+        test = main_dotenv ('deribit-147691')
+        print (test)
         
     except (KeyboardInterrupt):
         catch_error (KeyboardInterrupt)
