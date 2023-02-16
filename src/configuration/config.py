@@ -84,7 +84,7 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # github env
         credentials = os.environ
-        log.info (credentials)
+        #log.info (credentials)
             
     return credentials
                           
