@@ -668,11 +668,8 @@ async def  telegram_bot_sendtext (
     # simple telegram
     #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
     """
-
-    # Set endpoint
-    
-    
-    import requests
+    print (config.main_dotenv ('telegram-failed_order'))
+    print (config.main_dotenv ('telegram-general_error'))
     
     if purpose == 'failed_order':
         bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']

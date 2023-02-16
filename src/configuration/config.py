@@ -75,8 +75,6 @@ def main_dotenv (header: str = 'None')-> dict:
     # github env
     except Exception as error:
         
-        log.warning (error)
-        log.warning (header)
         import os
         from os.path import join, dirname
         from dotenv import load_dotenv
@@ -86,7 +84,6 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # github env
         credentials = os.environ
-        log.warning (credentials)
             
     return credentials
                           
