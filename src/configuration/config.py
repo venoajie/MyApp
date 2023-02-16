@@ -73,9 +73,9 @@ def main_dotenv (header: str = 'None')-> dict:
         log.warning (credentials)
 
     # github env
-    except KeyError:
+    except Exception as error:
         
-        log.warning (KeyError)
+        log.warning (error)
         log.warning (header)
         import os
         from os.path import join, dirname
