@@ -53,8 +53,10 @@ def main_dotenv (header: str = 'None')-> dict:
     """
     https://www.python-engineer.com/posts/run-python-github-actions/
     """
+    from loguru import logger as log
     # Initialize credentials to None
     credentials = None 
+    
             
     try: 
             
@@ -72,7 +74,7 @@ def main_dotenv (header: str = 'None')-> dict:
 
     # github env
     except KeyError:
-        from loguru import logger as log
+        
         log.warning (KeyError)
         log.warning (header)
         import os
