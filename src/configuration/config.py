@@ -73,7 +73,7 @@ def main_dotenv (header: str = 'None')-> dict:
         #log.warning (credentials)
 
     # github env
-    except Exception as error:
+    except:
         
         import os
         from os.path import join, dirname

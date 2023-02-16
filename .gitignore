@@ -65,6 +65,8 @@ coverage.xml
 *.mo
 *.pot
 
+#postgresql db
+tradingdb
 
 # Django stuff:
 *.log

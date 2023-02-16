@@ -230,3 +230,44 @@ def catch_error_message (error: str,
     else:
         sys.exit ()
         
+        
+        
+    def db_membuka_koneksi(self,params):
+        """Connect to a Postgres database."""
+        import psycopg2.extras
+        from psycopg2 import connect, sql
+        import psycopg2.extras
+
+        if self.conn is None:
+            try:
+               
+                self.conn = psycopg2.connect(**params)
+#                print(f'{self.conn=}')
+
+            # bila terdapat error terkait koneksi ke postgres         
+            except psycopg2.DatabaseError as e:
+                raise e
+            finally:
+                print('Koneksi ke database terbuka')
+        return self.conn
+
+def open_connection_sqlite_ (self, db_file, params= None):
+    """Connect to a sqlite database."""
+    import sqlite3
+    from sqlite3 import Error
+
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+
+    except Error as e:
+        log.error (e)
+    finally:
+        if conn:
+            conn.close()
+
+def open_connection_sqlite (self, db_file, params= None):
+    """Connect to a sqlite database."""
+    connection_ = self. open_connection_sqlite_ (db_file, params= None)
+    connection = connection_.result()
+        

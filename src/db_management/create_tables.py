@@ -1,7 +1,6 @@
 import psycopg2
 import psycopg2.extras
 
-
 # Function to connect to PostgreSQL database
 def postgres_connect(project_settings):
     """
@@ -53,7 +52,10 @@ def sql_execute(sql_query, project_settings):
 
 
 # Function to create a table
-def create_sql_table(table_name, table_details, project_settings):
+def create_sql_table(table_name, 
+                     table_details, 
+                     project_settings
+                     ):
     """
     Function to create a table in SQL
     :param table_name: String
@@ -68,7 +70,9 @@ def create_sql_table(table_name, table_details, project_settings):
 
 
 # Function to create a trade table
-def create_trade_table(table_name, project_settings):
+def create_trade_table(table_name, 
+                       project_settings
+                       ):
     """
     Function to create a trade table in SQL
     :param table_name: string
