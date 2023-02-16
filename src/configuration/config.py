@@ -63,10 +63,12 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
+        log.warning (header)
         
         credentials =  Connection.config (filename,
-                                header
-                                )
+                                          header
+                                          )
+        log.warning (credentials)
 
     # github env
     except KeyError:
