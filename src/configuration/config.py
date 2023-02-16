@@ -65,7 +65,7 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        log.warning (header)
+        #log.warning (header)
         
         credentials =  Connection.config (filename,
                                           header
@@ -84,6 +84,7 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # github env
         credentials = os.environ
+        log.info (credentials)
             
     return credentials
                           
