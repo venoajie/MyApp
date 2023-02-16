@@ -670,14 +670,21 @@ async def  telegram_bot_sendtext (
     """
     print (config.main_dotenv ('telegram-failed_order'))
     print (config.main_dotenv ('telegram-general_error'))
+    bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
     
     if purpose == 'failed_order':
-        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
-        bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
+        
+        try:
+            bot_chatID  = config.main_dotenv ('telegram-failed_order')['BOT_CHATID_FAILED_ORDER']
+        except:
+            bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
         
     if purpose == 'general_error':
-        bot_token   = config.main_dotenv ('telegram-general_error')['bot_token']
-        bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
+        try:
+            bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
+
+        except:
+            bot_chatID  = config.main_dotenv ('telegram-general_error')['BOT_CHATID_GENERAL_ERROR']
     connection_url   = 'https://api.telegram.org/bot'
     endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
 							        '&parse_mode=HTML&text=') + bot_message
