@@ -1,4 +1,4 @@
-from db_management import sqlite_operation
+from db_management import sqlite_management
 from loguru import logger as log
 def update_table_strategy_entries (strategyId, params)->list:
 
@@ -18,7 +18,7 @@ def update_table_strategy_entries (strategyId, params)->list:
     log.warning (params_info)
     
     try:
-        with sqlite_operation.db_ops() as cur:
+        with sqlite_management.db_ops() as cur:
             
             cur.execute ((f'{query_table}'), params_info)  
             

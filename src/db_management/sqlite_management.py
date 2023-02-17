@@ -2,10 +2,24 @@
 
 import sqlite3
 from contextlib import contextmanager
+                                 
+def catch_error (error, 
+                 idle: int = None
+                 ) -> list:
+    """
+    """
+    from utilities import system_tools
+    system_tools.catch_error_message(error, idle)
 
-def telegram_bot_sendtext(bot_message, purpose) -> None:
+
+def telegram_bot_sendtext(bot_message: str, 
+                          purpose: str
+                          ) -> None:
     from utils import telegram_app
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+    return telegram_app.telegram_bot_sendtext(
+                                                bot_message, 
+                                                purpose
+                                                )
 
 @contextmanager
 def db_ops(db_name: str = 'trading.db')->None:
@@ -17,8 +31,6 @@ def db_ops(db_name: str = 'trading.db')->None:
             # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
             https://code-kamran.medium.com/python-convert-json-to-sqlite-d6fa8952a319
     ''' 
-
-    #conn.execute('BEGIN')
     
     try:
         conn = sqlite3.connect(db_name, isolation_level=None)
@@ -57,10 +69,10 @@ def create_dataBase_sqlite(db_name: str = 'trading.db')->None:
 if __name__ == "__main__":
     
     try:   
-        db_ops()
+        create_dataBase_sqlite()
 
     except (KeyboardInterrupt, SystemExit):
-        sys.exit()
+        catch_error (KeyboardInterrupt)
 
     except Exception as error:
-        formula.log_error('database', 'main', error, 10)
+        catch_error (error, 10)

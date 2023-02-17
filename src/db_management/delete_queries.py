@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from db_management import sqlite_operation
+from db_management import sqlite_management
 from loguru import logger as log
 
 def telegram_bot_sendtext(bot_message, purpose) -> None:
@@ -17,7 +17,7 @@ def deleting_expired_instrument (instrument, table: str = 'strategy_entries')->l
     log.info (query_table)
 
     try:
-        with sqlite_operation.db_ops() as cur:
+        with sqlite_management.db_ops() as cur:
             
             cur.execute (query_table, (instrument,))  
             
@@ -34,7 +34,7 @@ def deleting_items_based_on_strategyId (strategyId, table: str = 'strategy_entri
     query_table = 'DELETE FROM strategy_entries WHERE strategyId=?'
 
     try:
-        with sqlite_operation.db_ops() as cur:
+        with sqlite_management.db_ops() as cur:
             
             cur.execute (query_table, (strategyId,))  
             

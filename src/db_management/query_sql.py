@@ -1,4 +1,4 @@
-from db_management import sqlite_operation
+from db_management import sqlite_management
 
 def perform_query_from_sqlite (table: str)->list:
 
@@ -9,7 +9,7 @@ def perform_query_from_sqlite (table: str)->list:
 
     query_table = f'SELECT * FROM {table}' 
     
-    with sqlite_operation.db_ops() as cur:
+    with sqlite_management.db_ops() as cur:
         try:
 #            log.warning (query_table)
             result = (list(cur.execute((f'{query_table}')))) 
@@ -43,7 +43,7 @@ def querying_strategies_sent (table: str = 'strategy_entries')->list:
     params = ('sent')
     
     try:
-        with sqlite_operation.db_ops() as cur:
+        with sqlite_management.db_ops() as cur:
             result = list(cur.execute((f'{query_table},{params}')))
             headers = list(map(lambda attr : attr[0], cur.description))
                         

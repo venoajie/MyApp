@@ -3,14 +3,14 @@
 from loguru import logger as log
 from functools import lru_cache
 from unsync import unsync
-from db_management import sqlite_operation
+from db_management import sqlite_management
 
 def create_table_strategy ():
 
     '''
     '''   
    
-    with sqlite_operation.db_ops() as cur:
+    with sqlite_management.db_ops() as cur:
          
         # create table name: strategy_entries
         #cur.execute("DROP TABLE IF EXISTS strategy_entries")
@@ -23,7 +23,7 @@ def insert_initial_data_to_table_strategy (subAccount,  strategy, sub_strategy, 
     '''   
     create_table_strategy()
    
-    with sqlite_operation.db_ops() as cur:
+    with sqlite_management.db_ops() as cur:
         insert_table_ticker_futures  = f'INSERT INTO strategy_entries (subAccount,  strategy, subStrategy, strategyId, startDate, instrument, instrumentRole, side, size, orderDate, orderId, orderPrice, transactionDate, transactionId, transactionPrice, strategyStatus) VALUES (:subAccount,  :strategy, :subStrategy, :strategyId, :startDate, :instrument, :instrumentRole, :side, :size, :orderDate, :orderId, :orderPrice, :transactionDate, :transactionId, :transactionPrice, :strategyStatus);'  
 
         strategyStatus ='sent'
