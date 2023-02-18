@@ -33,7 +33,9 @@ def db_ops(db_name: str = 'trading.db')->None:
     ''' 
     
     try:
-        conn = sqlite3.connect(db_name, isolation_level=None)
+        conn = sqlite3.connect(db_name, 
+                               isolation_level=None
+                               )
         cur = conn.cursor()
         yield cur
         
