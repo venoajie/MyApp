@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from configparser import ConfigParser
+from loguru import logger as log
 
 def catch_error (error,
                  idle: int = None
@@ -30,6 +31,7 @@ class Read_Configuration:
 
         # read file config  
         parser.read(filename) 
+        log.debug (parser.read(filename) )
 
         # prepare place holder for file config read result 
         parameters = {} 
@@ -53,7 +55,7 @@ def main_dotenv (header: str = 'None')-> dict:
     """
     https://www.python-engineer.com/posts/run-python-github-actions/
     """
-    from loguru import logger as log
+    
     # Initialize credentials to None
     credentials = None 
     
@@ -65,12 +67,13 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        #log.warning (header)
+        log.warning (filename)
+        log.warning (header)
         
         credentials =  Connection.config (filename,
                                           header
                                           )
-        #log.warning (credentials)
+        log.warning (credentials)
 
     # github env
     except:
