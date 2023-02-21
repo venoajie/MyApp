@@ -65,7 +65,7 @@ def main_dotenv (header: str = 'None')-> dict:
     try: 
             
         # Set the filename
-        filename = "src/configuration/.env" 
+        filename = ".env" 
         config_path = system_tools.provide_path_for_file (filename)
         
         # Create a Read_Configuration object
