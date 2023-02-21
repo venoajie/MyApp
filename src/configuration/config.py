@@ -2,6 +2,7 @@
 
 from configparser import ConfigParser
 from loguru import logger as log
+from utilities import system_tools
 
 def catch_error (error,
                  idle: int = None
@@ -31,6 +32,7 @@ class Read_Configuration:
 
         # read file config  
         parser.read(filename) 
+        log. critical ((filename))
         log.debug (parser.read(filename) )
 
         # prepare place holder for file config read result 
@@ -64,13 +66,14 @@ def main_dotenv (header: str = 'None')-> dict:
             
         # Set the filename
         filename = "src/configuration/.env" 
+        config_path = system_tools.provide_path_for_file (filename)
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        log.warning (filename)
+        log.warning (config_path)
         log.warning (header)
         
-        credentials =  Connection.config (filename,
+        credentials =  Connection.config (config_path,
                                           header
                                           )
         log.warning (credentials)
