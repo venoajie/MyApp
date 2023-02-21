@@ -148,7 +148,7 @@ def provide_path_for_file (
         if  method != None:
             file_name =  (f'{file_name}-{method}')  
     
-    if  '.env' in file_name:
+    if  '.env' in end_point:
         
         sub_folder = 'configuration'
                 
