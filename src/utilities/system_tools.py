@@ -148,13 +148,14 @@ def provide_path_for_file (
         if  method != None:
             file_name =  (f'{file_name}-{method}')  
     
-    if  '.env' in end_point:
-        
-        sub_folder = 'configuration'
                 
     else:
         file_name =  (f'{end_point}')
+
+    if  '.env' in end_point:
         
+        sub_folder = 'configuration'
+            
     file_name =  (f'{file_name}.pkl') if '.env' not in file_name else (f'{end_point}')
     
     # Combine root + folders
