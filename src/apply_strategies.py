@@ -316,7 +316,7 @@ class ApplyHedgingSpot ():
             positions = positions_from_sub_account#await self.get_positions ()
             pickling.replace_data (path_positions, positions)  
             
-        #log.debug (portfolio)
+        log.debug (my_trades_open)
         if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
             pickling.replace_data (path_portfolio, portfolio) 
