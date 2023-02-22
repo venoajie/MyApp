@@ -1,15 +1,11 @@
 #!/usr/bin/python3
 
 # built ins
-import os
-from os.path import join, dirname
 
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
 import asyncio
-from dotenv import load_dotenv
-from os.path import join, dirname
 
 # user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
@@ -19,9 +15,6 @@ from risk_management import spot_hedging, check_data_integrity#, position_sizing
 from configuration import  label_numbering, config
 from strategies import entries_exits, trading_strategies
 from market_understanding import futures_analysis
-
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
 
 async def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
@@ -35,17 +28,9 @@ def catch_error (error, idle: int = None) -> list:
     """
     system_tools.catch_error_message(error, idle)
 
-def parse_dotenv_()->dict:    
-    return {'client_id': os.environ.get('client_id'),
-            'client_secret': os.environ.get('client_secret')
-            }
     
-    
-def parse_dotenv()->dict:    
-    
-    #log.error (config.main_dotenv ('deribit-147691'))
-    
-    return config.main_dotenv ('deribit-147691')                                                         
+def parse_dotenv(sub_account)->dict:    
+    return config.main_dotenv (sub_account)                                                         
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot ():
@@ -937,12 +922,10 @@ async def main ():
     client_id: str = parse_dotenv() ['client_id']
     client_secret: str = parse_dotenv() ['client_secret']
     currency: str = 'ETH'
+    sub_account = 'deribit-147691'
     
-    client_id: str = parse_dotenv() ['client_id']
-    client_secret: str = parse_dotenv() ['client_secret']
-    log.info (client_id)
-    log.info (client_secret)
-    #log.info (parse_dotenv_())
+    client_id: str = parse_dotenv(sub_account) ['client_id']
+    client_secret: str = parse_dotenv(sub_account) ['client_secret']
     
     connection_url: str = 'https://www.deribit.com/api/v2/'
     #
