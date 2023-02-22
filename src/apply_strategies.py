@@ -649,7 +649,7 @@ class ApplyHedgingSpot ():
                         label:str = strategy ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
                         label_closed:str = f'{label}-closed'
-                        
+                        #
 
                         net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label_items_net (label_numbered)
                         log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
