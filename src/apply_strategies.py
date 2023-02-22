@@ -919,8 +919,7 @@ class ApplyHedgingSpot ():
 async def main ():
 
     connection_url: str = 'https://test.deribit.com/api/v2/'
-    client_id: str = parse_dotenv() ['client_id']
-    client_secret: str = parse_dotenv() ['client_secret']
+    
     currency: str = 'ETH'
     sub_account = 'deribit-147691'
     
