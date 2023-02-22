@@ -218,6 +218,9 @@ def catch_error_message (error: str,
     if error == True: # to respond 'def is_current_file_running'  result
         sys.exit (1)
         
+    if error == 'server rejected WebSocket connection: HTTP 503': # to respond 'def is_current_file_running'  result
+        log.critical (f'{error}')
+        
     log.critical (f'{error}')
     log.debug (traceback.format_exc())
     
