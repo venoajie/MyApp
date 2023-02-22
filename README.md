@@ -1,10 +1,9 @@
 # MyApp
+#### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management
 
 ## Current feature list:
-
 - WIP. Will be supported for Deribit/Kraken futures/Binance/Dydx cryptocurrency exchanges. Others coming soon
-- works in Python 3.8
-- Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management
+- Tested in Python 3.8 and Ubuntu 20.04 environment
 
 ## Quickstart:
 - install app 
@@ -29,7 +28,6 @@ make start # for first time running
 ``` 
 
 ## General troubleshootings:
-
 - Check .env file for any account update/ram-disk size change
 - File crash after resizing ram-disk
 ```shell 
