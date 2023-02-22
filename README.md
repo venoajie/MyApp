@@ -1,9 +1,12 @@
 # MyApp
-#### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management
+#### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management.
+
+#### Supoprted exchanges: Deribit. Others coming soon
+
+#### WIP. Tested in Python 3.8 and Ubuntu 20.04 environment
 
 ## Current feature list:
-- WIP. Will be supported for Deribit/Kraken futures/Binance/Dydx cryptocurrency exchanges. Others coming soon
-- Tested in Python 3.8 and Ubuntu 20.04 environment
+- [x] Automatic **hedging** for equity balances in crypto spot
 
 ## Quickstart:
 - install app 
