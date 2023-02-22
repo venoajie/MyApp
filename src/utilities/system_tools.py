@@ -92,8 +92,7 @@ def provide_path_for_file (
     root:str = Path(".")
     
     exchange = None
-    print (end_point)
-    print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+
     if  bool(
         [
             o for o in [
@@ -148,12 +147,10 @@ def provide_path_for_file (
         if  method != None:
             file_name =  (f'{file_name}-{method}')  
     
-                
     else:
         file_name =  (f'{end_point}')
 
-    if  '.env' in end_point:
-        
+    if  '.env' in end_point:        
         sub_folder = 'configuration'
             
     file_name =  (f'{file_name}.pkl') if '.env' not in file_name else (f'{end_point}')
@@ -164,10 +161,8 @@ def provide_path_for_file (
     
     # Create target Directory if doesn't exist in linux
     if not os.path.exists(my_path_linux) and current_os =='linux':    
-        print ('CCCCCCCCCCCCCCCCCC')
+
         os.makedirs(my_path_linux)
-    print ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-    print ((my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name))
                         
     return (my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name)
     

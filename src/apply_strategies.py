@@ -270,7 +270,7 @@ class ApplyHedgingSpot ():
                                                                     'open'
                                                                     )               
         my_trades_open: str = pickling.read_data(path_trades_open)           
-        log.error (my_trades_open)    
+#        log.error (my_trades_open)    
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', 
                                                                          self.currency, 
                                                                          'closed'
@@ -311,8 +311,6 @@ class ApplyHedgingSpot ():
         path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
         positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        log.error (path_sub_accounts)
-        log.error (sub_account)
         positions_from_sub_account = sub_account [0] ['positions']
         open_orders_from_sub_account = sub_account [0] ['open_orders']
         portfolio = pickling.read_data(path_portfolio)
