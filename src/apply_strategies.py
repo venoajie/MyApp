@@ -43,7 +43,8 @@ def parse_dotenv_()->dict:
     
 def parse_dotenv()->dict:    
     parse_env = system_tools.parse_dotenv ()
-    log.error (parse_dotenv)
+    log.error (parse_env ['client_id'])
+    log.error (parse_env ['client_secret'])
     
     return {
         'client_id': parse_env ['client_id'],
