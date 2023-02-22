@@ -804,13 +804,13 @@ class ApplyHedgingSpot ():
                                         and net_open_orders_open_byAPI_db == 0 \
                                             and  last_time_order_filled_exceed_threshold:
                                     
-                                        await self.send_orders ('sell', 
+                                        order_result = await self.send_orders ('sell', 
                                                                 instrument, 
                                                                 abs(check_spot_hedging ['hedging_size']), 
                                                                 label_numbered,
                                                                 best_ask_prc
                                                                 )
-                                        #log.warning (order_result)
+                                        log.warning (order_result)
                                         
                                         await self.cancel_redundant_orders_in_same_labels (label_open_for_filter)
                                         
