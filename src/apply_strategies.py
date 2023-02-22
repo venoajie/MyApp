@@ -276,6 +276,10 @@ class ApplyHedgingSpot ():
                                                                     self.currency, 
                                                                     'open'
                                                                     )
+        path_orders_open: str = system_tools.provide_path_for_file ('orders', 
+                                                                    self.currency, 
+                                                                    'else'
+                                                                    )
         
         path_orders_closed: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
@@ -316,7 +320,7 @@ class ApplyHedgingSpot ():
             positions = positions_from_sub_account#await self.get_positions ()
             pickling.replace_data (path_positions, positions)  
             
-        log.debug (my_trades_open)
+        #log.debug (my_trades_open)
         if portfolio in none_data:
             portfolio = await self.get_account_summary(self.currency)
             pickling.replace_data (path_portfolio, portfolio) 
@@ -325,6 +329,7 @@ class ApplyHedgingSpot ():
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
                 'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
                 'open_orders_open_byAPI': pickling.read_data(path_orders_open),
+                'open_orders_else': pickling.read_data(path_orders_else),
                 'open_orders_closed_byAPI': pickling.read_data(path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(path_orders_filled),
                 'positions': positions,
