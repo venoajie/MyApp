@@ -16,7 +16,7 @@ from portfolio.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, number_modification, string_modification
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity#, position_sizing
-from configuration import  label_numbering
+from configuration import  label_numbering, config
 from strategies import entries_exits, trading_strategies
 from market_understanding import futures_analysis
 
@@ -42,15 +42,10 @@ def parse_dotenv_()->dict:
     
     
 def parse_dotenv()->dict:    
-    parse_env = system_tools.parse_dotenv ()
-    log.error (parse_env)
-    log.error (parse_env ['client_id'])
-    log.error (parse_env ['client_secret'])
     
-    return {
-        'client_id': parse_env ['client_id'],
-        'client_secret': parse_env ['client_secret']
-        }                                                                
+    log.error (config.main_dotenv ('deribit-147691'))
+    
+    return config.main_dotenv ('deribit-147691')                                                         
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot ():
