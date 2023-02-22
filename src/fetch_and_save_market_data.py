@@ -5,14 +5,12 @@
 from pathlib import Path
 
 # installed
-from loguru import logger as log
 from rocketry import Rocketry
 from rocketry.conds import  every
-from loguru import logger as log
 import requests
 
 # user defined formula
-from utilities import pickling, formula, system_tools
+from utilities import pickling, system_tools
 from market_data import get_market_data
 
 symbol = 'ETH-PERPETUAL'
