@@ -30,11 +30,15 @@ make start # for first time running
 
 ## General troubleshootings:
 
-- Check .env file for any account update
+- Check .env file for any account update/ram-disk size change
 - File crash after applying ram-disk
 ```shell 
 git fetch origin
 git reset --hard origin/main
 git pull
 ``` 
-reattach .env
+
+```shell 
+cd MyApp/src/configuration
+# re-attach .env file here
+``` 
