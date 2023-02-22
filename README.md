@@ -29,6 +29,11 @@ cd MyApp/src/configuration
 cd MyApp/src
 make start # for first time running
 ``` 
+- Back up database. Highly encouraged when resizing ram-disk
+```shell 
+cd MyApp/src
+sync_with_remote.sh # to cloud  
+``` 
 
 ## General troubleshootings:
 - Check .env file for any account update/ram-disk size change
