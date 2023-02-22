@@ -220,6 +220,7 @@ def catch_error_message (error: str,
         
     if error == 'server rejected WebSocket connection: HTTP 503': # to respond 'def is_current_file_running'  result
         log.critical (f'{error}')
+        telegram_app.telegram_bot_sendtext ('server rejected WebSocket connection: HTTP 503')
         
     log.critical (f'{error}')
     log.debug (traceback.format_exc())
