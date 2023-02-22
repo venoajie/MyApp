@@ -7,8 +7,12 @@
 - Provide trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management
 
 ## Quickstart:
-- install app  through git clone https://github.com/venoajie/MyApp.git
-- run 'make install' yo download related Linux and Python dependencies
+- install app  through 
+```shell git clone https://github.com/venoajie/MyApp.git
+``` 
+
+- run  'make install' to download related Linux and Python dependencies
+- run make ram-disk (optional. Could improve tha app speed, but be careful with persistence issues for the database)
 
 ## General troubleshootings:
 
