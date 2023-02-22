@@ -42,9 +42,7 @@ git pull
 cd MyApp/src/configuration
 # re-attach .env file here
 ``` 
-
-- Fail to install Python dependecies (specific for Ubuntu 20)
--
+- Fail to install Python dependecies (specific for Ubuntu 20). Downgrade setup tools:
 ```shell 
 pip3 install --upgrade --user setuptools==58.3.0
 ``` 
