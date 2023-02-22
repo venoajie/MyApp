@@ -276,7 +276,7 @@ class ApplyHedgingSpot ():
                                                                     self.currency, 
                                                                     'open'
                                                                     )
-        path_orders_open: str = system_tools.provide_path_for_file ('orders', 
+        path_orders_else: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
                                                                     'else'
                                                                     )
