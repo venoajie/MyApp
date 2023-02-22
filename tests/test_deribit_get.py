@@ -24,6 +24,7 @@ async def test_get_user_trades_by_instrument():
                                                                             client_secret,
                                                                             'eth-perpetual'
                                                                             )    
+    assert (user_trades_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     assert list(user_trades_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
 
