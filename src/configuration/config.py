@@ -32,8 +32,8 @@ class Read_Configuration:
 
         # read file config  
         parser.read(filename) 
-        log. critical ((filename))
-        log.debug (parser.read(filename) )
+        #log. critical ((filename))
+        #log.debug (parser.read(filename) )
 
         # prepare place holder for file config read result 
         parameters = {} 
@@ -70,13 +70,13 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        log.warning (config_path)
-        log.warning (header)
+        #log.warning (config_path)
+        #log.warning (header)
         
         credentials =  Connection.config (config_path,
                                           header
                                           )
-        log.warning (credentials)
+        #log.warning (credentials)
 
     # github env
     except:
