@@ -8,7 +8,7 @@
 
 ## Quickstart:
 - install app  through git clone https://github.com/venoajie/MyApp.git
-- run "make install" yo download related Linux and Python dependencies
+- run 'make install' yo download related Linux and Python dependencies
 
 ## General troubleshootings:
 
