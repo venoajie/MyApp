@@ -11,7 +11,7 @@
 ```shell 
 git clone https://github.com/venoajie/MyApp.git
 ``` 
-- run make file
+- install dependencies
 ```shell 
 cd MyApp
 make install # to download related Linux and Python dependencies
