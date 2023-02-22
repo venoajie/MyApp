@@ -31,4 +31,10 @@ make start # for first time running
 ## General troubleshootings:
 
 - Check .env file for any account update
+- File crash after applying ram-disk
+```shell 
+git fetch origin
+git reset --hard origin/main
+git pull
+``` 
 
