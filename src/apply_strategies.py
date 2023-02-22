@@ -664,7 +664,7 @@ class ApplyHedgingSpot ():
                         log.warning (my_orders_api_basedOn_label_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] :
+                        if 'hedgingSpot' not in strategy['strategy'] and False:
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -749,7 +749,7 @@ class ApplyHedgingSpot ():
                                                         best_ask_prc if side == 'sell' else best_bid_prc
                                                         )
                             
-                        log.warning (strategy['strategy'])
+                        #log.warning (strategy['strategy'])
                         #log.warning ('hedgingSpot' in strategy['strategy'])
                             
                         if 'hedgingSpot' in strategy['strategy']:
