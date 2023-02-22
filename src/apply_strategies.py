@@ -43,7 +43,7 @@ def parse_dotenv_()->dict:
     
 def parse_dotenv()->dict:    
     
-    log.error (config.main_dotenv ('deribit-147691'))
+    #log.error (config.main_dotenv ('deribit-147691'))
     
     return config.main_dotenv ('deribit-147691')                                                         
 
@@ -942,6 +942,8 @@ async def main ():
     client_secret: str = parse_dotenv() ['client_secret']
     log.info (client_id)
     log.info (client_secret)
+    log.info (parse_dotenv_())
+    
     connection_url: str = 'https://www.deribit.com/api/v2/'
     #
     try:
