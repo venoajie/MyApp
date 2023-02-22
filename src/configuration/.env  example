@@ -1,0 +1,18 @@
+[pgsql-tradingdb]
+host = localhost
+database = tradingdb
+user = xxx
+password =xy 
+port = 5432
+
+[deribit]
+type=subaccount
+user_name=xx
+system_name=xx
+client_id=xx
+client_secret=xx
+id=xx
+
+[telegram-general_error]
+bot_token=xx
+bot_chatID=-xx
