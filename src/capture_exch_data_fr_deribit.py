@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 
 # user defined formula 
 from utilities import pickling, system_tools, string_modification
-from configuration import id_numbering
+from configuration import id_numbering, config
 from portfolio.deribit import open_orders_management, myTrades_management
 import deribit_get
 import apply_strategies
@@ -26,11 +26,18 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 @lru_cache(maxsize=None)
-def parse_dotenv()->dict:    
+def parse_dotenv_()->dict:    
     return {'client_id': os.environ.get('client_id'),
             'client_secret': os.environ.get('client_secret')
             }
     
+    
+def parse_dotenv()->dict:    
+    
+    #log.error (config.main_dotenv ('deribit-147691'))
+    
+    return config.main_dotenv ('deribit-147691')                                                         
+
 async def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
                            ) -> None:
