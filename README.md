@@ -17,7 +17,7 @@ cd MyApp
 make install # to download related Linux and Python dependencies
 make ram-disk # (optional. Could improve tha app speed, but you can easily lose your data due to database persistence)
 ``` 
-- attach .env file
+- attach .env file in configuration folder
 ```shell 
 cd MyApp/src/configuration
 # attach .env file here
