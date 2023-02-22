@@ -15,7 +15,7 @@ git clone https://github.com/venoajie/MyApp.git
 ```shell 
 cd MyApp
 make install # to download related Linux and Python dependencies
-make ram-disk # (optional. Could improve the app speed, but you can easily lose your data due to database persistence)
+make ram-disk # (optional, resizing ram disk to 2 GB. Could improve the app speed, but you can easily lose your data due to database persistence)
 ``` 
 - attach .env file in configuration folder
 ```shell 
@@ -30,5 +30,19 @@ make start # for first time running
 
 ## General troubleshootings:
 
-- Check .env file for any account update
+- Check .env file for any account update/ram-disk size change
+- File crash after resizing ram-disk
+```shell 
+git fetch origin
+git reset --hard origin/main
+git pull
+``` 
 
+```shell 
+cd MyApp/src/configuration
+# re-attach .env file here
+``` 
+- Fail to install Python dependecies (specific for Ubuntu 20). Downgrade setup tools:
+```shell 
+pip3 install --upgrade --user setuptools==58.3.0
+``` 
