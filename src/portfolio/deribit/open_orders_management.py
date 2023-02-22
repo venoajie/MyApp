@@ -299,6 +299,8 @@ class MyOrders ():
                     if order_state ['order_state_else']:
                         log.critical ('ORDER_STATE ELSE')
                         log.info (f'{order=}')
+                        log.critical (f'{order_state=}')
+                        log.critical (f'{my_path_orders_else=}')
                         
                         order_id = order_state ['order_id']
                         

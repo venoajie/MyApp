@@ -81,8 +81,8 @@ def provide_path_for_file (
     '''
     marker: currency, instrument, other
     end_point: orders, myTrades
-    method: web/manual, api/bot
     status: open, closed
+    method: web/manual, api/bot
     '''   
     from pathlib import Path
     

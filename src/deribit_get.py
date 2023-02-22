@@ -670,7 +670,6 @@ async def  telegram_bot_sendtext (
     """
 
     tel = (config.main_dotenv ('telegram-failed_order'))
-    print (f'AAAAAAAA {tel}')
 
     try:
         bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
