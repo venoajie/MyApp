@@ -24,12 +24,14 @@ def parse_dotenv (domain_app: str = 'None')-> dict:
             
     try:
         # linux/win env
+        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         client_id = os.environ.get ('client_id')
         client_secret =  os.environ.get ('client_secret')
         
     except KeyError:
         
         # github env
+        print ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
         client_id = os.environ ('client_id')
         client_secret =  os.environ ('client_secret')
             
