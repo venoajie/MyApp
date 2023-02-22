@@ -13,7 +13,6 @@ import websockets
 import asyncio
 import orjson
 from loguru import logger as log
-from dotenv import load_dotenv
 
 # user defined formula 
 from utilities import pickling, system_tools, string_modification
@@ -21,22 +20,9 @@ from configuration import id_numbering, config
 from portfolio.deribit import open_orders_management, myTrades_management
 import deribit_get
 import apply_strategies
-
-dotenv_path = join(dirname(__file__), '.env')
-load_dotenv(dotenv_path)
-
-@lru_cache(maxsize=None)
-def parse_dotenv_()->dict:    
-    return {'client_id': os.environ.get('client_id'),
-            'client_secret': os.environ.get('client_secret')
-            }
     
-    
-def parse_dotenv()->dict:    
-    
-    #log.error (config.main_dotenv ('deribit-147691'))
-    
-    return config.main_dotenv ('deribit-147691')                                                         
+def parse_dotenv(sub_account)->dict:    
+    return config.main_dotenv (sub_account)                                                         
 
 async def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
@@ -372,9 +358,9 @@ class StreamAccountData:
             )
                 
 def main ():
-    
-    client_id: str = parse_dotenv() ['client_id']
-    client_secret: str = parse_dotenv() ['client_secret']
+    sub_account = 'deribit-147691'
+    client_id: str = parse_dotenv(sub_account) ['client_id']
+    client_secret: str = parse_dotenv(sub_account) ['client_secret']
     
     
     try:
@@ -385,7 +371,10 @@ def main ():
         )
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save EXCHANGE data from deribit')
+        system_tools.catch_error_message (error, 
+                                          10, 
+                                          'fetch and save EXCHANGE data from deribit'
+                                          )
     
 if __name__ == "__main__":
 
@@ -396,6 +385,9 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
-        system_tools.catch_error_message (error, 10, 'fetch and save EXCHANGE data from deribit')
+        system_tools.catch_error_message (error, 
+                                          10, 
+                                          'fetch and save EXCHANGE data from deribit'
+                                          )
 
     
