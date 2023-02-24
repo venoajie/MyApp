@@ -286,6 +286,7 @@ class MyOrders ():
                 for order in self.open_orders_from_db:
                             
                     order_state = self.recognizing_order (order)
+                    log.critical (order_state)
             
                     if order_state ['order_state_open']:
                         log.error ('ORDER_STATE OPEN')
