@@ -585,7 +585,7 @@ class ApplyHedgingSpot ():
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
-                log.warning (open_orders_open_byAPI)
+                #log.warning (open_orders_open_byAPI)
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 #log.debug (open_orders_filled_byAPI)
                 # prepare open order manipulation
