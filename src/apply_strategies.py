@@ -505,7 +505,7 @@ class ApplyHedgingSpot ():
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db ['time_stamp_to_recover']
         #log.critical (positions_from_get)
-        log.info (my_trades_open_from_db)
+       # log.info (my_trades_open_from_db)
         log.critical (start_timestamp)
         
         my_selected_trades_open_from_system =[]
@@ -516,7 +516,7 @@ class ApplyHedgingSpot ():
                                                                                         start_timestamp, 
                                                                                          server_time
                                                                                          )
-            log.warning (my_selected_trades_open_from_system)
+        #    log.warning (my_selected_trades_open_from_system)
         
         await check_data_integrity.main_enforce_my_trade_db_integrity (
                                                                         self.currency,
