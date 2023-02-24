@@ -986,7 +986,7 @@ async def main ():
         label_hedging = 'hedgingSpot'
         
         server_time = await syn.current_server_time ()
-        syn.get_sub_accounts(currency)
+        await syn.get_sub_accounts(currency)
         #log.error (server_time+60000)
         await syn.running_strategy (server_time)
         #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
