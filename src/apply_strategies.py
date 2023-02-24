@@ -43,6 +43,34 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
+        
+    async def get_sub_accounts(self,
+                               currency
+                               ) -> list:
+        """
+        """
+        
+        try:
+            
+            result: dict =  await deribit_get.get_subaccounts (
+                                                                self.connection_url, 
+                                                                self.client_id,
+                                                                self.client_secret, 
+                                                                currency
+                                                            )
+            #log.warning(result)
+            result_sub_account =  result ['result'] 
+            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
+                                                                      currency
+                                                                      )
+            pickling.replace_data(my_path_sub_account, 
+                                  result_sub_account
+                                  )
+            return result_sub_account
+    
+        except Exception as error:
+            log.warning (error)
+            
     async def net_position (self, 
                       selected_transactions: list
                       )-> float:

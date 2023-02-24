@@ -143,7 +143,7 @@ class StreamAccountData:
                                                                                           )
                                    )
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
-                            await self.get_sub_accounts(currency)
+                            await syn.get_sub_accounts(currency)
                             #await synchronizing_files
 
                         self.refresh_token = message['result']['refresh_token']
@@ -198,7 +198,8 @@ class StreamAccountData:
                                                       positions
                                                       )
                                 
-                        await self.get_sub_accounts(currency)                                                      
+                        await syn.get_sub_accounts(currency)       
+                                                                       
             else:
                 log.info('WebSocket connection has broken.')
                 system_tools.catch_error_message ('error-WebSocket connection EXCHANGE has broken', 
@@ -206,33 +207,6 @@ class StreamAccountData:
                                                     'WebSocket connection EXCHANGE has broken'
                                                     )
                 
-    async def get_sub_accounts(self,
-                               currency
-                               ) -> list:
-        """
-        """
-        
-        try:
-            
-            result: dict =  await deribit_get.get_subaccounts (
-                                                                self.connection_url, 
-                                                                self.client_id,
-                                                                self.client_secret, 
-                                                                currency
-                                                            )
-            #log.warning(result)
-            result_sub_account =  result ['result'] 
-            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
-                                                                      currency
-                                                                      )
-            pickling.replace_data(my_path_sub_account, 
-                                  result_sub_account
-                                  )
-            return result_sub_account
-    
-        except Exception as error:
-            log.warning (error)
-
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
