@@ -469,12 +469,15 @@ class ApplyHedgingSpot ():
                                            ) -> None:
 
         #open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+
+        log.warning (open_orders_open_byAPI)
+        log.critical (open_orders_from_sub_account_get)
         open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
         orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
         
         #log.info (f"{open_orders_from_sub_account_get=}")
         #log.info (f"{open_orders_open_byAPI=}")
-        #log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
+        log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
             # update open order at db with open orders at sub account
@@ -593,7 +596,6 @@ class ApplyHedgingSpot ():
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
-                #log.warning (open_orders_open_byAPI)
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
                 #log.debug (open_orders_filled_byAPI)
                 # prepare open order manipulation
