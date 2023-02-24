@@ -281,7 +281,8 @@ class MyOrders ():
                                                                   )
         try:
             
-            if self.open_orders_from_db:
+            if self.open_orders_from_db: 
+                log.debug (self.open_orders_from_db)
                 
                 for order in self.open_orders_from_db:
                             
