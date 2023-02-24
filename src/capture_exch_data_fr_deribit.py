@@ -122,21 +122,21 @@ class StreamAccountData:
                 message_channel: str = None
                 #log.warning (message)
                 if 'id' in list(message):
-                    
+            
+                    syn = apply_strategies. ApplyHedgingSpot (
+                                                            self.connection_url,
+                                                            self.client_id,
+                                                            self.client_secret,
+                                                            currency
+                                                                    )
                     if message['id'] == 9929:
                         if self.refresh_token is None:
-                            await self.get_sub_accounts(currency)
+                            await syn.get_sub_accounts(currency)
                             log.debug('Successfully authenticated WebSocket Connection')
                             
                         else:
                             log.info('Successfully refreshed the authentication of the WebSocket Connection')
                             
-                            syn = apply_strategies. ApplyHedgingSpot (
-                                                                    self.connection_url,
-                                                                    self.client_id,
-                                                                    self.client_secret,
-                                                                    currency
-                                                                           )
                             server_time = await syn.current_server_time ()
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 
                                                                                           'hedgingSpot'

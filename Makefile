@@ -1,7 +1,7 @@
 .PHONY: virtual install build-requirements black isort flake8 clean-pyc clean-build docs clean
 
 help:
-	@echo "install - install dependencies and requirements"
+	@echo "install - install linux & python dependencies and requirements"
 	@echo "save-git-credential - save git credential for private repo"	
 	@echo "clean - remove all build, test, coverage and Python artifacts"
 	@echo "clean-build - remove build artifacts"
@@ -11,7 +11,7 @@ help:
 save-git-credential:
 	git config --global credential.helper store
 
-start: install ram-disk
+start: install 
 
 install:
 	sudo apt-get install inotify-tools
@@ -21,12 +21,6 @@ install:
 	pip3 install --upgrade requests
 
 clean: clean-build clean-pyc clean-test
-
-ram-disk:
-#https://towardsdev.com/linux-create-a-ram-disk-to-speed-up-your-i-o-file-operations-18dcaede61d2
-	sudo mount -t tmpfs -o rw,size=2G tmpfs src
-	sudo chmod 777 src
-	git pull
 
 clean-build:
 	rm -fr build/
