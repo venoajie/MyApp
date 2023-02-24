@@ -472,6 +472,8 @@ class ApplyHedgingSpot ():
         open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
         orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
         
+        log.info (f"{open_orders_from_sub_account_get=}")
+        log.info (f"{open_orders_open_byAPI=}")
         log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
