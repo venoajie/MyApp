@@ -1,7 +1,6 @@
 # MyApp TODO.md
 
 
-V
 
 ### Todo
 
@@ -20,15 +19,12 @@ V
 
 - [x] Automatic **hedging** for equity balance in crypto spot  
 
-
-
 ### Reading Material/to be implemented 
 - Programming related  
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
-Python | @jim19930609 |  | | 
-Technical Analysis | @strongoier |  | |
+Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
 
 
 - Technical Analysis  
