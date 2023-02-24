@@ -478,8 +478,16 @@ class ApplyHedgingSpot ():
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
             # update open order at db with open orders at sub account
+            my_path_orders_open = system_tools.provide_path_for_file ('orders', 
+                                                                  self.currency, 
+                                                                  'open'
+                                                                  )
             
-            open_order_mgt_sub_account. distribute_order_transactions (self.currency)
+            pickling.replace_data (my_path_orders_open, 
+                                   open_orders_from_sub_account_get,
+                                   True
+                                   )
+                        
                        
             catch_error ('update open order at db with open orders at sub account', 
                          idle = .1
