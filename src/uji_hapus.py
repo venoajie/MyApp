@@ -5,7 +5,7 @@ my_trades_open =    [{'trade_seq': 118020115, 'trade_id': 'ETH-160804604', 'time
 
 my_trades_path_open_recovery = system_tools.provide_path_for_file ('myTrades', 
                                                                             'eth',
-                                                                            'open-recovery-point'
+                                                                            'open'
                                                                             )
 pickling.replace_data (my_trades_path_open_recovery, 
                                                 my_trades_open, 
