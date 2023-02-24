@@ -472,9 +472,9 @@ class ApplyHedgingSpot ():
         open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
         orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
         
-        log.info (f"{open_orders_from_sub_account_get=}")
+        #log.info (f"{open_orders_from_sub_account_get=}")
         #log.info (f"{open_orders_open_byAPI=}")
-        log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
+        #log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
             # update open order at db with open orders at sub account
@@ -505,7 +505,7 @@ class ApplyHedgingSpot ():
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db ['time_stamp_to_recover']
         #log.critical (positions_from_get)
-        #log.info (my_trades_open_from_db)
+        log.info (my_trades_open_from_db)
         log.critical (start_timestamp)
         
         my_selected_trades_open_from_system =[]
