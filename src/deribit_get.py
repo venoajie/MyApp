@@ -658,7 +658,6 @@ async def  get_open_interest_symbol (
                         connection_url=connection_url
                         )     
     
-
 async def  telegram_bot_sendtext (
                             bot_message: str, 
                             purpose: str = 'general_error'

@@ -644,7 +644,7 @@ class ApplyHedgingSpot ():
                                                     server_time
                                                     )
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                #log.info (my_trades_open)
+                log.info (my_trades_open)
                 
                 for instrument in instrument_transactions:
 
