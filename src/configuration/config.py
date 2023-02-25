@@ -60,7 +60,6 @@ def main_dotenv (header: str = 'None')-> dict:
     
     # Initialize credentials to None
     credentials = None 
-    
             
     try: 
             
@@ -70,16 +69,17 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        #log.warning (config_path)
-        #log.warning (header)
+        log.warning (config_path)
+        log.warning (header)
         
         credentials =  Connection.config (config_path,
                                           header
                                           )
-        #log.warning (credentials)
+        log.warning (credentials)
 
     # github env
     except:
+        log.debug ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
         
         import os
         from os.path import join, dirname
