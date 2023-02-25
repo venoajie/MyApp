@@ -7,7 +7,7 @@ connection_url: str = 'https://www.deribit.com/api/v2/'
 sub_account = 'deribit-147691'
     
 def parse_dotenv(sub_account)->dict:    
-    from configuration import config
+    from src.configuration import config
     return config.main_dotenv (sub_account)                                                         
              
 client_id: str = parse_dotenv(sub_account) ['client_id']
