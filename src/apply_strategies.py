@@ -983,15 +983,23 @@ async def main ():
                                 currency = currency
         )
         
+        # get deribit server timr
+        server_time = await syn.current_server_time ()
+        
+        # resupply sub account db
+        await syn.get_sub_accounts(currency)
+        
+        # execute strategy
+        await syn.running_strategy (server_time)
+        
+        # hedging: check for over hedged and over-bought        
         label_hedging = 'hedgingSpot'
         
-        server_time = await syn.current_server_time ()
-        await syn.get_sub_accounts(currency)
-        #log.error (server_time+60000)
-        await syn.running_strategy (server_time)
-        #await syn.check_if_new_order_will_create_over_hedged ('eth', label_hedging)
-        await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, label_hedging)
-        await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()        
+        await syn.cancel_orders_hedging_spot_based_on_time_threshold (server_time, 
+                                                                      label_hedging
+                                                                      )
+        await syn.cancel_redundant_orders_in_same_labels_closed_hedge ()  
+              
         #open_orders_from_exchange = await syn.open_orders_from_exchange ()        
          
     except Exception as error:

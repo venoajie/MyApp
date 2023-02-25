@@ -123,28 +123,33 @@ class StreamAccountData:
                 #log.warning (message)
                 if 'id' in list(message):
             
-                    syn = apply_strategies. ApplyHedgingSpot (
-                                                            self.connection_url,
-                                                            self.client_id,
-                                                            self.client_secret,
-                                                            currency
-                                                                    )
                     if message['id'] == 9929:
+                        
+                        syn = apply_strategies. ApplyHedgingSpot (
+                                                                self.connection_url,
+                                                                self.client_id,
+                                                                self.client_secret,
+                                                                currency
+                                                                        )
+                        
                         if self.refresh_token is None:
                             await syn.get_sub_accounts(currency)
                             log.debug('Successfully authenticated WebSocket Connection')
                             
                         else:
-                            log.info('Successfully refreshed the authentication of the WebSocket Connection')
                             
+                             # resupply sub account db
+                            await syn.get_sub_accounts(currency)
+
                             server_time = await syn.current_server_time ()
+                            log.critical (server_time)
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 
                                                                                           'hedgingSpot'
                                                                                           )
                                    )
                             await (syn.cancel_redundant_orders_in_same_labels_closed_hedge())
-                            await syn.get_sub_accounts(currency)
-                            #await synchronizing_files
+                                                        #await synchronizing_files
+                            log.info('Successfully refreshed the authentication of the WebSocket Connection')
 
                         self.refresh_token = message['result']['refresh_token']
 
