@@ -11,10 +11,6 @@ def parse_dotenv(sub_account)->dict:
 sub_account: str = 'deribit-147691'
 client_id: str = parse_dotenv(sub_account) ['client_id']
 client_secret: str = parse_dotenv(sub_account) ['client_secret']
-print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-print (parse_dotenv(sub_account))
-print (client_id)
-print (client_secret)
 
 connection_url: str = 'https://www.deribit.com/api/v2/'
     
@@ -25,7 +21,7 @@ async def test_get_user_trades_by_instrument():
                                                                             client_secret,
                                                                             'eth-perpetual'
                                                                             )    
-    assert (user_trades_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
+
     assert list(user_trades_by_instrument) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
 

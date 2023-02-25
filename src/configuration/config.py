@@ -77,12 +77,9 @@ def main_dotenv (header: str = 'None',
         credentials =  Connection.config (config_path,
                                           header
                                           )
-        log.warning (credentials)
 
     # github env
-    except Exception as error:
-        log.debug ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
-        log.debug (error)
+    except :
         
         import os
         from os.path import join, dirname
