@@ -12,6 +12,8 @@ def parse_dotenv(sub_account)->dict:
              
 client_id: str = parse_dotenv(sub_account) ['client_id']
 client_secret: str = parse_dotenv(sub_account) ['client_secret']
+print (client_id)
+print (client_secret)
 
 @pytest.mark.asyncio
 async def test_get_user_trades_by_instrument():
