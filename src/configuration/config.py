@@ -69,8 +69,8 @@ def main_dotenv (header: str = 'None')-> dict:
         
         # Create a Read_Configuration object
         Connection = Read_Configuration () 
-        log.warning (config_path)
-        log.warning (header)
+        #log.warning (config_path)
+        #log.warning (header)
         
         credentials =  Connection.config (config_path,
                                           header
@@ -78,8 +78,9 @@ def main_dotenv (header: str = 'None')-> dict:
         log.warning (credentials)
 
     # github env
-    except:
+    except Exception as error:
         log.debug ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
+        log.debug (error)
         
         import os
         from os.path import join, dirname
