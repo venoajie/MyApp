@@ -7,6 +7,7 @@
 
 ## Current feature list:
 - [x] Automatic **hedging** for equity balances in crypto spot
+- [x] Back up database to cloud and local
 
 ## Quickstart:
 - install app 
