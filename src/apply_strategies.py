@@ -634,6 +634,7 @@ class ApplyHedgingSpot ():
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status ('filled')
                 
+                log.info (my_trades_open)
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
                 await self.check_open_orders_integrity (open_orders_open_byAPI,
                                                         open_orders_from_sub_account_get
@@ -644,7 +645,6 @@ class ApplyHedgingSpot ():
                                                     server_time
                                                     )
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                log.info (my_trades_open)
                 
                 for instrument in instrument_transactions:
 
