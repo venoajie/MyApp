@@ -299,17 +299,17 @@ class MyOrders ():
                                                                         True)
                         
                     if order_state ['order_state_else']:
+                        
+                        my_path_orders_else = system_tools.provide_path_for_file ('orders', 
+                                                                                  currency, 
+                                                                                  'else'
+                                                                                  )
                         log.critical ('ORDER_STATE ELSE')
                         log.info (f'{order=}')
                         log.critical (f'{order_state=}')
                         log.critical (f'{my_path_orders_else=}')
                         
                         order_id = order_state ['order_id']
-                        
-                        my_path_orders_else = system_tools.provide_path_for_file ('orders', 
-                                                                                  currency, 
-                                                                                  'else'
-                                                                                  )
                         
                         open_orders_open = pickling.read_data (my_path_orders_open) 
                         
