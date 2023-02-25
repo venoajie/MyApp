@@ -4,13 +4,14 @@ import asyncio
 import pytest
                       
 connection_url: str = 'https://www.deribit.com/api/v2/'
+sub_account = 'deribit-147691'
     
 def parse_dotenv(sub_account)->dict:    
     from configuration import config
     return config.main_dotenv (sub_account)                                                         
-                                                                                         
-client_id: str = parse_dotenv() ['client_id']
-client_secret: str = parse_dotenv() ['client_secret']
+             
+client_id: str = parse_dotenv(sub_account) ['client_id']
+client_secret: str = parse_dotenv(sub_account) ['client_secret']
 
 @pytest.mark.asyncio
 async def test_get_user_trades_by_instrument():
