@@ -153,6 +153,10 @@ def provide_path_for_file (
     if  '.env' in end_point:        
         sub_folder = 'configuration'
             
+    if  'test.env' in end_point:        
+        sub_folder = 'src/configuration'
+        end_point = '.env'
+            
     file_name =  (f'{file_name}.pkl') if '.env' not in file_name else (f'{end_point}')
     
     # Combine root + folders

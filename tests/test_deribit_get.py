@@ -5,7 +5,8 @@ import pytest
                       
 def parse_dotenv(sub_account)->dict:    
     from src.configuration import config
-    return config.main_dotenv (sub_account)                                                         
+    return config.main_dotenv (sub_account,
+                               'test.env')                                                         
              
 sub_account: str = 'deribit-147691'
 client_id: str = parse_dotenv(sub_account) ['client_id']

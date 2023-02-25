@@ -52,7 +52,9 @@ class Read_Configuration:
     
         return parameters
 
-def main_dotenv (header: str = 'None')-> dict:    
+def main_dotenv (header: str = 'None', 
+                 filename: str = ".env"
+                 )-> dict:    
     
     """
     https://www.python-engineer.com/posts/run-python-github-actions/
@@ -64,7 +66,7 @@ def main_dotenv (header: str = 'None')-> dict:
     try: 
             
         # Set the filename
-        filename = ".env" 
+        #filename = ".env" 
         config_path = system_tools.provide_path_for_file (filename)
         
         # Create a Read_Configuration object
