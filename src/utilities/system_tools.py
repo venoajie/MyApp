@@ -153,6 +153,7 @@ def provide_path_for_file (
     if  '.env' in end_point:        
         sub_folder = 'configuration'
             
+    # to accomodate pytest env
     if  'test.env' in end_point:        
         sub_folder = 'src/configuration'
         end_point = '.env'
