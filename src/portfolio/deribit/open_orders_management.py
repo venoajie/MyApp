@@ -327,23 +327,6 @@ class MyOrders ():
                                                                         1000, 
                                                                         True
                                                                         )
-                        #result_example = [
-                        #    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 
-                        # 'replaced': False, 'reject_post_only': False, #'reduce_only': False, 'profit_loss': 0.0, 
-                        # 'price': 1547.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'filled', 
-                        # 'order_id': 'ETH-3249516850', 'mmp': False, 'max_show': 53.0, 'last_update_timestamp': 1673675558839, 
-                        # 'label': #'hedgingSpot-open-1673675540', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 
-                        # 'filled_amount': 53.0, 'direction': #'sell', 'creation_timestamp': 1673675541623, 'commission': 0.0, 
-                        # 'average_price': 1547.6, 'api': True, 'amount': 53.0}, 
-                    
-                        #    {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 
-                        # 'replaced': False, 'reject_post_only': False, #'reduce_only': False, 'profit_loss': 0.0, 
-                        # 'price': 1547.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 
-                        # 'order_id': 'ETH-3249516850', 'mmp': False, 'max_show': 53.0, 'last_update_timestamp': 1673675541623,
-                        # 'label': #'hedgingSpot-open-1673675540', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 
-                        # 'filled_amount': 0.0, 'direction': 'sell', #'creation_timestamp': 1673675541623, 'commission': 0.0, 
-                        # 'average_price': 0.0, 'api': True, 'amount': 53.0}
-                        #    ]
                         
                         if item_with_same_id != []:
 
