@@ -3,19 +3,20 @@ import src.deribit_get as get_dbt
 import asyncio
 import pytest
                       
-connection_url: str = 'https://www.deribit.com/api/v2/'
-sub_account = 'deribit-147691'
-    
 def parse_dotenv(sub_account)->dict:    
     from src.configuration import config
     return config.main_dotenv (sub_account)                                                         
              
+sub_account: str = 'deribit-147691'
 client_id: str = parse_dotenv(sub_account) ['client_id']
 client_secret: str = parse_dotenv(sub_account) ['client_secret']
 print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+print (parse_dotenv(sub_account))
 print (client_id)
 print (client_secret)
 
+connection_url: str = 'https://www.deribit.com/api/v2/'
+    
 @pytest.mark.asyncio
 async def test_get_user_trades_by_instrument():
     user_trades_by_instrument = await get_dbt.get_user_trades_by_instrument(connection_url,
@@ -37,7 +38,6 @@ async def test_get_open_orders_byInstruments():
     
     assert list(open_orders_byInstruments) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
-
 @pytest.mark.asyncio
 async def test_get_order_history_by_instrument():
     order_history_by_instrument = await (get_dbt.get_order_history_by_instrument(connection_url,
