@@ -1,4 +1,4 @@
-#from utils import time_modification
+from utils import time_modification
 from src.utilities import time_modification
 import datetime
 from datetime import datetime, timezone#, timedelta
@@ -15,9 +15,9 @@ expected_utc_date_time = str(
 actual_utc_date_time = str(time_modification.translate_current_local_date_time_to_utc())
 print (expected_utc_date_time)
 print (actual_utc_date_time)
-print (len(actual_utc_date_time))
-print (len(expected_utc_date_time))
-print(len(actual_utc_date_time) == len(expected_utc_date_time))
+print (datetime(actual_utc_date_time))
+print (datetime(expected_utc_date_time))
+print((actual_utc_date_time) == (expected_utc_date_time))
 
 def test_convert_time_to_unix  ():
     test_data_transaction_time1 = '2022-12-14 15:33:29.858518'
