@@ -12,6 +12,7 @@ def parse_dotenv(sub_account)->dict:
              
 client_id: str = parse_dotenv(sub_account) ['client_id']
 client_secret: str = parse_dotenv(sub_account) ['client_secret']
+print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
 print (client_id)
 print (client_secret)
 
