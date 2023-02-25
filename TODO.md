@@ -31,4 +31,4 @@ Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-app
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
-Python | [@jim19930609](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
+Python | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
