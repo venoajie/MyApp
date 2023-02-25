@@ -4,16 +4,11 @@ import asyncio
 import pytest
                       
 connection_url: str = 'https://www.deribit.com/api/v2/'
-
-def parse_dotenv()->dict:    
-    from src.utilities import system_tools
-    parse_env = system_tools.parse_dotenv ()
     
-    return {
-        'client_id': parse_env ['client_id'],
-        'client_secret': parse_env ['client_secret']
-        }                                                                
-                                                  
+def parse_dotenv(sub_account)->dict:    
+    from configuration import config
+    return config.main_dotenv (sub_account)                                                         
+                                                                                         
 client_id: str = parse_dotenv() ['client_id']
 client_secret: str = parse_dotenv() ['client_secret']
 
