@@ -34,6 +34,7 @@ def test_get_current_local_date_time  ():
     assert isinstance(result, datetime) 
     
 def test_translate_current_local_date_time_to_utc  ():
+    import pytest
     
     # https://stackoverflow.com/questions/46914222/how-can-i-assert-lists-equality-with-pytest
     
@@ -48,7 +49,8 @@ def test_translate_current_local_date_time_to_utc  ():
     actual_utc_date_time = str(time_modification.translate_current_local_date_time_to_utc())
 
     assert len(actual_utc_date_time) == len(expected_utc_date_time)
-    assert all([a == b for a, b in zip(actual_utc_date_time, expected_utc_date_time)])
+    assert (actual_utc_date_time) == pytest.approx (expected_utc_date_time)
+    #assert all([a == b for a, b in zip(actual_utc_date_time, expected_utc_date_time)])
         
 def test_time_delta_between_two_times  ():
 
