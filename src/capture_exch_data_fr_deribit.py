@@ -123,6 +123,7 @@ class StreamAccountData:
                 #log.warning (message)
                 if 'id' in list(message):
             
+            
                     if message['id'] == 9929:
                         
                         syn = apply_strategies. ApplyHedgingSpot (
@@ -131,7 +132,10 @@ class StreamAccountData:
                                                                 self.client_secret,
                                                                 currency
                                                                         )
-                        
+            
+                        server_time = await syn.current_server_time ()
+                        log.critical (server_time)
+                                    
                         if self.refresh_token is None:
                             await syn.get_sub_accounts(currency)
                             log.debug('Successfully authenticated WebSocket Connection')
@@ -142,7 +146,7 @@ class StreamAccountData:
                             await syn.get_sub_accounts(currency)
 
                             server_time = await syn.current_server_time ()
-                            log.critical (server_time)
+
                             await (syn.cancel_orders_hedging_spot_based_on_time_threshold(server_time, 
                                                                                           'hedgingSpot'
                                                                                           )
