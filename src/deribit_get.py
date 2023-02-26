@@ -82,13 +82,10 @@ class GetPrivateData ():
     client_secret: str
     currency: str
         
-    async def get_subaccounts (self):
+    async def parse_main (self,
+                          endpoint: str,
+                          params: dict):
             
-        # Set endpoint
-        endpoint: str = 'private/get_subaccounts_details'
-
-        params =  {"currency": self.currency,
-                "with_open_orders": True}
         
         result = await main(
                 endpoint=endpoint,
@@ -98,9 +95,21 @@ class GetPrivateData ():
                 client_secret=self.client_secret,
                 )
         
-        return result #['result']
-
+        return result 
+    
+    async def get_subaccounts (self):
             
+        # Set endpoint
+        endpoint: str = 'private/get_subaccounts_details'
+
+        params =  {"currency": self.currency,
+                "with_open_orders": True}
+        
+        await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                )
+
     async def get_account_summary (self):
             
         params =  {"currency": self.currency,
@@ -110,16 +119,39 @@ class GetPrivateData ():
         # Set endpoint
         endpoint: str = 'private/get_account_summary'
         
-        result = await main(
-                endpoint=endpoint,
-                params=params,
-                connection_url=self.connection_url,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                )
+        await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                )
         
-        return result #['result']
+            
+    async def get_positions (self):
+
+        # Set endpoint
+        endpoint: str = 'private/get_positions'
+            
+        params =  {"currency": self.currency}
+
+        await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                )
+
+
+    async def  get_open_orders_byCurrency (self)-> list:
         
+        params =  {
+                    "currency": self.currency
+                    }
+        
+        # Set endpoint
+        endpoint: str = f'private/get_open_orders_by_currency'
+
+        await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                )
+
 async def send_order  (connection_url: str,
                         client_id,
                         client_secret,
@@ -308,26 +340,6 @@ async def  get_open_orders_byInstruments (connection_url,
             )
     return result 
 
-async def  get_open_orders_byCurrency (connection_url, 
-                                       client_id, 
-                                       client_secret, 
-                                       currency: str
-                                       )-> list:
-    params =  {
-                "currency": currency
-                }
-    
-    # Set endpoint
-    endpoint_open_orders_currency: str = f'private/get_open_orders_by_currency'
-
-    result = await main(
-            endpoint=endpoint_open_orders_currency,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    return result 
 
 async def  get_user_trades_by_currency (connection_url, 
                                         client_id, 
@@ -456,25 +468,6 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             client_secret=client_secret,
             )
     return result     
-
-async def get_positions (connection_url: str, 
-                         client_id, 
-                         client_secret, 
-                         currency):
-
-    # Set endpoint
-    endpoint: str = 'private/get_positions'
-        
-    params =  {"currency": currency}
-
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    return result #['result']
 
 async def  get_server_time (connection_url: str):
 

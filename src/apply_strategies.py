@@ -69,16 +69,7 @@ class ApplyHedgingSpot ():
         try:
             private_data = await self. get_private_data()
             result: dict =  await private_data.get_subaccounts()
-            
-            result_sub_account =  result ['result'] 
-            my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
-                                                                      self.currency
-                                                                      )
-            pickling.replace_data(my_path_sub_account, 
-                                  result_sub_account
-                                  )
-            
-            return result_sub_account
+            return result ['result'] 
     
         except Exception as error:
             catch_error (error)
@@ -103,11 +94,9 @@ class ApplyHedgingSpot ():
     async def get_open_orders_from_exchange (self) -> list:
         """
         """
-        open_ordersREST: list = await deribit_get.get_open_orders_byCurrency (self.connection_url, 
-                                                                              self.client_id, 
-                                                                              self.client_secret, 
-                                                                              self.currency
-                                                                              )                        
+    
+        private_data = await self. get_private_data()
+        open_ordersREST: dict =  await private_data.get_open_orders_byCurrency()         
         return open_ordersREST ['result']
         
     async def open_orders_from_exchange (self) -> object:
@@ -216,13 +205,11 @@ class ApplyHedgingSpot ():
     async def get_positions (self) -> list:
         """
         """
-            
-        result: dict =  await deribit_get.get_positions (self.connection_url, 
-                                                         self.client_id,
-                                                         self.client_secret, 
-                                                         self.currency
-                                                         )
-        log.error(result)
+        
+        private_data = await self. get_private_data()
+
+        result: dict =  await private_data.get_positions()
+        
         return result ['result'] 
     
     async def send_orders (self, 
@@ -1001,7 +988,14 @@ async def main ():
         server_time = await syn.current_server_time ()
         
         # resupply sub account db
-        await syn.get_sub_accounts()
+        sub_accounts = await syn.get_sub_accounts()
+    
+        my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
+                                                                    currency
+                                                                    )
+        pickling.replace_data(my_path_sub_account, 
+                                sub_accounts
+                                )
         
         # execute strategy
         await syn.running_strategy (server_time)
