@@ -601,9 +601,13 @@ class ApplyHedgingSpot ():
                 for instrument in instrument_transactions:
 
                     log.critical (f'{instrument}') 
+                    ticker = await self.reading_from_db ('ticker', 
+                                                         instrument
+                                                         )
                     reading_from_database_instrument = await self.reading_from_database (instrument)
                     ticker = reading_from_database_instrument ['ticker'] 
-                    #market_price = await self.market_price (instrument) 
+                    log.critical (f'{reading_from_database_instrument}') 
+                    log.debug (f'{ticker}') 
                     
                     # get bid and ask price
                     best_bid_prc= ticker [0]['best_bid_price']
