@@ -236,17 +236,10 @@ class ApplyHedgingSpot ():
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
-        path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', 
-                                                                         f'{(self.currency).upper()}-PERPETUAL'
-                                                                         ) 
         
         path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', 
                                                                          self.currency
                                                                          ) 
-        
-        path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', 
-                                                                    self.currency
-                                                                    ) 
             
         path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', 
                                                                      self.currency
@@ -446,15 +439,11 @@ class ApplyHedgingSpot ():
                                             open_orders_from_sub_account_get
                                            ) -> None:
 
-        #open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-
         log.warning (open_orders_open_byAPI)
         log.critical (open_orders_from_sub_account_get)
         open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
         orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
         
-        #log.info (f"{open_orders_from_sub_account_get=}")
-        #log.info (f"{open_orders_open_byAPI=}")
         log.info (f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
@@ -485,9 +474,6 @@ class ApplyHedgingSpot ():
         
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db ['time_stamp_to_recover']
-        #log.critical (positions_from_get)
-       # log.info (my_trades_open_from_db)
-        log.critical (start_timestamp)
         
         my_selected_trades_open_from_system =[]
         if start_timestamp:
@@ -497,7 +483,6 @@ class ApplyHedgingSpot ():
                                                                                         start_timestamp, 
                                                                                          server_time
                                                                                          )
-        #    log.warning (my_selected_trades_open_from_system)
         
         await check_data_integrity.main_enforce_my_trade_db_integrity (
                                                                         self.currency,
@@ -505,8 +490,7 @@ class ApplyHedgingSpot ():
                                                                         my_trades_open_from_db,
                                                                         my_selected_trades_open_from_system
                                                                         )
-        
-            
+                    
     async def running_strategy (self, 
                                 server_time
                                 ) -> float:
@@ -557,14 +541,15 @@ class ApplyHedgingSpot ():
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
                 futs_analysis = reading_from_database ['path_futures_analysis'] 
-                #log.warning (futs_analysis)
+                log.warning (futs_analysis)
+
+                futs_analysis = await self.reading_from_db ('futures_analysis', 
+                                                            self.currenc
+                                                            )
+                log.warning (futs_analysis)
 
                 # instruments future
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
-                
-                # obtain instruments future with rebates
-                #rebates = await self.get_instruments_with_rebates (instruments, server_time)
-                #rebates = rebates ['instruments_with_rebates_weekly_longest_exp'][0]
 
                 # obtain instruments future relevant to strategies
                 #instrument_transactions = [o['instrument_name'] for o in instruments_future \
