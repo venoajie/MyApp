@@ -113,10 +113,9 @@ class ApplyHedgingSpot ():
         """
         basis to recover data
         """
-        trades: list = await deribit_get.get_user_trades_by_currency_and_time (self.connection_url, 
-                                                                               self.client_id, 
-                                                                               self.client_secret, 
-                                                                              self.currency, 
+        
+        private_data = await self. get_private_data()
+        trades: dict =  await private_data.get_user_trades_by_currency_and_time( 
                                                                                start_timestamp,
                                                                                end_timestamp
                                                                                )     
