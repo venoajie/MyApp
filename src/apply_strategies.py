@@ -65,7 +65,7 @@ class ApplyHedgingSpot ():
         """
         
         try:
-            result = await self. get_private_data().get_subaccounts ()
+            result = await self. get_private_data()#.get_subaccounts ()
             log.critical(result)
             result: dict =  await deribit_get.get_subaccounts (
                                                                 self.connection_url, 
