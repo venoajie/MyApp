@@ -368,33 +368,6 @@ class ApplyHedgingSpot ():
             log.warning (position)
             position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
         return position
-                
-    async def market_price (self, 
-                            instrument: str
-                            ) -> dict:
-        """
-        """
-
-        ordBook = await self.reading_from_database (instrument)
-        log.debug (ordBook)
-        ordBook = await self.reading_from_db ('ordBook',
-                                              instrument)
-        log.debug (ordBook)
-        ordBook = ordBook ['ordBook']
-        
-        if ordBook :
-                
-            max_time_stamp_ordBook = max (
-                                        [
-                                            o['timestamp'] for o in ordBook 
-                                            ]
-                                        )
-            
-            most_current_ordBook = [o for o in ordBook if o['timestamp'] == max_time_stamp_ordBook ]
-            
-            return {'best_bid_prc': most_current_ordBook[0]['bids'][0][0],
-                    'best_ask_prc':  most_current_ordBook[0]['asks'][0][0]
-                    }
     
     async def current_server_time (self) -> float:
         """
