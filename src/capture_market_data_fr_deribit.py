@@ -191,7 +191,7 @@ class StreamMarketData:
                             try:
                                 await self.distribute_ticker_result_as_per_data_type (my_path_ticker,
                                                                                       data_orders,
-                                                                                      instrument
+                                                                                      instrument_ticker
                                                                                       )
                                   
                         
