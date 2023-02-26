@@ -368,7 +368,7 @@ class ApplyHedgingSpot ():
             log.warning (position)
             position  = [o for o in positions if o['instrument_name'] == instrument]  [0]
         return position
-    
+                
     async def current_server_time (self) -> float:
         """
         """
@@ -601,13 +601,15 @@ class ApplyHedgingSpot ():
                 for instrument in instrument_transactions:
 
                     log.critical (f'{instrument}') 
+                    
                     ticker = await self.reading_from_db ('ticker', 
                                                          instrument
                                                          )
+                    log.critical (f'AAAAAAAAAAAA {ticker}') 
                     reading_from_database_instrument = await self.reading_from_database (instrument)
                     ticker = reading_from_database_instrument ['ticker'] 
-                    log.critical (f'{reading_from_database_instrument}') 
-                    log.debug (f'{ticker}') 
+                    log.debug (f'BBBBBBBBBB {ticker}') 
+                    #market_price = await self.market_price (instrument) 
                     
                     # get bid and ask price
                     best_bid_prc= ticker [0]['best_bid_price']
