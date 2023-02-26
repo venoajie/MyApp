@@ -194,6 +194,7 @@ class StreamMarketData:
                                     log.debug(data_orders)
                                     log.critical(my_path_ticker)
                                     log.error(pickling.read_data(my_path_ticker) )
+                                    
                                 if data_orders['type'] == 'snapshot':
                                     log.critical(data_orders)
 
@@ -233,20 +234,15 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
-                                if 'PERPETUAL' in instrument_ticker:
-                                    log.error(tickers)
                                 ticker_all: list = pickling.read_data(my_path_futures_analysis)
-                                if 'PERPETUAL' in instrument_ticker:
-                                    log.warning(ticker_all)
+                                    
                                 if ticker_all == None:
                                     pickling.replace_data(my_path_futures_analysis, 
                                                         ticker_all
                                                         ) 
                                 else:
                                     ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
-                                    
-                                    if 'PERPETUAL' in instrument_ticker:
-                                        log.debug(ticker_all)
+                                        
                                     #! double file operation. could be further improved
                                     pickling.replace_data(my_path_futures_analysis, 
                                                         ticker_all
