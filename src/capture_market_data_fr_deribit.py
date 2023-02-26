@@ -286,11 +286,8 @@ class StreamMarketData:
         
         try:
             log.critical(instrument.upper())
-            if 'PERPETUAL' in instrument:
-                #log.debug(data_orders)
-                #log.critical(my_path_ticker)
-                log.error(f'read {pickling.read_data(my_path_ticker)}' )
-                log.info(f' order {data_orders}')
+            log.error(f'read {pickling.read_data(my_path_ticker)}' )
+            log.info(f' order {data_orders}')
                 
             if data_orders['type'] == 'snapshot':
 
