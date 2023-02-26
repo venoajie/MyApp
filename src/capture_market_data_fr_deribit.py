@@ -189,9 +189,10 @@ class StreamMarketData:
                             
                             
                             try:
-                                log.debug(data_orders)
-                                log.critical(my_path_ticker)
-                                log.error(pickling.read_data(my_path_ticker) )
+                                if 'PERPETUAL' in instrument_ticker:
+                                    log.debug(data_orders)
+                                    log.critical(my_path_ticker)
+                                    log.error(pickling.read_data(my_path_ticker) )
                                 if data_orders['type'] == 'snapshot':
                                     log.critical(data_orders)
 
@@ -205,10 +206,12 @@ class StreamMarketData:
                                 else:
                                     # updating ticker with the change
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    log.error(ticker_fr_snapshot)
+                                    if 'PERPETUAL' in instrument_ticker:
+                                        log.error(ticker_fr_snapshot)
                                     
                                     for item in data_orders:
-                                        log.critical(item)
+                                        if 'PERPETUAL' in instrument_ticker:
+                                            log.critical(item)
                                             
                                         ticker_fr_snapshot [0][item] = data_orders [item]
                                     
@@ -228,9 +231,11 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
-                                log.error(tickers)
+                                if 'PERPETUAL' in instrument_ticker:
+                                    log.error(tickers)
                                 ticker_all: list = pickling.read_data(my_path_futures_analysis)
-                                log.warning(ticker_all)
+                                if 'PERPETUAL' in instrument_ticker:
+                                    log.warning(ticker_all)
                                 if ticker_all == None:
                                     pickling.replace_data(my_path_futures_analysis, 
                                                         ticker_all
@@ -238,7 +243,8 @@ class StreamMarketData:
                                 else:
                                     ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
                                     
-                                    log.debug(ticker_all)
+                                    if 'PERPETUAL' in instrument_ticker:
+                                        log.debug(ticker_all)
                                     #! double file operation. could be further improved
                                     pickling.replace_data(my_path_futures_analysis, 
                                                         ticker_all
