@@ -25,6 +25,7 @@
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
 Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
+Asyncio |- https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3 | Ideal situation for asyncio | | 
 
 
 - Technical Analysis  
