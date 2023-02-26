@@ -23,10 +23,14 @@ async def telegram_bot_sendtext (bot_message,
     return await deribit_get.telegram_bot_sendtext (bot_message,
                                  purpose
                                  )
-def catch_error (error, idle: int = None) -> list:
+def catch_error (error, 
+                 idle: int = None
+                 ) -> list:
     """
     """
-    system_tools.catch_error_message(error, idle)
+    system_tools.catch_error_message(error, 
+                                     idle
+                                     )
 
     
 def parse_dotenv(sub_account)->dict:    
@@ -56,27 +60,28 @@ class ApplyHedgingSpot ():
                                                self.currency
                                                )
         except Exception as error:
-            log.warning (error)
+            catch_error (error)
         
     async def get_sub_accounts(self) -> list:
         """
         """
         
         try:
-            private_data = await self. get_private_data()#.get_subaccounts ()
-            log.critical(private_data)
+            private_data = await self. get_private_data()
             result: dict =  await private_data.get_subaccounts()
+            
             result_sub_account =  result ['result'] 
             my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
-                                                                      currency
+                                                                      self.currency
                                                                       )
             pickling.replace_data(my_path_sub_account, 
                                   result_sub_account
                                   )
+            
             return result_sub_account
     
         except Exception as error:
-            log.warning (error)
+            catch_error (error)
             
     async def net_position (self, 
                       selected_transactions: list
@@ -198,15 +203,22 @@ class ApplyHedgingSpot ():
         return [] if order_history ==[] else order_history ['result']
         
         
-    async def get_account_summary (self, currency: str) -> list:
+    async def get_account_summary (self) -> list:
         """
         """
         account_summary: list = await deribit_get.get_account_summary (self.connection_url, 
                                                                        self.client_id, 
                                                                        self.client_secret, 
-                                                                       currency
+                                                                       self.currency
                                                                        )
                         
+        log.error (account_summary)
+    
+        private_data = await self. get_private_data()
+
+        result: dict =  await private_data.get_account_summary()
+        log.debug (result)
+            
         return account_summary ['result']
     
     async def get_positions (self) -> list:
@@ -350,6 +362,11 @@ class ApplyHedgingSpot ():
         #log.error (open_order)
         none_data = [None, [], 0]
         
+        #! #########################################################
+        portfolio = await self.get_account_summary()
+        print (portfolio)
+        #! #########################################################
+        
         # at start, usually position == None
         if positions in none_data:
             positions = positions_from_sub_account#await self.get_positions ()
@@ -357,7 +374,7 @@ class ApplyHedgingSpot ():
             
         #log.debug (my_trades_open)
         if portfolio in none_data:
-            portfolio = await self.get_account_summary(self.currency)
+            portfolio = await self.get_account_summary()
             pickling.replace_data (path_portfolio, portfolio) 
             portfolio = pickling.read_data(path_portfolio)       
         
@@ -379,7 +396,10 @@ class ApplyHedgingSpot ():
                 'price_index': ticker_perpetual[0],
                 'instruments': pickling.read_data (path_instruments)}
     
-    async def position_per_instrument (self, positions, instrument: str) -> list:
+    async def position_per_instrument (self, 
+                                       positions, 
+                                       instrument: str
+                                       ) -> list:
         """
         """
         try:

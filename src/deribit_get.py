@@ -100,6 +100,25 @@ class GetPrivateData ():
         
         return result #['result']
 
+            
+    async def get_account_summary (self):
+            
+        params =  {"currency": self.currency,
+                   "extended": True
+                   }
+
+        # Set endpoint
+        endpoint: str = 'private/get_account_summary'
+        
+        result = await main(
+                endpoint=endpoint,
+                params=params,
+                connection_url=self.connection_url,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                )
+        
+        return result #['result']
         
 async def send_order  (connection_url: str,
                         client_id,

@@ -137,13 +137,13 @@ class StreamAccountData:
                         log.critical (server_time)
                                     
                         if self.refresh_token is None:
-                            await syn.get_sub_accounts(currency)
+                            await syn.get_sub_accounts()
                             log.debug('Successfully authenticated WebSocket Connection')
                             
                         else:
                             
                              # resupply sub account db
-                            await syn.get_sub_accounts(currency)
+                            await syn.get_sub_accounts()
 
                             server_time = await syn.current_server_time ()
 
@@ -207,7 +207,7 @@ class StreamAccountData:
                                                       positions
                                                       )
                                 
-                        await syn.get_sub_accounts(currency)       
+                        await syn.get_sub_accounts()       
                                                                        
             else:
                 log.info('WebSocket connection has broken.')
