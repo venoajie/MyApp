@@ -72,8 +72,8 @@ async def myTrades_originally_from_db (currency) -> list:
 class CheckTradeIntegrity ():
 
     '''
-    Sometimes the trading transactions were recorded improperly, and should be fixed.
-    How we know if the records in DB were wrong? If the net positions fetched from exchange <> DB net size
+    Check whether record in db summary from get = db from transactions 
+    Fixing the db from transactions record if their amount <> record ind db summary from get
     '''       
     currency: str 
     positions_from_get: list
@@ -197,12 +197,6 @@ async def main_enforce_my_trade_db_integrity (
 
     '''
     '''       
-    #log.critical (len(my_trades_open_from_db))
-    #log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-   # log.warning (my_trades_open_from_db)
-    #my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open_from_db)     
-    #my_trades_open_mgt.distribute_trade_transaction (currency)
-    #log.critical ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
             
     trade_integrity =  CheckTradeIntegrity (currency,
                                            positions_from_get,
