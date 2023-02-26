@@ -389,12 +389,12 @@ class ApplyHedgingSpot ():
             
     async def check_open_orders_integrity (
                                             self, 
-                                            open_orders_open_byAPI,
-                                            open_orders_from_sub_account_get
+                                            open_orders_from_sub_account_get,
+                                            open_orders_open_byAPI
                                            ) -> None:
 
-        log.warning (open_orders_open_byAPI)
-        log.critical (open_orders_from_sub_account_get)
+        #log.warning (open_orders_open_byAPI)
+        #log.critical (open_orders_from_sub_account_get)
         open_order_mgt_sub_account = open_orders_management.MyOrders (open_orders_from_sub_account_get)
         orders_per_db_equivalent_orders_fr_sub_account =  open_order_mgt_sub_account.compare_open_order_per_db_vs_get(open_orders_open_byAPI)
         
@@ -411,18 +411,29 @@ class ApplyHedgingSpot ():
                                    open_orders_from_sub_account_get,
                                    True
                                    )
-                        
-                       
+                                      
             catch_error ('update open order at db with open orders at sub account', 
                          idle = .1
                          ) 
        
     async def check_myTrade_integrity (
                                         self, 
-                                        positions_from_get, 
-                                        my_trades_open_from_db, 
-                                        server_time
+                                        positions_from_get: float, 
+                                        my_trades_open_from_db: list, 
+                                        server_time: int
                                         ) -> None:
+        
+        '''
+        Ensure record in db summary from get = db from transactions 
+        
+        Args:
+            positions_from_get (float): Total outstanding position
+            my_trades_open_from_db (list): List of active trading positions
+            server_time (int): Server time from exchange in UNIX format
+            
+        Returns:
+            None:
+        '''
                     
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db (self.currency)
         
@@ -455,10 +466,12 @@ class ApplyHedgingSpot ():
 
         #! fetch data ALL from db
         try:
+            
+            # gather basic data
+            #!############################# gathering basic data ######################################
 
             reading_from_database: dict = await self.reading_from_database ()
             
-            #!
             # portfolio data
             portfolio: list = reading_from_database ['portfolio']
             #log.warning (portfolio)
@@ -469,12 +482,13 @@ class ApplyHedgingSpot ():
             # index price
             index_price: float= reading_from_database ['index_price']
             #log.critical (index_price)
-                    
+
             # compute notional value
             notional: float =  await self.compute_notional_value (index_price, 
                                                                   equity
                                                                   )
                                
+            # to avoid error if index price/portfolio = []/None
             if  index_price and portfolio :                
                 
                 one_minute: int = 60000 # one minute in millisecond
@@ -510,8 +524,22 @@ class ApplyHedgingSpot ():
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
                 open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
-                #log.debug (open_orders_filled_byAPI)
-                # prepare open order manipulation
+
+                #!################################## end of gathering basic data #####################################
+                
+                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
+                # open order integrity
+                await self.check_open_orders_integrity (open_orders_from_sub_account_get,
+                                                        open_orders_open_byAPI                                                        
+                                                        )
+
+                # open trade integrity
+                await self.check_myTrade_integrity (positions,
+                                                    my_trades_open, 
+                                                    server_time
+                                                    )
+                
+                # prepare open order class object
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
 
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
@@ -520,15 +548,6 @@ class ApplyHedgingSpot ():
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status ('filled')
                 
                 #log.info (my_trades_open)
-                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
-                await self.check_open_orders_integrity (open_orders_open_byAPI,
-                                                        open_orders_from_sub_account_get
-                                                        )
-
-                await self.check_myTrade_integrity (positions,
-                                                    my_trades_open, 
-                                                    server_time
-                                                    )
                 my_trades_open: list = reading_from_database ['my_trades_open']
                 
                 for instrument in instrument_transactions:
@@ -541,8 +560,6 @@ class ApplyHedgingSpot ():
                     # get bid and ask price
                     best_bid_prc= ticker [0]['best_bid_price']
                     best_ask_prc= ticker [0] ['best_ask_price']
-                                        
-                    notional =  await self.compute_notional_value (index_price, equity)
     
                     #! get instrument detaila
                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
@@ -557,8 +574,7 @@ class ApplyHedgingSpot ():
                     log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
                     my_orders_from_exchange = await self.get_open_orders_from_exchange()
                     log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
-
-                                        
+                    
                     # fetch strategies 
                     strategies = entries_exits.strategies
             
@@ -574,7 +590,6 @@ class ApplyHedgingSpot ():
                         label:str = strategy ['strategy']
                         label_numbered: str = label_numbering.labelling ('open', label)
                         label_closed:str = f'{label}-closed'
-                        #
 
                         net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label_items_net (label_numbered)
                         log.warning (f'net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}') 
@@ -584,7 +599,7 @@ class ApplyHedgingSpot ():
                         #log.debug (f'open_order_mgt  {open_order_mgt}') 
                         log.error (f'net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}') 
                     
-                                        # create my order mgt template based on strategies
+                        # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.open_orders_api_basedOn_label (label)
                         #log.warning (my_orders_api_basedOn_label_strategy)
                         
