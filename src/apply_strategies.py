@@ -107,9 +107,9 @@ class ApplyHedgingSpot ():
         return open_orders_management.MyOrders (open_ordersREST)
         
     async def my_trades_time_constrained (self, 
-                         start_timestamp: int, 
-                         end_timestamp: int
-                         ) -> list:
+                                        start_timestamp: int, 
+                                        end_timestamp: int
+                                        ) -> list:
         """
         basis to recover data
         """
@@ -138,7 +138,9 @@ class ApplyHedgingSpot ():
             
         return result
     
-    async def get_my_trades_from_exchange (self, count: int = 1000) -> list:
+    async def get_my_trades_from_exchange (self, 
+                                           count: int = 1000
+                                           ) -> list:
         """
         """
         trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
@@ -149,47 +151,6 @@ class ApplyHedgingSpot ():
                                                                       )
                         
         return [] if trades == [] else trades ['result'] ['trades']
-        
-    async def check_my_orders_consistency (self, 
-                                           my_orders_from_db: list, 
-                                           server_time: int
-                                           ) -> list:
-        """
-        """
-        from utilities import string_modification
-        
-        if my_orders_from_db:
-            # get the earliest transaction time stamp
-            my_orders_from_db_min_time_stamp = min ([o['creation_timestamp'] for o in my_orders_from_db ])
-            
-            #! why trade?
-            # use the earliest time stamp to fetch data from exchange
-            fetch_my_orders_from_system_from_min_time_stamp_to_now = await self.my_trades_time_constrained (my_orders_from_db_min_time_stamp, 
-                                                                                                            server_time
-                                                                                                            )
-            
-            # compare data from exchanges. Pick only those have not recorded at system yet
-            filtered_data_from_ = string_modification.find_unique_elements (fetch_my_orders_from_system_from_min_time_stamp_to_now, 
-                                                                                                my_orders_from_db
-                                                                                                )
-            # redistribute the filtered data into db
-            myorders = open_orders_management.MyOrders (filtered_data_from_)
-            
-            myorders.distribute_order_transactions (self.currency)
-        else:
-            myorders = open_orders_management.MyOrders ([])
-            await myorders.distribute_order_transactions (self.currency)
-        
-    async def get_order_history_by_instrument (self, instrument: str, count: str = 1000) -> list:
-        """
-        """
-        order_history: list = await deribit_get.get_order_history_by_instrument (self.connection_url, 
-                                                                               self.client_id, 
-                                                                               self.client_secret, 
-                                                                               instrument,
-                                                                               count)                
-        return [] if order_history ==[] else order_history ['result']
-        
         
     async def get_account_summary (self) -> list:
         """
@@ -261,32 +222,44 @@ class ApplyHedgingSpot ():
         """
         return index_price * equity  
     
+    async def reading_from_db (self, 
+                               end_point,
+                               instrument: str = None
+                               ) -> float:
+        """
+        """
+        return pickling.read_data (system_tools.provide_path_for_file (end_point,
+                                                                       instrument
+                                                                       ) 
+                                   )
+                
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
-        path_ordBook: str = system_tools.provide_path_for_file ('ordBook',
-                                                                instrument
-                                                                ) 
         path_ticker: str = system_tools.provide_path_for_file ('ticker', 
                                                                instrument
                                                                ) 
         path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', 
                                                                          f'{(self.currency).upper()}-PERPETUAL'
                                                                          ) 
+        
         path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', 
                                                                          self.currency
                                                                          ) 
+        
         path_price_index: str = system_tools.provide_path_for_file ('futures_analysis', 
                                                                     self.currency
                                                                     ) 
             
         path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', 
                                                                      self.currency
-                                                                     )               
+                                                                     )  
+                     
         path_trades_open: str = system_tools.provide_path_for_file ('myTrades', 
                                                                     self.currency, 
                                                                     'open'
-                                                                    )               
+                                                                    )   
+                    
         my_trades_open: str = pickling.read_data(path_trades_open)           
 #        log.error (my_trades_open)    
         my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', 
@@ -295,12 +268,12 @@ class ApplyHedgingSpot ():
                                                                          )
         
         my_trades_closed: str = pickling.read_data(my_trades_path_closed)           
-        #log.warning (my_trades_closed)  
         
         path_orders_open: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
                                                                     'open'
                                                                     )
+        
         path_orders_else: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
                                                                     'else'
@@ -308,7 +281,9 @@ class ApplyHedgingSpot ():
         
         path_orders_closed: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
-                                                                      'closed')
+                                                                      'closed'
+                                                                      )
+        
         path_orders_filled: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
                                                                       'filled'
@@ -328,9 +303,13 @@ class ApplyHedgingSpot ():
                                                               )  
         ticker_perpetual: list = pickling.read_data(path_ticker_perpetual)
         symbol_index: str = f'{self.currency}_usd'
-        path_index: str = system_tools.provide_path_for_file ('index',  symbol_index)  
+        path_index: str = system_tools.provide_path_for_file ('index', 
+                                                              symbol_index
+                                                              )  
         index_price: list = pickling.read_data(path_index)
-        path_positions: str = system_tools.provide_path_for_file ('positions', self.currency) 
+        path_positions: str = system_tools.provide_path_for_file ('positions', 
+                                                                  self.currency
+                                                                  ) 
         positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
         positions_from_sub_account = sub_account [0] ['positions']
@@ -361,7 +340,6 @@ class ApplyHedgingSpot ():
                 'positions_from_sub_account': positions_from_sub_account,
                 'open_orders_from_sub_account': open_orders_from_sub_account,
                 'portfolio': portfolio,
-                'ordBook': pickling.read_data(path_ordBook),
                 'ticker': pickling.read_data(path_ticker),
                 'path_futures_analysis': pickling.read_data(path_futures_analysis),
                 'index_price': index_price [0]['price'],
@@ -398,10 +376,11 @@ class ApplyHedgingSpot ():
         """
 
         ordBook = await self.reading_from_database (instrument)
+        log.debug (ordBook)
+        ordBook = await self.reading_from_db ('ordBook',
+                                              instrument)
+        log.debug (ordBook)
         ordBook = ordBook ['ordBook']
-        
-        best_bid_prc = []
-        best_ask_prc = []
         
         if ordBook :
                 
@@ -489,7 +468,7 @@ class ApplyHedgingSpot ():
                                                         self.client_secret, 
                                                         open_order_id
                                                       )  
-
+            
     async def check_open_orders_integrity (
                                             self, 
                                             open_orders_open_byAPI,
@@ -793,12 +772,7 @@ class ApplyHedgingSpot ():
                         #log.warning ('hedgingSpot' in strategy['strategy'])
                             
                         if 'hedgingSpot' in strategy['strategy']:
-                                                
-                            if net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db != 0:
-                                await self.check_my_orders_consistency (my_orders_from_exchange, server_time)
-                                
-                                log.debug(f'{net_open_orders_open_byAPI_system=} {net_open_orders_open_byAPI_system - net_open_orders_open_byAPI_db =}')
-                        
+                            
                             if open_order_mgt_filed_status_filed != []: 
                                 open_order_filled_latest_timeStamp = max([o['last_update_timestamp'] for o in open_order_mgt_filed_status_filed] )
                                 filled_order_deltaTime: int = server_time - open_order_filled_latest_timeStamp  
