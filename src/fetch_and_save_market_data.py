@@ -84,17 +84,29 @@ def check_and_save_every_5_minutes ():
     try:
         # https://towardsdatascience.com/understand-async-await-with-asyncio-for-asynchronous-programming-in-python-e0bc4d25808e       
         open_interest_historical = market_data. open_interest_historical ()
-        my_path = system_tools.provide_path_for_file ('openInterestHistorical', currency.lower()) 
-        pickling.replace_data(my_path, open_interest_historical)
+        my_path = system_tools.provide_path_for_file ('openInterestHistorical', 
+                                                      currency.lower()
+                                                      ) 
+        pickling.replace_data(my_path, 
+                              open_interest_historical
+                              )
         
         open_interest_symbol = market_data. open_interest_symbol ()
         file_name =(f'{currency.lower()}-openInterestSymbol.pkl')
-        my_path = system_tools.provide_path_for_file ('openInterestHistorical', currency.lower())
-        pickling.replace_data(my_path, open_interest_symbol)
+        my_path = system_tools.provide_path_for_file ('openInterestHistorical', 
+                                                      currency.lower()
+                                                      )
+        pickling.replace_data(my_path, 
+                              open_interest_symbol
+                              )
         
         open_interest_aggregated_ohlc = market_data. open_interest_aggregated_ohlc ()
-        my_path = system_tools.provide_path_for_file ('openInterestAggregated', currency.lower())
-        pickling.replace_data(my_path, open_interest_aggregated_ohlc)
+        my_path = system_tools.provide_path_for_file ('openInterestAggregated',
+                                                      currency.lower()
+                                                      )
+        pickling.replace_data(my_path, 
+                              open_interest_aggregated_ohlc
+                              )
         
     except Exception as error:
         catch_error (error)
@@ -111,6 +123,3 @@ if __name__ == "__main__":
 
     except Exception as error:
         catch_error (error, 10)
-        
-        #formula.log_error('open interest','open interest main', error, 10)
-        
