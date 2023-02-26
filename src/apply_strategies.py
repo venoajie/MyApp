@@ -52,7 +52,8 @@ class ApplyHedgingSpot ():
             
             return deribit_get.GetPrivateData (self.connection_url, 
                                                self.client_id,
-                                               self.client_secret
+                                               self.client_secret,
+                                               self.currency
                                                )
         except Exception as error:
             log.warning (error)
@@ -64,7 +65,7 @@ class ApplyHedgingSpot ():
         """
         
         try:
-            result = await self. get_private_data(self.currency).get_subaccounts ()
+            result = await self. get_private_data().get_subaccounts ()
             log.critical(result)
             result: dict =  await deribit_get.get_subaccounts (
                                                                 self.connection_url, 
