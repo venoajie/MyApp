@@ -186,9 +186,6 @@ class StreamMarketData:
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  
                                                                                  instrument_ticker
                                                                                  ) 
-                            log.info(f' my_path_ticker {my_path_ticker}')
-                            
-                            
                             try:
                                 await self.distribute_ticker_result_as_per_data_type (my_path_ticker,
                                                                                       data_orders,
@@ -286,12 +283,8 @@ class StreamMarketData:
         
         
         try:
-            log.critical(instrument.upper())
+
             ticker: list = pickling.read_data(my_path_ticker)
-            log.error(f'ticker_fr_snapshot AAA {ticker}' )
-            log.error(f'read {pickling.read_data(my_path_ticker)}' )
-            log.info(f' order {data_orders}')
-            log.info(f' my_path_ticker {my_path_ticker}')
                 
             if data_orders['type'] == 'snapshot':
 
@@ -300,25 +293,18 @@ class StreamMarketData:
                                       )
                 
                 ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
-                log.warning(f'ticker_fr_snapshot BBBB {ticker_fr_snapshot}' )
                 
             else:
                 ticker_change: list = pickling.read_data(my_path_ticker)
-                log.error(f'ticker_fr_snapshot 1 {ticker_change}' )
-                log.info(f' my_path_ticker {my_path_ticker}')
-                
-                for item in data_orders:
-                        
-                    ticker_change [0][item] = data_orders [item]
-                    log.info(f'data_orders ITEM {data_orders [item]}' )
-                
-                    pickling.replace_data(my_path_ticker, 
-                                          ticker_change
-                                          )              
-
-                ticker: list = pickling.read_data(my_path_ticker)
-                log.error(f'ticker_fr_snapshot 2 {ticker}' )
-                
+                if ticker_change != []:
+                    log.debug (ticker_change)
+                    
+                    for item in data_orders:
+                            
+                        ticker_change [0][item] = data_orders [item]
+                        pickling.replace_data(my_path_ticker, 
+                                            ticker_change
+                                            )    
         except Exception as error:
             system_tools.catch_error_message (
                                 error,
