@@ -189,12 +189,10 @@ class StreamMarketData:
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
-                                    log.error(data_orders)
 
                                     pickling.replace_data(my_path_ticker, data_orders)
                                     
                                 else:
-                                    log.warning(data_orders)
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
                                     
                                     for item in data_orders:
@@ -233,7 +231,11 @@ class StreamMarketData:
                                 
                                 #log.critical (ticker_all) 
                                         
-                            except:
+                            except Exception as error:
+                                system_tools.catch_error_message (
+                                                  error,
+                                                  'WebSocket connection - failed to process data'
+                                                  )
                                 continue        
                         
                         #! freezed        
