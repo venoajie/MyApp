@@ -298,15 +298,15 @@ class StreamMarketData:
                 
             else:
                 ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                
+            
+                if 'PERPETUAL' in instrument:
+                    log.critical(ticker_fr_snapshot)
+                    
                 for item in data_orders:
-                    if 'PERPETUAL' in instrument:
-                        log.critical(item)
                         
                     ticker_fr_snapshot [0][item] = data_orders [item]
                 
                     pickling.replace_data(my_path_ticker, ticker_fr_snapshot)              
-            
 
         except Exception as error:
             system_tools.catch_error_message (
