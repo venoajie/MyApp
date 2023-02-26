@@ -186,6 +186,7 @@ class StreamMarketData:
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  
                                                                                  instrument_ticker
                                                                                  ) 
+                            log.info(f' my_path_ticker {my_path_ticker}')
                             
                             
                             try:
