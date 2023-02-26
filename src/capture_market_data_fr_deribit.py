@@ -214,10 +214,11 @@ class StreamMarketData:
                                 tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
                                                                                                   instrument, 
                                                                                                   ticker_instrument[0])
+                                log.error(tickers)
                                 ticker_all: list = pickling.read_data(my_path_futures_analysis)
                                 ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
                                 
-                                log.error(tickers)
+                                log.error(ticker_all)
                                 #! double file operation. could be further improved
                                 pickling.replace_data(my_path_futures_analysis, 
                                                       ticker_all
