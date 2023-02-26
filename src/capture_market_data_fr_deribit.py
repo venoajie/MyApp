@@ -290,24 +290,30 @@ class StreamMarketData:
             log.error(f'ticker_fr_snapshot AAA {ticker}' )
             log.error(f'read {pickling.read_data(my_path_ticker)}' )
             log.info(f' order {data_orders}')
+            log.info(f' my_path_ticker {my_path_ticker}')
                 
             if data_orders['type'] == 'snapshot':
 
-                pickling.replace_data(my_path_ticker, data_orders)
+                pickling.replace_data(my_path_ticker, 
+                                      data_orders
+                                      )
                 
                 ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
                 log.warning(f'ticker_fr_snapshot BBBB {ticker_fr_snapshot}' )
                 
             else:
-                #ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+                ticker: list = pickling.read_data(my_path_ticker)
                 log.error(f'ticker_fr_snapshot 1 {ticker}' )
+                log.info(f' my_path_ticker {my_path_ticker}')
                 
                 for item in data_orders:
                         
                     ticker [0][item] = data_orders [item]
                     log.info(f'data_orders ITEM {data_orders [item]}' )
                 
-                    pickling.replace_data(my_path_ticker, ticker)              
+                    pickling.replace_data(my_path_ticker, 
+                                          ticker
+                                          )              
 
                 ticker: list = pickling.read_data(my_path_ticker)
                 log.error(f'ticker_fr_snapshot 2 {ticker}' )
