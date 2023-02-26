@@ -457,28 +457,6 @@ async def get_positions (connection_url: str,
             )
     return result #['result']
 
-async def get_subaccounts (connection_url: str, 
-                           client_id, 
-                           client_secret, 
-                           currency
-                           ):
-        
-    # Set endpoint
-    endpoint: str = 'private/get_subaccounts_details'
-
-    params =  {"currency": currency,
-               "with_open_orders": True}
-    
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    
-    return result #['result']
-
 async def get_account_summary (connection_url: str, 
                                client_id, 
                                client_secret, 

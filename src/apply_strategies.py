@@ -58,24 +58,14 @@ class ApplyHedgingSpot ():
         except Exception as error:
             log.warning (error)
         
-    async def get_sub_accounts(self,
-                               currency
-                               ) -> list:
+    async def get_sub_accounts(self) -> list:
         """
         """
         
         try:
             private_data = await self. get_private_data()#.get_subaccounts ()
             log.critical(private_data)
-            result1: dict =  await private_data.get_subaccounts()
-            log.critical(result1)
-            result: dict =  await deribit_get.get_subaccounts (
-                                                                self.connection_url, 
-                                                                self.client_id,
-                                                                self.client_secret, 
-                                                                currency
-                                                            )
-            log.warning(result)
+            result: dict =  await private_data.get_subaccounts()
             result_sub_account =  result ['result'] 
             my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
                                                                       currency
@@ -1004,7 +994,7 @@ async def main ():
         server_time = await syn.current_server_time ()
         
         # resupply sub account db
-        await syn.get_sub_accounts(currency)
+        await syn.get_sub_accounts()
         
         # execute strategy
         await syn.running_strategy (server_time)
