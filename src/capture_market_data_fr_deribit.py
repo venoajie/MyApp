@@ -217,6 +217,7 @@ class StreamMarketData:
                                                                                                   ticker_instrument[0])
                                 log.error(tickers)
                                 ticker_all: list = pickling.read_data(my_path_futures_analysis)
+                                log.warning(ticker_all)
                                 if ticker_all == None:
                                     pickling.replace_data(my_path_futures_analysis, 
                                                         ticker_all
