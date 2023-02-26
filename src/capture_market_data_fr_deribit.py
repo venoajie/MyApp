@@ -175,50 +175,25 @@ class StreamMarketData:
                         data_orders: list = message['params']['data']
                         #log.debug(data_orders)
                         currency: str = string_modification.extract_currency_from_text (message_channel)
-                        #log.error(currency)
                                                                        
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f'incremental_ticker.{instrument_ticker}':
                             
-                            my_path_ticker = system_tools.provide_path_for_file ('ticker',  
-                                                                                 instrument_ticker
-                                                                                 ) 
+                            
                             my_path_futures_analysis = system_tools.provide_path_for_file ('futures_analysis', 
                                                                                            currency
                                                                                            ) 
+                            my_path_ticker = system_tools.provide_path_for_file ('ticker',  
+                                                                instrument
+                                                                ) 
                             
                             
                             try:
-                                log.critical(instrument_ticker.upper())
-                                if 'PERPETUAL' in instrument_ticker:
-                                    log.debug(data_orders)
-                                    log.critical(my_path_ticker)
-                                    log.error(pickling.read_data(my_path_ticker) )
-                                    log.info(data_orders)
-                                    
-                                if data_orders['type'] == 'snapshot':
-
-                                    pickling.replace_data(my_path_ticker, data_orders)
-                                    try:
-                                        ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                        log.error(ticker_fr_snapshot)
-                                    except Exception as error:
-                                        log.error(error)
-                                    
-                                else:
-                                    # updating ticker with the change
-                                    ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    
-                                    if 'PERPETUAL' in instrument_ticker:
-                                        log.error(ticker_fr_snapshot)
-                                    
-                                    for item in data_orders:
-                                        if 'PERPETUAL' in instrument_ticker:
-                                            log.critical(item)
-                                            
-                                        ticker_fr_snapshot [0][item] = data_orders [item]
-                                    
-                                        pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
+                                await self.distribute_ticker_result_as_per_data_type (my_path_ticker,
+                                                                                      data_orders,
+                                                                                      instrument
+                                                                                      )
+                                  
                         
                                 symbol_index: str = f'{currency}_usd'
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  
@@ -299,6 +274,46 @@ class StreamMarketData:
                                                   'WebSocket connection MARKET has broken'
                                                   )
                 
+    async def distribute_ticker_result_as_per_data_type (self,
+                                                         my_path_ticker,
+                                                         data_orders,
+                                                         instrument
+                                                         ) -> None:
+        """
+        """
+
+        
+        
+        try:
+            log.critical(instrument.upper())
+            if 'PERPETUAL' in instrument:
+                #log.debug(data_orders)
+                #log.critical(my_path_ticker)
+                log.error(f'read {pickling.read_data(my_path_ticker)}' )
+                log.info(f' order {data_orders}')
+                
+            if data_orders['type'] == 'snapshot':
+
+                pickling.replace_data(my_path_ticker, data_orders)
+                
+            else:
+                ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                
+                for item in data_orders:
+                    if 'PERPETUAL' in instrument:
+                        log.critical(item)
+                        
+                    ticker_fr_snapshot [0][item] = data_orders [item]
+                
+                    pickling.replace_data(my_path_ticker, ticker_fr_snapshot)              
+            
+
+        except Exception as error:
+            system_tools.catch_error_message (
+                                error,
+                                'WebSocket connection - failed to distribute_incremental_tickr_result_as_per_data_type'
+                                )
+                                
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
