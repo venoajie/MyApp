@@ -303,8 +303,8 @@ class StreamMarketData:
                 log.warning(f'ticker_fr_snapshot BBBB {ticker_fr_snapshot}' )
                 
             else:
-                ticker: list = pickling.read_data(my_path_ticker)
-                log.error(f'ticker_fr_snapshot 1 {ticker}' )
+                ticker_change: list = pickling.read_data(my_path_ticker)
+                log.error(f'ticker_fr_snapshot 1 {ticker_change}' )
                 log.info(f' my_path_ticker {my_path_ticker}')
                 
                 for item in data_orders:
@@ -313,7 +313,7 @@ class StreamMarketData:
                     log.info(f'data_orders ITEM {data_orders [item]}' )
                 
                     pickling.replace_data(my_path_ticker, 
-                                          ticker
+                                          ticker_change
                                           )              
 
                 ticker: list = pickling.read_data(my_path_ticker)
