@@ -200,7 +200,7 @@ class StreamMarketData:
                                 index_price: list = pickling.read_data(my_path_index) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
                                 if ticker_instrument !=[]:
-                                    log.error(ticker_instrument)
+                                    #log.error(ticker_instrument)
                                     instrument_name = ticker_instrument [0]['instrument_name']
                                     instrument: list = [o for o in instruments_kind if o['instrument_name'] == instrument_name] [0]
                                     
@@ -298,7 +298,7 @@ class StreamMarketData:
             else:
                 ticker_change: list = pickling.read_data(my_path_ticker)
                 if ticker_change != []:
-                    log.debug (ticker_change)
+                    #log.debug (ticker_change)
                     
                     for item in data_orders:
                             

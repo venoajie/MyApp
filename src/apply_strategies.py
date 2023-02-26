@@ -496,11 +496,7 @@ class ApplyHedgingSpot ():
                 instruments = await self.reading_from_db ('instruments', 
                                                             self.currency
                                                             )
-                futs_analysis = await self.reading_from_db ('futures_analysis', 
-                                                            self.currency
-                                                            )
-                                                            
-                log.warning (futs_analysis)
+                #futs_analysis = await self.reading_from_db ('futures_analysis',  self.currency )
 
                 # instruments future
                 instruments_future = [o for o in instruments if o['kind'] == 'future']
