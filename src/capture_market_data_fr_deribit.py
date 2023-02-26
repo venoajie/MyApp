@@ -136,7 +136,7 @@ class StreamMarketData:
                 message: bytes = await self.websocket_client.recv()
                 message: dict = orjson.loads(message)
                 message_channel: str = None
-                #log.warning (message)
+                log.warning (message)
                 if 'id' in list(message):
                     
                     if message['id'] == 9929:
