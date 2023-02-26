@@ -189,6 +189,7 @@ class StreamMarketData:
                             
                             
                             try:
+                                log.error(instrument_ticker.upper())
                                 if 'PERPETUAL' in instrument_ticker:
                                     log.debug(data_orders)
                                     log.critical(my_path_ticker)
@@ -206,7 +207,7 @@ class StreamMarketData:
                                 else:
                                     # updating ticker with the change
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    log.error(instrument_ticker)
+                                    
                                     if 'PERPETUAL' in instrument_ticker:
                                         log.error(ticker_fr_snapshot)
                                     
