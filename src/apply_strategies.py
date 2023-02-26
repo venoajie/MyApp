@@ -236,9 +236,6 @@ class ApplyHedgingSpot ():
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
-        path_ticker: str = system_tools.provide_path_for_file ('ticker', 
-                                                               instrument
-                                                               ) 
         path_ticker_perpetual: str = system_tools.provide_path_for_file ('ticker', 
                                                                          f'{(self.currency).upper()}-PERPETUAL'
                                                                          ) 
@@ -301,7 +298,9 @@ class ApplyHedgingSpot ():
         path_index: str = system_tools.provide_path_for_file ('index',  
                                                               symbol_index
                                                               )  
-        ticker_perpetual: list = pickling.read_data(path_ticker_perpetual)
+        ticker_perpetual: list = await self.reading_from_db ('ticker', 
+                                                         f'{(self.currency).upper()}-PERPETUAL'
+                                                         )
         symbol_index: str = f'{self.currency}_usd'
         path_index: str = system_tools.provide_path_for_file ('index', 
                                                               symbol_index
@@ -340,7 +339,6 @@ class ApplyHedgingSpot ():
                 'positions_from_sub_account': positions_from_sub_account,
                 'open_orders_from_sub_account': open_orders_from_sub_account,
                 'portfolio': portfolio,
-                'ticker': pickling.read_data(path_ticker),
                 'path_futures_analysis': pickling.read_data(path_futures_analysis),
                 'index_price': index_price [0]['price'],
                 'ticker_perpetual': ticker_perpetual[0],
@@ -605,12 +603,6 @@ class ApplyHedgingSpot ():
                     ticker = await self.reading_from_db ('ticker', 
                                                          instrument
                                                          )
-                    log.critical (f'AAAAAAAAAAAA {ticker}') 
-                    reading_from_database_instrument = await self.reading_from_database (instrument)
-                    ticker = reading_from_database_instrument ['ticker'] 
-                    log.debug (f'BBBBBBBBBB {ticker}') 
-                    #market_price = await self.market_price (instrument) 
-                    
                     # get bid and ask price
                     best_bid_prc= ticker [0]['best_bid_price']
                     best_ask_prc= ticker [0] ['best_ask_price']
