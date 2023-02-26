@@ -185,14 +185,16 @@ class StreamMarketData:
                             my_path_futures_analysis = system_tools.provide_path_for_file ('futures_analysis', 
                                                                                            currency
                                                                                            ) 
-                            log.error(data_orders)
+                            
                             
                             try:
                                 if data_orders['type'] == 'snapshot':
+                                    log.error(data_orders)
 
                                     pickling.replace_data(my_path_ticker, data_orders)
                                     
                                 else:
+                                    log.warning(data_orders)
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
                                     
                                     for item in data_orders:
@@ -201,6 +203,7 @@ class StreamMarketData:
                                     
                                         pickling.replace_data(my_path_ticker, ticker_fr_snapshot)  
                         
+                                log.critical(data_orders)
                                 symbol_index: str = f'{currency}_usd'
                                 my_path_index: str = system_tools.provide_path_for_file ('index',  
                                                                                          symbol_index
