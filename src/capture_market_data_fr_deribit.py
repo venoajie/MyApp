@@ -173,7 +173,7 @@ class StreamMarketData:
             
                         #one_minute: int = 60000
                         data_orders: list = message['params']['data']
-                        log.debug(data_orders)
+                        #log.debug(data_orders)
                         currency: str = string_modification.extract_currency_from_text (message_channel)
                         #log.error(currency)
                                                                        
@@ -189,12 +189,15 @@ class StreamMarketData:
                             
                             
                             try:
+                                log.debug(my_path_ticker)
+                                log.debug(pickling.read_data(my_path_ticker) )
                                 log.debug(data_orders)
                                 if data_orders['type'] == 'snapshot':
 
                                     pickling.replace_data(my_path_ticker, data_orders)
                                     
                                 else:
+                                    # updating ticker with the change
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
                                     log.info(ticker_fr_snapshot)
                                     
