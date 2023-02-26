@@ -354,11 +354,6 @@ class ApplyHedgingSpot ():
         #log.error (open_order)
         none_data = [None, [], 0]
         
-        #! #########################################################
-        portfolio = await self.get_account_summary()
-        print (portfolio)
-        #! #########################################################
-        
         # at start, usually position == None
         if positions in none_data:
             positions = positions_from_sub_account#await self.get_positions ()
