@@ -194,8 +194,10 @@ class StreamMarketData:
                                     
                                 else:
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                    log.info(ticker_fr_snapshot)
                                     
                                     for item in data_orders:
+                                        log.critical(item)
                                             
                                         ticker_fr_snapshot [0][item] = data_orders [item]
                                     
