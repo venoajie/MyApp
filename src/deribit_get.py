@@ -105,7 +105,7 @@ class GetPrivateData ():
         params =  {"currency": self.currency,
                 "with_open_orders": True}
         
-        await self.parse_main (
+        return await self.parse_main (
                                 endpoint=endpoint,
                                 params=params
                                 )
@@ -119,7 +119,7 @@ class GetPrivateData ():
         # Set endpoint
         endpoint: str = 'private/get_account_summary'
         
-        await self.parse_main (
+        return await self.parse_main (
                                 endpoint=endpoint,
                                 params=params
                                 )
@@ -132,7 +132,7 @@ class GetPrivateData ():
             
         params =  {"currency": self.currency}
 
-        await self.parse_main (
+        return await self.parse_main (
                                 endpoint=endpoint,
                                 params=params
                                 )
@@ -147,7 +147,7 @@ class GetPrivateData ():
         # Set endpoint
         endpoint: str = f'private/get_open_orders_by_currency'
 
-        await self.parse_main (
+        return await self.parse_main (
                                 endpoint=endpoint,
                                 params=params
                                 )
