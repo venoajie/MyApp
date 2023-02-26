@@ -199,35 +199,36 @@ class StreamMarketData:
                                                                                          ) 
                                 index_price: list = pickling.read_data(my_path_index) 
                                 ticker_instrument: list = pickling.read_data(my_path_ticker) 
-                                #log.error(ticker_instrument)
-                                instrument_name = ticker_instrument [0]['instrument_name']
-                                instrument: list = [o for o in instruments_kind if o['instrument_name'] == instrument_name] [0]
-                                
-                                # combine analysis of each instrument futures result
-                                tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
-                                                                                                  instrument, 
-                                                                                                  ticker_instrument[0])
-                                ticker_all: list = pickling.read_data(my_path_futures_analysis)
+                                if ticker_instrument !=[]:
+                                    log.error(ticker_instrument)
+                                    instrument_name = ticker_instrument [0]['instrument_name']
+                                    instrument: list = [o for o in instruments_kind if o['instrument_name'] == instrument_name] [0]
                                     
-                                if ticker_all == None:
-                                    pickling.replace_data(my_path_futures_analysis, 
-                                                        ticker_all
-                                                        ) 
-                                else:
-                                    ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
+                                    # combine analysis of each instrument futures result
+                                    tickers = futures_analysis.combining_individual_futures_analysis (index_price [0]['price'], 
+                                                                                                    instrument, 
+                                                                                                    ticker_instrument[0])
+                                    ticker_all: list = pickling.read_data(my_path_futures_analysis)
                                         
-                                    #! double file operation. could be further improved
-                                    pickling.replace_data(my_path_futures_analysis, 
-                                                        ticker_all
-                                                        ) 
-                                    
-                                    pickling.append_and_replace_items_based_on_qty (my_path_futures_analysis, 
-                                                                                    tickers, 
-                                                                                    100)
+                                    if ticker_all == None:
+                                        pickling.replace_data(my_path_futures_analysis, 
+                                                            ticker_all
+                                                            ) 
+                                    else:
+                                        ticker_all: list = [o for o in ticker_all if o['instrument_name'] != instrument_ticker] 
+                                            
+                                        #! double file operation. could be further improved
+                                        pickling.replace_data(my_path_futures_analysis, 
+                                                            ticker_all
+                                                            ) 
+                                        
+                                        pickling.append_and_replace_items_based_on_qty (my_path_futures_analysis, 
+                                                                                        tickers, 
+                                                                                        100)
 
-                                    #ticker_all: list = pickling.read_data(my_path_ticker_all) 
-                                    
-                                    #log.critical (ticker_all) 
+                                        #ticker_all: list = pickling.read_data(my_path_ticker_all) 
+                                        
+                                        #log.critical (ticker_all) 
                                         
                             except Exception as error:
                                 system_tools.catch_error_message (
