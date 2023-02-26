@@ -189,7 +189,7 @@ class StreamMarketData:
                             
                             
                             try:
-                                log.debug(my_path_ticker)
+                                log.critical(my_path_ticker)
                                 log.debug(pickling.read_data(my_path_ticker) )
                                 log.debug(data_orders)
                                 if data_orders['type'] == 'snapshot':
