@@ -188,6 +188,7 @@ class StreamMarketData:
                             
                             
                             try:
+                                log.debug(data_orders)
                                 if data_orders['type'] == 'snapshot':
 
                                     pickling.replace_data(my_path_ticker, data_orders)
