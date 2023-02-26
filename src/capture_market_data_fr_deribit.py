@@ -196,8 +196,11 @@ class StreamMarketData:
                                     log.critical(data_orders)
 
                                     pickling.replace_data(my_path_ticker, data_orders)
-                                    ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    log.error(ticker_fr_snapshot)
+                                    try:
+                                        ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
+                                        log.error(ticker_fr_snapshot)
+                                    except Exception as error:
+                                        log.error(error)
                                     
                                 else:
                                     # updating ticker with the change
