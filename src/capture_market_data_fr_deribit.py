@@ -184,8 +184,8 @@ class StreamMarketData:
                                                                                            currency
                                                                                            ) 
                             my_path_ticker = system_tools.provide_path_for_file ('ticker',  
-                                                                instrument
-                                                                ) 
+                                                                                 instrument_ticker
+                                                                                 ) 
                             
                             
                             try:
