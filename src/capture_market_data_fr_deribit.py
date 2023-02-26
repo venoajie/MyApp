@@ -309,7 +309,7 @@ class StreamMarketData:
                 
                 for item in data_orders:
                         
-                    ticker [0][item] = data_orders [item]
+                    ticker_change [0][item] = data_orders [item]
                     log.info(f'data_orders ITEM {data_orders [item]}' )
                 
                     pickling.replace_data(my_path_ticker, 
