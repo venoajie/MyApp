@@ -544,7 +544,7 @@ class ApplyHedgingSpot ():
                 log.warning (futs_analysis)
 
                 futs_analysis = await self.reading_from_db ('futures_analysis', 
-                                                            self.currenc
+                                                            self.currency
                                                             )
                 log.warning (futs_analysis)
 
