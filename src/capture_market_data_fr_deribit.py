@@ -189,14 +189,14 @@ class StreamMarketData:
                             
                             
                             try:
-                                log.error(instrument_ticker.upper())
+                                log.critical(instrument_ticker.upper())
                                 if 'PERPETUAL' in instrument_ticker:
                                     log.debug(data_orders)
                                     log.critical(my_path_ticker)
                                     log.error(pickling.read_data(my_path_ticker) )
+                                    log.info(data_orders)
                                     
                                 if data_orders['type'] == 'snapshot':
-                                    log.critical(data_orders)
 
                                     pickling.replace_data(my_path_ticker, data_orders)
                                     try:
