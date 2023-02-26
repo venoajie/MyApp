@@ -189,9 +189,9 @@ class StreamMarketData:
                             
                             
                             try:
-                                log.critical(my_path_ticker)
-                                log.debug(pickling.read_data(my_path_ticker) )
                                 log.debug(data_orders)
+                                log.critical(my_path_ticker)
+                                log.error(pickling.read_data(my_path_ticker) )
                                 if data_orders['type'] == 'snapshot':
 
                                     pickling.replace_data(my_path_ticker, data_orders)
@@ -199,7 +199,7 @@ class StreamMarketData:
                                 else:
                                     # updating ticker with the change
                                     ticker_fr_snapshot: list = pickling.read_data(my_path_ticker) 
-                                    log.info(ticker_fr_snapshot)
+                                    log.error(ticker_fr_snapshot)
                                     
                                     for item in data_orders:
                                         log.critical(item)
