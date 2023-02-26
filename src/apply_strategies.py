@@ -526,10 +526,9 @@ class ApplyHedgingSpot ():
                 #my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
                 #log.info (my_trades_open)
                 
-                # fetch instruments data
-                instruments = reading_from_database ['instruments']
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
+                # fetch instruments data                
                 instruments = await self.reading_from_db ('instruments', 
                                                             self.currency
                                                             )
