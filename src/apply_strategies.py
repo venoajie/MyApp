@@ -237,10 +237,6 @@ class ApplyHedgingSpot ():
         """
         """
         
-        path_futures_analysis: str = system_tools.provide_path_for_file ('futures_analysis', 
-                                                                         self.currency
-                                                                         ) 
-            
         path_sub_accounts: str = system_tools.provide_path_for_file ('sub_accounts', 
                                                                      self.currency
                                                                      )  
@@ -281,11 +277,7 @@ class ApplyHedgingSpot ():
         
         path_portfolio: str = system_tools.provide_path_for_file ('portfolio', 
                                                                   self.currency
-                                                                  )      
-        
-        path_instruments: str = system_tools.provide_path_for_file ('instruments', 
-                                                                    self.currency
-                                                                    )          
+                                                                  ) 
                 
         symbol_index: str = f'{self.currency}_usd'
         path_index: str = system_tools.provide_path_for_file ('index',  
@@ -332,11 +324,9 @@ class ApplyHedgingSpot ():
                 'positions_from_sub_account': positions_from_sub_account,
                 'open_orders_from_sub_account': open_orders_from_sub_account,
                 'portfolio': portfolio,
-                'path_futures_analysis': pickling.read_data(path_futures_analysis),
                 'index_price': index_price [0]['price'],
                 'ticker_perpetual': ticker_perpetual[0],
-                'price_index': ticker_perpetual[0],
-                'instruments': pickling.read_data (path_instruments)}
+                'price_index': ticker_perpetual[0]}
     
     async def position_per_instrument (self, 
                                        positions, 
@@ -540,12 +530,13 @@ class ApplyHedgingSpot ():
                 instruments = reading_from_database ['instruments']
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
                 
-                futs_analysis = reading_from_database ['path_futures_analysis'] 
-                log.warning (futs_analysis)
-
+                instruments = await self.reading_from_db ('instruments', 
+                                                            self.currency
+                                                            )
                 futs_analysis = await self.reading_from_db ('futures_analysis', 
                                                             self.currency
                                                             )
+                                                            
                 log.warning (futs_analysis)
 
                 # instruments future
