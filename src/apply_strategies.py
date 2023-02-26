@@ -73,23 +73,6 @@ class ApplyHedgingSpot ():
     
         except Exception as error:
             catch_error (error)
-            
-    async def net_position (self, 
-                      selected_transactions: list
-                      )-> float:
-        
-        ''' 
-            
-        Captured some order attributes
-        
-        Args:
-            order (dict): Order from exchange.
-            
-        Returns:
-            dict: explaining order state and order id.
-    
-        '''
-        return number_modification.net_position (selected_transactions)
     
     async def get_open_orders_from_exchange (self) -> list:
         """
@@ -224,12 +207,14 @@ class ApplyHedgingSpot ():
     
     async def reading_from_db (self, 
                                end_point,
-                               instrument: str = None
+                               instrument: str = None, 
+                               status: str =None
                                ) -> float:
         """
         """
         return pickling.read_data (system_tools.provide_path_for_file (end_point,
-                                                                       instrument
+                                                                       instrument,
+                                                                       status
                                                                        ) 
                                    )
                 
@@ -246,29 +231,12 @@ class ApplyHedgingSpot ():
                                                                     'open'
                                                                     )   
                     
-        my_trades_open: str = pickling.read_data(path_trades_open)           
-#        log.error (my_trades_open)    
-        my_trades_path_closed: str = system_tools.provide_path_for_file ('myTrades', 
-                                                                         self.currency, 
-                                                                         'closed'
-                                                                         )
-        
-        my_trades_closed: str = pickling.read_data(my_trades_path_closed)           
+        my_trades_open: str = pickling.read_data(path_trades_open)   
         
         path_orders_open: str = system_tools.provide_path_for_file ('orders', 
                                                                     self.currency, 
                                                                     'open'
                                                                     )
-        
-        path_orders_else: str = system_tools.provide_path_for_file ('orders', 
-                                                                    self.currency, 
-                                                                    'else'
-                                                                    )
-        
-        path_orders_closed: str = system_tools.provide_path_for_file ('orders', 
-                                                                      self.currency, 
-                                                                      'closed'
-                                                                      )
         
         path_orders_filled: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
@@ -299,7 +267,6 @@ class ApplyHedgingSpot ():
         positions_from_sub_account = sub_account [0] ['positions']
         open_orders_from_sub_account = sub_account [0] ['open_orders']
         portfolio = pickling.read_data(path_portfolio)
-        open_order = pickling.read_data(path_orders_open)
         #log.error (open_order)
         none_data = [None, [], 0]
         
@@ -315,17 +282,14 @@ class ApplyHedgingSpot ():
             portfolio = pickling.read_data(path_portfolio)       
         
         return {'my_trades_open': [] if my_trades_open in none_data else my_trades_open,
-                'my_trades_closed': [] if my_trades_closed in none_data else my_trades_closed,
                 'open_orders_open_byAPI': pickling.read_data(path_orders_open),
-                'open_orders_else': pickling.read_data(path_orders_else),
-                'open_orders_closed_byAPI': pickling.read_data(path_orders_closed),
                 'open_orders_filled_byAPI': pickling.read_data(path_orders_filled),
                 'positions': positions,
                 'positions_from_sub_account': positions_from_sub_account,
                 'open_orders_from_sub_account': open_orders_from_sub_account,
                 'portfolio': portfolio,
-                'index_price': index_price [0]['price'],
                 'ticker_perpetual': ticker_perpetual[0],
+                'index_price': index_price [0]['price'],
                 'price_index': ticker_perpetual[0]}
     
     async def position_per_instrument (self, 
