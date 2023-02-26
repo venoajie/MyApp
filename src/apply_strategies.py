@@ -43,6 +43,22 @@ class ApplyHedgingSpot ():
     client_secret: str
     currency: str
         
+    async def get_private_data(self,
+                               currency
+                               ) -> list:
+        """
+        Provide class object to access private get API
+        """
+        
+        try:
+            
+            return deribit_get.GetPrivateData (self.connection_url, 
+                                               self.client_id,
+                                               self.client_secret, 
+                                               currency
+                                               )
+        except Exception as error:
+            log.warning (error)
         
     async def get_sub_accounts(self,
                                currency
@@ -51,14 +67,15 @@ class ApplyHedgingSpot ():
         """
         
         try:
-            
+            result = await self. get_private_data.get_subaccounts ()
+            log.critical(result)
             result: dict =  await deribit_get.get_subaccounts (
                                                                 self.connection_url, 
                                                                 self.client_id,
                                                                 self.client_secret, 
                                                                 currency
                                                             )
-            #log.warning(result)
+            log.warning(result)
             result_sub_account =  result ['result'] 
             my_path_sub_account = system_tools.provide_path_for_file ('sub_accounts', 
                                                                       currency

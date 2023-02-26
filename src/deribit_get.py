@@ -81,17 +81,24 @@ class GetPrivateData ():
     client_id: str
     client_secret: str
     currency: str
-       
-    async def get_credentials (self, open_order_id) -> None:
         
-        await deribit_get.get_cancel_order_byOrderId (
-                                                        self.connection_url, 
-                                                        self.client_id, 
-                                                        self.client_secret, 
-                                                        open_order_id
-                                                      )  
+    async def get_subaccounts (self):
+            
+        # Set endpoint
+        endpoint: str = 'private/get_subaccounts_details'
 
-
+        params =  {"currency": self.currency,
+                "with_open_orders": True}
+        
+        result = await main(
+                endpoint=endpoint,
+                params=params,
+                connection_url=self.connection_url,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                )
+        
+        return result #['result']
 
         
 async def send_order  (connection_url: str,
