@@ -206,18 +206,10 @@ class ApplyHedgingSpot ():
     async def get_account_summary (self) -> list:
         """
         """
-        account_summary: list = await deribit_get.get_account_summary (self.connection_url, 
-                                                                       self.client_id, 
-                                                                       self.client_secret, 
-                                                                       self.currency
-                                                                       )
-                        
-        log.error (account_summary)
     
         private_data = await self. get_private_data()
 
-        result: dict =  await private_data.get_account_summary()
-        log.debug (result)
+        account_summary: dict =  await private_data.get_account_summary()
             
         return account_summary ['result']
     

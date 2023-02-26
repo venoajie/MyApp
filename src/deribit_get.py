@@ -476,27 +476,6 @@ async def get_positions (connection_url: str,
             )
     return result #['result']
 
-async def get_account_summary (connection_url: str, 
-                               client_id, 
-                               client_secret, 
-                               currency
-                               ):
-        
-    params =  {"currency": currency,
-    "extended": True}
-
-    # Set endpoint
-    endpoint: str = 'private/get_account_summary'
-    
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    return result #['result']
-
 async def  get_server_time (connection_url: str):
 
     """
