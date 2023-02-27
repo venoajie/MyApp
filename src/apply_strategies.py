@@ -163,10 +163,10 @@ class ApplyHedgingSpot ():
         """
 
         try:
+            private_data = await self. get_private_data()
+            
             if 'market' in type:
-                result =  (await deribit_get.send_order (self.connection_url,
-                                                self.client_id, 
-                                                self.client_secret, 
+                result =  (await private_data.send_order (                                                
                                                 side, 
                                                 instrument, 
                                                 size, 
@@ -176,9 +176,7 @@ class ApplyHedgingSpot ():
                                                 trigger_price
                                                 ))
             else:
-                result =  (await deribit_get.send_order (self.connection_url,
-                                                self.client_id, 
-                                                self.client_secret, 
+                result =  (await private_data.send_order ( 
                                                 side, 
                                                 instrument, 
                                                 size, 
