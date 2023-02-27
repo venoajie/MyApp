@@ -594,7 +594,7 @@ class ApplyHedgingSpot ():
                         #log.warning (my_orders_api_basedOn_label_strategy)
                         
                         #! hedging spot: part of risk management, not strategies
-                        if 'hedgingSpot' not in strategy['strategy'] and False:
+                        if 'hedgingSpot' not in strategy['strategy']:
                             #log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
                             str = trading_strategies.main (strategy,
                                                 index_price,
@@ -639,7 +639,7 @@ class ApplyHedgingSpot ():
                                         await self.cancel_by_order_id (order_result_id)
                                 log.info (order_result)
                                 
-                            if open_str_buy!= None and open_str_buy ['send_order'] and False:
+                            if open_str_buy!= None and open_str_buy ['send_order']:
                                 side = open_str_buy['side']
                                 log.info (open_str_buy['cl_price'])
                                 order_result = await self.send_orders (side, 
@@ -666,7 +666,7 @@ class ApplyHedgingSpot ():
                                         await self.cancel_by_order_id (order_result_id)
                                     log.info (order_result)
 
-                            if closed_str!= None and closed_str ['send_order'] and False:
+                            if closed_str!= None and closed_str ['send_order'] :
                                 side = closed_str['side']
                                 cut_loss = closed_str['cut_loss']
                                 if cut_loss == True:
@@ -678,10 +678,7 @@ class ApplyHedgingSpot ():
                                                         closed_str['label_numbered'],
                                                         best_ask_prc if side == 'sell' else best_bid_prc
                                                         )
-                            
-                        #log.warning (strategy['strategy'])
-                        #log.warning ('hedgingSpot' in strategy['strategy'])
-                            
+                                                        
                         if 'hedgingSpot' in strategy['strategy']:
                             
                             if open_order_mgt_filed_status_filed != []: 
