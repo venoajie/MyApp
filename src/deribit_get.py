@@ -177,6 +177,25 @@ class GetPrivateData ():
                                 params=params
                                 )
 
+    async def  get_user_trades_by_currency (self, 
+                                            count: int =1000
+                                            )-> list:
+        
+        # Set endpoint
+        endpoint: str = f'private/get_user_trades_by_currency'
+
+        params =  {
+                    "currency": self.currency.upper(),
+                    "kind": 'any',
+                    "count": count
+                    }
+        
+        return await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                ) 
+
+
 async def send_order  (connection_url: str,
                         client_id,
                         client_secret,
@@ -366,31 +385,6 @@ async def  get_open_orders_byInstruments (connection_url,
     return result 
 
 
-async def  get_user_trades_by_currency (connection_url, 
-                                        client_id, 
-                                        client_secret, 
-                                        currency: str, 
-                                        count: int =1000
-                                        )-> list:
-    
-    # Set endpoint
-    endpoint_get_user_trades: str = f'private/get_user_trades_by_currency'
-
-    params =  {
-                "currency": currency.upper(),
-                "kind": 'any',
-                "count": count
-                }
-    
-    result = await main(
-            endpoint= endpoint_get_user_trades,
-            params= params,
-            connection_url= connection_url,
-            client_id= client_id,
-            client_secret= client_secret,
-            )
-    return result 
-
 async def  get_user_trades_by_instrument (connection_url, 
                                           client_id, 
                                           client_secret, 
@@ -463,7 +457,7 @@ async def  get_cancel_order_byOrderId(connection_url: str,
             )
     return result     
 
-async def  get_server_time (connection_url: str):
+async def  get_server_time (connection_url: str)-> int:
 
     """
     Returning server time

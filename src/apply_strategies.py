@@ -9,7 +9,7 @@ import asyncio
 
 # user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools, number_modification, string_modification
+from utilities import pickling, system_tools#, number_modification, string_modification
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity#, position_sizing
 from configuration import  label_numbering, config
@@ -32,7 +32,6 @@ def catch_error (error,
                                      idle
                                      )
 
-    
 def parse_dotenv(sub_account)->dict:    
     return config.main_dotenv (sub_account)                                                         
 
@@ -126,12 +125,8 @@ class ApplyHedgingSpot ():
                                            ) -> list:
         """
         """
-        trades: list = await deribit_get.get_user_trades_by_currency (self.connection_url, 
-                                                                      self.client_id, 
-                                                                      self.client_secret, 
-                                                                      self.currency, 
-                                                                      count
-                                                                      )
+        private_data = await self. get_private_data()
+        trades: list = await private_data.get_user_trades_by_currency (count)
                         
         return [] if trades == [] else trades ['result'] ['trades']
         
@@ -461,14 +456,11 @@ class ApplyHedgingSpot ():
                                 server_time
                                 ) -> float:
         """
-        source data: loaded from database app
-        len_current_open_orders = open_order_mgt.my_orders_api_basedOn_label_items_qty(label_for_filter)
         """
 
-        #! fetch data ALL from db
         try:
             
-            # gather basic data
+            # gathering basic data
             #!############################# gathering basic data ######################################
 
             reading_from_database: dict = await self.reading_from_database ()
@@ -528,7 +520,8 @@ class ApplyHedgingSpot ():
 
                 #!################################## end of gathering basic data #####################################
                 
-                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY
+                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
+                
                 # open order integrity
                 await self.check_open_orders_integrity (open_orders_from_sub_account_get,
                                                         open_orders_open_byAPI                                                        
@@ -544,11 +537,9 @@ class ApplyHedgingSpot ():
                 open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
 
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
-                #log.warning (open_order_mgt_filed)
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status ('filled')
                 
-                #log.info (my_trades_open)
                 my_trades_open: list = reading_from_database ['my_trades_open']
                 
                 for instrument in instrument_transactions:
@@ -562,7 +553,7 @@ class ApplyHedgingSpot ():
                     best_bid_prc= ticker [0]['best_bid_price']
                     best_ask_prc= ticker [0] ['best_ask_price']
     
-                    #! get instrument detaila
+                    #! get instrument attributes detail
                     instrument_data:dict = [o for o in instruments if o['instrument_name'] == instrument]   [0] 
 
                     # instrument minimum order
@@ -572,9 +563,7 @@ class ApplyHedgingSpot ():
                     contract_size = instrument_data ['contract_size']
                     
                     open_order_mgt_from_exchange = await self.open_orders_from_exchange()
-                    log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
-                    my_orders_from_exchange = await self.get_open_orders_from_exchange()
-                    log.debug (f'my_orders_from_exchange {my_orders_from_exchange}') 
+                    #log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}') 
                     
                     # fetch strategies 
                     strategies = entries_exits.strategies

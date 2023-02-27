@@ -18,7 +18,7 @@ class RunningStrategies ():
     my_trades_open: list = []
     my_orders_api_basedOn_label_strategy: list = []
     notional: float = []
-    instrument: float = []
+    instrument: str = []
     
     def strategy_attributes (self) -> dict:
         
