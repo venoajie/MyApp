@@ -32,4 +32,7 @@ Asyncio |- https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-pyt
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
-Python | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
+Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
+VWAP | [VWAP]([https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40)) |  | | 
+
+
