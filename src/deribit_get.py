@@ -195,102 +195,95 @@ class GetPrivateData ():
                                 params=params
                                 ) 
 
-
-async def send_order  (connection_url: str,
-                        client_id,
-                        client_secret,
-                        side: str, 
-                        instrument, 
-                        amount, 
-                        label: str = None, 
-                        price: float = None, 
-                        type: str ='limit',
-                        trigger_price: float = None, 
-                        trigger: str = 'last_price', 
-                        time_in_force: str ='fill_or_kill',
-                        reduce_only: bool = False, 
-                        valid_until: int = False,
-                        post_only: bool = True, 
-                        reject_post_only: bool =False
-                        ):
-        
-    if valid_until == False:
-        if trigger_price == None:
-            if 'market' in type:
-                params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "label": label,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "reduce_only": reduce_only,
-                    }
+    async def send_order  (self,
+                            side: str, 
+                            instrument, 
+                            amount, 
+                            label: str = None, 
+                            price: float = None, 
+                            type: str ='limit',
+                            trigger_price: float = None, 
+                            trigger: str = 'last_price', 
+                            time_in_force: str ='fill_or_kill',
+                            reduce_only: bool = False, 
+                            valid_until: int = False,
+                            post_only: bool = True, 
+                            reject_post_only: bool =False
+                            ):
+            
+        if valid_until == False:
+            if trigger_price == None:
+                if 'market' in type:
+                    params =  {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "reduce_only": reduce_only,
+                        }
+                else:
+                    params =  {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                        }
             else:
-                params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "label": label,
-                    "price": price,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only,
-                    }
+                if 'market' in type :
+                    params =  {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only
+                        }
+                else:
+                    params =  {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                        }
         else:
-            if 'market' in type :
-                params =  {
+            params =  {
                     "instrument_name": instrument,
                     "amount": amount,
-                    "label": label,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "trigger": trigger,
-                    "trigger_price": trigger_price,
-                    "reduce_only": reduce_only
-                    }
-            else:
-                params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "label": label,
                     "price": price,
+                    "label": label,
+                    "valid_until": valid_until,
                     #"time_in_force": time_in_force, fik can not apply to post only
                     "type": type,
-                    "trigger": trigger,
-                    "trigger_price": trigger_price,
                     "reduce_only": reduce_only,
                     "post_only": post_only,
-                    "reject_post_only": reject_post_only,
+                    "reject_post_only": reject_post_only
                     }
-    else:
-        params =  {
-                "instrument_name": instrument,
-                "amount": amount,
-                "price": price,
-                "label": label,
-                "valid_until": valid_until,
-                #"time_in_force": time_in_force, fik can not apply to post only
-                "type": type,
-                "reduce_only": reduce_only,
-                "post_only": post_only,
-                "reject_post_only": reject_post_only
-                }
 
-    if side == 'buy':
-        endpoint: str = 'private/buy'
-    if side == 'sell'  :
-        endpoint: str = 'private/sell'
-        
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-
-    return result 
+        if side == 'buy':
+            endpoint: str = 'private/buy'
+        if side == 'sell'  :
+            endpoint: str = 'private/sell'
+            
+        result =  await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                ) 
+        return result 
     
     
 async def send_order_market (connection_url: str,
