@@ -168,7 +168,7 @@ class RunningStrategies ():
                     'instrument': self.instrument,
                     'side': side, 
                     'size': size, 
-                    'entry_price': cl_price, 
+                    'entry_price': entry_price, 
                     'cl_price': cl_price, 
                     'label_closed_numbered': label_closed_numbered, 
                     'label_numbered': label_numbered
