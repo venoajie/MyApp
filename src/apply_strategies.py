@@ -373,12 +373,9 @@ class ApplyHedgingSpot ():
     
     async def cancel_by_order_id (self, open_order_id) -> None:
         
-        await deribit_get.get_cancel_order_byOrderId (
-                                                        self.connection_url, 
-                                                        self.client_id, 
-                                                        self.client_secret, 
-                                                        open_order_id
-                                                      )  
+        private_data = await self. get_private_data()
+        
+        await private_data.get_cancel_order_byOrderId (open_order_id)  
             
     async def check_open_orders_integrity (
                                             self, 

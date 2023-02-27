@@ -284,8 +284,22 @@ class GetPrivateData ():
                                 params=params
                                 ) 
         return result 
-    
-    
+        
+    async def  get_cancel_order_byOrderId(self, 
+                                        order_id: int):
+        # Set endpoint
+        endpoint: str = 'private/cancel'
+
+        params =  {
+                    "order_id": order_id
+                    }
+            
+        result =  await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                ) 
+        return result    
+        
 async def send_order_market (connection_url: str,
                             client_id,
                             client_secret,
@@ -430,25 +444,6 @@ async def  get_order_history_by_instrument (connection_url,
             )
     return result 
 
-async def  get_cancel_order_byOrderId(connection_url: str,
-                                      client_id: str, 
-                                      client_secret: str, 
-                                      order_id: int):
-    # Set endpoint
-    endpoint: str = 'private/cancel'
-
-    params =  {
-                "order_id": order_id
-                }
-        
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    return result     
 
 async def  get_server_time (connection_url: str)-> int:
 
@@ -511,7 +506,6 @@ async def  get_currencies (
                         params=params,
                         connection_url=connection_url
                         )     
-    
     
 async def  get_ohlc (
                     connection_url: str,
