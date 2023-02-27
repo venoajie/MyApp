@@ -11,9 +11,21 @@ def parse_dotenv(sub_account)->dict:
 sub_account: str = 'deribit-147691'
 client_id: str = parse_dotenv(sub_account) ['client_id']
 client_secret: str = parse_dotenv(sub_account) ['client_secret']
+currency: str = 'eth'
 
 connection_url: str = 'https://www.deribit.com/api/v2/'
     
+async def get_private_data() -> list:
+    """
+    Provide class object to access private get API
+    """
+    
+    return get_dbt.GetPrivateData (connection_url, 
+                                       client_id,
+                                       client_secret,
+                                       currency
+                                            )
+        
 @pytest.mark.asyncio
 async def test_get_user_trades_by_instrument():
     user_trades_by_instrument = await get_dbt.get_user_trades_by_instrument(connection_url,
@@ -46,10 +58,9 @@ async def test_get_order_history_by_instrument():
     
 @pytest.mark.asyncio
 async def test_get_open_orders_byCurrency():
-    open_orders_byCurrency = await (get_dbt.get_open_orders_byCurrency(connection_url,
-                                                     client_id,
-                                                     client_secret,
-                                                     'eth'))
+    private_data = await get_private_data()
+    
+    open_orders_byCurrency = await (private_data.get_open_orders_byCurrency())
     
     assert list(open_orders_byCurrency) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
@@ -64,28 +75,22 @@ async def test_get_user_trades_by_currency():
     
 @pytest.mark.asyncio
 async def test_get_account_summary():
-    account_summary = await (get_dbt.get_account_summary(connection_url,
-                                                     client_id,
-                                                     client_secret,
-                                                     'eth'))
+    private_data = await get_private_data()
+    account_summary = await (private_data.get_account_summary())
     
     assert list(account_summary) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
 @pytest.mark.asyncio
 async def test_get_positions():
-    positions = await (get_dbt.get_positions(connection_url,
-                                                     client_id,
-                                                     client_secret,
-                                                     'eth'))
+    private_data = await get_private_data()
+    positions = await (private_data.get_positions())
     
     assert list(positions) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
 @pytest.mark.asyncio
 async def test_get_subaccounts():
-    subaccounts = await (get_dbt.get_subaccounts(connection_url,
-                                                     client_id,
-                                                     client_secret,
-                                                     'eth'))
+    private_data = await get_private_data()
+    subaccounts = await (private_data.get_subaccounts())
     
     assert list(subaccounts) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
