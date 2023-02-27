@@ -185,8 +185,6 @@ class CheckTradeIntegrity ():
 
         except Exception as error:
             catch_error (error)
-
-                             
                              
 async def main_enforce_my_trade_db_integrity (
                                             currency,

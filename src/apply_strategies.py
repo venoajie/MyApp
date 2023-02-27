@@ -435,6 +435,7 @@ class ApplyHedgingSpot ():
             None:
         '''
                     
+        #! yes, it seems circular. But its okay for now. FIxed it later
         myTrades_from_db = await check_data_integrity.myTrades_originally_from_db (self.currency)
         
         # get the earliest transaction time stamp

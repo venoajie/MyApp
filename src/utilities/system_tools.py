@@ -1,49 +1,22 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import os, sys
 from time import sleep
-
-#none_data=[None, 0, []]
-
-def parse_dotenv (domain_app: str = 'None')-> dict:    
-    
-    """
-    https://www.python-engineer.com/posts/run-python-github-actions/
-    """
-    
-    from os.path import join, dirname
-    from dotenv import load_dotenv
-    
-    dotenv_path = join(dirname(__file__), '.env')
-    load_dotenv(dotenv_path)
-    client_id = None
-    client_secret = None
-    bot_token = None
-    bot_chatid = None
-            
-    try:
-        # linux/win env
-        client_id = os.environ.get ('client_id')
-        client_secret =  os.environ.get ('client_secret')
-        
-    except KeyError:
-        
-        # github env
-        client_id = os.environ ('client_id')
-        client_secret =  os.environ ('client_secret')
-            
-    return {'client_id': client_id,
-            'client_secret': client_secret,
-            'bot_token': bot_token,
-            'bot_chatid': bot_chatid
-            }
             
 def get_platform ()-> str:
-
+    
     '''
-    https://www.webucator.com/article/how-to-check-the-operating-system-with-python/
-    https://stackoverflow.com/questions/1325581/how-do-i-check-if-im-running-on-windows-in-python
+    Check current platform/operating system where app is running
+    
+    Args:
+        None
+        
+    Returns:
+        Current platform (str): linux, OS X, win
+        
+    References:
+        https://www.webucator.com/article/how-to-check-the-operating-system-with-python/
+        https://stackoverflow.com/questions/1325581/how-do-i-check-if-im-running-on-windows-in-python
     '''   
     
     platforms: dict = {
@@ -58,20 +31,6 @@ def get_platform ()-> str:
     
     return platforms[sys.platform]
 
-def sleep_and_restart_program (idle: float)-> None:
-    
-    '''
-    '''   
-    
-    if idle != None:     
-        
-        print (f" sleep for {idle} seconds")
-        sleep (idle)
-        
-    print (f"restart")
-    python = sys.executable
-    os.execl(python, python, * sys.argv)
-    
 def provide_path_for_file (
                             end_point: str, 
                             marker: str = None, 
@@ -79,10 +38,17 @@ def provide_path_for_file (
                             method: str =None
                            )-> str:
     '''
-    marker: currency, instrument, other
-    end_point: orders, myTrades
-    status: open, closed
-    method: web/manual, api/bot
+    
+    Provide uniform format for file/folder path address
+    
+    Args:
+        marker(str): currency, instrument, other
+        end_point(str): orders, myTrades
+        status(str): open, closed
+        method(str): web/manual, api/bot        
+        
+    Returns:
+        Path address(str): in linux/windows format
     '''   
     from pathlib import Path
     
@@ -164,30 +130,26 @@ def provide_path_for_file (
     my_path_linux: str = root / sub_folder if exchange == None else  root / sub_folder / exchange
     my_path_win:str = root / "src" / sub_folder if exchange == None else  root / "src" / sub_folder / exchange
     
-    # Create target Directory if doesn't exist in linux
+    # Create target Directory if it doesn't exist in linux
     if not os.path.exists(my_path_linux) and current_os =='linux':    
 
         os.makedirs(my_path_linux)
                         
-    return (my_path_linux / file_name ) if get_platform () == 'linux' else (my_path_win / file_name)
+    return (my_path_linux / file_name ) if get_platform () == 'linux'\
+        else (my_path_win / file_name)
     
-    
-def check_environment()->bool:
-
+def is_current_file_running (script: str)->bool:
     '''
-    https://stackoverflow.com/questions/42665882/how-does-the-python-script-know-itself-running-in-nohup-mode
-    '''   
-    import signal
-
-    if signal.getsignal(signal.SIGHUP) == signal.SIG_DFL:  # default action
-        print("No SIGHUP handler")
-    else:
-        print("In nohup mode")
+    Check current file is running/not. Could be used to avoid execute an already running file
+    
+    Args:
+        script (str): name of the file
         
-def is_current_file_running (script)->bool:
-
-    '''
-    https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running
+    Returns:
+        Bool: True, file is running
+        
+    References:
+        https://stackoverflow.com/questions/788411/check-to-see-if-python-script-is-running
     '''   
     import psutil
 
@@ -199,18 +161,52 @@ def is_current_file_running (script)->bool:
 
     return False
             
+def sleep_and_restart_program (idle: float = None)-> None:
+    
+    '''
+    
+    Halt the program for some seconds and restart it
+    
+    Args:
+        idle (float): seconds of the program halted before restarted. 
+        None: restart is not needed
         
+    Returns:
+        None
+        
+    '''   
+    
+    if idle != None:     
+        
+        print (f" sleep for {idle} seconds")
+        sleep (idle)
+        
+    print (f"restart")
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
+    
 def catch_error_message (error: str, 
                          idle: float = None,
                          message: str = None
                          )->None:
 
     '''  
-        # Capture & emit error message
-        # Send error message to telegram server
-        # https://medium.com/pipeline-a-data-engineering-resource/prettify-your-python-logs-with-loguru-a7630ef48d87
+    
+    Capture & emit error message
+    Optional: Send error message to telegram server
+    
+    Args:
+        idle (float): seconds of the program halted before restarted. None: restart is not needed
+        message (str): error message
+        
+    Returns:
+        None
+        
+    Reference:
+        https://medium.com/pipeline-a-data-engineering-resource/prettify-your-python-logs-with-loguru-a7630ef48d87
 
     '''        
+    
     import traceback
     from utilities import telegram_app
     from loguru import logger as log
@@ -223,7 +219,7 @@ def catch_error_message (error: str,
     if error == True: # to respond 'def is_current_file_running'  result
         sys.exit (1)
         
-    if error == 'server rejected WebSocket connection: HTTP 503': # to respond 'def is_current_file_running'  result
+    if error == 'server rejected WebSocket connection: HTTP 503': 
         log.critical (f'{error}')
         telegram_app.telegram_bot_sendtext ('server rejected WebSocket connection: HTTP 503')
         
@@ -240,47 +236,36 @@ def catch_error_message (error: str,
     if idle != None:
         log.info (f"restart {idle} seconds after error")
         sleep_and_restart_program (idle)
+        
     else:
         sys.exit ()
+    
+    
+def check_file_attributes (filepath: str)-> None:
+    
+    '''
+    
+    Check file attributes
+    
+    Args:
+        filepath (str): name of the file
         
+    Returns:
+        st_mode=Inode protection mode
+        st_ino=Inode number
+        st_dev=Device inode resides on      
+        st_nlink=Number of links to the inode
+        st_uid=User id of the owner
+        st_gid=Group id of the owner
+        st_size=Size in bytes of a plain file; amount of data waiting on some special files
+        st_atime=Time of last access 
+        st_mtime=Time of last modification
+        st_ctime= 
+            Unix: is the time of the last metadata change
+            Windows: is the creation time (see platform documentation for details).
         
-        
-    def db_membuka_koneksi(self,params):
-        """Connect to a Postgres database."""
-        import psycopg2.extras
-        from psycopg2 import connect, sql
-        import psycopg2.extras
-
-        if self.conn is None:
-            try:
-               
-                self.conn = psycopg2.connect(**params)
-#                print(f'{self.conn=}')
-
-            # bila terdapat error terkait koneksi ke postgres         
-            except psycopg2.DatabaseError as e:
-                raise e
-            finally:
-                print('Koneksi ke database terbuka')
-        return self.conn
-
-def open_connection_sqlite_ (self, db_file, params= None):
-    """Connect to a sqlite database."""
-    import sqlite3
-    from sqlite3 import Error
-
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-
-    except Error as e:
-        log.error (e)
-    finally:
-        if conn:
-            conn.close()
-
-def open_connection_sqlite (self, db_file, params= None):
-    """Connect to a sqlite database."""
-    connection_ = self. open_connection_sqlite_ (db_file, params= None)
-    connection = connection_.result()
-        
+    Reference:
+        https://medium.com/@BetterEverything/automate-removal-of-old-files-in-python-2085381fdf51
+    '''   
+    return  os.stat(filepath)
+    
