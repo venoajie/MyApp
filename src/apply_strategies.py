@@ -9,7 +9,7 @@ import asyncio
 
 # user defined formula 
 from portfolio.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools#, number_modification, string_modification
+from utilities import pickling, system_tools, string_modification as str_mod#, number_modification, string_modification
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity#, position_sizing
 from configuration import  label_numbering, config
@@ -371,6 +371,18 @@ class ApplyHedgingSpot ():
             if open_orders_deltaTime > three_minute:
                 await self.cancel_by_order_id (open_order_id)    
     
+    async def matching_open_orderLabelCLosed_vs_its_my_trades_open(self, 
+                                                                   open_orders_open_byAPI,
+                                                                        my_trades_open
+                                                                        ) -> None:
+        # obtain all closed labels in open orders
+        order_label = [str_mod.extract_integers_from_text (o['label']) \
+            for o in open_orders_open_byAPI if 'closed' in (o['label']) ]
+        log.info (order_label)
+        for label in order_label:
+            log.error (label)
+        
+        
     async def cancel_by_order_id (self, open_order_id) -> None:
         
         private_data = await self. get_private_data()
@@ -516,6 +528,9 @@ class ApplyHedgingSpot ():
                 #!################################## end of gathering basic data #####################################
                 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
+                await self.matching_open_orderLabelCLosed_vs_its_my_trades_open(open_orders_open_byAPI,
+                                                                                my_trades_open
+                                                                                )
                 
                 # open order integrity
                 await self.check_open_orders_integrity (open_orders_from_sub_account_get,

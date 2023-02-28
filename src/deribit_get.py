@@ -195,6 +195,89 @@ class GetPrivateData ():
                                 params=params
                                 ) 
 
+    async def edit_order  (self,
+                            instrument, 
+                            order_id, 
+                            amount, 
+                            label: str = None, 
+                            price: float = None, 
+                            trigger_price: float = None, 
+                            trigger: str = 'last_price', 
+                            time_in_force: str ='fill_or_kill',
+                            reduce_only: bool = False, 
+                            valid_until: int = False,
+                            post_only: bool = True, 
+                            reject_post_only: bool =False
+                            ):
+            
+        if valid_until == False:
+            if trigger_price == None:
+                if 'market' in type:
+                    params =  {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "reduce_only": reduce_only,
+                        }
+                else:
+                    params =  {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        "price": price,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                        }
+            else:
+                if 'market' in type :
+                    params =  {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only
+                        }
+                else:
+                    params =  {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        "price": price,
+                        #"time_in_force": time_in_force, fik can not apply to post only
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                        }
+        else:
+            params =  {
+                    "instrument_name": instrument,
+                    "order_id": order_id,
+                    "amount": amount,
+                    "price": price,
+                    "valid_until": valid_until,
+                    #"time_in_force": time_in_force, fik can not apply to post only
+                    "type": type,
+                    "reduce_only": reduce_only,
+                    "post_only": post_only,
+                    "reject_post_only": reject_post_only
+                    }
+
+        endpoint: str = 'edit'
+            
+        result =  await self.parse_main (
+                                endpoint=endpoint,
+                                params=params
+                                ) 
+        return result 
+        
+        
     async def send_order  (self,
                             side: str, 
                             instrument, 
@@ -284,7 +367,7 @@ class GetPrivateData ():
                                 params=params
                                 ) 
         return result 
-        
+    
     async def  get_cancel_order_byOrderId(self, 
                                         order_id: int):
         # Set endpoint
