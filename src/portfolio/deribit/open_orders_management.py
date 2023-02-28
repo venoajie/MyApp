@@ -266,6 +266,21 @@ class MyOrders ():
         except Exception as error:
             catch_error (error)
                         
+                        
+    async def open_orderLabelCLosed (self, 
+                                     open_orders_open: list = None
+                                     ) -> list:
+        from utilities import string_modification as str_mod
+        
+        if open_orders_open == None:
+            open_orders_open = self.open_orders_from_db
+        # obtain all closed labels in open orders
+        order_label_all = [str_mod.extract_integers_from_text (o['label']) \
+            for o in open_orders_open if 'closed' in (o['label']) ]
+        
+        # remove redundant labels
+        return str_mod.remove_redundant_elements (order_label_all)
+    
     def distribute_order_transactions (self, 
                                        currency
                                        ) -> None:

@@ -371,16 +371,19 @@ class ApplyHedgingSpot ():
             if open_orders_deltaTime > three_minute:
                 await self.cancel_by_order_id (open_order_id)    
     
+            
     async def matching_open_orderLabelCLosed_vs_its_my_trades_open(self, 
                                                                    open_orders_open_byAPI,
                                                                         my_trades_open
                                                                         ) -> None:
         # obtain all closed labels in open orders
-        order_label = [str_mod.extract_integers_from_text (o['label']) \
+        order_label_all = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders_open_byAPI if 'closed' in (o['label']) ]
-        log.info (order_label)
-        for label in order_label:
-            log.error (label)
+        order_labels = str_mod.remove_redundant_elements (order_label_all)
+        log.info (order_labels)
+        for label in order_labels:
+            open_orderLabelCLosed_is_in_my_trades_open = [o for o in my_trades_open if label in str_mod.extract_integers_from_text (o['label']) ]
+            log.info (open_orderLabelCLosed_is_in_my_trades_open)
         
         
     async def cancel_by_order_id (self, open_order_id) -> None:
@@ -522,15 +525,13 @@ class ApplyHedgingSpot ():
 
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
+                log.critical (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
 
                 #!################################## end of gathering basic data #####################################
                 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
-                await self.matching_open_orderLabelCLosed_vs_its_my_trades_open(open_orders_open_byAPI,
-                                                                                my_trades_open
-                                                                                )
                 
                 # open order integrity
                 await self.check_open_orders_integrity (open_orders_from_sub_account_get,
