@@ -267,7 +267,7 @@ class MyOrders ():
             catch_error (error)
                         
                         
-    async def open_orderLabelCLosed (self, 
+    def open_orderLabelCLosed (self, 
                                      open_orders_open: list = None
                                      ) -> list:
         from utilities import string_modification as str_mod

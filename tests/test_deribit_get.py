@@ -66,10 +66,8 @@ async def test_get_open_orders_byCurrency():
     
 @pytest.mark.asyncio
 async def test_get_user_trades_by_currency():
-    user_trades_by_currency = await (get_dbt.get_user_trades_by_currency(connection_url,
-                                                     client_id,
-                                                     client_secret,
-                                                     'eth'))
+    private_data = await get_private_data()
+    user_trades_by_currency = await (private_data.get_user_trades_by_currency())
     
     assert list(user_trades_by_currency) ==  ['jsonrpc', 'id', 'result', 'usIn', 'usOut', 'usDiff', 'testnet']
     
