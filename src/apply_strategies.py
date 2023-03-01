@@ -503,6 +503,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
+                log.warning (my_trades_open)
                 
                 #my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
                 #log.info (my_trades_open)
