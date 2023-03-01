@@ -215,7 +215,7 @@ class MyTrades ():
                         ) for o in my_trades_open 
              ]
                     )
-        log.info (label_trades)
+
         return label in label_trades 
     
     def synchronizing_closed_tradings (self, 
