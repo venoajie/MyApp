@@ -268,20 +268,21 @@ class MyOrders ():
                         
                         
     def open_orderLabelCLosed (self, 
-                                     open_orders_open: list = None
+                                     open_orders: list = None
                                      ) -> list:
         from utilities import string_modification as str_mod
         
-        if open_orders_open == None:
-            open_orders_open = self.open_orders_from_db
+        if open_orders == None:
+            open_orders = self.open_orders_from_db
             
-        # obtain all closed labels in open orders        
+        # get open labels
         order_label_open = [str_mod.extract_integers_from_text (o['label']) \
-            for o in open_orders_open if 'open' in (o['label']) ]
+            for o in open_orders if 'open' in (o['label']) ]
 
+        # get open labels
         order_label_closed = [str_mod.extract_integers_from_text (o['label']) \
-            for o in open_orders_open if 'closed' in (o['label']) \
-                and str_mod.extract_integers_from_text (o['label']) not in order_label_open ]
+            for o in open_orders if 'closed' in (o['label']) \
+                and str_mod.extract_integers_from_text (o['label'])  in order_label_open ]
         
         # remove redundant labels
         return str_mod.remove_redundant_elements (order_label_closed)

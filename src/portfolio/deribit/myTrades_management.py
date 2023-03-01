@@ -202,6 +202,10 @@ class MyTrades ():
                                                    ) -> None:
         
         '''
+        closed-labelled open order, has:
+        - 
+        
+        
         '''       
         #
         
