@@ -275,19 +275,14 @@ class MyOrders ():
         if open_orders_open == None:
             open_orders_open = self.open_orders_from_db
             
-        # obtain all closed labels in open orders
-        
+        # obtain all closed labels in open orders        
         order_label_open = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders_open if 'open' in (o['label']) ]
-        log.error (order_label_open)
+
         order_label_closed = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders_open if 'closed' in (o['label']) \
                 and str_mod.extract_integers_from_text (o['label']) not in order_label_open ]
-        log.error (order_label_closed)
         
-        #order_label_closed_cleared = [o for o in order_label_closed if 'closed' in (o['label']) ]
-        
-        log.error (str_mod.remove_redundant_elements (order_label_closed))
         # remove redundant labels
         return str_mod.remove_redundant_elements (order_label_closed)
     
