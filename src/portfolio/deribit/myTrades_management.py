@@ -216,7 +216,7 @@ class MyTrades ():
              ]
                     )
         log.info (label_trades)
-        return [o for o in my_trades_open if label in label_trades]
+        return label in label_trades 
     
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
