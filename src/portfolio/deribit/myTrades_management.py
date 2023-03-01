@@ -196,7 +196,6 @@ class MyTrades ():
         #
         return [o for o in my_trades_open if (label) != str_mod.extract_integers_from_text (o['label']) ]
             
-            
     def closed_open_order_label_in_my_trades_open (self,
                                                    my_trades_open: list,
                                                    label: str
@@ -209,7 +208,15 @@ class MyTrades ():
         if my_trades_open == None:
             my_trades_open = self.my_trades_open
             
-        return [o for o in my_trades_open if label in str_mod.extract_integers_from_text (o['label']) ]
+        label_trades = (
+            [
+                str_mod.extract_integers_from_text (
+                        o['label']
+                        ) for o in my_trades_open 
+             ]
+                    )
+        log.info (label_trades)
+        return [o for o in my_trades_open if label in label_trades]
     
     def synchronizing_closed_tradings (self, 
                                        closed_label_id_int: str, 
