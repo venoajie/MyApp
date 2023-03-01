@@ -372,11 +372,19 @@ class ApplyHedgingSpot ():
                 await self.cancel_by_order_id (open_order_id)    
     
             
-    async def matching_open_orderLabelCLosed_vs_its_my_trades_open(self, 
-                                                                   order_labels,
-                                                                        my_trades_open
-                                                                        ) -> None:
+    async def get_and_drop_orphan_closed_orders(self, 
+                                                order_labels,
+                                                my_trades_open
+                                                ) -> None:
        
+        '''
+        closed-labelled open order, has:
+        - open order that have not executed yet. This is ok
+        - open trade waiting to close. This is ok
+        - no open order nor open trade. . This is NOT ok. If it found, cancel it
+        
+        
+        '''       
         
         for label in order_labels:
             open_orderLabelCLosed_is_in_my_trades_open = [o for o in my_trades_open if label in str_mod.extract_integers_from_text (o['label']) ]
