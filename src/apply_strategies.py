@@ -378,6 +378,9 @@ class ApplyHedgingSpot ():
                                                 ) -> None:
        
         '''
+        For every strategy, there are 1 SL and 1 TP. 
+        When  1 of them was executed, the other should be cancelled
+        
         closed-labelled open order, has:
         - open order that have not executed yet. This is ok
         - open trade waiting to close. This is ok

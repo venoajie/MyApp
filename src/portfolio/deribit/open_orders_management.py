@@ -270,20 +270,29 @@ class MyOrders ():
     def open_orderLabelCLosed (self, 
                                      open_orders: list = None
                                      ) -> list:
+        
+        '''
+        Get order with closed labels  but have no open labels  pair
+        The result should be further compared to open trades with open labels
+        '''                   
+        
         from utilities import string_modification as str_mod
         
         if open_orders == None:
             open_orders = self.open_orders_from_db
             
-        # get open labels
+        # get order with open labels
         order_label_open = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders if 'open' in (o['label']) ]
 
-        # get open labels
+        # furthermore, extract order with closed label but not
+            # registered in open labels above 
+        
         order_label_closed = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders if 'closed' in (o['label']) \
-                and str_mod.extract_integers_from_text (o['label'])  in order_label_open ]
+                and str_mod.extract_integers_from_text (o['label']) not in order_label_open ]
         
+        log.error (str_mod.remove_redundant_elements (order_label_closed))
         # remove redundant labels
         return str_mod.remove_redundant_elements (order_label_closed)
     

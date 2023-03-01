@@ -9,6 +9,7 @@
 # https://medium.com/@pjseoane/quantlib-libray-en-python-for-options-ff557d565e74
 # https://github.com/CyberPunkMetalHead
 # https://smartlever.medium.com/smartbots-basktesting-is-only-the-tip-of-the-iceberg-ce23b56e6427
+# https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c
 An end-to-end Platform.
 Data Feed: Services that connect to real-time data and feed the strategy portfolio.
 Historical Data: Download historical data for research and testing purposes.

@@ -320,17 +320,17 @@ def test_closed_open_order_label_in_my_trades_open ():
         {'trade_seq': 115425899, 'trade_id': 'ETH-157512749', 'timestamp': 1674106201607, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1528.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266368853', 'mmp': False, 'matching_id': None, 'mark_price': 1528.33, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674106085', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.78, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 7.0}, {'trade_seq': 115426103, 'trade_id': 'ETH-157513016', 'timestamp': 1674106959423, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1527.2, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266435353', 'mmp': False, 'matching_id': None, 'mark_price': 1526.81, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674106880', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1526.99, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 7.0}, {'trade_seq': 115426211, 'trade_id': 'ETH-157513139', 'timestamp': 1674107594720, 'tick_direction': 1, 'state': 'open', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1528.4, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266497562', 'mmp': False, 'matching_id': None, 'mark_price': 1528.62, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674107582', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.52, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 11.0}, {'trade_seq': 115426212, 'trade_id': 'ETH-157513141', 'timestamp': 1674107600323, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1528.4, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266497562', 'mmp': False, 'matching_id': None, 'mark_price': 1528.61, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674107582', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.55, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 45.0}, {'trade_seq': 115440589, 'trade_id': 'ETH-157532557', 'timestamp': 1674134437352, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1514.1, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269839438', 'mmp': False, 'matching_id': None, 'mark_price': 1514.49, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674134423', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1514.57, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 4.0}, {'trade_seq': 115441415, 'trade_id': 'ETH-157533765', 'timestamp': 1674134974683, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1524.95, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269979727', 'mmp': False, 'matching_id': None, 'mark_price': 1525.19, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674134971', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1524.87, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}, {'trade_seq': 118305997, 'trade_id': 'ETH-161151946', 'timestamp': 1677379636994, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1599.6, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31944078044', 'mmp': False, 'matching_id': None, 'mark_price': 1599.64, 'liquidity': 'M', 'label': 'hedgingSpot-open-1677379624', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1599.36, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}, {'trade_seq': 118327634, 'trade_id': 'ETH-161178533', 'timestamp': 1677436936464, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1622.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31951464881', 'mmp': False, 'matching_id': None, 'mark_price': 1621.27, 'liquidity': 'M', 'label': 'hedgingSpot-open-1677436932', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1620.55, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}, {'trade_seq': 118342537, 'trade_id': 'ETH-161197087', 'timestamp': 1677452774256, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1642.85, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31955055472', 'mmp': False, 'matching_id': None, 'mark_price': 1642.28, 'liquidity': 'M', 'label': 'hedgingSpot-open-1677452758', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1642.25, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}, {'trade_seq': 118355869, 'trade_id': 'ETH-161212758', 'timestamp': 1677474758759, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -0.00011743, 'price': 1635.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31958514035', 'mmp': False, 'matching_id': None, 'mark_price': 1635.17, 'liquidity': 'M', 'label': 'supplyDemandLong60-open-1677473096934', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1635.36, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 9.0}]
  
     # open order has executed
-    assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open, 
-                                                                1677059533
+    assert my_trades.closed_open_order_label_in_my_trades_open (1677059533,
+                                                                my_trades_open
                                                                 ) ==  True
 
     # open order has executed
-    assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open,
-                                                                601677473096934
+    assert my_trades.closed_open_order_label_in_my_trades_open (601677473096934,
+                                                                my_trades_open
                                                                 ) ==  True
     
-    assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open, 
-                                                                601677473096745
+    assert my_trades.closed_open_order_label_in_my_trades_open (601677473096745,
+                                                                my_trades_open
                                                                 ) ==  False 
     
     my_orders= [
@@ -350,18 +350,19 @@ def test_closed_open_order_label_in_my_trades_open ():
         if label_closed == 1677059533:
             
             # open order has executed. 
-            assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open, 
-                                                                        1677059533
+            assert my_trades.closed_open_order_label_in_my_trades_open (label_closed,
+                                                                        my_trades_open
                                                                         ) ==  True
         # open order has executed
         if label_closed == 601677473096934:
-            assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open, 
-                                                                        601677473096934
+            assert my_trades.closed_open_order_label_in_my_trades_open (label_closed,
+                                                                        my_trades_open
+                                                                        
                                                                         ) ==  True
         # open ordernot in open trade since has not executed yet
         if label_closed == 601677473096745:
-            assert my_trades.closed_open_order_label_in_my_trades_open (my_trades_open, 
-                                                                        601677473096745
+            assert my_trades.closed_open_order_label_in_my_trades_open (label_closed,
+                                                                        my_trades_open
                                                                         ) ==  False
     
         

@@ -197,12 +197,13 @@ class MyTrades ():
         return [o for o in my_trades_open if (label) != str_mod.extract_integers_from_text (o['label']) ]
             
     def closed_open_order_label_in_my_trades_open (self,
-                                                   my_trades_open: list,
-                                                   label: str
+                                                   label: str,
+                                                   my_trades_open: list = None,
                                                    ) -> None:
         
         '''
-        closed-labelled open order, has:
+        If label 'closed' from open order exist, then it is not orphan order. It is ok.
+        Otherwise, cancel the order
         - 
         
         
