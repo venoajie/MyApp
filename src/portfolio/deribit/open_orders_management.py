@@ -274,6 +274,7 @@ class MyOrders ():
         
         if open_orders_open == None:
             open_orders_open = self.open_orders_from_db
+            
         # obtain all closed labels in open orders
         order_label_all = [str_mod.extract_integers_from_text (o['label']) \
             for o in open_orders_open if 'closed' in (o['label']) ]
