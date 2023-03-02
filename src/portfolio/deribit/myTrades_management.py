@@ -211,7 +211,7 @@ class MyTrades ():
         #
         
         if my_trades_open == None:
-            my_trades_open = self.my_trades_open
+            my_trades_open = self.my_trades
             
         label_trades = (
             [
