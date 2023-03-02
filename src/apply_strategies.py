@@ -219,8 +219,10 @@ class ApplyHedgingSpot ():
         else:   
             if main_side == 'buy':
                 closed_side= 'sell'
+                tp_prc = tp_prc - 10
             if main_side == 'sell':
                 closed_side= 'buy'
+                tp_prc = tp_prc + 10
 
             order_result = await self.send_orders (closed_side, 
                                                     instrument,
@@ -239,7 +241,7 @@ class ApplyHedgingSpot ():
                                                     instrument,
                                                     size, 
                                                     closed_label,
-                                                    None,
+                                                    tp_prc,
                                                     'take_limit',
                                                     tp_prc                                                       
                                                     )
