@@ -372,7 +372,7 @@ class ApplyHedgingSpot ():
                 await self.cancel_by_order_id (open_order_id)    
     
             
-    async def get_and_drop_orphan_closed_orders(self, 
+    async def search_and_drop_orphan_closed_orders(self, 
                                                 order_labels,
                                                 my_trades_open
                                                 ) -> None:
@@ -390,7 +390,9 @@ class ApplyHedgingSpot ():
         '''       
         
         for label in order_labels:
-            open_orderLabelCLosed_is_in_my_trades_open = [o for o in my_trades_open if label in str_mod.extract_integers_from_text (o['label']) ]
+            my_trades.closed_open_order_label_in_my_trades_open (label,
+                                                                 my_trades_open
+                                                                 )
             log.info (open_orderLabelCLosed_is_in_my_trades_open)
         
         
@@ -513,7 +515,7 @@ class ApplyHedgingSpot ():
                 my_trades_open: list = reading_from_database ['my_trades_open']
                 log.warning (my_trades_open)
                 
-                #my_trades_open_mgt: list = myTrades_management.MyTrades (my_trades_open)
+                #
                 #log.info (my_trades_open)
                 
                 #instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
@@ -540,8 +542,19 @@ class ApplyHedgingSpot ():
 
                 #!################################## end of gathering basic data #####################################
                 
+                
+                # prepare open trade class object
+                my_trades_open_mgt: object = myTrades_management.MyTrades (my_trades_open)
+                
+                # prepare open order class object
+                open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
+                
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
                 
+                open_orderLabelCLosed =  open_order_mgt.open_orderLabelCLosed() 
+                for label_closed in open_orderLabelCLosed:
+                    is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
+                    log.error (f'{is_closed_label_exist=}')
                 
                 # open order integrity
                 await self.check_open_orders_integrity (open_orders_from_sub_account_get,
@@ -554,17 +567,12 @@ class ApplyHedgingSpot ():
                                                     server_time
                                                     )
                 
-                # prepare open order class object
-                open_order_mgt = open_orders_management.MyOrders (open_orders_open_byAPI)
-                
                 # obtain all closed labels in open orders
                 label_closed = open_order_mgt.open_orderLabelCLosed()
 
                 open_order_mgt_filed = open_orders_management.MyOrders (open_orders_filled_byAPI)
                 
                 open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status ('filled')
-                
-                my_trades_open: list = reading_from_database ['my_trades_open']
                 
                 for instrument in instrument_transactions:
 
