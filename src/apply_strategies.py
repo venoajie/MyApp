@@ -240,7 +240,7 @@ class ApplyHedgingSpot ():
                                                     size, 
                                                     closed_label,
                                                     None,
-                                                    'stop_market',
+                                                    'take_limit',
                                                     tp_prc                                                       
                                                     )
             log.info (order_result)
