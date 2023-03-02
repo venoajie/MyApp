@@ -469,12 +469,11 @@ class ApplyHedgingSpot ():
         for label_closed in open_orderLabelCLosed:
             is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
             log.error (f'{is_closed_label_exist=}')
-            log.error (f'{label_closed=}')
-            log.error (f'{label_closed[-10]=}')
-            open_order_id = open_order_mgt.open_orders_api_basedOn_label(label_closed)[0]['order_id']
-            log.error (f'{open_order_id=}')
+            log.error (f'{str(label_closed)[-10]=}')
             if is_closed_label_exist == False:
-                open_order_id = open_order_mgt.open_orders_api_basedOn_label(label_closed)[0]['order_id']
+                open_orders = open_order_mgt.open_orders_api()
+                open_order_id = [o['order_id'] for o in open_orders if str(label_closed)[-10] in o['label']  ]
+                log.error (f'{open_order_id=}')
                 await self.cancel_by_order_id (open_order_id) 
         
         
