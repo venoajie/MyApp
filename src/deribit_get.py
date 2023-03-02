@@ -297,6 +297,7 @@ class GetPrivateData ():
         if valid_until == False:
             if trigger_price == None:
                 if 'market' in type:
+                    print ('SSSSSSSSSSSSSSSSS')
                     params =  {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -306,6 +307,7 @@ class GetPrivateData ():
                         "reduce_only": reduce_only,
                         }
                 else:
+                    print ('DDDDDDDDDDDDDDDDDDDDDD')
                     params =  {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -319,6 +321,7 @@ class GetPrivateData ():
                         }
             else:
                 if 'market' in type :
+                    print ('BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB')
                     params =  {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -330,6 +333,7 @@ class GetPrivateData ():
                         "reduce_only": reduce_only
                         }
                 else:
+                    print ('AAAAAAAAAAAAAAAAAAAAAAAAAAA')
                     params =  {
                         "instrument_name": instrument,
                         "amount": amount,
