@@ -223,11 +223,12 @@ class ApplyHedgingSpot ():
                                                main_label,
                                                main_prc
                                                )
-        log.info (order_result)
-        log.info ('error' not in order_result)
+        log.warning (order_result)
+        
         order_result_id = order_result['result']['order']['order_id']
-        if 'error'  in order_result:   
+        if 'error'  in order_result:  
             await self.cancel_by_order_id (order_result_id)
+            telegram_bot_sendtext ('combo order failed') 
         else:   
             if main_side == 'buy':
                 closed_side= 'sell'
@@ -247,7 +248,8 @@ class ApplyHedgingSpot ():
             log.info (order_result)
             
             if 'error'  in order_result:   
-                await self.cancel_by_order_id (order_result_id)      
+                await self.cancel_by_order_id (order_result_id) 
+                telegram_bot_sendtext ('combo order failed')     
                 
             order_result = await self.send_orders (closed_side, 
                                                     instrument,
@@ -259,7 +261,8 @@ class ApplyHedgingSpot ():
                                                     )
             log.info (order_result)
             if 'error'  in order_result:   
-                await self.cancel_by_order_id (order_result_id)        
+                await self.cancel_by_order_id (order_result_id)   
+                telegram_bot_sendtext ('combo order failed')     
 
     async def compute_notional_value (self, 
                                       index_price: float, 
@@ -466,6 +469,12 @@ class ApplyHedgingSpot ():
         for label_closed in open_orderLabelCLosed:
             is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
             log.error (f'{is_closed_label_exist=}')
+            log.error (f'{label_closed[-10]=}')
+            open_order_id = open_order_mgt.open_orders_api_basedOn_label(label_closed)[0]['order_id']
+            log.error (f'{open_order_id=}')
+            if is_closed_label_exist == False:
+                open_order_id = open_order_mgt.open_orders_api_basedOn_label(label_closed)[0]['order_id']
+                await self.cancel_by_order_id (open_order_id) 
         
         
     async def cancel_by_order_id (self, open_order_id) -> None:
