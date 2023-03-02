@@ -206,11 +206,11 @@ class ApplyHedgingSpot ():
         tp_prc = params['take_profit_usd'] 
 
         order_result = await self.send_orders (main_side, 
-                                instrument,
-                                size, 
-                                main_label,
-                                main_prc
-                                )
+                                               instrument,
+                                               size, 
+                                               main_label,
+                                               main_prc
+                                               )
         log.info (order_result)
         log.info ('error' not in order_result)
         order_result_id = order_result['result']['order']['order_id']
@@ -223,26 +223,29 @@ class ApplyHedgingSpot ():
                 closed_side= 'buy'
 
             order_result = await self.send_orders (closed_side, 
-                                instrument,
-                                size, 
-                                closed_label,
-                                None,
-                                'stop_market',
-                                sl_prc                                                       
-                                )
+                                                    instrument,
+                                                    size, 
+                                                    closed_label,
+                                                    None,
+                                                    'stop_market',
+                                                    sl_prc                                                       
+                                                    )
+            log.info (order_result)
             
-            order_result = await self.send_orders (closed_side, 
-                                instrument,
-                                size, 
-                                closed_label,
-                                None,
-                                'stop_market',
-                                tp_prc                                                       
-                                )
             if 'error'  in order_result:   
-                await self.cancel_by_order_id (order_result_id)
-        log.info (order_result)
-        
+                await self.cancel_by_order_id (order_result_id)      
+                
+            order_result = await self.send_orders (closed_side, 
+                                                    instrument,
+                                                    size, 
+                                                    closed_label,
+                                                    None,
+                                                    'stop_market',
+                                                    tp_prc                                                       
+                                                    )
+            log.info (order_result)
+            if 'error'  in order_result:   
+                await self.cancel_by_order_id (order_result_id)        
 
     async def compute_notional_value (self, 
                                       index_price: float, 
