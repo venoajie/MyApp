@@ -292,7 +292,7 @@ class MyOrders ():
             for o in open_orders if 'closed' in (o['label']) \
                 and str_mod.extract_integers_from_text (o['label']) not in order_label_open ]
         
-        log.error (str_mod.remove_redundant_elements (order_label_closed))
+        #log.error (str_mod.remove_redundant_elements (order_label_closed))
         # remove redundant labels
         return str_mod.remove_redundant_elements (order_label_closed)
     
