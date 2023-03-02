@@ -176,7 +176,16 @@ class ApplyHedgingSpot ():
                                                 trigger_price
                                                 ))
             else:
-                result =  (await private_data.send_order ( 
+                if type =='limit'  :
+                    result =  (await private_data.send_order ( 
+                                                side, 
+                                                instrument, 
+                                                size, 
+                                                label,
+                                                prc
+                                                ))
+                else:
+                    result =  (await private_data.send_order ( 
                                                 side, 
                                                 instrument, 
                                                 size, 
