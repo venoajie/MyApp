@@ -181,7 +181,8 @@ class ApplyHedgingSpot ():
                                                 instrument, 
                                                 size, 
                                                 label,
-                                                prc
+                                                prc,
+                                                trigger_price
                                                 ))
             
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
