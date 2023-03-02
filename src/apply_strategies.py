@@ -219,10 +219,10 @@ class ApplyHedgingSpot ():
         else:   
             if main_side == 'buy':
                 closed_side= 'sell'
-                tp_prc = tp_prc - 10
+                trigger_prc = tp_prc - 10
             if main_side == 'sell':
                 closed_side= 'buy'
-                tp_prc = tp_prc + 10
+                trigger_prc = tp_prc + 10
 
             order_result = await self.send_orders (closed_side, 
                                                     instrument,
@@ -243,7 +243,7 @@ class ApplyHedgingSpot ():
                                                     closed_label,
                                                     tp_prc,
                                                     'take_limit',
-                                                    tp_prc                                                       
+                                                    trigger_prc                                                       
                                                     )
             log.info (order_result)
             if 'error'  in order_result:   
