@@ -190,6 +190,60 @@ class ApplyHedgingSpot ():
         except Exception as e:
             log.error (e)
             
+            
+    async def send_combo_orders (self, 
+                                 params) -> None:
+        """
+        """
+        
+        main_side = params['side']
+        instrument = params['instrument']
+        main_label = params['label_numbered']
+        closed_label = params['label_closed_numbered']
+        size = params['size']
+        main_prc = params['entry_price']
+        sl_prc = params['cl_price'] 
+        tp_prc = params['take_profit_usd'] 
+
+        order_result = await self.send_orders (main_side, 
+                                instrument,
+                                size, 
+                                main_label,
+                                main_prc
+                                )
+        log.info (order_result)
+        log.info ('error' not in order_result)
+        order_result_id = order_result['result']['order']['order_id']
+        if 'error'  in order_result:   
+            await self.cancel_by_order_id (order_result_id)
+        else:   
+            if main_side == 'buy':
+                closed_side= 'sell'
+            if main_side == 'sell':
+                closed_side= 'buy'
+
+            order_result = await self.send_orders (closed_side, 
+                                instrument,
+                                size, 
+                                closed_label,
+                                None,
+                                'stop_market',
+                                sl_prc                                                       
+                                )
+            
+            order_result = await self.send_orders (closed_side, 
+                                instrument,
+                                size, 
+                                closed_label,
+                                None,
+                                'stop_market',
+                                tp_prc                                                       
+                                )
+            if 'error'  in order_result:   
+                await self.cancel_by_order_id (order_result_id)
+        log.info (order_result)
+        
+
     async def compute_notional_value (self, 
                                       index_price: float, 
                                       equity: float
@@ -373,8 +427,9 @@ class ApplyHedgingSpot ():
     
             
     async def search_and_drop_orphan_closed_orders(self, 
-                                                order_labels,
-                                                my_trades_open
+                                                open_order_mgt: object,
+                                                my_trades_open_mgt: object
+                                                
                                                 ) -> None:
        
         '''
@@ -388,12 +443,12 @@ class ApplyHedgingSpot ():
         
         
         '''       
+
+        open_orderLabelCLosed =  open_order_mgt.open_orderLabelCLosed() 
         
-        for label in order_labels:
-            my_trades.closed_open_order_label_in_my_trades_open (label,
-                                                                 my_trades_open
-                                                                 )
-            log.info (open_orderLabelCLosed_is_in_my_trades_open)
+        for label_closed in open_orderLabelCLosed:
+            is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
+            log.error (f'{is_closed_label_exist=}')
         
         
     async def cancel_by_order_id (self, open_order_id) -> None:
@@ -551,10 +606,9 @@ class ApplyHedgingSpot ():
                 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
                 
-                open_orderLabelCLosed =  open_order_mgt.open_orderLabelCLosed() 
-                for label_closed in open_orderLabelCLosed:
-                    is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
-                    log.error (f'{is_closed_label_exist=}')
+                await self.search_and_drop_orphan_closed_orders(open_order_mgt,
+                                                                my_trades_open_mgt
+                                                                )
                 
                 # open order integrity
                 await self.check_open_orders_integrity (open_orders_from_sub_account_get,
@@ -645,71 +699,12 @@ class ApplyHedgingSpot ():
                             log.warning (closed_str)
                             
                             if open_str_sell!= None and open_str_sell ['send_order'] :
-                                side = open_str_sell['side']
-                                log.info (open_str_sell['cl_price'])
-                                order_result = await self.send_orders (side, 
-                                                        open_str_sell['instrument'],
-                                                        open_str_sell['size'], 
-                                                        open_str_sell['label_numbered'],
-                                                        open_str_sell['entry_price']
-                                                        )
-                                log.info (order_result)
-                                log.info ('error' not in order_result)
-                                order_result_id = order_result['result']['order']['order_id']
-                                if 'error'  in order_result:   
-                                    await self.cancel_by_order_id (order_result_id)
-                                else:   
-                                    order_result = await self.send_orders ('buy', 
-                                                        open_str_sell['instrument'],
-                                                        open_str_sell['size'], 
-                                                        open_str_sell['label_closed_numbered'],
-                                                        None,
-                                                        'stop_market',
-                                                        open_str_sell['cl_price']                                                        
-                                                        )
-                                    if 'error'  in order_result:   
-                                        await self.cancel_by_order_id (order_result_id)
-                                log.info (order_result)
+                                
+                                await self.send_combo_orders (open_str_sell)
                                 
                             if open_str_buy!= None and open_str_buy ['send_order']:
-                                side = open_str_buy['side']
-                                log.info (open_str_buy['cl_price'])
-                                order_result = await self.send_orders (side, 
-                                                        open_str_buy['instrument'],
-                                                        open_str_buy['size'], 
-                                                        open_str_buy['label_numbered'],
-                                                        open_str_buy['entry_price']
-                                                        )
-                                log.info (order_result)
-                                order_result_id = order_result['result']['order']['order_id']
-                                if 'error'  in order_result:   
-                                    await self.cancel_by_order_id (order_result_id)
                                 
-                                if 'error' not in order_result:
-                                    order_result = await self.send_orders ('sell', 
-                                                        open_str_buy['instrument'],
-                                                        open_str_buy['size'], 
-                                                        open_str_buy['label_closed_numbered'],
-                                                        None,
-                                                        'stop_market',
-                                                        open_str_buy['cl_price']
-                                                        )
-                                    if 'error'  in order_result:   
-                                        await self.cancel_by_order_id (order_result_id)
-                                    log.info (order_result)
-
-                            if closed_str!= None and closed_str ['send_order'] :
-                                side = closed_str['side']
-                                cut_loss = closed_str['cut_loss']
-                                if cut_loss == True:
-                                    pass
-                                else:
-                                    await self.send_orders  (side, 
-                                                        closed_str['instrument'],
-                                                        closed_str['size'], 
-                                                        closed_str['label_numbered'],
-                                                        best_ask_prc if side == 'sell' else best_bid_prc
-                                                        )
+                                await self.send_combo_orders (open_str_buy)
                                                         
                         if 'hedgingSpot' in strategy['strategy']:
                             
