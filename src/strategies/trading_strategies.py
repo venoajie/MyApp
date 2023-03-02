@@ -144,6 +144,8 @@ class RunningStrategies ():
             pct_threshold_CL:str =  self.strategy_attributes  () ['pct_threshold_CL']
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
+            take_profit_usd = self.strategy_attributes  () ['take_profit_usd']
+            
             label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             
             #log.debug (f'OPEN  {my_trades_buy ==[]=} {open_orders_buy ==[]=}')
@@ -169,6 +171,7 @@ class RunningStrategies ():
                     'side': side, 
                     'size': size, 
                     'entry_price': entry_price, 
+                    'take_profit_usd': take_profit_usd, 
                     'cl_price': cl_price, 
                     'label_closed_numbered': label_closed_numbered, 
                     'label_numbered': label_numbered
@@ -193,6 +196,7 @@ class RunningStrategies ():
             label_numbered: str = label_numbering.labelling ('open', label_strategy)
             label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
+            take_profit_usd = self.strategy_attributes  () ['take_profit_usd']
             
             log.debug (f'my_trades_sell  {my_trades_sell=}')
             log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
@@ -216,6 +220,7 @@ class RunningStrategies ():
             return {'send_order': send_order,
                     'instrument': self.instrument,
                     'entry_price': entry_price, 
+                    'take_profit_usd': take_profit_usd, 
                     'cl_price': cl_price, 
                     'side': side, 
                     'size': size, 
