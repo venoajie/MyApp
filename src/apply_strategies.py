@@ -188,11 +188,14 @@ class ApplyHedgingSpot ():
                                                 prc
                                                 ))
                 else:
+                    log.warning (trigger_price)
+                    log.warning (trigger_price)
                     result =  (await private_data.send_order ( 
                                                 side, 
                                                 instrument, 
                                                 size, 
                                                 label,
+                                                type,
                                                 prc,
                                                 trigger_price
                                                 ))
