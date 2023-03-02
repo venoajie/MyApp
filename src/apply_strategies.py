@@ -165,6 +165,7 @@ class ApplyHedgingSpot ():
         try:
             private_data = await self. get_private_data()
             
+            
             if 'market' in type:
                 result =  (await private_data.send_order (                                                
                                                 side, 
@@ -176,6 +177,8 @@ class ApplyHedgingSpot ():
                                                 trigger_price
                                                 ))
             else:
+                log.warning (type)
+                log.warning (trigger_price)
                 if type =='limit'  :
                     result =  (await private_data.send_order ( 
                                                 side, 
@@ -234,6 +237,7 @@ class ApplyHedgingSpot ():
                 closed_side= 'buy'
                 trigger_prc = tp_prc + 10
 
+            log.warning (trigger_prc)
             order_result = await self.send_orders (closed_side, 
                                                     instrument,
                                                     size, 
