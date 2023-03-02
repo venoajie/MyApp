@@ -295,6 +295,9 @@ class GetPrivateData ():
                             ):
             
         if valid_until == False:
+        
+            print (trigger_price)
+            print (trigger_price == None)
             if trigger_price == None:
                 if 'market' in type:
                     print ('SSSSSSSSSSSSSSSSS')
