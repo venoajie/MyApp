@@ -39,7 +39,7 @@ strategies = [
     'instrument': ['PERPETUAL'],
     'time_frame': 3600,
     'side': 'buy',
-    'entry_price': 1645,
+    'entry_price': 1640,
     'take_profit_usd': 1670,
     'take_profit_pct': 1/100,
     'quantity_discrete': 15,
