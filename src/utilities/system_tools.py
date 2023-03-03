@@ -141,14 +141,10 @@ def provide_path_for_file (
     my_path_linux: str = root / sub_folder if exchange == None else  root / sub_folder / exchange
     my_path_win:str = root / "src" / sub_folder if exchange == None else  root / "src" / sub_folder / exchange
     
-    print (sub_folder)
-    print ('portfolio' in sub_folder or  'transactions' in sub_folder)
-    
     if 'portfolio' in sub_folder or  'transactions' in sub_folder:
         my_path_linux: str = root / sub_folder if exchange == None else  root / sub_folder 
         my_path_win:str = root / "src" / sub_folder if exchange == None else  root / "src" / sub_folder 
     
-    print (my_path_linux)
     # Create target Directory if it doesn't exist in linux
     if not os.path.exists(my_path_linux) and current_os =='linux':    
 
