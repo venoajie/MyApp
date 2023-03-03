@@ -441,7 +441,7 @@ class GetPrivateData ():
         sl_prc = params['cl_price'] 
         tp_prc = params['take_profit_usd'] 
 
-        order_result = await self.send_orders (main_side, 
+        order_result = await self.send_order (main_side, 
                                                instrument,
                                                size, 
                                                main_label,
@@ -462,7 +462,7 @@ class GetPrivateData ():
                 closed_side= 'buy'
                 trigger_prc = tp_prc + 10
 
-            order_result = await self.send_orders (closed_side, 
+            order_result = await self.send_order (closed_side, 
                                                     instrument,
                                                     size, 
                                                     closed_label,
@@ -476,7 +476,7 @@ class GetPrivateData ():
                 await self.get_cancel_order_byOrderId (order_result_id) 
                 await telegram_bot_sendtext ('combo order failed')     
                 
-            order_result = await self.send_orders (closed_side, 
+            order_result = await self.send_order (closed_side, 
                                                     instrument,
                                                     size, 
                                                     closed_label,
