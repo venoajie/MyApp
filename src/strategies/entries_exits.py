@@ -18,6 +18,7 @@ strategies = [
     'equity_risked_usd': 60, 
     'equity_risked_pct': equity_risked_pct_default
     },
+    
     {
     'strategy': 'supplyDemandLong60',
     'instrument': ['PERPETUAL'],
@@ -34,6 +35,7 @@ strategies = [
     'equity_risked_usd': 60, 
     'equity_risked_pct': equity_risked_pct_default
     },
+    
     {
     'strategy': 'supplyDemandLong60A',
     'instrument': ['PERPETUAL'],
@@ -44,22 +46,6 @@ strategies = [
     'take_profit_pct': 1/100,
     'quantity_discrete': 15,
     'cut_loss_usd': 1570,
-    'cut_loss_pct': (1/100)/2,
-    'averaging': 15,
-    'halt_minute_before_reorder': 60, 
-    'equity_risked_usd': 60, 
-    'equity_risked_pct': equity_risked_pct_default
-    },
-    {
-    'strategy': 'supplyDemandLong60B',
-    'instrument': ['PERPETUAL'],
-    'time_frame': 3600,
-    'side': 'buy',
-    'entry_price': 1550,
-    'take_profit_usd': 1610,
-    'take_profit_pct': 1/100,
-    'quantity_discrete': 15,
-    'cut_loss_usd': 1420,
     'cut_loss_pct': (1/100)/2,
     'averaging': 15,
     'halt_minute_before_reorder': 60, 
