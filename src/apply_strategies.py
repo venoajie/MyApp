@@ -462,17 +462,18 @@ class ApplyHedgingSpot ():
         - no open order nor open trade. . This is NOT ok. If it found, cancel it
         
         
-        '''       
+        '''   
+        if open_orderLabelCLosed != None:
 
-        open_orderLabelCLosed =  open_order_mgt.open_orderLabelCLosed() 
-        
-        for label_closed in open_orderLabelCLosed:
-            is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
+            open_orderLabelCLosed =  open_order_mgt.open_orderLabelCLosed() 
             
-            if is_closed_label_exist == False:
-                open_orders = open_order_mgt.open_orders_api()
-                open_order_id = [o['order_id'] for o in open_orders if str(label_closed)[-10:] in o['label']  ] [0]
-                await self.cancel_by_order_id (open_order_id) 
+            for label_closed in open_orderLabelCLosed:
+                is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open (label_closed) 
+                
+                if is_closed_label_exist == False:
+                    open_orders = open_order_mgt.open_orders_api()
+                    open_order_id = [o['order_id'] for o in open_orders if str(label_closed)[-10:] in o['label']  ] [0]
+                    await self.cancel_by_order_id (open_order_id) 
         
         
     async def cancel_by_order_id (self, open_order_id) -> None:
