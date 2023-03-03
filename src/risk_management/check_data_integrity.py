@@ -122,10 +122,8 @@ class CheckTradeIntegrity ():
             else:
                 if size_from_get_db == []  and size_from_trading_db == [] :
                     return 0
-                
                 if size_from_get_db == []:
                     return size_from_trading_db  
-                
                 if size_from_trading_db == []:
                     return  0 - size_from_get_db 
             
