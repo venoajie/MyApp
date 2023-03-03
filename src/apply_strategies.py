@@ -304,6 +304,8 @@ class ApplyHedgingSpot ():
                                                                     self.currency, 
                                                                     'open'
                                                                     )
+        log.error (f'path_trades_open {path_trades_open}')
+        log.error (f'path_orders_open {path_orders_open}')
         
         path_orders_filled: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
