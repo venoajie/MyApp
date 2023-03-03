@@ -5,7 +5,7 @@ from dataclassy import dataclass
 from loguru import logger as log
 
 from utilities import string_modification
-from portfolio.deribit import myTrades_management
+from transaction_management.deribit import myTrades_management
 
 @dataclass(unsafe_hash=True, slots=True)
 class SpotHedging ():
