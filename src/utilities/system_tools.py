@@ -140,6 +140,8 @@ def provide_path_for_file (
     # Combine root + folders
     my_path_linux: str = root / sub_folder if exchange == None else  root / sub_folder / exchange
     my_path_win:str = root / "src" / sub_folder if exchange == None else  root / "src" / sub_folder / exchange
+    print (my_path_linux)
+    print (os.path.exists(my_path_linux))
     
     # Create target Directory if it doesn't exist in linux
     if not os.path.exists(my_path_linux) and current_os =='linux':    
