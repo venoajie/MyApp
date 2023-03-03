@@ -62,8 +62,6 @@ def provide_path_for_file (
     if  bool(
         [
             o for o in [
-                'orders', 
-                'myTrades', 
                 'portfolio',
                 'positions', 
                 'sub_accounts'
@@ -71,7 +69,19 @@ def provide_path_for_file (
             ]
         )  :
         
-        sub_folder: str = 'portfolio'
+        sub_folder: str = 'databases/portfolio'
+        exchange: str = 'deribit'
+        
+    if  bool(
+        [
+            o for o in [
+                'orders', 
+                'myTrades', 
+                ] if (o in end_point)
+            ]
+        )  :
+        
+        sub_folder: str = 'databases/transactions'
         exchange: str = 'deribit'
         
     if bool(
@@ -89,7 +99,7 @@ def provide_path_for_file (
             ]
         ):
         
-        sub_folder = 'market_data'
+        sub_folder = 'databases/market'
         exchange = 'deribit'
         
     if bool(
@@ -101,7 +111,8 @@ def provide_path_for_file (
                          ]  if (o in end_point)
             ]
         )  :
-        sub_folder: str = 'market_data'
+        sub_folder = 'databases/market'
+        exchange = 'general'
     
     if  marker != None:
         
