@@ -6,7 +6,7 @@ import asyncio
 
 # user defined formula 
 from utilities import system_tools, pickling, string_modification
-from portfolio.deribit import myTrades_management
+from transaction_management.deribit import myTrades_management
 from loguru import  logger as log
 
 def catch_error (error) -> list:

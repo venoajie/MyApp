@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.portfolio.deribit import myTrades_management
+from src.transaction_management.deribit import myTrades_management
 
 my_trades_all = [
     {

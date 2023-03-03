@@ -8,7 +8,7 @@ from loguru import logger as log
 import asyncio
 
 # user defined formula 
-from portfolio.deribit import open_orders_management, myTrades_management
+from transaction_management.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, string_modification as str_mod#, number_modification, string_modification
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity#, position_sizing
@@ -202,68 +202,14 @@ class ApplyHedgingSpot ():
         except Exception as e:
             log.error (e)
             
-            
     async def send_combo_orders (self, 
                                  params) -> None:
         """
         """
         
-        main_side = params['side']
-        instrument = params['instrument']
-        main_label = params['label_numbered']
-        closed_label = params['label_closed_numbered']
-        size = params['size']
-        main_prc = params['entry_price']
-        sl_prc = params['cl_price'] 
-        tp_prc = params['take_profit_usd'] 
-
-        order_result = await self.send_orders (main_side, 
-                                               instrument,
-                                               size, 
-                                               main_label,
-                                               main_prc
-                                               )
-        log.warning (order_result)
-        
-        order_result_id = order_result['result']['order']['order_id']
-        if 'error'  in order_result:  
-            await self.cancel_by_order_id (order_result_id)
-            telegram_bot_sendtext ('combo order failed') 
-        else:   
-            if main_side == 'buy':
-                closed_side= 'sell'
-                trigger_prc = tp_prc - 10
-            if main_side == 'sell':
-                closed_side= 'buy'
-                trigger_prc = tp_prc + 10
-
-            order_result = await self.send_orders (closed_side, 
-                                                    instrument,
-                                                    size, 
-                                                    closed_label,
-                                                    None,
-                                                    'stop_market',
-                                                    sl_prc                                                       
-                                                    )
-            log.info (order_result)
-            
-            if 'error'  in order_result:   
-                await self.cancel_by_order_id (order_result_id) 
-                telegram_bot_sendtext ('combo order failed')     
-                
-            order_result = await self.send_orders (closed_side, 
-                                                    instrument,
-                                                    size, 
-                                                    closed_label,
-                                                    tp_prc,
-                                                    'take_limit',
-                                                    trigger_prc                                                       
-                                                    )
-            log.info (order_result)
-            if 'error'  in order_result:   
-                await self.cancel_by_order_id (order_result_id)   
-                telegram_bot_sendtext ('combo order failed')     
-
+        private_data = await self. get_private_data()
+        result =  await private_data.send_triple_orders (params)
+                   
     async def compute_notional_value (self, 
                                       index_price: float, 
                                       equity: float

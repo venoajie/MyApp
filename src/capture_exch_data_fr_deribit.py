@@ -3,10 +3,7 @@
 
 # built ins
 from datetime import datetime, timedelta
-import os
-from os.path import join, dirname
 import json
-from functools import lru_cache
 
 # installed
 import websockets
@@ -17,8 +14,7 @@ from loguru import logger as log
 # user defined formula 
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
-from portfolio.deribit import open_orders_management, myTrades_management
-import deribit_get
+from transaction_management.deribit import open_orders_management, myTrades_management
 import apply_strategies
     
 def parse_dotenv(sub_account)->dict:    

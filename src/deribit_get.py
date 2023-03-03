@@ -22,6 +22,56 @@ params_coinGlass = {
             "coinglassSecret": "877ad9af931048aab7e468bda134942e"
         }
 
+async def  telegram_bot_sendtext (
+                            bot_message: str, 
+                            purpose: str = 'general_error'
+                            ) -> str:
+    
+    """
+    # simple telegram
+    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
+    """
+
+    tel = (config.main_dotenv ('telegram-failed_order'))
+
+    try:
+        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
+    
+    except:
+        bot_token   = config.main_dotenv ('telegram-failed_order')['BOT_TOKEN']
+    
+    if purpose == 'failed_order':
+        
+        try:
+            bot_chatID  = config.main_dotenv ('telegram-failed_order')['BOT_CHATID_FAILED_ORDER']
+        except:
+            bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
+        
+    if purpose == 'general_error':
+        try:
+            bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
+
+        except:
+            bot_chatID  = config.main_dotenv ('telegram-general_error')['BOT_CHATID_GENERAL_ERROR']
+    connection_url   = 'https://api.telegram.org/bot'
+    endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
+							        '&parse_mode=HTML&text=') + bot_message
+        
+
+    try:
+        return await main (
+                        endpoint=endpoint,
+                        params={},
+                        connection_url=connection_url
+                        )     
+    
+    except:
+        return await main (
+                        endpoint=endpoint,
+                        params=params_coinGlass,
+                        connection_url=connection_url
+                        )     
+    
 
 async def main(
     endpoint: str,
@@ -373,6 +423,73 @@ class GetPrivateData ():
                                 ) 
         return result 
     
+    async def send_triple_orders (self, 
+                                 params) -> None:
+        """
+        1 limit order
+        1 SL market order
+        1 TP limit order
+        """
+        from loguru import logger as log
+        
+        main_side = params['side']
+        instrument = params['instrument']
+        main_label = params['label_numbered']
+        closed_label = params['label_closed_numbered']
+        size = params['size']
+        main_prc = params['entry_price']
+        sl_prc = params['cl_price'] 
+        tp_prc = params['take_profit_usd'] 
+
+        order_result = await self.send_orders (main_side, 
+                                               instrument,
+                                               size, 
+                                               main_label,
+                                               main_prc
+                                               )
+        log.warning (order_result)
+        
+        order_result_id = order_result['result']['order']['order_id']
+        
+        if 'error'  in order_result:  
+            await self.get_cancel_order_byOrderId (order_result_id)
+            await telegram_bot_sendtext ('combo order failed') 
+        else:   
+            if main_side == 'buy':
+                closed_side= 'sell'
+                trigger_prc = tp_prc - 10
+            if main_side == 'sell':
+                closed_side= 'buy'
+                trigger_prc = tp_prc + 10
+
+            order_result = await self.send_orders (closed_side, 
+                                                    instrument,
+                                                    size, 
+                                                    closed_label,
+                                                    None,
+                                                    'stop_market',
+                                                    sl_prc                                                       
+                                                    )
+            log.info (order_result)
+            
+            if 'error'  in order_result:   
+                await self.get_cancel_order_byOrderId (order_result_id) 
+                await telegram_bot_sendtext ('combo order failed')     
+                
+            order_result = await self.send_orders (closed_side, 
+                                                    instrument,
+                                                    size, 
+                                                    closed_label,
+                                                    tp_prc,
+                                                    'take_limit',
+                                                    trigger_prc                                                       
+                                                    )
+            log.info (order_result)
+            
+            if 'error'  in order_result:   
+                await self.get_cancel_order_byOrderId (order_result_id)   
+                await telegram_bot_sendtext ('combo order failed')  
+        
     async def  get_cancel_order_byOrderId(self, 
                                         order_id: int):
         # Set endpoint
@@ -683,56 +800,6 @@ async def  get_open_interest_symbol (
 
     # Set endpoint
     endpoint: str = f'open_interest?symbol={currency}'
-    try:
-        return await main (
-                        endpoint=endpoint,
-                        params={},
-                        connection_url=connection_url
-                        )     
-    
-    except:
-        return await main (
-                        endpoint=endpoint,
-                        params=params_coinGlass,
-                        connection_url=connection_url
-                        )     
-    
-async def  telegram_bot_sendtext (
-                            bot_message: str, 
-                            purpose: str = 'general_error'
-                            ) -> str:
-    
-    """
-    # simple telegram
-    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
-    """
-
-    tel = (config.main_dotenv ('telegram-failed_order'))
-
-    try:
-        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
-    
-    except:
-        bot_token   = config.main_dotenv ('telegram-failed_order')['BOT_TOKEN']
-    
-    if purpose == 'failed_order':
-        
-        try:
-            bot_chatID  = config.main_dotenv ('telegram-failed_order')['BOT_CHATID_FAILED_ORDER']
-        except:
-            bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
-        
-    if purpose == 'general_error':
-        try:
-            bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
-
-        except:
-            bot_chatID  = config.main_dotenv ('telegram-general_error')['BOT_CHATID_GENERAL_ERROR']
-    connection_url   = 'https://api.telegram.org/bot'
-    endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
-							        '&parse_mode=HTML&text=') + bot_message
-        
-
     try:
         return await main (
                         endpoint=endpoint,

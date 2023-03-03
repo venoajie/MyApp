@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from src.portfolio.deribit import open_orders_management
+from src.transaction_management.deribit import open_orders_management
 #from portfolio.deribit import open_orders_management
 
 my_orders_all = [
