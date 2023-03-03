@@ -69,8 +69,8 @@ def provide_path_for_file (
             ]
         )  :
         
-        sub_folder: str = 'databases/portfolio'
         exchange: str = 'deribit'
+        sub_folder: str = f'databases/exchanges/{exchange}/portfolio'
         
     if  bool(
         [
@@ -81,8 +81,8 @@ def provide_path_for_file (
             ]
         )  :
         
-        sub_folder: str = 'databases/transactions'
         exchange: str = 'deribit'
+        sub_folder: str = f'databases/exchanges/{exchange}/transactions'
         
     if bool(
         [
