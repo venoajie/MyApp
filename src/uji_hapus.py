@@ -37,4 +37,6 @@ pickling.replace_data (path_orders_open,
                                                 True
                                                 )
 my_orders_open: str = pickling.read_data(path_orders_open)   
+file =  601677473096
+print (str(file) [-10:])
 print (sum(([ o['amount'] for o in my_orders_open ])))
