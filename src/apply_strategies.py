@@ -304,8 +304,6 @@ class ApplyHedgingSpot ():
                                                                     self.currency, 
                                                                     'open'
                                                                     )
-        log.error (f'path_trades_open {path_trades_open}')
-        log.error (f'path_orders_open {path_orders_open}')
         
         path_orders_filled: str = system_tools.provide_path_for_file ('orders', 
                                                                       self.currency, 
@@ -595,7 +593,7 @@ class ApplyHedgingSpot ():
             
                 # my trades data
                 my_trades_open: list = reading_from_database ['my_trades_open']
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
                 
                 #
                 #log.info (my_trades_open)
@@ -618,7 +616,7 @@ class ApplyHedgingSpot ():
 
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database ['open_orders_open_byAPI']
-                log.critical (open_orders_open_byAPI)
+                #log.critical (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database ['open_orders_from_sub_account']
                 open_orders_filled_byAPI: list = reading_from_database ['open_orders_filled_byAPI']
 
