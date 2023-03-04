@@ -95,8 +95,8 @@ class RunningStrategies ():
             label_int = string_modification.extract_integers_from_text (label_open_numbered)      
             label_closed_numbered  = f'{label}-closed-{label_int}'
                     
-            log.info (len (my_trades_sell) )
-            log.info (len (open_orders_buy) )
+            log.info (f' len (my_trades_sell) {len (my_trades_sell) }')
+            log.info (f' len (open_orders_buy) {len (open_orders_buy) }')
             log.warning (open_orders_buy)
             log.info (direction )
             #! CLOSED ORDER SELL
@@ -107,12 +107,12 @@ class RunningStrategies ():
                 tp_price = price - (price * self.strategy_attributes  ()['pct_threshold_TP'])
                 cl_price = price + (price * self.strategy_attributes  () ['pct_threshold_CL'])
                 cut_loss = cl_price > self.index_price
-                send_order = tp_price < self.index_price or cut_loss
                 side = 'buy'
                     
                 #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                 
-                return {'send_order': send_order,
+                return {'send_order_tp': tp_price < self.index_price,
+                        'send_order_cl': cut_loss,
                         'instrument': instrument,
                         'side': side, 
                         'tp_price': tp_price, 
@@ -134,12 +134,12 @@ class RunningStrategies ():
                 tp_price = price + (price * self.strategy_attributes  () ['pct_threshold_TP'])
                 cl_price = price - (price * self.strategy_attributes  () ['pct_threshold_CL'])
                 cut_loss = cl_price < self.index_price   
-                send_order = tp_price > self.index_price or cut_loss  
                 side = 'sell'          
                         
                 #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
-                
-                return {'send_order': send_order,
+            
+                return {'send_order_tp':  tp_price > self.index_price,
+                        'send_order_cl': cut_loss,
                         'instrument': instrument,
                         'side': side, 
                         'tp_price': tp_price, 
@@ -220,8 +220,8 @@ class RunningStrategies ():
             cl_price = self.strategy_attributes  () ['cut_loss_usd']
             take_profit_usd = self.strategy_attributes  () ['take_profit_usd']
             
-            log.debug (f'my_trades_sell  {my_trades_sell=}')
-            log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
+            #log.debug (f'my_trades_sell  {my_trades_sell=}')
+            #log.debug (f'OPEN  {open_orders_sell ==[]=} {my_trades_sell ==[]=}')
             
             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
@@ -265,7 +265,8 @@ def main (strategy,
     my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
     my_orders_open_strategy = ([o  for o in my_orders_api_basedOn_label_strategy if strategy['strategy'] in o['label']])
     #log.critical (my_trades_open_strategy)
-    log.critical (my_orders_open_strategy)
+    log.critical (f'strategy {strategy}')
+    log.critical (f'my_orders_open_strategy {my_orders_open_strategy}')
 
     strategies = RunningStrategies (strategy,
                                     index_price,

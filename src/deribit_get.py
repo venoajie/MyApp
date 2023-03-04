@@ -1,11 +1,11 @@
 # built ins
+import asyncio
 from typing import Dict
 
 # installed
-import asyncio
+from dataclassy import dataclass  # import websockets
 
-from dataclassy import dataclass#import websockets
-#import json, orjson
+# import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
 from dotenv import load_dotenv
@@ -14,89 +14,87 @@ from os.path import join, dirname
 # user defined formula
 from configuration import id_numbering, config
 
-dotenv_path = join(dirname(__file__), '.env')
+dotenv_path = join(dirname(__file__), ".env")
 load_dotenv(dotenv_path)
 
 params_coinGlass = {
-            "accept": "application/json",
-            "coinglassSecret": "877ad9af931048aab7e468bda134942e"
-        }
+    "accept": "application/json",
+    "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+}
 
-async def  telegram_bot_sendtext (
-                            bot_message: str, 
-                            purpose: str = 'general_error'
-                            ) -> str:
-    
+
+async def telegram_bot_sendtext(
+    bot_message: str, purpose: str = "general_error"
+) -> str:
+
     """
     # simple telegram
     #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
     """
 
-    tel = (config.main_dotenv ('telegram-failed_order'))
+    tel = config.main_dotenv("telegram-failed_order")
 
     try:
-        bot_token   = config.main_dotenv ('telegram-failed_order')['bot_token']
-    
+        bot_token = config.main_dotenv("telegram-failed_order")["bot_token"]
+
     except:
-        bot_token   = config.main_dotenv ('telegram-failed_order')['BOT_TOKEN']
-    
-    if purpose == 'failed_order':
-        
+        bot_token = config.main_dotenv("telegram-failed_order")["BOT_TOKEN"]
+
+    if purpose == "failed_order":
+
         try:
-            bot_chatID  = config.main_dotenv ('telegram-failed_order')['BOT_CHATID_FAILED_ORDER']
+            bot_chatID = config.main_dotenv("telegram-failed_order")[
+                "BOT_CHATID_FAILED_ORDER"
+            ]
         except:
-            bot_chatID  = config.main_dotenv ('telegram-failed_order')['bot_chatid']
-        
-    if purpose == 'general_error':
+            bot_chatID = config.main_dotenv("telegram-failed_order")["bot_chatid"]
+
+    if purpose == "general_error":
         try:
-            bot_chatID  = config.main_dotenv ('telegram-general_error')['bot_chatid']
+            bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatid"]
 
         except:
-            bot_chatID  = config.main_dotenv ('telegram-general_error')['BOT_CHATID_GENERAL_ERROR']
-    connection_url   = 'https://api.telegram.org/bot'
-    endpoint   = bot_token + ('/sendMessage?chat_id=') + bot_chatID + (
-							        '&parse_mode=HTML&text=') + bot_message
-        
+            bot_chatID = config.main_dotenv("telegram-general_error")[
+                "BOT_CHATID_GENERAL_ERROR"
+            ]
+    connection_url = "https://api.telegram.org/bot"
+    endpoint = (
+        bot_token
+        + ("/sendMessage?chat_id=")
+        + bot_chatID
+        + ("&parse_mode=HTML&text=")
+        + bot_message
+    )
 
     try:
-        return await main (
-                        endpoint=endpoint,
-                        params={},
-                        connection_url=connection_url
-                        )     
-    
+        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+
     except:
-        return await main (
-                        endpoint=endpoint,
-                        params=params_coinGlass,
-                        connection_url=connection_url
-                        )     
-    
+        return await main(
+            endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
+        )
+
 
 async def main(
     endpoint: str,
     params: str,
     connection_url: str,
-    client_id: str =None,
-    client_secret: str=None,
-        ) -> None:
+    client_id: str = None,
+    client_secret: str = None,
+) -> None:
 
-    id = id_numbering.id(endpoint, 
-                         endpoint
-                         )
-    
+    id = id_numbering.id(endpoint, endpoint)
+
     payload: Dict = {
-                    "jsonrpc": "2.0",
-                    "id": id,
-                    "method": f"{endpoint}",
-                    "params": params
-                    }  
-    
+        "jsonrpc": "2.0",
+        "id": id,
+        "method": f"{endpoint}",
+        "params": params,
+    }
+
     if client_id == None:
         async with aiohttp.ClientSession() as session:
-            async with session.get(
-                connection_url+endpoint
-                    ) as response:
+            async with session.get(connection_url + endpoint) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
 
@@ -104,15 +102,15 @@ async def main(
                 response: Dict = await response.json()
 
             return response
-                
+
     else:
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                connection_url+endpoint,
+                connection_url + endpoint,
                 auth=BasicAuth(client_id, client_secret),
-                json=payload
-                    ) as response:
+                json=payload,
+            ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
 
@@ -121,696 +119,585 @@ async def main(
 
             return response
 
+
 @dataclass(unsafe_hash=True, slots=True)
-class GetPrivateData ():
-    
-    '''
-    '''       
-    
+class GetPrivateData:
+
+    """
+    """
+
     connection_url: str
     client_id: str
     client_secret: str
     currency: str
-        
-    async def parse_main (self,
-                          endpoint: str,
-                          params: dict):
-            
-        
+
+    async def parse_main(self, endpoint: str, params: dict):
+
         result = await main(
-                endpoint=endpoint,
-                params=params,
-                connection_url=self.connection_url,
-                client_id=self.client_id,
-                client_secret=self.client_secret,
-                )
-        
-        return result 
-    
-    async def get_subaccounts (self):
-            
-        # Set endpoint
-        endpoint: str = 'private/get_subaccounts_details'
+            endpoint=endpoint,
+            params=params,
+            connection_url=self.connection_url,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+        )
 
-        params =  {"currency": self.currency,
-                "with_open_orders": True}
-        
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                )
+        return result
 
-    async def get_account_summary (self):
-            
-        params =  {"currency": self.currency,
-                   "extended": True
-                   }
+    async def get_subaccounts(self):
 
         # Set endpoint
-        endpoint: str = 'private/get_account_summary'
-        
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                )
-        
-            
-    async def get_positions (self):
+        endpoint: str = "private/get_subaccounts_details"
+
+        params = {"currency": self.currency, "with_open_orders": True}
+
+        return await self.parse_main(endpoint=endpoint, params=params)
+
+    async def get_account_summary(self):
+
+        params = {"currency": self.currency, "extended": True}
 
         # Set endpoint
-        endpoint: str = 'private/get_positions'
-            
-        params =  {"currency": self.currency}
+        endpoint: str = "private/get_account_summary"
 
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                )
+        return await self.parse_main(endpoint=endpoint, params=params)
 
+    async def get_positions(self):
 
-    async def  get_open_orders_byCurrency (self)-> list:
-        
-        params =  {
-                    "currency": self.currency
-                    }
-        
         # Set endpoint
-        endpoint: str = f'private/get_open_orders_by_currency'
+        endpoint: str = "private/get_positions"
 
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                )
+        params = {"currency": self.currency}
 
+        return await self.parse_main(endpoint=endpoint, params=params)
 
-    async def  get_user_trades_by_currency_and_time (self, 
-                                                    start_timestamp: int, 
-                                                    end_timestamp: int, 
-                                                    count: int = 1000, 
-                                                    include_old: bool = True
-                                                    )-> list:
-        
+    async def get_open_orders_byCurrency(self) -> list:
+
+        params = {"currency": self.currency}
+
         # Set endpoint
-        endpoint: str = f'private/get_user_trades_by_currency_and_time'
+        endpoint: str = f"private/get_open_orders_by_currency"
 
-        params =  {
-                    "currency": self.currency.upper(),
-                    "kind": "any",
-                    "start_timestamp": start_timestamp,
-                    "end_timestamp": end_timestamp,
-                    "count": count,
-                    "include_old": include_old
-                    }
+        return await self.parse_main(endpoint=endpoint, params=params)
 
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                )
+    async def get_user_trades_by_currency_and_time(
+        self,
+        start_timestamp: int,
+        end_timestamp: int,
+        count: int = 1000,
+        include_old: bool = True,
+    ) -> list:
 
-    async def  get_user_trades_by_currency (self, 
-                                            count: int =1000
-                                            )-> list:
-        
         # Set endpoint
-        endpoint: str = f'private/get_user_trades_by_currency'
+        endpoint: str = f"private/get_user_trades_by_currency_and_time"
 
-        params =  {
-                    "currency": self.currency.upper(),
-                    "kind": 'any',
-                    "count": count
-                    }
-        
-        return await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                ) 
+        params = {
+            "currency": self.currency.upper(),
+            "kind": "any",
+            "start_timestamp": start_timestamp,
+            "end_timestamp": end_timestamp,
+            "count": count,
+            "include_old": include_old,
+        }
 
-    async def edit_order  (self,
-                            instrument, 
-                            order_id, 
-                            amount, 
-                            label: str = None, 
-                            price: float = None, 
-                            trigger_price: float = None, 
-                            trigger: str = 'last_price', 
-                            time_in_force: str ='fill_or_kill',
-                            reduce_only: bool = False, 
-                            valid_until: int = False,
-                            post_only: bool = True, 
-                            reject_post_only: bool =False
-                            ):
-            
+        return await self.parse_main(endpoint=endpoint, params=params)
+
+    async def get_user_trades_by_currency(self, count: int = 1000) -> list:
+
+        # Set endpoint
+        endpoint: str = f"private/get_user_trades_by_currency"
+
+        params = {"currency": self.currency.upper(), "kind": "any", "count": count}
+
+        return await self.parse_main(endpoint=endpoint, params=params)
+
+    async def edit_order(
+        self,
+        instrument,
+        order_id,
+        amount,
+        label: str = None,
+        price: float = None,
+        trigger_price: float = None,
+        trigger: str = "last_price",
+        time_in_force: str = "fill_or_kill",
+        reduce_only: bool = False,
+        valid_until: int = False,
+        post_only: bool = True,
+        reject_post_only: bool = False,
+    ):
+
         if valid_until == False:
             if trigger_price == None:
-                if 'market' in type:
-                    params =  {
+                if "market" in type:
+                    params = {
                         "instrument_name": instrument,
                         "order_id": order_id,
                         "amount": amount,
-                        #"time_in_force": time_in_force, fik can not apply to post only
+                        # "time_in_force": time_in_force, fik can not apply to post only
                         "reduce_only": reduce_only,
-                        }
-                else:
-                    params =  {
-                        "instrument_name": instrument,
-                        "order_id": order_id,
-                        "amount": amount,
-                        "price": price,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "reduce_only": reduce_only,
-                        "post_only": post_only,
-                        "reject_post_only": reject_post_only,
-                        }
-            else:
-                if 'market' in type :
-                    params =  {
-                        "instrument_name": instrument,
-                        "order_id": order_id,
-                        "amount": amount,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "trigger": trigger,
-                        "trigger_price": trigger_price,
-                        "reduce_only": reduce_only
-                        }
-                else:
-                    params =  {
-                        "instrument_name": instrument,
-                        "order_id": order_id,
-                        "amount": amount,
-                        "price": price,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "trigger": trigger,
-                        "trigger_price": trigger_price,
-                        "reduce_only": reduce_only,
-                        "post_only": post_only,
-                        "reject_post_only": reject_post_only,
-                        }
-        else:
-            params =  {
-                    "instrument_name": instrument,
-                    "order_id": order_id,
-                    "amount": amount,
-                    "price": price,
-                    "valid_until": valid_until,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only
                     }
+                else:
+                    params = {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+            else:
+                if "market" in type:
+                    params = {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                    }
+                else:
+                    params = {
+                        "instrument_name": instrument,
+                        "order_id": order_id,
+                        "amount": amount,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+        else:
+            params = {
+                "instrument_name": instrument,
+                "order_id": order_id,
+                "amount": amount,
+                "price": price,
+                "valid_until": valid_until,
+                # "time_in_force": time_in_force, fik can not apply to post only
+                "type": type,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
+            }
 
-        endpoint: str = 'edit'
-            
-        result =  await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                ) 
-        return result 
-        
-        
-    async def send_order  (self,
-                            side: str, 
-                            instrument, 
-                            amount, 
-                            label: str = None, 
-                            price: float = None, 
-                            type: str ='limit',
-                            trigger_price: float = None, 
-                            trigger: str = 'last_price', 
-                            time_in_force: str ='fill_or_kill',
-                            reduce_only: bool = False, 
-                            valid_until: int = False,
-                            post_only: bool = True, 
-                            reject_post_only: bool =False
-                            ):
-            
+        endpoint: str = "edit"
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        return result
+
+    async def send_order(
+        self,
+        side: str,
+        instrument,
+        amount,
+        label: str = None,
+        price: float = None,
+        type: str = "limit",
+        trigger_price: float = None,
+        trigger: str = "last_price",
+        time_in_force: str = "fill_or_kill",
+        reduce_only: bool = False,
+        valid_until: int = False,
+        post_only: bool = True,
+        reject_post_only: bool = False,
+    ):
+
         if valid_until == False:
-        
-            print (trigger_price)
-            print (trigger_price == None)
+
+            print(trigger_price)
+            print(trigger_price == None)
             if trigger_price == None:
-                if 'market' in type:
+                if "market" in type:
 
-                    params =  {
+                    params = {
                         "instrument_name": instrument,
                         "amount": amount,
                         "label": label,
-                        #"time_in_force": time_in_force, fik can not apply to post only
+                        # "time_in_force": time_in_force, fik can not apply to post only
                         "type": type,
                         "reduce_only": reduce_only,
-                        }
-                else:
-                    params =  {
-                        "instrument_name": instrument,
-                        "amount": amount,
-                        "label": label,
-                        "price": price,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "type": type,
-                        "reduce_only": reduce_only,
-                        "post_only": post_only,
-                        "reject_post_only": reject_post_only,
-                        }
-            else:
-                if 'market' in type :
-
-                    params =  {
-                        "instrument_name": instrument,
-                        "amount": amount,
-                        "label": label,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "type": type,
-                        "trigger": trigger,
-                        "trigger_price": trigger_price,
-                        "reduce_only": reduce_only
-                        }
-                else:
-                    params =  {
-                        "instrument_name": instrument,
-                        "amount": amount,
-                        "label": label,
-                        "price": price,
-                        #"time_in_force": time_in_force, fik can not apply to post only
-                        "type": type,
-                        "trigger": trigger,
-                        "trigger_price": trigger_price,
-                        "reduce_only": reduce_only,
-                        "post_only": post_only,
-                        "reject_post_only": reject_post_only,
-                        }
-        else:
-            params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "price": price,
-                    "label": label,
-                    "valid_until": valid_until,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only
                     }
+                else:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+            else:
+                if "market" in type:
 
-        if side == 'buy':
-            endpoint: str = 'private/buy'
-        if side == 'sell'  :
-            endpoint: str = 'private/sell'
-            
-        result =  await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                ) 
-        return result 
-    
-    async def send_triple_orders (self, 
-                                 params) -> None:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                    }
+                else:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+        else:
+            params = {
+                "instrument_name": instrument,
+                "amount": amount,
+                "price": price,
+                "label": label,
+                "valid_until": valid_until,
+                # "time_in_force": time_in_force, fik can not apply to post only
+                "type": type,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
+            }
+
+        if side == "buy":
+            endpoint: str = "private/buy"
+        if side == "sell":
+            endpoint: str = "private/sell"
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        return result
+
+    async def send_triple_orders(self, params) -> None:
         """
         1 limit order
         1 SL market order
         1 TP limit order
         """
         from loguru import logger as log
-        
-        main_side = params['side']
-        instrument = params['instrument']
-        main_label = params['label_numbered']
-        closed_label = params['label_closed_numbered']
-        size = params['size']
-        main_prc = params['entry_price']
-        sl_prc = params['cl_price'] 
-        tp_prc = params['take_profit_usd'] 
 
-        order_result = await self.send_order (main_side, 
-                                               instrument,
-                                               size, 
-                                               main_label,
-                                               main_prc
-                                               )
-        log.warning (order_result)
-        
-        order_result_id = order_result['result']['order']['order_id']
-        
-        if 'error'  in order_result:  
-            await self.get_cancel_order_byOrderId (order_result_id)
-            await telegram_bot_sendtext ('combo order failed') 
-        else:   
-            if main_side == 'buy':
-                closed_side= 'sell'
+        main_side = params["side"]
+        instrument = params["instrument"]
+        main_label = params["label_numbered"]
+        closed_label = params["label_closed_numbered"]
+        size = params["size"]
+        main_prc = params["entry_price"]
+        sl_prc = params["cl_price"]
+        tp_prc = params["take_profit_usd"]
+
+        order_result = await self.send_order(
+            main_side, instrument, size, main_label, main_prc
+        )
+        log.warning(order_result)
+
+        order_result_id = order_result["result"]["order"]["order_id"]
+
+        if "error" in order_result:
+            await self.get_cancel_order_byOrderId(order_result_id)
+            await telegram_bot_sendtext("combo order failed")
+        else:
+            if main_side == "buy":
+                closed_side = "sell"
                 trigger_prc = tp_prc - 10
-            if main_side == 'sell':
-                closed_side= 'buy'
+            if main_side == "sell":
+                closed_side = "buy"
                 trigger_prc = tp_prc + 10
 
-            order_result = await self.send_order (closed_side, 
-                                                    instrument,
-                                                    size, 
-                                                    closed_label,
-                                                    None,
-                                                    'stop_market',
-                                                    sl_prc                                                       
-                                                    )
-            log.info (order_result)
-            
-            if 'error'  in order_result:   
-                await self.get_cancel_order_byOrderId (order_result_id) 
-                await telegram_bot_sendtext ('combo order failed')     
-                
-            order_result = await self.send_order (closed_side, 
-                                                    instrument,
-                                                    size, 
-                                                    closed_label,
-                                                    tp_prc,
-                                                    'take_limit',
-                                                    trigger_prc                                                       
-                                                    )
-            log.info (order_result)
-            
-            if 'error'  in order_result:   
-                await self.get_cancel_order_byOrderId (order_result_id)   
-                await telegram_bot_sendtext ('combo order failed')  
-        
-    async def  get_cancel_order_byOrderId(self, 
-                                        order_id: int):
-        # Set endpoint
-        endpoint: str = 'private/cancel'
+            order_result = await self.send_order(
+                closed_side, instrument, size, closed_label, None, "stop_market", sl_prc
+            )
+            log.info(order_result)
 
-        params =  {
-                    "order_id": order_id
-                    }
-            
-        result =  await self.parse_main (
-                                endpoint=endpoint,
-                                params=params
-                                ) 
-        return result    
-        
-async def send_order_market (connection_url: str,
-                            client_id,
-                            client_secret,
-                            side: str, 
-                            instrument, 
-                            amount, 
-                            label: str, 
-                            type: str ='market',
-                            time_in_force: str ='fill_or_kill',
-                            trigger: str = 'last_price', 
-                            trigger_price: float = None, 
-                            reduce_only: bool = False, 
-                            valid_until: int = False,
-                            post_only: bool = True, 
-                            reject_post_only: bool =False
-                            ):
-        
+            if "error" in order_result:
+                await self.get_cancel_order_byOrderId(order_result_id)
+                await telegram_bot_sendtext("combo order failed")
+
+            order_result = await self.send_order(
+                closed_side,
+                instrument,
+                size,
+                closed_label,
+                tp_prc,
+                "take_limit",
+                trigger_prc,
+            )
+            log.info(order_result)
+
+            if "error" in order_result:
+                await self.get_cancel_order_byOrderId(order_result_id)
+                await telegram_bot_sendtext("combo order failed")
+
+    async def get_cancel_order_byOrderId(self, order_id: int):
+        # Set endpoint
+        endpoint: str = "private/cancel"
+
+        params = {"order_id": order_id}
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        return result
+
+
+async def send_order_market(
+    connection_url: str,
+    client_id,
+    client_secret,
+    side: str,
+    instrument,
+    amount,
+    label: str,
+    type: str = "market",
+    time_in_force: str = "fill_or_kill",
+    trigger: str = "last_price",
+    trigger_price: float = None,
+    reduce_only: bool = False,
+    valid_until: int = False,
+    post_only: bool = True,
+    reject_post_only: bool = False,
+):
+
     if valid_until == False:
         if trigger_price == None:
-            params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "label": label,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only,
-                    }
-        else:
-            params =  {
-                    "instrument_name": instrument,
-                    "amount": amount,
-                    "label": label,
-                    #"time_in_force": time_in_force, fik can not apply to post only
-                    "type": type,
-                    "trigger": trigger,
-                    "trigger_price": trigger_price,
-                    "reduce_only": reduce_only,
-                    "post_only": post_only,
-                    "reject_post_only": reject_post_only,
-                    }
-    else:
-        params =  {
+            params = {
                 "instrument_name": instrument,
                 "amount": amount,
                 "label": label,
-                "valid_until": valid_until,
-                #"time_in_force": time_in_force, fik can not apply to post only
+                # "time_in_force": time_in_force, fik can not apply to post only
                 "type": type,
                 "reduce_only": reduce_only,
                 "post_only": post_only,
-                "reject_post_only": reject_post_only
-                }
+                "reject_post_only": reject_post_only,
+            }
+        else:
+            params = {
+                "instrument_name": instrument,
+                "amount": amount,
+                "label": label,
+                # "time_in_force": time_in_force, fik can not apply to post only
+                "type": type,
+                "trigger": trigger,
+                "trigger_price": trigger_price,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
+            }
+    else:
+        params = {
+            "instrument_name": instrument,
+            "amount": amount,
+            "label": label,
+            "valid_until": valid_until,
+            # "time_in_force": time_in_force, fik can not apply to post only
+            "type": type,
+            "reduce_only": reduce_only,
+            "post_only": post_only,
+            "reject_post_only": reject_post_only,
+        }
 
     # Set endpoint based on side
-    if side == 'buy':
-        endpoint: str = 'private/buy'
-    if side == 'sell'  :
-        endpoint: str = 'private/sell'
-        
+    if side == "buy":
+        endpoint: str = "private/buy"
+    if side == "sell":
+        endpoint: str = "private/sell"
+
     result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
+        endpoint=endpoint,
+        params=params,
+        connection_url=connection_url,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
 
-    return result 
+    return result
 
-async def  get_open_orders_byInstruments (connection_url, 
-                                          client_id, client_secret,
-                                          instrument, 
-                                          type
-                                          ):
-    endpoint_open_orders: str = f'private/get_open_orders_by_instrument'
-    params =  {
-                "instrument_name": instrument.upper(),
-                "type": type,
-                }
-    
+
+async def get_open_orders_byInstruments(
+    connection_url, client_id, client_secret, instrument, type
+):
+    endpoint_open_orders: str = f"private/get_open_orders_by_instrument"
+    params = {
+        "instrument_name": instrument.upper(),
+        "type": type,
+    }
+
     result = await main(
-            endpoint=endpoint_open_orders,
-            params=params,
-            connection_url=connection_url,
-            client_id=client_id,
-            client_secret=client_secret,
-            )
-    return result 
+        endpoint=endpoint_open_orders,
+        params=params,
+        connection_url=connection_url,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
+    return result
 
 
-async def  get_user_trades_by_instrument (connection_url, 
-                                          client_id, 
-                                          client_secret, 
-                                          instrument_name: str, 
-                                          count: int =1000
-                                          ):
-    
+async def get_user_trades_by_instrument(
+    connection_url, client_id, client_secret, instrument_name: str, count: int = 1000
+):
+
     # Set endpoint
-    endpoint_get_user_trades: str = f'private/get_user_trades_by_instrument'
-    
-    params =  {
-                "instrument_name": instrument_name.upper(),
-                "count": count
-                }
+    endpoint_get_user_trades: str = f"private/get_user_trades_by_instrument"
+
+    params = {"instrument_name": instrument_name.upper(), "count": count}
 
     result = await main(
-            endpoint= endpoint_get_user_trades,
-            params= params,
-            connection_url= connection_url,
-            client_id= client_id,
-            client_secret= client_secret,
-            )
-    return result 
+        endpoint=endpoint_get_user_trades,
+        params=params,
+        connection_url=connection_url,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
+    return result
 
 
-async def  get_order_history_by_instrument (connection_url, 
-                                            client_id, 
-                                            client_secret, 
-                                            instrument_name,
-                                            count: int = 100
-                                            ):
+async def get_order_history_by_instrument(
+    connection_url, client_id, client_secret, instrument_name, count: int = 100
+):
 
-    
     # Set endpoint
     endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
 
-    params =  {
-                "instrument_name": instrument_name.upper(),
-                "include_old": True,
-                "include_unfilled": True,
-                "count": count
-                }
+    params = {
+        "instrument_name": instrument_name.upper(),
+        "include_old": True,
+        "include_unfilled": True,
+        "count": count,
+    }
 
     result = await main(
-            endpoint= endpoint_get_order_history,
-            params= params,
-            connection_url= connection_url,
-            client_id= client_id,
-            client_secret= client_secret,
-            )
-    return result 
+        endpoint=endpoint_get_order_history,
+        params=params,
+        connection_url=connection_url,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
+    return result
 
 
-async def  get_server_time (connection_url: str)-> int:
+async def get_server_time(connection_url: str) -> int:
 
     """
     Returning server time
     """
     # Set endpoint
-    endpoint: str = 'public/get_time?'
-    
-    # Set the parameters  
-    params = {}
-    
-    # Get result
-    result = await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url
-            )
-    
-    return result  
+    endpoint: str = "public/get_time?"
 
-async def  get_index (connection_url: str,
-                      currency
-                      ):
-    
+    # Set the parameters
+    params = {}
+
+    # Get result
+    result = await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
+    return result
+
+
+async def get_index(connection_url: str, currency):
+
     # Set endpoint
-    endpoint: str = f'public/get_index?currency={currency.upper()}'
-    params =  {}
-    
-    return await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url
-            )     
-    
-async def  get_instruments (connection_url: str,
-                      currency
-                      ):
-    
+    endpoint: str = f"public/get_index?currency={currency.upper()}"
+    params = {}
+
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
+
+async def get_instruments(connection_url: str, currency):
+
     # Set endpoint
-    endpoint: str = f'public/get_instruments?currency={currency.upper()}'
-    params =  {}
-    
-    return await main(
-            endpoint=endpoint,
-            params=params,
-            connection_url=connection_url
-            )     
-    
-async def  get_currencies (
-                            connection_url: str
-                           )->list:
-    
+    endpoint: str = f"public/get_instruments?currency={currency.upper()}"
+    params = {}
+
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
+
+async def get_currencies(connection_url: str) -> list:
+
     # Set endpoint
-    endpoint: str = f'public/get_currencies?'
-    params =  {}
-    
-    return await main (
-                        endpoint=endpoint,
-                        params=params,
-                        connection_url=connection_url
-                        )     
-    
-async def  get_ohlc (
-                    connection_url: str,
-                    instrument_name,
-                    resolution,
-                    qty_candles,
-                           )->list:
-    
+    endpoint: str = f"public/get_currencies?"
+    params = {}
+
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
+
+async def get_ohlc(
+    connection_url: str, instrument_name, resolution, qty_candles,
+) -> list:
+
     from datetime import datetime
     from utilities import time_modification
-    
+
     now_utc = datetime.now()
-    now_unix = time_modification.convert_time_to_unix (now_utc)
+    now_unix = time_modification.convert_time_to_unix(now_utc)
     start_timestamp = now_unix - 60000 * qty_candles
     params = {}
 
     # Set endpoint
-    endpoint: str = f'public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}'
+    endpoint: str = f"public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}"
 
-    return await main (
-                        endpoint=endpoint,
-                        params=params,
-                        connection_url=connection_url
-                        )     
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
-async def  get_open_interest_aggregated_ohlc (
-                                            connection_url: str,
-                                            currency,
-                                            resolution
-                                            )->list:
-    
-    '''
+
+async def get_open_interest_aggregated_ohlc(
+    connection_url: str, currency, resolution
+) -> list:
+
+    """
     interval = m1 m5 m15 h1 h4 h12 all
 
-    '''       
+    """
     # Set endpoint
-    endpoint: str = f'indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}'
+    endpoint: str = f"indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}"
 
     try:
-        return await main (
-                        endpoint=endpoint,
-                        params={},
-                        connection_url=connection_url
-                        )     
-    
+        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+
     except:
-        return await main (
-                        endpoint=endpoint,
-                        params=params_coinGlass,
-                        connection_url=connection_url
-                        )     
-    
+        return await main(
+            endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
+        )
 
-async def  get_open_interest_historical (
-                                            connection_url: str,
-                                            currency,
-                                            resolution
-                                            )->list:
 
-    '''
+async def get_open_interest_historical(
+    connection_url: str, currency, resolution
+) -> list:
+
+    """
     time_frame = m1 m5 m15 h1 h4 h12 all
     currency = USD or symbol
 
-    '''       
+    """
     # Set endpoint
-    endpoint: str = f'open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}'
+    endpoint: str = f"open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}"
 
     try:
-        return await main (
-                        endpoint=endpoint,
-                        params={},
-                        connection_url=connection_url
-                        )     
-    
-    except:
-        return await main (
-                        endpoint=endpoint,
-                        params=params_coinGlass,
-                        connection_url=connection_url
-                        )     
-    
+        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
 
-async def  get_open_interest_symbol (
-                                            connection_url: str,
-                                            currency
-                                            )->list:
+    except:
+        return await main(
+            endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
+        )
+
+
+async def get_open_interest_symbol(connection_url: str, currency) -> list:
 
     # Set endpoint
-    endpoint: str = f'open_interest?symbol={currency}'
+    endpoint: str = f"open_interest?symbol={currency}"
     try:
-        return await main (
-                        endpoint=endpoint,
-                        params={},
-                        connection_url=connection_url
-                        )     
-    
+        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+
     except:
-        return await main (
-                        endpoint=endpoint,
-                        params=params_coinGlass,
-                        connection_url=connection_url
-                        )     
-    
+        return await main(
+            endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
+        )

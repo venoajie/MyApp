@@ -3,11 +3,11 @@
 
 # built ins
 from datetime import datetime, timedelta
+import asyncio
 import json
 
 # installed
 import websockets
-import asyncio
 import orjson
 from loguru import logger as log
 
