@@ -230,7 +230,7 @@ class ApplyHedgingSpot ():
                                                                        status
                                                                        ) 
                                    )
-                
+#! ########### will be deleted ##############################################################################                
     async def reading_from_database (self, instrument: str = None) -> float:
         """
         """
@@ -304,6 +304,8 @@ class ApplyHedgingSpot ():
                 'ticker_perpetual': ticker_perpetual[0],
                 'index_price': index_price [0]['price'],
                 'price_index': ticker_perpetual[0]}
+
+#! ########### end of will be deleted ##############################################################################                
     
     async def position_per_instrument (self, 
                                        positions, 
@@ -344,12 +346,11 @@ class ApplyHedgingSpot ():
         
         if len_current_open_orders != [] :
             if len_current_open_orders > 1 :
-                #log.critical(f'{len_current_open_orders > 1=}')
                 
                 open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_max_id (label_for_filter) 
                 
                 cancel = await self.cancel_by_order_id (open_order_id)
-                #log.critical(f'{cancel=}')
+
                 return (cancel)
                 
     async def cancel_redundant_orders_in_same_labels_closed_hedge (self) -> None:
@@ -668,6 +669,14 @@ class ApplyHedgingSpot ():
                             log.warning (open_str_buy)
                             
                             log.warning (closed_str)
+                            my_trades_strategy = [o for o in my_trades_open if strategy in o['label'] ]
+                            log.warning (my_trades_strategy)
+                            if my_trades_strategy != []:
+                                for my_trade in my_trades_open:
+                                    log.error (my_trade)
+                                    closed = str.closed_strategy(my_trade)
+                                    log.debug (my_trade)
+                                    
                             
                             if open_str_sell!= None and open_str_sell ['send_order'] :
                                 

@@ -130,7 +130,6 @@ class StreamAccountData:
                                                                         )
             
                         server_time = await syn.current_server_time ()
-                        log.critical (server_time)
                                     
                         if self.refresh_token is None:
                             await syn.get_sub_accounts()
