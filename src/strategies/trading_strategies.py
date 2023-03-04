@@ -57,7 +57,8 @@ class RunningStrategies ():
                             else ([o  for o in self.my_orders_api_basedOn_label_strategy if o['direction'] == 'buy'] )
                 } 
                 
-    def closed_strategy (self) -> list:
+    def closed_strategy (self,
+                         my_trades) -> list:
         
         '''
         '''  
@@ -70,61 +71,63 @@ class RunningStrategies ():
             my_trades_sell = self.my_trades_direction () ['sell'] 
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
-            for my_trades in self.my_trades_open:
+            
                 #log.warning (self.strategy_attributes () )
-                log.warning (my_trades )
+            log.warning (my_trades )
+            
+            price  = my_trades ['price']  
+            label = self.strategy_attributes  () ['label_strategy']      
+            size  = my_trades['amount']  
+            direction  = my_trades ['direction']  
+            instrument  = my_trades ['instrument_name'] 
+            label_open_numbered =  my_trades ['label'] 
+            label_int = string_modification.extract_integers_from_text (label_open_numbered)      
+            label_closed_numbered  = f'{label}-closed-{label_int}'
+                    
+            #! CLOSED ORDER SELL
+            if len (my_trades_sell) != 0 \
+                and len (open_orders_buy)==0 \
+                    and direction == 'sell':
+                        
+                tp_price = price - (price * self.strategy_attributes  ()['pct_threshold_TP'])
+                cl_price = price + (price * self.strategy_attributes  () ['pct_threshold_CL'])
+                cut_loss = cl_price > self.index_price
+                send_order = tp_price < self.index_price or cut_loss
+                side = 'buy'
+                    
+                #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                 
-                price  = my_trades ['price']  
-                label = self.strategy_attributes  () ['label_strategy']      
-                size  = my_trades['amount']  
-                direction  = my_trades ['direction']  
-                instrument  = my_trades ['instrument_name'] 
-                label_open_numbered =  my_trades ['label'] 
-                label_int = string_modification.extract_integers_from_text (label_open_numbered)      
-                label_closed_numbered  = f'{label}-closed-{label_int}'
+                return {'send_order': send_order,
+                        'instrument': instrument,
+                        'side': side, 
+                        'tp_price': tp_price, 
+                        'cut_loss': cut_loss, 
+                        'size': size, 
+                        'label_numbered': label_closed_numbered
+                        }
+                
+            #! CLOSED ORDER BUY
+            send_order = False
+            if len (my_trades_buy) != 0 \
+                and len (open_orders_sell)==0 \
+                    and direction == 'buy':
                         
-                #! CLOSED ORDER SELL
-                if len (my_trades_sell) != 0 \
-                    and len (open_orders_buy)==0 \
-                        and direction == 'sell':
-                            
-                    tp_price = price - (price * self.strategy_attributes  ()['pct_threshold_TP'])
-                    cl_price = price + (price * self.strategy_attributes  () ['pct_threshold_CL'])
-                    cut_loss = cl_price > self.index_price
-                    send_order = tp_price < self.index_price or cut_loss
-                    side = 'buy'
+                tp_price = price + (price * self.strategy_attributes  () ['pct_threshold_TP'])
+                cl_price = price - (price * self.strategy_attributes  () ['pct_threshold_CL'])
+                cut_loss = cl_price < self.index_price   
+                send_order = tp_price > self.index_price or cut_loss  
+                side = 'sell'          
                         
-                    #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
-                    
-                    return {'send_order': send_order,
-                            'instrument': instrument,
-                            'side': side, 
-                            'cut_loss': cut_loss, 
-                            'size': size, 
-                            'label_numbered': label_closed_numbered
-                            }
-                    
-                #! CLOSED ORDER BUY
-                send_order = False
-                if len (my_trades_buy) != 0 \
-                    and len (open_orders_sell)==0 \
-                        and direction == 'buy':
-                            
-                    tp_price = price + (price * self.strategy_attributes  () ['pct_threshold_TP'])
-                    cl_price = price - (price * self.strategy_attributes  () ['pct_threshold_CL'])
-                    cut_loss = cl_price < self.index_price   
-                    send_order = tp_price > self.index_price or cut_loss  
-                    side = 'sell'          
-                            
-                    #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
-                    
-                    return {'send_order': send_order,
-                            'instrument': instrument,
-                            'side': side, 
-                            'cut_loss': cut_loss, 
-                            'size': size, 
-                            'label_numbered': label_closed_numbered
-                            }
+                #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
+                
+                return {'send_order': send_order,
+                        'instrument': instrument,
+                        'side': side, 
+                        'tp_price': tp_price, 
+                        'cut_loss': cut_loss, 
+                        'size': size, 
+                        'label_numbered': label_closed_numbered
+                        }
                      
     def open_strategy_buy (self) -> list:
         
