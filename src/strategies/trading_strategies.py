@@ -66,8 +66,9 @@ class RunningStrategies ():
         open_orders_buy = self.my_orders_direction () ['buy'] 
         open_orders_sell = self.my_orders_direction () ['sell'] 
         
-        if self.my_trades_open !=[]:
+        if my_trades !=[]:
             
+            log.debug (my_trades)
             my_trades_sell = self.my_trades_direction () ['sell'] 
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
