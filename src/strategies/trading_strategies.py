@@ -71,9 +71,9 @@ class RunningStrategies ():
             my_trades_sell = self.my_trades_direction () ['sell'] 
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
+            log.warning (my_trades_sell)
+            log.warning (my_trades_buy)
             
-                #log.warning (self.strategy_attributes () )
-            log.warning (my_trades )
             
             price  = my_trades ['price']  
             label = self.strategy_attributes  () ['label_strategy']      
@@ -256,5 +256,4 @@ def main (strategy,
                                     )
     
     return {'open_strategy_buy': strategies. open_strategy_buy (),
-            'open_strategy_sell': strategies. open_strategy_sell (),
-            'closed_strategy': strategies. closed_strategy ()}
+            'open_strategy_sell': strategies. open_strategy_sell ()}
