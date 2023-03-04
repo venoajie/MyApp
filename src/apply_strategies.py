@@ -673,7 +673,7 @@ class ApplyHedgingSpot ():
                             log.warning (strategy['strategy'] )
                             #log.warning (my_trades_open)
                             
-                            log.warning (my_trades_strategy)
+                            #log.warning (my_trades_strategy)
                             if my_trades_strategy not in none_data:
                                 for my_trade in my_trades_strategy:
                                     log.error (my_trade)
