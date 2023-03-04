@@ -73,7 +73,7 @@ class RunningStrategies ():
             
             
                 #log.warning (self.strategy_attributes () )
-            log.warning (my_trades )
+            
             
             price  = my_trades ['price']  
             label = self.strategy_attributes  () ['label_strategy']      
@@ -256,5 +256,4 @@ def main (strategy,
                                     )
     
     return {'open_strategy_buy': strategies. open_strategy_buy (),
-            'open_strategy_sell': strategies. open_strategy_sell (),
-            'closed_strategy': strategies. closed_strategy ()}
+            'open_strategy_sell': strategies. open_strategy_sell ()}
