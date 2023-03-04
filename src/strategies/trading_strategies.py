@@ -234,6 +234,7 @@ class RunningStrategies ():
 def main (strategy,
           index_price,
           my_trades_open,
+          my_trades_strategy,
           my_orders_api_basedOn_label_strategy,
           notional,
           instrument
@@ -256,4 +257,6 @@ def main (strategy,
                                     )
     
     return {'open_strategy_buy': strategies. open_strategy_buy (),
-            'open_strategy_sell': strategies. open_strategy_sell ()}
+            'open_strategy_sell': strategies. open_strategy_sell (),
+            'exit_strategy': strategies. closed_strategy (my_trades_strategy)
+            }
