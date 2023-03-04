@@ -70,6 +70,8 @@ class RunningStrategies ():
         open_orders_buy = self.my_orders_direction () ['buy'] 
         open_orders_sell = self.my_orders_direction () ['sell'] 
         log.debug (my_trades)
+        log.debug (open_orders_buy)
+        log.debug (open_orders_sell)
         
         if my_trades !=[]:
             
@@ -261,7 +263,7 @@ def main (strategy,
     my_trades_open_strategy = ([o  for o in my_trades_open if strategy['strategy'] in o['label']])
     my_orders_open_strategy = ([o  for o in my_orders_api_basedOn_label_strategy if strategy['strategy'] in o['label']])
     #log.critical (my_trades_open_strategy)
-    #log.critical (my_orders_open_strategy)
+    log.critical (my_orders_open_strategy)
 
     strategies = RunningStrategies (strategy,
                                     index_price,
