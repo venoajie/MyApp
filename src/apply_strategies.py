@@ -623,13 +623,13 @@ class ApplyHedgingSpot:
                         #)
 
                         # check for any order outstanding as per label filter
-                        #net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
-                        #    label_numbered
-                        #)
-                        # log.debug (f'open_order_mgt  {open_order_mgt}')
-                        log.error(
-                            f"net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}"
+                        net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
+                            label_numbered
                         )
+                        # log.debug (f'open_order_mgt  {open_order_mgt}')
+                       # log.error(
+                        #    f"net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}"
+                        #)
 
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.open_orders_api_basedOn_label(
