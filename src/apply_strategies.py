@@ -9,17 +9,12 @@ from loguru import logger as log
 
 # user defined formula
 from transaction_management.deribit import open_orders_management, myTrades_management
-from utilities import (
-    pickling,
-    system_tools,
-)  # , string_modification as str_mod#, number_modification, string_modification
+from utilities import pickling, system_tools
 import deribit_get
-from risk_management import spot_hedging, check_data_integrity  # , position_sizing
+from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits, trading_strategies
-
 # from market_understanding import futures_analysis
-
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
@@ -654,6 +649,15 @@ class ApplyHedgingSpot:
                                 notional,
                                 instrument,
                             )
+                            entry_price = strategy ['entry_price']
+                            target_price = strategy ['take_profit_usd']
+                            equity_risked = strategy ['equity_risked_pct']
+                            size: float = position_sizing.pos_sizing (target_price,
+                                                    entry_price, 
+                                                    self.notional, 
+                                                    equity_risked
+                                                    ) 
+                            log.error (f'entry_price {entry_price} target_price {target_price} equity_risked {equity_risked} size {size}' )
                             open_str_buy = str["open_strategy_buy"]
                             open_str_sell = str["open_strategy_sell"]
                             # closed_str = str ['closed_strategy']
