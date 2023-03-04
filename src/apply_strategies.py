@@ -1,20 +1,20 @@
 #!/usr/bin/python3
 
 # built ins
+import asyncio
 
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
-import asyncio
 
 # user defined formula 
 from transaction_management.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools, string_modification as str_mod#, number_modification, string_modification
+from utilities import pickling, system_tools#, string_modification as str_mod#, number_modification, string_modification
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity#, position_sizing
 from configuration import  label_numbering, config
 from strategies import entries_exits, trading_strategies
-from market_understanding import futures_analysis
+#from market_understanding import futures_analysis
 
 async def telegram_bot_sendtext (bot_message, 
                            purpose: str = 'general_error'
@@ -199,8 +199,8 @@ class ApplyHedgingSpot ():
             await self.cancel_redundant_orders_in_same_labels_closed_hedge ()
             return result
             
-        except Exception as e:
-            log.error (e)
+        except Exception as error:
+            log.error (error)
             
     async def send_combo_orders (self, 
                                  params) -> None:
@@ -208,7 +208,7 @@ class ApplyHedgingSpot ():
         """
         
         private_data = await self. get_private_data()
-        result =  await private_data.send_triple_orders (params)
+        await private_data.send_triple_orders (params)
                    
     async def compute_notional_value (self, 
                                       index_price: float, 
