@@ -654,7 +654,7 @@ class ApplyHedgingSpot:
                             equity_risked = strategy ['equity_risked_pct']
                             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
-                                                    self.notional, 
+                                                    notional, 
                                                     equity_risked
                                                     ) 
                             log.error (f'entry_price {entry_price} target_price {target_price} equity_risked {equity_risked} size {size}' )
