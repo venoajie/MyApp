@@ -71,8 +71,8 @@ class RunningStrategies ():
             my_trades_sell = self.my_trades_direction () ['sell'] 
             my_trades_buy = self.my_trades_direction () ['buy'] 
             
-            
-                #log.warning (self.strategy_attributes () )
+            log.warning (my_trades_sell)
+            log.warning (my_trades_buy)
             
             
             price  = my_trades ['price']  
