@@ -37,13 +37,16 @@ class RunningStrategies ():
                 'halt_minute_before_reorder': self.strategy ['halt_minute_before_reorder'] * one_minute ,
                 } 
         
-    def my_trades_direction  (self) -> list:
+    def my_trades_direction  (self,
+                              my_trades_open: list = None) -> list:
         
         '''
         '''  
+        if my_trades_open != None:
+            my_trades_open = self.my_trades_open
 
-        return {'sell': [o  for o in self.my_trades_open if o['direction'] == 'sell'],
-                'buy': [o  for o in self.my_trades_open if o['direction'] == 'buy'] 
+        return {'sell': [o  for o in my_trades_open if o['direction'] == 'sell'],
+                'buy': [o  for o in my_trades_open if o['direction'] == 'buy'] 
                 } 
         
     def my_orders_direction (self) -> list:
@@ -65,13 +68,16 @@ class RunningStrategies ():
 
         open_orders_buy = self.my_orders_direction () ['buy'] 
         open_orders_sell = self.my_orders_direction () ['sell'] 
+        log.debug (my_trades)
         
         if my_trades !=[]:
+            
+            my_trades_sell = self.my_trades_direction (my_trades) ['sell'] 
+            my_trades_buy = self.my_trades_direction (my_trades) ['buy'] 
+            
+            
             my_trades = my_trades [0]
             
-            log.debug (my_trades)
-            my_trades_sell = self.my_trades_direction () ['sell'] 
-            my_trades_buy = self.my_trades_direction () ['buy'] 
             
             log.warning (my_trades_sell)
             log.warning (my_trades_buy)
