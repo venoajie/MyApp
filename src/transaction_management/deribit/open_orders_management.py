@@ -382,6 +382,17 @@ class MyOrders ():
         
         '''
         '''       
-        from utilities import pickling, system_tools
-        from loguru import logger as log
-            
+
+        send_order: bool =  False
+        if my_trades_buy ==[] \
+            and open_orders_buy ==[] \
+                and entry_price < self.index_price:
+                
+            send_order: bool =  True
+        
+        send_order:bool =  False
+        if my_trades_sell ==[] \
+            and open_orders_sell ==[] \
+                and entry_price > self.index_price:
+                
+            send_order:bool =  True
