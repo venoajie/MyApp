@@ -668,6 +668,7 @@ class ApplyHedgingSpot ():
                             log.warning (open_str_sell)
                             log.warning (open_str_buy)
                             
+                            log.warning (strategy)
                             log.warning (my_trades_open)
                             my_trades_strategy = [o for o in my_trades_open if strategy in o['label'] ]
                             log.warning (my_trades_strategy)
