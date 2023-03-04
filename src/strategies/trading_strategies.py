@@ -42,11 +42,12 @@ class RunningStrategies ():
         
         '''
         '''  
+        none_data = [None,[]]
         if my_trades_open != None:
             my_trades_open = self.my_trades_open
 
-        return {'sell': [] if my_trades_open == [] else [o  for o in my_trades_open if o['direction'] == 'sell'],
-                'buy': [] if my_trades_open == [] else  [o  for o in my_trades_open if o['direction'] == 'buy'] 
+        return {'sell': [] if my_trades_open in none_data else [o  for o in my_trades_open if o['direction'] == 'sell'],
+                'buy': [] if my_trades_open  in none_data else  [o  for o in my_trades_open if o['direction'] == 'buy'] 
                 } 
         
     def my_orders_direction (self) -> list:
