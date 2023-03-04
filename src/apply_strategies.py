@@ -675,7 +675,7 @@ class ApplyHedgingSpot ():
                             
                             log.warning (my_trades_strategy)
                             if my_trades_strategy != []:
-                                for my_trade in my_trades_open:
+                                for my_trade in my_trades_strategy:
                                     log.error (my_trade)
                                     exit_strategy = str ['exit_strategy']
                                     log.debug (exit_strategy)
