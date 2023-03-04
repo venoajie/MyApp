@@ -71,8 +71,6 @@ class RunningStrategies ():
         open_orders_sell = self.my_orders_direction () ['sell'] 
         log.debug (my_trades)
         
-        
-        
         if my_trades !=[]:
             
             my_trades_sell = self.my_trades_direction (my_trades) ['sell'] 
@@ -109,7 +107,7 @@ class RunningStrategies ():
                 cut_loss = cl_price > self.index_price
                 side = 'buy'
                     
-                #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
+                log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
                 
                 return {'send_order_tp': tp_price < self.index_price,
                         'send_order_cl': cut_loss,
@@ -136,7 +134,7 @@ class RunningStrategies ():
                 cut_loss = cl_price < self.index_price   
                 side = 'sell'          
                         
-                #log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
+                log.critical (f'CLOSE SD  {send_order=} {instrument=} {side=} {direction=} {size=} {price=} {tp_price=} {cl_price=} {label_open_numbered=} {label_closed_numbered=}')
             
                 return {'send_order_tp':  tp_price > self.index_price,
                         'send_order_cl': cut_loss,
