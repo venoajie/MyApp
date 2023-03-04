@@ -677,8 +677,8 @@ class ApplyHedgingSpot ():
                             if my_trades_strategy != []:
                                 for my_trade in my_trades_open:
                                     log.error (my_trade)
-                                    closed = str.closed_strategy(my_trade)
-                                    log.debug (my_trade)
+                                    closed = str ['closed_strategy']
+                                    log.debug (closed)
                                     
                             
                             if open_str_sell!= None and open_str_sell ['send_order'] :
