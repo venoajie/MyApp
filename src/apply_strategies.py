@@ -678,7 +678,7 @@ class ApplyHedgingSpot ():
                                 for my_trade in my_trades_strategy:
                                     log.error (my_trade)
                                     exit_strategy = str ['exit_strategy']
-                                    log.debug (exit_strategy)
+                                    log.critical (exit_strategy)
                                     
                             
                             if open_str_sell!= None and open_str_sell ['send_order'] :
