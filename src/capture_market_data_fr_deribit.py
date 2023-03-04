@@ -231,10 +231,9 @@ class StreamMarketData:
                                         #log.critical (ticker_all) 
                                         
                             except Exception as error:
-                                system_tools.catch_error_message (
-                                                  error,
-                                                  'WebSocket connection - failed to process data'
-                                                  )
+                                system_tools.catch_error_message (error)
+                                system_tools.catch_error_message ('WebSocket connection - failed to process data')
+                                
                                 continue        
                         
                         #! freezed        
@@ -309,7 +308,7 @@ class StreamMarketData:
         except Exception as error:
             system_tools.catch_error_message (
                                 error,
-                                'WebSocket connection - failed to distribute_incremental_tickr_result_as_per_data_type'
+                                'WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type'
                                 )
                                 
     async def establish_heartbeat(self) -> None:
