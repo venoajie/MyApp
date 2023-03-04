@@ -70,8 +70,8 @@ class RunningStrategies ():
         open_orders_buy = self.my_orders_direction () ['buy'] 
         open_orders_sell = self.my_orders_direction () ['sell'] 
         log.debug (my_trades)
-        log.debug (open_orders_buy)
-        log.debug (open_orders_sell)
+        
+        
         
         if my_trades !=[]:
             
@@ -97,6 +97,7 @@ class RunningStrategies ():
                     
             log.info (len (my_trades_sell) )
             log.info (len (open_orders_buy) )
+            log.warning (open_orders_buy)
             log.info (direction )
             #! CLOSED ORDER SELL
             if len (my_trades_sell) != 0 \
@@ -121,8 +122,9 @@ class RunningStrategies ():
                         }
                 
             #! CLOSED ORDER BUY
-            log.debug (len (my_trades_buy))
+            log.critical (len (my_trades_buy))
             log.debug (len (open_orders_sell))
+            log.debug (open_orders_sell)
             log.debug (len (direction ) )
             send_order = False
             if len (my_trades_buy) != 0 \
