@@ -497,7 +497,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                # log.warning (my_trades_open)
+                log.warning (my_trades_open)
 
                 #
                 # log.info (my_trades_open)
@@ -520,7 +520,7 @@ class ApplyHedgingSpot:
                 open_orders_open_byAPI: list = reading_from_database[
                     "open_orders_open_byAPI"
                 ]
-                # log.critical (open_orders_open_byAPI)
+                log.critical (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
@@ -595,6 +595,9 @@ class ApplyHedgingSpot:
 
                     for strategy in strategies:
 
+                        entry_price = strategy ['entry_price']
+                        target_price = strategy ['take_profit_usd']
+                        equity_risked = strategy ['equity_risked_pct']
                         pct_threshold_TP: float = strategy["take_profit_pct"]
                         pct_threshold_avg: float = strategy["averaging"]
                         quantity_discrete: float = strategy["quantity_discrete"]
@@ -609,14 +612,7 @@ class ApplyHedgingSpot:
                         label: str = strategy["strategy"]
                         label_numbered: str = label_numbering.labelling("open", label)
                         label_closed: str = f"{label}-closed"
-
-                        net_open_orders_open_byAPI_system: int = open_order_mgt_from_exchange.open_orders_api_basedOn_label_items_net(
-                            label_numbered
-                        )
-                        #log.warning(
-                        #    f"net_open_orders_open_byAPI_system {net_open_orders_open_byAPI_system}"
-                        #)
-
+                        
                         # check for any order outstanding as per label filter
                         net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
                             label_numbered
@@ -649,9 +645,6 @@ class ApplyHedgingSpot:
                                 notional,
                                 instrument,
                             )
-                            entry_price = strategy ['entry_price']
-                            target_price = strategy ['take_profit_usd']
-                            equity_risked = strategy ['equity_risked_pct']
                             size: float = position_sizing.pos_sizing (target_price,
                                                     entry_price, 
                                                     notional, 
@@ -675,9 +668,23 @@ class ApplyHedgingSpot:
                                     exit_strategy = str["exit_strategy"]
                                     log.critical(exit_strategy)
 
+                            
+                            send_order:bool =  False
+                            if my_trades_sell ==[] \
+                                and open_orders_sell ==[] \
+                                    and entry_price > self.index_price:
+                                    
+                                send_order:bool =  True
                             if open_str_sell != None and open_str_sell["send_order"]:
 
                                 await self.send_combo_orders(open_str_sell)
+                                
+                            send_order: bool =  False
+                            if my_trades_buy ==[] \
+                                and open_orders_buy ==[] \
+                                    and entry_price < self.index_price:
+                                    
+                                send_order: bool =  True
 
                             if open_str_buy != None and open_str_buy["send_order"]:
 

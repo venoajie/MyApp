@@ -377,3 +377,11 @@ class MyOrders ():
         except Exception as error:
             catch_error (error)
             
+            
+    def is_open_trade_has_exit_order (self) -> None:
+        
+        '''
+        '''       
+        from utilities import pickling, system_tools
+        from loguru import logger as log
+            
