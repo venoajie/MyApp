@@ -185,7 +185,7 @@ class SpotHedging ():
         
         size_take_profit = my_trades_max_price_attributes_filteredBy_label ['size']
 
-        sum_closed_trades_in_my_trades_open_net = my_trades_mgt.my_trades_api_net_position (trades_to_close)
+        sum_closed_trades_in_my_trades_open_net = my_trades_mgt.net_sum_trade_size (trades_to_close)
         avoid_over_bought = sum_closed_trades_in_my_trades_open_net + size_take_profit == 0
         
         if avoid_over_bought == False:        

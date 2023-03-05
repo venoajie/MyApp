@@ -615,30 +615,19 @@ class ApplyHedgingSpot:
                     for strategy in strategies:
 
                         label_strategy = strategy ['strategy']
-                        entry_price = strategy ['entry_price']
-                        target_price = strategy ['take_profit_usd']
-                        equity_risked = strategy ['equity_risked_pct']
-                        pct_threshold_TP: float = strategy["take_profit_pct"]
-                        pct_threshold_avg: float = strategy["averaging"]
-                        take_profit_usd: float = strategy["take_profit_usd"]
-                        cl_price_usd: float = strategy["cut_loss_usd"]
-                        side: float = strategy["side"]
-                        time_threshold: float = strategy[
-                            "halt_minute_before_reorder"
-                        ] * one_minute
-                        time_threshold_avg_up: float = strategy[
-                            "halt_minute_before_reorder"
-                        ] * one_minute * 12 * 4
-                        size: float = position_sizing.pos_sizing (target_price,
-                                                    entry_price, 
+                        time_threshold: float = strategy["halt_minute_before_reorder"] * one_minute
+                        time_threshold_avg_up: float = time_threshold * 12 * 4
+                        
+                        # determine position sizing
+                        size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
+                                                    strategy ['entry_price'], 
                                                     notional, 
-                                                    equity_risked
+                                                    strategy ['equity_risked_pct']
                                                     ) 
                         # log.error (f'time_threshold {time_threshold}')
 
-                        label: str = strategy["strategy"]
-                        label_numbered: str = label_numbering.labelling("open", label)
-                        label_closed: str = f"{label}-closed"
+                        label_numbered: str = label_numbering.labelling("open", label_strategy)
+                        label_closed: str = f"{label_strategy}-closed"
                         
                         # check for any order outstanding as per label filter
                         net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
@@ -651,7 +640,7 @@ class ApplyHedgingSpot:
 
                         # create my order mgt template based on strategies
                         my_orders_api_basedOn_label_strategy: list = open_order_mgt.open_orders_api_basedOn_label(
-                            label
+                            label_strategy
                         )
                         # log.warning (my_orders_api_basedOn_label_strategy)
                     
@@ -726,13 +715,13 @@ class ApplyHedgingSpot:
                                         spot_hedged.compute_actual_hedging_size()
                                     )
 
-                                    label_open_for_filter = f"{label}-open"
+                                    label_open_for_filter = f"{label_strategy}-open"
 
                                     log.debug(f"{label=} {label_open_for_filter=}")
 
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
-                                        label
+                                        label_strategy
                                     )
                                     log.warning(
                                         f"{spot_was_unhedged=} \
@@ -742,7 +731,7 @@ class ApplyHedgingSpot:
                                     )
 
                                     await self.will_new_open_order_create_over_hedge(
-                                        label, actual_hedging_size, min_hedging_size
+                                        label_strategy, actual_hedging_size, min_hedging_size
                                     )
 
                                     # send sell order if spot still unhedged and no current open orders
@@ -766,7 +755,7 @@ class ApplyHedgingSpot:
                                         )
 
                                         await self.will_new_open_order_create_over_hedge(
-                                            label, actual_hedging_size, min_hedging_size
+                                            label_strategy, actual_hedging_size, min_hedging_size
                                         )
 
                                     # if spot has hedged properly, check also for opportunity to get additional small profit
@@ -779,8 +768,8 @@ class ApplyHedgingSpot:
                                         adjusting_inventories = spot_hedged.adjusting_inventories(
                                             index_price,
                                             self.currency,
-                                            pct_threshold_TP,
-                                            pct_threshold_avg,
+                                            strategy["take_profit_pct"],
+                                            strategy["averaging"],
                                             label_open_for_filter,
                                         )
                                         bid_prc_is_lower_than_buy_price = (
