@@ -717,7 +717,7 @@ class ApplyHedgingSpot:
 
                                     label_open_for_filter = f"{label_strategy}-open"
 
-                                    log.debug(f"{label=} {label_open_for_filter=}")
+                                    log.debug(f"{label_strategy=} {label_open_for_filter=}")
 
                                     # check for any order outstanding as per label filter
                                     net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
