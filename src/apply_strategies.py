@@ -471,7 +471,7 @@ class ApplyHedgingSpot:
             log.critical (check_stop_loss)
             if check_stop_loss  ['is_sl_ok']== False:
                 log.critical ( check_stop_loss  ['is_sl_ok'])
-            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['is_tp_ok']
+            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy)
             log.critical (check_take_profit)
             
             if check_take_profit  ['is_tp_ok']== False:
