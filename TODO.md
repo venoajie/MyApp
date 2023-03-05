@@ -34,8 +34,13 @@ Asyncio |- https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-pyt
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
 Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
-VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40)) |  | | 
-Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c)) |  | | 
+VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40) |  | | 
+Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
+ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
+etcML | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
+
+
+
 
 
 

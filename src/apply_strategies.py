@@ -9,7 +9,7 @@ from loguru import logger as log
 
 # user defined formula
 from transaction_management.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools
+from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import label_numbering, config
@@ -460,6 +460,24 @@ class ApplyHedgingSpot:
             my_selected_trades_open_from_system,
         )
 
+    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object) -> None:
+        """
+        """
+
+        strategies =  str_mod.remove_redundant_elements([ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]) 
+        for strategy in strategies:
+            log.critical (strategy)
+            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy)
+            log.critical (check_stop_loss)
+            if check_stop_loss  ['is_sl_ok']== False:
+                log.critical ( check_stop_loss  ['is_sl_ok'])
+            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['is_tp_ok']
+            log.critical (check_take_profit)
+            
+            if check_take_profit  ['is_tp_ok']== False:
+                log.critical ( check_take_profit  ['is_tp_ok'])
+        
+            
     async def running_strategy(self, server_time) -> float:
         """
         """
@@ -497,7 +515,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
 
                 #
                 # log.info (my_trades_open)
@@ -553,6 +571,8 @@ class ApplyHedgingSpot:
                 await self.check_myTrade_integrity(
                     positions, my_trades_open, server_time
                 )
+                
+                #! END OF CHECK BALANCE AND TRANSACTIONS INTEGRITY.
 
                 # obtain all closed labels in open orders
                 label_closed = open_order_mgt.open_orderLabelCLosed()
@@ -593,20 +613,29 @@ class ApplyHedgingSpot:
                     # fetch strategies
                     strategies = entries_exits.strategies
 
+                    #execute each strategy
                     for strategy in strategies:
 
+                        label_strategy = strategy ['strategy']
                         entry_price = strategy ['entry_price']
                         target_price = strategy ['take_profit_usd']
                         equity_risked = strategy ['equity_risked_pct']
                         pct_threshold_TP: float = strategy["take_profit_pct"]
                         pct_threshold_avg: float = strategy["averaging"]
-                        quantity_discrete: float = strategy["quantity_discrete"]
+                        take_profit_usd: float = strategy["take_profit_usd"]
+                        cl_price_usd: float = strategy["cut_loss_usd"]
+                        side: float = strategy["side"]
                         time_threshold: float = strategy[
                             "halt_minute_before_reorder"
                         ] * one_minute
                         time_threshold_avg_up: float = strategy[
                             "halt_minute_before_reorder"
                         ] * one_minute * 12 * 4
+                        size: float = position_sizing.pos_sizing (target_price,
+                                                    entry_price, 
+                                                    notional, 
+                                                    equity_risked
+                                                    ) 
                         # log.error (f'time_threshold {time_threshold}')
 
                         label: str = strategy["strategy"]
@@ -627,68 +656,37 @@ class ApplyHedgingSpot:
                             label
                         )
                         # log.warning (my_orders_api_basedOn_label_strategy)
-
-                        #! hedging spot: part of risk management, not strategies
+                    
+                        label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
+                        params = strategy.update({'instrument': instrument,
+                                                    'size':size,
+                                                    'label_numbered':label_numbered,
+                                                    'label_closed_numbered': label_closed_numbered })
+                        log.warning (params)
+                        #! excluding hedging spot since its part of risk management, not strategy
                         if "hedgingSpot" not in strategy["strategy"]:
                             # log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
+                            await self.check_exit_orders_completeness (my_trades_open, open_order_mgt)
                             my_trades_strategy = [
                                 o
                                 for o in my_trades_open
                                 if strategy["strategy"] in o["label"]
                             ]
-                            str = trading_strategies.main(
-                                strategy,
-                                index_price,
-                                my_trades_open,
-                                my_trades_strategy,
-                                my_orders_api_basedOn_label_strategy,
-                                notional,
-                                instrument,
-                            )
-                            size: float = position_sizing.pos_sizing (target_price,
-                                                    entry_price, 
-                                                    notional, 
-                                                    equity_risked
-                                                    ) 
-                            log.error (f'entry_price {entry_price} target_price {target_price} equity_risked {equity_risked} size {size}' )
-                            open_str_buy = str["open_strategy_buy"]
-                            open_str_sell = str["open_strategy_sell"]
-                            # closed_str = str ['closed_strategy']
-
-                            log.warning(open_str_sell)
-                            log.warning(open_str_buy)
-
-                            log.warning(strategy["strategy"])
-                            # log.warning (my_trades_open)
-
+                            
                             # log.warning (my_trades_strategy)
                             if my_trades_strategy not in none_data:
                                 for my_trade in my_trades_strategy:
                                     log.error(my_trade)
                                     exit_strategy = str["exit_strategy"]
                                     log.critical(exit_strategy)
-
-                            
-                            send_order:bool =  False
-                            if my_trades_sell ==[] \
-                                and open_orders_sell ==[] \
-                                    and entry_price > self.index_price:
                                     
-                                send_order:bool =  True
-                            if open_str_sell != None and open_str_sell["send_order"]:
-
-                                await self.send_combo_orders(open_str_sell)
+                            #if open_str_sell != None and open_str_sell["send_order"]:
+                            #    await self.send_combo_orders(params)
                                 
-                            send_order: bool =  False
-                            if my_trades_buy ==[] \
-                                and open_orders_buy ==[] \
-                                    and entry_price < self.index_price:
-                                    
-                                send_order: bool =  True
 
-                            if open_str_buy != None and open_str_buy["send_order"]:
+                            #if open_str_buy != None and open_str_buy["send_order"]:
 
-                                await self.send_combo_orders(open_str_buy)
+                                #await self.send_combo_orders(open_str_buy)
 
                         if "hedgingSpot" in strategy["strategy"]:
 

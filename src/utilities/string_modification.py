@@ -90,5 +90,34 @@ def extract_integers_from_text (words: list) -> int:
 
     except:
         return []
-
     
+def get_strings_before_character (words: str, character: str= '-', character_place: int = [0,2]) -> str:
+    
+    '''  
+    
+    Get strings before a character
+    
+    Args:
+        words (str)
+        character (str)
+        character_place (list (default)/int)
+ 
+    Returns:
+        str
+        
+    Example:
+        data_original = 'hedgingSpot-open-1671189554374' become 'hedgingSpot'
+    
+    Reference:
+        https://stackoverflow.com/questions/32682199/how-to-get-string-before-hyphen
+    '''      
+   
+    
+    if isinstance(character_place, list):
+        splitted1 = words.split(character)[character_place[0]]
+        splitted2 = words.split(character)[character_place[1]]
+        splitted = f'{splitted1}-{splitted2}'
+    else:
+        splitted = words.split(character)[character_place]
+        
+    return splitted

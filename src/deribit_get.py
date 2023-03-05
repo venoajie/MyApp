@@ -397,7 +397,7 @@ class GetPrivateData:
         closed_label = params["label_closed_numbered"]
         size = params["size"]
         main_prc = params["entry_price"]
-        sl_prc = params["cl_price"]
+        sl_prc = params["cut_loss_usd"]
         tp_prc = params["take_profit_usd"]
 
         order_result = await self.send_order(

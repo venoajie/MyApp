@@ -125,10 +125,17 @@ def test_extract_currency_from_text  ():
     
 def test_extract_integers_from_text  ():
     list_text = ['hedging spot-open-1671189554374', 'hedging spot-close-167118955437']
-    list_int = [1671189554374, 167118955437]
     assert string_modification.extract_integers_from_text ('hedging spot-open-1671189554374') == 1671189554374    
     assert ([string_modification.extract_integers_from_text(o)  for o in list_text  ]) == [1671189554374, 167118955437]    
     assert string_modification.extract_integers_from_text ('hedging spot-open') == []    
     assert string_modification.extract_integers_from_text ('1671189554374') == 1671189554374
     
+def test_get_strings_before_character  ():
+    assert string_modification.get_strings_before_character ('hedgingSpot-open-1671189554374','-', 0) == 'hedgingSpot'    
+    assert string_modification.get_strings_before_character ('supplyDemandLong60B-closed-1677903684425','-', 0) == 'supplyDemandLong60B'    
+    assert string_modification.get_strings_before_character ('supplyDemandShort60-closed-1677473096','-', 0) == 'supplyDemandShort60'    
+    assert string_modification.get_strings_before_character ('supplyDemandShort60-closed-1677473096','-', 1) == 'closed'    
+    assert string_modification.get_strings_before_character ('supplyDemandShort60-closed-1677473096','-', 2) == '1677473096'    
+    assert string_modification.get_strings_before_character ('supplyDemandShort60-closed-1677473096','-', [0,1]) == 'supplyDemandShort60-closed'    
+    assert string_modification.get_strings_before_character ('supplyDemandShort60-closed-1677473096') == 'supplyDemandShort60-1677473096'    
     

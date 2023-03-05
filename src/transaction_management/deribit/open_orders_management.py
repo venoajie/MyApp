@@ -3,11 +3,11 @@
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
+from utilities import  pickling, system_tools, number_modification, string_modification as str_mod
 
 def catch_error (error, idle: int = None) -> list:
     """
     """
-    from utilities import system_tools
     system_tools.catch_error_message(error, idle)
 
 
@@ -173,9 +173,7 @@ class MyOrders ():
                             )-> float:
         
         '''
-        '''    
-        from utilities import number_modification
-        
+        '''           
         return number_modification.net_position (selected_transactions)
     
     def open_orders_api_basedOn_label_items_size (self, 
@@ -276,7 +274,7 @@ class MyOrders ():
         The result should be further compared to open trades with open labels
         '''                   
         
-        from utilities import string_modification as str_mod
+        
         
         if open_orders == None:
             open_orders = self.open_orders_from_db
@@ -302,7 +300,7 @@ class MyOrders ():
         
         '''
         '''       
-        from utilities import pickling, system_tools
+       
         from loguru import logger as log
         
         my_path_orders_open = system_tools.provide_path_for_file ('orders', 
@@ -377,22 +375,91 @@ class MyOrders ():
         except Exception as error:
             catch_error (error)
             
-            
-    def is_open_trade_has_exit_order (self) -> None:
+    def transactions_label_strategy (self, 
+                                     open_transactions_label,
+                                     strategy) -> None:
         
         '''
-        '''       
-
-        send_order: bool =  False
-        if my_trades_buy ==[] \
-            and open_orders_buy ==[] \
-                and entry_price < self.index_price:
-                
-            send_order: bool =  True
+        '''      
+        return ([o for o in open_transactions_label \
+            if str_mod.get_strings_before_character(o['label']) == strategy])
+ 
+    def net_sum_trade_size_based_on_label_strategy (self, 
+                                           open_transactions_label,
+                                           strategy) -> None:
         
-        send_order:bool =  False
-        if my_trades_sell ==[] \
-            and open_orders_sell ==[] \
-                and entry_price > self.index_price:
-                
-            send_order:bool =  True
+        '''
+        '''      
+        return self.net_sum_order_size (self.transactions_label_strategy(open_transactions_label,strategy))
+    
+        
+    def is_open_trade_has_exit_order_sl (self, open_trades_label, strategy) -> None:
+        
+        '''
+        '''   
+        #log.warning (strategy)    
+        #log.error (open_trades_label)    
+        net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
+        #log.warning (net_position_based_on_label)
+        #open_trades_label_strategy  =  self.transactions_label_strategy(open_trades_label,strategy)
+        #log.warning (open_trades_label_strategy)
+        
+        open_order_label_strategy_type = ([o for o in self. open_orders_from_db \
+            if str_mod.get_strings_before_character(o['label']) == strategy \
+                and o['order_type'] == 'stop_market']
+                )
+        #log.warning (open_order_label_strategy_type) 
+        sum_open_order_label_strategy_type = 0
+        if open_order_label_strategy_type !=[]:
+            sum_open_order_label_strategy_type = self.net_sum_order_size([o for o in open_order_label_strategy_type ])
+        #log.warning (sum_open_order_label_strategy_type) 
+        
+        net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        #log.warning (net_position) 
+            
+        is_sl_ok = net_position_based_on_label != 0 and net_position == 0
+        get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
+        get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
+        #log.warning (is_sl_ok) 
+        label_sl= f'{get_strategy_label}-closed-{get_strategy_int}'
+        #log.warning (label_sl) 
+        
+        return {'is_sl_ok': is_sl_ok,
+                'size_sl': abs(net_position),
+                'label_sl': label_sl }
+
+
+    def is_open_trade_has_exit_order_tp (self, open_trades_label, strategy) -> None:
+        
+        '''
+        '''   
+        #log.warning (strategy)    
+        #log.error (open_trades_label)    
+        net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
+        #log.warning (net_position_based_on_label)
+        #open_trades_label_strategy  =  self.transactions_label_strategy(open_trades_label,strategy)
+        #log.warning (open_trades_label_strategy)
+        
+        open_order_label_strategy_type = ([o for o in self. open_orders_from_db \
+            if str_mod.get_strings_before_character(o['label']) == strategy \
+                and o['order_type'] == 'take_limit']
+                )
+        #log.warning (open_order_label_strategy_type) 
+        sum_open_order_label_strategy_type = 0
+        if open_order_label_strategy_type !=[]:
+            sum_open_order_label_strategy_type = self.net_sum_order_size([o for o in open_order_label_strategy_type ])
+        #log.warning (sum_open_order_label_strategy_type) 
+        
+        net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        #log.warning (net_position) 
+            
+        is_tp_ok = net_position_based_on_label != 0 and net_position == 0
+        get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
+        get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
+        #log.warning (is_tp_ok) 
+        label_tp= f'{get_strategy_label}-closed-{get_strategy_int}'
+        #log.warning (label_tp) 
+        
+        return {'is_tp_ok': is_tp_ok,
+                'size_tp': abs(net_position),
+                'label_tp': label_tp }

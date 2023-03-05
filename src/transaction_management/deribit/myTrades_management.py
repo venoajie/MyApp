@@ -55,36 +55,15 @@ class MyTrades ():
         return [] if self.my_trades_api () == [] \
             else [o for o in self.my_trades_api () if  label in o['label'] ]
     
-    def my_trades_api_net_position(self, 
-                                   selected_trades: list
+    def net_sum_trade_size(self, 
+                                   selected_trades: list = None
                                    ) -> float:
         
         '''
         '''    
-
-        try:
-            if selected_trades != []:
-                # sum sell
-                sum_sell = ([o['amount'] for o in selected_trades \
-                    if o['direction']=='sell'])
-                
-                sum_sell = 0 if sum_sell == [] \
-                        else sum (
-                            sum_sell
-                            )
-                # sum buy
-                sum_buy = [
-                    o['amount'] for o in selected_trades if o['direction'] == 'buy'
-                    ]
-                
-                sum_buy = 0  if sum_buy == [] \
-                        else sum(sum_buy)
-                    
-            return selected_trades if selected_trades == [] \
-                else  sum_buy - sum_sell
-        
-        except Exception as error:
-            catch_error(error)
+        from utilities import number_modification
+        return selected_trades if selected_trades == [] \
+                else  number_modification.net_position (selected_trades)
             
     def recognize_trade_transactions (self, 
                                       trade_order: list
@@ -151,7 +130,7 @@ class MyTrades ():
         return {'transactions_same_id':transactions_under_same_id['transactions_same_id'],
                 # summing transaction under the same label id
                 'transactions_same_id_contain_open_label': transactions_under_same_id['transactions_same_id_contain_open_label'],
-                'transactions_same_id_net_qty': self.my_trades_api_net_position (transactions_under_same_id['transactions_same_id']),
+                'transactions_same_id_net_qty': self.net_sum_trade_size (transactions_under_same_id['transactions_same_id']),
                 'transactions_same_id_len': len (transactions_under_same_id['transactions_same_id']),
                 'remaining_open_trades': str_mod.remove_redundant_elements (remaining_open_trades)
                 }
@@ -301,7 +280,7 @@ class MyTrades ():
          # orphan closed orders:                    
         else:
             log. critical (remaining_open_trades)
-            log. critical (self.my_trades_api_net_position (remaining_open_trades))
+            log. critical (self.net_sum_trade_size (remaining_open_trades))
             
 
             pickling.replace_data (my_trades_path_open, 
