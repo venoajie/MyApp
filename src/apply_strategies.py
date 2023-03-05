@@ -624,7 +624,6 @@ class ApplyHedgingSpot:
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
-                        # log.error (f'time_threshold {time_threshold}')
 
                         label_numbered: str = label_numbering.labelling("open", label_strategy)
                         label_closed: str = f"{label_strategy}-closed"
@@ -645,20 +644,16 @@ class ApplyHedgingSpot:
                         # log.warning (my_orders_api_basedOn_label_strategy)
                     
                         label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
-                        params = strategy.update({'instrument': instrument,
+                        log.warning (strategy)
+                        strategy.update({'instrument': instrument,
                                                     'size':size,
                                                     'label_numbered':label_numbered,
                                                     'label_closed_numbered': label_closed_numbered })
-                        log.warning (params)
+                        log.debug (strategy)
                         #! excluding hedging spot since its part of risk management, not strategy
-                        if "hedgingSpot" not in strategy["strategy"]:
-                            # log.debug(f'{label=} {my_orders_api_basedOn_label_strategy=}')
+                        if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
+
                             await self.check_exit_orders_completeness (my_trades_open, open_order_mgt)
-                            my_trades_strategy = [
-                                o
-                                for o in my_trades_open
-                                if strategy["strategy"] in o["label"]
-                            ]
                             
                             #if open_str_sell != None and open_str_sell["send_order"]:
                             #    await self.send_combo_orders(params)
