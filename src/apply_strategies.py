@@ -468,16 +468,14 @@ class ApplyHedgingSpot:
         for strategy in strategies:
             log.critical (strategy)
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy)
-            log.critical (check_stop_loss)
+
             if check_stop_loss  ['is_sl_ok']== False:
                 log.critical ( check_stop_loss  ['is_sl_ok'])
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy)
-            log.critical (check_take_profit)
             
             if check_take_profit  ['is_tp_ok']== False:
                 log.critical ( check_take_profit  ['is_tp_ok'])
-        
-            
+                    
     async def running_strategy(self, server_time) -> float:
         """
         """
@@ -673,19 +671,10 @@ class ApplyHedgingSpot:
                                 if strategy["strategy"] in o["label"]
                             ]
                             
-                            # log.warning (my_trades_strategy)
-                            if my_trades_strategy not in none_data:
-                                for my_trade in my_trades_strategy:
-                                    log.error(my_trade)
-                                    exit_strategy = str["exit_strategy"]
-                                    log.critical(exit_strategy)
-                                    
                             #if open_str_sell != None and open_str_sell["send_order"]:
                             #    await self.send_combo_orders(params)
                                 
-
                             #if open_str_buy != None and open_str_buy["send_order"]:
-
                                 #await self.send_combo_orders(open_str_buy)
 
                         if "hedgingSpot" in strategy["strategy"]:
