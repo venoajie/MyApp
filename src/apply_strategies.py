@@ -689,7 +689,7 @@ class ApplyHedgingSpot:
                                     #
                                     # check under hedging
                                     spot_hedged = spot_hedging.SpotHedging(
-                                        label, my_trades_open
+                                        label_strategy, my_trades_open
                                     )
 
                                     check_spot_hedging = spot_hedged.is_spot_hedged_properly(
