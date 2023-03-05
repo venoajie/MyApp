@@ -707,7 +707,7 @@ class ApplyHedgingSpot:
                                         notional,
                                         min_trade_amount,
                                         contract_size,
-                                        quantity_discrete,
+                                        strategy['quantity_discrete']
                                     )
 
                                     remain_unhedged = check_spot_hedging[
