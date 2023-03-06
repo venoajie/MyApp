@@ -467,6 +467,7 @@ class ApplyHedgingSpot:
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
+        strategy_labels =  [o for o in strategy_labels if "hedgingSpot" or "test" not in o]
         log.info (strategy_labels)
         for label in strategy_labels:
             log.critical (label)
@@ -476,10 +477,7 @@ class ApplyHedgingSpot:
                 params = check_stop_loss  ['params']
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.warning (f'strategy_label {strategy_label}')
-                trigger_price = [
-                                        o["cut_loss_usd"]
-                                        for o in strategies if o['strategy'] == strategy_label
-                                    ][0]
+                trigger_price = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 log.debug (f'trigger_price {trigger_price}')
                 params.update({'trigger_price': trigger_price})
                 log.error (f'params {params}')
