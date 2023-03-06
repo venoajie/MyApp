@@ -453,7 +453,7 @@ class GetPrivateData:
         instrument = params["instrument"]
         label = params["label"]
         size = params["size"]
-        tp_prc = params["take_profit_usd"]
+        tp_prc = params["cut_loss_usd"]
 
         order_result = await self.send_order(
                 side,
