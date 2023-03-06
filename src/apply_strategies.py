@@ -492,12 +492,15 @@ class ApplyHedgingSpot:
             log.error (label)
             
             main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+            log.warning (main_side)
             
             if main_side == "buy":
                 side = "sell"
             if main_side == "sell":
                 side = "sell"
 
+            log.error (side)
+            
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
@@ -513,7 +516,7 @@ class ApplyHedgingSpot:
                 params = check_take_profit  ['params']
                 
                 log.critical (f'strategy_label {strategy_label}')
-                side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+                #side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
                 take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 params.update({'take_profit_usd': take_profit_usd,'side': side})
                 log.error (f'params {params}')
