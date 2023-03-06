@@ -487,6 +487,9 @@ class ApplyHedgingSpot:
         
         for label in strategy_labels:
             strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+            log.warning (strategies)
+            log.error (strategy_label)
+            log.error (label)
             
             main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
             

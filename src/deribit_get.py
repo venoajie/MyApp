@@ -307,14 +307,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        print (f'side {side}')
-        print (f'instrument {instrument}')
-        print (f'amount {amount}')
-        print (f'label {label}')
-        print (f'price {price}')
-        print (f'type {type}')
-        print (f'trigger_price {trigger_price}')
-
+        
         if valid_until == False:
             
             if trigger_price == None:
@@ -575,7 +568,6 @@ async def send_order_market(
     )
 
     return result
-
 
 async def get_open_orders_byInstruments(
     connection_url, client_id, client_secret, instrument, type

@@ -492,7 +492,7 @@ class MyOrders ():
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
                   'label': label_tp,
-                  'type': 'take_limit'
+                  'type': 'limit'
                   }
         return {'is_tp_ok': is_tp_ok,
                 'size_tp': abs(net_position),
