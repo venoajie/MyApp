@@ -508,10 +508,11 @@ class ApplyHedgingSpot:
             if main_side == "sell":
                 side = "buy"
 
+            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
+
             log.warning (f'check_stop_loss {check_stop_loss}')
             log.error (f'check_take_profit {check_take_profit}')
             
-            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
                 #log.critical (f'strategy_label {strategy_label}')
