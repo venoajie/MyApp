@@ -464,18 +464,64 @@ class ApplyHedgingSpot:
         """
         """
 
-        strategies =  str_mod.remove_redundant_elements([ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]) 
+        strategies =  str_mod.remove_redundant_elements(
+            [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
+            ) 
+        
         for strategy in strategies:
             log.critical (strategy)
+            
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy)
-
             if check_stop_loss  ['is_sl_ok']== False:
                 log.critical ( check_stop_loss  ['is_sl_ok'])
-            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy)
             
+            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy)
             if check_take_profit  ['is_tp_ok']== False:
                 log.critical ( check_take_profit  ['is_tp_ok'])
                     
+    async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
+        """
+        """
+        label_strategy = strategy ['strategy']
+        
+        none_data = [None, 0, []]
+        
+        # prepare default result to avoid unassociated value
+        send_sell_order_allowed = False
+        send_buy_order_allowed  = False
+        
+        log.debug ( strategy['side'])
+        log.warning (index_price)
+
+        if strategy['side'] == 'buy' \
+            and strategy['entry_price'] < index_price:
+                if my_trades_open not in none_data:
+                    my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
+                    my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
+                
+                if open_orders not in none_data:
+                    order_buy_open = [o  for o in open_orders if o['direction'] == 'buy'] 
+                    order_buy_open_label_strategy = [o  for o in order_buy_open if label_strategy in o['label']] 
+                    
+                send_buy_order_allowed =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
+
+        if strategy['side'] == 'sell' \
+            and strategy['entry_price'] > index_price:
+                
+                if my_trades_open not in none_data:
+                    my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
+                    my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
+
+                if open_orders not in none_data:
+                    order_sell_open = [o  for o in open_orders if o['direction'] == 'sell'] 
+                    order_sell_open_label_strategy = [o  for o in order_sell_open if label_strategy in o['label']] 
+                
+                send_sell_order_allowed =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
+
+        return {'send_buy_order_allowed': send_buy_order_allowed,
+                'send_sell_order_allowed': send_sell_order_allowed}
+        
+        
     async def running_strategy(self, server_time) -> float:
         """
         """
@@ -487,17 +533,15 @@ class ApplyHedgingSpot:
 
             reading_from_database: dict = await self.reading_from_database()
 
-            # portfolio data
+            # get portfolio data
             portfolio: list = reading_from_database["portfolio"]
-            # log.warning (portfolio)
 
             # obtain spot equity
             equity: float = portfolio[0]["equity"]
 
             # index price
             index_price: float = reading_from_database["index_price"]
-            # log.critical (index_price)
-
+            
             # compute notional value
             notional: float = await self.compute_notional_value(index_price, equity)
 
@@ -509,15 +553,11 @@ class ApplyHedgingSpot:
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"]
-                # log.error (positions)
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
                 #log.warning (my_trades_open)
-
-                #
-                # log.info (my_trades_open)
-
+                
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
                 # fetch instruments data
@@ -525,7 +565,7 @@ class ApplyHedgingSpot:
                 # futs_analysis = await self.reading_from_db ('futures_analysis',  self.currency )
 
                 # instruments future
-                instruments_future = [o for o in instruments if o["kind"] == "future"]
+                #instruments_future = [o for o in instruments if o["kind"] == "future"]
 
                 # obtain instruments future relevant to strategies
                 # instrument_transactions = [o['instrument_name'] for o in instruments_future \
@@ -603,11 +643,6 @@ class ApplyHedgingSpot:
                     # instrument contract size
                     contract_size = instrument_data["contract_size"]
 
-                    open_order_mgt_from_exchange = (
-                        await self.open_orders_from_exchange()
-                    )
-                    # log.warning (f'open_order_mgt_from_exchange {open_order_mgt_from_exchange}')
-
                     # fetch strategies
                     strategies = entries_exits.strategies
 
@@ -624,43 +659,39 @@ class ApplyHedgingSpot:
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
-
-                        label_numbered: str = label_numbering.labelling("open", label_strategy)
                         label_closed: str = f"{label_strategy}-closed"
                         
+                        # add some extra params to strategy
+                        strategy.update({'instrument': instrument,
+                                         'size':size,
+                                         'label_numbered':label_numbering.labelling("open", label_strategy),
+                                         'label_closed_numbered': label_numbering.labelling ('closed', label_strategy)}
+                                        )
+                                                
                         # check for any order outstanding as per label filter
                         net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
-                            label_numbered
+                            strategy['label_numbered']
                         )
-                        # log.debug (f'open_order_mgt  {open_order_mgt}')
-                       # log.error(
-                        #    f"net_open_orders_open_byAPI_db {net_open_orders_open_byAPI_db}"
-                        #)
-
-                        # create my order mgt template based on strategies
-                        my_orders_api_basedOn_label_strategy: list = open_order_mgt.open_orders_api_basedOn_label(
-                            label_strategy
-                        )
-                        # log.warning (my_orders_api_basedOn_label_strategy)
                     
-                        label_closed_numbered  = label_numbering.labelling ('closed', label_strategy)
-                        log.warning (strategy)
-                        strategy.update({'instrument': instrument,
-                                                    'size':size,
-                                                    'label_numbered':label_numbered,
-                                                    'label_closed_numbered': label_closed_numbered })
-                        log.debug (strategy)
                         #! excluding hedging spot since its part of risk management, not strategy
                         if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
 
                             await self.check_exit_orders_completeness (my_trades_open, open_order_mgt)
                             
-                            #if open_str_sell != None and open_str_sell["send_order"]:
-                            #    await self.send_combo_orders(params)
+                            send_main_order = await self.is_send_order_allowed (strategy, 
+                                                                                index_price, 
+                                                                                my_trades_open,
+                                                                                open_orders_open_byAPI
+                                                                                )
+                            
+                            if send_main_order ['send_buy_order_allowed']:
+                                pass
+                                #await self.send_combo_orders(strategy)
                                 
-                            #if open_str_buy != None and open_str_buy["send_order"]:
-                                #await self.send_combo_orders(open_str_buy)
-
+                            if send_main_order ['send_sell_order_allowed']:
+                                pass
+                                #await self.send_combo_orders(strategy)
+                            
                         if "hedgingSpot" in strategy["strategy"]:
 
                             if open_order_mgt_filed_status_filed != []:
@@ -740,7 +771,7 @@ class ApplyHedgingSpot:
                                             "sell",
                                             instrument,
                                             abs(check_spot_hedging["hedging_size"]),
-                                            label_numbered,
+                                            strategy['label_numbered'],
                                             best_ask_prc,
                                         )
                                         log.warning(order_result)
@@ -783,7 +814,7 @@ class ApplyHedgingSpot:
                                         )
 
                                         log.info(
-                                            f" {label_numbered=} {bid_prc_is_lower_than_buy_price=} \
+                                            f" {strategy['label_numbered']=} {bid_prc_is_lower_than_buy_price=} \
                                             {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
                                                 {best_ask_prc=}"
                                         )
@@ -826,7 +857,7 @@ class ApplyHedgingSpot:
                                                 "sell",
                                                 instrument,
                                                 check_spot_hedging["average_up_size"],
-                                                label_numbered,
+                                                strategy['label_numbered'],
                                                 best_ask_prc,
                                             )
                                             log.warning(order_result)
@@ -891,7 +922,6 @@ class ApplyHedgingSpot:
         read = pickling.read_data(self, path)
         return read
 
-
 async def main():
 
     connection_url: str = "https://test.deribit.com/api/v2/"
@@ -939,7 +969,6 @@ async def main():
 
     except Exception as error:
         catch_error(error, 30)
-
 
 if __name__ == "__main__":
 

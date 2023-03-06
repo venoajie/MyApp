@@ -396,70 +396,87 @@ class MyOrders ():
     def is_open_trade_has_exit_order_sl (self, open_trades_label, strategy) -> None:
         
         '''
+        order type to search = stop market
         '''   
-        #log.warning (strategy)    
-        #log.error (open_trades_label)    
+        # get net position with the respective strategy
         net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
-        #log.warning (net_position_based_on_label)
-        #open_trades_label_strategy  =  self.transactions_label_strategy(open_trades_label,strategy)
-        #log.warning (open_trades_label_strategy)
         
+        # get open order with the respective strategy and order type stop market
+            # to reduce the possibility of order not executed, stop loss using 
+                # stop market as order type default order
         open_order_label_strategy_type = ([o for o in self. open_orders_from_db \
             if str_mod.get_strings_before_character(o['label']) == strategy \
                 and o['order_type'] == 'stop_market']
                 )
-        #log.warning (open_order_label_strategy_type) 
+
+        # prepare net sum of the open order size based on label strategy
+            # default net sum value (just in case there are no open orders)
         sum_open_order_label_strategy_type = 0
+        
+            # net sum operation
         if open_order_label_strategy_type !=[]:
             sum_open_order_label_strategy_type = self.net_sum_order_size([o for o in open_order_label_strategy_type ])
-        #log.warning (sum_open_order_label_strategy_type) 
         
+        # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
-        #log.warning (net_position) 
             
+        # tp has properly ordered if net position == 0
         is_sl_ok = net_position_based_on_label != 0 and net_position == 0
+
+        
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
-        #log.warning (is_sl_ok) 
+        params = {'instrument': abs(net_position),
+                  'size': abs(net_position),
+                  'label': label_sl,
+                  'type': 'stop_market',
+                  'trigger_price': trigger_price,
+                  
+                  }
+
         label_sl= f'{get_strategy_label}-closed-{get_strategy_int}'
-        #log.warning (label_sl) 
         
         return {'is_sl_ok': is_sl_ok,
                 'size_sl': abs(net_position),
+                'params': params,
                 'label_sl': label_sl }
 
 
     def is_open_trade_has_exit_order_tp (self, open_trades_label, strategy) -> None:
         
         '''
+        order type to search =  take limit
         '''   
-        #log.warning (strategy)    
-        #log.error (open_trades_label)    
+         
+        # get net position of the respective strategy
         net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
-        #log.warning (net_position_based_on_label)
-        #open_trades_label_strategy  =  self.transactions_label_strategy(open_trades_label,strategy)
-        #log.warning (open_trades_label_strategy)
         
+        # get open order with the respective strategy and order type take_limit
+            # to optimise the profit, using take_limit as order type default order
         open_order_label_strategy_type = ([o for o in self. open_orders_from_db \
             if str_mod.get_strings_before_character(o['label']) == strategy \
                 and o['order_type'] == 'take_limit']
                 )
-        #log.warning (open_order_label_strategy_type) 
+
+        # prepare net sum of the open order size based on label strategy
+            # default net sum value (just in case there are no open orders)
         sum_open_order_label_strategy_type = 0
+        
+            # net sum operation
         if open_order_label_strategy_type !=[]:
             sum_open_order_label_strategy_type = self.net_sum_order_size([o for o in open_order_label_strategy_type ])
-        #log.warning (sum_open_order_label_strategy_type) 
         
+        # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
-        #log.warning (net_position) 
             
+        # tp has properly ordered if net position == 0
         is_tp_ok = net_position_based_on_label != 0 and net_position == 0
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
-        #log.warning (is_tp_ok) 
+
         label_tp= f'{get_strategy_label}-closed-{get_strategy_int}'
-        #log.warning (label_tp) 
         
         return {'is_tp_ok': is_tp_ok,
                 'size_tp': abs(net_position),
+                'instrument': abs(net_position),
                 'label_tp': label_tp }

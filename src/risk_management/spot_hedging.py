@@ -2,8 +2,8 @@
 
 # installed
 from dataclassy import dataclass
-from loguru import logger as log
 
+# user defined formula 
 from utilities import string_modification
 from transaction_management.deribit import myTrades_management
 
@@ -108,12 +108,11 @@ class SpotHedging ():
 
         '''
         '''       
-        # compute minimum hedging size. negative sign since the direction is expected as 'sell
+        # compute minimum hedging size. sign will be negative  since the direction is expected as 'sell
         min_hedged_size: int = (self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size))
         
         # check whether current spot was hedged
         actual_hedging_size : int = self.compute_actual_hedging_size () 
-        log.warning (f'{actual_hedging_size=}')
 
         # check remaining hedging needed
         return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
@@ -147,13 +146,7 @@ class SpotHedging ():
         hedging_size_portion = int(size_pct_qty if remain_unhedged < size_pct_qty else remain_unhedged)
 
         none_data = [None, [], '0.0', 0]
-            
-        #log.critical (f'{open_orders_byAPI=}')        
-        #log.info (f'{min_hedged_size=}')        
-        #log.info (f'{notional=}')        
-        #log.info (f'{remain_unhedged=} {remain_unhedged > 0=}')        
-        #log.info (f'{hedging_size_portion=}')  
-        #log.info (f'{remain_unhedged < 0=}')  
+        
         return {'spot_was_unhedged': False if notional in none_data else remain_unhedged < 0,
                 'remain_unhedged_size': remain_unhedged,
                 'all_hedging_size': min_hedged_size,
@@ -193,10 +186,6 @@ class SpotHedging ():
             my_trades.distribute_trade_transactions(currency)
         
         label_to_send = f'{self.label}-closed-{label_int}'
-        
-        log.debug(f'trans.price {myTrades_max_price}   {index_price=}  {avoid_over_bought=} ')
-        log.debug(f'take_profit {index_price <  myTrades_max_price_pct_minus} average_up {index_price  > myTrades_max_price_pct_plus} ')
-        log.debug(f'{myTrades_max_price_pct_minus=}  {myTrades_max_price_pct_plus=} {sum_closed_trades_in_my_trades_open_net=} ')
         
         return {'take_profit':  index_price <  myTrades_max_price_pct_minus and avoid_over_bought,
                 'buy_price':  myTrades_max_price_pct_minus,

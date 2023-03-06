@@ -200,7 +200,7 @@ def test_is_open_trade_has_exit_order ():
     strategies =  string_modification.remove_redundant_elements([ string_modification.get_strings_before_character(o['label'])  for o in open_trade ]) 
     
     for strategy in strategies: 
-        print (strategy)
+        #print (strategy)
         if strategy == 'supplyDemandShort60-1677473096':
             assert open_orders.net_sum_trade_size_based_on_label_strategy(open_trade, strategy) ==  -8
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_sl_ok']==  True
