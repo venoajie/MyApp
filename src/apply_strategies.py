@@ -467,7 +467,7 @@ class ApplyHedgingSpot:
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
-        strategy_labels =  [o for o in strategy_labels if "hedgingSpot" or "test" not in o]
+        strategy_labels =  [o for o in strategy_labels if "hedgingSpot" and "test" not in o]
         log.info (strategy_labels)
         for label in strategy_labels:
             log.critical (label)
