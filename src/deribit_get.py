@@ -84,6 +84,7 @@ async def main(
 ) -> None:
 
     id = id_numbering.id(endpoint, endpoint)
+    print (f'params {params}')
 
     payload: Dict = {
         "jsonrpc": "2.0",
