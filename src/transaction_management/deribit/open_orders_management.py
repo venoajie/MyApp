@@ -390,6 +390,7 @@ class MyOrders ():
         
         '''
         '''      
+        log.debug (open_transactions_label)
         transactions = self.transactions_label_strategy(open_transactions_label,strategy)
         return {'net_sum_order_size': [] if transactions == [] else self.net_sum_order_size (transactions),
                 'instrument': [] if transactions == [] else  [ o["instrument_name"] for o in transactions ][0]
