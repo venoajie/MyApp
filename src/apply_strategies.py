@@ -484,16 +484,23 @@ class ApplyHedgingSpot:
             ) 
         strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
         strategy_labels =  [o for o in strategy_labels if "test"  not in o]
-
+        
         for label in strategy_labels:
             
+            main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+            
+            if main_side == "buy":
+                side = "sell"
+            if main_side == "sell":
+                side = "sell"
+
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.critical (f'strategy_label {strategy_label}')
                 cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+                
                 params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
                 log.error (f'params {params}')
                 await self.send_market_order (params)
@@ -504,7 +511,8 @@ class ApplyHedgingSpot:
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.critical (f'strategy_label {strategy_label}')
                 side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-                params.update({'side': side})
+                take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                params.update({'take_profit_usd': take_profit_usd,'side': side})
                 log.error (f'params {params}')
                 await self.send_limit_order (params)
                     

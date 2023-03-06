@@ -474,7 +474,7 @@ class GetPrivateData:
         instrument = params["instrument"]
         label_numbered = params["label"]
         size = params["size"]
-        trigger_prc = params["trigger_price"]
+        limit_prc = params["take_profit_usd"]
         type = params["type"]
         
         order_result = await self.send_order(
@@ -483,7 +483,7 @@ class GetPrivateData:
                                             size,
                                             label_numbered,
                                             type,
-                                            trigger_prc,
+                                            limit_prc,
                                         )
                                         
         log.info(order_result)
