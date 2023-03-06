@@ -307,6 +307,13 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
+        print (f'side {side}')
+        print (f'instrument {instrument}')
+        print (f'amount {amount}')
+        print (f'label {label}')
+        print (f'price {price}')
+        print (f'type {type}')
+        print (f'trigger_price {trigger_price}')
 
         if valid_until == False:
             
