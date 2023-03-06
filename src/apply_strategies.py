@@ -509,7 +509,13 @@ class ApplyHedgingSpot:
                 side = "buy"
 
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
-
+            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
+            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,label),
+                           open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
+            
+            for order in check_order:
+                log.warning (f'order {order}')
+            
             log.warning (f'check_stop_loss {check_stop_loss}')
             log.error (f'check_take_profit {check_take_profit}')
             
@@ -523,7 +529,6 @@ class ApplyHedgingSpot:
                 #log.error (f'params {params}')
                 await self.send_market_order (params)
             
-            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
                 params = check_take_profit  ['params']
                 
