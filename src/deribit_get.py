@@ -308,9 +308,7 @@ class GetPrivateData:
     ):
 
         if valid_until == False:
-
-            print(trigger_price)
-            print(trigger_price == None)
+            
             if trigger_price == None:
                 if "market" in type:
 
@@ -441,6 +439,54 @@ class GetPrivateData:
             if "error" in order_result:
                 await self.get_cancel_order_byOrderId(order_result_id)
                 await telegram_bot_sendtext("combo order failed")
+
+
+    async def send_market_order(self, params) -> None:
+        """
+        1 limit order
+        1 SL market order
+        1 TP limit order
+        """
+        from loguru import logger as log
+
+        side = params["side"]
+        instrument = params["instrument"]
+        label = params["label"]
+        size = params["size"]
+        tp_prc = params["take_profit_usd"]
+
+        order_result = await self.send_order(
+                side,
+                instrument,
+                size,
+                label,
+                tp_prc
+            )
+        log.info(order_result)
+
+
+    async def send_limit_order(self, params) -> None:
+        """
+        """
+        from loguru import logger as log
+
+        side = params["side"]
+        instrument = params["instrument"]
+        label_numbered = params["label"]
+        size = params["size"]
+        trigger_prc = params["trigger_price"]
+        type = params["type"]
+        
+        order_result = await self.send_order(
+                                            side,
+                                            instrument,
+                                            size,
+                                            label_numbered,
+                                            type,
+                                            trigger_prc,
+                                        )
+                                        
+        log.info(order_result)
 
     async def get_cancel_order_byOrderId(self, order_id: int):
         # Set endpoint

@@ -13,7 +13,7 @@ from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import label_numbering, config
-from strategies import entries_exits, trading_strategies
+from strategies import entries_exits
 # from market_understanding import futures_analysis
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -459,33 +459,47 @@ class ApplyHedgingSpot:
             my_trades_open_from_db,
             my_selected_trades_open_from_system,
         )
+        
+    async def send_market_order(self, params) -> None:
+        """
+        """
+
+        private_data = await self.get_private_data()
+        await private_data.send_market_order(params)
+        
+    async def send_limit_order(self, params) -> None:
+        """
+        """
+
+        private_data = await self.get_private_data()
+        await private_data.send_limit_order(params)
+        
 
     async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list) -> None:
         """
         """
-#if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]
+
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
         strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
         strategy_labels =  [o for o in strategy_labels if "test"  not in o]
-        log.info (strategy_labels)
+
         for label in strategy_labels:
-            log.critical (label)
             
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-                log.warning (f'strategy_label {strategy_label}')
                 trigger_price = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                log.debug (f'trigger_price {trigger_price}')
                 params.update({'trigger_price': trigger_price})
                 log.error (f'params {params}')
+                await self.send_market_order (params)
             
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
                 params = check_take_profit  ['params']
+                await self.send_limit_order (params)
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
         """
@@ -686,9 +700,6 @@ class ApplyHedgingSpot:
                         #! excluding hedging spot since its part of risk management, not strategy
                         if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
 
-                            
-                            
-                            
                             send_main_order = await self.is_send_order_allowed (strategy, 
                                                                                 index_price, 
                                                                                 my_trades_open,
@@ -696,12 +707,10 @@ class ApplyHedgingSpot:
                                                                                 )
                             
                             if send_main_order ['send_buy_order_allowed']:
-                                pass
-                                #await self.send_combo_orders(strategy)
+                                await self.send_combo_orders(strategy)
                                 
                             if send_main_order ['send_sell_order_allowed']:
-                                pass
-                                #await self.send_combo_orders(strategy)
+                                await self.send_combo_orders(strategy)
                             
                         if "hedgingSpot" in strategy["strategy"]:
 
