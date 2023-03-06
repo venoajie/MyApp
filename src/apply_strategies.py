@@ -492,13 +492,17 @@ class ApplyHedgingSpot:
                 params = check_stop_loss  ['params']
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 trigger_price = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                params.update({'trigger_price': trigger_price})
+                side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+                params.update({'trigger_price': trigger_price}, {'side': side})
                 log.error (f'params {params}')
                 await self.send_market_order (params)
             
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
                 params = check_take_profit  ['params']
+                side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
+                params.update({'side': side})
+                log.error (f'params {params}')
                 await self.send_limit_order (params)
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
