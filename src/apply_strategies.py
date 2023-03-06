@@ -463,11 +463,11 @@ class ApplyHedgingSpot:
     async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list) -> None:
         """
         """
-
+#if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
-        
+        log.info (strategy_labels)
         for label in strategy_labels:
             log.critical (label)
             
@@ -479,7 +479,7 @@ class ApplyHedgingSpot:
                 trigger_price = [
                                         o["cut_loss_usd"]
                                         for o in strategies if o['strategy'] == strategy_label
-                                    ]
+                                    ][0]
                 log.debug (f'trigger_price {trigger_price}')
                 params.update({'trigger_price': trigger_price})
                 log.error (f'params {params}')
