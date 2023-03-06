@@ -467,6 +467,17 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
         
+    def optimising_exit_price (self, side, exit_price: float, best_bid_prc: float, best_ask_prc: float ) -> None:
+        """
+        """
+
+        if side == 'buy':
+            price = min (exit_price, best_bid_prc)
+        if side == 'sell':
+            price = max (exit_price, best_ask_prc)
+        return price
+    
+        
     async def send_limit_order(self, params) -> None:
         """
         """
@@ -475,7 +486,7 @@ class ApplyHedgingSpot:
         await private_data.send_limit_order(params)
         
 
-    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list) -> None:
+    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list, best_bid_prc: float, best_ask_prc: float) -> None:
         """
         """
 
@@ -506,6 +517,7 @@ class ApplyHedgingSpot:
                 params = check_stop_loss  ['params']
                 log.critical (f'strategy_label {strategy_label}')
                 cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)                
                 
                 params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
                 log.error (f'params {params}')
@@ -518,6 +530,7 @@ class ApplyHedgingSpot:
                 log.critical (f'strategy_label {strategy_label}')
                 #side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
                 take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)                
                 params.update({'take_profit_usd': take_profit_usd,'side': side})
                 log.error (f'params {params}')
                 await self.send_limit_order (params)
@@ -689,7 +702,7 @@ class ApplyHedgingSpot:
                     # fetch strategies
                     strategies = entries_exits.strategies
                     
-                    await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies)
+                    await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies, best_bid_prc, best_ask_prc)
 
                     #execute each strategy
                     for strategy in strategies:
