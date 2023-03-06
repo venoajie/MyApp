@@ -486,6 +486,7 @@ class ApplyHedgingSpot:
         strategy_labels =  [o for o in strategy_labels if "test"  not in o]
         
         for label in strategy_labels:
+            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
             
             main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
             
@@ -497,7 +498,6 @@ class ApplyHedgingSpot:
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
-                strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.critical (f'strategy_label {strategy_label}')
                 cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 
@@ -508,7 +508,7 @@ class ApplyHedgingSpot:
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
                 params = check_take_profit  ['params']
-                strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+                
                 log.critical (f'strategy_label {strategy_label}')
                 side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
                 take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
