@@ -389,6 +389,52 @@ class GetPrivateData:
         result = await self.parse_main(endpoint=endpoint, params=params)
         return result
 
+    async def send_limit_order(self, params) -> None:
+        """
+        """
+        from loguru import logger as log
+
+        side = params["side"]
+        instrument = params["instrument"]
+        label_numbered = params["label"]
+        size = params["size"]
+        limit_prc = params["take_profit_usd"]
+        type = params["type"]
+        
+        order_result = await self.send_order(
+                                            side,
+                                            instrument,
+                                            size,
+                                            label_numbered,
+                                            limit_prc,
+                                            type,
+                                        )
+                                        
+        log.info(order_result)
+        
+    async def send_market_order(self, params) -> None:
+        """
+        1 limit order
+        1 SL market order
+        1 TP limit order
+        """
+        from loguru import logger as log
+
+        side = params["side"]
+        instrument = params["instrument"]
+        label = params["label"]
+        size = params["size"]
+        tp_prc = params["cut_loss_usd"]
+
+        order_result = await self.send_order(
+                side,
+                instrument,
+                size,
+                label,
+                tp_prc
+            )
+        log.info(order_result)
+        
     async def send_triple_orders(self, params) -> None:
         """
         1 limit order
@@ -447,54 +493,6 @@ class GetPrivateData:
             if "error" in order_result:
                 await self.get_cancel_order_byOrderId(order_result_id)
                 await telegram_bot_sendtext("combo order failed")
-
-
-    async def send_market_order(self, params) -> None:
-        """
-        1 limit order
-        1 SL market order
-        1 TP limit order
-        """
-        from loguru import logger as log
-
-        side = params["side"]
-        instrument = params["instrument"]
-        label = params["label"]
-        size = params["size"]
-        tp_prc = params["cut_loss_usd"]
-
-        order_result = await self.send_order(
-                side,
-                instrument,
-                size,
-                label,
-                tp_prc
-            )
-        log.info(order_result)
-
-
-    async def send_limit_order(self, params) -> None:
-        """
-        """
-        from loguru import logger as log
-
-        side = params["side"]
-        instrument = params["instrument"]
-        label_numbered = params["label"]
-        size = params["size"]
-        limit_prc = params["take_profit_usd"]
-        type = params["type"]
-        
-        order_result = await self.send_order(
-                                            side,
-                                            instrument,
-                                            size,
-                                            label_numbered,
-                                            type,
-                                            limit_prc,
-                                        )
-                                        
-        log.info(order_result)
 
     async def get_cancel_order_byOrderId(self, order_id: int):
         # Set endpoint

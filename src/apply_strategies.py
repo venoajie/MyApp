@@ -593,7 +593,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
@@ -613,7 +613,7 @@ class ApplyHedgingSpot:
                 open_orders_open_byAPI: list = reading_from_database[
                     "open_orders_open_byAPI"
                 ]
-                #log.critical (open_orders_open_byAPI)
+                log.critical (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
