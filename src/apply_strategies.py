@@ -492,9 +492,9 @@ class ApplyHedgingSpot:
                 params = check_stop_loss  ['params']
                 strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.critical (f'strategy_label {strategy_label}')
-                trigger_price = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-                params.update({'trigger_price': trigger_price, 'side': side})
+                params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
                 log.error (f'params {params}')
                 await self.send_market_order (params)
             
