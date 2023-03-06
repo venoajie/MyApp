@@ -497,7 +497,7 @@ class ApplyHedgingSpot:
             if main_side == "buy":
                 side = "sell"
             if main_side == "sell":
-                side = "sell"
+                side = "buy"
 
             log.error (side)
             
