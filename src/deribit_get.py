@@ -405,11 +405,11 @@ class GetPrivateData:
                                         
         log.info(order_result)
         
+        if "error" in order_result:
+            await telegram_bot_sendtext("limit order failed")
+            
     async def send_market_order(self, params) -> None:
         """
-        1 limit order
-        1 SL market order
-        1 TP limit order
         """
         from loguru import logger as log
 
@@ -428,11 +428,15 @@ class GetPrivateData:
             )
         log.info(order_result)
         
+        if "error" in order_result:
+            await telegram_bot_sendtext("market order failed")
+            
     async def send_triple_orders(self, params) -> None:
         """
-        1 limit order
-        1 SL market order
-        1 TP limit order
+        triple orders:
+            1 limit order
+            1 SL market order
+            1 TP limit order
         """
         from loguru import logger as log
 
