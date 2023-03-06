@@ -473,11 +473,20 @@ class ApplyHedgingSpot:
             
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
-                log.critical ( check_stop_loss  ['params'])
+                params = check_stop_loss  ['params']
+                strategy_label = str_mod.get_strings_before_character (strategy_labels,'-', 0)
+                log.warning (f'strategy_label {strategy_label}')
+                trigger_price = [
+                                        o["cut_loss_usd"]
+                                        for o in strategies if o['strategy'] == strategy_label
+                                    ]
+                log.debug (f'trigger_price {trigger_price}')
+                params.update({'trigger_price': trigger_price})
+                log.error (f'params {params}')
             
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
-                log.critical ( check_take_profit  ['params'])
+                params = check_take_profit  ['params']
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
         """
