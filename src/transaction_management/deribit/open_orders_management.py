@@ -428,9 +428,9 @@ class MyOrders ():
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
         params = {'instrument': abs(net_position),
                   'size': abs(net_position),
-                  'label': label_sl,
+                  #'label': label_sl,
                   'type': 'stop_market',
-                  'trigger_price': trigger_price,
+                  #'trigger_price': trigger_price,
                   
                   }
 
