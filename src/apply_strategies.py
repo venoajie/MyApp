@@ -474,7 +474,7 @@ class ApplyHedgingSpot:
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
-                strategy_label = str_mod.get_strings_before_character (strategy_labels,'-', 0)
+                strategy_label = str_mod.get_strings_before_character (label,'-', 0)
                 log.warning (f'strategy_label {strategy_label}')
                 trigger_price = [
                                         o["cut_loss_usd"]
