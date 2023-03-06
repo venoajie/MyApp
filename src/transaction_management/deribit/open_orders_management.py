@@ -384,13 +384,16 @@ class MyOrders ():
         return ([o for o in open_transactions_label \
             if str_mod.get_strings_before_character(o['label']) == strategy])
  
-    def net_sum_trade_size_based_on_label_strategy (self, 
+    def trade_based_on_label_strategy (self, 
                                            open_transactions_label,
                                            strategy) -> None:
         
         '''
         '''      
-        return self.net_sum_order_size (self.transactions_label_strategy(open_transactions_label,strategy))
+        transactions = self.transactions_label_strategy(open_transactions_label,strategy)
+        return {'net_sum_order_size': [] if transactions == [] else self.net_sum_order_size (transactions),
+                'instrument': [] if transactions == [] else  [ o["instrument_name"] for o in transactions ][0]
+                }
     
         
     def is_open_trade_has_exit_order_sl (self, open_trades_label, strategy) -> None:
@@ -398,8 +401,10 @@ class MyOrders ():
         '''
         order type to search = stop market
         '''   
+        trade_based_on_label_strategy = self.trade_based_on_label_strategy (open_trades_label, strategy)
+        
         # get net position with the respective strategy
-        net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
+        net_position_based_on_label = trade_based_on_label_strategy ['net_sum_order_size']
         
         # get open order with the respective strategy and order type stop market
             # to reduce the possibility of order not executed, stop loss using 
@@ -426,15 +431,15 @@ class MyOrders ():
         
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
-        params = {'instrument': abs(net_position),
+        label_sl= f'{get_strategy_label}-closed-{get_strategy_int}'
+
+        # gather parameter items for order detail
+        params = {'instrument': trade_based_on_label_strategy ['instrument'],
                   'size': abs(net_position),
-                  #'label': label_sl,
-                  'type': 'stop_market',
-                  #'trigger_price': trigger_price,
-                  
+                  'label': label_sl,
+                  'type': 'stop_market'
                   }
 
-        label_sl= f'{get_strategy_label}-closed-{get_strategy_int}'
         
         return {'is_sl_ok': is_sl_ok,
                 'size_sl': abs(net_position),
@@ -448,14 +453,16 @@ class MyOrders ():
         order type to search =  take limit
         '''   
          
-        # get net position of the respective strategy
-        net_position_based_on_label = self.net_sum_trade_size_based_on_label_strategy (open_trades_label, strategy)
+        trade_based_on_label_strategy = self.trade_based_on_label_strategy (open_trades_label, strategy)
+        
+        # get net position with the respective strategy
+        net_position_based_on_label = trade_based_on_label_strategy ['net_sum_order_size']
         
         # get open order with the respective strategy and order type take_limit
             # to optimise the profit, using take_limit as order type default order
         open_order_label_strategy_type = ([o for o in self. open_orders_from_db \
             if str_mod.get_strings_before_character(o['label']) == strategy \
-                and o['order_type'] == 'take_limit']
+                and 'limit' in o['order_type'] ]
                 )
 
         # prepare net sum of the open order size based on label strategy
@@ -476,7 +483,13 @@ class MyOrders ():
 
         label_tp= f'{get_strategy_label}-closed-{get_strategy_int}'
         
+        # gather parameter items for order detail
+        params = {'instrument': trade_based_on_label_strategy['instrument'],
+                  'size': abs(net_position),
+                  'label': label_tp,
+                  'type': 'take_limit'
+                  }
         return {'is_tp_ok': is_tp_ok,
                 'size_tp': abs(net_position),
-                'instrument': abs(net_position),
+                'params': params,
                 'label_tp': label_tp }

@@ -460,24 +460,24 @@ class ApplyHedgingSpot:
             my_selected_trades_open_from_system,
         )
 
-    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object) -> None:
+    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list) -> None:
         """
         """
 
-        strategies =  str_mod.remove_redundant_elements(
+        strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
         
-        for strategy in strategies:
-            log.critical (strategy)
+        for label in strategy_labels:
+            log.critical (label)
             
-            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy)
+            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
-                log.critical ( check_stop_loss  ['is_sl_ok'])
+                log.critical ( check_stop_loss  ['params'])
             
-            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy)
+            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
-                log.critical ( check_take_profit  ['is_tp_ok'])
+                log.critical ( check_take_profit  ['params'])
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
         """
@@ -676,7 +676,8 @@ class ApplyHedgingSpot:
                         #! excluding hedging spot since its part of risk management, not strategy
                         if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
 
-                            await self.check_exit_orders_completeness (my_trades_open, open_order_mgt)
+                            await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies)
+                            
                             
                             send_main_order = await self.is_send_order_allowed (strategy, 
                                                                                 index_price, 

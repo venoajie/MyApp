@@ -202,7 +202,8 @@ def test_is_open_trade_has_exit_order ():
     for strategy in strategies: 
         #print (strategy)
         if strategy == 'supplyDemandShort60-1677473096':
-            assert open_orders.net_sum_trade_size_based_on_label_strategy(open_trade, strategy) ==  -8
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size'] ==  -8
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_sl_ok']==  True
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  0
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandShort60-closed-1677473096'
@@ -212,7 +213,8 @@ def test_is_open_trade_has_exit_order ():
             assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['label_tp']==  'supplyDemandShort60-closed-1677473096'
             
         if strategy == 'supplyDemandLong60-1677473096934':
-            assert open_orders.net_sum_trade_size_based_on_label_strategy(open_trade, strategy) ==  9
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size']  ==  9
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_sl_ok']==  False
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  9
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandLong60-closed-1677473096934'
@@ -222,7 +224,8 @@ def test_is_open_trade_has_exit_order ():
             assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['label_tp']==  'supplyDemandLong60-closed-1677473096934'
             
         if strategy == 'supplyDemandLong60B-1677903684425':
-            assert open_orders.net_sum_trade_size_based_on_label_strategy(open_trade, strategy) ==  5
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size']  ==  5
+            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_sl_ok']==  True
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  0
             assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandLong60B-closed-1677903684425'
