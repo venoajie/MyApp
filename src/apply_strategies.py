@@ -476,7 +476,6 @@ class ApplyHedgingSpot:
         if side == 'sell':
             price = max (exit_price, best_ask_prc)
         return price
-    
         
     async def send_limit_order(self, params) -> None:
         """
@@ -485,7 +484,6 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
         
-
     async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list, best_bid_prc: float, best_ask_prc: float) -> None:
         """
         """
@@ -498,41 +496,42 @@ class ApplyHedgingSpot:
         
         for label in strategy_labels:
             strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-            log.warning (strategies)
-            log.error (strategy_label)
-            log.error (label)
+            #log.warning (strategies)
+            #log.error (strategy_label)
+            #log.error (label)
             
             main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-            log.warning (main_side)
+            #log.warning (main_side)
             
             if main_side == "buy":
                 side = "sell"
             if main_side == "sell":
                 side = "buy"
 
-            log.error (side)
+            log.warning (f'check_stop_loss {check_stop_loss}')
+            log.error (f'check_take_profit {check_take_profit}')
             
             check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
             if check_stop_loss  ['is_sl_ok']== False:
                 params = check_stop_loss  ['params']
-                log.critical (f'strategy_label {strategy_label}')
+                #log.critical (f'strategy_label {strategy_label}')
                 cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)                
                 
                 params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
-                log.error (f'params {params}')
+                #log.error (f'params {params}')
                 await self.send_market_order (params)
             
             check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             if check_take_profit  ['is_tp_ok']== False:
                 params = check_take_profit  ['params']
                 
-                log.critical (f'strategy_label {strategy_label}')
+                #log.critical (f'strategy_label {strategy_label}')
                 #side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
                 take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                 take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)                
                 params.update({'take_profit_usd': take_profit_usd,'side': side})
-                log.error (f'params {params}')
+                #log.error (f'params {params}')
                 await self.send_limit_order (params)
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
@@ -546,8 +545,8 @@ class ApplyHedgingSpot:
         send_sell_order_allowed = False
         send_buy_order_allowed  = False
         
-        log.debug ( strategy['side'])
-        log.warning (index_price)
+        #log.debug ( strategy['side'])
+        #log.warning (index_price)
 
         if strategy['side'] == 'buy' \
             and strategy['entry_price'] < index_price:
