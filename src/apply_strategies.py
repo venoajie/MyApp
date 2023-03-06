@@ -653,6 +653,8 @@ class ApplyHedgingSpot:
 
                     # fetch strategies
                     strategies = entries_exits.strategies
+                    
+                    await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies)
 
                     #execute each strategy
                     for strategy in strategies:
@@ -684,7 +686,7 @@ class ApplyHedgingSpot:
                         #! excluding hedging spot since its part of risk management, not strategy
                         if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
 
-                            await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies)
+                            
                             
                             
                             send_main_order = await self.is_send_order_allowed (strategy, 
