@@ -405,6 +405,7 @@ class MyOrders ():
         
         # get net position with the respective strategy
         net_position_based_on_label = trade_based_on_label_strategy ['net_sum_order_size']
+        log.error (net_position_based_on_label)
         
         # get open order with the respective strategy and order type stop market
             # to reduce the possibility of order not executed, stop loss using 
@@ -424,6 +425,8 @@ class MyOrders ():
         
         # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        log.error (sum_open_order_label_strategy_type)
+        log.error (net_position)
             
         # tp has properly ordered if net position == 0
         is_sl_ok = net_position_based_on_label != 0 and net_position == 0
