@@ -67,6 +67,7 @@ coverage.xml
 
 #postgresql db
 tradingdb
+trading.db
 
 # Django stuff:
 *.log
