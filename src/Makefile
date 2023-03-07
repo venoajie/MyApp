@@ -10,5 +10,6 @@ fetch-data:
 
 exe-app: 
 	nohup sh checkEvents.sh >/dev/null 2>&1 &
+	nohup sh every30s.sh >/dev/null 2>&1 &
 	sleep 5m
 	nohup sh sync_with_remote.sh >/dev/null 2>&1 &
