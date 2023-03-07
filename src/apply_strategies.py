@@ -651,7 +651,7 @@ class ApplyHedgingSpot:
                     "open_orders_filled_byAPI"
                 ]
 
-                log.critical (open_orders_from_sub_account_get)
+                #log.critical (open_orders_from_sub_account_get)
                 #!################################## end of gathering basic data #####################################
 
                 # prepare open trade class object
