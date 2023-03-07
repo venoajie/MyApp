@@ -535,15 +535,18 @@ class ApplyHedgingSpot:
         
         #log.debug ( strategy['side'])
         log.warning (label_strategy)
-        log.warning (side)
-        log.warning (index_price)
-        log.warning (entry_price)
-        log.warning (entry_price < index_price)
-        log.warning (entry_price > index_price)
-
+        log.warning (f'side {side}')
+        log.warning (f'index_price {index_price}')
+        log.warning (f'entry_price {entry_price}')
+        log.warning (f'entry_price < index_price {entry_price < index_price}')
+        log.warning (f'entry_price > index_price {entry_price > index_price}')
+        
+        log.warning (f'index_price > invalidation_price {index_price > invalidation_price}')
+        log.warning (f'index_price < invalidation_price {index_price < invalidation_price}')
+        
         if side == 'buy' \
             and index_price < entry_price \
-                and entry_price > invalidation_price:
+                and index_price > invalidation_price:
                 log.error ('AAAAAAAAAAAAAAAAAAAAAAA')
                 log.error (label_strategy)
                 if my_trades_open not in none_data:
@@ -558,7 +561,7 @@ class ApplyHedgingSpot:
 
         if side == 'sell' \
             and index_price > entry_price \
-                and entry_price < invalidation_price:
+                and index_price < invalidation_price:
                 log.error ('BBBBBBBBBBBBBBBB')
                 log.error (label_strategy)                
                 if my_trades_open not in none_data:
