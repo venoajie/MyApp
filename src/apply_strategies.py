@@ -390,7 +390,8 @@ class ApplyHedgingSpot:
 
         private_data = await self.get_private_data()
 
-        await private_data.get_cancel_order_byOrderId(open_order_id)
+        result = await private_data.get_cancel_order_byOrderId(open_order_id)
+        return result
 
     async def check_open_orders_integrity(
         self, open_orders_from_sub_account_get, open_orders_open_byAPI
@@ -511,9 +512,9 @@ class ApplyHedgingSpot:
                 log.warning (order)
                 if order  ['current_order_len_exceeding_minimum']:
                     for transaction in  order  ['list_order_exceeding_minimum']:
-                        order_id = transaction['order_id']
-                        await self.cancel_redundant_orders_in_same_labels(order_id)
-                        log.warning (order_id)
+                        open_order_id = transaction['order_id']
+                        cancel = await self.cancel_by_order_id(open_order_id)
+                        log.warning (cancel)
                 
                 if order  ['is_exit_order_ok']== False:
                     log.critical (f'order {order}')
