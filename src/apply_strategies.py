@@ -508,7 +508,7 @@ class ApplyHedgingSpot:
                            open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
             
             for order in check_order:
-                
+                log.warning (order)
                 if order  ['current_order_len_exceeding_minimum']:
                     for order in  order  ['list_order_exceeding_minimum']:
                         order_id = order['order_id']
