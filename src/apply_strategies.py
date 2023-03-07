@@ -510,6 +510,12 @@ class ApplyHedgingSpot:
             for order in check_order:
                 log.critical (order  ['is_exit_order_ok'])
                 
+                if order  ['current_order_len_exceeding_minimum']:
+                    for order in  order  ['list_order_exceeding_minimum']:
+                        order_id = ( [ o['order_id'] for o in order ])
+                        log.warning (order_id)
+                        #cancel = await self.cancel_redundant_orders_in_same_labels(label_for_filter)
+                
                 if order  ['is_exit_order_ok']== False:
                     log.critical (f'order {order}')
                     params = order  ['params']
@@ -545,22 +551,22 @@ class ApplyHedgingSpot:
         send_buy_order_allowed  = False
         
         #log.debug ( strategy['side'])
-        log.warning (label_strategy)
-        log.warning (f'side {side}')
-        log.warning (f'index_price {index_price}')
-        log.warning (f'entry_price {entry_price}')
-        log.warning (f'invalidation_price {invalidation_price}')
-        log.warning (f'entry_price < index_price {entry_price < index_price}')
-        log.warning (f'entry_price > index_price {entry_price > index_price}')
+        #log.warning (label_strategy)
+        #log.warning (f'side {side}')
+        #log.warning (f'index_price {index_price}')
+        #log.warning (f'entry_price {entry_price}')
+        #log.warning (f'invalidation_price {invalidation_price}')
+        #log.warning (f'entry_price < index_price {entry_price < index_price}')
+        #log.warning (f'entry_price > index_price {entry_price > index_price}')
         
-        log.warning (f'index_price > invalidation_price {index_price > invalidation_price}')
-        log.warning (f'index_price < invalidation_price {index_price < invalidation_price}')
+        #log.warning (f'index_price > invalidation_price {index_price > invalidation_price}')
+        #log.warning (f'index_price < invalidation_price {index_price < invalidation_price}')
         
         if side == 'buy' \
             and index_price < entry_price \
                 and index_price > invalidation_price:
-                log.error ('AAAAAAAAAAAAAAAAAAAAAAA')
-                log.error (label_strategy)
+                #log.error ('AAAAAAAAAAAAAAAAAAAAAAA')
+                #log.error (label_strategy)
                 if my_trades_open not in none_data:
                     my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
                     my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
@@ -574,8 +580,8 @@ class ApplyHedgingSpot:
         if side == 'sell' \
             and index_price > entry_price \
                 and index_price < invalidation_price:
-                log.error ('BBBBBBBBBBBBBBBB')
-                log.error (label_strategy)                
+                #log.error ('BBBBBBBBBBBBBBBB')
+                #log.error (label_strategy)                
                 if my_trades_open not in none_data:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
                     my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
