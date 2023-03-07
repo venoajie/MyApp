@@ -433,18 +433,18 @@ class MyOrders ():
         #log.error (net_position)
             
         # tp has properly ordered if net position == 0
-        is_over_order = net_position == 0 
-        is_sl_ok = net_position_based_on_label != 0 and is_over_order and len_open_order_label_strategy_type > 0
+        #is_over_order = net_position == 0 
+        #is_sl_ok = net_position_based_on_label != 0 and is_over_order and len_open_order_label_strategy_type > 0
 
         
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
         label_sl= f'{get_strategy_label}-closed-{get_strategy_int}'
 
-        log.info (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
-        log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
-        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
-        log.warning (f'is_sl_ok  {is_sl_ok}')
+        #log.info (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
+        #log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
+        #log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
+        #log.warning (f'is_sl_ok  {is_sl_ok}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy ['instrument'],
                   'size': abs(net_position),
@@ -453,7 +453,7 @@ class MyOrders ():
                   }
 
         
-        return {'is_exit_order_ok': is_sl_ok,
+        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
                 'size_sl': abs(net_position),
                 'params': params,
                 'label_sl': label_sl }
@@ -490,24 +490,24 @@ class MyOrders ():
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
             
         # tp has properly ordered if net position == 0
-        is_over_order = net_position == 0 
-        is_tp_ok = net_position_based_on_label != 0 and is_over_order and len_open_order_label_strategy_type > 0
+        #is_over_order = net_position == 0 
+        #is_tp_ok = net_position_based_on_label != 0 and is_over_order and len_open_order_label_strategy_type > 0
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
 
         label_tp= f'{get_strategy_label}-closed-{get_strategy_int}'
         
-        log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
-        log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
-        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
-        log.warning (f'is_tp_ok  {is_tp_ok}')
+        #log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
+        #log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
+        #log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
+        #log.warning (f'is_tp_ok  {is_tp_ok}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
                   'label': label_tp,
                   'type': 'limit'
                   }
-        return {'is_exit_order_ok': is_tp_ok,
+        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
