@@ -518,7 +518,6 @@ class ApplyHedgingSpot:
                     if side == "sell":
                         cl_side = "buy"
 
-
                     cut_loss_usd = self.optimising_exit_price (cl_side, cut_loss_usd, best_bid_prc, best_ask_prc)  
                     take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                     take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
@@ -1047,7 +1046,7 @@ if __name__ == "__main__":
         if is_running:
             catch_error(is_running)
 
-        system_tools.sleep_and_restart_program(30)
+        #system_tools.sleep_and_restart_program(30)
 
     except (KeyboardInterrupt):
         catch_error(KeyboardInterrupt)
