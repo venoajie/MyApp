@@ -394,6 +394,7 @@ class MyOrders ():
         transactions = self.transactions_label_strategy(open_transactions_label,strategy)
         log.debug (transactions)
         return {'net_sum_order_size': [] if transactions == [] else self.net_sum_order_size (transactions),
+                'len_transactions': [] if transactions == [] else  len(transactions),
                 'instrument': [] if transactions == [] else  [ o["instrument_name"] for o in transactions ][0]
                 }
     
@@ -416,6 +417,7 @@ class MyOrders ():
             if str_mod.get_strings_before_character(o['label']) == strategy \
                 and o['order_type'] == 'stop_market']
                 )
+        log.error (open_order_label_strategy_type)
 
         # prepare net sum of the open order size based on label strategy
             # default net sum value (just in case there are no open orders)
