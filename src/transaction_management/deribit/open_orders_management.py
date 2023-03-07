@@ -418,7 +418,7 @@ class MyOrders ():
                 and o['order_type'] == 'stop_market']
                 )
         len_open_order_label_strategy_type =  (len(open_order_label_strategy_type))
-        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type < 1}')
+        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
 
         # prepare net sum of the open order size based on label strategy
             # default net sum value (just in case there are no open orders)
@@ -434,7 +434,7 @@ class MyOrders ():
         #log.error (net_position)
             
         # tp has properly ordered if net position == 0
-        is_sl_ok = net_position_based_on_label != 0 and net_position == 0 and len_open_order_label_strategy_type < 1
+        is_sl_ok = net_position_based_on_label != 0 and net_position == 0 and len_open_order_label_strategy_type > 0
 
         
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
@@ -487,7 +487,7 @@ class MyOrders ():
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
             
         # tp has properly ordered if net position == 0
-        is_tp_ok = net_position_based_on_label != 0 and net_position == 0 and len_open_order_label_strategy_type < 1
+        is_tp_ok = net_position_based_on_label != 0 and net_position == 0 and len_open_order_label_strategy_type > 0
         get_strategy_label = str_mod.get_strings_before_character (strategy,'-', 0)
         get_strategy_int = str_mod.get_strings_before_character (strategy,'-', 1)
 
