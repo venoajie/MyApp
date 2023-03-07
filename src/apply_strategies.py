@@ -517,9 +517,9 @@ class ApplyHedgingSpot:
                     take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
                     params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
                     log.warning (f'order {order}')
-                    if order  ['type'] =='limit':
+                    if order   ['params'] ['type'] =='limit':
                         await self.send_limit_order (params)
-                    if order  ['type'] =='stop_market':
+                    if order  ['params'] ['type'] =='stop_market':
                         await self.send_market_order (params)
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
