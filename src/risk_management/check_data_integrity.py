@@ -217,6 +217,8 @@ class CheckOrderIntegrity ():
         ''' 
 
         try:
+            #print (f"open_order_from_db {self. open_order_from_db}")
+            print (f"open_order_from_get {self. open_order_from_get}")
             
             both_sources_are_equivalent =  self.open_order_from_get == self. open_order_from_db
             log.critical (f'both_sources_are_equivalent {both_sources_are_equivalent} open_order_from_get {self.open_order_from_get} open_order_from_db {self. open_order_from_db}')
