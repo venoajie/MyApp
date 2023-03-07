@@ -508,8 +508,9 @@ class ApplyHedgingSpot:
                            open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
             
             for order in check_order:
-                log.critical (f'order {order}')
+                
                 if order  ['is_send_order_ok']== False:
+                    log.critical (f'order {order}')
                     params = order  ['params']
                     cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                             
@@ -517,8 +518,8 @@ class ApplyHedgingSpot:
                         cl_side = "sell"
                     if side == "sell":
                         cl_side = "buy"
+                    log.critical (f'cl_side {cl_side}')
 
-                    cut_loss_usd = self.optimising_exit_price (cl_side, cut_loss_usd, best_bid_prc, best_ask_prc)  
                     take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                     take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
                     params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
