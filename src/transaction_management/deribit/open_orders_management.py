@@ -449,7 +449,7 @@ class MyOrders ():
                   }
 
         
-        return {'is_exist_order_ok': is_sl_ok,
+        return {'is_exit_order_ok': is_sl_ok,
                 'size_sl': abs(net_position),
                 'params': params,
                 'label_sl': label_sl }
@@ -495,13 +495,14 @@ class MyOrders ():
         log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
         log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
         log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
+        log.warning (f'is_tp_ok  {is_tp_ok}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
                   'label': label_tp,
                   'type': 'limit'
                   }
-        return {'is_exist_order_ok': is_tp_ok,
+        return {'is_exit_order_ok': is_tp_ok,
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
