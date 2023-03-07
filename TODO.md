@@ -38,8 +38,7 @@ VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-exe
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
 etcML | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
-
-market structure | [market structure](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
+Market structure | [market](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
 
 
 
