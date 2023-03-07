@@ -446,7 +446,7 @@ class MyOrders ():
                   }
 
         
-        return {'is_sl_ok': is_sl_ok,
+        return {'is_send_order_ok': is_sl_ok,
                 'size_sl': abs(net_position),
                 'params': params,
                 'label_sl': label_sl }
@@ -494,7 +494,7 @@ class MyOrders ():
                   'label': label_tp,
                   'type': 'limit'
                   }
-        return {'is_tp_ok': is_tp_ok,
+        return {'is_send_order_ok': is_tp_ok,
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
