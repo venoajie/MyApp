@@ -508,6 +508,7 @@ class ApplyHedgingSpot:
                            open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
             
             for order in check_order:
+                log.critical (order  ['is_exit_order_ok'])
                 
                 if order  ['is_exit_order_ok']== False:
                     log.critical (f'order {order}')
