@@ -1,9 +1,0 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-import fetch_and_save_market_data_from_deribit
-
-currencies =['eth', 'btc']
-
-for currency in currencies:
-    fetch_and_save_market_data_from_deribit.main(currency)
