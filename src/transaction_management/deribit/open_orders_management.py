@@ -418,6 +418,7 @@ class MyOrders ():
                 and o['order_type'] == 'stop_market']
                 )
         log.error (open_order_label_strategy_type)
+        log.critical (len(open_order_label_strategy_type))
 
         # prepare net sum of the open order size based on label strategy
             # default net sum value (just in case there are no open orders)
