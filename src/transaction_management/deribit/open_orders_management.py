@@ -418,7 +418,7 @@ class MyOrders ():
                 and o['order_type'] == 'stop_market']
                 )
         len_open_order_label_strategy_type =  (len(open_order_label_strategy_type))
-        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type}')
+        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type < 1}')
 
         # prepare net sum of the open order size based on label strategy
             # default net sum value (just in case there are no open orders)
@@ -449,7 +449,7 @@ class MyOrders ():
                   }
 
         
-        return {'is_send_order_ok': is_sl_ok,
+        return {'is_exist_order_ok': is_sl_ok,
                 'size_sl': abs(net_position),
                 'params': params,
                 'label_sl': label_sl }
@@ -499,7 +499,7 @@ class MyOrders ():
                   'label': label_tp,
                   'type': 'limit'
                   }
-        return {'is_send_order_ok': is_tp_ok,
+        return {'is_exist_order_ok': is_tp_ok,
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
