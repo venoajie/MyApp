@@ -514,22 +514,31 @@ class ApplyHedgingSpot:
                            open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
             
             for order in check_order:
-                log.warning (f'order {order}')
+                log.critical (f'order {order}')
+                if order  ['is_send_order_ok']== False:
+                    params = order  ['params']
+                    cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                    cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)  
+                    log.warning (f'order {order}')
+                    await self.send_limit_order (params)
             
             log.warning (f'check_stop_loss {check_stop_loss}')
             log.error (f'check_take_profit {check_take_profit}')
             
-            if check_stop_loss  ['is_sl_ok']== False:
+            if False and check_stop_loss  ['is_send_order_ok']== False:
                 params = check_stop_loss  ['params']
                 #log.critical (f'strategy_label {strategy_label}')
                 cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)                
+                cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)   
+                take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
+                params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})                      
                 
                 params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
                 #log.error (f'params {params}')
                 await self.send_market_order (params)
             
-            if check_take_profit  ['is_tp_ok']== False:
+            if False and check_take_profit  ['is_send_order_ok']== False:
                 params = check_take_profit  ['params']
                 
                 #log.critical (f'strategy_label {strategy_label}')
