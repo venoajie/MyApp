@@ -3,6 +3,23 @@ equity_risked_pct_default =  1/100/4
 
 strategies = [
     {
+    'strategy': 'supplyDemandShort60A',
+    'instrument': ['PERPETUAL'],
+    'time_frame': 3600,
+    'side': 'sell',
+    'entry_price': 1580,
+    'invalidation_entry_price': 1600,
+    'take_profit_usd': 1550,
+    'take_profit_pct': 1/100,
+    'quantity_discrete': 15,
+    'cut_loss_usd': 1640,
+    'cut_loss_pct': (1/100)/2,
+    'averaging': 15,
+    'halt_minute_before_reorder': 60, 
+    'equity_risked_usd': 60, 
+    'equity_risked_pct': equity_risked_pct_default
+    },
+    {
     'strategy': 'supplyDemandShort60',
     'instrument': ['PERPETUAL'],
     'time_frame': 3600,
@@ -19,7 +36,6 @@ strategies = [
     'equity_risked_usd': 60, 
     'equity_risked_pct': equity_risked_pct_default
     },
-    
     {
     'strategy': 'supplyDemandLong60',
     'instrument': ['PERPETUAL'],
