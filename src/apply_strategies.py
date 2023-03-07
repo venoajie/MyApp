@@ -523,6 +523,8 @@ class ApplyHedgingSpot:
         """
         """
         label_strategy = strategy ['strategy']
+        entry_price = strategy['entry_price'] 
+        side = strategy['side'] 
         
         none_data = [None, 0, []]
         
@@ -531,10 +533,15 @@ class ApplyHedgingSpot:
         send_buy_order_allowed  = False
         
         #log.debug ( strategy['side'])
-        #log.warning (index_price)
+        log.warning (label_strategy)
+        log.warning (side)
+        log.warning (index_price)
+        log.warning (entry_price)
+        log.warning (entry_price < index_price)
+        log.warning (entry_price > index_price)
 
-        if strategy['side'] == 'buy' \
-            and strategy['entry_price'] < index_price:
+        if side == 'buy' \
+            and entry_price < index_price:
                 if my_trades_open not in none_data:
                     my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
                     my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
@@ -545,8 +552,8 @@ class ApplyHedgingSpot:
                     
                 send_buy_order_allowed =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
 
-        if strategy['side'] == 'sell' \
-            and strategy['entry_price'] > index_price:
+        if side == 'sell' \
+            and entry_price > index_price:
                 
                 if my_trades_open not in none_data:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
