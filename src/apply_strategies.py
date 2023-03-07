@@ -512,6 +512,8 @@ class ApplyHedgingSpot:
                 
                 if order  ['current_order_len_exceeding_minimum']:
                     for order in  order  ['list_order_exceeding_minimum']:
+                        log.warning (order  ['list_order_exceeding_minimum'])
+                        log.warning (order)
                         order_id = ( [ o['order_id'] for o in order ])
                         log.warning (order_id)
                         #cancel = await self.cancel_redundant_orders_in_same_labels(label_for_filter)
