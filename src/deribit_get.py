@@ -225,6 +225,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
+        
 
         if valid_until == False:
             if trigger_price == None:
@@ -334,6 +335,7 @@ class GetPrivateData:
                     }
             else:
                 if "market" in type:
+                    print (f'trigger_price {trigger_price}')
 
                     params = {
                         "instrument_name": instrument,
@@ -416,14 +418,14 @@ class GetPrivateData:
         instrument = params["instrument"]
         label = params["label"]
         size = params["size"]
-        tp_prc = params["cut_loss_usd"]
+        cut_loss_usd = params["cut_loss_usd"]
 
         order_result = await self.send_order(
                 side,
                 instrument,
                 size,
                 label,
-                tp_prc
+                cut_loss_usd
             )
         log.info(order_result)
         
