@@ -544,6 +544,8 @@ class ApplyHedgingSpot:
         if side == 'buy' \
             and index_price < entry_price \
                 and entry_price > invalidation_price:
+                log.error ('AAAAAAAAAAAAAAAAAAAAAAA')
+                log.error (label_strategy)
                 if my_trades_open not in none_data:
                     my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
                     my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
@@ -557,7 +559,8 @@ class ApplyHedgingSpot:
         if side == 'sell' \
             and index_price > entry_price \
                 and entry_price < invalidation_price:
-                
+                log.error ('BBBBBBBBBBBBBBBB')
+                log.error (label_strategy)                
                 if my_trades_open not in none_data:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
                     my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
