@@ -307,7 +307,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        
+        print (f'trigger_price {trigger_price}')
         if valid_until == False:
             
             if trigger_price == None:
@@ -335,7 +335,7 @@ class GetPrivateData:
                     }
             else:
                 if "market" in type:
-                    print (f'trigger_price {trigger_price}')
+                    
 
                     params = {
                         "instrument_name": instrument,
@@ -415,6 +415,7 @@ class GetPrivateData:
         from loguru import logger as log
 
         side = params["side"]
+        type = params["type"]
         instrument = params["instrument"]
         label = params["label"]
         size = params["size"]
@@ -425,6 +426,8 @@ class GetPrivateData:
                 instrument,
                 size,
                 label,
+                None,
+                type,
                 cut_loss_usd
             )
         log.info(order_result)
