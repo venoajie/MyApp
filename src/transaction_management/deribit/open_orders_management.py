@@ -454,6 +454,8 @@ class MyOrders ():
 
         
         return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
+                'current_order_len_exceeding_minimum': len_open_order_label_strategy_type > 1,
+                'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_sl': abs(net_position),
                 'params': params,
                 'label_sl': label_sl }
@@ -508,6 +510,8 @@ class MyOrders ():
                   'type': 'limit'
                   }
         return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
+                'current_order_len_exceeding_minimum': len_open_order_label_strategy_type > 1,
+                'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
