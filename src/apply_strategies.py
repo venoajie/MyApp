@@ -496,20 +496,14 @@ class ApplyHedgingSpot:
         
         for label in strategy_labels:
             strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-            #log.warning (strategies)
-            #log.error (strategy_label)
-            #log.error (label)
             
             main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-            #log.warning (main_side)
             
             if main_side == "buy":
                 side = "sell"
             if main_side == "sell":
                 side = "buy"
 
-            check_stop_loss = open_orders.is_open_trade_has_exit_order_sl(open_trade,label)
-            check_take_profit = open_orders.is_open_trade_has_exit_order_tp(open_trade,label)
             check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,label),
                            open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
             
@@ -519,35 +513,11 @@ class ApplyHedgingSpot:
                     params = order  ['params']
                     cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                     cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)  
+                    take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                    take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
+                    params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
                     log.warning (f'order {order}')
                     await self.send_limit_order (params)
-            
-            log.warning (f'check_stop_loss {check_stop_loss}')
-            log.error (f'check_take_profit {check_take_profit}')
-            
-            if False and check_stop_loss  ['is_send_order_ok']== False:
-                params = check_stop_loss  ['params']
-                #log.critical (f'strategy_label {strategy_label}')
-                cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                cut_loss_usd = self.optimising_exit_price (side, cut_loss_usd, best_bid_prc, best_ask_prc)   
-                take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
-                params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})                      
-                
-                params.update({'cut_loss_usd': cut_loss_usd, 'side': side})
-                #log.error (f'params {params}')
-                await self.send_market_order (params)
-            
-            if False and check_take_profit  ['is_send_order_ok']== False:
-                params = check_take_profit  ['params']
-                
-                #log.critical (f'strategy_label {strategy_label}')
-                #side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-                take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)                
-                params.update({'take_profit_usd': take_profit_usd,'side': side})
-                #log.error (f'params {params}')
-                await self.send_limit_order (params)
                     
     async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
         """
