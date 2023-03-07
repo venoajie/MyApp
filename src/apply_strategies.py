@@ -509,7 +509,7 @@ class ApplyHedgingSpot:
             
             for order in check_order:
                 
-                if order  ['is_exist_order_ok']== False:
+                if order  ['is_exit_order_ok']== False:
                     log.critical (f'order {order}')
                     params = order  ['params']
                     cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
