@@ -25,7 +25,6 @@
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
 Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
-Asyncio | [Pytest](https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) |Pytest examples and fixtures  | | 
 Asyncio | [Asyncio](https://python.plainenglish.io/maximizing-performance-with-concurrent-and-parallel-programming-in-python-53f0b3bcd44b) |Ideal situation for asyncio  | | 
 Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3) |  | | 
 
@@ -39,7 +38,7 @@ Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/applicatio
 VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40) |  | | 
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
-etcML | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
+etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
 Market structure | [market](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
 
 
