@@ -517,7 +517,7 @@ class ApplyHedgingSpot:
                         log.warning (cancel)
                 
                 if order  ['is_exit_order_ok']== False:
-                    log.critical (f'order {order}')
+                    #log.critical (f'order {order}')
                     params = order  ['params']
                     cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                             
@@ -525,12 +525,12 @@ class ApplyHedgingSpot:
                         cl_side = "sell"
                     if side == "sell":
                         cl_side = "buy"
-                    log.critical (f'cl_side {cl_side}')
+                    #log.critical (f'cl_side {cl_side}')
 
                     take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
                     take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
                     params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
-                    log.warning (f'order {order}')
+                    #log.warning (f'order {order}')
                     if order   ['params'] ['type'] =='limit':
                         await self.send_limit_order (params)
                     if order  ['params'] ['type'] =='stop_market':
