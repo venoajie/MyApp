@@ -307,7 +307,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        print (f'trigger_price {trigger_price}')
+        #print (f'trigger_price {trigger_price}')
         if valid_until == False:
             
             if trigger_price == None:
