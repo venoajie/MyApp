@@ -499,10 +499,10 @@ class MyOrders ():
 
         label_tp= f'{get_strategy_label}-closed-{get_strategy_int}'
         
-        #log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
-        #log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
-        #log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
-        #log.warning (f'is_tp_ok  {is_tp_ok}')
+        log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
+        log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
+        log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
+        log.warning (f'is_tp_ok  {is_tp_ok}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
