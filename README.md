@@ -15,6 +15,7 @@
     Why pickle: it is easy. Data can be saved as is to its format without further modification. Also, it is fast.
 - Modify market data for further analysis
 - Check the balance in cryto currency. Check whether they have properly hedged
+- Determine parameters for risk management at configuration files (especially, max risk per transaction as the basis for position sizing)
 - Frequently check market condition and current asset position. Send/cancel order based on them
 - Frequently: check current position based on time (every x seconds using sleep function as well as scheduler) and events (by captured any changes taken place at balance/position using rsync)
 - Send transaction update to telegram
