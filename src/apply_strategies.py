@@ -630,7 +630,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
@@ -671,10 +671,6 @@ class ApplyHedgingSpot:
 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
 
-                await self.search_and_drop_orphan_closed_orders(
-                    open_order_mgt, my_trades_open_mgt
-                )
-
                 # open order integrity
                 await self.check_open_orders_integrity(
                     open_orders_from_sub_account_get, open_orders_open_byAPI
@@ -683,6 +679,10 @@ class ApplyHedgingSpot:
                 # open trade integrity
                 await self.check_myTrade_integrity(
                     positions, my_trades_open, server_time
+                )
+
+                await self.search_and_drop_orphan_closed_orders(
+                    open_order_mgt, my_trades_open_mgt
                 )
                 
                 #! END OF CHECK BALANCE AND TRANSACTIONS INTEGRITY.

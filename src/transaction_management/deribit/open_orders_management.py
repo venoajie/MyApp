@@ -429,8 +429,10 @@ class MyOrders ():
         
         # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        len_position_based_on_label = trade_based_on_label_strategy ['len_transactions']
+        trade_position_exit_order_ok = len_position_based_on_label > 0 and net_position == 0
         #log.error (sum_open_order_label_strategy_type)
-        #log.error (net_position)
+        log.error (trade_position_exit_order_ok)
             
         # tp has properly ordered if net position == 0
         #is_over_order = net_position == 0 
@@ -444,7 +446,7 @@ class MyOrders ():
         #log.info (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
         #log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
         #log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
-        #log.warning (f'is_sl_ok  {is_sl_ok}')
+        log.warning (f'is_exit_order_ok  {len_open_order_label_strategy_type > 0}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy ['instrument'],
                   'size': abs(net_position),
@@ -453,7 +455,7 @@ class MyOrders ():
                   }
 
         
-        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
+        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0 and trade_position_exit_order_ok,
                 'current_order_len_exceeding_minimum': len_open_order_label_strategy_type > 1,
                 'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_sl': abs(net_position),
@@ -471,6 +473,9 @@ class MyOrders ():
         
         # get net position with the respective strategy
         net_position_based_on_label = trade_based_on_label_strategy ['net_sum_order_size']
+        len_position_based_on_label = trade_based_on_label_strategy ['len_transactions']
+        trade_position_exit_order_ok = len_position_based_on_label > 0 and net_position == 0
+        log.error (trade_position_exit_order_ok)
         
         # get open order with the respective strategy and order type take_limit
             # to optimise the profit, using take_limit as order type default order
@@ -502,14 +507,14 @@ class MyOrders ():
         log.critical (f'net_position_based_on_label  {net_position_based_on_label} sum_open_order_label_strategy_type {sum_open_order_label_strategy_type}')
         log.critical (f'net_position_based_on_label != 0 {net_position_based_on_label != 0} net_position == 0 {net_position == 0}')
         log.critical (f'len_open_order_label_strategy_type {len_open_order_label_strategy_type} {len_open_order_label_strategy_type > 0}')
-        log.warning (f'is_tp_ok  {is_tp_ok}')
+        log.warning (f'is_exit_order_ok  {len_open_order_label_strategy_type > 0}')
         # gather parameter items for order detail
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
                   'label': label_tp,
                   'type': 'limit'
                   }
-        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0,
+        return {'is_exit_order_ok': len_open_order_label_strategy_type > 0 and trade_position_exit_order_ok,
                 'current_order_len_exceeding_minimum': len_open_order_label_strategy_type > 1,
                 'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_tp': abs(net_position),

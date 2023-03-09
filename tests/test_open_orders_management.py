@@ -195,42 +195,29 @@ def test_is_open_trade_has_exit_order ():
             }
         ]
     
+    
+    open_trade2 =  [
+        {'trade_seq': 118854184, 'trade_id': 'ETH-161815173', 'timestamp': 1678158321841, 'tick_direction': 1, 'state': 'filled', 
+         'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1583.0, 'post_only': True, 
+         'order_type': 'limit', 'order_id': 'ETH-32091091431', 'mmp': False, 'matching_id': None, 'mark_price': 1582.82, 'liquidity': 'M', 
+         'label': 'supplyDemandShort60A-open-1678158310813', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1582.49, 
+         'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 10.0}, 
+        {'trade_seq': 118988617, 'trade_id': 'ETH-161978397', 'timestamp': 1678317993146, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1534.75, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32123173645', 'mmp': False, 'matching_id': None, 'mark_price': 1534.75, 'liquidity': 'M', 'label': 'supplyDemandShort60A-closed-1678158310813', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.05, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 10.0
+         }
+        ]
+    open_orders_alt =  []
+    open_orders2 = open_orders_management.MyOrders (open_orders_alt)
     open_orders = open_orders_management.MyOrders (open_orders)
     exclude = ['test', 'hedgingSpot']
     strategies =  string_modification.remove_redundant_elements([ string_modification.get_strings_before_character(o['label'])  for o in open_trade ]) 
+    strategies2 =  string_modification.remove_redundant_elements([ string_modification.get_strings_before_character(o['label'])  for o in open_trade2 ]) 
     
-    for strategy in strategies: 
-        #print (strategy)
-        if strategy == 'supplyDemandShort60-1677473096':
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size'] ==  -8
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_send_order_ok']==  True
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  0
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandShort60-closed-1677473096'
+    for strategy in strategies2: 
+        
+        if strategy == 'supplyDemandShort60A-1678158310813':
+            assert open_orders2.trade_based_on_label_strategy(open_trade2, strategy)['net_sum_order_size'] ==  0
+            assert open_orders2.is_open_trade_has_exit_order_sl(open_trade2,strategy) ['is_exit_order_ok']==  False
+            assert open_orders2.is_open_trade_has_exit_order_sl(open_trade2,strategy) ['current_order_len_exceeding_minimum']==  False
+            assert open_orders2.is_open_trade_has_exit_order_sl(open_trade2,strategy) ['size_sl']==  0
+            assert open_orders2.is_open_trade_has_exit_order_sl(open_trade2,strategy) ['label_sl']==  'supplyDemandShort60A-closed-1678158310813'
             
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['is_send_order_ok']==  False
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['size_tp']==  8
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['label_tp']==  'supplyDemandShort60-closed-1677473096'
-            
-        if strategy == 'supplyDemandLong60-1677473096934':
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size']  ==  9
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_send_order_ok']==  False
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  9
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandLong60-closed-1677473096934'
-            
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['is_send_order_ok']==  False
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['size_tp']==  9
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['label_tp']==  'supplyDemandLong60-closed-1677473096934'
-            
-        if strategy == 'supplyDemandLong60B-1677903684425':
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['net_sum_order_size']  ==  5
-            assert open_orders.trade_based_on_label_strategy(open_trade, strategy)['instrument'] ==  'ETH-PERPETUAL'
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['is_send_order_ok']==  True
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['size_sl']==  0
-            assert open_orders.is_open_trade_has_exit_order_sl(open_trade,strategy) ['label_sl']==  'supplyDemandLong60B-closed-1677903684425'
-            
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['is_send_order_ok']==  True
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['size_tp']==  0
-            assert open_orders.is_open_trade_has_exit_order_tp(open_trade,strategy) ['label_tp']==  'supplyDemandLong60B-closed-1677903684425'
-    
