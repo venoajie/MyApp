@@ -445,6 +445,7 @@ class ApplyHedgingSpot:
 
         # get the earliest transaction time stamp
         start_timestamp = myTrades_from_db["time_stamp_to_recover"]
+        log.critical (start_timestamp)
 
         my_selected_trades_open_from_system = []
         if start_timestamp:
