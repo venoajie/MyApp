@@ -31,6 +31,35 @@ git clone https://github.com/venoajie/MyApp.git
 cd MyApp
 make install # to download related Linux and Python dependencies
 ``` 
+- general folder structure
+
+    ```
+    .
+    ├── src
+    │   ├── configuration
+    │   ├── databases
+    │   ├── market_data
+    │       ├── get_market_data.py
+    │   ├── market_understanding
+    │       ├── futures_analysis.py
+    │   ├── risk_management
+    │       ├── check_data_integrity.py
+    │       ├── position_sizing.py
+    │       ├── spot_hedging.py
+    │   ├── strategies
+    │   ├── transaction_management
+    │   ├── utilities
+    │   ├── capture_exch_data_fr_deribit.py
+    │   ├── capture_market_data_fr_deribit.py
+    │   ├── checkEvents.sh
+    │   ├── deribit_get.py
+    │   ├── every30s.sh
+    │   ├── fetch_and_save_market_data.py
+    │   ├── Makefile
+    ├── tests
+    ├── Makefile
+    └── requirements.txt
+    ```
 - attach .env file in configuration folder
 ```shell 
 cd MyApp/src/configuration
