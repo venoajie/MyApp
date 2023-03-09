@@ -157,6 +157,11 @@ class MyTrades ():
         '''
         '''       
 
+        label = 'label' # https://www.appsloveworld.com/coding/python3x/291/how-to-handle-missing-keys-in-list-of-json-objects-in-python
+        for key in my_trades_open:
+            if label not in key:
+                key [label] = []
+                        
         return str_mod.remove_redundant_elements (
             [
                 str_mod.extract_integers_from_text (
