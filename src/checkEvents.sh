@@ -6,7 +6,7 @@ rsync -partial -z   databases/exchanges/deribit/transactions/ ~/live/MyApp/local
 
 rsync -partial -z   databases/exchanges/deribit/portfolio/ ~/live/MyApp/local_recoveries/
 
-while inotifywait -r -e modify,create,delete,move databases/exchanges/deribit/transactions; 
+while inotifywait -r -e modify,create,delete,move databases/exchanges/deribit/transactions/eth-myTrades-open.pkl; 
     do 
     rsync -partial -z   databases/exchanges/deribit/transactions/ ~/live/MyApp/local_recoveries/
     rsync -partial -z   databases/exchanges/deribit/portfolio/ ~/live/MyApp/local_recoveries/
