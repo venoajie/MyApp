@@ -759,6 +759,7 @@ class ApplyHedgingSpot:
                                                                                 my_trades_open,
                                                                                 open_orders_open_byAPI
                                                                                 )
+                            log.warning (send_main_order)
                             
                             if send_main_order ['send_buy_order_allowed']:
                                 await self.send_combo_orders(strategy)
