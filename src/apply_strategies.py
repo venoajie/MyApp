@@ -544,7 +544,59 @@ class ApplyHedgingSpot:
                     if order  ['params'] ['type'] =='stop_market':
                         await self.send_market_order (params)
                     
-    async def is_send_order_allowed (self, 
+                    
+    async def is_exit_order_allowed (self, 
+                                              open_trade: list, 
+                                              open_orders: object, 
+                                              max_size,
+                                              strategies: list, 
+                                              best_bid_prc: float, 
+                                              best_ask_prc: float
+                                              ) -> None:
+        """
+        """
+
+        strategy_labels =  str_mod.remove_redundant_elements(
+            [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
+            ) 
+        strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
+        strategy_labels =  [o for o in strategy_labels if "test"  not in o]
+        
+        for label in strategy_labels:
+            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+
+            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,max_size,label),
+                           open_orders.is_open_trade_has_exit_order_tp(open_trade,max_size,label)]
+            
+            for order in check_order:
+                log.warning (order)
+                if order  ['current_order_len_exceeding_minimum']:
+                    for transaction in  order  ['list_order_exceeding_minimum']:
+                        open_order_id = transaction['order_id']
+                        cancel = await self.cancel_by_order_id(open_order_id)
+                        log.warning (cancel)
+                
+                if order  ['is_exit_order_ok']== False:
+                    #log.critical (f'order {order}')
+                    params = order  ['params']
+                    cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                            
+                    if side == "buy":
+                        cl_side = "sell"
+                    if side == "sell":
+                        cl_side = "buy"
+                    #log.critical (f'cl_side {cl_side}')
+
+                    take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
+                    take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
+                    params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
+                    #log.warning (f'order {order}')
+                    if order   ['params'] ['type'] =='limit':
+                        await self.send_limit_order (params)
+                    if order  ['params'] ['type'] =='stop_market':
+                        await self.send_market_order (params)
+                        
+    async def is_open_order_allowed (self, 
                                      strategy: dict, 
                                      index_price: float, 
                                      my_trades_open: list, 
