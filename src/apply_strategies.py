@@ -555,31 +555,76 @@ class ApplyHedgingSpot:
                                     ) -> None:
         """
         """
+        
 
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
         strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
-        strategy_labels =  [o for o in strategy_labels if "test"  not in o]
         log.error (strategy_labels)
         
-        for label in strategy_labels:
+        if strategy_labels != []:
             
-            # formatting label: strategy & int
-            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-            log.error (strategy_label)
-            
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
-            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+            for label in strategy_labels:
+                
+                # formatting label: strategy & int
+                strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+                log.error (strategy_label)
+                get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
 
-            determine_size_and_side = open_orders.determine_size_and_side(max_size, strategy_label, net_sum_current_position)
-            
-            return determine_size_and_side
-            
+                label_closed= f'{label}-closed-{get_strategy_int}'
+                    
+                # get open order with the respective strategy and order type take_limit
+                    # to optimise the profit, using take_limit as order type default order
+                open_order_label_strategy_type_limit = ([o for o in open_orders. open_orders_from_db \
+                    if str_mod.get_strings_before_character(o['label']) == strategy_label \
+                        and 'limit' in o['order_type'] ]
+                        )
+                len_open_order_label_strategy_type =  (len(open_order_label_strategy_type_limit))
+                
+                
+                # get open order with the respective strategy and order type stop market
+                    # to reduce the possibility of order not executed, stop loss using 
+                        # stop market as order type default order
+                open_order_label_strategy_type_market = ([o for o in self. open_orders_from_db \
+                    if str_mod.get_strings_before_character(o['label']) == strategy_label \
+                        and o['order_type'] == 'stop_market']
+                        )
+                len_open_order_label_strategy_type_market =  (len(open_order_label_strategy_type_market))
+        
+                trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
+                net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+
+                determine_size_and_side = open_orders.determine_size_and_side(max_size, strategy_label, net_sum_current_position)
+                side = determine_size_and_side ['side']
+                remain_main_orders = determine_size_and_side ['remain_main_orders']
+                remain_exit_orders = determine_size_and_side ['remain_exit_orders']
+
+                if remain_exit_orders != 0:
+                    params = {'instrument': trade_based_on_label_strategy['instrument'],
+                        'size': determine_size_and_side ['size'],
+                        'label': label_closed,
+                        'side': side,
+                        'type': 'limit'
+                        }
+                    await self.send_limit_order (params)
+                    
+                if remain_main_orders != 0:
+                    params = {'instrument': trade_based_on_label_strategy['instrument'],
+                        'size': determine_size_and_side ['size'],
+                        'label': label_closed,
+                        'side': side,
+                        'type': 'limit'
+                        }
+                    
+                    
+                
+                return determine_size_and_side
+                
 
      #! #################################################################################               
                         
-    async def is_open_order_allowed (self, 
+    async def is_open_main_order_allowed (self, 
                                      strategy: dict, 
                                      index_price: float, 
                                      my_trades_open: list, 
@@ -790,6 +835,13 @@ class ApplyHedgingSpot:
                                                                    )
                         log.error (f'exit_order_allowed {exit_order_allowed}' )
                         
+                        open_order_allowed = await self.is_open_main_order_allowed (strategy, 
+                                                                                index_price, 
+                                                                                my_trades_open,
+                                                                                open_orders_open_byAPI
+                                                                                )
+                        log.error (f'open_order_allowed {open_order_allowed}' )
+                        
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy["strategy"]:
                             min_position_size = check_spot_hedging[
@@ -845,7 +897,6 @@ class ApplyHedgingSpot:
                                     remain_unhedged = check_spot_hedging[
                                         "remain_unhedged_size"
                                     ]
-
 
                                     spot_was_unhedged = check_spot_hedging[
                                         "spot_was_unhedged"
