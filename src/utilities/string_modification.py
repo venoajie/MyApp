@@ -111,7 +111,6 @@ def get_strings_before_character (words: str, character: str= '-', character_pla
     Reference:
         https://stackoverflow.com/questions/32682199/how-to-get-string-before-hyphen
     '''      
-   
     
     if isinstance(character_place, list):
         splitted1 = words.split(character)[character_place[0]]
