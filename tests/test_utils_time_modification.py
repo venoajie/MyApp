@@ -62,3 +62,12 @@ def test_time_delta_between_two_times  ():
                                                             start_time, 
                                                             end_time
                                                             )) == expected_time_delta
+
+
+def test_check_alarm_clock  ():
+    triggerHour = 14
+    triggerMinute = 42
+
+    alarm = time_modification.check_alarm_clock(triggerHour, triggerMinute, isTrigger = False)
+    
+    assert alarm == False

@@ -128,7 +128,7 @@ strategies = [
     'strategy': 'hedgingSpot',
     'instrument': ['PERPETUAL'],
     'time_frame': 900,
-    'side': 900,
+    'side': 'sell',
     'entry_price': 1000,
     'take_profit_usd': (1/100)/15,
     'take_profit_pct': 1/100,

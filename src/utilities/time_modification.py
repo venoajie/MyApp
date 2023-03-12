@@ -2,6 +2,8 @@
 
 import calendar
 from datetime import datetime, timedelta, timezone
+import time
+
 
 def get_current_local_date_time ():
 
@@ -88,7 +90,6 @@ def check_day_name (time: datetime)->str:
         time_in_time_format = time_format_standardization(time)['strptime'] 
         return time_in_time_format.strftime("%A")
             
-    
 def convert_time_to_unix (time)-> int:
 
     '''  
@@ -183,3 +184,46 @@ def time_delta_between_two_times (time_format,
     return {'seconds': time_delta_unix/seconds_divider if  'unix' in time_format else time_delta_utc,
             'hours': time_delta_unix/3600/seconds_divider if 'unix' in time_format  else time_delta_utc/3600,
             'days': time_delta_unix/3600/seconds_divider/24 if 'unix' in time_format  else time_delta_utc/3600/24}
+
+
+def check_alarm_clock(triggerHour, triggerMinute, isTrigger = False, local_time: str = None):
+        
+    '''  
+    
+    Add an alarm clock to the trading strategy
+    
+    Args:
+        triggerHour (int)
+        triggerMinute (int)
+
+    Returns:
+        str
+        
+    Example:
+        data_original = 'hedgingSpot-open-1671189554374' become 'hedgingSpot'
+    
+    Reference:
+        https://medium.com/@FMZQuant/add-an-alarm-clock-to-the-trading-strategy-e90e0372405f
+'''      
+
+    if local_time == 'jkt_now':
+        current_time = convert_time_to_utc ()['jkt_now']
+    else:
+        current_time = convert_time_to_utc ()['utc_now']
+        
+    t = time.localtime(time.time())
+    hour = t.tm_hour
+    minute = t.tm_min
+    day = t.tm_wday
+    
+    nowDay = time.localtime(time.time()).tm_wday
+    
+    if day != nowDay:
+        isTrigger = False
+        nowDay = day
+        
+    if isTrigger == False and hour == triggerHour and minute >= triggerMinute:
+        isTrigger = True
+        return True
+    
+    return False 

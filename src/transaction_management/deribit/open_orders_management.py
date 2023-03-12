@@ -382,7 +382,7 @@ class MyOrders ():
         '''
         '''      
         return ([o for o in open_transactions_label \
-            if str_mod.get_strings_before_character(o['label']) == strategy])
+            if strategy in str_mod.get_strings_before_character(o['label'])])
  
     def trade_based_on_label_strategy (self, 
                                            open_transactions_label,
@@ -392,7 +392,7 @@ class MyOrders ():
         '''      
         #log.debug (open_transactions_label)
         transactions = self.transactions_label_strategy(open_transactions_label,strategy)
-        log.debug (transactions)
+        #log.debug (transactions)
         return {'net_sum_order_size': [] if transactions == [] else self.net_sum_order_size (transactions),
                 'len_transactions': [] if transactions == [] else  len(transactions),
                 'instrument': [] if transactions == [] else  [ o["instrument_name"] for o in transactions ][0]
@@ -495,6 +495,8 @@ class MyOrders ():
         
         # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        proforma_size = self.check_proforma_position(abs(net_position), net_position_based_on_label)
+        log.warning (proforma_size)
             
         # tp has properly ordered if net position == 0
         #is_over_order = net_position == 0 
@@ -520,3 +522,150 @@ class MyOrders ():
                 'size_tp': abs(net_position),
                 'params': params,
                 'label_tp': label_tp }
+        
+    def determine_size_and_side (self, max_size, strategy, net_sum_current_position: float) -> None:
+
+        """
+        net_sum_current_position: buy - sell
+        """
+
+        try:     
+            side_strategy = strategy ['side'] 
+            
+            if side_strategy == 'sell':
+                
+                # sell side is always negative
+                max_size = max_size * -1 if max_size > 0 else max_size
+                
+                main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+
+                if main_orders_sum_vs_max_orders > 0:
+                    remain_main_orders = 0
+                    remain_exit_orders = (main_orders_sum_vs_max_orders)
+                    side = 'buy'
+                    
+                if main_orders_sum_vs_max_orders < 0:
+                    remain_main_orders = main_orders_sum_vs_max_orders
+                    remain_exit_orders = 0
+                    side = 'sell'
+                    
+                if main_orders_sum_vs_max_orders == 0:
+                    remain_main_orders = 0
+                    remain_exit_orders = 0
+                    side = None
+                    
+            if side_strategy == 'buy':
+                
+                main_orders_sum_vs_max_orders = net_sum_current_position - max_size
+
+                if main_orders_sum_vs_max_orders > 0:
+                    remain_main_orders = 0
+                    remain_exit_orders = - main_orders_sum_vs_max_orders
+                    side = 'sell'
+                    
+                if main_orders_sum_vs_max_orders < 0:
+                    remain_main_orders = abs(main_orders_sum_vs_max_orders)
+                    remain_exit_orders = 0
+                    side = 'buy'
+                    
+                if main_orders_sum_vs_max_orders == 0:
+                    remain_main_orders = 0
+                    remain_exit_orders = 0
+                    side = None
+                    
+            return {'remain_main_orders': remain_main_orders,
+                    'remain_exit_orders': remain_exit_orders,
+                    'side': side
+                    }
+            
+        except Exception as error:
+            catch_error(error)
+            
+    def check_proforma_position(self, max_size, strategy, open_trades_label: float = []) -> None:
+
+        """
+        Check proforma: current position + new order/ check whether new order will exceed threhold
+        """
+
+        try:
+            log.warning (f'max_size  {max_size}')
+            log.warning (f'open_trades_label  {open_trades_label}')
+            # [], None: indicate new order/position/label
+            if  open_trades_label == []:
+                side =  strategy  ['side']
+                order_size = max_size
+                proforma_size = max_size
+                exceed_threhold = False
+            
+            # indicate position has opened
+            else:
+                label_strategy =  strategy  ['strategy']
+                log.error (f'trade_based_on_label_strategy  {label_strategy}')
+                trade_based_on_label_strategy = self.trade_based_on_label_strategy (open_trades_label, label_strategy)
+                log.error (f'trade_based_on_label_strategy  {trade_based_on_label_strategy}')
+                
+                # get net position with the respective strategy
+                net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+                
+                main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+                if strategy ['side'] == 'sell':
+                    pass
+                if strategy ['side'] == 'buy':
+                    pass
+                remain_main_orders = 0
+                remain_exit_orders = 0
+                log.error (f'net_sum_current_position  {net_sum_current_position}')
+                side = 'sell' if (net_sum_current_position) > 0 else 'buy'
+                side = 'buy' if (net_sum_current_position) < 0 else 'sell'
+                
+                # position has closed
+                if net_sum_current_position == 0:
+                    side = None
+                    order_size = None
+                    proforma_size = None
+                    exceed_threhold = True
+                    
+                # net position in long
+                if net_sum_current_position > 0:
+                    order_size = (net_sum_current_position)
+                    log.warning (order_size)
+                    proforma_size = net_sum_current_position - order_size
+                    log.warning (proforma_size)
+                    exceed_threhold = proforma_size != 0
+                    
+                # net position in short
+                if net_sum_current_position < 0:
+                    order_size = (net_sum_current_position)
+                    proforma_size = net_sum_current_position - order_size
+                    exceed_threhold = proforma_size != 0
+
+
+            return {'side': side,
+                    'order_size': order_size,
+                    'proforma_size': proforma_size,
+                    'is_new_position_exceed_threhold': exceed_threhold
+                    }
+                
+        except Exception as error:
+            catch_error(error)
+            
+            
+    def established_threshold_before_opening_order(self, label, open_order, trade_item
+    ) -> None:
+
+        """
+        state: closed/open
+        """
+        max_order = 0
+
+        try:
+            if 'closed' in label:
+                max_order = sum([o['amount'] for o in trade_item ]) - sum([o['amount'] for o in open_order ])
+            if 'open' in label:
+                max_order = None
+
+
+            return max_order
+                
+        except Exception as error:
+            catch_error(error)

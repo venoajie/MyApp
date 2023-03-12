@@ -134,7 +134,7 @@ async def test_is_send_order_allowed():
     for strategy in strategies:
         label_strategy = strategy ['strategy']
 
-        print (strategy)
+        #print (strategy)
         if label_strategy == 'supplyDemandLong60A':
             
             index_price = 1550

@@ -10,6 +10,7 @@
 # https://github.com/CyberPunkMetalHead
 # https://smartlever.medium.com/smartbots-basktesting-is-only-the-tip-of-the-iceberg-ce23b56e6427
 # https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c
+# https://medium.datadriveninvestor.com/black-scholes-price-and-implied-with-tensorflow-b76e51a022ac
 An end-to-end Platform.
 Data Feed: Services that connect to real-time data and feed the strategy portfolio.
 Historical Data: Download historical data for research and testing purposes.

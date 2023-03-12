@@ -183,7 +183,7 @@ class ApplyHedgingSpot:
         """
         """
         return index_price * equity
-
+    
     async def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
@@ -486,7 +486,14 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
         
-    async def check_exit_orders_completeness (self, open_trade: list, open_orders: object, strategies: list, best_bid_prc: float, best_ask_prc: float) -> None:
+    async def check_exit_orders_completeness (self, 
+                                              open_trade: list, 
+                                              open_orders: object, 
+                                              max_size,
+                                              strategies: list, 
+                                              best_bid_prc: float, 
+                                              best_ask_prc: float
+                                              ) -> None:
         """
         """
 
@@ -506,8 +513,8 @@ class ApplyHedgingSpot:
             if main_side == "sell":
                 side = "buy"
 
-            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,label),
-                           open_orders.is_open_trade_has_exit_order_tp(open_trade,label)]
+            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,max_size,label),
+                           open_orders.is_open_trade_has_exit_order_tp(open_trade,max_size,label)]
             
             for order in check_order:
                 log.warning (order)
@@ -537,7 +544,11 @@ class ApplyHedgingSpot:
                     if order  ['params'] ['type'] =='stop_market':
                         await self.send_market_order (params)
                     
-    async def is_send_order_allowed (self, strategy: dict, index_price: float, my_trades_open: list, open_orders: list) -> bool:
+    async def is_send_order_allowed (self, 
+                                     strategy: dict, 
+                                     index_price: float, 
+                                     my_trades_open: list, 
+                                     open_orders: list) -> bool:
         """
         """
         label_strategy = strategy ['strategy']
@@ -662,12 +673,12 @@ class ApplyHedgingSpot:
                 #log.critical (open_orders_from_sub_account_get)
                 #!################################## end of gathering basic data #####################################
 
-                # prepare open trade class object
+                # Creating an instance of the my-Trade class 
                 my_trades_open_mgt: object = myTrades_management.MyTrades(
                     my_trades_open
                 )
 
-                # prepare open order class object
+                # Creating an instance of the open order  class 
                 open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
 
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
@@ -722,7 +733,7 @@ class ApplyHedgingSpot:
                     # fetch strategies
                     strategies = entries_exits.strategies
                     
-                    await self.check_exit_orders_completeness (my_trades_open, open_order_mgt, strategies, best_bid_prc, best_ask_prc)
+                    
 
                     #execute each strategy
                     for strategy in strategies:
@@ -730,20 +741,48 @@ class ApplyHedgingSpot:
                         label_strategy = strategy ['strategy']
                         time_threshold: float = strategy["halt_minute_before_reorder"] * one_minute
                         time_threshold_avg_up: float = time_threshold * 12 * 4
-                        
-                        # determine position sizing
-                        size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
+
+                        # Creating an instance of the spot hedging class 
+                        check_spot_hedging = spot_hedged.is_spot_hedged_properly(
+                            notional,
+                            min_trade_amount,
+                            contract_size,
+                            strategy['quantity_discrete']
+                        )        
+                                                   
+                        # determine position sizing-general strategy
+                        min_position_size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
                                                     strategy ['entry_price'], 
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
+                        await self.check_exit_orders_completeness (my_trades_open, 
+                                                                   open_order_mgt, 
+                                                                   min_position_size, 
+                                                                   strategies, 
+                                                                   best_bid_prc, 
+                                                                   best_ask_prc
+                                                                   )
+                        
+                        # determine position sizing-hedging
+                        if "hedgingSpot" in strategy["strategy"]:
+                            min_position_size = check_spot_hedging[
+                            "all_hedging_size"
+                            ]
+                         
                         label_closed: str = f"{label_strategy}-closed"
                         
                         # add some extra params to strategy
-                        strategy.update({'instrument': instrument,
-                                         'size':size,
-                                         'label_numbered':label_numbering.labelling("open", label_strategy),
-                                         'label_closed_numbered': label_numbering.labelling ('closed', label_strategy)}
+                        strategy.update(
+                            {'instrument': instrument,
+                             'size':min_position_size,
+                             'label_numbered':label_numbering.labelling("open", 
+                                                                        label_strategy
+                                                                        ),
+                             'label_closed_numbered': label_numbering.labelling ('closed', 
+                                                                                 label_strategy
+                                                                                             )
+                                         }
                                         )
                                                 
                         # check for any order outstanding as per label filter
@@ -752,7 +791,7 @@ class ApplyHedgingSpot:
                         )
                     
                         #! excluding hedging spot since its part of risk management, not strategy
-                        if "hedgingSpot" not in strategy["strategy"] and "test" not in strategy["strategy"]:
+                        if "hedgingSpot" not in strategy["strategy"]:
 
                             send_main_order = await self.is_send_order_allowed (strategy, 
                                                                                 index_price, 
@@ -793,20 +832,10 @@ class ApplyHedgingSpot:
                                         label_strategy, my_trades_open
                                     )
 
-                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly(
-                                        notional,
-                                        min_trade_amount,
-                                        contract_size,
-                                        strategy['quantity_discrete']
-                                    )
-
                                     remain_unhedged = check_spot_hedging[
                                         "remain_unhedged_size"
                                     ]
 
-                                    min_hedging_size = check_spot_hedging[
-                                        "all_hedging_size"
-                                    ]
 
                                     spot_was_unhedged = check_spot_hedging[
                                         "spot_was_unhedged"
@@ -832,7 +861,7 @@ class ApplyHedgingSpot:
                                     )
 
                                     await self.will_new_open_order_create_over_hedge(
-                                        label_strategy, actual_hedging_size, min_hedging_size
+                                        label_strategy, actual_hedging_size, min_position_size
                                     )
 
                                     # send sell order if spot still unhedged and no current open orders
@@ -856,7 +885,7 @@ class ApplyHedgingSpot:
                                         )
 
                                         await self.will_new_open_order_create_over_hedge(
-                                            label_strategy, actual_hedging_size, min_hedging_size
+                                            label_strategy, actual_hedging_size, min_position_size
                                         )
 
                                     # if spot has hedged properly, check also for opportunity to get additional small profit
@@ -945,7 +974,7 @@ class ApplyHedgingSpot:
             catch_error(error, 30)
 
     async def will_new_open_order_create_over_hedge(
-        self, label, actual_hedging_size: float, min_hedging_size: float
+        self, label, actual_hedging_size: float, min_position_size: float
     ) -> None:
 
         """
@@ -972,10 +1001,10 @@ class ApplyHedgingSpot:
             )
 
             is_over_hedged = (
-                actual_hedging_size + current_open_orders_size < min_hedging_size
+                actual_hedging_size + current_open_orders_size < min_position_size
             )
             log.info(
-                f"{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_hedging_size=}"
+                f"{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_position_size=}"
             )
 
             if is_over_hedged:
@@ -991,11 +1020,6 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error)
 
-    async def read_data_from_db(self, path) -> list:
-        """
-        """
-        read = pickling.read_data(self, path)
-        return read
 
 async def main():
 
