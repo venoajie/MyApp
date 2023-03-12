@@ -754,8 +754,6 @@ class ApplyHedgingSpot:
                     # fetch strategies
                     strategies = entries_exits.strategies
                     
-                    
-
                     #execute each strategy
                     for strategy in strategies:
 
@@ -781,13 +779,14 @@ class ApplyHedgingSpot:
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
-                        await self.is_exit_order_allowed (my_trades_open, 
+                        exit_order_allowed = await self.is_exit_order_allowed (my_trades_open, 
                                                                    open_order_mgt, 
                                                                    min_position_size, 
                                                                    strategies, 
                                                                    best_bid_prc, 
                                                                    best_ask_prc
                                                                    )
+                        log.error (f'exit_order_allowed {exit_order_allowed}' )
                         
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy["strategy"]:
