@@ -106,93 +106,82 @@ def test_recognize_order_transactions ():
         ]
     assert open_orders.compare_open_order_per_db_vs_get(my_orders_get) == False
 
+def test_determine_order_size_and_side_for_outstanding_transactions ():
+    from src.utilities import string_modification as str_mod
 
-
-def test_check_proforma_position ():
-    from src.risk_management import position_sizing
-    from src.strategies import entries_exits
-    
-    strategies = entries_exits.strategies
-    
-    notional = 100  
-    
-    for strategy in strategies:
-        
-
-        size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
-                                    strategy ['entry_price'], 
-                                    notional, 
-                                    strategy ['equity_risked_pct']
-                                    ) 
-        label_strategy =  strategy  ['strategy']
-        
-        if 'supplyDemandShort60A' in label_strategy:
-            open_trades_label = []            
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['proforma_size'] ==  12
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['side'] ==  'sell'
-            
-            open_trades_label = [
-                {'trade_seq': 118854184, 'trade_id': 'ETH-161815173', 'timestamp': 1678158321841, 'tick_direction': 1, 'state': 'filled', 
-                 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1583.0, 'post_only': True, 
-                 'order_type': 'limit', 'order_id': 'ETH-32091091431', 'mmp': False, 'matching_id': None, 'mark_price': 1582.82, 'liquidity': 'M', 
-                 'label': 'supplyDemandShort60A-open-1678158310813', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1582.49, 
-                 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 10.0
-                 }
-                ]           
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['order_size'] ==  -10
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['proforma_size'] ==  0
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['is_new_position_exceed_threhold'] ==  False
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['side'] ==  'buy'
-            
-        
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trades_label, label_strategy)
-            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
-            
-            max_size = 12
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'sell'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  -2
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  0
-    
-            max_size = 8 #! ##########################################
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'buy'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  0
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  2
-    
-        if 'supplyDemandLong60A' in label_strategy:
-            open_trades_label = [
-                {'trade_seq': 118355869, 'trade_id': 'ETH-161212758', 'timestamp': 1677474758759, 'tick_direction': 3, 'state': 'filled',
+    open_trade = [
+        {'trade_seq': 118854184, 'trade_id': 'ETH-161815173', 'timestamp': 1678158321841, 'tick_direction': 1, 'state': 'filled', 
+            'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1583.0, 'post_only': True, 
+            'order_type': 'limit', 'order_id': 'ETH-32091091431', 'mmp': False, 'matching_id': None, 'mark_price': 1582.82, 'liquidity': 'M', 
+            'label': 'supplyDemandShort60A-open-1678158310813', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1582.49, 
+            'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 10.0
+            },
+        {'trade_seq': 118355869, 'trade_id': 'ETH-161212758', 'timestamp': 1677474758759, 'tick_direction': 3, 'state': 'filled',
                  'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -0.00011743, 'price': 1635.0, 'post_only': True, 
                  'order_type': 'limit', 'order_id': 'ETH-31958514035', 'mmp': False, 'matching_id': None, 'mark_price': 1635.17, 'liquidity': 'M', 
                  'label': 'supplyDemandLong60A-open-1677473096934', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1635.36, 'fee_currency': 'ETH',
                  'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 9.0
                  }
-
-                ]           
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['order_size'] ==  9
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['proforma_size'] ==  0
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['is_new_position_exceed_threhold'] ==  False
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['side'] ==  'sell'
+        ]        
             
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trades_label, label_strategy)
+    strategy_labels =  str_mod.remove_redundant_elements(
+        [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
+        ) 
+
+    for strategy in strategy_labels:
+
+        if 'supplyDemandShort60A' in strategy:
+            
+            max_size = 8     
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
             net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
-            max_size = 9
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  None
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  0
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  0
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'buy'
+            assert determine_order_size['remain_main_orders'] ==  0
+            assert determine_order_size['remain_exit_orders'] ==  2
+
+            max_size = 12    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'sell'
+            assert determine_order_size['remain_main_orders'] ==  -2
+            assert determine_order_size['remain_exit_orders'] ==  0
     
-            max_size = 8
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'sell'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] == 0
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  -1
+        if 'supplyDemandLong60A' in strategy:
+            
+            max_size = 9    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  None
+            assert determine_order_size['remain_main_orders'] ==  0
+            assert determine_order_size['remain_exit_orders'] ==  0
+    
+            max_size = 8    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'sell'
+            assert determine_order_size['remain_main_orders'] == 0
+            assert determine_order_size['remain_exit_orders'] ==  -1
     
             max_size = 10
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'buy'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  1
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  0
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'buy'
+            assert determine_order_size['remain_main_orders'] ==  1
+            assert determine_order_size['remain_exit_orders'] ==  0
             
-        if 'hedgingSpot' in label_strategy:
+        if 'hedgingSpot' in strategy:
             size = 30
-            open_trades_label = [
+            open_trade = [
                 {'trade_seq': 115425899, 'trade_id': 'ETH-157512749', 'timestamp': 1674106201607, 'tick_direction': 3,
                 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 
                 'price': 1528.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266368853', 'mmp': False, 
@@ -215,29 +204,91 @@ def test_check_proforma_position ():
                 'direction': 'sell', 'api': True, 'amount': 11.0
                 }
                 ]           
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['order_size'] ==  -25
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['proforma_size'] ==  0
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['is_new_position_exceed_threhold'] ==  False
-            assert open_orders.check_proforma_position(size, strategy, open_trades_label)['side'] ==  'buy'
             
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trades_label, label_strategy)
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
             net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
-            max_size = 25
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  None
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  0
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  0
+            max_size = 25    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  None
+            assert determine_order_size['remain_main_orders'] ==  0
+            assert determine_order_size['remain_exit_orders'] ==  0
     
-            max_size = 24
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'buy'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  0
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  1
+            max_size = 24    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'buy'
+            assert determine_order_size['remain_main_orders'] ==  0
+            assert determine_order_size['remain_exit_orders'] ==  1
     
-            max_size = 27
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['side'] ==  'sell'
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_main_orders'] ==  -2
-            assert open_orders.determine_size_and_side(max_size, strategy, net_sum_current_position)['remain_exit_orders'] ==  0
+            max_size = 27    
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy)
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(max_size, strategy, net_sum_current_position)
+
+            assert determine_order_size['side'] ==  'sell'
+            assert determine_order_size['remain_main_orders'] ==  -2
+            assert determine_order_size['remain_exit_orders'] ==  0
             
-def test_is_open_trade_has_exit_order ():
+def test_trade_based_on_label_strategy ():
+
+    open_orders_source = [
+        {
+            'web': False, 'triggered': False, 'trigger_price': 1720.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 
+            'stop_price': 1720.0, 'risk_reducing': False, 'replaced': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 'market_price', 
+            'post_only': False, 'order_type': 'stop_market', 'order_state': 'untriggered', 'order_id': 'ETH-SLTB-5655271', 'mmp': False, 'max_show': 9.0,
+            'last_update_timestamp': 1677934800237, 'label': 'supplyDemandShort60-closed-1677934800137', 'is_liquidation': False, 
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'buy', 'creation_timestamp': 1677934800237, 'api': True, 'amount': 9.0
+            }, 
+        {
+            'web': False, 'triggered': False, 'trigger_price': 1600.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled',
+            'stop_price': 1600.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1610.0, 
+            'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTS-5655237', 'mmp': False, 'max_show': 5.0,
+            'last_update_timestamp': 1677903684561, 'label': 'supplyDemandLong60B-closed-1677903684425', 'is_liquidation': False, 
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'sell', 'creation_timestamp': 1677903684561, 'api': True, 'amount': 5.0
+            },
+        {
+            'web': False, 'triggered': False, 'trigger_price': 1420.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 
+            'stop_price': 1420.0, 'risk_reducing': False, 'replaced': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 'market_price', 
+            'post_only': False, 'order_type': 'stop_market', 'order_state': 'untriggered', 'order_id': 'ETH-SLTS-5655236', 'mmp': False, 'max_show': 5.0, 
+            'last_update_timestamp': 1677903684513, 'label': 'supplyDemandLong60B-closed-1677903684425', 'is_liquidation': False, 
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'sell', 'creation_timestamp': 1677903684513, 'api': True, 'amount': 5.0
+            }, 
+        {
+            'web': False, 'triggered': False, 'trigger_price': 1720.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 
+            'stop_price': 1720.0, 'risk_reducing': False, 'replaced': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 'market_price', 
+            'post_only': False, 'order_type': 'stop_market', 'order_state': 'untriggered', 'order_id': 'ETH-SLTB-5652931', 'mmp': False, 'max_show': 8.0, 
+            'last_update_timestamp': 1677473096745, 'label': 'supplyDemandShort60-closed-1677473096', 'is_liquidation': False,
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'buy', 'creation_timestamp': 1677473096745, 'api': True, 'amount': 8.0
+            }
+        ]
+        
+    open_orders_market = [{
+            'web': False, 'triggered': False, 'trigger_price': 1420.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 
+            'stop_price': 1420.0, 'risk_reducing': False, 'replaced': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 'market_price', 
+            'post_only': False, 'order_type': 'stop_market', 'order_state': 'untriggered', 'order_id': 'ETH-SLTS-5655236', 'mmp': False, 'max_show': 5.0, 
+            'last_update_timestamp': 1677903684513, 'label': 'supplyDemandLong60B-closed-1677903684425', 'is_liquidation': False, 
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'sell', 'creation_timestamp': 1677903684513, 'api': True, 'amount': 5.0
+            }]
+    
+    open_orders_limit = [{
+            'web': False, 'triggered': False, 'trigger_price': 1600.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled',
+            'stop_price': 1600.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1610.0, 
+            'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTS-5655237', 'mmp': False, 'max_show': 5.0,
+            'last_update_timestamp': 1677903684561, 'label': 'supplyDemandLong60B-closed-1677903684425', 'is_liquidation': False, 
+            'instrument_name': 'ETH-PERPETUAL', 'direction': 'sell', 'creation_timestamp': 1677903684561, 'api': True, 'amount': 5.0
+            }
+                         ]
+    
+    open_orders = open_orders_management.MyOrders (open_orders_source)
+    
+    strategy = 'supplyDemandLong60B'
+    assert open_orders.trade_based_on_label_strategy(open_orders_source, strategy, 'limit')['transaction_label_strategy_type'] ==  open_orders_limit
+    assert open_orders.trade_based_on_label_strategy(open_orders_source, strategy, 'stop_market')['transaction_label_strategy_type'] ==  open_orders_market
+    
+    
+def tst_is_open_trade_has_exit_order ():
     from src.strategies import entries_exits
     from src.utilities import string_modification
     
@@ -285,7 +336,7 @@ def test_is_open_trade_has_exit_order ():
          }, {'trade_seq': 115426212, 'trade_id': 'ETH-157513141', 'timestamp': 1674107600323, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1528.4, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31266497562', 'mmp': False, 'matching_id': None, 'mark_price': 1528.61, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674107582', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1528.55, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 45.0}, {'trade_seq': 115440589, 'trade_id': 'ETH-157532557', 'timestamp': 1674134437352, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1514.1, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269839438', 'mmp': False, 'matching_id': None, 'mark_price': 1514.49, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674134423', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1514.57, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 4.0}, {'trade_seq': 115441415, 'trade_id': 'ETH-157533765', 'timestamp': 1674134974683, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1524.95, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31269979727', 'mmp': False, 'matching_id': None, 'mark_price': 1525.19, 'liquidity': 'M', 'label': 'hedgingSpot-open-1674134971', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1524.87, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}, {'trade_seq': 118355869, 'trade_id': 'ETH-161212758', 'timestamp': 1677474758759, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -0.00011743, 'price': 1635.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31958514035', 'mmp': False, 'matching_id': None, 'mark_price': 1635.17, 'liquidity': 'M', 'label': 'supplyDemandLong60-open-1677473096934', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1635.36, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 9.0}, {'trade_seq': 118554841, 'trade_id': 'ETH-161447719', 'timestamp': 1677716308851, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0, 'price': 1675, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-31958514019', 'mmp': False, 'matching_id': None, 'mark_price': 1675.06, 'liquidity': 'M', 'label': 'supplyDemandShort60-open-1677473096', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1674.09, 'fee_currency': 'ETH', 'fee': 0, 'direction': 'sell', 'api': True, 'amount': 8}, {'trade_seq': 118698584, 'trade_id': 'ETH-161624004', 'timestamp': 1677836968025, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0, 'price': 1566.8, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32042537117', 'mmp': False, 'matching_id': None, 'mark_price': 1566.77, 'liquidity': 'M', 'label': 'hedgingSpot-open-1677836948224', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1566.95, 'fee_currency': 'ETH', 'fee': 0, 'direction': 'sell', 'api': True, 'amount': 10}, {'trade_seq': 118754111, 'trade_id': 'ETH-161694237', 'timestamp': 1677962858339, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 3.886e-05, 'price': 1550.0, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32055316625', 'mmp': False, 'matching_id': None, 'mark_price': 1550.34, 'liquidity': 'M', 'label': 'supplyDemandLong60B-open-1677903684425', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1550.76, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 5.0}
         ]
 
-    open_orders = [
+    open_orders_source = [
         {
             'web': False, 'triggered': False, 'trigger_price': 1720.0, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 
             'stop_price': 1720.0, 'risk_reducing': False, 'replaced': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 'market_price', 
@@ -315,8 +366,7 @@ def test_is_open_trade_has_exit_order ():
             'instrument_name': 'ETH-PERPETUAL', 'direction': 'buy', 'creation_timestamp': 1677473096745, 'api': True, 'amount': 8.0
             }
         ]
-    
-    
+        
     open_trade2 =  [
         {'trade_seq': 118854184, 'trade_id': 'ETH-161815173', 'timestamp': 1678158321841, 'tick_direction': 1, 'state': 'filled', 
          'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1583.0, 'post_only': True, 
@@ -326,12 +376,14 @@ def test_is_open_trade_has_exit_order ():
         {'trade_seq': 118988617, 'trade_id': 'ETH-161978397', 'timestamp': 1678317993146, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1534.75, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32123173645', 'mmp': False, 'matching_id': None, 'mark_price': 1534.75, 'liquidity': 'M', 'label': 'supplyDemandShort60A-closed-1678158310813', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1535.05, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 10.0
          }
         ]
+                         
     open_orders_alt =  []
     open_orders2 = open_orders_management.MyOrders (open_orders_alt)
-    open_orders = open_orders_management.MyOrders (open_orders)
+    open_orders = open_orders_management.MyOrders (open_orders_source)
     exclude = ['test', 'hedgingSpot']
     strategies =  string_modification.remove_redundant_elements([ string_modification.get_strings_before_character(o['label'])  for o in open_trade ]) 
     strategies2 =  string_modification.remove_redundant_elements([ string_modification.get_strings_before_character(o['label'])  for o in open_trade2 ]) 
+    
     
     for strategy in strategies2: 
         
