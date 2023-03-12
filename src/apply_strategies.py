@@ -816,7 +816,12 @@ class ApplyHedgingSpot:
                             min_trade_amount,
                             contract_size,
                             strategy['quantity_discrete']
-                        )        
+                        )       
+            
+                        remain_unhedged = check_spot_hedging[
+                            "remain_unhedged_size"
+                        ]
+
                                                    
                         # determine position sizing-general strategy
                         min_position_size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
@@ -824,6 +829,13 @@ class ApplyHedgingSpot:
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
+            
+                        # determine position sizing-hedging
+                        if "hedgingSpot" in strategy["strategy"]:
+                            min_position_size = check_spot_hedging[
+                            "all_hedging_size"
+                            ]
+                        
                         exit_order_allowed = await self.is_exit_order_allowed (my_trades_open, 
                                                                    open_order_mgt, 
                                                                    min_position_size, 
@@ -839,12 +851,6 @@ class ApplyHedgingSpot:
                                                                                 open_orders_open_byAPI
                                                                                 )
                         log.error (f'open_order_allowed {open_order_allowed}' )
-                        
-                        # determine position sizing-hedging
-                        if "hedgingSpot" in strategy["strategy"]:
-                            min_position_size = check_spot_hedging[
-                            "all_hedging_size"
-                            ]
                          
                         label_closed: str = f"{label_strategy}-closed"
                         
@@ -891,10 +897,6 @@ class ApplyHedgingSpot:
                                     spot_hedged = spot_hedging.SpotHedging(
                                         label_strategy, my_trades_open
                                     )
-
-                                    remain_unhedged = check_spot_hedging[
-                                        "remain_unhedged_size"
-                                    ]
 
                                     spot_was_unhedged = check_spot_hedging[
                                         "spot_was_unhedged"
