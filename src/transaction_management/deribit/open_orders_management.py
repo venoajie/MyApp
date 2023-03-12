@@ -431,7 +431,7 @@ class MyOrders ():
             
         
         """
-        from src.strategies import entries_exits
+        from strategies import entries_exits
         
         strategies = entries_exits.strategies
         
