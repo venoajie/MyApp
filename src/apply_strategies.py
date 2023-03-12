@@ -585,15 +585,26 @@ class ApplyHedgingSpot:
                 side = determine_size_and_side ['side']
                 remain_main_orders = determine_size_and_side ['remain_main_orders']
                 remain_exit_orders = determine_size_and_side ['remain_exit_orders']
+                log.error (f'remain_exit_orders {remain_exit_orders}')
 
                 if remain_exit_orders != 0:
-                    params = {'instrument': trade_based_on_label_strategy['instrument'],
-                        'size': determine_size_and_side ['size'],
+                    if determine_size_and_side['order_type_market']:
+                        params = {'instrument': trade_based_on_label_strategy['instrument'],
+                        'size': determine_size_and_side ['remain_exit_orders'],
+                        'label': label_closed,
+                        'side': side,
+                        'type': 'stop_market'
+                        }
+                        await self.send_limit_order (params)
+                    
+                    if determine_size_and_side['order_type_limit']:
+                        params = {'instrument': trade_based_on_label_strategy['instrument'],
+                        'size': determine_size_and_side ['remain_exit_orders'],
                         'label': label_closed,
                         'side': side,
                         'type': 'limit'
                         }
-                    await self.send_limit_order (params)
+                        await self.send_limit_order (params)
                     
                 if remain_main_orders != 0:
                     params = {'instrument': trade_based_on_label_strategy['instrument'],
