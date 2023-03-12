@@ -764,6 +764,10 @@ class ApplyHedgingSpot:
                         time_threshold_avg_up: float = time_threshold * 12 * 4
 
                         # Creating an instance of the spot hedging class 
+                        spot_hedged = spot_hedging.SpotHedging(
+                                        label_strategy, my_trades_open
+                                    )
+                        
                         check_spot_hedging = spot_hedged.is_spot_hedged_properly(
                             notional,
                             min_trade_amount,
