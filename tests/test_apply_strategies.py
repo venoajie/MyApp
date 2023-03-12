@@ -134,11 +134,10 @@ async def test_is_send_order_allowed():
     for strategy in strategies:
         label_strategy = strategy ['strategy']
 
-        #print (strategy)
         if label_strategy == 'supplyDemandLong60A':
             
             index_price = 1550
-            is_send_order_allowed = await Strategy.is_send_order_allowed(strategy, index_price, open_trade, open_orders) 
+            is_send_order_allowed = await Strategy.is_open_main_order_allowed(strategy, index_price, open_trade, open_orders) 
 
             assert is_send_order_allowed['send_buy_order_allowed'] == False 
             assert is_send_order_allowed['send_sell_order_allowed'] == False
@@ -146,7 +145,7 @@ async def test_is_send_order_allowed():
         if label_strategy == 'supplyDemandShort60':
             
             index_price = 1550
-            is_send_order_allowed = await Strategy.is_send_order_allowed(strategy, index_price, open_trade, open_orders) 
+            is_send_order_allowed = await Strategy.is_open_main_order_allowed(strategy, index_price, open_trade, open_orders) 
             print (is_send_order_allowed)
 
             assert is_send_order_allowed['send_buy_order_allowed'] == False
