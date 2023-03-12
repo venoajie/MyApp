@@ -40,6 +40,9 @@ Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-r
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
 etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
 Market structure | [market](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
+Statistic | [statistic](https://medium.com/@yuhui_w/applying-extreme-value-theory-and-survival-analysis-to-trading-hedging-e878f73751f0) |  | | 
+Market psychology | [psychology](https://medium.com/@matthewjinfong/trading-101-second-level-thinking-94bc40cb8074) |  | | 
+
 
 
 
