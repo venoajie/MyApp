@@ -574,24 +574,6 @@ class ApplyHedgingSpot:
 
                 label_closed= f'{label}-closed-{get_strategy_int}'
                     
-                # get open order with the respective strategy and order type take_limit
-                    # to optimise the profit, using take_limit as order type default order
-                open_order_label_strategy_type_limit = ([o for o in open_orders. open_orders_from_db \
-                    if str_mod.get_strings_before_character(o['label']) == strategy_label \
-                        and 'limit' in o['order_type'] ]
-                        )
-                len_open_order_label_strategy_type =  (len(open_order_label_strategy_type_limit))
-                
-                
-                # get open order with the respective strategy and order type stop market
-                    # to reduce the possibility of order not executed, stop loss using 
-                        # stop market as order type default order
-                open_order_label_strategy_type_market = ([o for o in self. open_orders_from_db \
-                    if str_mod.get_strings_before_character(o['label']) == strategy_label \
-                        and o['order_type'] == 'stop_market']
-                        )
-                len_open_order_label_strategy_type_market =  (len(open_order_label_strategy_type_market))
-        
                 trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
                 net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
 
