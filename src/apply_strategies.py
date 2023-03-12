@@ -577,7 +577,11 @@ class ApplyHedgingSpot:
                 trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
                 net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
 
-                determine_size_and_side = open_orders.determine_size_and_side(max_size, strategy_label, net_sum_current_position)
+                determine_size_and_side = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                                                                                                            max_size, 
+                                                                                                            strategy_label, 
+                                                                                                            net_sum_current_position
+                                                                                                                )
                 side = determine_size_and_side ['side']
                 remain_main_orders = determine_size_and_side ['remain_main_orders']
                 remain_exit_orders = determine_size_and_side ['remain_exit_orders']
