@@ -835,7 +835,8 @@ class ApplyHedgingSpot:
                             min_position_size = check_spot_hedging[
                             "all_hedging_size"
                             ]
-                        
+                        log.error(f'min_position_size {min_position_size}')
+                        log.error(strategy["strategy"])
                         exit_order_allowed = await self.is_exit_order_allowed (my_trades_open, 
                                                                    open_order_mgt, 
                                                                    min_position_size, 
