@@ -487,7 +487,6 @@ class MyOrders ():
                     
                 # get open order with the respective strategy and order type take_limit
                     # to optimise the profit, using take_limit as order type default order
-                
                 open_order_label_strategy_type_limit = self.trade_based_on_label_strategy (open_orders_from_db,
                                                                                       basic_strategy,
                                                                                       'limit')
