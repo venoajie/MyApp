@@ -385,8 +385,8 @@ class MyOrders ():
             if strategy in str_mod.get_strings_before_character(o['label'])])
  
     def trade_based_on_label_strategy (self, 
-                                           open_transactions_label,
-                                           strategy) -> None:
+                                       open_transactions_label,
+                                       strategy) -> None:
         
         '''
         '''      
@@ -399,7 +399,7 @@ class MyOrders ():
                 }
     
         
-    def is_open_trade_has_exit_order_sl (self, open_trades_label, strategy) -> None:
+    def is_open_trade_has_exit_order_sl (self, open_trades_label, max_size, strategy) -> None:
         
         '''
         order type to search = stop market
@@ -429,6 +429,7 @@ class MyOrders ():
         
         # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
+        determine_size_and_side = self.determine_size_and_side (max_size, strategy, net_position_based_on_label)
         len_position_based_on_label = trade_based_on_label_strategy ['len_transactions']
         trade_position_exit_order_ok = len_position_based_on_label > 0 and net_position == 0
         #log.error (sum_open_order_label_strategy_type)
@@ -451,6 +452,7 @@ class MyOrders ():
         params = {'instrument': trade_based_on_label_strategy ['instrument'],
                   'size': abs(net_position),
                   'label': label_sl,
+                  'side': determine_size_and_side['side'],
                   'type': 'stop_market'
                   }
 
@@ -460,10 +462,11 @@ class MyOrders ():
                 'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_sl': abs(net_position),
                 'params': params,
-                'label_sl': label_sl }
+                'label_sl': label_sl 
+                }
 
 
-    def is_open_trade_has_exit_order_tp (self, open_trades_label, strategy) -> None:
+    def is_open_trade_has_exit_order_tp (self, open_trades_label, max_size, strategy) -> None:
         
         '''
         order type to search =  take limit
@@ -495,8 +498,8 @@ class MyOrders ():
         
         # compare size per trade vs per order open. The amoungt should be 0/zero
         net_position = net_position_based_on_label + sum_open_order_label_strategy_type
-        proforma_size = self.check_proforma_position(abs(net_position), net_position_based_on_label)
-        log.warning (proforma_size)
+        determine_size_and_side = self.determine_size_and_side (max_size, strategy, net_position_based_on_label)
+        log.warning (determine_size_and_side)
             
         # tp has properly ordered if net position == 0
         #is_over_order = net_position == 0 
@@ -514,6 +517,7 @@ class MyOrders ():
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'size': abs(net_position),
                   'label': label_tp,
+                  'side': determine_size_and_side['side'],
                   'type': 'limit'
                   }
         return {'is_exit_order_ok': len_open_order_label_strategy_type > 0 and trade_position_exit_order_ok,
@@ -521,9 +525,14 @@ class MyOrders ():
                 'list_order_exceeding_minimum': open_order_label_strategy_type,
                 'size_tp': abs(net_position),
                 'params': params,
-                'label_tp': label_tp }
+                'label_tp': label_tp
+                }
         
-    def determine_size_and_side (self, max_size, strategy, net_sum_current_position: float) -> None:
+            
+    def determine_size_and_side (self, 
+                                 max_size, 
+                                 strategy,
+                                 net_sum_current_position: float) -> None:
 
         """
         net_sum_current_position: buy - sell
@@ -542,16 +551,19 @@ class MyOrders ():
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
                     remain_exit_orders = (main_orders_sum_vs_max_orders)
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = 'buy'
                     
                 if main_orders_sum_vs_max_orders < 0:
                     remain_main_orders = main_orders_sum_vs_max_orders
                     remain_exit_orders = 0
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = 'sell'
                     
                 if main_orders_sum_vs_max_orders == 0:
                     remain_main_orders = 0
                     remain_exit_orders = 0
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = None
                     
             if side_strategy == 'buy':
@@ -561,20 +573,24 @@ class MyOrders ():
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
                     remain_exit_orders = - main_orders_sum_vs_max_orders
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = 'sell'
                     
                 if main_orders_sum_vs_max_orders < 0:
                     remain_main_orders = abs(main_orders_sum_vs_max_orders)
                     remain_exit_orders = 0
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = 'buy'
                     
                 if main_orders_sum_vs_max_orders == 0:
                     remain_main_orders = 0
                     remain_exit_orders = 0
+                    proforma_size = remain_exit_orders - net_sum_current_position
                     side = None
                     
             return {'remain_main_orders': remain_main_orders,
                     'remain_exit_orders': remain_exit_orders,
+                    'proforma_size': proforma_size,
                     'side': side
                     }
             
