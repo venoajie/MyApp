@@ -560,7 +560,7 @@ class ApplyHedgingSpot:
         strategy_labels =  str_mod.remove_redundant_elements(
             [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
             ) 
-        strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
+        #strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
         log.error (strategy_labels)
         
         if strategy_labels != []:
