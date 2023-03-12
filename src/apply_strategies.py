@@ -544,15 +544,15 @@ class ApplyHedgingSpot:
                     if order  ['params'] ['type'] =='stop_market':
                         await self.send_market_order (params)
                     
-                    
+     #! #################################################################################               
     async def is_exit_order_allowed (self, 
-                                              open_trade: list, 
-                                              open_orders: object, 
-                                              max_size,
-                                              strategies: list, 
-                                              best_bid_prc: float, 
-                                              best_ask_prc: float
-                                              ) -> None:
+                                    open_trade: list, 
+                                    open_orders: object, 
+                                    max_size,
+                                    strategies: list, 
+                                    best_bid_prc: float, 
+                                    best_ask_prc: float
+                                    ) -> None:
         """
         """
 
@@ -563,38 +563,19 @@ class ApplyHedgingSpot:
         strategy_labels =  [o for o in strategy_labels if "test"  not in o]
         
         for label in strategy_labels:
-            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-
-            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,max_size,label),
-                           open_orders.is_open_trade_has_exit_order_tp(open_trade,max_size,label)]
             
-            for order in check_order:
-                log.warning (order)
-                if order  ['current_order_len_exceeding_minimum']:
-                    for transaction in  order  ['list_order_exceeding_minimum']:
-                        open_order_id = transaction['order_id']
-                        cancel = await self.cancel_by_order_id(open_order_id)
-                        log.warning (cancel)
-                
-                if order  ['is_exit_order_ok']== False:
-                    #log.critical (f'order {order}')
-                    params = order  ['params']
-                    cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                            
-                    if side == "buy":
-                        cl_side = "sell"
-                    if side == "sell":
-                        cl_side = "buy"
-                    #log.critical (f'cl_side {cl_side}')
+            # formatting label: strategy & int
+            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+            
+            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
+            net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
 
-                    take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                    take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
-                    params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
-                    #log.warning (f'order {order}')
-                    if order   ['params'] ['type'] =='limit':
-                        await self.send_limit_order (params)
-                    if order  ['params'] ['type'] =='stop_market':
-                        await self.send_market_order (params)
+            determine_size_and_side = open_orders.determine_size_and_side(max_size, strategy_label, net_sum_current_position)
+            log.error (determine_size_and_side)
+            return determine_size_and_side
+            
+
+     #! #################################################################################               
                         
     async def is_open_order_allowed (self, 
                                      strategy: dict, 
@@ -613,19 +594,7 @@ class ApplyHedgingSpot:
         # prepare default result to avoid unassociated value
         send_sell_order_allowed = False
         send_buy_order_allowed  = False
-        
-        #log.debug ( strategy['side'])
-        #log.warning (label_strategy)
-        #log.warning (f'side {side}')
-        #log.warning (f'index_price {index_price}')
-        #log.warning (f'entry_price {entry_price}')
-        #log.warning (f'invalidation_price {invalidation_price}')
-        #log.warning (f'entry_price < index_price {entry_price < index_price}')
-        #log.warning (f'entry_price > index_price {entry_price > index_price}')
-        
-        #log.warning (f'index_price > invalidation_price {index_price > invalidation_price}')
-        #log.warning (f'index_price < invalidation_price {index_price < invalidation_price}')
-        
+                
         if side == 'buy' \
             and index_price < entry_price \
                 and index_price > invalidation_price:
@@ -808,7 +777,7 @@ class ApplyHedgingSpot:
                                                     notional, 
                                                     strategy ['equity_risked_pct']
                                                     ) 
-                        await self.check_exit_orders_completeness (my_trades_open, 
+                        await self.is_exit_order_allowed (my_trades_open, 
                                                                    open_order_mgt, 
                                                                    min_position_size, 
                                                                    strategies, 
@@ -842,22 +811,6 @@ class ApplyHedgingSpot:
                             strategy['label_numbered']
                         )
                     
-                        #! excluding hedging spot since its part of risk management, not strategy
-                        if "hedgingSpot" not in strategy["strategy"]:
-
-                            send_main_order = await self.is_send_order_allowed (strategy, 
-                                                                                index_price, 
-                                                                                my_trades_open,
-                                                                                open_orders_open_byAPI
-                                                                                )
-                            log.warning (send_main_order)
-                            
-                            if send_main_order ['send_buy_order_allowed']:
-                                await self.send_combo_orders(strategy)
-                                
-                            if send_main_order ['send_sell_order_allowed']:
-                                await self.send_combo_orders(strategy)
-                            
                         if "hedgingSpot" in strategy["strategy"]:
 
                             if open_order_mgt_filed_status_filed != []:
