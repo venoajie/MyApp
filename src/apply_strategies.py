@@ -566,12 +566,13 @@ class ApplyHedgingSpot:
             
             # formatting label: strategy & int
             strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+            log.error (strategy_label)
             
             trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
             net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
 
             determine_size_and_side = open_orders.determine_size_and_side(max_size, strategy_label, net_sum_current_position)
-            log.error (determine_size_and_side)
+            
             return determine_size_and_side
             
 
