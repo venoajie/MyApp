@@ -561,6 +561,7 @@ class ApplyHedgingSpot:
             ) 
         strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
         strategy_labels =  [o for o in strategy_labels if "test"  not in o]
+        log.error (strategy_labels)
         
         for label in strategy_labels:
             
