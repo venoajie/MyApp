@@ -125,8 +125,7 @@ def test_check_proforma_position ():
                                     strategy ['equity_risked_pct']
                                     ) 
         label_strategy =  strategy  ['strategy']
-        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        print (label_strategy)
+        
         if 'supplyDemandShort60A' in label_strategy:
             open_trades_label = []            
             assert open_orders.check_proforma_position(size, strategy, open_trades_label)['proforma_size'] ==  12
