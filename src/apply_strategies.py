@@ -528,19 +528,19 @@ class ApplyHedgingSpot:
         log.warning (f'remain_main_orders {remain_main_orders}')
         self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
 
+        params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
+                    'side': side,
+                    'type': 'limit'
+                    }
+    
+        params_market = {'instrument': trade_based_on_label_strategy['instrument'],
+                    'side': side,
+                    'type': 'stop_market'
+                    }
+            
         if remain_exit_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
         
-            params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
-                      'side': side,
-                      'type': 'limit'
-                      }
-        
-            params_market = {'instrument': trade_based_on_label_strategy['instrument'],
-                      'side': side,
-                      'type': 'stop_market'
-                      }
-            
             # no order type market for hedging spot
             if "hedgingSpot" not in label_mod \
                 and determine_size_and_side['order_type_market']:
@@ -564,7 +564,7 @@ class ApplyHedgingSpot:
                 await self.send_limit_order (params)
             
         if remain_main_orders != 0:
-            params.update(
+            params_limit.update(
                 {'size': remain_main_orders,
                  'label': label_closed,
                  'label':label_numbering.labelling("open", label
@@ -572,7 +572,7 @@ class ApplyHedgingSpot:
                         
                 }
                 )
-            log.warning (params)
+            log.warning (params_limit)
             
         return determine_size_and_side
                 
