@@ -570,6 +570,7 @@ class ApplyHedgingSpot:
                 await self.send_limit_order (params)
             
         if remain_main_orders != 0:
+            label_mod = str_mod.get_strings_before_character(label,'-', 0)
             params_limit.update(
                 {'size': remain_main_orders,
                  'entry_price': price,
