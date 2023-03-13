@@ -530,7 +530,9 @@ class ApplyHedgingSpot:
         
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
-        price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
+        
+        if side !=None:
+            price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
 
         params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
                     'side': side,
