@@ -615,7 +615,8 @@ class ApplyHedgingSpot:
         if side == 'sell' \
             and index_price > entry_price \
                 and index_price < invalidation_price:
-                log.warning (f'order_sell_open {order_sell_open}')
+                log.warning (f'order_sell_open {open_orders}')
+                log.warning ([o  for o in open_orders if o['direction'] == 'sell'] )
                 log.warning ([o  for o in order_sell_open if label_strategy in o['label']] )
                  
                 if my_trades_open not in none_data:
