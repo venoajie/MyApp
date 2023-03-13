@@ -546,7 +546,7 @@ class ApplyHedgingSpot:
             
         if remain_main_orders != 0:
             params = {'instrument': trade_based_on_label_strategy['instrument'],
-                    'size': determine_size_and_side ['size'],
+                    'size': determine_size_and_side ['remain_main_orders'],
                     'label': label_closed,
                     'side': side,
                     'type': 'limit'
