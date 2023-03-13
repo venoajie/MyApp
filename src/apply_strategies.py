@@ -486,7 +486,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
                     
-    async def is_send_exit_or_additional_order_is_allowed (self, 
+    async def is_send_exit_or_additional_order_allowed (self, 
                                                             label,
                                                             open_trade: list, 
                                                             open_orders: object, 
@@ -740,7 +740,28 @@ class ApplyHedgingSpot:
                                                     strategy_attr ['equity_risked_pct']
                                                     ) 
                 
-                        exit_order_allowed = await self.is_send_exit_or_additional_order_is_allowed (label,
+                        # Creating an instance of the spot hedging class 
+                        spot_hedged = spot_hedging.SpotHedging(
+                                        label_strategy, my_trades_open
+                                    )
+                        
+                        check_spot_hedging = spot_hedged.is_spot_hedged_properly(
+                            notional,
+                            min_trade_amount,
+                            contract_size,
+                            strategy_attr['quantity_discrete']
+                        )       
+                        
+            
+                        # determine position sizing-hedging
+                        if "hedgingSpot" in strategy["strategy"]:
+                            min_position_size = check_spot_hedging[
+                            "all_hedging_size"
+                            ]
+                        log.error(f'min_position_size {min_position_size}')
+                        log.error(strategy["strategy"])
+                        
+                        exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
                                                                                my_trades_open, 
                                                                                open_order_mgt, 
                                                                                 strategy_attr, 
@@ -768,7 +789,6 @@ class ApplyHedgingSpot:
                     # instrument contract size
                     contract_size = instrument_data["contract_size"]
 
-                    
                     #execute each strategy
                     for strategy in strategies:
 
@@ -776,31 +796,9 @@ class ApplyHedgingSpot:
                         time_threshold: float = strategy["halt_minute_before_reorder"] * one_minute
                         time_threshold_avg_up: float = time_threshold * 12 * 4
 
-                        # Creating an instance of the spot hedging class 
-                        spot_hedged = spot_hedging.SpotHedging(
-                                        label_strategy, my_trades_open
-                                    )
-                        
-                        check_spot_hedging = spot_hedged.is_spot_hedged_properly(
-                            notional,
-                            min_trade_amount,
-                            contract_size,
-                            strategy['quantity_discrete']
-                        )       
-            
                         remain_unhedged = check_spot_hedging[
                             "remain_unhedged_size"
-                        ]
-
-                                        
-            
-                        # determine position sizing-hedging
-                        if "hedgingSpot" in strategy["strategy"]:
-                            min_position_size = check_spot_hedging[
-                            "all_hedging_size"
-                            ]
-                        log.error(f'min_position_size {min_position_size}')
-                        log.error(strategy["strategy"])
+                        ]         
                         
                         open_order_allowed = await self.is_open_main_order_allowed (strategy, 
                                                                                 index_price, 
