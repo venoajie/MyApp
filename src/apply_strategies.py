@@ -522,8 +522,8 @@ class ApplyHedgingSpot:
                                                                                                     net_sum_current_position
                                                                                                         )
         side = determine_size_and_side ['side']
-        remain_main_orders = determine_size_and_side ['remain_main_orders']
-        remain_exit_orders = determine_size_and_side ['remain_exit_orders']
+        remain_main_orders = abs(determine_size_and_side ['remain_main_orders'])
+        remain_exit_orders =  abs(determine_size_and_side ['remain_exit_orders'])
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
         price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
