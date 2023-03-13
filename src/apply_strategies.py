@@ -532,12 +532,6 @@ class ApplyHedgingSpot:
         
         if side !=None:
             price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
-            
-        params = {'instrument': trade_based_on_label_strategy['instrument'],
-                  'side': side
-                  }
-        params_tes = params.update({'type': 'limit'})
-        log.warning (params_tes)
 
         params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
                         'side': side,
@@ -584,10 +578,7 @@ class ApplyHedgingSpot:
             log.warning (params_limit)
             await self.send_limit_order (params_limit)
             
-        return determine_size_and_side
-                
-
-     #! #################################################################################               
+        return determine_size_and_side#               
                         
     async def is_open_main_order_allowed (self, 
                                      strategy: dict, 
@@ -610,8 +601,7 @@ class ApplyHedgingSpot:
         if side == 'buy' \
             and index_price < entry_price \
                 and index_price > invalidation_price:
-                #log.error ('AAAAAAAAAAAAAAAAAAAAAAA')
-                #log.error (label_strategy)
+                
                 if my_trades_open not in none_data:
                     my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
                     my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
@@ -625,8 +615,9 @@ class ApplyHedgingSpot:
         if side == 'sell' \
             and index_price > entry_price \
                 and index_price < invalidation_price:
-                #log.error ('BBBBBBBBBBBBBBBB')
-                #log.error (label_strategy)                
+                log.warning (f'order_sell_open {order_sell_open}')
+                log.warning ([o  for o in order_sell_open if label_strategy in o['label']] )
+                 
                 if my_trades_open not in none_data:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
                     my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
@@ -639,7 +630,6 @@ class ApplyHedgingSpot:
 
         return {'send_buy_order_allowed': send_buy_order_allowed,
                 'send_sell_order_allowed': send_sell_order_allowed}
-        
         
     async def running_strategy(self, server_time) -> float:
         """
