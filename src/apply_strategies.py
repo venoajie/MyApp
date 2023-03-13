@@ -711,64 +711,9 @@ class ApplyHedgingSpot:
                     "filled"
                 )
                 
-                # fetch label for outstanding trade position/orders
-                strategy_labels =  str_mod.remove_redundant_elements(
-                    [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
-                    ) 
-
-                log.error (strategy_labels)
-            
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
                 
-                
-                # when there are some positions/order, check their appropriateness to the established standard
-                if strategy_labels != []:
-                            
-                    for label in strategy_labels:
-                        log.error (label)
-                        label_mod = str_mod.get_strings_before_character(label,'-', 0)
-                        
-                        # get startegy details
-                        strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
-                        
-                        # determine position sizing-general strategy
-                        min_position_size: float = position_sizing.pos_sizing (
-                                                    strategy_attr ['take_profit_usd'],
-                                                    strategy_attr ['entry_price'], 
-                                                    notional, 
-                                                    strategy_attr ['equity_risked_pct']
-                                                    ) 
-                
-                        # Creating an instance of the spot hedging class 
-                        spot_hedged = spot_hedging.SpotHedging(
-                                        strategy_attr['strategy'], my_trades_open
-                                    )
-                        
-                        check_spot_hedging = spot_hedged.is_spot_hedged_properly(
-                            notional,
-                            min_trade_amount,
-                            contract_size,
-                            strategy_attr['quantity_discrete']
-                        )       
-                        
-            
-                        # determine position sizing-hedging
-                        if "hedgingSpot" in strategy["strategy"]:
-                            min_position_size = check_spot_hedging[
-                            "all_hedging_size"
-                            ]
-                        log.error(f'min_position_size {min_position_size}')
-                        log.error(strategy["strategy"])
-                        
-                        exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
-                                                                               my_trades_open, 
-                                                                               open_order_mgt, 
-                                                                                strategy_attr, 
-                                                                                min_position_size
-                                                                   )
-                        log.error (f'exit_order_allowed {exit_order_allowed}' )                        
-
                 for instrument in instrument_transactions:
 
                     log.critical(f"{instrument}")
@@ -788,6 +733,61 @@ class ApplyHedgingSpot:
 
                     # instrument contract size
                     contract_size = instrument_data["contract_size"]
+
+                    # fetch label for outstanding trade position/orders
+                    strategy_labels =  str_mod.remove_redundant_elements(
+                        [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
+                        ) 
+
+                    log.error (strategy_labels)
+                    
+                    # when there are some positions/order, check their appropriateness to the established standard
+                    if strategy_labels != []:
+                                
+                        for label in strategy_labels:
+                            log.error (label)
+                            label_mod = str_mod.get_strings_before_character(label,'-', 0)
+                            
+                            # get startegy details
+                            strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
+                            
+                            # determine position sizing-general strategy
+                            min_position_size: float = position_sizing.pos_sizing (
+                                                        strategy_attr ['take_profit_usd'],
+                                                        strategy_attr ['entry_price'], 
+                                                        notional, 
+                                                        strategy_attr ['equity_risked_pct']
+                                                        ) 
+                    
+                            # Creating an instance of the spot hedging class 
+                            spot_hedged = spot_hedging.SpotHedging(
+                                            strategy_attr['strategy'], my_trades_open
+                                        )
+                            
+                            check_spot_hedging = spot_hedged.is_spot_hedged_properly(
+                                notional,
+                                min_trade_amount,
+                                contract_size,
+                                strategy_attr['quantity_discrete']
+                            )       
+                            
+                
+                            # determine position sizing-hedging
+                            if "hedgingSpot" in strategy["strategy"]:
+                                min_position_size = check_spot_hedging[
+                                "all_hedging_size"
+                                ]
+                            log.error(f'min_position_size {min_position_size}')
+                            log.error(strategy["strategy"])
+                            
+                            exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
+                                                                                my_trades_open, 
+                                                                                open_order_mgt, 
+                                                                                    strategy_attr, 
+                                                                                    min_position_size
+                                                                    )
+                            log.error (f'exit_order_allowed {exit_order_allowed}' )                        
+
 
                     #execute each strategy
                     for strategy in strategies:
