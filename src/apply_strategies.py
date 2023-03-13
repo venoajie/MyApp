@@ -472,6 +472,8 @@ class ApplyHedgingSpot:
     def optimising_exit_price (self, side, best_bid_prc: float, best_ask_prc: float, exit_price: float =None ) -> None:
         """
         """
+        log.error (f'side {side}')
+        log.error (f'exit_price {exit_price}')
         if exit_price != None:
 
             if side == 'buy':
