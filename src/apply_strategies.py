@@ -571,7 +571,7 @@ class ApplyHedgingSpot:
                  }
                 )
             log.warning (params_limit)
-            #await self.send_limit_order (params_limit)
+            await self.send_limit_order (params_limit)
             
         return determine_size_and_side
                 
