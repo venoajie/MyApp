@@ -622,12 +622,9 @@ class ApplyHedgingSpot:
         if side == 'sell':
             log.error (my_trades_open)
     
-            if open_orders  in none_data:
-                order_sell_open_label_strategy = [] 
-            if my_trades_open  in none_data:
-                my_trade_sell_open_label_strategy = [] 
-            log.error (my_trades_open  in none_data)
-
+            order_sell_open_label_strategy = [] 
+            my_trade_sell_open_label_strategy = [] 
+            
             if 'spotHedging' not in label_strategy:
                 if index_price > entry_price \
                     and index_price < invalidation_price:
