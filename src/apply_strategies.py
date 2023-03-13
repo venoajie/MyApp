@@ -595,6 +595,7 @@ class ApplyHedgingSpot:
                 
                 params = {'instrument': trade_based_on_label_strategy['instrument'],
                         'size': determine_size_and_side ['remain_exit_orders'],
+                'take_profit_usd': strategy_attr ['take_profit_usd'],
                         'label': label_closed,
                         'side': side,
                         'type': 'limit'
