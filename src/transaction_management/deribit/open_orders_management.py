@@ -438,6 +438,7 @@ class MyOrders ():
         try:     
             basic_strategy = str_mod.get_strings_before_character(strategy_from_outstanding_transactions,'-', 0) 
             side_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['side']
+            label_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['strategy']
 
             if side_basic_strategy == 'sell':
                 
@@ -499,12 +500,15 @@ class MyOrders ():
                                                                                         basic_strategy,
                                                                                         'stop_market')
                 len_open_order_label_strategy_type_market = open_order_label_strategy_type_market ['len_transactions']
+                order_type_market =  False if 'hedgingSpot' in label_basic_strategy \
+                    else True if len_open_order_label_strategy_type_market == [] \
+                        else len_open_order_label_strategy_type_market < 1
+                label_basic_strategy
             
             return {'remain_main_orders': remain_main_orders,
                     'remain_exit_orders': remain_exit_orders,
                     #'proforma_size_ok': proforma_size < max_size,
-                    'order_type_market': True if len_open_order_label_strategy_type_market == [] \
-                        else len_open_order_label_strategy_type_market < 1,
+                    'order_type_market': order_type_market,
                     'order_type_limit': True if len_open_order_label_strategy_type_limit == [] \
                         else  len_open_order_label_strategy_type_limit < 1,
                     'side': side
