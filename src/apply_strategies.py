@@ -620,6 +620,8 @@ class ApplyHedgingSpot:
                 send_buy_order_allowed =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
 
         if side == 'sell':
+            log.error (my_trade_sell_open_label_strategy)
+            log.error (my_trades_open  in none_data)
     
             if open_orders  in none_data:
                 order_sell_open_label_strategy = [] 
