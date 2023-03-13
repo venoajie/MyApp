@@ -636,15 +636,9 @@ class ApplyHedgingSpot:
             order_sell_open_label_strategy = [] 
             my_trade_sell_open_label_strategy = [] 
             
-            log.error (f'label_strategy {label_strategy}')
-            log.error (f'index_price {index_price}')
-            log.error (f'entry_price {entry_price}')
-            log.error ('hedgingSpot' not in label_strategy)
-            log.error ('hedgingSpot' in label_strategy)
-            log.error ('hedgingSpot' == label_strategy)
-            log.error (f'index_price > entry_price  {index_price > entry_price }')
-
+           
             if 'hedgingSpot' not in label_strategy:
+
                 if index_price > entry_price \
                     and index_price < invalidation_price:
                     
@@ -900,7 +894,14 @@ class ApplyHedgingSpot:
                                                                                              )
                                          }
                                         )
-                                                
+                                            
+                                            
+                        if open_order_allowed ['send_buy_order_allowed']:
+                            await self.send_combo_orders(strategy)
+                            
+                        if open_order_allowed ['send_sell_order_allowed']:
+                            await self.send_combo_orders(strategy)
+                                
                         # check for any order outstanding as per label filter
                         net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
                             strategy['label_numbered']
