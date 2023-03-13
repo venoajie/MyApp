@@ -549,6 +549,7 @@ class ApplyHedgingSpot:
                                      label,
                                     open_trade: list, 
                                     open_orders: object, 
+                                    strategies, 
                                     max_size,
                                     best_bid_prc: float, 
                                     best_ask_prc: float
@@ -765,27 +766,36 @@ class ApplyHedgingSpot:
                     "filled"
                 )
                 
-                
-                # determine position sizing-general strategy
-                min_position_size: float = position_sizing.pos_sizing (strategy ['take_profit_usd'],
-                                            strategy ['entry_price'], 
-                                            notional, 
-                                            strategy ['equity_risked_pct']
-                                            ) 
-                
                 strategy_labels =  str_mod.remove_redundant_elements(
                     [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
                     ) 
                 #strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
                 log.error (strategy_labels)
-                
+            
+                # fetch strategies
+                strategies = entries_exits.strategies
+            
                 if strategy_labels != []:
                             
                     for label in strategy_labels:
+                        log.error (label)
+                        
+                        strategy_attr = [o for o in strategies if o['strategy'] == label][0]
+                                
+                        log.error (strategy_attr)
+                        
+                        # determine position sizing-general strategy
+                        min_position_size: float = position_sizing.pos_sizing (strategy_attr ['take_profit_usd'],
+                                                    strategy_attr ['entry_price'], 
+                                                    notional, 
+                                                    strategy_attr ['equity_risked_pct']
+                                                    ) 
+                
 
                         exit_order_allowed = await self.is_exit_order_allowed (label,
                                                                                my_trades_open, 
-                                                                                open_order_mgt, 
+                                                                               my_trades_open, 
+                                                                                strategies, 
                                                                                 min_position_size, 
                                                                                 best_bid_prc, 
                                                                                 best_ask_prc
@@ -812,8 +822,6 @@ class ApplyHedgingSpot:
                     # instrument contract size
                     contract_size = instrument_data["contract_size"]
 
-                    # fetch strategies
-                    strategies = entries_exits.strategies
                     
                     #execute each strategy
                     for strategy in strategies:
