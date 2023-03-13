@@ -498,7 +498,9 @@ class ApplyHedgingSpot:
                                                             open_trade: list, 
                                                             open_orders: object, 
                                                             strategy_attr, 
-                                                            max_size
+                                                            max_size,
+                                                            best_bid_prc,
+                                                            best_ask_prc
                                                             ) -> None:
         """
         """
@@ -524,10 +526,22 @@ class ApplyHedgingSpot:
         remain_exit_orders = determine_size_and_side ['remain_exit_orders']
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
+        self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
 
         if remain_exit_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
+        
+            params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
+                      'side': side,
+                      'type': 'limit'
+                      }
+        
+            params_market = {'instrument': trade_based_on_label_strategy['instrument'],
+                      'side': side,
+                      'type': 'stop_market'
+                      }
             
+            # no order type market for hedging spot
             if "hedgingSpot" not in label_mod \
                 and determine_size_and_side['order_type_market']:
                     
@@ -535,7 +549,6 @@ class ApplyHedgingSpot:
                 'size': determine_size_and_side ['remain_exit_orders'],
                 'label': label_closed,
                 'take_profit_usd': strategy_attr ['take_profit_usd'],
-                'side': side,
                 'type': 'stop_market'
                 }
                 await self.send_limit_order (params)
@@ -546,18 +559,20 @@ class ApplyHedgingSpot:
                         'size': determine_size_and_side ['remain_exit_orders'],
                         'take_profit_usd': strategy_attr ['take_profit_usd'],
                         'label': label_closed,
-                        'side': side,
                         'type': 'limit'
                         }
                 await self.send_limit_order (params)
             
         if remain_main_orders != 0:
-            params = {'instrument': trade_based_on_label_strategy['instrument'],
-                    'size': determine_size_and_side ['remain_main_orders'],
-                    'label': label_closed,
-                    'side': side,
-                    'type': 'limit'
+            params.update(
+                {'size': remain_main_orders,
+                 'label': label_closed,
+                 'label':label_numbering.labelling("open", label
+                                                                        )
+                        
                 }
+                )
+            log.warning (params)
             
         return determine_size_and_side
                 
@@ -745,8 +760,6 @@ class ApplyHedgingSpot:
                     strategy_labels =  str_mod.remove_redundant_elements(
                         [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
                         ) 
-
-                    log.error (strategy_labels)
                     
                     # when there are some positions/order, check their appropriateness to the established standard
                     if strategy_labels != []:
@@ -777,8 +790,7 @@ class ApplyHedgingSpot:
                                 contract_size,
                                 strategy_attr['quantity_discrete']
                             )       
-                            
-                
+                                            
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 min_position_size = check_spot_hedging[
@@ -788,13 +800,14 @@ class ApplyHedgingSpot:
                             log.error(strategy_attr["strategy"])
                             
                             exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
-                                                                                my_trades_open, 
-                                                                                open_order_mgt, 
-                                                                                    strategy_attr, 
-                                                                                    min_position_size
-                                                                    )
+                                                                                                    my_trades_open, 
+                                                                                                    open_order_mgt, 
+                                                                                                    strategy_attr, 
+                                                                                                    min_position_size,
+                                                                                                    best_bid_prc,
+                                                                                                    best_ask_prc
+                                                                                                    )
                             log.error (f'exit_order_allowed {exit_order_allowed}' )                        
-
 
                     #execute each strategy
                     for strategy in strategies:
@@ -1103,8 +1116,6 @@ if __name__ == "__main__":
 
         if is_running:
             catch_error(is_running)
-
-        #system_tools.sleep_and_restart_program(30)
 
     except (KeyboardInterrupt):
         catch_error(KeyboardInterrupt)
