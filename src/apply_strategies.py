@@ -575,11 +575,13 @@ class ApplyHedgingSpot:
         remain_main_orders = determine_size_and_side ['remain_main_orders']
         remain_exit_orders = determine_size_and_side ['remain_exit_orders']
         log.error (f'remain_exit_orders {remain_exit_orders}')
-        log.error (f'label {label}')
-        log.error ("hedgingSpot" not in label)
 
         if remain_exit_orders != 0:
-            if "hedgingSpot" not in label and determine_size_and_side['order_type_market']:
+            label_mod = str_mod.get_strings_before_character(label,'-', 0)
+            
+            log.error (f'label {label_mod}')
+            log.error ("hedgingSpot" not in label_mod)
+            if "hedgingSpot" not in label_mod and determine_size_and_side['order_type_market']:
                 params = {'instrument': trade_based_on_label_strategy['instrument'],
                 'size': determine_size_and_side ['remain_exit_orders'],
                 'label': label_closed,
