@@ -639,10 +639,10 @@ class ApplyHedgingSpot:
             log.error (f'label_strategy {label_strategy}')
             log.error (f'index_price {index_price}')
             log.error (f'entry_price {entry_price}')
-            log.error (f'invalidation_price {invalidation_price}')
             log.error ('hedgingSpot' not in label_strategy)
+            log.error ('hedgingSpot' in label_strategy)
+            log.error ('hedgingSpot' == label_strategy)
             log.error (f'index_price > entry_price  {index_price > entry_price }')
-            log.error (f'index_price < invalidation_price {index_price < invalidation_price}')
 
             if 'hedgingSpot' not in label_strategy:
                 if index_price > entry_price \
