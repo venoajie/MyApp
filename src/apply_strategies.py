@@ -625,6 +625,9 @@ class ApplyHedgingSpot:
             order_sell_open_label_strategy = [] 
             my_trade_sell_open_label_strategy = [] 
             
+            log.error (f'label_strategy {label_strategy}')
+            log.error ('spotHedging' not in label_strategy)
+
             if 'spotHedging' not in label_strategy:
                 if index_price > entry_price \
                     and index_price < invalidation_price:
