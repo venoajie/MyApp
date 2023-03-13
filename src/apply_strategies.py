@@ -579,9 +579,13 @@ class ApplyHedgingSpot:
             log.warning (params_limit)
             if "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
                 await self.send_limit_order (params_limit)
-                await self.will_new_open_order_create_over_hedge(
-                                        label_strategy, actual_hedging_size, max_size
+                new_open_order_create_over_hedge = await self.will_new_open_order_create_over_hedge(
+                                        strategy_label, net_sum_current_position, max_size
                                     )
+                log.warning (new_open_order_create_over_hedge)
+                log.warning (strategy_label)
+                log.warning (net_sum_current_position)
+                log.warning (max_size)
             
         return determine_size_and_side#               
                         
@@ -918,9 +922,14 @@ class ApplyHedgingSpot:
                                                 {last_time_order_filled_exceed_threshold=}"
                                     )
 
-                                    await self.will_new_open_order_create_over_hedge(
+                                    new_open_order_create_over_hedge = await self.will_new_open_order_create_over_hedge(
                                         label_strategy, actual_hedging_size, min_position_size
                                     )
+                                                        
+                                    log.warning (new_open_order_create_over_hedge)
+                                    log.warning (label_strategy)
+                                    log.warning (actual_hedging_size)
+                                    log.warning (min_position_size)
 
                                     # send sell order if spot still unhedged and no current open orders
                                     if (
