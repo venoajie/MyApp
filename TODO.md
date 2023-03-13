@@ -27,6 +27,7 @@
 Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
 Asyncio | [Asyncio](https://python.plainenglish.io/maximizing-performance-with-concurrent-and-parallel-programming-in-python-53f0b3bcd44b) |Ideal situation for asyncio  | | 
 Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3) |  | | 
+Scheduling | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
 
 
 - Technical Analysis  
