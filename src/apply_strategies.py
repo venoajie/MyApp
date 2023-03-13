@@ -773,7 +773,7 @@ class ApplyHedgingSpot:
                             
                 
                             # determine position sizing-hedging
-                            if "hedgingSpot" in strategy["strategy"]:
+                            if "hedgingSpot" in strategy_attr["strategy"]:
                                 min_position_size = check_spot_hedging[
                                 "all_hedging_size"
                                 ]
