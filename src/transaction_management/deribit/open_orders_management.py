@@ -439,6 +439,8 @@ class MyOrders ():
             basic_strategy = str_mod.get_strings_before_character(strategy_from_outstanding_transactions,'-', 0) 
             side_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['side']
             label_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['strategy']
+            log.error (label_basic_strategy)
+            order_type_market =  False
 
             if side_basic_strategy == 'sell':
                 
