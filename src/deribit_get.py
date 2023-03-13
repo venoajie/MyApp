@@ -392,7 +392,10 @@ class GetPrivateData:
         instrument = params["instrument"]
         label_numbered = params["label"]
         size = params["size"]
-        limit_prc = params["take_profit_usd"]
+        try:
+            limit_prc = params["take_profit_usd"]
+        except:
+            limit_prc = params["entry_price"]
         type = params["type"]
         
         order_result = await self.send_order(
