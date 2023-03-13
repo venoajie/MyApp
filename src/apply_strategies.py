@@ -567,10 +567,8 @@ class ApplyHedgingSpot:
             params_limit.update(
                 {'size': remain_main_orders,
                  'entry_price': price,
-                 'label':label_numbering.labelling("open", strategy_label
-                                                                        )
-                        
-                }
+                 'label':label_numbering.labelling("open", strategy_label)
+                 }
                 )
             log.warning (params_limit)
             await self.send_limit_order (params_limit)
