@@ -524,6 +524,8 @@ class ApplyHedgingSpot:
         side = determine_size_and_side ['side']
         remain_main_orders = abs(determine_size_and_side ['remain_main_orders'])
         remain_exit_orders =  abs(determine_size_and_side ['remain_exit_orders'])
+        no_limit_open_order_outstanding =  (determine_size_and_side ['no_limit_open_order_outstanding'])
+        
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
         price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
@@ -563,7 +565,7 @@ class ApplyHedgingSpot:
                         }
                 await self.send_limit_order (params)
             
-        if remain_main_orders != 0:
+        if remain_main_orders != 0 and no_limit_open_order_outstanding:
             params_limit.update(
                 {'size': remain_main_orders,
                  'entry_price': price,
