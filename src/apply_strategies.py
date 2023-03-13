@@ -536,7 +536,7 @@ class ApplyHedgingSpot:
         params = {'instrument': trade_based_on_label_strategy['instrument'],
                   'side': side
                   }
-        params_tes = params.update{'type': 'limit'}
+        params_tes = params.update({'type': 'limit'})
         log.warning (params_tes)
 
         params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
