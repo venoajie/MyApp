@@ -472,8 +472,7 @@ class ApplyHedgingSpot:
     def optimising_exit_price (self, side, best_bid_prc: float, best_ask_prc: float, exit_price: float =None ) -> None:
         """
         """
-        log.error (f'side {side}')
-        log.error (f'exit_price {exit_price}')
+        
         if exit_price != None:
 
             if side == 'buy':
@@ -533,11 +532,17 @@ class ApplyHedgingSpot:
         
         if side !=None:
             price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
+            
+        params = {'instrument': trade_based_on_label_strategy['instrument'],
+                  'side': side
+                  }
+        params_tes = params.update{'type': 'limit'}
+        log.warning (params_tes)
 
         params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
-                    'side': side,
-                    'type': 'limit'
-                    }
+                        'side': side,
+                        'type': 'limit'
+                        }
     
         params_market = {'instrument': trade_based_on_label_strategy['instrument'],
                     'side': side,
