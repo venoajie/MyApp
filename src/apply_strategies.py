@@ -794,7 +794,7 @@ class ApplyHedgingSpot:
 
                         exit_order_allowed = await self.is_exit_order_allowed (label,
                                                                                my_trades_open, 
-                                                                               my_trades_open, 
+                                                                               open_order_mgt, 
                                                                                 strategies, 
                                                                                 min_position_size
                                                                    )
