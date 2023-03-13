@@ -516,6 +516,7 @@ class ApplyHedgingSpot:
             
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
         net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
+        log.error (f'net_sum_current_position {net_sum_current_position}')
 
         determine_size_and_side = open_orders.determine_order_size_and_side_for_outstanding_transactions(
                                                                                                     max_size, 
@@ -568,7 +569,7 @@ class ApplyHedgingSpot:
                         }
                 await self.send_limit_order (params)
             
-        if remain_main_orders != 0 and no_limit_open_order_outstanding:
+        if remain_main_orders != 0:
             params_limit.update(
                 {'size': remain_main_orders,
                  'entry_price': price,
@@ -576,7 +577,11 @@ class ApplyHedgingSpot:
                  }
                 )
             log.warning (params_limit)
-            await self.send_limit_order (params_limit)
+            if "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
+                await self.send_limit_order (params_limit)
+                await self.will_new_open_order_create_over_hedge(
+                                        label_strategy, actual_hedging_size, max_size
+                                    )
             
         return determine_size_and_side#               
                         
@@ -1065,8 +1070,6 @@ class ApplyHedgingSpot:
                     label_open
                 )
                 log.critical(f"{open_order_id=}")
-
-                sleep(2)
 
                 await self.cancel_by_order_id(open_order_id)
 
