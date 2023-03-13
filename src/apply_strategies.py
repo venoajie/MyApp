@@ -549,7 +549,7 @@ class ApplyHedgingSpot:
                                      label,
                                     open_trade: list, 
                                     open_orders: object, 
-                                    strategies, 
+                                    strategy_attr, 
                                     max_size
                                     ) -> None:
         """
@@ -557,7 +557,7 @@ class ApplyHedgingSpot:
         
         # formatting label: strategy & int
         strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-        log.error (strategy_label)
+        #log.error (strategy_label)
         log.error (f'max_size {max_size}')
         get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
 
@@ -587,20 +587,22 @@ class ApplyHedgingSpot:
                 await self.send_limit_order (params)
             
             if determine_size_and_side['order_type_limit']:
+                
                 params = {'instrument': trade_based_on_label_strategy['instrument'],
-                'size': determine_size_and_side ['remain_exit_orders'],
-                'label': label_closed,
-                'side': side,
-                'type': 'limit'
-                }
+                        'size': determine_size_and_side ['remain_exit_orders'],
+                        'label': label_closed,
+                        'take_profit_usd': strategy_attr ['take_profit_usd'],
+                        'side': side,
+                        'type': 'limit'
+                        }
                 await self.send_limit_order (params)
             
         if remain_main_orders != 0:
             params = {'instrument': trade_based_on_label_strategy['instrument'],
-                'size': determine_size_and_side ['size'],
-                'label': label_closed,
-                'side': side,
-                'type': 'limit'
+                    'size': determine_size_and_side ['size'],
+                    'label': label_closed,
+                    'side': side,
+                    'type': 'limit'
                 }
             
             
@@ -778,11 +780,11 @@ class ApplyHedgingSpot:
                     for label in strategy_labels:
                         log.error (label)
                         label_mod = str_mod.get_strings_before_character(label,'-', 0)
-                        log.error (label_mod)
+                        #log.error (label_mod)
                         
                         strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
                                 
-                        log.error (strategy_attr)
+                        #log.error (strategy_attr)
                         
                         # determine position sizing-general strategy
                         min_position_size: float = position_sizing.pos_sizing (strategy_attr ['take_profit_usd'],
@@ -795,7 +797,7 @@ class ApplyHedgingSpot:
                         exit_order_allowed = await self.is_exit_order_allowed (label,
                                                                                my_trades_open, 
                                                                                open_order_mgt, 
-                                                                                strategies, 
+                                                                                strategy_attr, 
                                                                                 min_position_size
                                                                    )
                         log.error (f'exit_order_allowed {exit_order_allowed}' )                        
