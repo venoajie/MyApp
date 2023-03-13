@@ -502,15 +502,11 @@ class MyOrders ():
                 order_type_market =  False if 'hedgingSpot' in label_basic_strategy \
                     else True if len_open_order_label_strategy_type_market == [] \
                         else len_open_order_label_strategy_type_market < 1
-                log.error (f'len_open_order_label_strategy_type_limit {len_open_order_label_strategy_type_limit}')
-                log.error (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
+                
             return {'remain_main_orders': remain_main_orders,
                     'remain_exit_orders': remain_exit_orders,
                     'no_limit_open_order_outstanding': len_open_order_label_strategy_type_limit == [],
                     'no_market_open_order_outstanding': len_open_order_label_strategy_type_limit == [],
-                    'no_open_order_outstanding': len_open_order_label_strategy_type_market == [] \
-                        and len_open_order_label_strategy_type_market ==[],
-                    #'proforma_size_ok': proforma_size < max_size,
                     'order_type_market': order_type_market,
                     'order_type_limit': True if len_open_order_label_strategy_type_limit == [] \
                         else  len_open_order_label_strategy_type_limit < 1,
