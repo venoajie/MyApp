@@ -567,7 +567,12 @@ class ApplyHedgingSpot:
                         'label': label_closed,
                         'type': 'limit'
                         }
-                await self.send_limit_order (params)
+                    
+                if False and "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
+                    await self.send_limit_order (params_limit)
+                    await self.will_new_open_order_create_over_hedge(
+                                            strategy_label, net_sum_current_position, max_size
+                                        )
             
         if remain_main_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
