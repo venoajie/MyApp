@@ -742,7 +742,7 @@ class ApplyHedgingSpot:
                 
                         # Creating an instance of the spot hedging class 
                         spot_hedged = spot_hedging.SpotHedging(
-                                        label_strategy, my_trades_open
+                                        strategy_attr['strategy'], my_trades_open
                                     )
                         
                         check_spot_hedging = spot_hedged.is_spot_hedged_properly(
