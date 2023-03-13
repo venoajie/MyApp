@@ -469,14 +469,21 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
         
-    def optimising_exit_price (self, side, exit_price: float, best_bid_prc: float, best_ask_prc: float ) -> None:
+    def optimising_exit_price (self, side, best_bid_prc: float, best_ask_prc: float, exit_price: float =None ) -> None:
         """
         """
+        if exit_price != None:
 
-        if side == 'buy':
-            price = min (exit_price, best_bid_prc)
-        if side == 'sell':
-            price = max (exit_price, best_ask_prc)
+            if side == 'buy':
+                price = min (exit_price, best_bid_prc)
+            if side == 'sell':
+                price = max (exit_price, best_ask_prc)
+        else:
+
+            if side == 'buy':
+                price = best_bid_prc
+            if side == 'sell':
+                price =  best_ask_prc
         return price
         
     async def send_limit_order(self, params) -> None:
@@ -521,9 +528,9 @@ class ApplyHedgingSpot:
         if remain_exit_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
             
-            log.error (f'label {label_mod}')
-            log.error ("hedgingSpot" not in label_mod)
-            if "hedgingSpot" not in label_mod and determine_size_and_side['order_type_market']:
+            if "hedgingSpot" not in label_mod \
+                and determine_size_and_side['order_type_market']:
+                    
                 params = {'instrument': trade_based_on_label_strategy['instrument'],
                 'size': determine_size_and_side ['remain_exit_orders'],
                 'label': label_closed,
