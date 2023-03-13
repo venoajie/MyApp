@@ -550,9 +550,7 @@ class ApplyHedgingSpot:
                                     open_trade: list, 
                                     open_orders: object, 
                                     strategies, 
-                                    max_size,
-                                    best_bid_prc: float, 
-                                    best_ask_prc: float
+                                    max_size
                                     ) -> None:
         """
         """
@@ -798,9 +796,7 @@ class ApplyHedgingSpot:
                                                                                my_trades_open, 
                                                                                my_trades_open, 
                                                                                 strategies, 
-                                                                                min_position_size, 
-                                                                                best_bid_prc, 
-                                                                                best_ask_prc
+                                                                                min_position_size
                                                                    )
                         log.error (f'exit_order_allowed {exit_order_allowed}' )                        
 
