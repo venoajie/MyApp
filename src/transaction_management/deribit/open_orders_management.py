@@ -506,7 +506,9 @@ class MyOrders ():
                 log.error (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
             return {'remain_main_orders': remain_main_orders,
                     'remain_exit_orders': remain_exit_orders,
-                    'no_open_order_outstanding': len_open_order_label_strategy_type_limit == [] \
+                    'no_limit_open_order_outstanding': len_open_order_label_strategy_type_limit == [],
+                    'no_market_open_order_outstanding': len_open_order_label_strategy_type_limit == [],
+                    'no_open_order_outstanding': len_open_order_label_strategy_type_market == [] \
                         and len_open_order_label_strategy_type_market ==[],
                     #'proforma_size_ok': proforma_size < max_size,
                     'order_type_market': order_type_market,
