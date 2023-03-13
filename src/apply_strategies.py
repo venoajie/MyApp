@@ -485,73 +485,14 @@ class ApplyHedgingSpot:
 
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
-        
-    async def check_exit_orders_completeness (self, 
-                                              open_trade: list, 
-                                              open_orders: object, 
-                                              max_size,
-                                              strategies: list, 
-                                              best_bid_prc: float, 
-                                              best_ask_prc: float
-                                              ) -> None:
-        """
-        """
-
-        strategy_labels =  str_mod.remove_redundant_elements(
-            [ str_mod.get_strings_before_character(o['label'])  for o in open_trade ]
-            ) 
-        strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
-        strategy_labels =  [o for o in strategy_labels if "test"  not in o]
-        
-        for label in strategy_labels:
-            strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-            
-            main_side = [o["side"] for o in strategies if o['strategy'] == strategy_label][0]
-            
-            if main_side == "buy":
-                side = "sell"
-            if main_side == "sell":
-                side = "buy"
-
-            check_order = [open_orders.is_open_trade_has_exit_order_sl(open_trade,max_size,label),
-                           open_orders.is_open_trade_has_exit_order_tp(open_trade,max_size,label)]
-            
-            for order in check_order:
-                log.warning (order)
-                if order  ['current_order_len_exceeding_minimum']:
-                    for transaction in  order  ['list_order_exceeding_minimum']:
-                        open_order_id = transaction['order_id']
-                        cancel = await self.cancel_by_order_id(open_order_id)
-                        log.warning (cancel)
-                
-                if order  ['is_exit_order_ok']== False:
-                    #log.critical (f'order {order}')
-                    params = order  ['params']
-                    cut_loss_usd = [o["cut_loss_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                            
-                    if side == "buy":
-                        cl_side = "sell"
-                    if side == "sell":
-                        cl_side = "buy"
-                    #log.critical (f'cl_side {cl_side}')
-
-                    take_profit_usd = [o["take_profit_usd"] for o in strategies if o['strategy'] == strategy_label][0]
-                    take_profit_usd = self.optimising_exit_price (side, take_profit_usd, best_bid_prc, best_ask_prc)   
-                    params.update({'take_profit_usd': take_profit_usd,'cut_loss_usd': cut_loss_usd,'side': side})      
-                    #log.warning (f'order {order}')
-                    if order   ['params'] ['type'] =='limit':
-                        await self.send_limit_order (params)
-                    if order  ['params'] ['type'] =='stop_market':
-                        await self.send_market_order (params)
                     
-     #! #################################################################################               
-    async def is_exit_order_allowed (self, 
-                                     label,
-                                    open_trade: list, 
-                                    open_orders: object, 
-                                    strategy_attr, 
-                                    max_size
-                                    ) -> None:
+    async def is_send_exit_or_additional_order_is_allowed (self, 
+                                                            label,
+                                                            open_trade: list, 
+                                                            open_orders: object, 
+                                                            strategy_attr, 
+                                                            max_size
+                                                            ) -> None:
         """
         """
         
@@ -575,6 +516,7 @@ class ApplyHedgingSpot:
         remain_main_orders = determine_size_and_side ['remain_main_orders']
         remain_exit_orders = determine_size_and_side ['remain_exit_orders']
         log.error (f'remain_exit_orders {remain_exit_orders}')
+        log.warning (f'remain_main_orders {remain_main_orders}')
 
         if remain_exit_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
@@ -610,8 +552,6 @@ class ApplyHedgingSpot:
                     'type': 'limit'
                 }
             
-            
-        
         return determine_size_and_side
                 
 
@@ -771,35 +711,36 @@ class ApplyHedgingSpot:
                     "filled"
                 )
                 
+                # fetch label for outstanding trade position/orders
                 strategy_labels =  str_mod.remove_redundant_elements(
                     [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
                     ) 
-                #strategy_labels =  [o for o in strategy_labels if "hedgingSpot"  not in o]
+
                 log.error (strategy_labels)
             
-                # fetch strategies
+                # fetch strategies attributes
                 strategies = entries_exits.strategies
-            
+                
+                
+                # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
                             
                     for label in strategy_labels:
                         log.error (label)
                         label_mod = str_mod.get_strings_before_character(label,'-', 0)
-                        #log.error (label_mod)
                         
+                        # get startegy details
                         strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
-                                
-                        #log.error (strategy_attr)
                         
                         # determine position sizing-general strategy
-                        min_position_size: float = position_sizing.pos_sizing (strategy_attr ['take_profit_usd'],
+                        min_position_size: float = position_sizing.pos_sizing (
+                                                    strategy_attr ['take_profit_usd'],
                                                     strategy_attr ['entry_price'], 
                                                     notional, 
                                                     strategy_attr ['equity_risked_pct']
                                                     ) 
                 
-
-                        exit_order_allowed = await self.is_exit_order_allowed (label,
+                        exit_order_allowed = await self.is_send_exit_or_additional_order_is_allowed (label,
                                                                                my_trades_open, 
                                                                                open_order_mgt, 
                                                                                 strategy_attr, 
