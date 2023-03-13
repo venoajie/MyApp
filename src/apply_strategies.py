@@ -779,8 +779,10 @@ class ApplyHedgingSpot:
                             
                     for label in strategy_labels:
                         log.error (label)
+                        label_mod = str_mod.get_strings_before_character(label,'-', 0)
+                        log.error (label_mod)
                         
-                        strategy_attr = [o for o in strategies if o['strategy'] == label][0]
+                        strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
                                 
                         log.error (strategy_attr)
                         
