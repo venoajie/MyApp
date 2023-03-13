@@ -637,6 +637,9 @@ class ApplyHedgingSpot:
             my_trade_sell_open_label_strategy = [] 
             
             log.error (f'label_strategy {label_strategy}')
+            log.error (f'index_price {index_price}')
+            log.error (f'entry_price {entry_price}')
+            log.error (f'invalidation_price {invalidation_price}')
             log.error ('hedgingSpot' not in label_strategy)
             log.error (f'index_price > entry_price  {index_price > entry_price }')
             log.error (f'index_price < invalidation_price {index_price < invalidation_price}')
