@@ -606,6 +606,9 @@ class ApplyHedgingSpot:
                 if open_orders  in none_data:
                     order_buy_open_label_strategy = [] 
                  
+                if my_trades_open  in none_data:
+                    my_trade_buy_open_label_strategy = [] 
+                    
                 if my_trades_open not in none_data:
                     my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
                     my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
@@ -617,12 +620,15 @@ class ApplyHedgingSpot:
                 send_buy_order_allowed =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
 
         if side == 'sell':
+    
+            if open_orders  in none_data:
+                order_sell_open_label_strategy = [] 
+            if my_trades_open  in none_data:
+                my_trade_sell_open_label_strategy = [] 
+
             if 'spotHedging' not in label_strategy:
                 if index_price > entry_price \
                     and index_price < invalidation_price:
-                    
-                    if open_orders  in none_data:
-                        order_sell_open_label_strategy = [] 
                     
                     if my_trades_open not in none_data:
                         my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
