@@ -526,7 +526,7 @@ class ApplyHedgingSpot:
         remain_exit_orders = determine_size_and_side ['remain_exit_orders']
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
-        self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
+        price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
 
         params_limit = {'instrument': trade_based_on_label_strategy['instrument'],
                     'side': side,
@@ -566,7 +566,7 @@ class ApplyHedgingSpot:
         if remain_main_orders != 0:
             params_limit.update(
                 {'size': remain_main_orders,
-                 'label': label_closed,
+                 'entry_price': price,
                  'label':label_numbering.labelling("open", strategy_label
                                                                         )
                         
