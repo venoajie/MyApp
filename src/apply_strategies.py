@@ -567,7 +567,7 @@ class ApplyHedgingSpot:
             params_limit.update(
                 {'size': remain_main_orders,
                  'label': label_closed,
-                 'label':label_numbering.labelling("open", label
+                 'label':label_numbering.labelling("open", strategy_label
                                                                         )
                         
                 }
