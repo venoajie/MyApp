@@ -557,7 +557,7 @@ class ApplyHedgingSpot:
         
         # formatting label: strategy & int
         strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-        #log.error (strategy_label)
+        log.error (strategy_attr)
         log.error (f'max_size {max_size}')
         get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
 
