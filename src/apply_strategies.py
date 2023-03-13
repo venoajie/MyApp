@@ -587,6 +587,7 @@ class ApplyHedgingSpot:
                                      open_orders: list) -> bool:
         """
         """
+        log.error (strategy)
         label_strategy = strategy ['strategy']
         entry_price = strategy['entry_price'] 
         side = strategy['side'] 
