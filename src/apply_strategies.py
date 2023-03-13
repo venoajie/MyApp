@@ -778,7 +778,7 @@ class ApplyHedgingSpot:
                                 "all_hedging_size"
                                 ]
                             log.error(f'min_position_size {min_position_size}')
-                            log.error(strategy["strategy"])
+                            log.error(strategy_attr["strategy"])
                             
                             exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
                                                                                 my_trades_open, 
