@@ -800,9 +800,11 @@ class ApplyHedgingSpot:
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
                             
+                    # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
                         
                         log.error (label)
+                        
                         label_mod = str_mod.get_strings_before_character(label,'-', 0)
                         
                         # get startegy details
@@ -811,7 +813,7 @@ class ApplyHedgingSpot:
                         instrument = [
                             o["instrument_name"] for o in my_trades_open if str_mod.get_strings_before_character(o["label"],'-', 0)  == label_mod
                         ][0]
-                        log.error (f'instrument AA {instrument}')
+                        #log.error (f'instrument AA {instrument}')
                             
                         ticker = await self.reading_from_db("ticker", instrument)
                         # get bid and ask price
@@ -855,8 +857,8 @@ class ApplyHedgingSpot:
                             min_position_size = check_spot_hedging[
                             "all_hedging_size"
                             ]
-                        log.error(f'min_position_size {min_position_size}')
-                        log.error(strategy_attr["strategy"])
+                        #log.error(f'min_position_size {min_position_size}')
+                        #log.error(strategy_attr["strategy"])
                         
                         exit_order_allowed = await self.is_send_exit_or_additional_order_allowed (label,
                                                                                                 my_trades_open, 
