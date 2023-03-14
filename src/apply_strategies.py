@@ -850,7 +850,9 @@ class ApplyHedgingSpot:
                             min_trade_amount,
                             contract_size,
                             strategy_attr['quantity_discrete']
-                        )    
+                        )  
+                        label_open_for_filter = f"{label_mod}-open"  
+                        log.error (f'label_open_for_filter {label_open_for_filter}')
                         adjusting_inventories = spot_hedged.adjusting_inventories(
                                             index_price,
                                             self.currency,
@@ -903,6 +905,7 @@ class ApplyHedgingSpot:
                     #execute each strategy
                     for strategy_attr in strategies:
 
+                        # result example: 'hedgingSpot'
                         label_strategy = strategy_attr ['strategy']
                         time_threshold: float = strategy_attr["halt_minute_before_reorder"] * one_minute
                         time_threshold_avg_up: float = time_threshold * 12 * 4
@@ -986,7 +989,9 @@ class ApplyHedgingSpot:
                                     actual_hedging_size = (
                                         spot_hedged.compute_actual_hedging_size()
                                     )
+                                    
 
+                                    # result: 'hedgingSpot-open'
                                     label_open_for_filter = f"{label_strategy}-open"
 
                                     log.debug(f"{label_strategy=} {label_open_for_filter=}")
