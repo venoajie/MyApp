@@ -482,7 +482,13 @@ class MyOrders ():
             len_open_order_label_strategy_type_market = []
             len_open_order_label_strategy_type_limit = []
             
-            if open_orders_from_db != []:
+            log.critical (label_basic_strategy)
+            log.warning (open_orders_from_db ==[])
+            log.warning (open_orders_from_db)
+            if open_orders_from_db ==[]:
+                order_type_market =  True
+            
+            else:
                     
                 # get open order with the respective strategy and order type take_limit
                     # to optimise the profit, using take_limit as order type default order
@@ -499,8 +505,6 @@ class MyOrders ():
                                                                                         'stop_market')
                 len_open_order_label_strategy_type_market = open_order_label_strategy_type_market ['len_transactions']
                 
-                log.critical (label_basic_strategy)
-                log.warning ('hedgingSpot' in label_basic_strategy)
                 log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
                 log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
                 
