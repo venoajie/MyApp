@@ -609,10 +609,18 @@ class ApplyHedgingSpot:
                                         label_open_for_filter,
                                     )
                     log.error (adjusting_inventories)   
-                    #await self.send_limit_order (params_limit)
-                    #await self.will_new_open_order_create_over_hedge(
-                    #                        strategy_label, net_sum_current_position, max_size
-                    #                    )
+                    params_limit.update(
+                {'size': adjusting_inventories['size_take_profit'],
+                 'entry_price': best_bid_prc,
+                 'label':adjusting_inventories['label_take_profit']
+                 }
+                )
+                    log.error (best_bid_prc < adjusting_inventories["take_profit"])   
+                    if best_bid_prc < adjusting_inventories["take_profit"]:
+                        await self.send_limit_order (params_limit)
+                        await self.will_new_open_order_create_over_hedge(
+                            strategy_label, net_sum_current_position, max_size
+                            )
             
         if remain_main_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
