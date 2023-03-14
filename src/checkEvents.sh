@@ -1,21 +1,21 @@
 #!/bin/bash
-@echo "SSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
+echo "SSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 
 python3 apply_strategies.py
-@echo "WWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+echo "WWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 
 rsync -partial -z   databases/exchanges/deribit/transactions/ ~/live/MyApp/local_recoveries/
 
 rsync -partial -z   databases/exchanges/deribit/portfolio/ ~/live/MyApp/local_recoveries/
-@echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
+echo "XXXXXXXXXXXXXXXXXXXXXXXXX"
 while inotifywait -r -e modify,create,delete,move databases/exchanges/deribit/transactions/; 
-@echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     do 
-    @echo "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    echo "BBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
     rsync -partial -z   databases/exchanges/deribit/transactions/ ~/live/MyApp/local_recoveries/
-    @echo "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+    echo "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
     rsync -partial -z   databases/exchanges/deribit/portfolio/ ~/live/MyApp/local_recoveries/
-    @echo "DDDDDDDDDDDDDDDDDDDDDDDDDD"
+    echo "DDDDDDDDDDDDDDDDDDDDDDDDDD"
     python3  apply_strategies.py
 
 done
