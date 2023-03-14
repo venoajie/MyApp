@@ -863,17 +863,17 @@ class ApplyHedgingSpot:
                     
 
                     #execute each strategy
-                    for strategy in strategies:
+                    for strategy_attr in strategies:
 
-                        label_strategy = strategy ['strategy']
-                        time_threshold: float = strategy["halt_minute_before_reorder"] * one_minute
+                        label_strategy = strategy_attr ['strategy']
+                        time_threshold: float = strategy_attr["halt_minute_before_reorder"] * one_minute
                         time_threshold_avg_up: float = time_threshold * 12 * 4
 
                         remain_unhedged = check_spot_hedging[
                             "remain_unhedged_size"
                         ]         
                         
-                        open_order_allowed = await self.is_open_main_order_allowed (strategy, 
+                        open_order_allowed = await self.is_open_main_order_allowed (strategy_attr, 
                                                                                 index_price, 
                                                                                 my_trades_open,
                                                                                 open_orders_open_byAPI
@@ -882,8 +882,16 @@ class ApplyHedgingSpot:
                          
                         label_closed: str = f"{label_strategy}-closed"
                         
+                        # determine position sizing-general strategy
+                        min_position_size: float = position_sizing.pos_sizing (
+                                                    strategy_attr ['take_profit_usd'],
+                                                    strategy_attr ['entry_price'], 
+                                                    notional, 
+                                                    strategy_attr ['equity_risked_pct']
+                                                    ) 
+                        
                         # add some extra params to strategy
-                        strategy.update(
+                        strategy_attr.update(
                             {'instrument': instrument,
                              'size':min_position_size,
                              'label_numbered':label_numbering.labelling("open", 
@@ -897,17 +905,17 @@ class ApplyHedgingSpot:
                                             
                                             
                         if open_order_allowed ['send_buy_order_allowed']:
-                            await self.send_combo_orders(strategy)
+                            await self.send_combo_orders(strategy_attr)
                             
                         if open_order_allowed ['send_sell_order_allowed']:
-                            await self.send_combo_orders(strategy)
+                            await self.send_combo_orders(strategy_attr)
                                 
                         # check for any order outstanding as per label filter
                         net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
-                            strategy['label_numbered']
+                            strategy_attr['label_numbered']
                         )
                     
-                        if "hedgingSpot" in strategy["strategy"]:
+                        if "hedgingSpot" in strategy_attr["strategy"]:
 
                             if open_order_mgt_filed_status_filed != []:
                                 open_order_filled_latest_timeStamp = max(
@@ -971,7 +979,7 @@ class ApplyHedgingSpot:
                                             "sell",
                                             instrument,
                                             abs(check_spot_hedging["hedging_size"]),
-                                            strategy['label_numbered'],
+                                            strategy_attr['label_numbered'],
                                             best_ask_prc,
                                         )
                                         log.warning(order_result)
@@ -994,8 +1002,8 @@ class ApplyHedgingSpot:
                                         adjusting_inventories = spot_hedged.adjusting_inventories(
                                             index_price,
                                             self.currency,
-                                            strategy["take_profit_pct"],
-                                            strategy["averaging"],
+                                            strategy_attr["take_profit_pct"],
+                                            strategy_attr["averaging"],
                                             label_open_for_filter,
                                         )
                                         bid_prc_is_lower_than_buy_price = (
@@ -1014,7 +1022,7 @@ class ApplyHedgingSpot:
                                         )
 
                                         log.info(
-                                            f" {strategy['label_numbered']=} {bid_prc_is_lower_than_buy_price=} \
+                                            f" {strategy_attr['label_numbered']=} {bid_prc_is_lower_than_buy_price=} \
                                             {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
                                                 {best_ask_prc=}"
                                         )
@@ -1057,7 +1065,7 @@ class ApplyHedgingSpot:
                                                 "sell",
                                                 instrument,
                                                 check_spot_hedging["average_up_size"],
-                                                strategy['label_numbered'],
+                                                strategy_attr['label_numbered'],
                                                 best_ask_prc,
                                             )
                                             log.warning(order_result)
