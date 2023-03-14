@@ -610,38 +610,29 @@ class ApplyHedgingSpot:
         send_sell_order_allowed = False
         send_buy_order_allowed  = False
                 
-        if side == 'buy' \
-            and index_price < entry_price \
-                and index_price > invalidation_price:
+        if side == 'buy'  :
                 
-                if open_orders  in none_data:
-                    order_buy_open_label_strategy = [] 
-                 
-                if my_trades_open  in none_data:
-                    my_trade_buy_open_label_strategy = [] 
-                    
-                if my_trades_open not in none_data:
-                    my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
-                    my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
+            order_buy_open_label_strategy = []     
+            my_trade_buy_open_label_strategy = [] 
                 
-                if open_orders not in none_data:
-                    order_buy_open = [o  for o in open_orders if o['direction'] == 'buy'] 
-                    order_buy_open_label_strategy = [o  for o in order_buy_open if label_strategy in o['label']] 
+            if my_trades_open not in none_data:
+                my_trade_buy_open = [o  for o in my_trades_open if o['direction'] == 'buy'] 
+                my_trade_buy_open_label_strategy = [o  for o in my_trade_buy_open if label_strategy in o['label']] 
+            
+            if open_orders not in none_data:
+                order_buy_open = [o  for o in open_orders if o['direction'] == 'buy'] 
+                order_buy_open_label_strategy = [o  for o in order_buy_open if label_strategy in o['label']] 
                     
-                send_buy_order_allowed =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
+            order_and_position_buy_ok =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
+            market_buy_ok =  index_price < entry_price \
+                and index_price > invalidation_price
 
         if side == 'sell':
             
-    
             order_sell_open_label_strategy = [] 
             my_trade_sell_open_label_strategy = [] 
-            log.error (my_trades_open)
-            log.warning (my_trades_open not in none_data)
-            log.warning (open_orders not in none_data)
-            
            
             if 'hedgingSpot' not in label_strategy:
-
                 
                 if my_trades_open not in none_data:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
@@ -657,17 +648,13 @@ class ApplyHedgingSpot:
             else:
                 pass
             
-            order_and_position_ok =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
-            market_ok =  index_price > entry_price \
+            order_and_position_sell_ok =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
+            market_sell_ok =  index_price > entry_price \
                     and index_price < invalidation_price
-                
 
-            log.critical (send_sell_order_allowed)
-            log.critical (my_trade_sell_open_label_strategy in none_data)
-            log.critical (order_sell_open_label_strategy  in none_data)
             
-        return {'send_buy_order_allowed': send_buy_order_allowed,
-                'send_sell_order_allowed': order_and_position_ok and market_ok}
+        return {'send_buy_order_allowed': order_and_position_buy_ok and market_buy_ok,
+                'send_sell_order_allowed': order_and_position_sell_ok and market_sell_ok}
         
     async def running_strategy(self, server_time) -> float:
         """
