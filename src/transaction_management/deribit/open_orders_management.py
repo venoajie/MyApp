@@ -406,9 +406,9 @@ class MyOrders ():
                 }
     
     def determine_order_size_and_side_for_outstanding_transactions (self, 
-                                 max_size: int, 
-                                 strategy_from_outstanding_transactions: str,
-                                 net_sum_current_position: int) -> None:
+                                                                    max_size: int, 
+                                                                    strategy_label_from_outstanding_transactions: str,
+                                                                    net_sum_current_position: int) -> None:
 
         """
         Determine order size based on current position size vs current position
@@ -418,7 +418,7 @@ class MyOrders ():
             
         Args:
             net_sum_current_position (int): sum myTradebuy - sum myTradesell
-            strategy_from_outstanding_transactions (str): taken from o/s my trades label (format example = supplyDemandShort60)
+            strategy_label_from_outstanding_transactions (str): taken from o/s my trades label (format example = supplyDemandShort60)
 
         Returns:
             dict
@@ -432,10 +432,12 @@ class MyOrders ():
         strategies = entries_exits.strategies
         
         try:     
-            basic_strategy = str_mod.get_strings_before_character(strategy_from_outstanding_transactions,'-', 0) 
+            basic_strategy = str_mod.get_strings_before_character(strategy_label_from_outstanding_transactions,'-', 0) 
             side_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['side']
             label_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['strategy']
             order_type_market =  False
+            log.warning (f'basic_strategy {basic_strategy}')
+            log.warning (f'label_basic_strategy {label_basic_strategy}')
 
             if side_basic_strategy == 'sell':
                 
