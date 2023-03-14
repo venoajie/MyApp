@@ -850,7 +850,15 @@ class ApplyHedgingSpot:
                             min_trade_amount,
                             contract_size,
                             strategy_attr['quantity_discrete']
-                        )       
+                        )    
+                        adjusting_inventories = spot_hedged.adjusting_inventories(
+                                            index_price,
+                                            self.currency,
+                                            strategy_attr["take_profit_pct"],
+                                            strategy_attr["averaging"],
+                                            label_open_for_filter,
+                                        )
+                        log.error (adjusting_inventories)   
                                         
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
