@@ -530,6 +530,8 @@ class ApplyHedgingSpot:
         
         log.error (f'remain_exit_orders {remain_exit_orders}')
         log.warning (f'remain_main_orders {remain_main_orders}')
+        log.warning (f'side {side}')
+        log.debug (determine_size_and_side['order_type_market'])
         
         if side !=None:
             price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
@@ -546,6 +548,8 @@ class ApplyHedgingSpot:
             
         if remain_exit_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
+            log.warning (f'label_mod {label_mod}')
+            log.debug (determine_size_and_side['order_type_market'])
         
             # no order type market for hedging spot
             if "hedgingSpot" not in label_mod \
@@ -568,6 +572,12 @@ class ApplyHedgingSpot:
                         'type': 'limit'
                         }
                     
+                if "hedgingSpot" not in label_mod and no_limit_open_order_outstanding:
+                    await self.send_limit_order (params_limit)
+                    await self.will_new_open_order_create_over_hedge(
+                                            strategy_label, net_sum_current_position, max_size
+                                        )
+            
                 if False and "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
                     await self.send_limit_order (params_limit)
                     await self.will_new_open_order_create_over_hedge(
