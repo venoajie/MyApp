@@ -438,6 +438,7 @@ class MyOrders ():
             order_type_market =  False
             log.warning (f'basic_strategy {basic_strategy}')
             log.warning (f'label_basic_strategy {label_basic_strategy}')
+            log.warning (f'strategy_label_from_outstanding_transactions {strategy_label_from_outstanding_transactions}')
 
             if side_basic_strategy == 'sell':
                 
