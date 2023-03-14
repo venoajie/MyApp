@@ -635,6 +635,9 @@ class ApplyHedgingSpot:
     
             order_sell_open_label_strategy = [] 
             my_trade_sell_open_label_strategy = [] 
+            log.error (my_trades_open)
+            log.warning (my_trades_open not in none_data)
+            log.warning (open_orders not in none_data)
             
            
             if 'hedgingSpot' not in label_strategy:
@@ -642,7 +645,7 @@ class ApplyHedgingSpot:
                 if index_price > entry_price \
                     and index_price < invalidation_price:
                     
-                    log.error (my_trades_open)
+                    
                         
                     
                     if my_trades_open not in none_data:
@@ -659,10 +662,12 @@ class ApplyHedgingSpot:
             else:
                 pass
             
-            log.critical (my_trade_sell_open_label_strategy in none_data)
-            log.critical (order_sell_open_label_strategy  in none_data)
             send_sell_order_allowed =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
 
+            log.critical (send_sell_order_allowed)
+            log.critical (my_trade_sell_open_label_strategy in none_data)
+            log.critical (order_sell_open_label_strategy  in none_data)
+            
         return {'send_buy_order_allowed': send_buy_order_allowed,
                 'send_sell_order_allowed': send_sell_order_allowed}
         
