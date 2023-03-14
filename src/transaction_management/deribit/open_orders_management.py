@@ -431,11 +431,18 @@ class MyOrders ():
         
         strategies = entries_exits.strategies
         
-        try:     
+        try:
+            # result: 'hedgingSpot'/'supplyDemandShort60'     
             basic_strategy = str_mod.get_strings_before_character(strategy_label_from_outstanding_transactions,'-', 0) 
+            
             side_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['side']
+            
+            # result: 'hedgingSpot'/'supplyDemandShort60'     
             label_basic_strategy = [o for o in strategies if basic_strategy in o['strategy'] ][0]['strategy']
+            
+            # default result for order_type_market
             order_type_market =  False
+            
             log.warning (f'basic_strategy {basic_strategy}')
             log.warning (f'label_basic_strategy {label_basic_strategy}')
             log.warning (f'strategy_label_from_outstanding_transactions {strategy_label_from_outstanding_transactions}')
@@ -486,7 +493,7 @@ class MyOrders ():
             len_open_order_label_strategy_type_limit = []
             
             log.critical (label_basic_strategy)
-            log.warning (open_orders_from_db ==[])
+            #log.warning (open_orders_from_db ==[])
             #log.warning (open_orders_from_db)
             if open_orders_from_db ==[]:
                 order_type_market =  True
@@ -508,9 +515,9 @@ class MyOrders ():
                                                                                         'stop_market')
                 len_open_order_label_strategy_type_market = open_order_label_strategy_type_market ['len_transactions']
                 
-                log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
-                log.warning ('hedgingSpot' in label_basic_strategy)
-                log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market == []}')
+                #log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
+                #log.warning ('hedgingSpot' in label_basic_strategy)
+                #log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market == []}')
                 #log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market < 1}')
                 
                 order_type_market =  False if 'hedgingSpot' in label_basic_strategy \
