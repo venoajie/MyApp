@@ -1,6 +1,8 @@
 #!/bin/bash
+@echo "SSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
 
 python3 apply_strategies.py
+@echo "WWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 
 rsync -partial -z   databases/exchanges/deribit/transactions/ ~/live/MyApp/local_recoveries/
 
