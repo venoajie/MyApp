@@ -652,7 +652,7 @@ class ApplyHedgingSpot:
                 pass
             
             order_and_position_sell_ok =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
-            market_sell_ok =  index_price > entry_price \
+            market_sell_ok =  False if  'hedgingSpot'  in label_strategy else index_price > entry_price \
                     and index_price < invalidation_price
 
             
