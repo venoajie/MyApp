@@ -555,22 +555,23 @@ class ApplyHedgingSpot:
             if "hedgingSpot" not in label_mod \
                 and determine_size_and_side['order_type_market']:
                     
-                params = {'instrument': trade_based_on_label_strategy['instrument'],
-                'size': determine_size_and_side ['remain_exit_orders'],
-                'label': label_closed,
-                'take_profit_usd': strategy_attr ['take_profit_usd'],
-                'type': 'stop_market'
-                }
-                await self.send_limit_order (params)
+                params_market.update(
+                {'size': determine_size_and_side ['remain_exit_orders'],
+                'cut_loss_usd': strategy_attr ['cut_loss_usd'],
+                 'label':label_closed
+                 }
+                )
+                
+                await self.send_market_order (params_market)
             
             if determine_size_and_side['order_type_limit']:
                 
-                params = {'instrument': trade_based_on_label_strategy['instrument'],
-                        'size': determine_size_and_side ['remain_exit_orders'],
-                        'take_profit_usd': strategy_attr ['take_profit_usd'],
-                        'label': label_closed,
-                        'type': 'limit'
-                        }
+                params_limit.update(
+                {'size': determine_size_and_side ['remain_exit_orders'],
+                 'take_profit_usd': strategy_attr ['take_profit_usd'],
+                 'label':label_closed
+                 }
+                )
                     
                 if "hedgingSpot" not in label_mod and no_limit_open_order_outstanding:
                     await self.send_limit_order (params_limit)
