@@ -509,7 +509,9 @@ class MyOrders ():
                 len_open_order_label_strategy_type_market = open_order_label_strategy_type_market ['len_transactions']
                 
                 log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
-                log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
+                log.warning ('hedgingSpot' in label_basic_strategy)
+                log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market == []}')
+                log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market < 1}')
                 
                 order_type_market =  False if 'hedgingSpot' in label_basic_strategy \
                     else True if len_open_order_label_strategy_type_market == [] \
