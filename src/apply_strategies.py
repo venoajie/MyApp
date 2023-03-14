@@ -642,20 +642,25 @@ class ApplyHedgingSpot:
                 if index_price > entry_price \
                     and index_price < invalidation_price:
                     
+                    log.error (my_trades_open)
+                        
+                    
                     if my_trades_open not in none_data:
                         my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
                         log.debug (my_trade_sell_open)
                         my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
                         log.warning (my_trade_sell_open_label_strategy)
-                        log.critical (my_trade_sell_open_label_strategy in none_data)
 
                     if open_orders not in none_data:
                         order_sell_open = [o  for o in open_orders if o['direction'] == 'sell'] 
                         order_sell_open_label_strategy = [o  for o in order_sell_open if label_strategy in o['label']] 
+                        log.warning (order_sell_open_label_strategy)
                     
             else:
                 pass
             
+            log.critical (my_trade_sell_open_label_strategy in none_data)
+            log.critical (order_sell_open_label_strategy  in none_data)
             send_sell_order_allowed =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
 
         return {'send_buy_order_allowed': send_buy_order_allowed,
