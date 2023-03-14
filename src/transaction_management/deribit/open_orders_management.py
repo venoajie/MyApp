@@ -487,7 +487,7 @@ class MyOrders ():
             
             log.critical (label_basic_strategy)
             log.warning (open_orders_from_db ==[])
-            log.warning (open_orders_from_db)
+            #log.warning (open_orders_from_db)
             if open_orders_from_db ==[]:
                 order_type_market =  True
             
