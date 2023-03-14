@@ -508,15 +508,15 @@ class ApplyHedgingSpot:
         
         # formatting label: strategy & int
         strategy_label = str_mod.get_strings_before_character (label,'-', 0)
-        log.error (strategy_attr)
-        log.error (f'max_size {max_size}')
+        log.debug (strategy_attr)
+        
         get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
 
         label_closed= f'{strategy_label}-closed-{get_strategy_int}'
             
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
         net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
-        log.error (f'net_sum_current_position {net_sum_current_position}')
+        #log.error (f'net_sum_current_position {net_sum_current_position}')
 
         determine_size_and_side = open_orders.determine_order_size_and_side_for_outstanding_transactions(
                                                                                                     max_size, 
@@ -527,11 +527,16 @@ class ApplyHedgingSpot:
         remain_main_orders = abs(determine_size_and_side ['remain_main_orders'])
         remain_exit_orders =  abs(determine_size_and_side ['remain_exit_orders'])
         no_limit_open_order_outstanding =  (determine_size_and_side ['no_limit_open_order_outstanding'])
-        
-        log.error (f'remain_exit_orders {remain_exit_orders}')
-        log.warning (f'remain_main_orders {remain_main_orders}')
-        log.warning (f'side {side}')
-        log.debug (determine_size_and_side['order_type_market'])
+
+        #!#################################
+        if 'supplyDemandShort60' in strategy_label ['strategy']:
+            log.warning (f'side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}')
+            log.warning (determine_size_and_side['order_type_market'])
+        else:
+            log.error (f'side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}')
+            log.error (determine_size_and_side['order_type_market'])
+
+        #!#################################
         
         if side !=None:
             price = self.optimising_exit_price (side, best_bid_prc, best_ask_prc, None )
@@ -545,11 +550,19 @@ class ApplyHedgingSpot:
                     'side': side,
                     'type': 'stop_market'
                     }
-            
+        
+        # check exit order     
         if remain_exit_orders != 0:
+            # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
-            log.warning (f'label_mod {label_mod}')
+            
+            #!#################################
+            if label_mod == 'supplyDemandShort60':
+                log.warning (f'label_mod {label_mod}')
+            else:
+                log.error (f'label_mod {label_mod}')
             log.debug (determine_size_and_side['order_type_market'])
+            #!#################################
         
             # no order type market for hedging spot
             if "hedgingSpot" not in label_mod \
