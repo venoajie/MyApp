@@ -508,6 +508,7 @@ class ApplyHedgingSpot:
         
         # formatting label: strategy & int
         strategy_label = str_mod.get_strings_before_character (label,'-', 0)
+        log.debug (strategy_label)
         log.debug (strategy_attr)
         
         get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
@@ -529,7 +530,7 @@ class ApplyHedgingSpot:
         no_limit_open_order_outstanding =  (determine_size_and_side ['no_limit_open_order_outstanding'])
 
         #!#################################
-        if 'supplyDemandShort60' in strategy_label ['strategy']:
+        if 'supplyDemandShort60' in strategy_attr ['strategy']:
             log.warning (f'side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}')
             log.warning (determine_size_and_side['order_type_market'])
         else:
