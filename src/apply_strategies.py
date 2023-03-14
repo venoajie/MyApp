@@ -607,9 +607,12 @@ class ApplyHedgingSpot:
         none_data = [None, 0, []]
         
         # prepare default result to avoid unassociated value
-        send_sell_order_allowed = False
-        send_buy_order_allowed  = False
+        order_and_position_buy_ok = False
+        market_buy_ok  = False
+        order_and_position_sell_ok = False
+        market_sell_ok  = False
                 
+            
         if side == 'buy'  :
                 
             order_buy_open_label_strategy = []     
@@ -622,9 +625,9 @@ class ApplyHedgingSpot:
             if open_orders not in none_data:
                 order_buy_open = [o  for o in open_orders if o['direction'] == 'buy'] 
                 order_buy_open_label_strategy = [o  for o in order_buy_open if label_strategy in o['label']] 
-                    
-        order_and_position_buy_ok =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
-        market_buy_ok =  index_price < entry_price \
+                        
+            order_and_position_buy_ok =  my_trade_buy_open_label_strategy in none_data and order_buy_open_label_strategy  in none_data
+            market_buy_ok =  index_price < entry_price \
                 and index_price > invalidation_price
 
         if side == 'sell':
