@@ -500,6 +500,8 @@ class ApplyHedgingSpot:
                                                             open_orders: object, 
                                                             strategy_attr, 
                                                             max_size,
+                                                            spot_hedged,
+                                                            index_price,
                                                             best_bid_prc,
                                                             best_ask_prc
                                                             ) -> None:
@@ -595,11 +597,22 @@ class ApplyHedgingSpot:
                                             strategy_label, net_sum_current_position, max_size
                                         )
             
-                if False and "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
-                    await self.send_limit_order (params_limit)
-                    await self.will_new_open_order_create_over_hedge(
-                                            strategy_label, net_sum_current_position, max_size
-                                        )
+                if   "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
+                
+                    label_open_for_filter = f"{label_mod}-open"  
+                    log.error (f'label_open_for_filter {label_open_for_filter}')
+                    adjusting_inventories = spot_hedged.adjusting_inventories(
+                                        index_price,
+                                        self.currency,
+                                        strategy_attr["take_profit_pct"],
+                                        strategy_attr["averaging"],
+                                        label_open_for_filter,
+                                    )
+                    log.error (adjusting_inventories)   
+                    #await self.send_limit_order (params_limit)
+                    #await self.will_new_open_order_create_over_hedge(
+                    #                        strategy_label, net_sum_current_position, max_size
+                    #                    )
             
         if remain_main_orders != 0:
             label_mod = str_mod.get_strings_before_character(label,'-', 0)
@@ -851,16 +864,6 @@ class ApplyHedgingSpot:
                             contract_size,
                             strategy_attr['quantity_discrete']
                         )  
-                        label_open_for_filter = f"{label_mod}-open"  
-                        log.error (f'label_open_for_filter {label_open_for_filter}')
-                        adjusting_inventories = spot_hedged.adjusting_inventories(
-                                            index_price,
-                                            self.currency,
-                                            strategy_attr["take_profit_pct"],
-                                            strategy_attr["averaging"],
-                                            label_open_for_filter,
-                                        )
-                        log.error (adjusting_inventories)   
                                         
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
@@ -875,6 +878,8 @@ class ApplyHedgingSpot:
                                                                                                 open_order_mgt, 
                                                                                                 strategy_attr, 
                                                                                                 min_position_size,
+                                                                                                spot_hedged,
+                                                                                                index_price,
                                                                                                 best_bid_prc,
                                                                                                 best_ask_prc
                                                                                                 )
