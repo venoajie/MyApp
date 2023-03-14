@@ -512,7 +512,7 @@ class ApplyHedgingSpot:
         log.error (f'max_size {max_size}')
         get_strategy_int = str_mod.get_strings_before_character (label,'-', 1)            
 
-        label_closed= f'{label}-closed-{get_strategy_int}'
+        label_closed= f'{strategy_label}-closed-{get_strategy_int}'
             
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy (open_trade, strategy_label)
         net_sum_current_position = trade_based_on_label_strategy ['net_sum_order_size']
