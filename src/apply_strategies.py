@@ -227,14 +227,9 @@ class ApplyHedgingSpot:
             "portfolio", self.currency
         )
 
-        symbol_index: str = f"{self.currency}_usd"
-        path_index: str = system_tools.provide_path_for_file("index", symbol_index)
         ticker_perpetual: list = await self.reading_from_db(
             "ticker", f"{(self.currency).upper()}-PERPETUAL"
         )
-        symbol_index: str = f"{self.currency}_usd"
-        path_index: str = system_tools.provide_path_for_file("index", symbol_index)
-        index_price: list = pickling.read_data(path_index)
         path_positions: str = system_tools.provide_path_for_file(
             "positions", self.currency
         )
@@ -266,7 +261,6 @@ class ApplyHedgingSpot:
             "open_orders_from_sub_account": open_orders_from_sub_account,
             "portfolio": portfolio,
             "ticker_perpetual": ticker_perpetual[0],
-            "index_price": index_price[0]["price"],
             "price_index": ticker_perpetual[0],
         }
 
@@ -728,17 +722,8 @@ class ApplyHedgingSpot:
             # get portfolio data
             portfolio: list = reading_from_database["portfolio"]
 
-            # obtain spot equity
-            equity: float = portfolio[0]["equity"]
-
-            # index price
-            index_price: float = reading_from_database["index_price"]
-            
-            # compute notional value
-            notional: float = await self.compute_notional_value(index_price, equity)
-
             # to avoid error if index price/portfolio = []/None
-            if index_price and portfolio:
+            if  portfolio:
 
                 one_minute: int = 60000  # one minute in millisecond
                 none_data: None = [0, None, []]  # to capture none
@@ -848,12 +833,20 @@ class ApplyHedgingSpot:
                             
                         ticker = await self.reading_from_db("ticker", instrument)
                                         
+                        # index price
+                        index_price: float = ticker[0]["index_price"]
+                        
                         log.critical (f'index_price {index_price}')
                         log.warning (f'ticker {ticker}')
                         # get bid and ask price
                         best_bid_prc = ticker[0]["best_bid_price"]
                         best_ask_prc = ticker[0]["best_ask_price"]
 
+                        # obtain spot equity
+                        equity: float = portfolio[0]["equity"]
+
+                        # compute notional value
+                        notional: float = await self.compute_notional_value(index_price, equity)
                         #! get instrument attributes detail
                         instrument_data: dict = [
                             o for o in instruments if o["instrument_name"] == instrument
