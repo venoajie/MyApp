@@ -199,12 +199,6 @@ class ApplyHedgingSpot:
             "sub_accounts", self.currency
         )
 
-        path_trades_open: str = system_tools.provide_path_for_file(
-            "myTrades", self.currency, "open"
-        )
-
-        my_trades_open: str = pickling.read_data(path_trades_open)
-
         path_orders_open: str = system_tools.provide_path_for_file(
             "orders", self.currency, "open"
         )
@@ -243,7 +237,6 @@ class ApplyHedgingSpot:
             portfolio = pickling.read_data(path_portfolio)
 
         return {
-            "my_trades_open": [] if my_trades_open in none_data else my_trades_open,
             "open_orders_open_byAPI": pickling.read_data(path_orders_open),
             "open_orders_filled_byAPI": pickling.read_data(path_orders_filled),
             "positions": positions,
@@ -718,11 +711,9 @@ class ApplyHedgingSpot:
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"]
-
-                my_trades_open: list = await self.reading_from_db("myTrades", self.currency, "open")
-                log.error (my_trades_open)
+                
                 # my trades data
-                my_trades_open: list = reading_from_database["my_trades_open"]
+                my_trades_open: list = await self.reading_from_db("myTrades", self.currency, "open")
                 log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
