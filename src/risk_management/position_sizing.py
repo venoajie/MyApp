@@ -22,3 +22,13 @@ def pos_sizing (target_price: float,
                 )-> float:
     
     return int(abs((max_loss_allowed (capital, pct_loss) / price_difference (entry_price, target_price))))
+
+
+def compute_delta (notional: float, total_long: int, total_short: int)-> float:
+    
+    return (notional + total_long + total_short) /notional
+
+
+def compute_leverage (notional: float, total_long: int, total_short: int)-> float:
+    
+    return (total_long + abs(total_short))/notional
