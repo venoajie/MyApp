@@ -105,14 +105,6 @@ class ApplyHedgingSpot:
 
         return result
 
-    async def get_my_trades_from_exchange(self, count: int = 1000) -> list:
-        """
-        """
-        private_data = await self.get_private_data()
-        trades: list = await private_data.get_user_trades_by_currency(count)
-
-        return [] if trades == [] else trades["result"]["trades"]
-
     async def get_account_summary(self) -> list:
         """
         """
@@ -141,7 +133,7 @@ class ApplyHedgingSpot:
         label: str = None,
         prc: float = None,
         type: str = "limit",
-        trigger_price: float = None,
+        trigger_price: float = None
     ) -> None:
         """
         """
@@ -183,10 +175,8 @@ class ApplyHedgingSpot:
 
     def compute_position_leverage_and_delta (self, notional: float, my_trades_open: float)-> float:
         total_long = 0 if my_trades_open == [] else sum([o['amount']  for o in my_trades_open if o['direction'] == 'buy'])
-        log.error (total_long)
         
         total_short = 0 if my_trades_open == [] else sum([o['amount']  for o in my_trades_open if o['direction'] == 'sell']) * -1       
-        log.error (total_short)
         
         return {'delta':position_sizing.compute_delta (notional, total_long, total_short),
                 'leverage':position_sizing.compute_leverage (notional, total_long, total_short)}
@@ -554,8 +544,7 @@ class ApplyHedgingSpot:
     
         params_market = {'instrument': trade_based_on_label_strategy['instrument'],
                     'side': side,
-                    'type': 'stop_market'
-                    }
+                    'type': 'stop_market'}
         
         # check exit order     
         if remain_exit_orders != 0:
@@ -634,9 +623,9 @@ class ApplyHedgingSpot:
             log.warning (params_limit)
             if "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
                 await self.send_limit_order (params_limit)
-                await self.will_new_open_order_create_over_hedge(
-                                        strategy_label, net_sum_current_position, max_size
-                                    )
+                await self.will_new_open_order_create_over_hedge(strategy_label, 
+                                                                 net_sum_current_position, max_size
+                                                                 )
             
         return determine_size_and_side#               
                         
@@ -661,7 +650,6 @@ class ApplyHedgingSpot:
         order_and_position_sell_ok = False
         market_sell_ok  = False
                 
-            
         if side == 'buy'  :
                 
             order_buy_open_label_strategy = []     
@@ -726,14 +714,16 @@ class ApplyHedgingSpot:
             if  portfolio:
 
                 one_minute: int = 60000  # one minute in millisecond
-                none_data: None = [0, None, []]  # to capture none
+                #none_data: None = [0, None, []]  # to capture none
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"]
 
+                my_trades_open: list = await self.reading_from_db("myTrades", self.currency, "open")
+                log.error (my_trades_open)
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                #log.warning (my_trades_open)
+                log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
@@ -765,9 +755,7 @@ class ApplyHedgingSpot:
                 #!################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class 
-                my_trades_open_mgt: object = myTrades_management.MyTrades(
-                    my_trades_open
-                )
+                my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
 
                 # Creating an instance of the open order  class 
                 open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
@@ -775,31 +763,26 @@ class ApplyHedgingSpot:
                 #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
 
                 # open order integrity
-                await self.check_open_orders_integrity(
-                    open_orders_from_sub_account_get, open_orders_open_byAPI
-                )
+                await self.check_open_orders_integrity(open_orders_from_sub_account_get, 
+                                                       open_orders_open_byAPI
+                                                       )
 
                 # open trade integrity
-                await self.check_myTrade_integrity(
-                    positions, my_trades_open, server_time
-                )
+                await self.check_myTrade_integrity(positions, 
+                                                   my_trades_open, 
+                                                   server_time
+                                                   )
 
-                await self.search_and_drop_orphan_closed_orders(
-                    open_order_mgt, my_trades_open_mgt
-                )
+                await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
                 
                 #! END OF CHECK BALANCE AND TRANSACTIONS INTEGRITY.
 
                 # obtain all closed labels in open orders
                 label_closed = open_order_mgt.open_orderLabelCLosed()
 
-                open_order_mgt_filed = open_orders_management.MyOrders(
-                    open_orders_filled_byAPI
-                )
+                open_order_mgt_filed = open_orders_management.MyOrders(open_orders_filled_byAPI)
 
-                open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status(
-                    "filled"
-                )
+                open_order_mgt_filed_status_filed = open_order_mgt_filed.open_orders_status("filled")
                 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies                
@@ -825,15 +808,12 @@ class ApplyHedgingSpot:
                         instrument = [
                             o["instrument_name"] for o in my_trades_open if str_mod.get_strings_before_character(o["label"],'-', 0)  == label_mod
                         ][0]
-                        #log.error (f'instrument AA {instrument}')
                             
                         ticker = await self.reading_from_db("ticker", instrument)
                                         
                         # index price
                         index_price: float = ticker[0]["index_price"]
                         
-                        log.critical (f'index_price {index_price}')
-                        log.warning (f'ticker {ticker}')
                         # get bid and ask price
                         best_bid_prc = ticker[0]["best_bid_price"]
                         best_ask_prc = ticker[0]["best_ask_price"]
