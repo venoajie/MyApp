@@ -97,7 +97,7 @@ class StreamAccountData:
             self.loop.create_task(
                 self.ws_operation(
                     operation="subscribe",
-                    ws_channel=f"user.changes.any.{currency.upper()}.100ms",
+                    ws_channel=f"user.changes.any.{currency.upper()}.raw",
                 )
             )
             while self.websocket_client.open:
