@@ -626,7 +626,7 @@ class ApplyHedgingSpot:
                                      open_orders: list) -> bool:
         """
         """
-        log.error (strategy)
+        #log.error (strategy)
         label_strategy = strategy ['strategy']
         entry_price = strategy['entry_price'] 
         side = strategy['side'] 
@@ -814,8 +814,8 @@ class ApplyHedgingSpot:
                         # compute notional value
                         notional: float = await self.compute_notional_value(index_price, equity)
                                 
-                        leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
-                        log.warning (leverage_and_delta)
+                        #leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
+                        #log.warning (leverage_and_delta)
                         
                         #! get instrument attributes detail
                         instrument_data: dict = [
