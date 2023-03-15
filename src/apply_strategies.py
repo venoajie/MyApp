@@ -786,9 +786,11 @@ class ApplyHedgingSpot:
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
                         
-                        log.error (label)
+                        log.warning (label)
                         
                         label_mod = str_mod.get_strings_before_character(label,'-', 0)
+                        log.error (label_mod)
+                        log.error (strategy_labels)
                         
                         # get startegy details
                         strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
