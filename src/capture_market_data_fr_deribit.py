@@ -30,27 +30,6 @@ class StreamMarketData:
     +----------------------------------------------------------------------------------------------+ 
     #  References: 
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
-        + https://niekdeschipper.com/projects/asyncio.md
-        + https://stackoverflow.com/questions/40143289/why-do-most-asyncio-examples-use-loop-run-until-complete
-        + https://realpython.com/async-io-python/
-        + https://www.youtube.com/watch?v=ZzfHjytDceU
-        + https://stackoverflow.com/questions/71279168/how-to-stop-python-websocket-connection-after-some-seconds
-        + https://alpaca.markets/learn/advanced-live-websocket-crypto-data-streams-in-python/
-        + https://sammchardy.github.io/async-binance-basics/
-        + https://github.com/SilverBeavers/deribit_testnet_copy_trader/blob/main/deribit_ws.py
-        + https://trading-data-analysis.pro/understanding-crypto-trading-order-book-and-depth-graphs-data-1bb2adc32976
-        + https://pratham1202.medium.com/python-for-finance-5-efficient-frontier-and-creating-an-optimal-portfolio-4f4
-        
-        Multiprocessing:
-        + https://towardsdatascience.com/applying-python-multiprocessing-in-2-lines-of-code-3ced521bac8f
-        + https://blog.devgenius.io/running-multiple-functions-at-once-in-python-using-the-multiprocessing-module-4c1fe3ed9878
-        + https://stackoverflow.com/questions/27435284/multiprocessing-vs-multithreading-vs-asyncio
-        + https://stackoverflow.com/questions/61351844/difference-between-multiprocessing-asyncio-threading-and-concurrency-futures-i
-        + https://medium.com/analytics-vidhya/asyncio-threading-and-multiprocessing-in-python-4f5ff6ca75e8
-        
-        Basic:
-        + https://websockets.readthedocs.io/en/6.0/intro.html
-        + https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     +----------------------------------------------------------------------------------------------+ 
 
     """
@@ -106,12 +85,12 @@ class StreamMarketData:
             instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
             instruments_name: list = [o["instrument_name"] for o in instruments_kind]
 
-            self.loop.create_task(
-                self.ws_operation(
-                    operation="subscribe",
-                    ws_channel=f"deribit_price_index.{currency.lower()}_usd",
-                )
-            )
+            #self.loop.create_task(
+            #    self.ws_operation(
+            #        operation="subscribe",
+            #        ws_channel=f"deribit_price_index.{currency.lower()}_usd",
+            #    )
+            #)
 
             for instrument in instruments_name:
 
@@ -243,10 +222,6 @@ class StreamMarketData:
                                             my_path_futures_analysis, tickers, 100
                                         )
 
-                                        # ticker_all: list = pickling.read_data(my_path_ticker_all)
-
-                                        # log.critical (ticker_all)
-
                             except Exception as error:
                                 system_tools.catch_error_message(error)
                                 system_tools.catch_error_message(
@@ -254,34 +229,6 @@ class StreamMarketData:
                                 )
 
                                 continue
-
-                        #! freezed
-                        # instrument_book = "".join(list(message_channel) [5:][:-14])
-                        if (
-                            False
-                            and message_channel
-                            == f"book.{instrument_book}.none.20.100ms"
-                        ):
-
-                            my_path = system_tools.provide_path_for_file(
-                                "ordBook", instrument_book
-                            )
-
-                            try:
-                                pickling.append_and_replace_items_based_on_time_expiration(
-                                    my_path, data_orders, one_minute
-                                )
-                            except:
-                                continue
-
-                        symbol_index = (message_channel)[-7:]
-                        if message_channel == f"deribit_price_index.{symbol_index}":
-
-                            my_path = system_tools.provide_path_for_file(
-                                "index", symbol_index.lower()
-                            )
-
-                            pickling.replace_data(my_path, data_orders)
 
             else:
                 log.info("WebSocket connection has broken.")
