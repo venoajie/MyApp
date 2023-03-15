@@ -668,12 +668,12 @@ class ApplyHedgingSpot:
                     my_trade_sell_open =  [o  for o in my_trades_open if o['direction'] == 'sell'] 
                     #log.debug (my_trade_sell_open)
                     my_trade_sell_open_label_strategy = [o  for o in my_trade_sell_open if label_strategy in o['label']] 
-                    log.warning (my_trade_sell_open_label_strategy)
+                    #log.warning (my_trade_sell_open_label_strategy)
 
                 if open_orders not in none_data:
                     order_sell_open = [o  for o in open_orders if o['direction'] == 'sell'] 
                     order_sell_open_label_strategy = [o  for o in order_sell_open if label_strategy in o['label']] 
-                    log.warning (order_sell_open_label_strategy)
+                    #log.warning (order_sell_open_label_strategy)
                 
             else:
                 pass
