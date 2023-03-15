@@ -20,16 +20,13 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-
 def catch_error(error, idle: int = None) -> list:
     """
     """
     system_tools.catch_error_message(error, idle)
 
-
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot:
@@ -649,7 +646,7 @@ class ApplyHedgingSpot:
             
         return determine_size_and_side#               
                         
-    async def is_open_main_order_allowed (self, 
+    async def is_send_main_order_allowed (self, 
                                      strategy: dict, 
                                      index_price: float, 
                                      my_trades_open: list, 
@@ -826,7 +823,6 @@ class ApplyHedgingSpot:
                 # fetch strategies attributes
                 strategies = entries_exits.strategies                
                 
-            
                 # fetch label for outstanding trade position/orders
                 strategy_labels =  str_mod.remove_redundant_elements(
                     [ str_mod.get_strings_before_character(o['label'])  for o in my_trades_open ]
@@ -851,6 +847,9 @@ class ApplyHedgingSpot:
                         #log.error (f'instrument AA {instrument}')
                             
                         ticker = await self.reading_from_db("ticker", instrument)
+                                        
+                        log.critical (f'index_price {index_price}')
+                        log.warning (f'ticker {ticker}')
                         # get bid and ask price
                         best_bid_prc = ticker[0]["best_bid_price"]
                         best_ask_prc = ticker[0]["best_ask_price"]
@@ -941,7 +940,7 @@ class ApplyHedgingSpot:
                             "remain_unhedged_size"
                         ]         
                         
-                        open_order_allowed = await self.is_open_main_order_allowed (strategy_attr, 
+                        open_order_allowed = await self.is_send_main_order_allowed (strategy_attr, 
                                                                                 index_price, 
                                                                                 my_trades_open,
                                                                                 open_orders_open_byAPI
