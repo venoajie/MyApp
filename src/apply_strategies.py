@@ -186,9 +186,13 @@ class ApplyHedgingSpot:
 
     def compute_position_leverage_and_delta (self, notional: float, my_trades_open: float)-> float:
         total_long = 0 if my_trades_open == [] else [o  for o in my_trades_open if o['direction'] == 'buy']
+        log.error (total_long)
         total_long = 0 if total_long == [] else total_long [0]
+        log.error (total_long)
         total_short = 0 if my_trades_open == [] else [o  for o in my_trades_open if o['direction'] == 'sell']        
+        log.error (total_short)
         total_short = 0 if total_short == [] else total_short [0]       
+        log.error (total_short)
         
         return {'delta':position_sizing.compute_delta (notional, total_long, total_short),
                 'leverage':position_sizing.compute_leverage (notional, total_long, total_short)}
