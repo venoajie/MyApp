@@ -750,6 +750,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
+                log.warning (my_trades_open)
                 
                 leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 log.warning (leverage_and_delta)
