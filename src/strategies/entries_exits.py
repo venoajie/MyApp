@@ -11,7 +11,23 @@ For strategy with many derivatives name (a/b/c):
 equity_risked_pct_default =  1/100/4
 
 strategies = [
-    
+    {
+    'strategy': 'supplyDemandShort60',
+    'instrument': ['PERPETUAL'],
+    'time_frame': 3600,
+    'side': 'sell',
+    'entry_price': 1675,
+    'invalidation_entry_price': 1680,
+    'take_profit_usd': 1640,
+    'take_profit_pct': 1/100,
+    'quantity_discrete': 15,
+    'cut_loss_usd': 1720,
+    'cut_loss_pct': (1/100)/2,
+    'averaging': 15,
+    'halt_minute_before_reorder': 60, 
+    'equity_risked_usd': 60, 
+    'equity_risked_pct': equity_risked_pct_default
+    },
     {
     'strategy': 'supplyDemandLong60A',
     'instrument': ['PERPETUAL'],
