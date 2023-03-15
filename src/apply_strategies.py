@@ -733,8 +733,6 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
-                log.warning (my_trades_open)
-                
                 #log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
