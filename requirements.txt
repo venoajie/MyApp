@@ -2,6 +2,5 @@ dataclassy==0.11.1
 rocketry==2.4.1
 websockets
 orjson
-python-dotenv
 aiohttp
 psutil
