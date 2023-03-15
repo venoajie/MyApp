@@ -95,6 +95,7 @@ class SpotHedging ():
         '''  
         my_trades = self.my_trades_api_basedOn_label ()
         
+        print (f'self.label {self.label}')
         if     my_trades != [] :
             my_trades_label = ([o for o in my_trades if self.label in o['label'] ])
 
