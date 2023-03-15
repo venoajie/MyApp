@@ -676,7 +676,7 @@ class ApplyHedgingSpot:
                     #log.warning (order_sell_open_label_strategy)
                 
             else:
-                pass
+                log.critical ('HEDGING SPOT MAIN ORDER')
             
             order_and_position_sell_ok =  my_trade_sell_open_label_strategy in none_data and order_sell_open_label_strategy  in none_data
             market_sell_ok =  False if  'hedgingSpot'  in label_strategy else index_price > entry_price \
@@ -693,7 +693,7 @@ class ApplyHedgingSpot:
         try:
 
             # gathering basic data
-            #!############################# gathering basic data ######################################
+            #?############################# gathering basic data ######################################
 
             reading_from_database: dict = await self.reading_from_database()
 
@@ -740,7 +740,7 @@ class ApplyHedgingSpot:
                 ]
 
                 #log.critical (open_orders_from_sub_account_get)
-                #!################################## end of gathering basic data #####################################
+                #?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class 
                 my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
@@ -788,9 +788,8 @@ class ApplyHedgingSpot:
                         
                         log.warning (label)
                         
+                        # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_mod = str_mod.get_strings_before_character(label,'-', 0)
-                        log.error (label_mod)
-                        log.error (strategy_labels)
                         
                         # get startegy details
                         strategy_attr = [o for o in strategies if o['strategy'] == label_mod][0]
