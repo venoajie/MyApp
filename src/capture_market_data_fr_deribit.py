@@ -244,13 +244,13 @@ class StreamMarketData:
 
         try:
 
-            ticker: list = pickling.read_data(my_path_ticker)
+            #ticker: list = pickling.read_data(my_path_ticker)
 
             if data_orders["type"] == "snapshot":
 
                 pickling.replace_data(my_path_ticker, data_orders)
 
-                ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+                #ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
 
             else:
                 ticker_change: list = pickling.read_data(my_path_ticker)
