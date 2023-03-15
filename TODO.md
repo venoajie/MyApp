@@ -29,6 +29,7 @@ Asyncio | [Asyncio](https://python.plainenglish.io/maximizing-performance-with-c
 Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3) |  | | 
 Scheduling | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
 Scheduling | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
+RL | [RL](https://medium.com/@sthanikamsanthosh1994/reinforcement-learning-part-8-proximal-policy-optimization-ppo-for-trading-9f1c3431f27d) |  | | 
 
 
 - Technical Analysis  
