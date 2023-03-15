@@ -110,6 +110,7 @@ class SpotHedging ():
         '''       
         # compute minimum hedging size. sign will be negative  since the direction is expected as 'sell
         min_hedged_size: int = (self.compute_minimum_hedging_size (notional, min_trade_amount, contract_size))
+        print (f'min_hedged_size {min_hedged_size}')
         
         # check whether current spot was hedged
         actual_hedging_size : int = self.compute_actual_hedging_size () 
@@ -140,6 +141,8 @@ class SpotHedging ():
                                                         min_trade_amount,
                                                         contract_size
                                                         )
+        print (f'notional {notional}')
+        print (f'remain_unhedged {remain_unhedged}')
         # check open orders related to hedging, to ensure previous open orders has completely consumed
         
         size_pct_qty = int ((quantity_discrete * min_hedged_size ))
