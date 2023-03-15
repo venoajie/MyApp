@@ -735,8 +735,6 @@ class ApplyHedgingSpot:
                 my_trades_open: list = reading_from_database["my_trades_open"]
                 log.warning (my_trades_open)
                 
-                leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
-                log.warning (leverage_and_delta)
                 #log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
@@ -847,6 +845,10 @@ class ApplyHedgingSpot:
 
                         # compute notional value
                         notional: float = await self.compute_notional_value(index_price, equity)
+                                
+                        leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
+                        log.warning (leverage_and_delta)
+                        
                         #! get instrument attributes detail
                         instrument_data: dict = [
                             o for o in instruments if o["instrument_name"] == instrument
