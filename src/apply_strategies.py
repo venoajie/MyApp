@@ -183,6 +183,15 @@ class ApplyHedgingSpot:
         """
         """
         return index_price * equity
+
+    def compute_position_leverage_and_delta (self, notional: float, my_trades_open: float)-> float:
+        total_long = 0 if my_trades_open == [] else [o  for o in my_trades_open if o['side'] == 'buy']
+        total_long = 0 if total_long == [] else total_long [0]
+        total_short = 0 if my_trades_open == [] else [o  for o in my_trades_open if o['side'] == 'sell']        
+        total_short = 0 if total_short == [] else total_short [0]       
+        
+        return {'delta':position_sizing.compute_delta (notional, total_long, total_short),
+                'leverage':position_sizing.compute_leverage (notional, total_long, total_short)}
     
     async def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
@@ -741,6 +750,9 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = reading_from_database["my_trades_open"]
+                
+                leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
+                log.warning (leverage_and_delta)
                 #log.warning (my_trades_open)
                 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
