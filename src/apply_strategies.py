@@ -186,9 +186,7 @@ class ApplyHedgingSpot:
     ) -> float:
         """
         """
-        return pickling.read_data(
-            system_tools.provide_path_for_file(end_point, instrument, status)
-        )
+        return pickling.read_data(system_tools.provide_path_for_file(end_point, instrument, status))
 
     #! ########### will be deleted ##############################################################################
     async def reading_from_database(self, instrument: str = None) -> float:
@@ -244,7 +242,6 @@ class ApplyHedgingSpot:
             "open_orders_from_sub_account": open_orders_from_sub_account,
             "portfolio": portfolio,
             "ticker_perpetual": ticker_perpetual[0],
-            "price_index": ticker_perpetual[0],
         }
 
     #! ########### end of will be deleted ##############################################################################
@@ -921,6 +918,13 @@ class ApplyHedgingSpot:
                                                     strategy_attr ['equity_risked_pct']
                                                     ) 
                         
+                        
+                        # determine position sizing-hedging
+                        if "hedgingSpot" in strategy_attr["strategy"]:
+                            min_position_size = check_spot_hedging[
+                            "all_hedging_size"
+                            ]
+                            
                         # add some extra params to strategy
                         strategy_attr.update(
                             {'instrument': instrument,
@@ -1015,7 +1019,7 @@ class ApplyHedgingSpot:
                                             strategy_attr['label_numbered'],
                                             best_ask_prc,
                                         )
-                                        log.warning(order_result)
+                                        log.info(order_result)
 
                                         await self.cancel_redundant_orders_in_same_labels(
                                             label_open_for_filter
@@ -1082,7 +1086,7 @@ class ApplyHedgingSpot:
                                                 ],
                                                 best_bid_prc,
                                             )
-                                            log.warning(order_result)
+                                            log.info(order_result)
 
                                             await self.cancel_redundant_orders_in_same_labels(
                                                 label_closed
