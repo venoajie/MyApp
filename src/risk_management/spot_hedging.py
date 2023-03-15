@@ -114,6 +114,7 @@ class SpotHedging ():
         
         # check whether current spot was hedged
         actual_hedging_size : int = self.compute_actual_hedging_size () 
+        print (f'actual_hedging_size {actual_hedging_size}')
 
         # check remaining hedging needed
         return int(min_hedged_size if actual_hedging_size  == [] else min_hedged_size - actual_hedging_size )
