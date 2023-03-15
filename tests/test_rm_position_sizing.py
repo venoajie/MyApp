@@ -2,10 +2,10 @@
 from src.risk_management import position_sizing
 
 def test_pos_sizing():
-    assert position_sizing.pos_sizing(target_price=100, entry_price=90, capital=1000, pct_loss = .5/100) == 50
-    assert position_sizing.pos_sizing(target_price=90, entry_price=100, capital=1000, pct_loss = .5/100) == 45
-    assert position_sizing.pos_sizing(target_price=100, entry_price=90, capital=1000, pct_loss = 1/100) == 100
-    assert position_sizing.pos_sizing(target_price=90, entry_price=100, capital=1000, pct_loss = 1/100) == 90
+    assert position_sizing.pos_sizing(cut_loss_price=100, entry_price=90, capital=1000, pct_loss = .5/100) == 50
+    assert position_sizing.pos_sizing(cut_loss_price=90, entry_price=100, capital=1000, pct_loss = .5/100) == 45
+    assert position_sizing.pos_sizing(cut_loss_price=100, entry_price=90, capital=1000, pct_loss = 1/100) == 100
+    assert position_sizing.pos_sizing(cut_loss_price=90, entry_price=100, capital=1000, pct_loss = 1/100) == 90
 
     
 def test_compute_delta  ():
