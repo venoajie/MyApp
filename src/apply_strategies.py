@@ -975,6 +975,13 @@ class ApplyHedgingSpot:
                                     spot_hedged = spot_hedging.SpotHedging(
                                         label_strategy, my_trades_open
                                     )
+                                    
+                                    check_spot_hedging = spot_hedged.is_spot_hedged_properly(
+                                        notional,
+                                        min_trade_amount,
+                                        contract_size,
+                                        strategy_attr['quantity_discrete']
+                                    )  
 
                                     spot_was_unhedged = check_spot_hedging[
                                         "spot_was_unhedged"
