@@ -473,8 +473,8 @@ class MyOrders:
             #! same result/recheck:
             log.warning (f'label_basic_strategy {label_basic_strategy}')
             log.warning (f'basic_strategy {basic_strategy}')
-            log.warning (f'open_orders_strategy_limit {open_orders_strategy_limit} open_orders_strategy_limit_net_sum {open_orders_strategy_limit_net_sum}')
-            log.warning (f'open_orders_strategy_market {open_orders_strategy_market} open_orders_strategy_market_net_sum {open_orders_strategy_market_net_sum}')
+            log.warning (f'open_orders_strategy_limit_net_sum {open_orders_strategy_limit_net_sum} open_orders_strategy_limit {open_orders_strategy_limit} ')
+            log.warning (f'open_orders_strategy_market_net_sum {open_orders_strategy_market_net_sum} open_orders_strategy_market {open_orders_strategy_market} ')
             # log.warning (f'basic_strategy {basic_strategy}')
             # log.warning (f'label_basic_strategy {label_basic_strategy}')
             # log.warning (f'strategy_label_from_outstanding_transactions {strategy_label_from_outstanding_transactions}')
@@ -490,17 +490,20 @@ class MyOrders:
 
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
+                    excess_position = main_orders_sum_vs_max_orders
                     remain_exit_orders = main_orders_sum_vs_max_orders
                     side = "buy"
 
                 if main_orders_sum_vs_max_orders < 0:
                     remain_main_orders = main_orders_sum_vs_max_orders
                     remain_exit_orders = 0
+                    excess_position = 0
                     side = "sell"
 
                 if main_orders_sum_vs_max_orders == 0:
                     remain_main_orders = 0
                     remain_exit_orders = 0
+                    excess_position = 0
                     side = None
 
             if side_basic_strategy == "buy":
@@ -509,16 +512,18 @@ class MyOrders:
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
                     remain_exit_orders = -main_orders_sum_vs_max_orders
+                    excess_position = -main_orders_sum_vs_max_orders
                     side = "sell"
 
                 if main_orders_sum_vs_max_orders < 0:
                     remain_main_orders = abs(main_orders_sum_vs_max_orders)
                     remain_exit_orders = 0
+                    remain_exit_orders = 0
                     side = "buy"
 
                 if main_orders_sum_vs_max_orders == 0:
                     remain_main_orders = 0
-                    remain_exit_orders = 0
+                    excess_position = 0
                     side = None
 
             
