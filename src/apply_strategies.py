@@ -683,11 +683,11 @@ class ApplyHedgingSpot:
             my_trade_sell_open_label_strategy = []
 
             if open_orders not in none_data:
-                order_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
+                order_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
                 # log.warning (order_sell_open_label_strategy)
             if my_trades_open not in none_data:
-                my_trade_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
-                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['net_sum_my_trade_side_strategy_label']
+                my_trade_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
+                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['net_sum_my_trade_side_strategy_label']
 
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
@@ -696,6 +696,9 @@ class ApplyHedgingSpot:
                 )
                 log.critical(
                     f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
+                )
+                log.critical(
+                    f"my_trade_sell_open_label_strategy {my_trade_sell_open_label_strategy}"
                 )
                 log.critical(
                     f"my_trade_sell_open_label_strategy {my_trade_sell_open_label_strategy}"
