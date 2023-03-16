@@ -466,7 +466,7 @@ class MyOrders:
             
             open_orders_from_db = self.open_orders_from_db
             open_orders_strategy_limit = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
-            open_orders_strategy_market = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
+            open_orders_strategy_market = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'market')
 
             #! same result/recheck:
             log.warning (f'open_orders_strategy_limit {open_orders_strategy_limit}')
