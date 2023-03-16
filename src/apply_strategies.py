@@ -762,7 +762,7 @@ class ApplyHedgingSpot:
                 open_orders_open_byAPI: list = reading_from_database[
                     "open_orders_open_byAPI"
                 ]
-                log.critical (open_orders_open_byAPI)
+                #log.critical (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
