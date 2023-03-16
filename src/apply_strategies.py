@@ -701,7 +701,7 @@ class ApplyHedgingSpot:
                     o for o in my_trade_sell_open if label_strategy in o["label"]
                 ]
                 # log.warning (my_trade_sell_open_label_strategy)
-                
+
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
