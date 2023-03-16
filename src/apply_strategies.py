@@ -820,6 +820,7 @@ class ApplyHedgingSpot:
                         for o in my_trades_open
                     ]
                 )
+                log.critical (f'strategy_labels {strategy_labels}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
