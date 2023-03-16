@@ -640,6 +640,7 @@ class ApplyHedgingSpot:
         index_price: float,
         my_trades_open: list,
         open_orders: list,
+        notional
     ) -> bool:
         """ """
         # log.error (strategy)
@@ -690,18 +691,14 @@ class ApplyHedgingSpot:
                 net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['net_sum_my_trade_side_strategy_label']
 
             if "hedgingSpot" in label_strategy:
+                actual_hedging_size = net_sum_my_trade_side_strategy_label
+                min_position_size = net_sum_my_trade_side_strategy_label
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
-                    f"label_strategy {side} {label_strategy}"
+                    f"label_strategy {side} {label_strategy} notional {notional}"
                 )
                 log.critical(
                     f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
-                )
-                log.critical(
-                    f"my_trade_sell_open_label_strategy {my_trade_sell_open_label_strategy}"
-                )
-                log.critical(
-                    f"my_trade_sell_open_label_strategy {my_trade_sell_open_label_strategy}"
                 )
 
             order_and_position_sell_ok = (
@@ -945,13 +942,6 @@ class ApplyHedgingSpot:
 
                         remain_unhedged = check_spot_hedging["remain_unhedged_size"]
 
-                        open_order_allowed = await self.is_send_main_order_allowed(
-                            strategy_attr,
-                            index_price,
-                            my_trades_open,
-                            open_orders_open_byAPI,
-                        )
-                        log.error(f"open_order_allowed {open_order_allowed}")
 
                         label_closed: str = f"{label_strategy}-closed"
 
@@ -967,6 +957,14 @@ class ApplyHedgingSpot:
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = check_spot_hedging["all_hedging_size"]
 
+                        open_order_allowed = await self.is_send_main_order_allowed(
+                            strategy_attr,
+                            index_price,
+                            my_trades_open,
+                            open_orders_open_byAPI,
+                            notional
+                        )
+                        log.error(f"open_order_allowed {open_order_allowed}")
                         # add some extra params to strategy
                         strategy_attr.update(
                             {
