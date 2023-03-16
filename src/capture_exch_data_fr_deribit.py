@@ -166,7 +166,7 @@ class StreamAccountData:
                 if "params" in list(message):
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
-                        log.info (message_channel)
+                        #log.info (message_channel)
 
                         data_orders: list = message["params"]["data"]
                         currency: str = string_modification.extract_currency_from_text(
@@ -177,6 +177,10 @@ class StreamAccountData:
                             message_channel
                             == f"user.portfolio.{currency.lower()}"
                         ):
+                            my_path_portfolio = system_tools.provide_path_for_file(
+                                    "portfolio", currency
+                                )
+                            pickling.replace_data(my_path_portfolio, data_orders)
                             log.info(data_orders)
                         if (
                             message_channel
