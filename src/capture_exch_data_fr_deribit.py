@@ -107,7 +107,7 @@ class StreamAccountData:
                 message: bytes = await self.websocket_client.recv()
                 message: dict = orjson.loads(message)
                 message_channel: str = None
-                # log.warning (message)
+                log.warning (message_channel)
                 if "id" in list(message):
                     if message["id"] == 9929:
                         syn = apply_strategies.ApplyHedgingSpot(
@@ -175,7 +175,7 @@ class StreamAccountData:
 
                         if (
                             message_channel
-                            == f"user.changes.any.{currency.upper()}.100ms"
+                            == f"user.changes.any.{currency.upper()}.raw"
                         ):
                             log.info(data_orders)
                             positions = data_orders["positions"]
