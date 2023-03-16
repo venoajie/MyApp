@@ -915,7 +915,7 @@ class ApplyHedgingSpot:
                         log.error(f"exit_order_allowed {exit_order_allowed}")
 
                 for instrument in instrument_transactions:
-                    log.critical(f"{instrument}")
+                    #log.critical(f"{instrument}")
 
                     ticker = await self.reading_from_db("ticker", instrument)
                     # get bid and ask price
