@@ -693,21 +693,22 @@ class ApplyHedgingSpot:
                 ]
                 # log.warning (order_sell_open_label_strategy)
 
-            if "hedgingSpot" not in label_strategy:
-                if my_trades_open not in none_data:
-                    my_trade_sell_open = [
-                        o for o in my_trades_open if o["direction"] == "sell"
-                    ]
-                    # log.debug (my_trade_sell_open)
-                    my_trade_sell_open_label_strategy = [
-                        o for o in my_trade_sell_open if label_strategy in o["label"]
-                    ]
-                    # log.warning (my_trade_sell_open_label_strategy)
-
-            else:
+                my_trade_sell_open = [
+                    o for o in my_trades_open if o["direction"] == "sell"
+                ]
+                # log.debug (my_trade_sell_open)
+                my_trade_sell_open_label_strategy = [
+                    o for o in my_trade_sell_open if label_strategy in o["label"]
+                ]
+                # log.warning (my_trade_sell_open_label_strategy)
+                
+            if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
                     f"order_sell_open_label_strategy {order_sell_open_label_strategy}"
+                )
+                log.critical(
+                    f"my_trade_sell_open_label_strategy {my_trade_sell_open_label_strategy}"
                 )
 
             order_and_position_sell_ok = (
