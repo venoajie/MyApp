@@ -136,7 +136,7 @@ class MyTrades:
             my_trade_side = [
                     o for o in my_trades_open if o["direction"] == side
                 ]
-            log.critical (my_trades_open)
+            #log.critical (my_trades_open)
             my_trade_side_strategy_label = [] if my_trade_side == [] else [
                     o for o in my_trade_side if label_strategy in o["label"]
                     ]
