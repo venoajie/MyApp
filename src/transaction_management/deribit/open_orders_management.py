@@ -402,6 +402,9 @@ class MyOrders:
         transactions = self.transactions_label_strategy(
             open_transactions_label, strategy_label
         )
+        log.warning (strategy_label)
+        log.warning (transactions)
+        log.warning (open_transactions_label)
 
         return {
             "net_sum_order_size": []
@@ -429,7 +432,7 @@ class MyOrders:
         - Side for every order size
 
         Args:
-            net_sum_current_position (int): sum myTradebuy - sum myTradesell
+            net_sum_current_position (int): sum myTradebuy - sum myTrade sell
             strategy_label_from_outstanding_transactions (str): taken from o/s my trades label (format example = supplyDemandShort60)
 
         Returns:
