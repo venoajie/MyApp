@@ -693,7 +693,6 @@ class ApplyHedgingSpot:
                 ]
                 # log.warning (order_sell_open_label_strategy)
             if my_trades_open not in none_data:
-
                 my_trade_sell_open = [
                     o for o in my_trades_open if o["direction"] == "sell"
                 ]
