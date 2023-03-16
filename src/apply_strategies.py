@@ -496,6 +496,7 @@ class ApplyHedgingSpot:
         get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
 
         label_closed = f"{strategy_label}-closed-{get_strategy_int}"
+        
 
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
             open_trade, strategy_label
@@ -520,16 +521,18 @@ class ApplyHedgingSpot:
 
         if "supplyDemandShort60" in strategy_attr["strategy"]:
             log.warning(strategy_label)
+            log.warning(open_trade)
+            log.warning(trade_based_on_label_strategy)
             log.warning(
                 f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
             )
             log.warning(determine_size_and_side["order_type_market"])
-        else:
-            log.error(strategy_label)
-            log.error(
-                f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
-            )
-            log.error(determine_size_and_side["order_type_market"])
+       # else:
+       #     log.error(strategy_label)
+        #    log.error(
+        #        f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
+        #    )
+        #    log.error(determine_size_and_side["order_type_market"])
 
         #!#################################
 
@@ -742,7 +745,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
-                log.debug (my_trades_open)
+                #og.debug (my_trades_open)
 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
