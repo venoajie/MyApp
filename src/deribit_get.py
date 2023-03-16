@@ -26,7 +26,6 @@ params_coinGlass = {
 async def telegram_bot_sendtext(
     bot_message: str, purpose: str = "general_error"
 ) -> str:
-
     """
     # simple telegram
     #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
@@ -41,7 +40,6 @@ async def telegram_bot_sendtext(
         bot_token = config.main_dotenv("telegram-failed_order")["BOT_TOKEN"]
 
     if purpose == "failed_order":
-
         try:
             bot_chatID = config.main_dotenv("telegram-failed_order")[
                 "BOT_CHATID_FAILED_ORDER"
@@ -82,9 +80,8 @@ async def main(
     client_id: str = None,
     client_secret: str = None,
 ) -> None:
-
     id = id_numbering.id(endpoint, endpoint)
-    
+
     payload: Dict = {
         "jsonrpc": "2.0",
         "id": id,
@@ -104,7 +101,6 @@ async def main(
             return response
 
     else:
-
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 connection_url + endpoint,
@@ -123,8 +119,7 @@ async def main(
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
 
-    """
-    """
+    """ """
 
     connection_url: str
     client_id: str
@@ -132,7 +127,6 @@ class GetPrivateData:
     currency: str
 
     async def parse_main(self, endpoint: str, params: dict):
-
         result = await main(
             endpoint=endpoint,
             params=params,
@@ -144,7 +138,6 @@ class GetPrivateData:
         return result
 
     async def get_subaccounts(self):
-
         # Set endpoint
         endpoint: str = "private/get_subaccounts_details"
 
@@ -153,7 +146,6 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_account_summary(self):
-
         params = {"currency": self.currency, "extended": True}
 
         # Set endpoint
@@ -162,7 +154,6 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_positions(self):
-
         # Set endpoint
         endpoint: str = "private/get_positions"
 
@@ -171,7 +162,6 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_open_orders_byCurrency(self) -> list:
-
         params = {"currency": self.currency}
 
         # Set endpoint
@@ -186,7 +176,6 @@ class GetPrivateData:
         count: int = 1000,
         include_old: bool = True,
     ) -> list:
-
         # Set endpoint
         endpoint: str = f"private/get_user_trades_by_currency_and_time"
 
@@ -202,7 +191,6 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_user_trades_by_currency(self, count: int = 1000) -> list:
-
         # Set endpoint
         endpoint: str = f"private/get_user_trades_by_currency"
 
@@ -225,8 +213,6 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        
-
         if valid_until == False:
             if trigger_price == None:
                 if "market" in type:
@@ -307,12 +293,10 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        #print (f'trigger_price {trigger_price}')
+        # print (f'trigger_price {trigger_price}')
         if valid_until == False:
-            
             if trigger_price == None:
                 if "market" in type:
-
                     params = {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -335,8 +319,6 @@ class GetPrivateData:
                     }
             else:
                 if "market" in type:
-                    
-
                     params = {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -384,8 +366,7 @@ class GetPrivateData:
         return result
 
     async def send_limit_order(self, params) -> None:
-        """
-        """
+        """ """
         from loguru import logger as log
 
         side = params["side"]
@@ -397,24 +378,23 @@ class GetPrivateData:
         except:
             limit_prc = params["entry_price"]
         type = params["type"]
-        
+
         order_result = await self.send_order(
-                                            side,
-                                            instrument,
-                                            size,
-                                            label_numbered,
-                                            limit_prc,
-                                            type,
-                                        )
-                                        
+            side,
+            instrument,
+            size,
+            label_numbered,
+            limit_prc,
+            type,
+        )
+
         log.info(order_result)
-        
+
         if "error" in order_result:
             await telegram_bot_sendtext("limit order failed")
-            
+
     async def send_market_order(self, params) -> None:
-        """
-        """
+        """ """
         from loguru import logger as log
 
         side = params["side"]
@@ -425,19 +405,13 @@ class GetPrivateData:
         cut_loss_usd = params["cut_loss_usd"]
 
         order_result = await self.send_order(
-                side,
-                instrument,
-                size,
-                label,
-                None,
-                type,
-                cut_loss_usd
-            )
+            side, instrument, size, label, None, type, cut_loss_usd
+        )
         log.info(order_result)
-        
+
         if "error" in order_result:
             await telegram_bot_sendtext("market order failed")
-            
+
     async def send_triple_orders(self, params) -> None:
         """
         triple orders:
@@ -525,7 +499,6 @@ async def send_order_market(
     post_only: bool = True,
     reject_post_only: bool = False,
 ):
-
     if valid_until == False:
         if trigger_price == None:
             params = {
@@ -580,6 +553,7 @@ async def send_order_market(
 
     return result
 
+
 async def get_open_orders_byInstruments(
     connection_url, client_id, client_secret, instrument, type
 ):
@@ -602,7 +576,6 @@ async def get_open_orders_byInstruments(
 async def get_user_trades_by_instrument(
     connection_url, client_id, client_secret, instrument_name: str, count: int = 1000
 ):
-
     # Set endpoint
     endpoint_get_user_trades: str = f"private/get_user_trades_by_instrument"
 
@@ -621,7 +594,6 @@ async def get_user_trades_by_instrument(
 async def get_order_history_by_instrument(
     connection_url, client_id, client_secret, instrument_name, count: int = 100
 ):
-
     # Set endpoint
     endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
 
@@ -643,7 +615,6 @@ async def get_order_history_by_instrument(
 
 
 async def get_server_time(connection_url: str) -> int:
-
     """
     Returning server time
     """
@@ -660,7 +631,6 @@ async def get_server_time(connection_url: str) -> int:
 
 
 async def get_index(connection_url: str, currency):
-
     # Set endpoint
     endpoint: str = f"public/get_index?currency={currency.upper()}"
     params = {}
@@ -669,7 +639,6 @@ async def get_index(connection_url: str, currency):
 
 
 async def get_instruments(connection_url: str, currency):
-
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
     params = {}
@@ -678,7 +647,6 @@ async def get_instruments(connection_url: str, currency):
 
 
 async def get_currencies(connection_url: str) -> list:
-
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
     params = {}
@@ -687,9 +655,11 @@ async def get_currencies(connection_url: str) -> list:
 
 
 async def get_ohlc(
-    connection_url: str, instrument_name, resolution, qty_candles,
+    connection_url: str,
+    instrument_name,
+    resolution,
+    qty_candles,
 ) -> list:
-
     from datetime import datetime
     from utilities import time_modification
 
@@ -707,7 +677,6 @@ async def get_ohlc(
 async def get_open_interest_aggregated_ohlc(
     connection_url: str, currency, resolution
 ) -> list:
-
     """
     interval = m1 m5 m15 h1 h4 h12 all
 
@@ -727,7 +696,6 @@ async def get_open_interest_aggregated_ohlc(
 async def get_open_interest_historical(
     connection_url: str, currency, resolution
 ) -> list:
-
     """
     time_frame = m1 m5 m15 h1 h4 h12 all
     currency = USD or symbol
@@ -746,7 +714,6 @@ async def get_open_interest_historical(
 
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
-
     # Set endpoint
     endpoint: str = f"open_interest?symbol={currency}"
     try:

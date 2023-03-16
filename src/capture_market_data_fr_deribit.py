@@ -26,11 +26,11 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 class StreamMarketData:
 
     """
-        
-    +----------------------------------------------------------------------------------------------+ 
-    #  References: 
+
+    +----------------------------------------------------------------------------------------------+
+    #  References:
         + https://github.com/ElliotP123/crypto-exchange-code-samples/blob/master/deribit/websockets/dbt-ws-authenticated-example.py
-    +----------------------------------------------------------------------------------------------+ 
+    +----------------------------------------------------------------------------------------------+
 
     """
 
@@ -49,9 +49,11 @@ class StreamMarketData:
         else:
             raise Exception("live must be a bool, True=real, False=paper")
 
-        self.connection_url: str = "https://www.deribit.com/api/v2/" \
-            if "test" not in self.ws_connection_url \
-                else "https://test.deribit.com/api/v2/"
+        self.connection_url: str = (
+            "https://www.deribit.com/api/v2/"
+            if "test" not in self.ws_connection_url
+            else "https://test.deribit.com/api/v2/"
+        )
 
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
@@ -67,7 +69,6 @@ class StreamMarketData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-
             # Establish Heartbeat
             await self.establish_heartbeat()
 
@@ -85,15 +86,14 @@ class StreamMarketData:
             instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
             instruments_name: list = [o["instrument_name"] for o in instruments_kind]
 
-            #self.loop.create_task(
+            # self.loop.create_task(
             #    self.ws_operation(
             #        operation="subscribe",
             #        ws_channel=f"deribit_price_index.{currency.lower()}_usd",
             #    )
-            #)
+            # )
 
             for instrument in instruments_name:
-
                 # self.loop.create_task(
                 #    self.ws_operation(
                 #        operation='subscribe',
@@ -113,9 +113,8 @@ class StreamMarketData:
                 message: bytes = await self.websocket_client.recv()
                 message: dict = orjson.loads(message)
                 message_channel: str = None
-                #log.warning(message)
+                # log.warning(message)
                 if "id" in list(message):
-
                     if message["id"] == 9929:
                         if self.refresh_token is None:
                             log.debug("Successfully authenticated WebSocket Connection")
@@ -147,7 +146,6 @@ class StreamMarketData:
                         await self.heartbeat_response()
 
                 if "params" in list(message):
-
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
                         # log.info (message_channel)
@@ -161,9 +159,10 @@ class StreamMarketData:
 
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f"incremental_ticker.{instrument_ticker}":
-
-                            my_path_futures_analysis = system_tools.provide_path_for_file(
-                                "futures_analysis", currency
+                            my_path_futures_analysis = (
+                                system_tools.provide_path_for_file(
+                                    "futures_analysis", currency
+                                )
                             )
                             my_path_ticker = system_tools.provide_path_for_file(
                                 "ticker", instrument_ticker
@@ -239,18 +238,15 @@ class StreamMarketData:
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
     ) -> None:
-        """
-        """
+        """ """
 
         try:
-
-            #ticker: list = pickling.read_data(my_path_ticker)
+            # ticker: list = pickling.read_data(my_path_ticker)
 
             if data_orders["type"] == "snapshot":
-
                 pickling.replace_data(my_path_ticker, data_orders)
 
-                #ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+                # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
 
             else:
                 ticker_change: list = pickling.read_data(my_path_ticker)
@@ -258,7 +254,6 @@ class StreamMarketData:
                     # log.debug (ticker_change)
 
                     for item in data_orders:
-
                         ticker_change[0][item] = data_orders[item]
                         pickling.replace_data(my_path_ticker, ticker_change)
         except Exception as error:
@@ -349,9 +344,7 @@ class StreamMarketData:
 
 
 def main():
-
     try:
-
         StreamMarketData()
 
     except Exception as error:
@@ -361,12 +354,10 @@ def main():
 
 
 if __name__ == "__main__":
-
     try:
         main()
 
     except (KeyboardInterrupt, SystemExit):
-
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:

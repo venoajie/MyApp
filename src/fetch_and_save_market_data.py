@@ -25,22 +25,19 @@ root = Path(".")
 
 
 def catch_error(error, idle: int = None) -> list:
-    """
-    """
+    """ """
     system_tools.catch_error_message(error, idle)
 
 
 def get_currencies() -> float:
-    """
-    """
+    """ """
 
     endpoint = f"https://test.deribit.com/api/v2/public/get_currencies?"
     return requests.get(endpoint).json()["result"]
 
 
 def get_instruments(currency) -> float:
-    """
-    """
+    """ """
 
     endpoint = (
         f"https://test.deribit.com/api/v2/public/get_instruments?currency={currency}"
@@ -50,9 +47,7 @@ def get_instruments(currency) -> float:
 
 @app.task(every("3600 seconds"))
 def check_and_save_every_60_minutes():
-
     try:
-
         currencies = get_currencies()
         currencies = ["ETH", "BTC"]
         for currency in currencies:
@@ -71,7 +66,6 @@ def check_and_save_every_60_minutes():
 
 # @app.task(every("5 seconds"))
 def check_and_save_every_30_seconds():
-
     try:
         from synchronizing_files import main
         import asyncio
@@ -86,7 +80,6 @@ def check_and_save_every_30_seconds():
 
 @app.task(every("300 seconds"))
 def check_and_save_every_5_minutes():
-
     try:
         # https://towardsdatascience.com/understand-async-await-with-asyncio-for-asynchronous-programming-in-python-e0bc4d25808e
         open_interest_historical = market_data.open_interest_historical()
@@ -113,13 +106,11 @@ def check_and_save_every_5_minutes():
 
 
 if __name__ == "__main__":
-
     try:
-
         app.run()
     #        check_and_save_every_30_seconds ()
 
-    except (KeyboardInterrupt):
+    except KeyboardInterrupt:
         catch_error(KeyboardInterrupt)
 
     except Exception as error:

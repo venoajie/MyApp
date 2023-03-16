@@ -31,14 +31,13 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 class StreamAccountData:
 
     """
-        
-    +----------------------------------------------------------------------------------------------+ 
-    +----------------------------------------------------------------------------------------------+ 
+
+    +----------------------------------------------------------------------------------------------+
+    +----------------------------------------------------------------------------------------------+
 
     """
 
     def __init__(self, client_id: str, client_secret: str, live=True) -> None:
-
         # Async Event Loop
         self.loop = asyncio.get_event_loop()
 
@@ -50,7 +49,11 @@ class StreamAccountData:
             raise Exception("live must be a bool, True=real, False=paper")
 
         # Instance Variables
-        self.connection_url: str = "https://www.deribit.com/api/v2/" if "test" not in self.ws_connection_url else "https://test.deribit.com/api/v2/"
+        self.connection_url: str = (
+            "https://www.deribit.com/api/v2/"
+            if "test" not in self.ws_connection_url
+            else "https://test.deribit.com/api/v2/"
+        )
         self.client_id: str = client_id
         self.client_secret: str = client_secret
         self.websocket_client: websockets.WebSocketClientProtocol = None
@@ -68,7 +71,6 @@ class StreamAccountData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-
             # Authenticate WebSocket Connection
             await self.ws_auth()
 
@@ -105,11 +107,9 @@ class StreamAccountData:
                 message: bytes = await self.websocket_client.recv()
                 message: dict = orjson.loads(message)
                 message_channel: str = None
-                #log.warning (message)
+                # log.warning (message)
                 if "id" in list(message):
-
                     if message["id"] == 9929:
-
                         syn = apply_strategies.ApplyHedgingSpot(
                             self.connection_url,
                             self.client_id,
@@ -124,7 +124,6 @@ class StreamAccountData:
                             log.debug("Successfully authenticated WebSocket Connection")
 
                         else:
-
                             # resupply sub account db
                             await syn.get_sub_accounts()
 
@@ -165,7 +164,6 @@ class StreamAccountData:
                         await self.heartbeat_response()
 
                 if "params" in list(message):
-
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
                         # log.info (message_channel)
@@ -312,7 +310,6 @@ def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     try:
-
         StreamAccountData(client_id=client_id, client_secret=client_secret)
 
     except Exception as error:
@@ -322,7 +319,6 @@ def main():
 
 
 if __name__ == "__main__":
-
     try:
         main()
 

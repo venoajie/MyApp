@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
 
+
 # Function to connect to PostgreSQL database
 def postgres_connect(project_settings):
     """
@@ -11,11 +12,11 @@ def postgres_connect(project_settings):
     # Define the connection
     try:
         conn = psycopg2.connect(
-            database=project_settings['postgres']['database'],
-            user=project_settings['postgres']['user'],
-            password=project_settings['postgres']['password'],
-            host=project_settings['postgres']['host'],
-            port=project_settings['postgres']['port']
+            database=project_settings["postgres"]["database"],
+            user=project_settings["postgres"]["user"],
+            password=project_settings["postgres"]["password"],
+            host=project_settings["postgres"]["host"],
+            port=project_settings["postgres"]["port"],
         )
         return conn
     except Exception as e:
@@ -52,10 +53,7 @@ def sql_execute(sql_query, project_settings):
 
 
 # Function to create a table
-def create_sql_table(table_name, 
-                     table_details, 
-                     project_settings
-                     ):
+def create_sql_table(table_name, table_details, project_settings):
     """
     Function to create a table in SQL
     :param table_name: String
@@ -70,9 +68,7 @@ def create_sql_table(table_name,
 
 
 # Function to create a trade table
-def create_trade_table(table_name, 
-                       project_settings
-                       ):
+def create_trade_table(table_name, project_settings):
     """
     Function to create a trade table in SQL
     :param table_name: string
@@ -80,19 +76,25 @@ def create_trade_table(table_name,
     :return: Boolean
     """
     # Define the table according to the CIM: https://github.com/jimtin/python_trading_bot/blob/master/common_information_model.json
-    table_details = f"strategy VARCHAR(100) NOT NULL," \
-                    f"exchange VARCHAR(100) NOT NULL," \
-                    f"trade_type VARCHAR(50) NOT NULL," \
-                    f"trade_stage VARCHAR(50) NOT NULL," \
-                    f"symbol VARCHAR(50) NOT NULL," \
-                    f"volume FLOAT4 NOT NULL," \
-                    f"stop_loss FLOAT4 NOT NULL," \
-                    f"take_profit FLOAT4 NOT NULL," \
-                    f"price FLOAT4 NOT NULL," \
-                    f"comment VARCHAR(250) NOT NULL," \
-                    f"status VARCHAR(100) NOT NULL"
+    table_details = (
+        f"strategy VARCHAR(100) NOT NULL,"
+        f"exchange VARCHAR(100) NOT NULL,"
+        f"trade_type VARCHAR(50) NOT NULL,"
+        f"trade_stage VARCHAR(50) NOT NULL,"
+        f"symbol VARCHAR(50) NOT NULL,"
+        f"volume FLOAT4 NOT NULL,"
+        f"stop_loss FLOAT4 NOT NULL,"
+        f"take_profit FLOAT4 NOT NULL,"
+        f"price FLOAT4 NOT NULL,"
+        f"comment VARCHAR(250) NOT NULL,"
+        f"status VARCHAR(100) NOT NULL"
+    )
     # Pass to Create Table function
-    return create_sql_table(table_name=table_name, table_details=table_details, project_settings=project_settings)
+    return create_sql_table(
+        table_name=table_name,
+        table_details=table_details,
+        project_settings=project_settings,
+    )
 
 
 # Function to insert a trade action into SQL database
@@ -108,22 +110,24 @@ def insert_trade_action(table_name, trade_information, project_settings):
         # Make trade_information shorter
         ti = trade_information
         # Construct the SQL Query
-        sql_query = f"INSERT INTO {table_name} (strategy, exchange, trade_type, trade_stage, symbol, volume, stop_loss, " \
-                    f"take_profit, price, comment, status) VALUES (" \
-                    f"'{ti['strategy']}'," \
-                    f"'{ti['exchange']}'," \
-                    f"'{ti['trade_type']}'," \
-                    f"'{ti['trade_stage']}'," \
-                    f"'{ti['symbol']}'," \
-                    f"{ti['volume']}," \
-                    f"{ti['stop_loss']}," \
-                    f"{ti['take_profit']}," \
-                    f"{ti['price']}," \
-                    f"'{ti['comment']}'," \
-                    f"'{ti['status']}'" \
-                    f")"
+        sql_query = (
+            f"INSERT INTO {table_name} (strategy, exchange, trade_type, trade_stage, symbol, volume, stop_loss, "
+            f"take_profit, price, comment, status) VALUES ("
+            f"'{ti['strategy']}',"
+            f"'{ti['exchange']}',"
+            f"'{ti['trade_type']}',"
+            f"'{ti['trade_stage']}',"
+            f"'{ti['symbol']}',"
+            f"{ti['volume']},"
+            f"{ti['stop_loss']},"
+            f"{ti['take_profit']},"
+            f"{ti['price']},"
+            f"'{ti['comment']}',"
+            f"'{ti['status']}'"
+            f")"
+        )
         # Execute the query
         return sql_execute(sql_query=sql_query, project_settings=project_settings)
     else:
         # Return an exception
-        return Exception # Custom Error Handling Coming Soon
+        return Exception  # Custom Error Handling Coming Soon
