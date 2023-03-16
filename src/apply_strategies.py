@@ -687,6 +687,7 @@ class ApplyHedgingSpot:
                 # log.warning (order_sell_open_label_strategy)
             if my_trades_open not in none_data:
                 my_trade_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
+                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['net_sum_my_trade_side_strategy_label']
 
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
@@ -736,7 +737,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
