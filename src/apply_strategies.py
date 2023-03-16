@@ -696,7 +696,7 @@ class ApplyHedgingSpot:
                 net_hedge = actual_hedging_size - min_hedging_size
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
-                    f"label_strategy {side} {label_strategy} min_hedging_size {min_hedging_size} net_hedge {net_hedge} net_hedge < 0 {net_hedge < 0}"
+                    f"label_strategy {side} {label_strategy} min_hedging_size {min_hedging_size} net_hedge {net_hedge} net_hedge > 0 {net_hedge > 0}"
                 )
                 log.critical(
                     f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
@@ -713,7 +713,8 @@ class ApplyHedgingSpot:
             )
 
         return {
-            "send_buy_order_allowed": net_hedge < 0 if label_strategy =='hedgingSpot' else order_and_position_buy_ok and market_buy_ok,
+            "send_buy_order_allowed": net_hedge > 0 if label_strategy =='hedgingSpot' and order_sell_open_label_strategy in none_data \
+                else order_and_position_buy_ok and market_buy_ok,
             "send_sell_order_allowed": order_and_position_sell_ok and market_sell_ok,
         }
 
