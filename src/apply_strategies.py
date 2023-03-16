@@ -655,24 +655,20 @@ class ApplyHedgingSpot:
         market_buy_ok = False
         order_and_position_sell_ok = False
         market_sell_ok = False
+        
+        my_trades_open_mgt: object = myTrades_management.MyTrades(
+                    my_trades_open
+                )
 
         if side == "buy":
             order_buy_open_label_strategy = []
             my_trade_buy_open_label_strategy = []
 
             if my_trades_open not in none_data:
-                my_trade_buy_open = [
-                    o for o in my_trades_open if o["direction"] == "buy"
-                ]
-                my_trade_buy_open_label_strategy = [
-                    o for o in my_trade_buy_open if label_strategy in o["label"]
-                ]
+                my_trade_buy_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
 
             if open_orders not in none_data:
-                order_buy_open = [o for o in open_orders if o["direction"] == "buy"]
-                order_buy_open_label_strategy = [
-                    o for o in order_buy_open if label_strategy in o["label"]
-                ]
+                order_buy_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
 
             order_and_position_buy_ok = (
                 my_trade_buy_open_label_strategy in none_data
@@ -687,19 +683,11 @@ class ApplyHedgingSpot:
             my_trade_sell_open_label_strategy = []
 
             if open_orders not in none_data:
-                order_sell_open = [o for o in open_orders if o["direction"] == "sell"]
-                order_sell_open_label_strategy = [
-                    o for o in order_sell_open if label_strategy in o["label"]
-                ]
+                order_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
                 # log.warning (order_sell_open_label_strategy)
             if my_trades_open not in none_data:
-                my_trade_sell_open = [
-                    o for o in my_trades_open if o["direction"] == "sell"
-                ]
-                my_trade_sell_open_label_strategy = [
-                    o for o in my_trade_sell_open if label_strategy in o["label"]
-                ]
-                
+                my_trade_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
+
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
