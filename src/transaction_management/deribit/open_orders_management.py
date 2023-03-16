@@ -402,9 +402,9 @@ class MyOrders:
         transactions = self.transactions_label_strategy(
             open_transactions_label, strategy_label
         )
-        log.warning (strategy_label)
-        log.warning (transactions)
-        log.warning (open_transactions_label)
+        #log.warning (strategy_label)
+        #log.warning (transactions)
+        #log.warning (open_transactions_label)
 
         return {
             "net_sum_order_size": []
