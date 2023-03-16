@@ -175,6 +175,11 @@ class StreamAccountData:
 
                         if (
                             message_channel
+                            == f"user.portfolio.{currency.upper()}"
+                        ):
+                            log.info(data_orders)
+                        if (
+                            message_channel
                             == f"user.changes.any.{currency.upper()}.raw"
                         ):
                             log.info(data_orders)
