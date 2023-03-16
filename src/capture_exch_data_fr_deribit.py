@@ -175,7 +175,7 @@ class StreamAccountData:
 
                         if (
                             message_channel
-                            == f"user.portfolio.{currency.upper()}"
+                            == f"user.portfolio.{currency.lower()}"
                         ):
                             log.info(data_orders)
                         if (
