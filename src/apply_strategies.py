@@ -699,11 +699,7 @@ class ApplyHedgingSpot:
                 my_trade_sell_open_label_strategy = [
                     o for o in my_trade_sell_open if label_strategy in o["label"]
                 ]
-                if "hedgingSpot" in label_strategy:
-                    log.warning(label_strategy)
-                    log.warning(my_trade_sell_open)
-                    log.info(my_trade_sell_open_label_strategy)
-
+                
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
@@ -752,7 +748,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
-                # log.warning (my_trades_open)
+                log.warning (my_trades_open)
 
                 # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
 
