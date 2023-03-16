@@ -484,14 +484,15 @@ class MyOrders:
                 max_size = max_size * -1 if max_size > 0 else max_size
 
                 main_orders_sum_vs_max_orders = max_size - net_sum_current_position
-                #log.error (f'main_orders_sum_vs_max_orders {main_orders_sum_vs_max_orders}')
+                positions_covered_by_orders = net_sum_current_position - open_orders_strategy_limit_net_sum
+                log.error (f'positions_covered_by_orders {positions_covered_by_orders}')
                 #log.error (f'max_size {max_size}')
                 #log.error (f'net_sum_current_position {net_sum_current_position}')
 
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
                     excess_position = main_orders_sum_vs_max_orders
-                    remain_exit_orders = main_orders_sum_vs_max_orders
+                    remain_exit_orders = net_sum_current_position - open_orders_strategy_limit_net_sum
                     side = "buy"
 
                 if main_orders_sum_vs_max_orders < 0:
@@ -518,11 +519,12 @@ class MyOrders:
                 if main_orders_sum_vs_max_orders < 0:
                     remain_main_orders = abs(main_orders_sum_vs_max_orders)
                     remain_exit_orders = 0
-                    remain_exit_orders = 0
+                    excess_position = 0
                     side = "buy"
 
                 if main_orders_sum_vs_max_orders == 0:
                     remain_main_orders = 0
+                    remain_exit_orders = 0
                     excess_position = 0
                     side = None
 
@@ -575,6 +577,7 @@ class MyOrders:
 
             return {
                 "remain_main_orders": remain_main_orders,
+                "excess_position": excess_position,
                 "remain_exit_orders": remain_exit_orders,
                 "no_limit_open_order_outstanding": len_open_order_label_strategy_type_limit
                 == [],
