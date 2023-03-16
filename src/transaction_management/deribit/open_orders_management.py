@@ -403,7 +403,7 @@ class MyOrders:
             open_transactions_label, strategy_label
         )
         #log.warning (strategy_label)
-        #log.warning (transactions)
+        log.critical (f'transactions {transactions}')
         #log.warning (open_transactions_label)
 
         return {
@@ -471,6 +471,8 @@ class MyOrders:
             open_orders_strategy_market_net_sum =  open_orders_strategy_market['net_sum_order_size']
 
             #! same result/recheck:
+            log.warning (f'label_basic_strategy {label_basic_strategy}')
+            log.warning (f'basic_strategy {basic_strategy}')
             log.warning (f'open_orders_strategy_limit {open_orders_strategy_limit} open_orders_strategy_limit_net_sum {open_orders_strategy_limit_net_sum}')
             log.warning (f'open_orders_strategy_market {open_orders_strategy_market} open_orders_strategy_market_net_sum {open_orders_strategy_market_net_sum}')
             # log.warning (f'basic_strategy {basic_strategy}')
