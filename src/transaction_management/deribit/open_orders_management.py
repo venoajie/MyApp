@@ -463,8 +463,14 @@ class MyOrders:
 
             # default result for order_type_market
             order_type_market = False
+            
+            open_orders_from_db = self.open_orders_from_db
+            open_orders_strategy_limit = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
+            open_orders_strategy_market = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
 
             #! same result/recheck:
+            log.warning (f'open_orders_strategy_limit {open_orders_strategy_limit}')
+            log.warning (f'open_orders_strategy_market {open_orders_strategy_market}')
             # log.warning (f'basic_strategy {basic_strategy}')
             # log.warning (f'label_basic_strategy {label_basic_strategy}')
             # log.warning (f'strategy_label_from_outstanding_transactions {strategy_label_from_outstanding_transactions}')
@@ -511,7 +517,7 @@ class MyOrders:
                     remain_exit_orders = 0
                     side = None
 
-            open_orders_from_db = self.open_orders_from_db
+            
             len_open_order_label_strategy_type_market = []
             len_open_order_label_strategy_type_limit = []
 
