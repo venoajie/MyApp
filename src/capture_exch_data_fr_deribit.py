@@ -107,7 +107,7 @@ class StreamAccountData:
                 message: bytes = await self.websocket_client.recv()
                 message: dict = orjson.loads(message)
                 message_channel: str = None
-                log.warning (message_channel)
+                #log.warning (message)
                 if "id" in list(message):
                     if message["id"] == 9929:
                         syn = apply_strategies.ApplyHedgingSpot(
@@ -166,7 +166,7 @@ class StreamAccountData:
                 if "params" in list(message):
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
-                        # log.info (message_channel)
+                        log.info (message_channel)
 
                         data_orders: list = message["params"]["data"]
                         currency: str = string_modification.extract_currency_from_text(
