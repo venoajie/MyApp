@@ -474,9 +474,9 @@ class MyOrders:
                 max_size = max_size * -1 if max_size > 0 else max_size
 
                 main_orders_sum_vs_max_orders = max_size - net_sum_current_position
-                log.error (f'main_orders_sum_vs_max_orders {main_orders_sum_vs_max_orders}')
-                log.error (f'max_size {max_size}')
-                log.error (f'net_sum_current_position {net_sum_current_position}')
+                #log.error (f'main_orders_sum_vs_max_orders {main_orders_sum_vs_max_orders}')
+                #log.error (f'max_size {max_size}')
+                #log.error (f'net_sum_current_position {net_sum_current_position}')
 
                 if main_orders_sum_vs_max_orders > 0:
                     remain_main_orders = 0
