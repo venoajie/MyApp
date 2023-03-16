@@ -78,7 +78,7 @@ def check_and_save_every_30_seconds():
         catch_error(error)
 
 
-@app.task(every("300 seconds"))
+#@app.task(every("300 seconds"))
 def check_and_save_every_5_minutes():
     try:
         # https://towardsdatascience.com/understand-async-await-with-asyncio-for-asynchronous-programming-in-python-e0bc4d25808e
