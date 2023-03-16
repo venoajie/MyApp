@@ -692,6 +692,9 @@ class ApplyHedgingSpot:
             if "hedgingSpot" in label_strategy:
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
+                    f"label_strategy {label_strategy}"
+                )
+                log.critical(
                     f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
                 )
                 log.critical(
