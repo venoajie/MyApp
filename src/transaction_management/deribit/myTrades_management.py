@@ -125,6 +125,29 @@ class MyTrades:
             ),
         }
 
+    def transactions_same_side_and_label(self, side: str, label_strategy: str, my_trades_open: list = None) -> dict:
+        """ 
+        
+        """
+        if my_trades_open == None:
+            my_trades_open = self.my_trades
+            
+        if my_trades_open !=[]     :
+            my_trade_side = [
+                    o for o in my_trades_open if o["direction"] == side
+                ]
+            log.critical (my_trades_open)
+            my_trade_side_strategy_label = [] if my_trade_side == [] else [
+                    o for o in my_trade_side if label_strategy in o["label"]
+                    ]
+            net_sum_my_trade_side_strategy_label = 0 if my_trade_side_strategy_label== []  else self.net_sum_trade_size(my_trade_side_strategy_label)
+        
+        return {
+            "my_trade_side": [] if my_trades_open == [] else my_trade_side,
+            "my_trade_side_strategy_label": [] if my_trades_open == [] else my_trade_side_strategy_label,
+            "net_sum_my_trade_side_strategy_label": net_sum_my_trade_side_strategy_label,
+        }
+        
     def transactions_same_id(self, label: str, my_trades_open: list) -> None:
         """ """
         transactions_under_same_id = [
