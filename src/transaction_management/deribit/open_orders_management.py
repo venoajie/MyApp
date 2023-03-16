@@ -468,7 +468,10 @@ class MyOrders:
             open_orders_strategy_limit = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
             open_orders_strategy_market = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'market')
             open_orders_strategy_limit_net_sum = open_orders_strategy_limit['net_sum_order_size']
+            open_orders_strategy_limit_net_sum = 0 if open_orders_strategy_limit_net_sum == [] else open_orders_strategy_limit_net_sum
+
             open_orders_strategy_market_net_sum =  open_orders_strategy_market['net_sum_order_size']
+            open_orders_strategy_market_net_sum = 0 if open_orders_strategy_market_net_sum == [] else open_orders_strategy_market_net_sum
 
             #! same result/recheck:
             log.warning (f'label_basic_strategy {label_basic_strategy}')
