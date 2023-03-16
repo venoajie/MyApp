@@ -520,9 +520,10 @@ class ApplyHedgingSpot:
         # log.debug (strategy_attr)
 
         if "supplyDemandShort60" in strategy_attr["strategy"]:
-            log.warning(strategy_label)
+            log.critical(strategy_label)
+            log.debug(f'net_sum_current_position {net_sum_current_position}')
+            log.info(f'trade_based_on_label_strategy {trade_based_on_label_strategy}')
             log.warning(open_trade)
-            log.warning(trade_based_on_label_strategy)
             log.warning(
                 f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
             )
