@@ -424,6 +424,7 @@ class MyOrders:
         }
 
     def calculate_order_size_and_side_for_outstanding_transactions(self,
+                                                                   strategy,
                                                                    main_side: str, 
                                                                    net_sum_current_position: float,
                                                                    net_sum_open_orders_strategy_limit: int, 
@@ -461,12 +462,15 @@ class MyOrders:
 
         main_orders_qty = 0
         main_orders_side =  None
+        main_orders_type =  None
+
         exit_orders_limit_qty = 0
         exit_orders_limit_side = None
+        exit_orders_limit_type= None
+
         exit_orders_market_qty = 0
         exit_orders_market_side = None
-        order_type_market = None
-        order_type_limit = None
+        exit_orders_market_type = None
         
         if main_side == "sell":
             
@@ -479,12 +483,13 @@ class MyOrders:
                     and net_sum_open_orders_strategy_market==0:
                 main_orders_qty = abs(max_size)
                 main_orders_side =  'sell'
+                main_orders_type = 'limit'
                 exit_orders_limit_qty = abs(max_size)
                 exit_orders_limit_side = "buy"
+                exit_orders_limit_type = "limit"                
                 exit_orders_market_qty = abs(max_size)
                 exit_orders_market_side = "buy"
-                order_type_limit = "sell"
-                order_type_market = "sell"
+                exit_orders_market_type = "stop_market"
 
 
             # main has executed
@@ -497,19 +502,21 @@ class MyOrders:
                         and net_sum_open_orders_strategy_market !=0:
                     exit_orders_limit_qty = abs(net_sum_current_position)
                     exit_orders_limit_side = "buy"
+                    exit_orders_limit_type = "limit"                
+
                     exit_orders_market_qty = 0
                     exit_orders_market_side = None
-                    order_type_limit = "sell"
-                    order_type_market = "sell"
+                    exit_orders_market_type = "stop_market"
                     
                 if  net_sum_open_orders_strategy_limit!=0\
                         and net_sum_open_orders_strategy_market ==0:
                     exit_orders_limit_qty = 0
                     exit_orders_limit_side = None
+                    exit_orders_limit_type = "limit"                
+
                     exit_orders_market_qty = abs(net_sum_current_position) 
                     exit_orders_market_side = "buy"
-                    order_type_limit = "sell"
-                    order_type_market = "sell"
+                    exit_orders_market_type = "stop_market"
 
         if main_side == "buy":
 
@@ -521,10 +528,10 @@ class MyOrders:
                 main_orders_side =  'buy'
                 exit_orders_limit_qty = abs(max_size)
                 exit_orders_limit_side = "sell"
-                order_type_limit = "sell"
+                exit_orders_limit_type = "limit"                
                 exit_orders_market_qty = abs(max_size)
                 exit_orders_market_side = "sell"
-                order_type_market
+                exit_orders_market_type = 'stop_market'
                 
                 
             # main has execute
@@ -537,29 +544,30 @@ class MyOrders:
                         and net_sum_open_orders_strategy_market!= 0:
                     exit_orders_limit_qty = abs(net_sum_current_position)
                     exit_orders_limit_side = "sell"
-                    order_type_limit = "sell"
+                    exit_orders_limit_type = "limit"                
                     exit_orders_market_qty = 0
                     exit_orders_market_side = None
-                    order_type_market = "sell"
+                    exit_orders_market_type = "stop_market"
                 
                 if net_sum_open_orders_strategy_limit!=0\
                         and net_sum_open_orders_strategy_market== 0:
                     exit_orders_limit_qty = 0
                     exit_orders_limit_side = None
-                    order_type_limit = "sell"
+                    exit_orders_limit_type = "limit"                
                     exit_orders_market_qty = abs(net_sum_current_position)
                     exit_orders_market_side = "sell"
-                    order_type_market = "sell"
+                    exit_orders_market_type = "stop_market"
                 
         return {
             "main_orders_qty": main_orders_qty,
             "main_orders_side": main_orders_side,
+            'main_orders_type':  main_orders_type,
             "exit_orders_limit_qty": exit_orders_limit_qty,
             "exit_orders_limit_side": exit_orders_limit_side,
-            "order_type_market": order_type_market,
+            "exit_orders_limit_type": exit_orders_limit_type,
             "exit_orders_market_qty": exit_orders_market_qty,
             "exit_orders_market_side": exit_orders_market_side,
-            "order_type_limit": order_type_limit,
+            "exit_orders_market_type": exit_orders_market_type,
         }
             
     def determine_order_size_and_side_for_outstanding_transactions(
@@ -629,6 +637,7 @@ class MyOrders:
 
             if side_basic_strategy == "sell":
                 calculate_order_size_and_side= self.calculate_order_size_and_side_for_outstanding_transactions(
+                                                                    label_basic_strategy,
                                                                    side_basic_strategy, 
                                                                    net_sum_current_position,
                                                                    net_sum_open_orders_strategy_limit, 
