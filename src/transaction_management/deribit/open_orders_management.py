@@ -464,7 +464,7 @@ class MyOrders:
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning (strategy_label)
 
-        get_strategy_int = str_mod.get_strings_before_character(strategy_label, "-", 1)
+        get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
 
         label_closed = f"{strategy_label}-closed-{get_strategy_int}"
 
