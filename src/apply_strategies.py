@@ -516,11 +516,11 @@ class ApplyHedgingSpot:
         if net_sum_current_position !=0:
             #log.critical(strategy_attr)
 
-            side = strategy_attr["side"]
+            side_main = strategy_attr["side"]
             determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
                     strategy_label, 
-                    side, 
+                    side_main, 
                     net_sum_current_position,
                     net_sum_open_orders_strategy_limit,
                     net_sum_open_orders_strategy_market,
@@ -530,6 +530,8 @@ class ApplyHedgingSpot:
             log.critical(determine_size_and_side)
             remain_main_orders = abs(determine_size_and_side["main_orders_qty"])
             remain_exit_orders = abs(determine_size_and_side["exit_orders_limit_qty"])
+            exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
+            exit_orders_market_side= determine_size_and_side['exit_orders_market_side']
             
             no_limit_open_order_outstanding = open_orders_strategy_limit["len_transactions"]
             #!#################################
@@ -541,7 +543,7 @@ class ApplyHedgingSpot:
                 log.info(f'trade_based_on_label_strategy {trade_based_on_label_strategy}')
                 #log.warning(open_trade)
                 log.warning(
-                    f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
+                    f"exit_orders_limit_side {exit_orders_limit_side} exit_orders_market_side {exit_orders_market_side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
                 )
                 log.warning(determine_size_and_side["exit_orders_market_type"])
         # else:
@@ -553,18 +555,21 @@ class ApplyHedgingSpot:
 
             #!#################################
 
-            if side != None:
-                price = self.optimising_exit_price(side, best_bid_prc, best_ask_prc, None)
+            if exit_orders_limit_side != None:
+                price = self.optimising_exit_price(exit_orders_limit_side, best_bid_prc, best_ask_prc, None)
+
+            if exit_orders_market_side != None:
+                price = self.optimising_exit_price(exit_orders_market_side, best_bid_prc, best_ask_prc, None)
 
             params_limit = {
                 "instrument": trade_based_on_label_strategy["instrument"],
-                "side": side,
+                "side": exit_orders_limit_side,
                 "type": "limit",
             }
 
             params_market = {
                 "instrument": trade_based_on_label_strategy["instrument"],
-                "side": side,
+                "side": exit_orders_market_side,
                 "type": "stop_market",
             }
 
