@@ -1550,11 +1550,17 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                         if net_open_orders_market== 0:
                                             assert calculation_result['main_orders_qty'] == abs(size)
                                             assert calculation_result['main_orders_side'] == 'sell'
+                                            assert calculation_result['main_orders_type'] == 'sell'
                                             assert calculation_result['exit_orders_limit_qty'] == abs(size)
                                             assert calculation_result['exit_orders_limit_side'] == 'buy'
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == abs(size)
                                             assert calculation_result['exit_orders_market_side'] == 'buy'
+                                            assert calculation_result['exit_orders_market_type'] == 'buy'                                            
+                                            assert calculation_result['exit_orders_market_qty'] == 'buy'
+                                            assert calculation_result['exit_orders_market_side'] == 'buy'
 
+            
                                 if net_current_position== -10:
                             
                                     assert calculation_result['main_orders_qty'] == 0
@@ -1564,15 +1570,19 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                         if net_open_orders_market== 0:
                                             assert calculation_result['exit_orders_limit_qty'] == 0
                                             assert calculation_result['exit_orders_limit_side'] == None
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == abs(net_current_position)
+                                            assert calculation_result['exit_orders_market_side'] == 'buy'
                                             assert calculation_result['exit_orders_market_side'] == 'buy'
 
                                     if net_open_orders_limit== 0:
                                         if net_open_orders_market== 10:
                                             assert calculation_result['exit_orders_limit_qty'] == abs(net_current_position)
                                             assert calculation_result['exit_orders_limit_side'] == 'buy'
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == 0
                                             assert calculation_result['exit_orders_market_side'] == None
+                                            assert calculation_result['exit_orders_market_type'] == 'buy'
 
                         if side =='buy':
                             if size == 10:
@@ -1583,8 +1593,10 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                             assert calculation_result['main_orders_side'] == 'buy'
                                             assert calculation_result['exit_orders_limit_qty'] == size
                                             assert calculation_result['exit_orders_limit_side'] == 'sell'
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == size
                                             assert calculation_result['exit_orders_market_side'] == 'sell'
+                                            assert calculation_result['exit_orders_market_type'] == 'buy'
 
                                 if net_current_position== 10:
                             
@@ -1595,13 +1607,17 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                         if net_open_orders_market== 0:
                                             assert calculation_result['exit_orders_limit_qty'] == 0
                                             assert calculation_result['exit_orders_limit_side'] == None
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == abs(net_current_position)
                                             assert calculation_result['exit_orders_market_side'] == 'sell'
+                                            assert calculation_result['exit_orders_market_type'] == 'buy'
 
                                     if net_open_orders_limit== 0:
                                         if net_open_orders_market== 10:
                                             assert calculation_result['exit_orders_limit_qty'] == abs(net_current_position)
                                             assert calculation_result['exit_orders_limit_side'] == 'sell'
+                                            assert calculation_result['exit_orders_limit_type'] == 'buy'
                                             assert calculation_result['exit_orders_market_qty'] == 0
                                             assert calculation_result['exit_orders_market_side'] == None
+                                            assert calculation_result['exit_orders_market_type'] == 'buy'
 
