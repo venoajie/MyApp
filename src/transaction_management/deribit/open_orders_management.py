@@ -426,7 +426,7 @@ class MyOrders:
         }
 
     def calculate_order_size_and_side_for_outstanding_transactions(self,
-                                                                   strategy,
+                                                                   strategy_label,
                                                                    main_side: str, 
                                                                    net_sum_current_position: float,
                                                                    net_sum_open_orders_strategy_limit: int, 
@@ -461,6 +461,10 @@ class MyOrders:
         positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
         
         main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+
+        get_strategy_int = str_mod.get_strings_before_character(strategy_label, "-", 1)
+
+        label_closed = f"{strategy_label}-closed-{get_strategy_int}"
 
         main_orders_qty = 0
         main_orders_side =  None
@@ -497,14 +501,13 @@ class MyOrders:
                 exit_orders_market_side = "buy"
                 exit_orders_market_type = "stop_market"
 
-
             # main has executed
             if net_sum_current_position < 0:
             
                 main_orders_qty = 0
                 main_orders_side =  None
                 order_type_market = "sell"
-                if 'hedgingSpot' in strategy:
+                if 'hedgingSpot' in strategy_label:
                     if  net_sum_open_orders_strategy_limit==0:
                         exit_orders_limit_qty = abs(net_sum_current_position)
                         exit_orders_limit_side = "buy"
@@ -585,200 +588,7 @@ class MyOrders:
             "exit_orders_market_qty": exit_orders_market_qty,
             "exit_orders_market_side": exit_orders_market_side,
             "exit_orders_market_type": exit_orders_market_type,
+            "label_closed": label_closed,
+            
         }
             
-    def determine_order_size_and_side_for_outstanding_transactions(
-        self,
-        strategy_label_from_outstanding_transactions: str,
-        net_sum_current_position: int,
-        max_size: int,
-    ) -> None:
-        """
-        Determine order size based on current position size vs current position
-        - Additional main order size
-        - Exit order size
-        - Side for every order size
-
-        Args:
-            net_sum_current_position (int): sum myTradebuy - sum myTrade sell
-            strategy_label_from_outstanding_transactions (str): taken from o/s my trades label (format example = supplyDemandShort60)
-
-        Returns:
-            dict
-
-        Example:
-            data_original = 'hedgingSpot-open-1671189554374' become 'hedgingSpot'
-
-        """
-        from strategies import entries_exits
-
-        strategies = entries_exits.strategies
-
-        try:
-            # result: 'hedgingSpot'/'supplyDemandShort60'
-            basic_strategy = str_mod.get_strings_before_character(
-                strategy_label_from_outstanding_transactions, "-", 0
-            )
-
-            side_basic_strategy = [
-                o for o in strategies if basic_strategy in o["strategy"]
-            ][0]["side"]
-
-            # result: 'hedgingSpot'/'supplyDemandShort60'
-            label_basic_strategy = [
-                o for o in strategies if basic_strategy in o["strategy"]
-            ][0]["strategy"]
-
-            # default result for order_type_market
-            order_type_market = False
-            
-            open_orders_from_db = self.open_orders_from_db
-            open_orders_strategy_limit = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'limit')
-            open_orders_strategy_market = self.trade_based_on_label_strategy(open_orders_from_db,label_basic_strategy,'market')
-            net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
-            net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit
-
-            net_sum_open_orders_strategy_market =  open_orders_strategy_market['net_sum_order_size']
-            net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
-
-            #! same result/recheck:
-            log.warning (f'label_basic_strategy {label_basic_strategy}')
-            log.warning (f'basic_strategy {basic_strategy}')
-            log.warning (f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit} open_orders_strategy_limit {open_orders_strategy_limit} ')
-            log.warning (f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market} open_orders_strategy_market {open_orders_strategy_market} ')
-            positions_covered_by_limit_orders = net_sum_current_position - net_sum_open_orders_strategy_limit
-            positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
-            # log.warning (f'basic_strategy {basic_strategy}')
-            # log.warning (f'label_basic_strategy {label_basic_strategy}')
-            # log.warning (f'strategy_label_from_outstanding_transactions {strategy_label_from_outstanding_transactions}')
-
-            if side_basic_strategy == "sell":
-                calculate_order_size_and_side= self.calculate_order_size_and_side_for_outstanding_transactions(
-                                                                    label_basic_strategy,
-                                                                   side_basic_strategy, 
-                                                                   net_sum_current_position,
-                                                                   net_sum_open_orders_strategy_limit, 
-                                                                   net_sum_open_orders_strategy_market, 
-                                                                   max_size
-                                                                   )
-                # sell side is always negative
-                max_size = max_size * -1 if max_size > 0 else max_size
-
-                main_orders_sum_vs_max_orders = max_size - net_sum_current_position
-                
-                log.error (f'positions_covered_by_limit_orders {positions_covered_by_limit_orders}')
-                #log.error (f'max_size {max_size}')
-                #log.error (f'net_sum_current_position {net_sum_current_position}')
-                
-                # net sell positions > net order
-                if positions_covered_by_limit_orders < 0:
-                    remain_main_orders = 0
-                    excess_position = main_orders_sum_vs_max_orders
-                    remain_exit_orders = net_sum_current_position - net_sum_open_orders_strategy_limit
-                    side = "buy"
-
-                if main_orders_sum_vs_max_orders < 0:
-                    remain_main_orders = main_orders_sum_vs_max_orders
-                    remain_exit_orders = 0
-                    excess_position = 0
-                    side = "sell"
-
-                if main_orders_sum_vs_max_orders == 0:
-                    remain_main_orders = 0
-                    remain_exit_orders = 0
-                    excess_position = 0
-                    side = None
-
-            if side_basic_strategy == "buy":
-                
-                calculate_order_size_and_side= self.calculate_order_size_and_side_for_outstanding_transactions(
-                                                                   side_basic_strategy, 
-                                                                   net_sum_current_position,
-                                                                   net_sum_open_orders_strategy_limit, 
-                                                                   net_sum_open_orders_strategy_market, 
-                                                                   max_size
-                                                                   )
-                main_orders_sum_vs_max_orders = net_sum_current_position - max_size
-
-                if main_orders_sum_vs_max_orders > 0:
-                    remain_main_orders = 0
-                    remain_exit_orders = -main_orders_sum_vs_max_orders
-                    excess_position = -main_orders_sum_vs_max_orders
-                    side = "sell"
-
-                if main_orders_sum_vs_max_orders < 0:
-                    remain_main_orders = abs(main_orders_sum_vs_max_orders)
-                    remain_exit_orders = 0
-                    excess_position = 0
-                    side = "buy"
-
-                if main_orders_sum_vs_max_orders == 0:
-                    remain_main_orders = 0
-                    remain_exit_orders = 0
-                    excess_position = 0
-                    side = None
-
-            
-            len_open_order_label_strategy_type_market = []
-            len_open_order_label_strategy_type_limit = []
-
-            log.critical(label_basic_strategy)
-            # log.warning (open_orders_from_db ==[])
-            # log.warning (open_orders_from_db)
-            if open_orders_from_db == []:
-                order_type_market = True
-
-            else:
-                # get open order with the respective strategy and order type take_limit
-                # to optimise the profit, using take_limit as order type default order
-                open_order_label_strategy_type_limit = (
-                    self.trade_based_on_label_strategy(
-                        open_orders_from_db, basic_strategy, "limit"
-                    )
-                )
-                len_open_order_label_strategy_type_limit = (
-                    open_order_label_strategy_type_limit["len_transactions"]
-                )
-
-                # get open order with the respective strategy and order type stop market
-                # to reduce the possibility of order not executed, stop loss using
-                # stop market as order type default order
-                open_order_label_strategy_type_market = (
-                    self.trade_based_on_label_strategy(
-                        open_orders_from_db, basic_strategy, "stop_market"
-                    )
-                )
-                len_open_order_label_strategy_type_market = (
-                    open_order_label_strategy_type_market["len_transactions"]
-                )
-
-                # log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market}')
-                # log.warning ('hedgingSpot' in label_basic_strategy)
-                # log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market == []}')
-                # log.warning (f'len_open_order_label_strategy_type_market {len_open_order_label_strategy_type_market < 1}')
-
-                order_type_market = (
-                    False
-                    if "hedgingSpot" in label_basic_strategy
-                    else True
-                    if len_open_order_label_strategy_type_market == []
-                    else len_open_order_label_strategy_type_market < 1
-                )
-
-            return {'calculate_order_size_and_side': calculate_order_size_and_side,
-                "remain_main_orders": remain_main_orders,
-                "excess_position": excess_position,
-                "remain_exit_orders": remain_exit_orders,
-                "no_limit_open_order_outstanding": len_open_order_label_strategy_type_limit
-                == [],
-                "no_market_open_order_outstanding": len_open_order_label_strategy_type_limit
-                == [],
-                "order_type_market": order_type_market,
-                "order_type_limit": True
-                if len_open_order_label_strategy_type_limit == []
-                else len_open_order_label_strategy_type_limit < 1,
-                "side": side,
-            }
-
-        except Exception as error:
-            catch_error(error)
