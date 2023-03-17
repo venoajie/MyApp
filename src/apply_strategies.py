@@ -543,7 +543,6 @@ class ApplyHedgingSpot:
             determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
             determine_size_and_side['price'] = price_as_per_label
             determine_size_and_side['timestamp'] = time_as_per_label
-            log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
 
             return determine_size_and_side
 
@@ -829,10 +828,10 @@ class ApplyHedgingSpot:
                         )
                         log.error(f"exit_order_allowed {exit_order_allowed}")
                         
-                        if exit_order_allowed ['exit_orders_limit_type']== 'limit':
+                        if exit_order_allowed ['exit_orders_limit_qty'] != 0:
                             log.warning(f"exit_orders_limit_type")
                         
-                        if exit_order_allowed ['exit_orders_market_type']== 'stop_market':
+                        if exit_order_allowed ['exit_orders_market_qty'] != 0:
                             log.debug(f"exit_orders_market_type")
                             
 
