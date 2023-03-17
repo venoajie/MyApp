@@ -530,10 +530,8 @@ class ApplyHedgingSpot:
             log.critical(determine_size_and_side)
             remain_main_orders = abs(determine_size_and_side["main_orders_qty"])
             remain_exit_orders = abs(determine_size_and_side["exit_orders_limit_qty"])
-            no_limit_open_order_outstanding = determine_size_and_side[
-                "no_limit_open_order_outstanding"
-            ]
-
+            
+            no_limit_open_order_outstanding = open_orders_strategy_limit["len_transactions"]
             #!#################################
             # log.debug (strategy_attr)
 
