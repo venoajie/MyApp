@@ -502,7 +502,7 @@ class ApplyHedgingSpot:
             open_trade, strategy_label
         )
         net_sum_current_position = trade_based_on_label_strategy["net_sum_order_size"]
-        # log.error (f'net_sum_current_position {net_sum_current_position}')
+        log.error (f'net_sum_current_position {net_sum_current_position}')
 
         determine_size_and_side = (
             open_orders.determine_order_size_and_side_for_outstanding_transactions(
