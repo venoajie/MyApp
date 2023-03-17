@@ -498,6 +498,7 @@ class ApplyHedgingSpot:
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
             open_trade, strategy_label
         )
+        
         net_sum_current_position = trade_based_on_label_strategy["net_sum_order_size"]
             
         open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
@@ -814,6 +815,13 @@ class ApplyHedgingSpot:
                             )
                         )
                         log.error(f"exit_order_allowed {exit_order_allowed}")
+                        
+                        if exit_order_allowed ['exit_orders_limit_type']== 'limit':
+                            log.warning(f"exit_orders_limit_type")
+                        
+                        if exit_order_allowed ['exit_orders_market_type']== 'stop_market':
+                            log.debug(f"exit_orders_market_type")
+                            
 
                 for instrument in instrument_transactions:
                     #log.critical(f"{instrument}")
