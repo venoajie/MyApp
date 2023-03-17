@@ -604,7 +604,7 @@ class ApplyHedgingSpot:
                 if determine_size_and_side["exit_orders_limit_type"]:
                     params_limit.update(
                         {
-                            "size": determine_size_and_side["remain_exit_orders"],
+                            "size": determine_size_and_side["exit_orders_limit_qty"],
                             "take_profit_usd": strategy_attr["take_profit_usd"],
                             "label": label_closed,
                         }
