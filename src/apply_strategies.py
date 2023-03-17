@@ -508,6 +508,10 @@ class ApplyHedgingSpot:
 
         net_sum_open_orders_strategy_market =  open_orders_strategy_market['net_sum_order_size']
         net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
+        size_as_per_label = [o['amount'] for o in open_trade if o['label'] == label]
+        price_as_per_label = [o['price'] for o in open_trade if o['label'] == label]
+        time_as_per_label = [o['timestamp'] for o in open_trade if o['label'] == label]
+        log.warning (f'size_as_per_label {size_as_per_label} price_as_per_label {price_as_per_label} time_as_per_label {time_as_per_label}')
         
         if net_sum_current_position !=0:
             #log.critical(strategy_attr)
