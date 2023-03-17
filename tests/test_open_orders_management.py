@@ -1573,7 +1573,7 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                                 if net_open_orders_market== 0:
                                                     assert calculation_result['exit_orders_limit_qty'] == 0
                                                     assert calculation_result['exit_orders_limit_side'] == None
-                                                    assert calculation_result['exit_orders_limit_type'] == 'buy'
+                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
                                                     assert calculation_result['exit_orders_market_qty'] == abs(net_current_position)
                                                     assert calculation_result['exit_orders_market_side'] == 'buy'
                                                     assert calculation_result['exit_orders_market_side'] == 'buy'
