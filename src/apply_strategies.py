@@ -495,18 +495,11 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
 
-        get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
-
-        label_closed = f"{strategy_label}-closed-{get_strategy_int}"
-        
-
         trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
             open_trade, strategy_label
         )
         net_sum_current_position = trade_based_on_label_strategy["net_sum_order_size"]
-        
-        log.error (f'net_sum_current_position {net_sum_current_position}')
-    
+            
         open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
         open_orders_strategy_market = open_orders.trade_based_on_label_strategy(None,strategy_label,'market')
         net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
@@ -1167,7 +1160,6 @@ async def main():
 
     except Exception as error:
         catch_error(error, 30)
-
 
 if __name__ == "__main__":
     try:
