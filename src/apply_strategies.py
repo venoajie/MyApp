@@ -504,12 +504,20 @@ class ApplyHedgingSpot:
         net_sum_current_position = trade_based_on_label_strategy["net_sum_order_size"]
         
         log.error (f'net_sum_current_position {net_sum_current_position}')
+    
+        open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
+        open_orders_strategy_market = open_orders.trade_based_on_label_strategy(None,strategy_label,'market')
+        net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
+        net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit
+
+        net_sum_open_orders_strategy_market =  open_orders_strategy_market['net_sum_order_size']
+        net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
         
         if net_sum_current_position !=0:
 
             determine_size_and_side = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    strategy_label, net_sum_current_position, max_size
+                open_orders.calculate_order_size_and_side_for_outstanding_transactions(
+                    strategy_label, side, net_sum_current_position, max_size
                 )
             )
             log.critical(determine_size_and_side)
