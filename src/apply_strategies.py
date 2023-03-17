@@ -517,6 +517,7 @@ class ApplyHedgingSpot:
         
         # determine position sizing-hedging
         if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
+            determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
             log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
 
         if net_sum_current_position !=0:
