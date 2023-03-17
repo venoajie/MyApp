@@ -514,14 +514,15 @@ class ApplyHedgingSpot:
         net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
         
         if net_sum_current_position !=0:
+            log.critical(strategy_attr)
 
+            side = strategy_attr["side"]
             determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
                     strategy_label, side, net_sum_current_position, max_size
                 )
             )
             log.critical(determine_size_and_side)
-            side = determine_size_and_side["side"]
             remain_main_orders = abs(determine_size_and_side["remain_main_orders"])
             remain_exit_orders = abs(determine_size_and_side["remain_exit_orders"])
             no_limit_open_order_outstanding = determine_size_and_side[
