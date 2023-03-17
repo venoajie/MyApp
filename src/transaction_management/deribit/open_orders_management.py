@@ -481,6 +481,9 @@ class MyOrders:
                 exit_orders_limit_side = "buy"
                 exit_orders_market_qty = abs(max_size)
                 exit_orders_market_side = "buy"
+                order_type_limit = "sell"
+                order_type_market = "sell"
+
 
             # main has executed
             if net_sum_current_position < 0:
@@ -493,6 +496,8 @@ class MyOrders:
                     exit_orders_limit_side = "buy"
                     exit_orders_market_qty = 0
                     exit_orders_market_side = None
+                    order_type_limit = "sell"
+                    order_type_market = "sell"
                     
                 if  net_sum_open_orders_strategy_limit!=0\
                         and net_sum_open_orders_strategy_market ==0:
@@ -500,6 +505,8 @@ class MyOrders:
                     exit_orders_limit_side = None
                     exit_orders_market_qty = abs(net_sum_current_position) 
                     exit_orders_market_side = "buy"
+                    order_type_limit = "sell"
+                    order_type_market = "sell"
 
         if main_side == "buy":
 
@@ -511,8 +518,11 @@ class MyOrders:
                 main_orders_side =  'buy'
                 exit_orders_limit_qty = abs(max_size)
                 exit_orders_limit_side = "sell"
+                order_type_limit = "sell"
                 exit_orders_market_qty = abs(max_size)
                 exit_orders_market_side = "sell"
+                order_type_market
+                
                 
             # main has execute
             if net_sum_current_position > 0:
@@ -523,8 +533,10 @@ class MyOrders:
                         and net_sum_open_orders_strategy_market!= 0:
                     exit_orders_limit_qty = abs(net_sum_current_position)
                     exit_orders_limit_side = "sell"
+                    order_type_limit = "sell"
                     exit_orders_market_qty = 0
                     exit_orders_market_side = None
+                    order_type_market = "sell"
                 
                 if net_sum_open_orders_strategy_limit!=0\
                         and net_sum_open_orders_strategy_market== 0:
