@@ -506,7 +506,7 @@ class ApplyHedgingSpot:
 
         determine_size_and_side = (
             open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                max_size, strategy_label, net_sum_current_position
+                strategy_label, net_sum_current_position, max_size
             )
         )
         log.critical(determine_size_and_side)
