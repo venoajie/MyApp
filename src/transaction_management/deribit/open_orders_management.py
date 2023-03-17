@@ -426,7 +426,7 @@ class MyOrders:
         }
 
     def calculate_order_size_and_side_for_outstanding_transactions(self,
-                                                                   strategy_label,
+                                                                   label,
                                                                    main_side: str, 
                                                                    net_sum_current_position: float,
                                                                    net_sum_open_orders_strategy_limit: int, 
@@ -461,6 +461,7 @@ class MyOrders:
         positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
         
         main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning (strategy_label)
 
         get_strategy_int = str_mod.get_strings_before_character(strategy_label, "-", 1)
@@ -479,6 +480,7 @@ class MyOrders:
         exit_orders_market_side = None
         exit_orders_market_type = None
         
+        log.info(f'strategy_label {strategy_label}')
         log.info(f'main_side {main_side}')
         log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position} < 0')
         log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
