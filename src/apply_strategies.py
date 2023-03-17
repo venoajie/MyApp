@@ -488,7 +488,9 @@ class ApplyHedgingSpot:
         best_bid_prc,
         best_ask_prc,
     ) -> None:
-        """ """
+        """ 
+        To settled transactions that have taken place
+        """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
@@ -527,137 +529,16 @@ class ApplyHedgingSpot:
                     max_size
                 )
             )
-            log.critical(determine_size_and_side)
-            remain_main_orders = abs(determine_size_and_side["main_orders_qty"])
-            remain_exit_orders = abs(determine_size_and_side["exit_orders_limit_qty"])
             exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
             exit_orders_market_side= determine_size_and_side['exit_orders_market_side']
             
-            no_limit_open_order_outstanding = open_orders_strategy_limit["len_transactions"]
-            #!#################################
-            # log.debug (strategy_attr)
-
-            if "supplyDemandShort60" in strategy_attr["strategy"]:
-                log.critical(strategy_label)
-                log.debug(f'net_sum_current_position {net_sum_current_position}')
-                log.info(f'trade_based_on_label_strategy {trade_based_on_label_strategy}')
-                #log.warning(open_trade)
-                log.warning(
-                    f"exit_orders_limit_side {exit_orders_limit_side} exit_orders_market_side {exit_orders_market_side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
-                )
-                log.warning(determine_size_and_side["exit_orders_market_type"])
-        # else:
-        #     log.error(strategy_label)
-            #    log.error(
-            #        f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
-            #    )
-            #    log.error(determine_size_and_side["order_type_market"])
-
-            #!#################################
-
             if exit_orders_limit_side != None:
                 price = self.optimising_exit_price(exit_orders_limit_side, best_bid_prc, best_ask_prc, None)
 
             if exit_orders_market_side != None:
                 price = self.optimising_exit_price(exit_orders_market_side, best_bid_prc, best_ask_prc, None)
 
-            params_limit = {
-                "instrument": trade_based_on_label_strategy["instrument"],
-                "side": exit_orders_limit_side,
-                "type": "limit",
-            }
-
-            params_market = {
-                "instrument": trade_based_on_label_strategy["instrument"],
-                "side": exit_orders_market_side,
-                "type": "stop_market",
-            }
-
-            # check exit order
-            if remain_exit_orders != 0:
-                # result example: 'hedgingSpot'/'supplyDemandShort60'
-                label_mod = str_mod.get_strings_before_character(label, "-", 0)
-
-                #!#################################
-                if label_mod == "supplyDemandShort60":
-                    log.warning(f"label_mod {label_mod}")
-                else:
-                    log.error(f"label_mod {label_mod}")
-                log.debug(determine_size_and_side["exit_orders_market_type"])
-                #!#################################
-
-                # no order type market for hedging spot
-                if (
-                    "hedgingSpot" not in label_mod
-                    and determine_size_and_side["exit_orders_market_type"]
-                ):
-                    params_market.update(
-                        {
-                            "size": determine_size_and_side["exit_orders_market_qty"],
-                            "cut_loss_usd": strategy_attr["cut_loss_usd"],
-                            "label": label_closed,
-                        }
-                    )
-
-                    await self.send_market_order(params_market)
-
-                if determine_size_and_side["exit_orders_limit_type"]:
-                    params_limit.update(
-                        {
-                            "size": determine_size_and_side["exit_orders_limit_qty"],
-                            "take_profit_usd": strategy_attr["take_profit_usd"],
-                            "label": label_closed,
-                        }
-                    )
-
-                    if "hedgingSpot" not in label_mod and no_limit_open_order_outstanding:
-                        await self.send_limit_order(params_limit)
-                        await self.will_new_open_order_create_over_hedge(
-                            strategy_label, net_sum_current_position, max_size
-                        )
-
-                    if "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
-                        label_open_for_filter = f"{label_mod}-open"
-                        log.error(f"label_open_for_filter {label_open_for_filter}")
-                        adjusting_inventories = spot_hedged.adjusting_inventories(
-                            index_price,
-                            self.currency,
-                            strategy_attr["take_profit_pct"],
-                            strategy_attr["averaging"],
-                            label_open_for_filter,
-                        )
-                        log.error(adjusting_inventories)
-                        params_limit.update(
-                            {
-                                "size": adjusting_inventories["size_take_profit"],
-                                "entry_price": best_bid_prc,
-                                "label": adjusting_inventories["label_take_profit"],
-                            }
-                        )
-                        log.error(best_bid_prc < adjusting_inventories["take_profit"])
-                        if best_bid_prc < adjusting_inventories["take_profit"]:
-                            await self.send_limit_order(params_limit)
-                            await self.will_new_open_order_create_over_hedge(
-                                strategy_label, net_sum_current_position, max_size
-                            )
-
-            if remain_main_orders != 0:
-                label_mod = str_mod.get_strings_before_character(label, "-", 0)
-                params_limit.update(
-                    {
-                        "size": remain_main_orders,
-                        "entry_price": price,
-                        "label": label_numbering.labelling("open", strategy_label),
-                    }
-                )
-                log.warning(params_limit)
-                if "hedgingSpot" in label_mod and no_limit_open_order_outstanding:
-                    await self.send_limit_order(params_limit)
-                    await self.will_new_open_order_create_over_hedge(
-                        strategy_label, net_sum_current_position, max_size
-                    )
-
-            return determine_size_and_side  #
+            return determine_size_and_side
 
     async def is_send_main_order_allowed(
         self,
