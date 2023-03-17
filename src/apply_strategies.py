@@ -515,11 +515,6 @@ class ApplyHedgingSpot:
         log.warning (f'label {label} strategy_label {strategy_label}')
         log.warning (f'size_as_per_label {size_as_per_label} price_as_per_label {price_as_per_label} time_as_per_label {time_as_per_label}')
         
-        # determine position sizing-hedging
-        if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
-            determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
-            log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
-
         if net_sum_current_position !=0:
             #log.critical(strategy_attr)
 
@@ -542,6 +537,11 @@ class ApplyHedgingSpot:
 
             if exit_orders_market_side != None:
                 price = self.optimising_exit_price(exit_orders_market_side, best_bid_prc, best_ask_prc, None)
+
+        # determine position sizing-hedging
+        if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
+            determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
+            log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
 
             return determine_size_and_side
 
