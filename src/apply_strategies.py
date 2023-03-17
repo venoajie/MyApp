@@ -601,7 +601,7 @@ class ApplyHedgingSpot:
 
                     await self.send_market_order(params_market)
 
-                if determine_size_and_side["order_type_limit"]:
+                if determine_size_and_side["exit_orders_limit_type"]:
                     params_limit.update(
                         {
                             "size": determine_size_and_side["remain_exit_orders"],
