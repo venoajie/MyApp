@@ -543,7 +543,7 @@ class ApplyHedgingSpot:
                 log.warning(
                     f"side {side} max_size {max_size} remain_exit_orders {remain_exit_orders} remain_main_orders {remain_main_orders}"
                 )
-                log.warning(determine_size_and_side["order_type_market"])
+                log.warning(determine_size_and_side["exit_orders_market_type"])
         # else:
         #     log.error(strategy_label)
             #    log.error(
@@ -578,17 +578,17 @@ class ApplyHedgingSpot:
                     log.warning(f"label_mod {label_mod}")
                 else:
                     log.error(f"label_mod {label_mod}")
-                log.debug(determine_size_and_side["order_type_market"])
+                log.debug(determine_size_and_side["exit_orders_market_type"])
                 #!#################################
 
                 # no order type market for hedging spot
                 if (
                     "hedgingSpot" not in label_mod
-                    and determine_size_and_side["order_type_market"]
+                    and determine_size_and_side["exit_orders_market_type"]
                 ):
                     params_market.update(
                         {
-                            "size": determine_size_and_side["remain_exit_orders"],
+                            "size": determine_size_and_side["exit_orders_market_qty"],
                             "cut_loss_usd": strategy_attr["cut_loss_usd"],
                             "label": label_closed,
                         }
