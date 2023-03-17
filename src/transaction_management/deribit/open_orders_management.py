@@ -461,6 +461,7 @@ class MyOrders:
         positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
         
         main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+        log.warning (strategy_label)
 
         get_strategy_int = str_mod.get_strings_before_character(strategy_label, "-", 1)
 
