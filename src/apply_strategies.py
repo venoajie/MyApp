@@ -509,6 +509,7 @@ class ApplyHedgingSpot:
                 max_size, strategy_label, net_sum_current_position
             )
         )
+        log.critical(determine_size_and_side)
         side = determine_size_and_side["side"]
         remain_main_orders = abs(determine_size_and_side["remain_main_orders"])
         remain_exit_orders = abs(determine_size_and_side["remain_exit_orders"])
@@ -666,6 +667,7 @@ class ApplyHedgingSpot:
                 )
 
         if side == "buy":
+            
             order_buy_open_label_strategy = []
             my_trade_buy_open_label_strategy = []
 
