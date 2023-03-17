@@ -511,6 +511,7 @@ class ApplyHedgingSpot:
         size_as_per_label = [o['amount'] for o in open_trade if o['label'] == label]
         price_as_per_label = [o['price'] for o in open_trade if o['label'] == label]
         time_as_per_label = [o['timestamp'] for o in open_trade if o['label'] == label]
+        log.warning (f'label {label} strategy_label {strategy_label}')
         log.warning (f'size_as_per_label {size_as_per_label} price_as_per_label {price_as_per_label} time_as_per_label {time_as_per_label}')
         
         if net_sum_current_position !=0:
