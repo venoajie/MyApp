@@ -399,9 +399,11 @@ class MyOrders:
         return result
 
     def trade_based_on_label_strategy(
-        self, open_transactions_label, strategy_label, type: str = "limit"
+        self, open_transactions_label: list, strategy_label, type: str = "limit"
     ) -> None:
         """ """
+        if open_transactions_label == None:
+            open_transactions_label == self.open_orders_from_db
 
         transactions = self.transactions_label_strategy(
             open_transactions_label, strategy_label
@@ -471,6 +473,8 @@ class MyOrders:
         exit_orders_market_qty = 0
         exit_orders_market_side = None
         exit_orders_market_type = None
+        
+        log.info(f'main_side {main_side}')
         
         if main_side == "sell":
             
