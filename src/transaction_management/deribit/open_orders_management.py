@@ -480,7 +480,7 @@ class MyOrders:
         exit_orders_market_type = None
         
         log.info(f'main_side {main_side}')
-        log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position} < 0')
+        log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position< 0} ')
         log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
         log.info(f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}')
         
@@ -534,6 +534,16 @@ class MyOrders:
                             and net_sum_open_orders_strategy_market ==0:
                         exit_orders_limit_qty = 0
                         exit_orders_limit_side = None
+                        exit_orders_limit_type = "limit"                
+
+                        exit_orders_market_qty = abs(net_sum_current_position) 
+                        exit_orders_market_side = "buy"
+                        exit_orders_market_type = "stop_market"
+
+                    if  net_sum_open_orders_strategy_limit ==0\
+                            and net_sum_open_orders_strategy_market ==0:
+                        exit_orders_limit_qty = abs(net_sum_current_position) 
+                        exit_orders_limit_side = "buy"
                         exit_orders_limit_type = "limit"                
 
                         exit_orders_market_qty = abs(net_sum_current_position) 
