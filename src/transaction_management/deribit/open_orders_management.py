@@ -465,6 +465,8 @@ class MyOrders:
         exit_orders_limit_side = None
         exit_orders_market_qty = 0
         exit_orders_market_side = None
+        order_type_market = None
+        order_type_limit = None
         
         if main_side == "sell":
             
@@ -490,6 +492,7 @@ class MyOrders:
             
                 main_orders_qty = 0
                 main_orders_side =  None
+                order_type_market = "sell"
                 if  net_sum_open_orders_strategy_limit==0\
                         and net_sum_open_orders_strategy_market !=0:
                     exit_orders_limit_qty = abs(net_sum_current_position)
@@ -528,6 +531,7 @@ class MyOrders:
             if net_sum_current_position > 0:
                 main_orders_qty = 0
                 main_orders_side =  None
+                order_type_market = "sell"
                 
                 if net_sum_open_orders_strategy_limit==0\
                         and net_sum_open_orders_strategy_market!= 0:
