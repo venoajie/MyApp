@@ -514,7 +514,7 @@ class ApplyHedgingSpot:
         net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
         
         if net_sum_current_position !=0:
-            log.critical(strategy_attr)
+            #log.critical(strategy_attr)
 
             side = strategy_attr["side"]
             determine_size_and_side = (
