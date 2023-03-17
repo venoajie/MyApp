@@ -515,6 +515,10 @@ class ApplyHedgingSpot:
         log.warning (f'label {label} strategy_label {strategy_label}')
         log.warning (f'size_as_per_label {size_as_per_label} price_as_per_label {price_as_per_label} time_as_per_label {time_as_per_label}')
         
+        # determine position sizing-hedging
+        if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
+            log.critical ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa')
+
         if net_sum_current_position !=0:
             #log.critical(strategy_attr)
 
