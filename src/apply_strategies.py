@@ -483,11 +483,8 @@ class ApplyHedgingSpot:
         net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
         get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
         
-        if net_sum_current_position !=0:
-            #log.critical(strategy_attr)
-
-            side_main = strategy_attr["side"]
-            determine_size_and_side = (
+        side_main = strategy_attr["side"]
+        determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
                     label, 
                     side_main, 
@@ -497,32 +494,39 @@ class ApplyHedgingSpot:
                     min_position_size
                 )
             )
-            
-        # determine position sizing-hedging
-        open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
         
-        if open_trade_hedging !=[]:
-                
-            size_as_per_label = [o['amount'] for o in open_trade if get_strategy_int in o['label'] ][0]
-            price_as_per_label = [o['price'] for o in open_trade if get_strategy_int in o['label'] ][0]
-            time_as_per_label = [o['timestamp'] for o in open_trade if get_strategy_int in o['label'] ][0]
-            
-            open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
-            open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
-            
-            if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
-                pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
-                price_as_per_label_tp = price_as_per_label - pct_prc
-                resupply_price = price_as_per_label + pct_prc
-                
-                #log.info (open_trade_hedging_selected)
-                determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
-                determine_size_and_side['take_profit_usd'] = price_as_per_label_tp
-                determine_size_and_side['timestamp'] = time_as_per_label
-                determine_size_and_side['entry_price'] = resupply_price
+        if net_sum_current_position== 0:            
+            # determine position sizing-hedging
+            open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
+        
+        if net_sum_current_position !=0:
+            #log.critical(strategy_attr)
 
-            else:
-                determine_size_and_side['exit_orders_limit_qty'] = 0
+            # determine position sizing-hedging
+            open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
+            
+            if open_trade_hedging !=[]:
+                    
+                size_as_per_label = [o['amount'] for o in open_trade if get_strategy_int in o['label'] ][0]
+                price_as_per_label = [o['price'] for o in open_trade if get_strategy_int in o['label'] ][0]
+                time_as_per_label = [o['timestamp'] for o in open_trade if get_strategy_int in o['label'] ][0]
+                
+                open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
+                open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
+                
+                if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
+                    pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
+                    price_as_per_label_tp = price_as_per_label - pct_prc
+                    resupply_price = price_as_per_label + pct_prc
+                    
+                    #log.info (open_trade_hedging_selected)
+                    determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
+                    determine_size_and_side['take_profit_usd'] = price_as_per_label_tp
+                    determine_size_and_side['timestamp'] = time_as_per_label
+                    determine_size_and_side['entry_price'] = resupply_price
+
+                else:
+                    determine_size_and_side['exit_orders_limit_qty'] = 0
             
             return determine_size_and_side
 
