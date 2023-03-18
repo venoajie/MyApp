@@ -479,10 +479,10 @@ class MyOrders:
         exit_orders_market_side = None
         exit_orders_market_type = None
         
-        log.info(f'main_side {main_side}')
-        log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position< 0} ')
-        log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
-        log.info(f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}')
+        #log.info(f'main_side {main_side}')
+        #log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position< 0} ')
+        #log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
+        #log.info(f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}')
         
         if main_side == "sell":
             
