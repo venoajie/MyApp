@@ -541,10 +541,13 @@ class ApplyHedgingSpot:
                 price = self.optimising_exit_price(exit_orders_market_side, best_bid_prc, best_ask_prc, None)
 
         # determine position sizing-hedging
-        if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
-            max_price_as_per_label = max([o['price'] for o in open_trade if strategy_label in o['label'] ])
+        max_price_as_per_label = max([o['price'] for o in open_trade if strategy_label in o['label'] ])
+        trade_id_as_per_label = [o['trade_id'] for o in open_trade if  o['price'] == max_price_as_per_label][0]
+        if "hedgingSpot" in [o['label'] for o in open_trade if o['price']==max_price_as_per_label ][0]:
+            
             list_max_price_as_per_label = [o for o in open_trade if  o['price'] == max_price_as_per_label][0]
             log.info (max_price_as_per_label)
+            log.info (trade_id_as_per_label)
             log.info (list_max_price_as_per_label)
             determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
             determine_size_and_side['price'] = price_as_per_label
