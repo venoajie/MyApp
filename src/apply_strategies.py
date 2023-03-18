@@ -867,7 +867,7 @@ class ApplyHedgingSpot:
                         )
                                 delta_time: int = server_time - exit_order_allowed ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
-                                log.critical(f'delta_time {delta_time} server_time{server_time} exceed_threshold_time{exceed_threshold_time}')
+                                log.critical(f'best_ask_prc {best_ask_prc} delta_time {delta_time} server_time{server_time} exceed_threshold_time {exceed_threshold_time}')
                                 if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time:
                                     label_strategy = str_mod.get_strings_before_character(label, "-", 0)
                                     
