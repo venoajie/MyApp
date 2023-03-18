@@ -861,7 +861,10 @@ class ApplyHedgingSpot:
                                     log.warning(f"exit_orders_limit_type")
                                     
                                 # new order    
-                                if best_ask_prc > exit_order_allowed ['entry_price']:
+                                delta_time: int = server_time - exit_order_allowed ['timestamp'] > time_threshold
+                                exceed_threshold_time: int = delta_time > time_threshold
+                                log.critical(f'delta_time {delta_time} server_time{server_time} exceed_threshold_time{exceed_threshold_time}')
+                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time:
                                     label_strategy = str_mod.get_strings_before_character(label, "-", 0)
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
