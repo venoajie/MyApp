@@ -26,10 +26,8 @@ def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
-
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot:
@@ -254,26 +252,6 @@ class ApplyHedgingSpot:
 
     #! ########### end of will be deleted ##############################################################################
 
-    async def position_per_instrument(self, positions, instrument: str) -> list:
-        """ """
-        try:
-            position = [o for o in positions if o["instrument_name"] == instrument]
-            if position:
-                position = position[0]
-            # log.warning (position)
-        except:
-            path_positions: str = system_tools.provide_path_for_file(
-                "positions", self.currency
-            )
-            log.debug(path_positions)
-            positions = await self.get_positions()
-            pickling.replace_data(path_positions, positions)
-            position = await self.reading_from_database()
-            position = position["positions"]
-            log.warning(position)
-            position = [o for o in positions if o["instrument_name"] == instrument][0]
-        return position
-
     async def current_server_time(self) -> float:
         """ """
         current_time = await deribit_get.get_server_time(self.connection_url)
@@ -351,7 +329,6 @@ class ApplyHedgingSpot:
         - open order that have not executed yet. This is ok
         - open trade waiting to close. This is ok
         - no open order nor open trade. . This is NOT ok. If it found, cancel it
-
 
         """
         open_orderLabelCLosed = open_order_mgt.open_orderLabelCLosed()
@@ -481,12 +458,8 @@ class ApplyHedgingSpot:
         label,
         open_trade: list,
         open_orders: object,
-        strategy_attr,
-        min_position_size,
-        spot_hedged,
-        index_price,
-        best_bid_prc,
-        best_ask_prc,
+        strategy_attr: list,
+        min_position_size: float,
     ) -> None:
         """ 
         To settled transactions that have taken place
@@ -525,15 +498,6 @@ class ApplyHedgingSpot:
                 )
             )
             
-            exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
-            exit_orders_market_side= determine_size_and_side['exit_orders_market_side']
-            
-            if exit_orders_limit_side != None:
-                price = self.optimising_exit_price(exit_orders_limit_side, best_bid_prc, best_ask_prc, None)
-
-            if exit_orders_market_side != None:
-                price = self.optimising_exit_price(exit_orders_market_side, best_bid_prc, best_ask_prc, None)
-
         # determine position sizing-hedging
         open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
         
@@ -570,7 +534,9 @@ class ApplyHedgingSpot:
         open_orders: list,
         notional
     ) -> bool:
-        """ """
+        
+        """ 
+        """
         # log.error (strategy)
         label_strategy = strategy["strategy"]
         entry_price = strategy["entry_price"]
@@ -851,24 +817,22 @@ class ApplyHedgingSpot:
                                 open_order_mgt,
                                 strategy_attr,
                                 min_position_size,
-                                spot_hedged,
-                                index_price,
-                                best_bid_prc,
-                                best_ask_prc,
                             )
                         )
                         exit_order_allowed['instrument'] = instrument
                         
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
-                            log.warning(f"exit_orders_limit_type")
-                            log.debug(best_bid_prc < exit_order_allowed ['take_profit_usd'])
-                            log.error(best_ask_prc > exit_order_allowed ['entry_price'])
-                                                    
+                        
+                            len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
+                            len_open_order_label_long = 0 if open_order_label_long == [] else len (open_order_label_long)
+                                                            
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
-                                len_open_order_label_long = 0 if open_order_label_long == [] else len (open_order_label_long)
-                                
+                                time_threshold: float = (
+                            strategy_attr["halt_minute_before_reorder"] * one_minute
+                        )
+                                delta_time: int = server_time - exit_order_allowed ['timestamp'] 
+                                exceed_threshold_time: int = delta_time > time_threshold
                                 
                                 # closing order
                                 if best_bid_prc < exit_order_allowed ['take_profit_usd'] and len_open_order_label_long < 1:
@@ -877,19 +841,10 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
-                                    log.warning(f"exit_orders_limit_type")
+                                    await self.send_limit_order (exit_order_allowed)
                                     
                                 # new order    
-                                time_threshold: float = (
-                            strategy_attr["halt_minute_before_reorder"] * one_minute
-                        )
-                                delta_time: int = server_time - exit_order_allowed ['timestamp'] 
-                                exceed_threshold_time: int = delta_time > time_threshold
-                                log.critical(f'best_ask_prc {best_ask_prc} delta_time {delta_time} server_time{server_time} exceed_threshold_time {exceed_threshold_time}')
-                                
-                                log.warning(f' label {label} label_strategy {label_strategy} len_open_order_label_short {len_open_order_label_short}')
-                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time and len_open_order_label_short < 1:
-                                    
+                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time and len_open_order_label_short < 1:                                    
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
                                     exit_order_allowed['take_profit_usd'] = best_ask_prc
@@ -904,7 +859,6 @@ class ApplyHedgingSpot:
                                                               
                                 exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                 exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
-                                
                                 
                                 if 'limit' in exit_order_allowed ['exit_orders_limit_type']:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
@@ -922,12 +876,12 @@ class ApplyHedgingSpot:
                                 
                         if exit_order_allowed ['exit_orders_market_qty'] != 0:
                             log.debug(f"exit_orders_market_type")
-                            
 
                 for instrument in instrument_transactions:
                     #log.critical(f"{instrument}")
 
                     ticker = await self.reading_from_db("ticker", instrument)
+                    
                     # get bid and ask price
                     best_bid_prc = ticker[0]["best_bid_price"]
                     best_ask_prc = ticker[0]["best_ask_price"]
@@ -1053,6 +1007,7 @@ async def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     connection_url: str = "https://www.deribit.com/api/v2/"
+    
     #
     try:
         syn = ApplyHedgingSpot(
@@ -1090,6 +1045,7 @@ async def main():
         catch_error(error, 30)
 
 if __name__ == "__main__":
+    
     try:
         asyncio.get_event_loop().run_until_complete(main())
 
