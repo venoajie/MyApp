@@ -843,7 +843,7 @@ class ApplyHedgingSpot:
                             )
                         )
                         exit_order_allowed['instrument'] = instrument
-                        log.error(f"exit_order_allowed {exit_order_allowed}")
+                        
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                             log.warning(f"exit_orders_limit_type")
@@ -879,10 +879,26 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['label'] = label_numbering.labelling(
                                     "open", label_strategy
                                 )
-                                    log.debug(f"exit_order_allowed {exit_order_allowed}")
                                     await self.send_limit_order (exit_order_allowed)
                             else :
-                                log.debug(f"exit_orders_limit_type")
+                                                              
+                                exit_order_allowed['label'] = exit_order_allowed ['label_closed']
+                                exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
+                                
+                                
+                                if 'limit' in exit_order_allowed ['exit_orders_limit_type']:
+                                    exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
+                                    exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd'] 
+                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
+
+                                log.warning(f"exit_order_allowed limit {exit_order_allowed}")
+                                
+                                if 'stop_market' in exit_order_allowed ['exit_orders_limit_type']:
+                                    exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
+                                    exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
+                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
+                                
+                                log.error(f"exit_order_allowed stop_market {exit_order_allowed}")
                                 
                         if exit_order_allowed ['exit_orders_market_qty'] != 0:
                             log.debug(f"exit_orders_market_type")
