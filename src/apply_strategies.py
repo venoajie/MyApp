@@ -542,7 +542,8 @@ class ApplyHedgingSpot:
 
         # determine position sizing-hedging
         if "hedgingSpot" in [o['label'] for o in open_trade if get_strategy_int in o['label'] ][0]:
-            list_max_price_as_per_label = [o for o in open_trade if  o['price'] == price_as_per_label][0]
+            list_max_price_as_per_label = [o for o in open_trade if  o['price'] == max_price_as_per_label][0]
+            log.info (max_price_as_per_label)
             log.info (list_max_price_as_per_label)
             determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
             determine_size_and_side['price'] = price_as_per_label
