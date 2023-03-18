@@ -515,7 +515,7 @@ class ApplyHedgingSpot:
                 price_as_per_label_tp = price_as_per_label - pct_prc
                 resupply_price = price_as_per_label + pct_prc
                 
-                log.info (open_trade_hedging_selected)
+                #log.info (open_trade_hedging_selected)
                 determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
                 determine_size_and_side['take_profit_usd'] = price_as_per_label_tp
                 determine_size_and_side['timestamp'] = time_as_per_label
@@ -896,6 +896,7 @@ class ApplyHedgingSpot:
 
                     # instrument contract size
                     contract_size = instrument_data["contract_size"]
+                    log.debug (strategies)
 
                     # execute each strategy
                     for strategy_attr in strategies:
@@ -932,7 +933,7 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
-                        log.error(f"send_main_order_allowed  {open_order_allowed}")
+                        log.error(f" {strategy_attr} send_main_order_allowed  {open_order_allowed}")
                         
                         open_order_allowed = await self.is_send_main_order_allowed(
                             strategy_attr,
