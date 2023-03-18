@@ -855,7 +855,7 @@ class ApplyHedgingSpot:
                                 # closing order
                                 if best_bid_prc < exit_order_allowed ['take_profit_usd']:
                                     exit_order_allowed['entry_price'] = best_bid_prc
-                                    exit_order_allowed['label_numbered'] = exit_order_allowed ['label_closed']
+                                    exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                     exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
                                     log.warning(f"exit_orders_limit_type")
@@ -873,7 +873,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['entry_price'] = best_ask_prc
                                     exit_order_allowed['side'] = 'sell'
                                     exit_order_allowed['size'] = int(max (notional * 10/100, 2))
-                                    exit_order_allowed['label_numbered'] = label_numbering.labelling(
+                                    exit_order_allowed['label'] = label_numbering.labelling(
                                     "open", label_strategy
                                 )
                                     await self.send_limit_order (exit_order_allowed)
