@@ -876,7 +876,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['label_numbered'] = label_numbering.labelling(
                                     "open", label_strategy
                                 )
-                                    log.critical(exit_order_allowed)
+                                    await self.send_limit_order (exit_order_allowed)
                             else :
                                 log.debug(f"exit_orders_limit_type")
                                 
