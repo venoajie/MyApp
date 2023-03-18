@@ -872,6 +872,7 @@ class ApplyHedgingSpot:
                                     label_strategy = str_mod.get_strings_before_character(label, "-", 0)
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
+                                    exit_order_allowed['take_profit_usd'] = best_ask_prc
                                     exit_order_allowed['side'] = 'sell'
                                     exit_order_allowed['type'] = 'limit'
                                     exit_order_allowed['size'] = int(max (notional * 10/100, 2))
