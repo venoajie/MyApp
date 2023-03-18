@@ -844,9 +844,7 @@ class ApplyHedgingSpot:
                         log.error(f"exit_order_allowed {exit_order_allowed}")
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
-                            
-                            log.warning(f"exit_orders_limit_type")
-                        
+                                                    
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 log.warning(f"exit_orders_limit_type")
                             else :
