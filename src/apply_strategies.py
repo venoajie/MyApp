@@ -852,6 +852,7 @@ class ApplyHedgingSpot:
                                 if best_bid_prc < exit_order_allowed ['take_profit_usd']:
                                     log.warning(f"exit_orders_limit_type")
                                 if best_ask_prc > exit_order_allowed ['entry_price']:
+                                    label_strategy = str_mod.get_strings_before_character(label, "-", 0)
                                     label_numbered = label_numbering.labelling(
                                     "open", label_strategy
                                 )
