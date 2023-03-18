@@ -766,6 +766,9 @@ class ApplyHedgingSpot:
                         open_order_label_short = [
                             o for o in open_order_label if o["direction"] == 'sell'
                         ]
+                        open_order_label_long = [
+                            o for o in open_order_label if o["direction"] == 'buy'
+                        ]
                         log.warning(f' open_order_label {open_order_label}')
                         log.error(f' open_order_label_short {open_order_label_short}')
 
@@ -863,10 +866,12 @@ class ApplyHedgingSpot:
                             log.error(best_ask_prc > exit_order_allowed ['entry_price'])
                                                     
                             if "hedgingSpot" in strategy_attr["strategy"]:
+                                len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
+                                len_open_order_label_long = 0 if open_order_label_long == [] else len (open_order_label_long)
                                 
                                 
                                 # closing order
-                                if best_bid_prc < exit_order_allowed ['take_profit_usd']:
+                                if best_bid_prc < exit_order_allowed ['take_profit_usd'] and len_open_order_label_long < 1:
                                     exit_order_allowed['entry_price'] = best_bid_prc
                                     exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                     exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
@@ -881,9 +886,9 @@ class ApplyHedgingSpot:
                                 delta_time: int = server_time - exit_order_allowed ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
                                 log.critical(f'best_ask_prc {best_ask_prc} delta_time {delta_time} server_time{server_time} exceed_threshold_time {exceed_threshold_time}')
-                                len_open_order_label_short = 0 if open_order_label == [] else len (open_order_label)
-                                log.warning(f' label {label} label_strategy {label_strategy} open_order_label_short {open_order_label_short}')
-                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time:
+                                
+                                log.warning(f' label {label} label_strategy {label_strategy} len_open_order_label_short {len_open_order_label_short}')
+                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time and len_open_order_label_short < 1:
                                     
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
