@@ -547,13 +547,14 @@ class ApplyHedgingSpot:
         #log.info (open_trade_hedging)
         log.info (open_trade_hedging_price_max)
         log.info (open_trade_hedging_selected)
-        log.warning ([o['price'] for o in open_trade_hedging_selected ][0])
-        log.debug (get_strategy_int == [o['label'] for o in open_trade_hedging_selected ][0])
+        log.warning ([o['label'] for o in open_trade_hedging_selected ][0])
+        log.info (get_strategy_int)
+        log.debug (get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0])
         
         if open_trade_hedging_selected !=[]:
             
             
-            if get_strategy_int == [o['label'] for o in open_trade_hedging_selected ][0]:
+            if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
 
                 log.info (open_trade_hedging_selected)
                 determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
