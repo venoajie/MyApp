@@ -546,12 +546,15 @@ class ApplyHedgingSpot:
             open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
             
             if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
-                price_as_per_label_tp = price_as_per_label - price_as_per_label * strategy_attr['take_profit_pct']
+                pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
+                price_as_per_label_tp = price_as_per_label - pct_prc
+                resupply_price = price_as_per_label + pct_prc
                 
                 log.info (open_trade_hedging_selected)
                 determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
                 determine_size_and_side['price'] = price_as_per_label_tp
                 determine_size_and_side['timestamp'] = time_as_per_label
+                determine_size_and_side['resupply_price'] = resupply_price
 
             return determine_size_and_side
 
@@ -838,9 +841,15 @@ class ApplyHedgingSpot:
                         log.error(f"exit_order_allowed {exit_order_allowed}")
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
+                            log.warning(f"exit_orders_limit_type")
+                            log.debug(best_bid_prc < exit_order_allowed ['price'])
+                            log.error(best_ask_prc > exit_order_allowed ['resupply_price'])
                                                     
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                log.warning(f"exit_orders_limit_type")
+                                if best_bid_prc < exit_order_allowed ['price']:
+                                    log.warning(f"exit_orders_limit_type")
+                                if best_ask_prc > exit_order_allowed ['resupply_price']:
+                                    log.warning(f"exit_orders_limit_type")
                             else :
                                 log.debug(f"exit_orders_limit_type")
                                 
@@ -900,7 +909,7 @@ class ApplyHedgingSpot:
                             open_orders_open_byAPI,
                             notional
                         )
-                        log.error(f"open_order_allowed {open_order_allowed}")
+                        #log.error(f"open_order_allowed {open_order_allowed}")
                         # add some extra params to strategy
                         strategy_attr.update(
                             {
