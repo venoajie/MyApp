@@ -524,6 +524,7 @@ class ApplyHedgingSpot:
                     min_position_size
                 )
             )
+            determine_size_and_side['instrument'] = size_as_per_label
             exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
             exit_orders_market_side= determine_size_and_side['exit_orders_market_side']
             
@@ -849,14 +850,20 @@ class ApplyHedgingSpot:
                             log.error(best_ask_prc > exit_order_allowed ['entry_price'])
                                                     
                             if "hedgingSpot" in strategy_attr["strategy"]:
+                                
+                                # closing order
                                 if best_bid_prc < exit_order_allowed ['take_profit_usd']:
                                     log.warning(f"exit_orders_limit_type")
+                                    
+                                # new order    
                                 if best_ask_prc > exit_order_allowed ['entry_price']:
                                     label_strategy = str_mod.get_strings_before_character(label, "-", 0)
-                                    label_numbered = label_numbering.labelling(
+                                    
+                                    exit_order_allowed['size'] = int(max (notional * 10/100, 2))
+                                    exit_order_allowed['label_numbered'] = label_numbering.labelling(
                                     "open", label_strategy
                                 )
-                                    log.warning(f"label_numbered {label_numbered}")
+                                    log.warning(f"exit_order_allowed")
                             else :
                                 log.debug(f"exit_orders_limit_type")
                                 
