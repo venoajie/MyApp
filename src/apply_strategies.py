@@ -754,17 +754,20 @@ class ApplyHedgingSpot:
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
+                    
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
+                        
+                        # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_strategy = str_mod.get_strings_before_character(label, "-", 0)
-                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
+                        
+                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(label_strategy)
+                        
                         open_order_label_short = [
                             o for o in open_order_label if o["direction"] == 'sell'
                         ]
                         log.warning(f' open_order_label {open_order_label}')
                         log.error(f' open_order_label_short {open_order_label_short}')
-                        
-                        
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_mod = str_mod.get_strings_before_character(label, "-", 0)
