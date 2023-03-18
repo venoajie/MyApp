@@ -524,7 +524,7 @@ class ApplyHedgingSpot:
                     min_position_size
                 )
             )
-            determine_size_and_side['instrument'] = size_as_per_label
+            
             exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
             exit_orders_market_side= determine_size_and_side['exit_orders_market_side']
             
@@ -842,6 +842,7 @@ class ApplyHedgingSpot:
                                 best_ask_prc,
                             )
                         )
+                        exit_order_allowed['instrument'] = instrument
                         log.error(f"exit_order_allowed {exit_order_allowed}")
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
