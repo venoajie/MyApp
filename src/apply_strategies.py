@@ -544,10 +544,11 @@ class ApplyHedgingSpot:
         open_trade_hedging = ([o  for o in open_trade if strategy_label in o['label'] ])
         open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
         open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
-        log.info (open_trade_hedging)
+        #log.info (open_trade_hedging)
         log.info (open_trade_hedging_price_max)
         log.info (open_trade_hedging_selected)
-        log.info (open_trade_hedging_price_max == [o['price'] for o in open_trade_hedging_selected ][0])
+        log.warning ([o['price'] for o in open_trade_hedging_selected ][0])
+        log.debug (open_trade_hedging_price_max == [o['price'] for o in open_trade_hedging_selected ][0])
         
         if open_trade_hedging_selected !=[]:
             
