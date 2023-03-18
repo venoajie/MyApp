@@ -482,7 +482,7 @@ class ApplyHedgingSpot:
         open_trade: list,
         open_orders: object,
         strategy_attr,
-        max_size,
+        min_position_size,
         spot_hedged,
         index_price,
         best_bid_prc,
@@ -519,6 +519,7 @@ class ApplyHedgingSpot:
         
         if net_sum_current_position !=0:
             #log.critical(strategy_attr)
+            
 
             side_main = strategy_attr["side"]
             determine_size_and_side = (
@@ -528,7 +529,7 @@ class ApplyHedgingSpot:
                     net_sum_current_position,
                     net_sum_open_orders_strategy_limit,
                     net_sum_open_orders_strategy_market,
-                    max_size
+                    min_position_size
                 )
             )
             exit_orders_limit_side= determine_size_and_side['exit_orders_limit_side']
@@ -542,23 +543,19 @@ class ApplyHedgingSpot:
 
         # determine position sizing-hedging
         open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
-        #log.info (open_trade_hedging)
-        open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
-        open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
-        #log.info (open_trade_hedging)
-        #log.info (open_trade_hedging_price_max)
-        #log.info (open_trade_hedging_selected)
-        #log.warning ([o['label'] for o in open_trade_hedging_selected ][0])
-        #log.info (get_strategy_int)
-        #log.debug (get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0])
         
-        if open_trade_hedging_selected !=[]:
+        if open_trade_hedging !=[]:
             
+            open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
+            open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
             
             if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
+                price_as_per_label_tp = price_as_per_label - price_as_per_label * strategy_attr['take_profit_pct']
+                
+                
 
                 log.info (open_trade_hedging_selected)
-                determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
+                determine_size_and_side['exit_orders_limit_qty'] = price_as_per_label_tp
                 determine_size_and_side['price'] = price_as_per_label
                 determine_size_and_side['timestamp'] = time_as_per_label
 
@@ -827,7 +824,7 @@ class ApplyHedgingSpot:
 
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
-                            min_position_size = check_spot_hedging["all_hedging_size"]
+                            min_position_size = - notional
                         # log.error(f'min_position_size {min_position_size}')
                         # log.error(strategy_attr["strategy"])
 
