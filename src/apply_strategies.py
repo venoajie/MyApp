@@ -923,6 +923,17 @@ class ApplyHedgingSpot:
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = check_spot_hedging["all_hedging_size"]
 
+                        open_order_allowed = (
+                            await self.is_send_exit_or_additional_order_allowed(
+                                label,
+                                my_trades_open,
+                                open_order_mgt,
+                                strategy_attr,
+                                min_position_size,
+                            )
+                        )
+                        log.error(f"send_main_order_allowed  {open_order_allowed}")
+                        
                         open_order_allowed = await self.is_send_main_order_allowed(
                             strategy_attr,
                             index_price,
