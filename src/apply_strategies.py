@@ -494,25 +494,24 @@ class ApplyHedgingSpot:
                     min_position_size
                 )
             )
+        open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
         if net_sum_current_position== 0:            
             # determine position sizing-hedging
-            open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
+            pass
+            
         
         if net_sum_current_position !=0:
-            #log.critical(strategy_attr)
+            log.critical(open_trade_strategy)
 
-            # determine position sizing-hedging
-            open_trade_hedging = ([o  for o in open_trade if 'hedgingSpot' in o['label'] ])
-            
-            if open_trade_hedging !=[]:
+            if open_trade_strategy !=[]:
                     
-                size_as_per_label = [o['amount'] for o in open_trade if get_strategy_int in o['label'] ][0]
-                price_as_per_label = [o['price'] for o in open_trade if get_strategy_int in o['label'] ][0]
-                time_as_per_label = [o['timestamp'] for o in open_trade if get_strategy_int in o['label'] ][0]
+                size_as_per_label = [o['amount'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
+                price_as_per_label = [o['price'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
+                time_as_per_label = [o['timestamp'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
                 
-                open_trade_hedging_price_max = max([o['price'] for o in open_trade_hedging  ])
-                open_trade_hedging_selected = ([o  for o in open_trade_hedging if o['price'] == open_trade_hedging_price_max])
+                open_trade_hedging_price_max = max([o['price'] for o in open_trade_strategy  ])
+                open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
                 
                 if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
                     pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
