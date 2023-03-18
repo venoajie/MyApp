@@ -552,9 +552,9 @@ class ApplyHedgingSpot:
                 
                 log.info (open_trade_hedging_selected)
                 determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
-                determine_size_and_side['price'] = price_as_per_label_tp
+                determine_size_and_side['take_profit_usd'] = price_as_per_label_tp
                 determine_size_and_side['timestamp'] = time_as_per_label
-                determine_size_and_side['resupply_price'] = resupply_price
+                determine_size_and_side['entry_price'] = resupply_price
 
             else:
                 determine_size_and_side['exit_orders_limit_qty'] = 0
@@ -845,14 +845,17 @@ class ApplyHedgingSpot:
                         
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                             log.warning(f"exit_orders_limit_type")
-                            log.debug(best_bid_prc < exit_order_allowed ['price'])
-                            log.error(best_ask_prc > exit_order_allowed ['resupply_price'])
+                            log.debug(best_bid_prc < exit_order_allowed ['take_profit_usd'])
+                            log.error(best_ask_prc > exit_order_allowed ['entry_price'])
                                                     
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                if best_bid_prc < exit_order_allowed ['price']:
+                                if best_bid_prc < exit_order_allowed ['take_profit_usd']:
                                     log.warning(f"exit_orders_limit_type")
-                                if best_ask_prc > exit_order_allowed ['resupply_price']:
-                                    log.warning(f"exit_orders_limit_type")
+                                if best_ask_prc > exit_order_allowed ['entry_price']:
+                                    label_numbered = label_numbering.labelling(
+                                    "open", label_strategy
+                                )
+                                    log.warning(f"label_numbered {label_numbered}")
                             else :
                                 log.debug(f"exit_orders_limit_type")
                                 
