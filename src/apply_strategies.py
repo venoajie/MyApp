@@ -556,6 +556,9 @@ class ApplyHedgingSpot:
                 determine_size_and_side['timestamp'] = time_as_per_label
                 determine_size_and_side['resupply_price'] = resupply_price
 
+            else:
+                determine_size_and_side['exit_orders_limit_qty'] = 0
+            
             return determine_size_and_side
 
     async def is_send_main_order_allowed(
@@ -745,7 +748,7 @@ class ApplyHedgingSpot:
                         for o in my_trades_open
                     ]
                 )
-                log.critical (f'strategy_labels {strategy_labels}')
+                #log.critical (f'strategy_labels {strategy_labels}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
