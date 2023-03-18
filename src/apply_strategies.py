@@ -840,11 +840,11 @@ class ApplyHedgingSpot:
                         )
                         log.error(f"exit_order_allowed {exit_order_allowed}")
                         
-                        if exit_order_allowed ['exit_orders_limit_qty'] != 0:
-                            log.warning(f"exit_orders_limit_type")
+                        #if exit_order_allowed ['exit_orders_limit_qty'] != 0:
+                        #    log.warning(f"exit_orders_limit_type")
                         
-                        if exit_order_allowed ['exit_orders_market_qty'] != 0:
-                            log.debug(f"exit_orders_market_type")
+                       # if exit_order_allowed ['exit_orders_market_qty'] != 0:
+                        #    log.debug(f"exit_orders_market_type")
                             
 
                 for instrument in instrument_transactions:
