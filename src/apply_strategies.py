@@ -854,12 +854,18 @@ class ApplyHedgingSpot:
                                 
                                 # closing order
                                 if best_bid_prc < exit_order_allowed ['take_profit_usd']:
+                                    exit_order_allowed['entry_price'] = best_bid_prc
+                                    exit_order_allowed['label_numbered'] = exit_order_allowed ['label_closed']
+                                    exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
+                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
                                     log.warning(f"exit_orders_limit_type")
                                     
                                 # new order    
                                 if best_ask_prc > exit_order_allowed ['entry_price']:
                                     label_strategy = str_mod.get_strings_before_character(label, "-", 0)
                                     
+                                    exit_order_allowed['entry_price'] = best_ask_prc
+                                    exit_order_allowed['side'] = 'sell'
                                     exit_order_allowed['size'] = int(max (notional * 10/100, 2))
                                     exit_order_allowed['label_numbered'] = label_numbering.labelling(
                                     "open", label_strategy
@@ -944,187 +950,6 @@ class ApplyHedgingSpot:
 
                         if open_order_allowed["send_sell_order_allowed"]:
                             await self.send_combo_orders(strategy_attr)
-
-                        # check for any order outstanding as per label filter
-                        net_open_orders_open_byAPI_db: int = (
-                            open_order_mgt.open_orders_api_basedOn_label_items_net(
-                                strategy_attr["label_numbered"]
-                            )
-                        )
-
-                        if "hedgingSpot" in strategy_attr["strategy"]:
-                            if open_order_mgt_filed_status_filed != []:
-                                open_order_filled_latest_timeStamp = max(
-                                    [
-                                        o["last_update_timestamp"]
-                                        for o in open_order_mgt_filed_status_filed
-                                    ]
-                                )
-                                filled_order_deltaTime: int = (
-                                    server_time - open_order_filled_latest_timeStamp
-                                )
-
-                            last_time_order_filled_exceed_threshold = (
-                                True
-                                if open_order_mgt_filed_status_filed == []
-                                else filled_order_deltaTime > time_threshold
-                            )
-
-                            if "PERPETUAL" in instrument:
-                                if last_time_order_filled_exceed_threshold:
-                                    # log.error (label)
-
-                                    # check under hedging
-                                    spot_hedged = spot_hedging.SpotHedging(
-                                        label_strategy, my_trades_open
-                                    )
-
-                                    check_spot_hedging = (
-                                        spot_hedged.is_spot_hedged_properly(
-                                            notional,
-                                            min_trade_amount,
-                                            contract_size,
-                                            strategy_attr["quantity_discrete"],
-                                        )
-                                    )
-
-                                    spot_was_unhedged = check_spot_hedging[
-                                        "spot_was_unhedged"
-                                    ]
-
-                                    actual_hedging_size = (
-                                        spot_hedged.compute_actual_hedging_size()
-                                    )
-
-                                    # result: 'hedgingSpot-open'
-                                    label_open_for_filter = f"{label_strategy}-open"
-
-                                    log.debug(
-                                        f"{label_strategy=} {label_open_for_filter=}"
-                                    )
-
-                                    # check for any order outstanding as per label filter
-                                    net_open_orders_open_byAPI_db: int = open_order_mgt.open_orders_api_basedOn_label_items_net(
-                                        label_strategy
-                                    )
-                                    log.warning(
-                                        f"{spot_was_unhedged=} \
-                                        {actual_hedging_size=}  \
-                                            {net_open_orders_open_byAPI_db=} \
-                                                {last_time_order_filled_exceed_threshold=}"
-                                    )
-
-                                    new_open_order_create_over_hedge = await self.will_new_open_order_create_over_hedge(
-                                        label_strategy,
-                                        actual_hedging_size,
-                                        min_position_size,
-                                    )
-
-                                    # send sell order if spot still unhedged and no current open orders
-                                    if (
-                                        spot_was_unhedged
-                                        and net_open_orders_open_byAPI_db == 0
-                                        and last_time_order_filled_exceed_threshold
-                                    ):
-                                        order_result = await self.send_orders(
-                                            "sell",
-                                            instrument,
-                                            abs(check_spot_hedging["hedging_size"]),
-                                            strategy_attr["label_numbered"],
-                                            best_ask_prc,
-                                        )
-                                        log.info(order_result)
-
-                                        await self.cancel_redundant_orders_in_same_labels(
-                                            label_open_for_filter
-                                        )
-
-                                        await self.will_new_open_order_create_over_hedge(
-                                            label_strategy,
-                                            actual_hedging_size,
-                                            min_position_size,
-                                        )
-
-                                    # if spot has hedged properly, check also for opportunity to get additional small profit
-                                    if (
-                                        spot_was_unhedged == False
-                                        and remain_unhedged >= 0
-                                        and net_open_orders_open_byAPI_db == 0
-                                    ):
-                                        adjusting_inventories = (
-                                            spot_hedged.adjusting_inventories(
-                                                index_price,
-                                                self.currency,
-                                                strategy_attr["take_profit_pct"],
-                                                strategy_attr["averaging"],
-                                                label_open_for_filter,
-                                            )
-                                        )
-                                        bid_prc_is_lower_than_buy_price = (
-                                            best_bid_prc
-                                            < adjusting_inventories["buy_price"]
-                                        )
-                                        ask_prc_is_higher_than_sell_price = (
-                                            best_ask_prc
-                                            > adjusting_inventories["sell_price"]
-                                        )
-                                        last_time_order_filled_exceed_threshold_avg_up = (
-                                            True
-                                            if open_order_mgt_filed_status_filed == []
-                                            else filled_order_deltaTime
-                                            > time_threshold_avg_up
-                                        )
-
-                                        log.info(
-                                            f" {strategy_attr['label_numbered']=} {bid_prc_is_lower_than_buy_price=} \
-                                            {best_bid_prc=} {ask_prc_is_higher_than_sell_price=} \
-                                                {best_ask_prc=}"
-                                        )
-
-                                        log.warning(
-                                            f" {last_time_order_filled_exceed_threshold_avg_up=}"
-                                        )
-
-                                        if (
-                                            adjusting_inventories["take_profit"]
-                                            and bid_prc_is_lower_than_buy_price
-                                        ):
-                                            order_result = await self.send_orders(
-                                                "buy",
-                                                instrument,
-                                                abs(
-                                                    adjusting_inventories[
-                                                        "size_take_profit"
-                                                    ]
-                                                ),
-                                                adjusting_inventories[
-                                                    "label_take_profit"
-                                                ],
-                                                best_bid_prc,
-                                            )
-                                            log.info(order_result)
-
-                                            await self.cancel_redundant_orders_in_same_labels(
-                                                label_closed
-                                            )
-
-                                        if (
-                                            adjusting_inventories["average_up"]
-                                            and ask_prc_is_higher_than_sell_price
-                                            and last_time_order_filled_exceed_threshold_avg_up
-                                        ):
-                                            order_result = await self.send_orders(
-                                                "sell",
-                                                instrument,
-                                                check_spot_hedging["average_up_size"],
-                                                strategy_attr["label_numbered"],
-                                                best_ask_prc,
-                                            )
-                                            log.warning(order_result)
-
-                                            await self.cancel_redundant_orders_in_same_labels(
-                                                label_open_for_filter
-                                            )
 
         except Exception as error:
             catch_error(error, 30)
