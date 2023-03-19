@@ -378,23 +378,21 @@ class MyTrades:
             catch_error(error)
 
     def my_trades_max_price_attributes_filteredBy_label(
-        self, trade_sources_filtering: list
+        self, my_trades_filtered: list
     ) -> dict:
         """
         trade_sources: 'API'
         """
-        my_trades = []
 
         try:
-            log.warning (trade_sources_filtering)
-            if trade_sources_filtering != None:
-                my_trades = self.my_trades_api_basedOn_label(trade_sources_filtering)
-            log.warning (my_trades)
 
-            if my_trades != []:
-                max_price = max([o["price"] for o in my_trades])
+            if my_trades_filtered != None:
+                my_trades_filtered = self.my_trades
+
+            if my_trades_filtered != []:
+                max_price = max([o["price"] for o in my_trades_filtered])
                 trade_list_with_max_price = [
-                    o for o in my_trades if o["price"] == max_price
+                    o for o in my_trades_filtered if o["price"] == max_price
                 ]
                 len_trade_list_with_max_price = len(trade_list_with_max_price)
 
@@ -422,7 +420,7 @@ class MyTrades:
                     "size": ([o["amount"] for o in trade_list_with_max_price])[0],
                     "label": ([o["label"] for o in trade_list_with_max_price])[0],
                 }
-            if my_trades == []:
+            if my_trades_filtered == []:
                 return []
 
         except Exception as error:
