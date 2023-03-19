@@ -523,7 +523,7 @@ class ApplyHedgingSpot:
             
             determine_size_and_side['label_closed'] = label_closed            
             determine_size_and_side['label'] = label_open     
-            log.warning(f'determine_size_and_side {determine_size_and_side}')
+            #log.warning(f'determine_size_and_side {determine_size_and_side}')
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
@@ -948,19 +948,18 @@ class ApplyHedgingSpot:
                         )
                         log.error(f" send_main_order_allowed  {open_order_allowed}")
                         
-                        # add some extra params to strategy
-                        strategy_attr.update(
-                            {
-                                "instrument": instrument,
-                                "size": min_position_size,
-                                "label_numbered": label_numbering.labelling(
-                                    "open", strategy_label
-                                ),
-                                "label_closed_numbered": label_numbering.labelling(
-                                    "closed", strategy_label
-                                ),
-                            }
-                        )
+                        if open_order_allowed ['main_orders_qty'] != 0\
+                            and open_order_allowed['len_order_limit'] ==0:
+                                
+                                exit_order_allowed['side'] = exit_order_allowed ['main_orders_side'] 
+                                exit_order_allowed['instrument'] = instrument
+                                exit_order_allowed['label_numbered'] = exit_order_allowed ['label']
+                                exit_order_allowed['label_closed_numbered'] = exit_order_allowed ['exit_orders_market_type']
+                                exit_order_allowed['size'] = exit_order_allowed ['main_orders_qty']
+                                exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
+                                exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
+                                exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
+                                await self.send_combo_orders(exit_order_allowed)
 
 
         except Exception as error:
