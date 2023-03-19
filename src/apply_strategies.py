@@ -495,7 +495,7 @@ class ApplyHedgingSpot:
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
         
-        log.warning(f'label_closed {label_closed}')
+        
         determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
                     label, 
@@ -520,6 +520,7 @@ class ApplyHedgingSpot:
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+            log.warning(f'label_closed {label_closed}')
             
             # get integer of strategy            
             
