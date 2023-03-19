@@ -459,7 +459,6 @@ class MyOrders:
         positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
         
         main_orders_sum_vs_max_orders = max_size - net_sum_current_position
-        
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
 
         main_orders_qty = 0
@@ -603,8 +602,7 @@ class MyOrders:
             "exit_orders_limit_type": exit_orders_limit_type,
             "exit_orders_market_qty": exit_orders_market_qty,
             "exit_orders_market_side": exit_orders_market_side,
-            "exit_orders_market_type": exit_orders_market_type,
-            "label_closed": label_closed,
+            "exit_orders_market_type": exit_orders_market_type
             
         }
             
