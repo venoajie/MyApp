@@ -914,12 +914,6 @@ class ApplyHedgingSpot:
                         time_threshold: float = (
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
-                        time_threshold_avg_up: float = time_threshold * 12 * 4
-
-                        remain_unhedged = check_spot_hedging["remain_unhedged_size"]
-
-
-                        label_closed: str = f"{strategy_label}-closed"
 
                         # determine position sizing-general strategy
                         min_position_size: float = position_sizing.pos_sizing(
@@ -931,7 +925,7 @@ class ApplyHedgingSpot:
 
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
-                            min_position_size = check_spot_hedging["all_hedging_size"]
+                            min_position_size =- notional
                         log.error(f" strategy_label  {strategy_label}")
                         open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
 
