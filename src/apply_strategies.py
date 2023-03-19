@@ -467,6 +467,7 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+        strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         
        # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
@@ -488,7 +489,7 @@ class ApplyHedgingSpot:
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
         try:
-            label_closed = f"{strategy_label}-closed-{get_strategy_int}"
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
         except:
             label_closed = None
         
@@ -518,23 +519,20 @@ class ApplyHedgingSpot:
         # the strategy has outstanding position
         if net_sum_current_position !=0 and label_closed != None:
             
-            # get integer of strategy
-            log.warning(f'label {label}')
-            get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
-            
+            # get integer of strategy            
             
             determine_size_and_side['label_closed'] = label_closed
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
                     
-                size_as_per_label = [o['amount'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
-                price_as_per_label = [o['price'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
-                time_as_per_label = [o['timestamp'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
+                size_as_per_label = [o['amount'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
+                price_as_per_label = [o['price'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
+                time_as_per_label = [o['timestamp'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
                 
                 open_trade_hedging_price_max = max([o['price'] for o in open_trade_strategy  ])
                 open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
                 
-                if get_strategy_int in [o['label'] for o in open_trade_hedging_selected ][0]:
+                if strategy_label_int in [o['label'] for o in open_trade_hedging_selected ][0]:
                     pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
                     price_as_per_label_tp = price_as_per_label - pct_prc
                     resupply_price = price_as_per_label + pct_prc
@@ -764,18 +762,18 @@ class ApplyHedgingSpot:
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-                        strategy_label_and_int = str_mod.get_strings_before_character(label, "-", 1)
+                        strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
 
                         # get startegy details
                         strategy_attr = [
                             o for o in strategies if o["strategy"] == strategy_label
                         ][0]
                         
-                        log.critical (f'strategy_label_and_int {strategy_label_and_int}')
-                        log.critical (f'strategy_label {strategy_label}')
+                        log.critical (f' {label}')
+                        #log.critical (f'strategy_label {strategy_label}')
                         
                         open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
-                        open_trade_strategy_label = ([o  for o in open_trade_strategy if strategy_label_and_int in o['label'] ])
+                        open_trade_strategy_label = ([o  for o in open_trade_strategy if strategy_label_int in o['label'] ])
                         #log.critical (f'open_trade_strategy {open_trade_strategy}')
 
                         instrument = [
