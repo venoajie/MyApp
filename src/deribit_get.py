@@ -355,13 +355,16 @@ class GetPrivateData:
                 "post_only": post_only,
                 "reject_post_only": reject_post_only,
             }
+            
 
+        result == None
         if side == "buy":
             endpoint: str = "private/buy"
         if side == "sell":
             endpoint: str = "private/sell"
 
-        result = await self.parse_main(endpoint=endpoint, params=params)
+        if side != None:
+            result = await self.parse_main(endpoint=endpoint, params=params)
         return result
 
     async def send_limit_order(self, params) -> None:
@@ -377,8 +380,11 @@ class GetPrivateData:
         except:
             limit_prc = params["entry_price"]
         type = params["type"]
-
-        order_result = await self.send_order(
+        
+        order_result = None
+        
+        if side != None:
+            order_result = await self.send_order(
             side,
             instrument,
             size,
