@@ -518,12 +518,21 @@ class ApplyHedgingSpot:
         # the strategy has outstanding position
         if net_sum_current_position !=0 and label_closed != None:
             
+            instrument = [
+                            o["instrument_name"]
+                            for o in open_trade_strategy
+                            if str_mod.get_strings_before_character(o["label"], "-", 0)
+                            == strategy_label
+                        ][0]
+            
             # get integer of strategy
+            log.warning(f'instrument {instrument}')
             log.warning(f'label {label}')
             get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
             
             
             determine_size_and_side['label_closed'] = label_closed
+            determine_size_and_side['instrument'] = instrument
             
             
 
@@ -771,13 +780,6 @@ class ApplyHedgingSpot:
                         # get startegy details
                         strategy_attr = [
                             o for o in strategies if o["strategy"] == label_mod
-                        ][0]
-
-                        instrument = [
-                            o["instrument_name"]
-                            for o in my_trades_open
-                            if str_mod.get_strings_before_character(o["label"], "-", 0)
-                            == label_mod
                         ][0]
 
                         ticker = await self.reading_from_db("ticker", instrument)
