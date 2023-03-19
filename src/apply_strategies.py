@@ -467,6 +467,7 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         log.warning(f'label {label}')
+        log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
         
@@ -482,13 +483,13 @@ class ApplyHedgingSpot:
         net_sum_current_position =  [] if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
             
         # get net buy-sell order limit
-        open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
+        open_orders_strategy_limit = open_orders.trade_based_on_strategy_label(None,strategy_label,'limit')
         net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
         len_transactions_open_orders_strategy_limit = open_orders_strategy_limit['len_transactions']
         net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit
 
         # get net buy-sell order market
-        open_orders_strategy_market = open_orders.trade_based_on_label_strategy(None,strategy_label,'market')
+        open_orders_strategy_market = open_orders.trade_based_on_strategy_label(None,strategy_label,'market')
         net_sum_open_orders_strategy_market =  open_orders_strategy_market['net_sum_order_size']
         len_transactions_open_orders_strategy_market =  open_orders_strategy_market['len_transactions']
         net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market        
@@ -565,7 +566,7 @@ class ApplyHedgingSpot:
         """ 
         """
         # log.error (strategy)
-        label_strategy = strategy["strategy"]
+        strategy_label = strategy["strategy"]
         entry_price = strategy["entry_price"]
         side = strategy["side"]
         invalidation_price = strategy["invalidation_entry_price"]
@@ -584,58 +585,58 @@ class ApplyHedgingSpot:
 
         if side == "buy":
             
-            order_buy_open_label_strategy = []
-            my_trade_buy_open_label_strategy = []
+            order_buy_open_strategy_label = []
+            my_trade_buy_open_strategy_label = []
 
             if my_trades_open not in none_data:
-                my_trade_buy_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
+                my_trade_buy_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['my_trade_side_strategy_label']
 
             if open_orders not in none_data:
-                order_buy_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
+                order_buy_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label,open_orders) ['my_trade_side_strategy_label']
 
             order_and_position_buy_ok = (
-                my_trade_buy_open_label_strategy in none_data
-                and order_buy_open_label_strategy in none_data
+                my_trade_buy_open_strategy_label in none_data
+                and order_buy_open_strategy_label in none_data
             )
             market_buy_ok = (
                 index_price < entry_price and index_price > invalidation_price
             )
 
         if side == "sell":
-            order_sell_open_label_strategy = []
-            my_trade_sell_open_label_strategy = []
+            order_sell_open_strategy_label = []
+            my_trade_sell_open_strategy_label = []
 
             if open_orders not in none_data:
-                order_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy,open_orders) ['my_trade_side_strategy_label']
-                # log.warning (order_sell_open_label_strategy)
+                order_sell_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label,open_orders) ['my_trade_side_strategy_label']
+                # log.warning (order_sell_open_strategy_label)
             if my_trades_open not in none_data:
-                my_trade_sell_open_label_strategy = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['my_trade_side_strategy_label']
-                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,label_strategy) ['net_sum_my_trade_side_strategy_label']
+                my_trade_sell_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['my_trade_side_strategy_label']
+                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['net_sum_my_trade_side_strategy_label']
 
-            if "hedgingSpot" in label_strategy:
+            if "hedgingSpot" in strategy_label:
                 actual_hedging_size = net_sum_my_trade_side_strategy_label
                 min_hedging_size = - notional
                 net_hedge = actual_hedging_size - min_hedging_size
                 log.critical("HEDGING SPOT MAIN ORDER")
                 log.critical(
-                    f"label_strategy {side} {label_strategy} min_hedging_size {min_hedging_size} net_hedge {net_hedge} net_hedge > 0 {net_hedge > 0}"
+                    f"strategy_label {side} {strategy_label} min_hedging_size {min_hedging_size} net_hedge {net_hedge} net_hedge > 0 {net_hedge > 0}"
                 )
                 log.critical(
                     f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
                 )
 
             order_and_position_sell_ok = (
-                my_trade_sell_open_label_strategy in none_data
-                and order_sell_open_label_strategy in none_data
+                my_trade_sell_open_strategy_label in none_data
+                and order_sell_open_strategy_label in none_data
             )
             market_sell_ok = (
                 False
-                if "hedgingSpot" in label_strategy
+                if "hedgingSpot" in strategy_label
                 else index_price > entry_price and index_price < invalidation_price
             )
 
         return {
-            "send_buy_order_allowed": net_hedge > 0 if label_strategy =='hedgingSpot' and order_sell_open_label_strategy in none_data \
+            "send_buy_order_allowed": net_hedge > 0 if strategy_label =='hedgingSpot' and order_sell_open_strategy_label in none_data \
                 else order_and_position_buy_ok and market_buy_ok,
             "send_sell_order_allowed": order_and_position_sell_ok and market_sell_ok,
         }
@@ -752,9 +753,9 @@ class ApplyHedgingSpot:
                         #log.critical (f'label {label}')
                         
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        label_strategy = str_mod.get_strings_before_character(label, "-", 0)
+                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
                         
-                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(label_strategy)
+                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(strategy_label)
                         
                         open_order_label_short = [
                             o for o in open_order_label if o["direction"] == 'sell'
@@ -887,7 +888,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['type'] = 'limit'
                                     exit_order_allowed['size'] = int(max (notional * 10/100, 2))
                                     exit_order_allowed['label'] = label_numbering.labelling(
-                                    "open", label_strategy
+                                    "open", strategy_label
                                 )
                                     await self.send_limit_order (exit_order_allowed)
                             else :
@@ -936,7 +937,7 @@ class ApplyHedgingSpot:
                     # execute each strategy
                     for strategy_attr in strategies:
                         # result example: 'hedgingSpot'
-                        label_strategy = strategy_attr["strategy"]
+                        strategy_label = strategy_attr["strategy"]
                         time_threshold: float = (
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
@@ -945,7 +946,7 @@ class ApplyHedgingSpot:
                         remain_unhedged = check_spot_hedging["remain_unhedged_size"]
 
 
-                        label_closed: str = f"{label_strategy}-closed"
+                        label_closed: str = f"{strategy_label}-closed"
 
                         # determine position sizing-general strategy
                         min_position_size: float = position_sizing.pos_sizing(
@@ -958,12 +959,13 @@ class ApplyHedgingSpot:
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = check_spot_hedging["all_hedging_size"]
-                        log.error(f" label_strategy  {label_strategy}")
+                        log.error(f" strategy_label  {strategy_label}")
+                        open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
 
                         open_order_allowed = (
                             await self.is_send_exit_or_additional_order_allowed(
-                                label_strategy,
-                                my_trades_open,
+                                strategy_label,
+                                open_trade_strategy,
                                 open_order_mgt,
                                 strategy_attr,
                                 min_position_size,
@@ -971,33 +973,20 @@ class ApplyHedgingSpot:
                         )
                         log.error(f" {strategy_attr} send_main_order_allowed  {open_order_allowed}")
                         
-                        open_order_allowed = await self.is_send_main_order_allowed(
-                            strategy_attr,
-                            index_price,
-                            my_trades_open,
-                            open_orders_open_byAPI,
-                            notional
-                        )
-                        #log.error(f"open_order_allowed {open_order_allowed}")
                         # add some extra params to strategy
                         strategy_attr.update(
                             {
                                 "instrument": instrument,
                                 "size": min_position_size,
                                 "label_numbered": label_numbering.labelling(
-                                    "open", label_strategy
+                                    "open", strategy_label
                                 ),
                                 "label_closed_numbered": label_numbering.labelling(
-                                    "closed", label_strategy
+                                    "closed", strategy_label
                                 ),
                             }
                         )
 
-                        if open_order_allowed["send_buy_order_allowed"]:
-                            await self.send_combo_orders(strategy_attr)
-
-                        if open_order_allowed["send_sell_order_allowed"]:
-                            await self.send_combo_orders(strategy_attr)
 
         except Exception as error:
             catch_error(error, 30)
