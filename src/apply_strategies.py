@@ -523,6 +523,7 @@ class ApplyHedgingSpot:
             
             determine_size_and_side['label_closed'] = label_closed            
             determine_size_and_side['label'] = label_open     
+            log.warning(f'determine_size_and_side {determine_size_and_side}')
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
