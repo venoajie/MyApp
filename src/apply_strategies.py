@@ -535,15 +535,10 @@ class ApplyHedgingSpot:
                 open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
                 
                 if strategy_label_int in [o['label'] for o in open_trade_hedging_selected ][0]:
-                    pct_prc = price_as_per_label * strategy_attr['cut_loss_pct']
-                    price_as_per_label_tp = price_as_per_label - pct_prc
-                    resupply_price = price_as_per_label + pct_prc
                     
                     #log.info (open_trade_hedging_selected)
                     determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
-                    determine_size_and_side['take_profit_usd'] = price_as_per_label_tp
                     determine_size_and_side['timestamp'] = time_as_per_label
-                    determine_size_and_side['entry_price'] = resupply_price
 
                 else:
                     determine_size_and_side['exit_orders_limit_qty'] = 0
@@ -849,11 +844,14 @@ class ApplyHedgingSpot:
                         )
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(open_trade_strategy)
                                 log.error (f'open_trade_strategy_max_attr {open_trade_strategy_max_attr}')
-                                delta_time: int = server_time - exit_order_allowed ['timestamp'] 
+                                delta_time: int = server_time - open_trade_strategy_max_attr ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
+                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr ['max_price']
+                                price_as_per_label_tp = open_trade_strategy_max_attr_price - pct_prc
+                                resupply_price = open_trade_strategy_max_attr_price + pct_prc
                                 
                                 # closing order
-                                if best_bid_prc < exit_order_allowed ['take_profit_usd'] and len_open_order_label_long < 1:
+                                if best_bid_prc < price_as_per_label_tp and len_open_order_label_long < 1:
                                     exit_order_allowed['entry_price'] = best_bid_prc
                                     exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                     exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
@@ -861,9 +859,10 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     await self.send_limit_order (exit_order_allowed)
                                     
-                                # new order    
-                                log.warning(f'best_ask_prc {strategy_label}')
-                                if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time and len_open_order_label_short < 1:                                    
+                                # new order                                   
+                                
+                                pct_prc = open_trade_strategy_max_attr_price * strategy_attr['cut_loss_pct']
+                                if best_ask_prc > resupply_price and exceed_threshold_time and len_open_order_label_short < 1:                                    
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
                                     exit_order_allowed['take_profit_usd'] = best_ask_prc
