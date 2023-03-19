@@ -527,11 +527,12 @@ class ApplyHedgingSpot:
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
                 log.warning(f'strategy_label_int {strategy_label_int}')
-                log.warning(f'open_trade_strategy {open_trade_strategy}')
+                #log.warning(f'open_trade_strategy {open_trade_strategy}')
                     
                 size_as_per_label = [o['amount'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
                 price_as_per_label = [o['price'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
                 time_as_per_label = [o['timestamp'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
+                log.warning(f'size_as_per_label {size_as_per_label}')
                 
                 open_trade_hedging_price_max = max([o['price'] for o in open_trade_strategy  ])
                 open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
