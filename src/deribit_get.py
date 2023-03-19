@@ -395,7 +395,7 @@ class GetPrivateData:
 
         log.info(order_result)
 
-        if "error" in order_result:
+        if order_result != None and "error" in order_result:
             await telegram_bot_sendtext("limit order failed")
 
     async def send_market_order(self, params) -> None:
