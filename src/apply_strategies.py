@@ -951,11 +951,11 @@ class ApplyHedgingSpot:
                         if open_order_allowed ['main_orders_qty'] != 0\
                             and open_order_allowed['len_order_limit'] ==0:
                                 
-                                exit_order_allowed['side'] = exit_order_allowed ['main_orders_side'] 
                                 exit_order_allowed['instrument'] = instrument
-                                exit_order_allowed['label_numbered'] = exit_order_allowed ['label']
-                                exit_order_allowed['label_closed_numbered'] = exit_order_allowed ['exit_orders_market_type']
+                                exit_order_allowed['side'] = exit_order_allowed ['main_orders_side'] 
                                 exit_order_allowed['size'] = exit_order_allowed ['main_orders_qty']
+                                exit_order_allowed['label'] = exit_order_allowed ['label_numbered']
+                                exit_order_allowed['label_closed_numbered'] = exit_order_allowed ['label_closed']
                                 exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
                                 exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
                                 exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
