@@ -800,19 +800,7 @@ class ApplyHedgingSpot:
                             notional,
                             strategy_attr["equity_risked_pct"],
                         )
-
-                        # Creating an instance of the spot hedging class
-                        spot_hedged = spot_hedging.SpotHedging(
-                            strategy_attr["strategy"], my_trades_open
-                        )
-
-                        check_spot_hedging = spot_hedged.is_spot_hedged_properly(
-                            notional,
-                            min_trade_amount,
-                            contract_size,
-                            strategy_attr["quantity_discrete"],
-                        )
-
+                        
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = - notional
