@@ -485,7 +485,6 @@ class ApplyHedgingSpot:
             
         # get net buy-sell order limit
         open_orders_strategy_limit = open_orders.trade_based_on_strategy_label(None,strategy_label,'limit')
-        log.warning(f'open_orders_strategy_limit {open_orders_strategy_limit}')
         net_sum_open_orders_strategy_limit =  open_orders_strategy_limit['net_sum_order_size']
         net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit        
         len_transactions_open_orders_strategy_limit =  open_orders_strategy_limit['len_transactions']
@@ -493,9 +492,10 @@ class ApplyHedgingSpot:
         
         # get net buy-sell order market
         open_orders_strategy_market = open_orders.trade_based_on_strategy_label(None,strategy_label,'market')
-        net_sum_open_orders_strategy_market =  0 if open_orders_strategy_market == [] else  open_orders_strategy_market['net_sum_order_size']
-        len_transactions_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else open_orders_strategy_market['len_transactions']
-        net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market        
+        net_sum_open_orders_strategy_market =   open_orders_strategy_market['net_sum_order_size']
+        net_sum_open_orders_strategy_market =  0 if net_sum_open_orders_strategy_market == [] else  net_sum_open_orders_strategy_market 
+        len_transactions_open_orders_strategy_market =   open_orders_strategy_market['len_transactions']
+        len_transactions_open_orders_strategy_market =   0 if len_transactions_open_orders_strategy_market == [] else len_transactions_open_orders_strategy_market
         
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
