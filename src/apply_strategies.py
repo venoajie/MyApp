@@ -456,7 +456,7 @@ class ApplyHedgingSpot:
     async def is_send_exit_or_additional_order_allowed(
         self,
         label,
-        open_trade: list,
+        open_trade_strategy: list,
         open_orders: object,
         strategy_attr: list,
         min_position_size: float,
@@ -468,7 +468,7 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         
-        open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
+       # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
         # get net buy-sell position
         net_sum_current_position =  [] if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
@@ -775,7 +775,7 @@ class ApplyHedgingSpot:
                         log.critical (f'strategy_label {strategy_label}')
                         
                         open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
-                        open_trade_strategy_label = ([o  for o in my_trades_open if strategy_label_and_int in o['label'] ])
+                        open_trade_strategy_label = ([o  for o in open_trade_strategy if strategy_label_and_int in o['label'] ])
                         #log.critical (f'open_trade_strategy {open_trade_strategy}')
 
                         instrument = [
@@ -844,7 +844,7 @@ class ApplyHedgingSpot:
                         exit_order_allowed = (
                             await self.is_send_exit_or_additional_order_allowed(
                                 label,
-                                my_trades_open,
+                                open_trade_strategy,
                                 open_order_mgt,
                                 strategy_attr,
                                 min_position_size,
