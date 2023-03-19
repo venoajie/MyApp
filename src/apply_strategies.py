@@ -514,6 +514,9 @@ class ApplyHedgingSpot:
             # get integer of strategy
             get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
             
+            label_closed = f"{strategy_label}-closed-{get_strategy_int}"
+            determine_size_and_side['label_closed'] = label_closed
+            
             #log.critical(open_trade_strategy)
 
             #the strategy has outstanding position
