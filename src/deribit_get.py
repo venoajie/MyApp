@@ -334,7 +334,6 @@ class GetPrivateData:
                         "instrument_name": instrument,
                         "amount": amount,
                         "label": label,
-                        "price": price,
                         # "time_in_force": time_in_force, fik can not apply to post only
                         "type": type,
                         "trigger": trigger,
