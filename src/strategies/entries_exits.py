@@ -70,7 +70,7 @@ strategies = [
         "entry_price": 1000,
         "invalidation_entry_price": None,
         "take_profit_usd": (1 / 100) / 15,
-        "take_profit_pct": 3 / 100,
+        "take_profit_pct": (1 / 100)/2,
         "quantity_discrete": 15,
         "averaging": (5 / 100),
         "cut_loss_usd": 15,
