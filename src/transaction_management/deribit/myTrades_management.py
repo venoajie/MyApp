@@ -386,6 +386,7 @@ class MyTrades:
         my_trades = []
 
         try:
+            log.warning (trade_sources_filtering)
             if trade_sources_filtering != None:
                 my_trades = self.my_trades_api_basedOn_label(trade_sources_filtering)
             log.warning (my_trades)
