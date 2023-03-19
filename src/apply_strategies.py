@@ -468,6 +468,7 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         log.warning(f'label {label}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+        log.warning(f'strategy_label {strategy_label}')
         
         try:
             strategy_label_int = f"{strategy_label}-closed-{strategy_label_int}"
