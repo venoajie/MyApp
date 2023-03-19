@@ -499,6 +499,7 @@ class ApplyHedgingSpot:
                 )
             )
         
+        log.warning(f'label {label}')
         log.warning(f'net_sum_current_position {net_sum_current_position}')
         log.critical(f'len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
         log.critical(f'len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market}')
@@ -941,7 +942,7 @@ class ApplyHedgingSpot:
 
                         open_order_allowed = (
                             await self.is_send_exit_or_additional_order_allowed(
-                                label,
+                                label_strategy,
                                 my_trades_open,
                                 open_order_mgt,
                                 strategy_attr,
