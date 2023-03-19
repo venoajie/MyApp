@@ -471,8 +471,7 @@ class ApplyHedgingSpot:
         log.warning(f'strategy_label {strategy_label}')
         
         try:
-            get_int = str_mod.get_strings_before_character(label, "-", 1)
-            strategy_label_int = f"{strategy_label}-closed-{get_int}"
+            strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
             strategy_label_int = None
         
