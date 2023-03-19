@@ -414,13 +414,14 @@ class GetPrivateData:
         log.info(label)
         log.info(size)
         log.info(cut_loss_usd)
-
-        order_result = await self.send_order(
+        order_result = None
+        if size !=0:
+            order_result = await self.send_order(
             side, instrument, size, label, None, type, cut_loss_usd
         )
         log.info(order_result)
 
-        if "error" in order_result:
+        if order_result != None and "error" in order_result:
             await telegram_bot_sendtext("market order failed")
 
     async def send_triple_orders(self, params) -> None:
