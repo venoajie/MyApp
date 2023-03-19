@@ -14,13 +14,10 @@ import deribit_get
 from risk_management import spot_hedging, check_data_integrity, position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits
-
 # from market_understanding import futures_analysis
-
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
-
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -207,10 +204,6 @@ class ApplyHedgingSpot:
             "orders", self.currency, "open"
         )
 
-        path_orders_filled: str = system_tools.provide_path_for_file(
-            "orders", self.currency, "filled"
-        )
-
         path_portfolio: str = system_tools.provide_path_for_file(
             "portfolio", self.currency
         )
@@ -242,7 +235,6 @@ class ApplyHedgingSpot:
 
         return {
             "open_orders_open_byAPI": pickling.read_data(path_orders_open),
-            "open_orders_filled_byAPI": pickling.read_data(path_orders_filled),
             "positions": positions,
             "positions_from_sub_account": positions_from_sub_account,
             "open_orders_from_sub_account": open_orders_from_sub_account,
@@ -359,8 +351,7 @@ class ApplyHedgingSpot:
     async def check_open_orders_integrity(
         self, open_orders_from_sub_account_get, open_orders_open_byAPI
     ) -> None:
-        # log.warning (open_orders_open_byAPI)
-        # log.critical (open_orders_from_sub_account_get)
+        
         open_order_mgt_sub_account = open_orders_management.MyOrders(
             open_orders_from_sub_account_get
         )
@@ -373,6 +364,7 @@ class ApplyHedgingSpot:
         log.info(f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
+            
             # update open order at db with open orders at sub account
             my_path_orders_open = system_tools.provide_path_for_file(
                 "orders", self.currency, "open"
@@ -471,12 +463,10 @@ class ApplyHedgingSpot:
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
         
-        
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
             strategy_label_int = None
-        
         
        # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
@@ -533,6 +523,7 @@ class ApplyHedgingSpot:
             # get integer of strategy            
             
             determine_size_and_side['label_closed'] = label_closed
+            
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
                     
@@ -544,7 +535,7 @@ class ApplyHedgingSpot:
                 open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
                 
                 if strategy_label_int in [o['label'] for o in open_trade_hedging_selected ][0]:
-                    pct_prc = price_as_per_label * strategy_attr['take_profit_pct']
+                    pct_prc = price_as_per_label * strategy_attr['cut_loss_pct']
                     price_as_per_label_tp = price_as_per_label - pct_prc
                     resupply_price = price_as_per_label + pct_prc
                     
@@ -694,9 +685,6 @@ class ApplyHedgingSpot:
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
-                open_orders_filled_byAPI: list = reading_from_database[
-                    "open_orders_filled_byAPI"
-                ]
 
                 # log.critical (open_orders_from_sub_account_get)
                 # ?################################## end of gathering basic data #####################################
@@ -727,17 +715,6 @@ class ApplyHedgingSpot:
 
                 #! END OF CHECK BALANCE AND TRANSACTIONS INTEGRITY.
 
-                # obtain all closed labels in open orders
-                label_closed = open_order_mgt.open_orderLabelCLosed()
-
-                open_order_mgt_filed = open_orders_management.MyOrders(
-                    open_orders_filled_byAPI
-                )
-
-                open_order_mgt_filed_status_filed = (
-                    open_order_mgt_filed.open_orders_status("filled")
-                )
-
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
 
@@ -748,7 +725,6 @@ class ApplyHedgingSpot:
                         for o in my_trades_open
                     ]
                 )
-                #log.critical (f'strategy_labels {strategy_labels}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -862,7 +838,6 @@ class ApplyHedgingSpot:
                         log.warning(f'exit_order_allowed {exit_order_allowed}')
                         exit_order_allowed['instrument'] = instrument
                         
-                        
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                         
                             len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
@@ -872,6 +847,8 @@ class ApplyHedgingSpot:
                                 time_threshold: float = (
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
+                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(open_trade_strategy)
+                                log.error (f'open_trade_strategy_max_attr {open_trade_strategy_max_attr}')
                                 delta_time: int = server_time - exit_order_allowed ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
                                 
@@ -885,6 +862,7 @@ class ApplyHedgingSpot:
                                     await self.send_limit_order (exit_order_allowed)
                                     
                                 # new order    
+                                log.warning(f'best_ask_prc {strategy_label}')
                                 if best_ask_prc > exit_order_allowed ['entry_price'] and exceed_threshold_time and len_open_order_label_short < 1:                                    
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
@@ -1090,12 +1068,6 @@ if __name__ == "__main__":
     
     try:
         asyncio.get_event_loop().run_until_complete(main())
-
-        # only one file is allowed to running
-        is_running = system_tools.is_current_file_running("apply_strategies.py")
-
-        if is_running:
-            catch_error(is_running)
 
     except KeyboardInterrupt:
         catch_error(KeyboardInterrupt)
