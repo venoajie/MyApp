@@ -467,23 +467,25 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-
-        trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
-            open_trade, strategy_label
-        )
         
-        net_sum_current_position = trade_based_on_label_strategy["net_sum_order_size"]
+        # get net buy-sell position
+        net_sum_current_position =  [] if open_trade == [] else open_orders.net_sum_order_size(open_trade)
             
+        # get net buy-sell order limit
         open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
-        open_orders_strategy_market = open_orders.trade_based_on_label_strategy(None,strategy_label,'market')
         net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
+        len_transactions_open_orders_strategy_limit = open_orders_strategy_limit['len_transactions']
         net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit
 
+        # get net buy-sell order market
+        open_orders_strategy_market = open_orders.trade_based_on_label_strategy(None,strategy_label,'market')
         net_sum_open_orders_strategy_market =  open_orders_strategy_market['net_sum_order_size']
-        net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market
-        get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
+        len_transactions_open_orders_strategy_market =  open_orders_strategy_market['len_transactions']
+        net_sum_open_orders_strategy_market = 0 if net_sum_open_orders_strategy_market == [] else net_sum_open_orders_strategy_market        
         
+        # get default side from the strategy configuration
         side_main = strategy_attr["side"]
+        
         determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
                     label, 
@@ -495,9 +497,8 @@ class ApplyHedgingSpot:
                 )
             )
         open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
-        log.critical(f'open_trade_strategy {open_trade_strategy}')
-        log.warning (f'trade_based_on_label_strategy {trade_based_on_label_strategy}')
-        log.critical(f'open_trade_strategy {open_trade_strategy== 0}')
+        log.critical(f'len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
+        log.critical(f'len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market}')
         
         if net_sum_current_position== 0:            
             # determine position sizing-hedging
@@ -505,6 +506,10 @@ class ApplyHedgingSpot:
             
         # the strategy has outstanding position
         if net_sum_current_position !=0:
+            
+            # get integer of strategy
+            get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
+            
             log.critical(open_trade_strategy)
 
             #the strategy has outstanding position
