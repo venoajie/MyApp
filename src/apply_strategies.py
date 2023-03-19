@@ -495,15 +495,19 @@ class ApplyHedgingSpot:
                 )
             )
         open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
+        log.critical(f'open_trade_strategy {open_trade_strategy}')
+        log.warning (f'trade_based_on_label_strategy {trade_based_on_label_strategy}')
+        log.critical(f'open_trade_strategy {open_trade_strategy== 0}')
         
         if net_sum_current_position== 0:            
             # determine position sizing-hedging
             pass
             
-        
+        # the strategy has outstanding position
         if net_sum_current_position !=0:
             log.critical(open_trade_strategy)
 
+            #the strategy has outstanding position
             if open_trade_strategy !=[]:
                     
                 size_as_per_label = [o['amount'] for o in open_trade_strategy if get_strategy_int in o['label'] ][0]
