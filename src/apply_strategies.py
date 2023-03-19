@@ -776,7 +776,7 @@ class ApplyHedgingSpot:
                         
                         open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
                         open_trade_strategy_label = ([o  for o in my_trades_open if strategy_label_and_int in o['label'] ])
-                        log.critical (f'open_trade_strategy {open_trade_strategy}')
+                        #log.critical (f'open_trade_strategy {open_trade_strategy}')
 
                         instrument = [
                             o["instrument_name"]
@@ -850,6 +850,7 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
+                        log.warning(f'exit_order_allowed {exit_order_allowed}')
                         exit_order_allowed['instrument'] = instrument
                         
                         
