@@ -481,7 +481,7 @@ class ApplyHedgingSpot:
        # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
         # get net buy-sell position
-        net_sum_current_position =  [] if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
+        net_sum_current_position = 0 if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
             
         # get net buy-sell order limit
         open_orders_strategy_limit = open_orders.trade_based_on_strategy_label(None,strategy_label,'limit')
