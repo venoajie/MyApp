@@ -513,7 +513,7 @@ class ApplyHedgingSpot:
             
             # get integer of strategy
             log.warning(f'label {label}')
-            get_strategy_int = str_mod.get_strings_before_character(label, "-", 0)
+            get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
             
             label_closed = f"{strategy_label}-closed-{get_strategy_int}"
             determine_size_and_side['label_closed'] = label_closed
