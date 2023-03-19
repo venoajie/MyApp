@@ -514,8 +514,15 @@ class ApplyHedgingSpot:
         
         if net_sum_current_position== 0:            
             # determine position sizing-hedging
-            pass
+            label_open = label_numbering.labelling(
+                                    "open", strategy_label
+                                )
+            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 1)
+
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
             
+            determine_size_and_side['label_closed'] = label_closed            
+            determine_size_and_side['label'] = label_open     
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
@@ -938,7 +945,7 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
-                        log.error(f" {strategy_attr} send_main_order_allowed  {open_order_allowed}")
+                        log.error(f" send_main_order_allowed  {open_order_allowed}")
                         
                         # add some extra params to strategy
                         strategy_attr.update(
