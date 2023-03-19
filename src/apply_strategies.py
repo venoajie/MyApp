@@ -468,8 +468,10 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         
+        open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
+        
         # get net buy-sell position
-        net_sum_current_position =  [] if open_trade == [] else open_orders.net_sum_order_size(open_trade)
+        net_sum_current_position =  [] if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
             
         # get net buy-sell order limit
         open_orders_strategy_limit = open_orders.trade_based_on_label_strategy(None,strategy_label,'limit')
@@ -496,7 +498,8 @@ class ApplyHedgingSpot:
                     min_position_size
                 )
             )
-        open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
+        
+        log.warning(f'net_sum_current_position {net_sum_current_position}')
         log.critical(f'len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
         log.critical(f'len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market}')
         
@@ -510,7 +513,7 @@ class ApplyHedgingSpot:
             # get integer of strategy
             get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
             
-            log.critical(open_trade_strategy)
+            #log.critical(open_trade_strategy)
 
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
