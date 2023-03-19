@@ -388,6 +388,7 @@ class MyTrades:
         try:
             if trade_sources_filtering != None:
                 my_trades = self.my_trades_api_basedOn_label(trade_sources_filtering)
+            log.warning (my_trades)
 
             if my_trades != []:
                 max_price = max([o["price"] for o in my_trades])
