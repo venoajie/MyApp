@@ -946,7 +946,7 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
-                        log.error(f" send_main_order_allowed  {open_order_allowed}")
+                        
                         
                         if open_order_allowed ['main_orders_qty'] != 0\
                             and open_order_allowed['len_order_limit'] ==0:
@@ -959,6 +959,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
                                 exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
                                 exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
+                                log.error(f" send_main_order_allowed  {open_order_allowed}")
                                 await self.send_combo_orders(exit_order_allowed)
 
 
