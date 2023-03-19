@@ -403,6 +403,7 @@ class GetPrivateData:
         label = params["label"]
         size = params["size"]
         cut_loss_usd = params["cut_loss_usd"]
+        log.info(params)
 
         order_result = await self.send_order(
             side, instrument, size, label, None, type, cut_loss_usd
