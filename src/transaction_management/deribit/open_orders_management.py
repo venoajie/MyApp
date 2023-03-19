@@ -403,8 +403,6 @@ class MyOrders:
     ) -> None:
         """
         """
-        if open_transactions_label == None:
-            open_transactions_label == self.open_orders_from_db
 
         transactions = self.transactions_strategy_label(
             open_transactions_label, strategy_label
