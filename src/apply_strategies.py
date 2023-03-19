@@ -500,6 +500,8 @@ class ApplyHedgingSpot:
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
         
+        log.warning(f'side_main {side_main} net_sum_current_position {net_sum_current_position} net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit} net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
+        log.warning(f'min_position_size {min_position_size}')
         
         determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
