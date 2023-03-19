@@ -764,7 +764,7 @@ class ApplyHedgingSpot:
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_mod = str_mod.get_strings_before_character(label, "-", 0)
-                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+                        strategy_label = str_mod.get_strings_before_character(label, "-", 1)
 
                         # get startegy details
                         strategy_attr = [
