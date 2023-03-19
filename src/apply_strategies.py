@@ -739,14 +739,14 @@ class ApplyHedgingSpot:
                         for o in my_trades_open
                     ]
                 )
-                log.critical (f'strategy_labels {strategy_labels}')
+                #log.critical (f'strategy_labels {strategy_labels}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
                     
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
-                        log.critical (f'label {label}')
+                        #log.critical (f'label {label}')
                         
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_strategy = str_mod.get_strings_before_character(label, "-", 0)
@@ -769,6 +769,8 @@ class ApplyHedgingSpot:
                         strategy_attr = [
                             o for o in strategies if o["strategy"] == label_mod
                         ][0]
+                        
+                        log.critical (f'label_mod {label_mod}')
 
                         instrument = [
                             o["instrument_name"]
