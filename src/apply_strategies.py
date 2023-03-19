@@ -461,7 +461,7 @@ class ApplyHedgingSpot:
         #log.warning(f'label {label}')
         #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        #log.warning(f'strategy_label {strategy_label}')
+        log.warning(f'strategy_label {strategy_label}')
         
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
@@ -474,18 +474,14 @@ class ApplyHedgingSpot:
         net_sum_current_position = 0 if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
             
         # get net buy-sell order limit
-        open_orders_strategy_limit = open_orders.trade_based_on_strategy_label(None,strategy_label,'limit')
-        net_sum_open_orders_strategy_limit =  open_orders_strategy_limit['net_sum_order_size']
-        net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit        
-        len_transactions_open_orders_strategy_limit =  open_orders_strategy_limit['len_transactions']
-        len_transactions_open_orders_strategy_limit = 0 if len_transactions_open_orders_strategy_limit == [] else len_transactions_open_orders_strategy_limit
+        open_orders_strategy_limit =  [o for o in open_trade_strategy if 'limit' in o["type"] ]        
+        net_sum_open_orders_strategy_limit = 0 if open_orders_strategy_limit == [] else open_orders.net_sum_order_size(open_orders_strategy_limit)        
+        len_transactions_open_orders_strategy_limit =  0 if open_orders_strategy_limit == [] else len (open_orders_strategy_limit)
         
         # get net buy-sell order market
-        open_orders_strategy_market = open_orders.trade_based_on_strategy_label(None,strategy_label,'market')
-        net_sum_open_orders_strategy_market =   open_orders_strategy_market['net_sum_order_size']
-        net_sum_open_orders_strategy_market =  0 if net_sum_open_orders_strategy_market == [] else  net_sum_open_orders_strategy_market 
-        len_transactions_open_orders_strategy_market =   open_orders_strategy_market['len_transactions']
-        len_transactions_open_orders_strategy_market =   0 if len_transactions_open_orders_strategy_market == [] else len_transactions_open_orders_strategy_market
+        open_orders_strategy_market = [o for o in open_trade_strategy if 'market' in o["type"] ]   
+        net_sum_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else open_orders.net_sum_order_size(open_orders_strategy_market)      
+        len_transactions_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else len (open_orders_strategy_market)
         
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
