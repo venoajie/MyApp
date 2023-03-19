@@ -517,7 +517,7 @@ class ApplyHedgingSpot:
             label_open = label_numbering.labelling(
                                     "open", strategy_label
                                 )
-            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 1)
+            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 2)
 
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
             
