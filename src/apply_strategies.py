@@ -954,7 +954,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed['instrument'] = instrument
                                 exit_order_allowed['side'] = exit_order_allowed ['main_orders_side'] 
                                 exit_order_allowed['size'] = exit_order_allowed ['main_orders_qty']
-                                exit_order_allowed['label'] = exit_order_allowed ['label_numbered']
+                                exit_order_allowed['label_numbered'] = exit_order_allowed ['label']
                                 exit_order_allowed['label_closed_numbered'] = exit_order_allowed ['label_closed']
                                 exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
                                 exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
