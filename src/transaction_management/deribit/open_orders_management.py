@@ -401,17 +401,15 @@ class MyOrders:
     def trade_based_on_label_strategy(
         self, open_transactions_label: list, strategy_label, type: str = "limit"
     ) -> None:
-        """ """
+        """
+        """
         if open_transactions_label == None:
             open_transactions_label == self.open_orders_from_db
 
         transactions = self.transactions_label_strategy(
             open_transactions_label, strategy_label
         )
-        #log.warning (strategy_label)
-        #log.critical (f'transactions {transactions}')
-        #log.warning (open_transactions_label)
-
+        
         return {
             "net_sum_order_size": []
             if transactions == []
