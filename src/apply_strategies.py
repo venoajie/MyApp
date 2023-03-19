@@ -508,6 +508,7 @@ class ApplyHedgingSpot:
             )
         
         log.warning(f'net_sum_current_position {net_sum_current_position}')
+        log.warning(f'strategy_label_int {strategy_label_int}')
         log.critical(f'len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
         log.critical(f'len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market}')
         determine_size_and_side['len_order_market']= len_transactions_open_orders_strategy_limit
