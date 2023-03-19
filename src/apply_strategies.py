@@ -887,7 +887,7 @@ class ApplyHedgingSpot:
 
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
-                                if 'stop_market' in exit_order_allowed ['exit_orders_limit_type']:
+                                if 'stop_market' in exit_order_allowed ['exit_orders_market_type']:
                                     exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
