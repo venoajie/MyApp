@@ -357,7 +357,7 @@ class GetPrivateData:
             }
             
 
-        result == None
+        result = None
         if side == "buy":
             endpoint: str = "private/buy"
         if side == "sell":
