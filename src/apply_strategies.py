@@ -11,7 +11,7 @@ from loguru import logger as log
 from transaction_management.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get
-from risk_management import spot_hedging, check_data_integrity, position_sizing
+from risk_management import check_data_integrity, position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits
 # from market_understanding import futures_analysis
