@@ -764,6 +764,7 @@ class ApplyHedgingSpot:
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         label_mod = str_mod.get_strings_before_character(label, "-", 0)
+                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
 
                         # get startegy details
                         strategy_attr = [
@@ -771,12 +772,14 @@ class ApplyHedgingSpot:
                         ][0]
                         
                         log.critical (f'label_mod {label_mod}')
+                        log.critical (f'strategy_label {strategy_label}')
+                        
+                        open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
+                        log.critical (f'open_trade_strategy {open_trade_strategy}')
 
                         instrument = [
                             o["instrument_name"]
-                            for o in my_trades_open
-                            if str_mod.get_strings_before_character(o["label"], "-", 0)
-                            == label_mod
+                            for o in open_trade_strategy
                         ][0]
 
                         ticker = await self.reading_from_db("ticker", instrument)
