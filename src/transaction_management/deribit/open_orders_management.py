@@ -459,11 +459,8 @@ class MyOrders:
         positions_covered_by_market_orders = net_sum_current_position - net_sum_open_orders_strategy_market
         
         main_orders_sum_vs_max_orders = max_size - net_sum_current_position
+        
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-
-        get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
-
-        label_closed = f"{strategy_label}-closed-{get_strategy_int}"
 
         main_orders_qty = 0
         main_orders_side =  None
