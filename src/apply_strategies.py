@@ -458,10 +458,10 @@ class ApplyHedgingSpot:
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
-        log.warning(f'label {label}')
+        #log.warning(f'label {label}')
         #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        log.warning(f'strategy_label {strategy_label}')
+        #log.warning(f'strategy_label {strategy_label}')
         
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
@@ -517,10 +517,7 @@ class ApplyHedgingSpot:
             
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
-            
-            
-            # get integer of strategy            
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
             
             determine_size_and_side['label_closed'] = label_closed
             
@@ -833,17 +830,19 @@ class ApplyHedgingSpot:
                         exit_order_allowed['instrument'] = instrument
                         
                         log.warning(f'exit_order_allowed {exit_order_allowed}')
+                        log.warning( "hedgingSpot" in strategy_attr["strategy"])
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                         
                             len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
                             len_open_order_label_long = 0 if open_order_label_long == [] else len (open_order_label_long)
                                                             
                             if "hedgingSpot" in strategy_attr["strategy"]:
+                                
                                 time_threshold: float = (
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(open_trade_strategy)
-                                log.error (f'open_trade_strategy_max_attr {open_trade_strategy_max_attr}')
+                                #log.error (f'open_trade_strategy_max_attr {open_trade_strategy_max_attr}')
                                 delta_time: int = server_time - open_trade_strategy_max_attr ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
                                 open_trade_strategy_max_attr_price = open_trade_strategy_max_attr ['max_price']
@@ -851,7 +850,7 @@ class ApplyHedgingSpot:
                                 pct_prc = open_trade_strategy_max_attr_price * strategy_attr['cut_loss_pct']
                                 tp_price = open_trade_strategy_max_attr_price - pct_prc
                                 resupply_price = open_trade_strategy_max_attr_price + pct_prc
-                                log.warning(f'tp_price {tp_price} resupply_price {resupply_price} ')
+                                #log.warning(f'tp_price {tp_price} resupply_price {resupply_price} ')
                                 
                                 # closing order
                                 if best_bid_prc < tp_price and len_open_order_label_long < 1:
@@ -877,6 +876,7 @@ class ApplyHedgingSpot:
                                 )
                                     await self.send_limit_order (exit_order_allowed)
                             else :
+                                log.warning(f'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
                                                               
                                 exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                 exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
