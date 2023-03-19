@@ -512,12 +512,13 @@ class ApplyHedgingSpot:
         if net_sum_current_position !=0:
             
             # get integer of strategy
-            get_strategy_int = str_mod.get_strings_before_character(label, "-", 1)
+            log.warning(f'label {label}')
+            get_strategy_int = str_mod.get_strings_before_character(label, "-", 0)
             
             label_closed = f"{strategy_label}-closed-{get_strategy_int}"
             determine_size_and_side['label_closed'] = label_closed
             
-            #log.critical(open_trade_strategy)
+            log.warning(f'label_closed {label_closed}')
 
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
