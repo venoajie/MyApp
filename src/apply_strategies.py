@@ -467,7 +467,7 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         log.warning(f'label {label}')
-        log.warning(f'open_trade_strategy {open_trade_strategy}')
+        #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
         
