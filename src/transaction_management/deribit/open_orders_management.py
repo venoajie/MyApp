@@ -382,7 +382,7 @@ class MyOrders:
         except Exception as error:
             catch_error(error)
 
-    def transactions_label_strategy(
+    def transactions_strategy_label(
         self, open_transactions_label, strategy_label
     ) -> None:
         """ """
@@ -398,7 +398,7 @@ class MyOrders:
 
         return result
 
-    def trade_based_on_label_strategy(
+    def trade_based_on_strategy_label(
         self, open_transactions_label: list, strategy_label, type: str = "limit"
     ) -> None:
         """
@@ -406,7 +406,7 @@ class MyOrders:
         if open_transactions_label == None:
             open_transactions_label == self.open_orders_from_db
 
-        transactions = self.transactions_label_strategy(
+        transactions = self.transactions_strategy_label(
             open_transactions_label, strategy_label
         )
         
@@ -415,7 +415,7 @@ class MyOrders:
             if transactions == []
             else self.net_sum_order_size(transactions),
             "len_transactions": [] if transactions == [] else len(transactions),
-            "transaction_label_strategy_type": []
+            "transaction_strategy_label_type": []
             if transactions == []
             else ([o for o in transactions if type in o["order_type"]]),
             "instrument": []
