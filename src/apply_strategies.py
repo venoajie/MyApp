@@ -466,6 +466,7 @@ class ApplyHedgingSpot:
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
+        log.warning(f'label {label}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         
@@ -493,7 +494,7 @@ class ApplyHedgingSpot:
         except:
             label_closed = None
         
-        log.warning(f'label {label}')
+        
         log.warning(f'label_closed {label_closed}')
         determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
