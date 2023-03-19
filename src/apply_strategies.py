@@ -470,7 +470,7 @@ class ApplyHedgingSpot:
         #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
-        log.warning(f'open_orders {open_orders}')
+        
         
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
@@ -485,6 +485,7 @@ class ApplyHedgingSpot:
             
         # get net buy-sell order limit
         open_orders_strategy_limit = open_orders.trade_based_on_strategy_label(None,strategy_label,'limit')
+        log.warning(f'open_orders_strategy_limit {open_orders_strategy_limit}')
         net_sum_open_orders_strategy_limit = open_orders_strategy_limit['net_sum_order_size']
         len_transactions_open_orders_strategy_limit = open_orders_strategy_limit['len_transactions']
         net_sum_open_orders_strategy_limit = 0 if net_sum_open_orders_strategy_limit == [] else net_sum_open_orders_strategy_limit
