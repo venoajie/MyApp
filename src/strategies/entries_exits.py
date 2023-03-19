@@ -74,7 +74,7 @@ strategies = [
         "quantity_discrete": 15,
         "averaging": (5 / 100),
         "cut_loss_usd": 15,
-        "cut_loss_pct": (5 / 100),
+        "cut_loss_pct": (3 / 100),
         "halt_minute_before_reorder": 60 * 4,
         "equity_risked_usd": 60,
         "equity_risked_pct": (1 / 100),
