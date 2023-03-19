@@ -484,9 +484,9 @@ class ApplyHedgingSpot:
         open_orders_strategy_market = [o for o in open_orders_strategy if 'market' in o["order_type"] ]   
         net_sum_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else open_orders.net_sum_order_size(open_orders_strategy_market)      
         len_transactions_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else len (open_orders_strategy_market)
-        log.info (open_orders_strategy)
-        log.info (open_orders_strategy_limit)
-        log.info (open_orders_strategy_market)
+        #log.info (open_orders_strategy)
+        #log.info (open_orders_strategy_limit)
+        #log.info (open_orders_strategy_market)
         
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
