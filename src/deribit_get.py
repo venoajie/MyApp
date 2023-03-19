@@ -445,7 +445,7 @@ class GetPrivateData:
         order_result = await self.send_order(
             main_side, instrument, size, main_label, main_prc
         )
-        log.warning(order_result)
+        log.info(order_result)
 
         order_result_id = order_result["result"]["order"]["order_id"]
 
