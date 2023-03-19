@@ -861,9 +861,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     await self.send_limit_order (exit_order_allowed)
                                     
-                                # new order                                   
-                                
-                                
+                                # new order           
                                 if best_ask_prc > resupply_price and exceed_threshold_time and len_open_order_label_short < 1:                                    
                                     
                                     exit_order_allowed['entry_price'] = best_ask_prc
@@ -885,6 +883,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd'] 
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
+                                    await self.send_limit_order (exit_order_allowed)
 
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
@@ -892,6 +891,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
+                                    await self.send_market_order (exit_order_allowed)
                                 
                                 log.error(f"exit_order_allowed stop_market {exit_order_allowed}")
                                 
