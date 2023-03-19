@@ -470,6 +470,7 @@ class ApplyHedgingSpot:
         #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
+        log.warning(f'open_orders {open_orders}')
         
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
