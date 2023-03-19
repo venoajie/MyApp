@@ -468,7 +468,12 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         log.warning(f'label {label}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
+        
+        try:
+            strategy_label_int = f"{strategy_label}-closed-{strategy_label_int}"
+        except:
+            strategy_label_int = None
+        
         
        # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
@@ -489,11 +494,6 @@ class ApplyHedgingSpot:
         
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
-        try:
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
-        except:
-            label_closed = None
-        
         
         log.warning(f'label_closed {label_closed}')
         determine_size_and_side = (
@@ -518,7 +518,8 @@ class ApplyHedgingSpot:
             pass
             
         # the strategy has outstanding position
-        if net_sum_current_position !=0 and label_closed != None:
+        if net_sum_current_position !=0 and strategy_label_int != None:
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
             
             # get integer of strategy            
             
