@@ -517,7 +517,7 @@ class ApplyHedgingSpot:
             label_open = label_numbering.labelling(
                                     "open", strategy_label
                                 )
-            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 0)
+            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 1)
 
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
             
@@ -550,93 +550,6 @@ class ApplyHedgingSpot:
                     determine_size_and_side['exit_orders_limit_qty'] = 0
             
         return determine_size_and_side
-
-    async def is_send_main_order_allowed(
-        self,
-        strategy: dict,
-        index_price: float,
-        my_trades_open: list,
-        open_orders: list,
-        notional
-    ) -> bool:
-        
-        """ 
-        """
-        # log.error (strategy)
-        strategy_label = strategy["strategy"]
-        entry_price = strategy["entry_price"]
-        side = strategy["side"]
-        invalidation_price = strategy["invalidation_entry_price"]
-
-        none_data = [None, 0, []]
-
-        # prepare default result to avoid unassociated value
-        order_and_position_buy_ok = False
-        market_buy_ok = False
-        order_and_position_sell_ok = False
-        market_sell_ok = False
-        
-        my_trades_open_mgt: object = myTrades_management.MyTrades(
-                    my_trades_open
-                )
-
-        if side == "buy":
-            
-            order_buy_open_strategy_label = []
-            my_trade_buy_open_strategy_label = []
-
-            if my_trades_open not in none_data:
-                my_trade_buy_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['my_trade_side_strategy_label']
-
-            if open_orders not in none_data:
-                order_buy_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label,open_orders) ['my_trade_side_strategy_label']
-
-            order_and_position_buy_ok = (
-                my_trade_buy_open_strategy_label in none_data
-                and order_buy_open_strategy_label in none_data
-            )
-            market_buy_ok = (
-                index_price < entry_price and index_price > invalidation_price
-            )
-
-        if side == "sell":
-            order_sell_open_strategy_label = []
-            my_trade_sell_open_strategy_label = []
-
-            if open_orders not in none_data:
-                order_sell_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label,open_orders) ['my_trade_side_strategy_label']
-                # log.warning (order_sell_open_strategy_label)
-            if my_trades_open not in none_data:
-                my_trade_sell_open_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['my_trade_side_strategy_label']
-                net_sum_my_trade_side_strategy_label = my_trades_open_mgt.transactions_same_side_and_label (side,strategy_label) ['net_sum_my_trade_side_strategy_label']
-
-            if "hedgingSpot" in strategy_label:
-                actual_hedging_size = net_sum_my_trade_side_strategy_label
-                min_hedging_size = - notional
-                net_hedge = actual_hedging_size - min_hedging_size
-                log.critical("HEDGING SPOT MAIN ORDER")
-                log.critical(
-                    f"strategy_label {side} {strategy_label} min_hedging_size {min_hedging_size} net_hedge {net_hedge} net_hedge > 0 {net_hedge > 0}"
-                )
-                log.critical(
-                    f"net_sum_my_trade_side_strategy_label {net_sum_my_trade_side_strategy_label}"
-                )
-
-            order_and_position_sell_ok = (
-                my_trade_sell_open_strategy_label in none_data
-                and order_sell_open_strategy_label in none_data
-            )
-            market_sell_ok = (
-                False
-                if "hedgingSpot" in strategy_label
-                else index_price > entry_price and index_price < invalidation_price
-            )
-
-        return {
-            "send_buy_order_allowed": net_hedge > 0 if strategy_label =='hedgingSpot' and order_sell_open_strategy_label in none_data \
-                else order_and_position_buy_ok and market_buy_ok,
-            "send_sell_order_allowed": order_and_position_sell_ok and market_sell_ok,
-        }
 
     async def running_strategy(self, server_time) -> float:
         """ """
