@@ -960,6 +960,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
                                 exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
                                 log.error(f" send_main_order_allowed  {open_order_allowed}")
+                                log.error(f" strategy_attr  {strategy_attr}")
                                 await self.send_combo_orders(exit_order_allowed)
 
 
