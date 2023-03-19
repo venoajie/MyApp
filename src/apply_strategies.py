@@ -518,7 +518,7 @@ class ApplyHedgingSpot:
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"
-            log.warning(f'label_closed {label_closed}')
+            
             
             # get integer of strategy            
             
@@ -526,6 +526,8 @@ class ApplyHedgingSpot:
             
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
+                log.warning(f'strategy_label_int {strategy_label_int}')
+                log.warning(f'open_trade_strategy {open_trade_strategy}')
                     
                 size_as_per_label = [o['amount'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
                 price_as_per_label = [o['price'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
@@ -830,9 +832,9 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
-                        log.warning(f'exit_order_allowed {exit_order_allowed}')
                         exit_order_allowed['instrument'] = instrument
                         
+                        log.warning(f'exit_order_allowed {exit_order_allowed}')
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                         
                             len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
