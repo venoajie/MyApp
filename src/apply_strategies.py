@@ -879,8 +879,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed['label'] = exit_order_allowed ['label_closed']
                                 exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
                                 
-                                if 'limit' in exit_order_allowed ['exit_orders_limit_type'] \
-                                    and exit_order_allowed ['len_order_limit'] == 0:
+                                if  exit_order_allowed ['len_order_limit'] == 0:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
                                     exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd'] 
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
@@ -888,8 +887,7 @@ class ApplyHedgingSpot:
 
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
-                                if 'stop_market' in exit_order_allowed ['exit_orders_market_type']\
-                                    and exit_order_allowed ['len_order_market'] == 0:
+                                if exit_order_allowed ['len_order_market'] == 0:
                                     exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_market_type']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
