@@ -293,8 +293,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
-        from loguru import logger as log
-        # print (f'trigger_price {trigger_price}')
+
         if valid_until == False:
             if trigger_price == None:
                 if "market" in type:
@@ -332,14 +331,6 @@ class GetPrivateData:
                     }
                 else:
                     
-                    log.error(amount)
-                    log.error(label)
-                    log.error(type)
-                    log.error(trigger)
-                    log.error(trigger_price)
-                    log.error(reduce_only)
-                    log.error(post_only)
-                    log.error(reject_post_only)
                     params = {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -373,8 +364,6 @@ class GetPrivateData:
             endpoint: str = "private/buy"
         if side == "sell":
             endpoint: str = "private/sell"
-
-        log.warning(params)
         if side != None:
             result = await self.parse_main(endpoint=endpoint, params=params)
         return result
