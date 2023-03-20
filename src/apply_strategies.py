@@ -459,7 +459,7 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        log.warning(f'strategy_label {strategy_label}')
+        #log.warning(f'strategy_label {strategy_label}')
         
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
@@ -518,11 +518,11 @@ class ApplyHedgingSpot:
             
             #the strategy has outstanding position
             if open_trade_strategy !=[]:
-                log.warning(f'strategy_label_int {strategy_label_int}')
+                #log.warning(f'strategy_label_int {strategy_label_int}')
                 #log.warning(f'open_trade_strategy {open_trade_strategy}')
                     
                 size_as_per_label = [o['amount'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
-                log.warning(f'size_as_per_label {size_as_per_label}')
+                #log.warning(f'size_as_per_label {size_as_per_label}')
                 
                 open_trade_hedging_price_max = max([o['price'] for o in open_trade_strategy  ])
                 open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
@@ -695,8 +695,8 @@ class ApplyHedgingSpot:
                         )
                         exit_order_allowed['instrument'] = instrument
                         
-                        log.warning(f'exit_order_allowed {exit_order_allowed}')
-                        log.warning( "hedgingSpot" in strategy_attr["strategy"])
+                        #log.warning(f'exit_order_allowed {exit_order_allowed}')
+                        #log.warning( "hedgingSpot" in strategy_attr["strategy"])
                         if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
                         
                             len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
@@ -749,7 +749,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
                                     await self.send_limit_order (exit_order_allowed)
 
-                                log.warning(f"exit_order_allowed limit {exit_order_allowed}")
+                                #log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
                                 if exit_order_allowed ['len_order_market'] == 0:
                                     exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
