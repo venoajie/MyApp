@@ -28,7 +28,6 @@ def test_pos_sizing():
         == 90
     )
 
-
 def test_compute_delta():
     notional = 100
     long = 0
@@ -36,10 +35,19 @@ def test_compute_delta():
     compute_delta = position_sizing.compute_delta(notional, long, short)
     assert compute_delta == 0
 
-
 def test_compute_leverage():
     notional = 100
     long = 0
     short = -100
     compute_delta = position_sizing.compute_leverage(notional, long, short)
     assert compute_delta == 1
+
+
+def test_sizing_for_perpetual_grid():
+    notional = 100
+    pct = 1/100
+    pct_daily_profit_target = 2 * pct
+    pct_profit_per_transaction = pct/2
+    pct_capital_risk = 2 * pct
+    sizing_for_perpetual_grid = position_sizing.sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction, pct_capital_risk)
+    assert sizing_for_perpetual_grid == 200
