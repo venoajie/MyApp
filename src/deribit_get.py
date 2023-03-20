@@ -293,6 +293,7 @@ class GetPrivateData:
         post_only: bool = True,
         reject_post_only: bool = False,
     ):
+        from loguru import logger as log
         # print (f'trigger_price {trigger_price}')
         if valid_until == False:
             if trigger_price == None:
