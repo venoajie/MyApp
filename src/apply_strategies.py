@@ -458,8 +458,6 @@ class ApplyHedgingSpot:
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
-        #log.warning(f'label {label}')
-        #log.warning(f'open_trade_strategy {open_trade_strategy}')
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
         
@@ -467,8 +465,6 @@ class ApplyHedgingSpot:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
             strategy_label_int = None
-        
-       # open_trade_strategy = ([o  for o in open_trade if strategy_label in o['label'] ])
         
         # get net buy-sell position
         net_sum_current_position = 0 if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
@@ -484,15 +480,9 @@ class ApplyHedgingSpot:
         open_orders_strategy_market = [o for o in open_orders_strategy if 'market' in o["order_type"] ]   
         net_sum_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else open_orders.net_sum_order_size(open_orders_strategy_market)      
         len_transactions_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else len (open_orders_strategy_market)
-        #log.info (open_orders_strategy)
-        #log.info (open_orders_strategy_limit)
-        #log.info (open_orders_strategy_market)
         
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
-        
-        log.warning(f'side_main {side_main} net_sum_current_position {net_sum_current_position} net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit} net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
-        log.warning(f'min_position_size {min_position_size} len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market} len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
         
         determine_size_and_side = (
                 open_orders.calculate_order_size_and_side_for_outstanding_transactions(
@@ -505,10 +495,6 @@ class ApplyHedgingSpot:
                 )
             )
         
-        log.warning(f'net_sum_current_position {net_sum_current_position}')
-        log.warning(f'strategy_label_int {strategy_label_int}')
-        log.critical(f'len_transactions_open_orders_strategy_limit {len_transactions_open_orders_strategy_limit}')
-        log.critical(f'len_transactions_open_orders_strategy_market {len_transactions_open_orders_strategy_market}')
         determine_size_and_side['len_order_market']= len_transactions_open_orders_strategy_limit
         determine_size_and_side['len_order_limit']= len_transactions_open_orders_strategy_market
         
@@ -523,7 +509,7 @@ class ApplyHedgingSpot:
             
             determine_size_and_side['label_closed'] = label_closed            
             determine_size_and_side['label'] = label_open     
-            #log.warning(f'determine_size_and_side {determine_size_and_side}')
+
         # the strategy has outstanding position
         if net_sum_current_position !=0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
@@ -577,30 +563,17 @@ class ApplyHedgingSpot:
                 )
                 #og.debug (my_trades_open)
 
-                # instruments_kind: list =  [o  for o in instruments if o['kind'] == 'future']
-
-                # fetch instruments data
-                instruments = await self.reading_from_db("instruments", self.currency)
-                # futs_analysis = await self.reading_from_db ('futures_analysis',  self.currency )
-
-                # instruments future
-                # instruments_future = [o for o in instruments if o["kind"] == "future"]
-
                 # obtain instruments future relevant to strategies
-                # instrument_transactions = [o['instrument_name'] for o in instruments_future \
-                #    if o['instrument_name']   in [f'{self.currency.upper()}-PERPETUAL' , rebates['instrument_name']] ]
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
                 open_orders_open_byAPI: list = reading_from_database[
                     "open_orders_open_byAPI"
                 ]
-                #log.critical (open_orders_open_byAPI)
+
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
-
-                # log.critical (open_orders_from_sub_account_get)
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
@@ -658,8 +631,6 @@ class ApplyHedgingSpot:
                         open_order_label_long = [
                             o for o in open_order_label if o["direction"] == 'buy'
                         ]
-                        log.warning(f' open_order_label {open_order_label}')
-                        log.error(f' open_order_label_short {open_order_label_short}')
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
@@ -671,11 +642,9 @@ class ApplyHedgingSpot:
                         ][0]
                         
                         log.critical (f' {label}')
-                        #log.critical (f'strategy_label {strategy_label}')
                         
                         open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
                         open_trade_strategy_label = ([o  for o in open_trade_strategy if strategy_label_int in o['label'] ])
-                        #log.critical (f'open_trade_strategy {open_trade_strategy}')
 
                         instrument = [
                             o["instrument_name"]
@@ -703,17 +672,6 @@ class ApplyHedgingSpot:
                         # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                         # log.warning (leverage_and_delta)
 
-                        #! get instrument attributes detail
-                        instrument_data: dict = [
-                            o for o in instruments if o["instrument_name"] == instrument
-                        ][0]
-
-                        # instrument minimum order
-                        min_trade_amount = instrument_data["min_trade_amount"]
-
-                        # instrument contract size
-                        contract_size = instrument_data["contract_size"]
-
                         # determine position sizing-general strategy
                         min_position_size: float = position_sizing.pos_sizing(
                             strategy_attr["take_profit_usd"],
@@ -725,8 +683,6 @@ class ApplyHedgingSpot:
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = - notional
-                        # log.error(f'min_position_size {min_position_size}')
-                        # log.error(strategy_attr["strategy"])
 
                         exit_order_allowed = (
                             await self.is_send_exit_or_additional_order_allowed(
@@ -752,7 +708,7 @@ class ApplyHedgingSpot:
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(open_trade_strategy)
-                                #log.error (f'open_trade_strategy_max_attr {open_trade_strategy_max_attr}')
+
                                 delta_time: int = server_time - open_trade_strategy_max_attr ['timestamp'] 
                                 exceed_threshold_time: int = delta_time > time_threshold
                                 open_trade_strategy_max_attr_price = open_trade_strategy_max_attr ['max_price']
@@ -760,7 +716,6 @@ class ApplyHedgingSpot:
                                 pct_prc = open_trade_strategy_max_attr_price * strategy_attr['cut_loss_pct']
                                 tp_price = open_trade_strategy_max_attr_price - pct_prc
                                 resupply_price = open_trade_strategy_max_attr_price + pct_prc
-                                #log.warning(f'tp_price {tp_price} resupply_price {resupply_price} ')
                                 
                                 # closing order
                                 if best_bid_prc < tp_price and len_open_order_label_long < 1:
@@ -801,9 +756,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed['type'] = exit_order_allowed ['exit_orders_market_type']
                                     exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
                                     await self.send_market_order (exit_order_allowed)
-                                
-                                log.error(f"exit_order_allowed stop_market {exit_order_allowed}")
-                                
+                                                                
                         if exit_order_allowed ['exit_orders_market_qty'] != 0:
                             log.debug(f"exit_orders_market_type")
 
@@ -815,18 +768,6 @@ class ApplyHedgingSpot:
                     # get bid and ask price
                     best_bid_prc = ticker[0]["best_bid_price"]
                     best_ask_prc = ticker[0]["best_ask_price"]
-
-                    #! get instrument attributes detail
-                    instrument_data: dict = [
-                        o for o in instruments if o["instrument_name"] == instrument
-                    ][0]
-
-                    # instrument minimum order
-                    min_trade_amount = instrument_data["min_trade_amount"]
-
-                    # instrument contract size
-                    contract_size = instrument_data["contract_size"]
-                    log.debug (strategies)
 
                     # execute each strategy
                     for strategy_attr in strategies:
@@ -859,8 +800,7 @@ class ApplyHedgingSpot:
                                 min_position_size,
                             )
                         )
-                        
-                        
+                                                
                         if open_order_allowed ['main_orders_qty'] != 0\
                             and open_order_allowed['len_order_limit'] ==0:
                                 
@@ -872,8 +812,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
                                 exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
                                 exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
-                                log.error(f" send_main_order_allowed  {open_order_allowed}")
-                                log.error(f" strategy_attr  {strategy_attr}")
+                                
                                 await self.send_combo_orders(exit_order_allowed)
 
 
@@ -884,8 +823,6 @@ class ApplyHedgingSpot:
         self, label, actual_hedging_size: float, min_position_size: float
     ) -> None:
         """ """
-
-        from time import sleep
 
         try:
             # refresh open orders
@@ -922,7 +859,6 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error)
 
-
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
 
@@ -943,7 +879,7 @@ async def main():
             currency=currency,
         )
 
-        # get deribit server timr
+        # get deribit server time
         server_time = await syn.current_server_time()
 
         # resupply sub account db
