@@ -31,6 +31,19 @@ git clone https://github.com/venoajie/MyApp.git
 cd MyApp
 make install # to download related Linux and Python dependencies
 ``` 
+- attach .env file in configuration folder
+```shell 
+cd MyApp/src/configuration
+# attach .env file here
+``` 
+- run app
+```shell 
+cd MyApp/src
+make start # for first time running
+``` 
+
+## File structure:
+
 - general folder structure
 
     ```
@@ -60,13 +73,3 @@ make install # to download related Linux and Python dependencies
     ├── Makefile
     └── requirements.txt
     ```
-- attach .env file in configuration folder
-```shell 
-cd MyApp/src/configuration
-# attach .env file here
-``` 
-- run app
-```shell 
-cd MyApp/src
-make start # for first time running
-``` 
