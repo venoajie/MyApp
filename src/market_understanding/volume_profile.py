@@ -7,7 +7,7 @@ from datetime import datetime
 import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default = "browser"
-
+#https://letian-wang.medium.com/market-profile-and-volume-profile-in-python-139cb636ece
 
 def volume_profile(df, price_pace=0.25, return_raw=False):
     """
@@ -248,10 +248,11 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
 
 
 if __name__ == "__main__":
-    sd = datetime(2023, 3, 12)
-    ed = datetime(2023, 3, 13)
-    df = yf.download(tickers='BTC-USD', start=sd, end=ed, interval="1m")
+    sd = datetime(2023, 3, 16)
+    ed = datetime(2023, 3, 17)
+    df = yf.download(tickers='ETH-USD', start=sd, end=ed, interval="1m")
     df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
+    print (df)
 
     # fig = volume_profile(df, price_pace=0.25, return_raw=False)
     # fig.show()
