@@ -331,7 +331,7 @@ class GetPrivateData:
                         "reduce_only": reduce_only,
                     }
                 else:
-                    log.error(instrument)
+                    
                     log.error(amount)
                     log.error(label)
                     log.error(type)
@@ -373,6 +373,7 @@ class GetPrivateData:
         if side == "sell":
             endpoint: str = "private/sell"
 
+        log.warning(params)
         if side != None:
             result = await self.parse_main(endpoint=endpoint, params=params)
         return result
