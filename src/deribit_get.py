@@ -72,7 +72,6 @@ async def telegram_bot_sendtext(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
-
 async def main(
     endpoint: str,
     params: str,
@@ -409,12 +408,7 @@ class GetPrivateData:
         label = params["label"]
         size = params["size"]
         cut_loss_usd = params["cut_loss_usd"]
-        log.info(side)
-        log.info(type)
-        log.info(instrument)
-        log.info(label)
-        log.info(size)
-        log.info(cut_loss_usd)
+        
         order_result = None
         if size !=0:
             order_result = await self.send_order(
@@ -566,67 +560,6 @@ async def send_order_market(
 
     return result
 
-
-async def get_open_orders_byInstruments(
-    connection_url, client_id, client_secret, instrument, type
-):
-    endpoint_open_orders: str = f"private/get_open_orders_by_instrument"
-    params = {
-        "instrument_name": instrument.upper(),
-        "type": type,
-    }
-
-    result = await main(
-        endpoint=endpoint_open_orders,
-        params=params,
-        connection_url=connection_url,
-        client_id=client_id,
-        client_secret=client_secret,
-    )
-    return result
-
-
-async def get_user_trades_by_instrument(
-    connection_url, client_id, client_secret, instrument_name: str, count: int = 1000
-):
-    # Set endpoint
-    endpoint_get_user_trades: str = f"private/get_user_trades_by_instrument"
-
-    params = {"instrument_name": instrument_name.upper(), "count": count}
-
-    result = await main(
-        endpoint=endpoint_get_user_trades,
-        params=params,
-        connection_url=connection_url,
-        client_id=client_id,
-        client_secret=client_secret,
-    )
-    return result
-
-
-async def get_order_history_by_instrument(
-    connection_url, client_id, client_secret, instrument_name, count: int = 100
-):
-    # Set endpoint
-    endpoint_get_order_history: str = f"private/get_order_history_by_instrument"
-
-    params = {
-        "instrument_name": instrument_name.upper(),
-        "include_old": True,
-        "include_unfilled": True,
-        "count": count,
-    }
-
-    result = await main(
-        endpoint=endpoint_get_order_history,
-        params=params,
-        connection_url=connection_url,
-        client_id=client_id,
-        client_secret=client_secret,
-    )
-    return result
-
-
 async def get_server_time(connection_url: str) -> int:
     """
     Returning server time
@@ -642,15 +575,6 @@ async def get_server_time(connection_url: str) -> int:
 
     return result
 
-
-async def get_index(connection_url: str, currency):
-    # Set endpoint
-    endpoint: str = f"public/get_index?currency={currency.upper()}"
-    params = {}
-
-    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
-
-
 async def get_instruments(connection_url: str, currency):
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
@@ -658,14 +582,12 @@ async def get_instruments(connection_url: str, currency):
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
-
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
     params = {}
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
-
 
 async def get_ohlc(
     connection_url: str,
@@ -686,7 +608,6 @@ async def get_ohlc(
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
-
 async def get_open_interest_aggregated_ohlc(
     connection_url: str, currency, resolution
 ) -> list:
@@ -704,7 +625,6 @@ async def get_open_interest_aggregated_ohlc(
         return await main(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
-
 
 async def get_open_interest_historical(
     connection_url: str, currency, resolution
@@ -724,7 +644,6 @@ async def get_open_interest_historical(
         return await main(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
-
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
     # Set endpoint
