@@ -17,12 +17,10 @@ def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
-
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class MyOrders:
@@ -485,6 +483,7 @@ class MyOrders:
                 exit_orders_limit_side = "buy"
                 exit_orders_limit_type = "limit"                
                 exit_orders_market_qty = main_orders_qty
+                
                 exit_orders_market_side = "buy"
                 exit_orders_market_type = "stop_market"
 
@@ -597,3 +596,33 @@ class MyOrders:
             
         }
             
+            
+    def cancel_orders_based_on_time_threshold(
+        self, server_time: int, label: str
+    ) -> float:
+        """ """
+        one_minute = 60000
+
+        three_minute = one_minute * 3
+
+        try:
+            open_orders_lastUpdateTStamps: list = (
+                self.open_orders_api_last_update_timestamps()
+            )
+        except:
+            open_orders_lastUpdateTStamps: list = []
+
+        if open_orders_lastUpdateTStamps != []:
+            open_orders_lastUpdateTStamps: list = (
+                self.open_orders_api_last_update_timestamps()
+            )
+
+            open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
+            open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min
+
+            open_order_id: list = self.open_orders_api_basedOn_label_last_update_timestamps_min_id(
+                label
+            )
+
+            return {'open_orders_deltaTime-exceed_threshold': open_orders_deltaTime > three_minute,
+                    'open_order_id': open_order_id}
