@@ -72,6 +72,7 @@ async def telegram_bot_sendtext(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
+
 async def main(
     endpoint: str,
     params: str,
@@ -329,11 +330,11 @@ class GetPrivateData:
                         "reduce_only": reduce_only,
                     }
                 else:
-                    
+
                     params = {
                         "instrument_name": instrument,
                         "amount": amount,
-                        "label": label,                
+                        "label": label,
                         "price": price,
                         # "time_in_force": time_in_force, fik can not apply to post only
                         "type": type,
@@ -356,7 +357,6 @@ class GetPrivateData:
                 "post_only": post_only,
                 "reject_post_only": reject_post_only,
             }
-            
 
         result = None
         if side == "buy":
@@ -380,18 +380,13 @@ class GetPrivateData:
         except:
             limit_prc = params["entry_price"]
         type = params["type"]
-        
+
         order_result = None
-        
+
         if side != None:
             order_result = await self.send_order(
-            side,
-            instrument,
-            size,
-            label_numbered,
-            limit_prc,
-            type,
-        )
+                side, instrument, size, label_numbered, limit_prc, type,
+            )
 
         log.info(order_result)
 
@@ -408,12 +403,12 @@ class GetPrivateData:
         label = params["label"]
         size = params["size"]
         cut_loss_usd = params["cut_loss_usd"]
-        
+
         order_result = None
-        if size !=0:
+        if size != 0:
             order_result = await self.send_order(
-            side, instrument, size, label, None, type, cut_loss_usd
-        )
+                side, instrument, size, label, None, type, cut_loss_usd
+            )
         log.info(order_result)
 
         if order_result != None and "error" in order_result:
@@ -560,6 +555,7 @@ async def send_order_market(
 
     return result
 
+
 async def get_server_time(connection_url: str) -> int:
     """
     Returning server time
@@ -575,12 +571,14 @@ async def get_server_time(connection_url: str) -> int:
 
     return result
 
+
 async def get_instruments(connection_url: str, currency):
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
     params = {}
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
 
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
@@ -589,11 +587,9 @@ async def get_currencies(connection_url: str) -> list:
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
+
 async def get_ohlc(
-    connection_url: str,
-    instrument_name,
-    resolution,
-    qty_candles,
+    connection_url: str, instrument_name, resolution, qty_candles,
 ) -> list:
     from datetime import datetime
     from utilities import time_modification
@@ -607,6 +603,7 @@ async def get_ohlc(
     endpoint: str = f"public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}"
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
 
 async def get_open_interest_aggregated_ohlc(
     connection_url: str, currency, resolution
@@ -626,6 +623,7 @@ async def get_open_interest_aggregated_ohlc(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
+
 async def get_open_interest_historical(
     connection_url: str, currency, resolution
 ) -> list:
@@ -644,6 +642,7 @@ async def get_open_interest_historical(
         return await main(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
+
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
     # Set endpoint

@@ -159,10 +159,8 @@ class StreamMarketData:
 
                         instrument_ticker = (message_channel)[19:]
                         if message_channel == f"incremental_ticker.{instrument_ticker}":
-                            my_path_futures_analysis = (
-                                system_tools.provide_path_for_file(
-                                    "futures_analysis", currency
-                                )
+                            my_path_futures_analysis = system_tools.provide_path_for_file(
+                                "futures_analysis", currency
                             )
                             my_path_ticker = system_tools.provide_path_for_file(
                                 "ticker", instrument_ticker

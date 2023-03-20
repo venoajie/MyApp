@@ -8,23 +8,28 @@ from dataclassy import dataclass
 from loguru import logger as log
 
 # user defined formula
+import deribit_get
 from transaction_management.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, string_modification as str_mod
-import deribit_get
 from risk_management import check_data_integrity, position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits
+
 # from market_understanding import futures_analysis
+
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+
 
 def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot:
@@ -253,8 +258,8 @@ class ApplyHedgingSpot:
         """ """
         open_order_mgt = await self.open_orders_from_exchange()
 
-        len_current_open_orders = (
-            open_order_mgt.open_orders_api_basedOn_label_items_qty(label_for_filter)
+        len_current_open_orders = open_order_mgt.open_orders_api_basedOn_label_items_qty(
+            label_for_filter
         )
 
         if len_current_open_orders != []:
@@ -299,7 +304,7 @@ class ApplyHedgingSpot:
             open_orders_lastUpdateTStamps: list = (
                 open_order_mgt.open_orders_api_last_update_timestamps()
             )
-            # log.critical (open_orders_lastUpdateTStamps)
+
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min
 
@@ -327,10 +332,8 @@ class ApplyHedgingSpot:
 
         if open_orderLabelCLosed != None:
             for label_closed in open_orderLabelCLosed:
-                is_closed_label_exist = (
-                    my_trades_open_mgt.closed_open_order_label_in_my_trades_open(
-                        label_closed
-                    )
+                is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open(
+                    label_closed
                 )
 
                 if is_closed_label_exist == False:
@@ -351,20 +354,18 @@ class ApplyHedgingSpot:
     async def check_open_orders_integrity(
         self, open_orders_from_sub_account_get, open_orders_open_byAPI
     ) -> None:
-        
+
         open_order_mgt_sub_account = open_orders_management.MyOrders(
             open_orders_from_sub_account_get
         )
-        orders_per_db_equivalent_orders_fr_sub_account = (
-            open_order_mgt_sub_account.compare_open_order_per_db_vs_get(
-                open_orders_open_byAPI
-            )
+        orders_per_db_equivalent_orders_fr_sub_account = open_order_mgt_sub_account.compare_open_order_per_db_vs_get(
+            open_orders_open_byAPI
         )
 
         log.info(f"{orders_per_db_equivalent_orders_fr_sub_account=}")
 
         if orders_per_db_equivalent_orders_fr_sub_account == False:
-            
+
             # update open order at db with open orders at sub account
             my_path_orders_open = system_tools.provide_path_for_file(
                 "orders", self.currency, "open"
@@ -459,82 +460,112 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        #log.warning(f'strategy_label {strategy_label}')
-        
+        # log.warning(f'strategy_label {strategy_label}')
+
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
             strategy_label_int = None
-        
+
         # get net buy-sell position
-        net_sum_current_position = 0 if open_trade_strategy == [] else open_orders.net_sum_order_size(open_trade_strategy)
-        
-        open_orders_strategy= open_orders.open_orders_api_basedOn_label(strategy_label)
-            
+        net_sum_current_position = (
+            0
+            if open_trade_strategy == []
+            else open_orders.net_sum_order_size(open_trade_strategy)
+        )
+
+        open_orders_strategy = open_orders.open_orders_api_basedOn_label(strategy_label)
+
         # get net buy-sell order limit
-        open_orders_strategy_limit =  [o for o in open_orders_strategy if 'limit' in o["order_type"] ]        
-        net_sum_open_orders_strategy_limit = 0 if open_orders_strategy_limit == [] else open_orders.net_sum_order_size(open_orders_strategy_limit)        
-        len_transactions_open_orders_strategy_limit =  0 if open_orders_strategy_limit == [] else len (open_orders_strategy_limit)
-        
+        open_orders_strategy_limit = [
+            o for o in open_orders_strategy if "limit" in o["order_type"]
+        ]
+        net_sum_open_orders_strategy_limit = (
+            0
+            if open_orders_strategy_limit == []
+            else open_orders.net_sum_order_size(open_orders_strategy_limit)
+        )
+        len_transactions_open_orders_strategy_limit = (
+            0 if open_orders_strategy_limit == [] else len(open_orders_strategy_limit)
+        )
+
         # get net buy-sell order market
-        open_orders_strategy_market = [o for o in open_orders_strategy if 'market' in o["order_type"] ]   
-        net_sum_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else open_orders.net_sum_order_size(open_orders_strategy_market)      
-        len_transactions_open_orders_strategy_market =   0 if open_orders_strategy_market == [] else len (open_orders_strategy_market)
-        
+        open_orders_strategy_market = [
+            o for o in open_orders_strategy if "market" in o["order_type"]
+        ]
+        net_sum_open_orders_strategy_market = (
+            0
+            if open_orders_strategy_market == []
+            else open_orders.net_sum_order_size(open_orders_strategy_market)
+        )
+        len_transactions_open_orders_strategy_market = (
+            0 if open_orders_strategy_market == [] else len(open_orders_strategy_market)
+        )
+
         # get default side from the strategy configuration
         side_main = strategy_attr["side"]
-        
-        determine_size_and_side = (
-                open_orders.calculate_order_size_and_side_for_outstanding_transactions(
-                    label, 
-                    side_main, 
-                    net_sum_current_position,
-                    net_sum_open_orders_strategy_limit,
-                    net_sum_open_orders_strategy_market,
-                    min_position_size
-                )
-            )
-        
-        determine_size_and_side['len_order_market']= len_transactions_open_orders_strategy_limit
-        determine_size_and_side['len_order_limit']= len_transactions_open_orders_strategy_market
-        
-        if net_sum_current_position== 0:            
-            # determine position sizing-hedging
-            label_open = label_numbering.labelling(
-                                    "open", strategy_label
-                                )
-            strategy_label_int = str_mod.get_strings_before_character(label_open, "-", 2)
 
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
-            
-            determine_size_and_side['label_closed'] = label_closed            
-            determine_size_and_side['label'] = label_open     
+        determine_size_and_side = open_orders.calculate_order_size_and_side_for_outstanding_transactions(
+            label,
+            side_main,
+            net_sum_current_position,
+            net_sum_open_orders_strategy_limit,
+            net_sum_open_orders_strategy_market,
+            min_position_size,
+        )
+
+        determine_size_and_side[
+            "len_order_market"
+        ] = len_transactions_open_orders_strategy_limit
+        determine_size_and_side[
+            "len_order_limit"
+        ] = len_transactions_open_orders_strategy_market
+
+        if net_sum_current_position == 0:
+            # determine position sizing-hedging
+            label_open = label_numbering.labelling("open", strategy_label)
+            strategy_label_int = str_mod.get_strings_before_character(
+                label_open, "-", 2
+            )
+
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+
+            determine_size_and_side["label_closed"] = label_closed
+            determine_size_and_side["label"] = label_open
 
         # the strategy has outstanding position
-        if net_sum_current_position !=0 and strategy_label_int != None:
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"     
-            
-            determine_size_and_side['label_closed'] = label_closed
-            
-            #the strategy has outstanding position
-            if open_trade_strategy !=[]:
-                #log.warning(f'strategy_label_int {strategy_label_int}')
-                #log.warning(f'open_trade_strategy {open_trade_strategy}')
-                    
-                size_as_per_label = [o['amount'] for o in open_trade_strategy if strategy_label_int in o['label'] ][0]
-                #log.warning(f'size_as_per_label {size_as_per_label}')
-                
-                open_trade_hedging_price_max = max([o['price'] for o in open_trade_strategy  ])
-                open_trade_hedging_selected = ([o  for o in open_trade_strategy if o['price'] == open_trade_hedging_price_max])
-                
-                if strategy_label_int in [o['label'] for o in open_trade_hedging_selected ][0]:
-                    
-                    #log.info (open_trade_hedging_selected)
-                    determine_size_and_side['exit_orders_limit_qty'] = size_as_per_label
+        if net_sum_current_position != 0 and strategy_label_int != None:
+            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+
+            determine_size_and_side["label_closed"] = label_closed
+
+            # the strategy has outstanding position
+            if open_trade_strategy != []:
+
+                size_as_per_label = [
+                    o["amount"]
+                    for o in open_trade_strategy
+                    if strategy_label_int in o["label"]
+                ][0]
+
+                open_trade_hedging_price_max = max(
+                    [o["price"] for o in open_trade_strategy]
+                )
+                open_trade_hedging_selected = [
+                    o
+                    for o in open_trade_strategy
+                    if o["price"] == open_trade_hedging_price_max
+                ]
+
+                if (
+                    strategy_label_int
+                    in [o["label"] for o in open_trade_hedging_selected][0]
+                ):
+                    determine_size_and_side["exit_orders_limit_qty"] = size_as_per_label
 
                 else:
-                    determine_size_and_side['exit_orders_limit_qty'] = 0
-            
+                    determine_size_and_side["exit_orders_limit_qty"] = 0
+
         return determine_size_and_side
 
     async def running_strategy(self, server_time) -> float:
@@ -561,7 +592,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
-                #og.debug (my_trades_open)
+                # og.debug (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -615,42 +646,55 @@ class ApplyHedgingSpot:
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
-                    
+
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
-                        #log.critical (f'label {label}')
-                        
+                        # log.critical (f'label {label}')
+
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-                        
-                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(strategy_label)
-                        
+                        strategy_label = str_mod.get_strings_before_character(
+                            label, "-", 0
+                        )
+
+                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(
+                            strategy_label
+                        )
+
                         open_order_label_short = [
-                            o for o in open_order_label if o["direction"] == 'sell'
+                            o for o in open_order_label if o["direction"] == "sell"
                         ]
                         open_order_label_long = [
-                            o for o in open_order_label if o["direction"] == 'buy'
+                            o for o in open_order_label if o["direction"] == "buy"
                         ]
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-                        strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
+                        strategy_label = str_mod.get_strings_before_character(
+                            label, "-", 0
+                        )
+                        strategy_label_int = str_mod.get_strings_before_character(
+                            label, "-", 1
+                        )
 
                         # get startegy details
                         strategy_attr = [
                             o for o in strategies if o["strategy"] == strategy_label
                         ][0]
-                        
-                        log.critical (f' {label}')
-                        
-                        open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
-                        open_trade_strategy_label = ([o  for o in open_trade_strategy if strategy_label_int in o['label'] ])
+
+                        log.critical(f" {label}")
+
+                        open_trade_strategy = [
+                            o for o in my_trades_open if strategy_label in o["label"]
+                        ]
+                        open_trade_strategy_label = [
+                            o
+                            for o in open_trade_strategy
+                            if strategy_label_int in o["label"]
+                        ]
 
                         instrument = [
-                            o["instrument_name"]
-                            for o in open_trade_strategy_label
+                            o["instrument_name"] for o in open_trade_strategy_label
                         ][0]
-                        log.critical (f'instrument {instrument}')
+                        log.critical(f"instrument {instrument}")
 
                         ticker = await self.reading_from_db("ticker", instrument)
 
@@ -679,92 +723,145 @@ class ApplyHedgingSpot:
                             notional,
                             strategy_attr["equity_risked_pct"],
                         )
-                        
+
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
-                            min_position_size = - notional
+                            min_position_size = -notional
 
-                        exit_order_allowed = (
-                            await self.is_send_exit_or_additional_order_allowed(
-                                label,
-                                open_trade_strategy,
-                                open_order_mgt,
-                                strategy_attr,
-                                min_position_size,
+                        exit_order_allowed = await self.is_send_exit_or_additional_order_allowed(
+                            label,
+                            open_trade_strategy,
+                            open_order_mgt,
+                            strategy_attr,
+                            min_position_size,
+                        )
+                        exit_order_allowed["instrument"] = instrument
+
+                        # log.warning(f'exit_order_allowed {exit_order_allowed}')
+                        # log.warning( "hedgingSpot" in strategy_attr["strategy"])
+                        if exit_order_allowed["exit_orders_limit_qty"] not in none_data:
+
+                            len_open_order_label_short = (
+                                0
+                                if open_order_label_short == []
+                                else len(open_order_label_short)
                             )
-                        )
-                        exit_order_allowed['instrument'] = instrument
-                        
-                        #log.warning(f'exit_order_allowed {exit_order_allowed}')
-                        #log.warning( "hedgingSpot" in strategy_attr["strategy"])
-                        if exit_order_allowed ['exit_orders_limit_qty'] not in none_data:
-                        
-                            len_open_order_label_short = 0 if open_order_label_short == [] else len (open_order_label_short)
-                            len_open_order_label_long = 0 if open_order_label_long == [] else len (open_order_label_long)
-                                                            
+                            len_open_order_label_long = (
+                                0
+                                if open_order_label_long == []
+                                else len(open_order_label_long)
+                            )
+
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                
+
                                 time_threshold: float = (
-                            strategy_attr["halt_minute_before_reorder"] * one_minute
-                        )
-                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(open_trade_strategy)
-
-                                delta_time: int = server_time - open_trade_strategy_max_attr ['timestamp'] 
-                                exceed_threshold_time: int = delta_time > time_threshold
-                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr ['max_price']
-                                
-                                pct_prc = open_trade_strategy_max_attr_price * strategy_attr['cut_loss_pct']
-                                tp_price = open_trade_strategy_max_attr_price - pct_prc
-                                resupply_price = open_trade_strategy_max_attr_price + pct_prc
-                                
-                                # closing order
-                                if best_bid_prc < tp_price and len_open_order_label_long < 1:
-                                    exit_order_allowed['entry_price'] = best_bid_prc
-                                    exit_order_allowed['label'] = exit_order_allowed ['label_closed']
-                                    exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
-                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
-                                    exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
-                                    await self.send_limit_order (exit_order_allowed)
-                                    
-                                # new order           
-                                if best_ask_prc > resupply_price and exceed_threshold_time and len_open_order_label_short < 1:                                    
-                                    
-                                    exit_order_allowed['entry_price'] = best_ask_prc
-                                    exit_order_allowed['take_profit_usd'] = best_ask_prc
-                                    exit_order_allowed['side'] = 'sell'
-                                    exit_order_allowed['type'] = 'limit'
-                                    exit_order_allowed['size'] = int(max (notional * 10/100, 2))
-                                    exit_order_allowed['label'] = label_numbering.labelling(
-                                    "open", strategy_label
+                                    strategy_attr["halt_minute_before_reorder"]
+                                    * one_minute
                                 )
-                                    await self.send_limit_order (exit_order_allowed)
-                            else :
-                                                              
-                                exit_order_allowed['label'] = exit_order_allowed ['label_closed']
-                                exit_order_allowed['side'] = exit_order_allowed ['exit_orders_limit_side']
-                                
-                                if  exit_order_allowed ['len_order_limit'] == 0:
-                                    exit_order_allowed['type'] = exit_order_allowed ['exit_orders_limit_type']
-                                    exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd'] 
-                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_limit_qty']
-                                    await self.send_limit_order (exit_order_allowed)
+                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
+                                    open_trade_strategy
+                                )
 
-                                #log.warning(f"exit_order_allowed limit {exit_order_allowed}")
-                                
-                                if exit_order_allowed ['len_order_market'] == 0:
-                                    exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']  
-                                    exit_order_allowed['type'] = exit_order_allowed ['exit_orders_market_type']
-                                    exit_order_allowed['size'] = exit_order_allowed ['exit_orders_market_qty']
-                                    await self.send_market_order (exit_order_allowed)
-                                                                
-                        if exit_order_allowed ['exit_orders_market_qty'] != 0:
+                                delta_time: int = server_time - open_trade_strategy_max_attr[
+                                    "timestamp"
+                                ]
+                                exceed_threshold_time: int = delta_time > time_threshold
+                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr[
+                                    "max_price"
+                                ]
+
+                                pct_prc = (
+                                    open_trade_strategy_max_attr_price
+                                    * strategy_attr["cut_loss_pct"]
+                                )
+                                tp_price = open_trade_strategy_max_attr_price - pct_prc
+                                resupply_price = (
+                                    open_trade_strategy_max_attr_price + pct_prc
+                                )
+
+                                # closing order
+                                if (
+                                    best_bid_prc < tp_price
+                                    and len_open_order_label_long < 1
+                                ):
+                                    exit_order_allowed["entry_price"] = best_bid_prc
+                                    exit_order_allowed["label"] = exit_order_allowed[
+                                        "label_closed"
+                                    ]
+                                    exit_order_allowed["side"] = exit_order_allowed[
+                                        "exit_orders_limit_side"
+                                    ]
+                                    exit_order_allowed["size"] = exit_order_allowed[
+                                        "exit_orders_limit_qty"
+                                    ]
+                                    exit_order_allowed["type"] = exit_order_allowed[
+                                        "exit_orders_limit_type"
+                                    ]
+                                    await self.send_limit_order(exit_order_allowed)
+
+                                # new order
+                                if (
+                                    best_ask_prc > resupply_price
+                                    and exceed_threshold_time
+                                    and len_open_order_label_short < 1
+                                ):
+
+                                    exit_order_allowed["entry_price"] = best_ask_prc
+                                    exit_order_allowed["take_profit_usd"] = best_ask_prc
+                                    exit_order_allowed["side"] = "sell"
+                                    exit_order_allowed["type"] = "limit"
+                                    exit_order_allowed["size"] = int(
+                                        max(notional * 10 / 100, 2)
+                                    )
+                                    exit_order_allowed[
+                                        "label"
+                                    ] = label_numbering.labelling(
+                                        "open", strategy_label
+                                    )
+                                    await self.send_limit_order(exit_order_allowed)
+                            else:
+
+                                exit_order_allowed["label"] = exit_order_allowed[
+                                    "label_closed"
+                                ]
+                                exit_order_allowed["side"] = exit_order_allowed[
+                                    "exit_orders_limit_side"
+                                ]
+
+                                if exit_order_allowed["len_order_limit"] == 0:
+                                    exit_order_allowed["type"] = exit_order_allowed[
+                                        "exit_orders_limit_type"
+                                    ]
+                                    exit_order_allowed[
+                                        "take_profit_usd"
+                                    ] = strategy_attr["take_profit_usd"]
+                                    exit_order_allowed["size"] = exit_order_allowed[
+                                        "exit_orders_limit_qty"
+                                    ]
+                                    await self.send_limit_order(exit_order_allowed)
+
+                                # log.warning(f"exit_order_allowed limit {exit_order_allowed}")
+
+                                if exit_order_allowed["len_order_market"] == 0:
+                                    exit_order_allowed["cut_loss_usd"] = strategy_attr[
+                                        "cut_loss_usd"
+                                    ]
+                                    exit_order_allowed["type"] = exit_order_allowed[
+                                        "exit_orders_market_type"
+                                    ]
+                                    exit_order_allowed["size"] = exit_order_allowed[
+                                        "exit_orders_market_qty"
+                                    ]
+                                    await self.send_market_order(exit_order_allowed)
+
+                        if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
 
                 for instrument in instrument_transactions:
-                    #log.critical(f"{instrument}")
+                    # log.critical(f"{instrument}")
 
                     ticker = await self.reading_from_db("ticker", instrument)
-                    
+
                     # get bid and ask price
                     best_bid_prc = ticker[0]["best_bid_price"]
                     best_ask_prc = ticker[0]["best_ask_price"]
@@ -787,34 +884,49 @@ class ApplyHedgingSpot:
 
                         # determine position sizing-hedging
                         if "hedgingSpot" in strategy_attr["strategy"]:
-                            min_position_size =- notional
+                            min_position_size = -notional
                         log.error(f" strategy_label  {strategy_label}")
-                        open_trade_strategy = ([o  for o in my_trades_open if strategy_label in o['label'] ])
+                        open_trade_strategy = [
+                            o for o in my_trades_open if strategy_label in o["label"]
+                        ]
 
-                        open_order_allowed = (
-                            await self.is_send_exit_or_additional_order_allowed(
-                                strategy_label,
-                                open_trade_strategy,
-                                open_order_mgt,
-                                strategy_attr,
-                                min_position_size,
-                            )
+                        open_order_allowed = await self.is_send_exit_or_additional_order_allowed(
+                            strategy_label,
+                            open_trade_strategy,
+                            open_order_mgt,
+                            strategy_attr,
+                            min_position_size,
                         )
-                                                
-                        if open_order_allowed ['main_orders_qty'] != 0\
-                            and open_order_allowed['len_order_limit'] ==0:
-                                
-                                exit_order_allowed['instrument'] = instrument
-                                exit_order_allowed['side'] = open_order_allowed ['main_orders_side'] 
-                                exit_order_allowed['size'] = open_order_allowed ['main_orders_qty']
-                                exit_order_allowed['label_numbered'] = open_order_allowed ['label']
-                                exit_order_allowed['label_closed_numbered'] = open_order_allowed ['label_closed']
-                                exit_order_allowed['entry_price'] = strategy_attr ['entry_price']
-                                exit_order_allowed['cut_loss_usd'] = strategy_attr ['cut_loss_usd']
-                                exit_order_allowed['take_profit_usd'] = strategy_attr ['take_profit_usd']
-                                
-                                await self.send_combo_orders(exit_order_allowed)
 
+                        if (
+                            open_order_allowed["main_orders_qty"] != 0
+                            and open_order_allowed["len_order_limit"] == 0
+                        ):
+
+                            exit_order_allowed["instrument"] = instrument
+                            exit_order_allowed["side"] = open_order_allowed[
+                                "main_orders_side"
+                            ]
+                            exit_order_allowed["size"] = open_order_allowed[
+                                "main_orders_qty"
+                            ]
+                            exit_order_allowed["label_numbered"] = open_order_allowed[
+                                "label"
+                            ]
+                            exit_order_allowed[
+                                "label_closed_numbered"
+                            ] = open_order_allowed["label_closed"]
+                            exit_order_allowed["entry_price"] = strategy_attr[
+                                "entry_price"
+                            ]
+                            exit_order_allowed["cut_loss_usd"] = strategy_attr[
+                                "cut_loss_usd"
+                            ]
+                            exit_order_allowed["take_profit_usd"] = strategy_attr[
+                                "take_profit_usd"
+                            ]
+
+                            await self.send_combo_orders(exit_order_allowed)
 
         except Exception as error:
             catch_error(error, 30)
@@ -834,8 +946,8 @@ class ApplyHedgingSpot:
             # log.info(f'{open_orders_open_byAPI=}')
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
             label_open = f"{label}-open"
-            current_open_orders_size = (
-                open_order_mgt.open_orders_api_basedOn_label_items_size(label_open)
+            current_open_orders_size = open_order_mgt.open_orders_api_basedOn_label_items_size(
+                label_open
             )
             current_open_orders_size = (
                 0 if current_open_orders_size == [] else current_open_orders_size
@@ -859,6 +971,7 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error)
 
+
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
 
@@ -869,7 +982,7 @@ async def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     connection_url: str = "https://www.deribit.com/api/v2/"
-    
+
     #
     try:
         syn = ApplyHedgingSpot(
@@ -906,8 +1019,9 @@ async def main():
     except Exception as error:
         catch_error(error, 30)
 
+
 if __name__ == "__main__":
-    
+
     try:
         asyncio.get_event_loop().run_until_complete(main())
 
