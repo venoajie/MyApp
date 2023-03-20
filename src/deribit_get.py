@@ -330,6 +330,15 @@ class GetPrivateData:
                         "reduce_only": reduce_only,
                     }
                 else:
+                    log.error(instrument)
+                    log.error(amount)
+                    log.error(label)
+                    log.error(type)
+                    log.error(trigger)
+                    log.error(trigger_price)
+                    log.error(reduce_only)
+                    log.error(post_only)
+                    log.error(reject_post_only)
                     params = {
                         "instrument_name": instrument,
                         "amount": amount,
@@ -469,12 +478,6 @@ class GetPrivateData:
                 await self.get_cancel_order_byOrderId(order_result_id)
                 await telegram_bot_sendtext("combo order failed")
 
-            log.error(closed_side)
-            log.error(instrument)
-            log.error(size)
-            log.error(closed_label)
-            log.error(tp_prc)
-            log.error(trigger_prc)
             order_result = await self.send_order(
                 closed_side,
                 instrument,
