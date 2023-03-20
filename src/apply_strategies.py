@@ -14,22 +14,17 @@ from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import check_data_integrity, position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits
-
 # from market_understanding import futures_analysis
-
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
-
 
 def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
-
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot:
@@ -45,13 +40,9 @@ class ApplyHedgingSpot:
         """
         Provide class object to access private get API
         """
-
-        try:
-            return deribit_get.GetPrivateData(
+        return deribit_get.GetPrivateData(
                 self.connection_url, self.client_id, self.client_secret, self.currency
             )
-        except Exception as error:
-            catch_error(error)
 
     async def get_sub_accounts(self) -> list:
         """ """
@@ -59,14 +50,12 @@ class ApplyHedgingSpot:
         try:
             private_data = await self.get_private_data()
             result: dict = await private_data.get_subaccounts()
-            return result["result"]
-
         except Exception as error:
             catch_error(error)
+        return result["result"]
 
     async def get_open_orders_from_exchange(self) -> list:
         """ """
-
         private_data = await self.get_private_data()
         open_ordersREST: dict = await private_data.get_open_orders_byCurrency()
         return open_ordersREST["result"]
@@ -121,41 +110,6 @@ class ApplyHedgingSpot:
 
         return result["result"]
 
-    async def send_orders(
-        self,
-        side: str,
-        instrument: str,
-        size: float = None,
-        label: str = None,
-        prc: float = None,
-        type: str = "limit",
-        trigger_price: float = None,
-    ) -> None:
-        """ """
-
-        try:
-            private_data = await self.get_private_data()
-
-            if "market" in type:
-                result = await private_data.send_order(
-                    side, instrument, size, label, None, type, trigger_price
-                )
-            else:
-                if type == "limit":
-                    result = await private_data.send_order(
-                        side, instrument, size, label, prc
-                    )
-                else:
-                    result = await private_data.send_order(
-                        side, instrument, size, label, prc, type, trigger_price
-                    )
-
-            await self.cancel_redundant_orders_in_same_labels_closed_hedge()
-            return result
-
-        except Exception as error:
-            log.error(error)
-
     async def send_combo_orders(self, params) -> None:
         """ """
 
@@ -169,24 +123,11 @@ class ApplyHedgingSpot:
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: float
     ) -> float:
-        total_long = (
-            0
-            if my_trades_open == []
-            else sum([o["amount"] for o in my_trades_open if o["direction"] == "buy"])
-        )
-
-        total_short = (
-            0
-            if my_trades_open == []
-            else sum([o["amount"] for o in my_trades_open if o["direction"] == "sell"])
-            * -1
-        )
-
+        
+        position_leverage_and_delta = position_sizing.compute_delta(notional, my_trades_open)
         return {
-            "delta": position_sizing.compute_delta(notional, total_long, total_short),
-            "leverage": position_sizing.compute_leverage(
-                notional, total_long, total_short
-            ),
+            "delta": position_leverage_and_delta['delta'],
+            "leverage": position_leverage_and_delta['leverage'],
         }
 
     async def reading_from_db(
@@ -280,7 +221,7 @@ class ApplyHedgingSpot:
         # log.critical(f'{cancel=}')
         return cancel
 
-    async def cancel_orders_hedging_spot_based_on_time_threshold(
+    async def cancel_orders_based_on_time_threshold(
         self, server_time, label
     ) -> float:
         """ """
@@ -446,7 +387,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
-    async def is_send_exit_or_additional_order_allowed(
+    async def is_send_order_allowed(
         self,
         label,
         open_trade_strategy: list,
@@ -455,7 +396,7 @@ class ApplyHedgingSpot:
         min_position_size: float,
     ) -> None:
         """ 
-        To settled transactions that have taken place
+        To open/settle transactions 
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
@@ -728,7 +669,7 @@ class ApplyHedgingSpot:
                         if "hedgingSpot" in strategy_attr["strategy"]:
                             min_position_size = -notional
 
-                        exit_order_allowed = await self.is_send_exit_or_additional_order_allowed(
+                        exit_order_allowed = await self.is_send_order_allowed(
                             label,
                             open_trade_strategy,
                             open_order_mgt,
@@ -798,6 +739,7 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_type"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
+                                    await self.cancel_redundant_orders_in_same_labels_closed_hedge()
 
                                 # new order
                                 if (
@@ -890,7 +832,7 @@ class ApplyHedgingSpot:
                             o for o in my_trades_open if strategy_label in o["label"]
                         ]
 
-                        open_order_allowed = await self.is_send_exit_or_additional_order_allowed(
+                        open_order_allowed = await self.is_send_order_allowed(
                             strategy_label,
                             open_trade_strategy,
                             open_order_mgt,
@@ -1009,7 +951,7 @@ async def main():
         # hedging: check for over hedged and over-bought
         label_hedging = "hedgingSpot"
 
-        await syn.cancel_orders_hedging_spot_based_on_time_threshold(
+        await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
         await syn.cancel_redundant_orders_in_same_labels_closed_hedge()
