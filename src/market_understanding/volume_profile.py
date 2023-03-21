@@ -248,9 +248,9 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
 
 
 if __name__ == "__main__":
-    sd = datetime(2023, 3, 16)
+    sd = datetime(2023, 3, 15)
     ed = datetime(2023, 3, 17)
-    df = yf.download(tickers='ETH-USD', start=sd, end=ed, interval="1m")
+    df = yf.download(tickers='ETH-USD', start=sd, end=ed, interval="30m")
     df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
     print (df)
 
