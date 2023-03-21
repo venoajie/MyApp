@@ -29,6 +29,9 @@ def volume_profile(df, price_pace=0.25, return_raw=False):
     price_buckets = np.arange(cmin_int, cmax_int, price_pace)
     price_coors = pd.Series(price_buckets).rolling(2).mean().dropna()
     vol_bars = np.histogram(df.Close, bins=price_buckets, weights=df.Volume)[0]
+    print (price_buckets)
+    print (price_coors)
+    print (vol_bars)
 
     if return_raw:
         return (price_coors.values, vol_bars)
