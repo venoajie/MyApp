@@ -137,6 +137,10 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
     df_agg = df.resample(time_pace).agg({'High': 'max', 'Low': 'min'})
     tpo_bars = np.zeros([price_buckets.shape[0] - 1, df_agg.shape[0]], dtype=np.int32)
     j = 0
+    
+    print (price_buckets)
+    print (price_coors)
+
     for idx, row in df_agg.iterrows():
         time_bars = np.histogram([row.Low, row.High], bins=price_buckets)[0]
         result = np.where(time_bars == 1)[0]
@@ -145,6 +149,7 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
 
         tpo_bars[:, j] = time_bars
         j += 1
+    print (result)
 
     if return_raw:
         return (price_coors.values, tpo_bars)
@@ -253,7 +258,7 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
 if __name__ == "__main__":
     sd = datetime(2023, 3, 15)
     ed = datetime(2023, 3, 17)
-    df = yf.download(tickers='ETH-USD', start=sd, end=ed, interval="30m")
+    df = yf.download(tickers='SPY', start=sd, end=ed, interval="5m")
     df = df[['Open', 'High', 'Low', 'Close', 'Volume']]
     print (df)
 
