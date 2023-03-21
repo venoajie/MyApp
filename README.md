@@ -58,7 +58,6 @@ make start # for first time running
     │   ├── risk_management
     │       ├── check_data_integrity.py
     │       ├── position_sizing.py
-    │       ├── spot_hedging.py
     │   ├── strategies
     │   ├── transaction_management
     │   ├── utilities
@@ -66,7 +65,6 @@ make start # for first time running
     │   ├── capture_market_data_fr_deribit.py
     │   ├── checkEvents.sh
     │   ├── deribit_get.py
-    │   ├── every30s.sh
     │   ├── fetch_and_save_market_data.py
     │   ├── Makefile
     ├── tests
