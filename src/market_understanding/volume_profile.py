@@ -150,6 +150,7 @@ def market_profile(df, price_pace=0.25, time_pace='30T', return_raw=False):
         tpo_bars[:, j] = time_bars
         j += 1
     print (result)
+    print (tpo_bars)
 
     if return_raw:
         return (price_coors.values, tpo_bars)
