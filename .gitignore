@@ -9,6 +9,7 @@ __pycache__/
 *.pkl
 *.db
 *.csv
+*.sqlite3
 
 # from output/log
 *.out
