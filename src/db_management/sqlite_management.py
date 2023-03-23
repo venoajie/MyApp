@@ -66,6 +66,7 @@ def create_tables ():
         try:           
             for table in tables:
                 print (table)
+                print ('myTrades' in table)
                 #cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
