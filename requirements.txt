@@ -4,3 +4,5 @@ websockets
 orjson
 aiohttp
 psutil
+duckdb
+-U fugue[duckdb,sql] 
