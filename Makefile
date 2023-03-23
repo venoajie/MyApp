@@ -14,11 +14,11 @@ save-git-credential:
 start: install 
 
 install:
-	sudo apt-get install inotify-tools
-	sudo apt-get install python3-psutil
+	yes | sudo apt-get install inotify-tools python3-psutil sqlite3
 	pip3 install black coverage flake8 mypy pylint pytest pytest-asyncio tox python-dotenv
 	pip3 install --upgrade -r requirements.txt
 	pip3 install --upgrade requests
+	sudo apt-get autoremove --purge
 
 clean: clean-build clean-pyc clean-test
 
