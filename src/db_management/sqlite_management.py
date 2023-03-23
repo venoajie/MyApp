@@ -94,23 +94,25 @@ def insert_table_mytrades (params):
         cur.executemany (f'{insert_table_mytrades}', [params])
         
                   
-def querying_table_mytrades (table: str = 'mytrades')->list:
+def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
             Reference
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
-    
-    query_table = f'SELECT  * FROM {table} WHERE  strategyStatus = ?' 
-    params = ('sent')
-    
-    query_table = f'SELECT  * FROM {table}' 
+    query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} {filter_value}' 
+    if filter == None:
+        query_table = f'SELECT  * FROM {table}'
+        
     params = ('sent')
     
     try:
         with db_ops() as cur:
-            #result = list(cur.execute((f'{query_table},{params}')))
-            result = list(cur.execute((f'{query_table}')))
+
+            if filter == None:
+                result = list(cur.execute((f'{query_table}')))
+            else:
+                result =list(cur.execute((f'{query_table},{params}')))
             headers = list(map(lambda attr : attr[0], cur.description))
                         
             combine_result = []
