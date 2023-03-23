@@ -94,7 +94,7 @@ def insert_table_mytrades (table_name, params):
         
         if isinstance(params, list):
             for param in params:
-                cur.executemany (f'{insert_table_mytrades}', param)
+                cur.executemany (f'{insert_table_mytrades}', [param])
         
                   
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
