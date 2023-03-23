@@ -96,8 +96,9 @@ def create_tables ():
                                                                     last_update_timestamp REAL, \
                                                                     filled_amount REAL, \
                                                                     order_id TEXT, \
-                                                                    is_liquidation BOOLEAN NOT NULL CHECK (api IN (0, 1)), \
+                                                                    is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
+                
                 cur.execute (f'{create_table}') 
             
         except Exception as error:
