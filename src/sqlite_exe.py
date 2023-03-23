@@ -15,12 +15,13 @@ if __name__ == "__main__":
         sqlite_management.create_table_mytrades()
         params= {'trade_seq': 119459281, 'trade_id': 'ETH-162634254', 'timestamp': 1678610180143, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1473.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32205761779', 'mmp': False, 'matching_id': None, 'mark_price': 1472.79, 'liquidity': 'M', 'label': 'hedgingSpot-open-1678610144572', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1474.68, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 78.0}
         
-        query=sqlite_management.querying_table()
+        sqlite_management.insert_table_mytrades('myTradesOpen',params)
+        
+        query=sqlite_management.querying_table('myTradesOpen')
         print (query)
         
-        query=sqlite_management.querying_table('mytrades', 'state', '=', 'filled')
+        query=sqlite_management.querying_table('myTradesOpen', 'state', '=', 'filled')
         print (query)
-        sqlite_management.insert_table_mytrades(params)
         
 
     except (KeyboardInterrupt, SystemExit):
