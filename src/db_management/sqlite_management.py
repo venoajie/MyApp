@@ -100,7 +100,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
             Reference
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
-    query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} {filter_value}' 
+    query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} ?' 
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
     print(query_table)
