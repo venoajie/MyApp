@@ -119,6 +119,8 @@ def insert_tables (table_name, params):
         
         if isinstance(params, list):
             for param in params:
+                print (insert_table)
+                print (param)
                 cur.executemany (f'{insert_table}', [param])
         else:
             cur.executemany (f'{insert_table}', [params])
