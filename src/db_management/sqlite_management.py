@@ -85,20 +85,6 @@ def insert_table_mytrades (params):
 
     '''
     '''   
-    instrument_name = params ['instrument_name']
-    label = params ['label']
-    direction = params ['direction']
-    amount = params ['amount']
-    price = params ['price']
-    state = params ['state']
-    order_type = params ['order_type']
-    timestamp = params ['timestamp']
-    trade_seq = params ['trade_seq']
-    trade_id = params ['trade_id']
-    tick_direction = params ['tick_direction']
-    order_id = params ['order_id']
-    api = params ['api']
-    #print (params)
         
     with db_ops() as cur:
         
@@ -118,7 +104,7 @@ def querying_table_mytrades (table: str = 'mytrades')->list:
     
     try:
         with db_ops() as cur:
-            result = list(cur.execute((f'{query_table}')))
+            result = (cur.execute((f'{query_table}')))
             headers = list(map(lambda attr : attr[0], cur.description))
                         
             combine_result = []
