@@ -32,6 +32,8 @@ Scheduling | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-
 Scheduling | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
 RL | [RL](https://medium.com/@sthanikamsanthosh1994/reinforcement-learning-part-8-proximal-policy-optimization-ppo-for-trading-9f1c3431f27d) |  | | 
 database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
+Orchestration | [airflow](https://medium.com/datareply/airflow-lesser-known-tips-tricks-and-best-practises-cf4d4a90f8f) |  | | 
+Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestration-1f7cdd41634d) |  | | 
 
 
 - Technical Analysis  
