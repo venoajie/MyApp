@@ -26,7 +26,6 @@ def create_dataBase_sqlite(db_name: str = "src/databases/trading.sqlite3") -> No
     
     except Exception as error:
         print (error)
-    return cur
 
 @contextmanager
 def db_ops(db_name: str = "src/databases/trading.sqlite3") -> None:
