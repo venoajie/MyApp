@@ -16,7 +16,7 @@ from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
 from transaction_management.deribit import open_orders_management, myTrades_management
 import apply_strategies
-
+from db_management import sqlite_management
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -190,6 +190,7 @@ class StreamAccountData:
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
+                                sqlite_management.insert_table_mytrades('myTradesOpen',my_trades)
                                 my_trades.distribute_trade_transactions(currency)
 
                             if orders:
