@@ -100,11 +100,17 @@ def querying_table_mytrades (table: str = 'mytrades')->list:
             Reference
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
+    
+    query_table = f'SELECT  * FROM {table} WHERE  strategyStatus = ?' 
+    params = ('sent')
+    
     query_table = f'SELECT  * FROM {table}' 
+    params = ('sent')
     
     try:
         with db_ops() as cur:
-            result = (cur.execute((f'{query_table}')))
+            result = list(cur.execute((f'{query_table},{params}')))
+            result = list(cur.execute((f'{query_table}')))
             headers = list(map(lambda attr : attr[0], cur.description))
                         
             combine_result = []
@@ -112,5 +118,11 @@ def querying_table_mytrades (table: str = 'mytrades')->list:
                 combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
-        print (error)
+        from utils import formula
+        formula.log_error('app','name-try2', error, 10)
+        combine_result = []
+        
+    return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
+
+
 
