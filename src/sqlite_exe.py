@@ -18,6 +18,9 @@ if __name__ == "__main__":
         query=sqlite_management.querying_table_mytrades()
         print (query)
         
+        query=sqlite_management.querying_table('mytrades', 'state', '=', 'filled')
+        print (query)
+        
 
     except (KeyboardInterrupt, SystemExit):
         catch_error(KeyboardInterrupt)
