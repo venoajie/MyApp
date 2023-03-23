@@ -2,6 +2,7 @@
 
 import sqlite3
 from contextlib import contextmanager
+from loguru import Logger as log
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -127,7 +128,7 @@ def insert_tables (table_name, params):
                 cur.executemany (f'{insert_table}', [params])
             
     except Exception as error:
-        print (insert_table)
+        log.error (insert_table)
         print (param)
         print (error)
         
@@ -140,7 +141,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} ?' 
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
-    print(query_table)
+    log.debug(query_table)
     try:
         with db_ops() as cur:
 
