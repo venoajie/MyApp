@@ -14,7 +14,7 @@ def telegram_bot_sendtext(bot_message: str, purpose: str) -> None:
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
-def create_dataBase_sqlite(db_name: str = "src/databases/trading.sqlite3") -> None:
+def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
     """
     """
     
@@ -28,7 +28,7 @@ def create_dataBase_sqlite(db_name: str = "src/databases/trading.sqlite3") -> No
         print (error)
 
 @contextmanager
-def db_ops(db_name: str = "src/databases/trading.sqlite3") -> None:
+def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
     """
     # prepare sqlite initial connection + close
             Return and rtype: None
