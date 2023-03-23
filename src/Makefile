@@ -16,4 +16,7 @@ exe-app:
 replace-db: 
 	rsync -partial -z  ~/live/MyApp/local_recoveries/ databases/exchanges/deribit/transactions/ 
 
+create-db: 
+	python3 sqlite_exe.py
+
 
