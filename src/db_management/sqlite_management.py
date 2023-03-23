@@ -106,6 +106,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     
     try:
         with db_ops() as cur:
+            print(query_table)
 
             result = list(cur.execute((f'{query_table}')))
                 
