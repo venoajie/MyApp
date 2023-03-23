@@ -76,11 +76,11 @@ if __name__ == "__main__":
         
         sqlite_management.insert_tables('ordersOpen',params)
         
-        query=sqlite_management.querying_table('myTradesOpen')
-        print (query)
         query=sqlite_management.querying_table('ordersOpen')
         print (query)
         
+        query=sqlite_management.querying_table('myTradesOpen')
+        print (query)
         query=sqlite_management.querying_table('myTradesOpen', 'state', '=', 'filled')
         print (query)
         
