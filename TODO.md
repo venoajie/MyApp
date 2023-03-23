@@ -31,6 +31,7 @@ Asyncio | [Asyncio](https://medium.com/better-programming/a-hands-on-guide-to-co
 Scheduling | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
 Scheduling | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
 RL | [RL](https://medium.com/@sthanikamsanthosh1994/reinforcement-learning-part-8-proximal-policy-optimization-ppo-for-trading-9f1c3431f27d) |  | | 
+database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
 
 
 - Technical Analysis  
