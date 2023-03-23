@@ -90,11 +90,11 @@ def insert_table_mytrades (table_name, params):
     '''   
         
     with db_ops() as cur:
-        
         insert_table_mytrades= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api);'  
-
         
-        cur.executemany (f'{insert_table_mytrades}', [params])
+        if isinstance(params, list):
+            for param in params:
+                cur.executemany (f'{insert_table_mytrades}', param)
         
                   
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
