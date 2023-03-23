@@ -39,7 +39,6 @@ def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
     conn = sqlite3.connect(db_name, isolation_level=None)
 
     try:
-        
         cur = conn.cursor()
         yield cur
 
@@ -54,49 +53,72 @@ def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         conn.commit()
         conn.close()
          
-def create_table_mytrades ():
+def create_tables ():
 
     '''
     '''   
     with db_ops() as cur:
         
         #cur.execute("DROP TABLE IF EXISTS mytrades")
-        try:
-            tables= ['myTradesOpen', 'myTradesClosed']
+        
+        tables= ['myTradesOpen', 'myTradesClosed','ordersOpen', 'ordersClosed','ordersUntrig']
+        
+        try:           
             for table in tables:
+                if 'myTrades' in table:
+                    create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
+                                                                    label TEXT, \
+                                                                    direction TEXT, \
+                                                                    amount REAL, \
+                                                                    price REAL, \
+                                                                    state TEXT, \
+                                                                    order_type TEXT, \
+                                                                    timestamp REAL, \
+                                                                    trade_seq REAL, \
+                                                                    trade_id TEXT, \
+                                                                    tick_direction REAL, \
+                                                                    order_id TEXT, \
+                                                                    api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
+                                                                    fee REAL, \
+                                                                    )'           
+                if 'orders' in table:
+                    create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
+                                                                    label TEXT, \
+                                                                    direction TEXT, \
+                                                                    amount REAL, \
+                                                                    price REAL, \
+                                                                    trigger_price REAL, \
+                                                                    stop_price REAL, \
+                                                                    order_state TEXT, \
+                                                                    order_type TEXT, \
+                                                                    last_update_timestamp REAL, \
+                                                                    filled_amount REAL, \
+                                                                    order_id TEXT, \
+                                                                    is_liquidation BOOLEAN NOT NULL CHECK (api IN (0, 1)), \
+                                                                    api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
+                cur.execute (f'{create_table}') 
             
-                # create table name: tickers_futures
-                create_table_mytrades = f'CREATE TABLE IF NOT EXISTS {table} (   instrument_name TEXT, \
-                                                                                    label TEXT, \
-                                                                                direction TEXT, \
-                                                                                amount REAL, \
-                                                                                price REAL, \
-                                                                                state TEXT, \
-                                                                                order_type TEXT, \
-                                                                                timestamp REAL, \
-                                                                                trade_seq REAL, \
-                                                                                trade_id TEXT, \
-                                                                                tick_direction REAL, \
-                                                                                order_id TEXT, \
-                                                                                api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'           
-            
-                cur.execute (f'{create_table_mytrades}') 
         except Exception as error:
             print(error)
 
-def insert_table_mytrades (table_name, params):
+def insert_tables (table_name, params):
 
     '''
     '''   
         
     with db_ops() as cur:
-        insert_table_mytrades= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api);'  
+        if 'orders' in table_name:
+            insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, order_state, order_type, last_update_timestamp, filled_amount,  order_id, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :filled_amount, :order_id, :is_liquidation, :api);'  
+            
+        if 'myTrades' in table_name:
+            insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'   
         
         if isinstance(params, list):
             for param in params:
-                cur.executemany (f'{insert_table_mytrades}', [param])
-        
-                  
+                cur.executemany (f'{insert_table}', [param])
+        else:
+            cur.executemany (f'{insert_table}', [params])
+            
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
