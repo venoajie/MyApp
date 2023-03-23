@@ -36,9 +36,10 @@ def db_ops(db_name: str = "src/databases/trading.sqlite3") -> None:
             # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
             https://code-kamran.medium.com/python-convert-json-to-sqlite-d6fa8952a319
     """
+    conn = sqlite3.connect(db_name, isolation_level=None)
 
     try:
-        conn = sqlite3.connect(db_name, isolation_level=None)
+        
         cur = conn.cursor()
         yield cur
 
