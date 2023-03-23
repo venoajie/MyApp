@@ -82,8 +82,7 @@ def create_tables ():
                                                                     tick_direction REAL, \
                                                                     order_id TEXT, \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
-                                                                    fee REAL, \
-                                                                    )'           
+                                                                    fee REAL)'           
                 if 'orders' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
