@@ -65,6 +65,7 @@ def create_tables ():
         
         try:           
             for table in tables:
+                print (table)
                 #cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
@@ -97,7 +98,9 @@ def create_tables ():
                                                                     order_id TEXT, \
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (api IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
-                cur.execute (f'{create_table}') 
+            print (create_table)
+
+            cur.execute (f'{create_table}') 
             
         except Exception as error:
             print(error)
