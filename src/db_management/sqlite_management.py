@@ -103,16 +103,12 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} {filter_value}' 
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
-        
-    params = ('sent')
     
     try:
         with db_ops() as cur:
 
-            if filter == None:
-                result = list(cur.execute((f'{query_table}')))
-            else:
-                result =list(cur.execute((f'{query_table},{params}')))
+            result = list(cur.execute((f'{query_table}')))
+                
             headers = list(map(lambda attr : attr[0], cur.description))
                         
             combine_result = []
