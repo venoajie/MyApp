@@ -62,7 +62,7 @@ def create_table_mytrades ():
         
         cur.execute("DROP TABLE IF EXISTS mytrades")
         try:
-            tables= ['myTradesOpen, myTradesClosed']
+            tables= ['myTradesOpen', 'myTradesClosed']
             for table in tables:
             
                 # create table name: tickers_futures
