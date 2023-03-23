@@ -61,34 +61,37 @@ def create_table_mytrades ():
     with db_ops() as cur:
         
         cur.execute("DROP TABLE IF EXISTS mytrades")
-        
-        # create table name: tickers_futures
-        create_table_mytrades = f'CREATE TABLE IF NOT EXISTS mytrades (   instrument_name TEXT, \
-                                                                            label TEXT, \
-                                                                            direction TEXT, \
-                                                                            amount REAL, \
-                                                                            price REAL, \
-                                                                            state TEXT, \
-                                                                            order_type TEXT, \
-                                                                            timestamp REAL, \
-                                                                            trade_seq REAL, \
-                                                                            trade_id TEXT, \
-                                                                            tick_direction REAL, \
-                                                                            order_id TEXT, \
-                                                                            api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'           
         try:
-            cur.execute (f'{create_table_mytrades}') 
+            tables= ['myTradesOpen, myTradesClosed']
+            for table in tables:
+            
+                # create table name: tickers_futures
+                create_table_mytrades = f'CREATE TABLE IF NOT EXISTS {table} (   instrument_name TEXT, \
+                                                                                    label TEXT, \
+                                                                                direction TEXT, \
+                                                                                amount REAL, \
+                                                                                price REAL, \
+                                                                                state TEXT, \
+                                                                                order_type TEXT, \
+                                                                                timestamp REAL, \
+                                                                                trade_seq REAL, \
+                                                                                trade_id TEXT, \
+                                                                                tick_direction REAL, \
+                                                                                order_id TEXT, \
+                                                                                api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'           
+            
+                cur.execute (f'{create_table_mytrades}') 
         except Exception as error:
             print(error)
 
-def insert_table_mytrades (params):
+def insert_table_mytrades (table_name, params):
 
     '''
     '''   
         
     with db_ops() as cur:
         
-        insert_table_mytrades= f'INSERT INTO mytrades (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api);'  
+        insert_table_mytrades= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api);'  
 
         
         cur.executemany (f'{insert_table_mytrades}', [params])
