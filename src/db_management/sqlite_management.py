@@ -67,7 +67,7 @@ def create_tables ():
         try:           
             for table in tables:
                 
-                #cur.execute(f"DROP TABLE IF EXISTS {table}")
+                cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -94,7 +94,6 @@ def create_tables ():
                                                                     order_state TEXT, \
                                                                     order_type TEXT, \
                                                                     last_update_timestamp REAL, \
-                                                                    filled_amount REAL, \
                                                                     order_id TEXT, \
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
@@ -113,7 +112,7 @@ def insert_tables (table_name, params):
         with db_ops() as cur:
             
             if 'orders' in table_name:
-                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp, filled_amount,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :filled_amount, :order_id, :is_liquidation, :api);'  
+                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
                 
             if 'myTrades' in table_name:
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'   
