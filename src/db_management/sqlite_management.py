@@ -109,22 +109,27 @@ def insert_tables (table_name, params):
 
     '''
     '''   
-        
-    with db_ops() as cur:
-        if 'orders' in table_name:
-            insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, order_state, order_type, last_update_timestamp, filled_amount,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :filled_amount, :order_id, :is_liquidation, :api);'  
+    try:
             
-        if 'myTrades' in table_name:
-            insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'   
-        
-        if isinstance(params, list):
-            for param in params:
-                print (insert_table)
-                print (param)
-                cur.executemany (f'{insert_table}', [param])
-        else:
-            cur.executemany (f'{insert_table}', [params])
+        with db_ops() as cur:
+            if 'orders' in table_name:
+                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, order_state, order_type, last_update_timestamp, filled_amount,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :filled_amount, :order_id, :is_liquidation, :api);'  
+                
+            if 'myTrades' in table_name:
+                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'   
             
+            if isinstance(params, list):
+                for param in params:
+                    
+                    cur.executemany (f'{insert_table}', [param])
+            else:
+                cur.executemany (f'{insert_table}', [params])
+            
+    except Exception as error:
+        print (insert_table)
+        print (param)
+        print (error)
+        
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
@@ -148,9 +153,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
                 combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
-        from utils import formula
-        formula.log_error('app','name-try2', error, 10)
-        combine_result = []
+        print (error)
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
