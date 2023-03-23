@@ -103,10 +103,10 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} ?' 
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
-    
+    print(query_table)
     try:
         with db_ops() as cur:
-            print(query_table)
+            
 
             result = list(cur.execute((f'{query_table},{filter_value} ')))
                 
