@@ -60,7 +60,7 @@ def create_table_mytrades ():
     '''   
     with db_ops() as cur:
         
-        cur.execute("DROP TABLE IF EXISTS mytrades")
+        #cur.execute("DROP TABLE IF EXISTS mytrades")
         try:
             tables= ['myTradesOpen', 'myTradesClosed']
             for table in tables:
