@@ -111,7 +111,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
         with db_ops() as cur:
             
 
-            result = list(cur.execute((f'{query_table}, {filter_value}')))
+            result = list(cur.execute((f'{query_table}')))
                 
             headers = list(map(lambda attr : attr[0], cur.description))
                         
