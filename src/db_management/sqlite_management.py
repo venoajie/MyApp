@@ -160,11 +160,11 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
             async with db.execute(query_table) as cur:
 
                 res = (await cur.execute((f'{query_table}')))
+                log.error (res)
                 result = list(res)
                     
                 head = (map(lambda attr : attr[0], await cur.description))
-                headers = list(head)
-                            
+                headers = list(head)        
                 
                 for i in result:
                     combine_result.append(dict(zip(headers,i)))
