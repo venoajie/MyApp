@@ -87,7 +87,7 @@ async def main(
         "params": params,
     }
     
-    if 'open_interest_history' in endpoint :
+    if 'open_interest_aggregated_ohlc' in endpoint :
         
         async with aiohttp.ClientSession() as session:
                     
