@@ -87,9 +87,13 @@ async def main(
         "params": params,
     }
 
-    if client_id == None:
+    if client_id != None or 'coinglass' in endpoint:
         async with aiohttp.ClientSession() as session:
-            async with session.get(connection_url + endpoint) as response:
+            async with session.post(
+                connection_url + endpoint,
+                auth=BasicAuth(client_id, client_secret),
+                json=payload,
+            ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
 
@@ -98,13 +102,9 @@ async def main(
 
             return response
 
-    else:
+    if client_id == None:
         async with aiohttp.ClientSession() as session:
-            async with session.post(
-                connection_url + endpoint,
-                auth=BasicAuth(client_id, client_secret),
-                json=payload,
-            ) as response:
+            async with session.get(connection_url + endpoint) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
 
