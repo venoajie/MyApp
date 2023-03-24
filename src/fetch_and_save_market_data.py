@@ -117,6 +117,7 @@ async def job(message='stuff', n=1):
     ohlc = await get_dbt.get_open_interest_aggregated_ohlc(
         connection_url, "eth-perpetual", resolution
     )
+    print (ohlc)
 
 
 if __name__ == "__main__":
@@ -126,7 +127,7 @@ if __name__ == "__main__":
         schedule.every(1).seconds.do(job, n=i)
     schedule.every(5).to(10).days.do(job)
     schedule.every().hour.do(job, message='things')
-    schedule.every().day.at("16:43").do(job2)
+    schedule.every().day.at("16:43").do(job)
 
     loop = asyncio.get_event_loop()
     while True:
