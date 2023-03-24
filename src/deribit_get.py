@@ -87,13 +87,21 @@ async def main(
         "params": params,
     }
     
-    if 'open_interest_aggregated_ohlc' in endpoint :
+    if 'open_interest_history' in endpoint :
         
         async with aiohttp.ClientSession() as session:
-                    
+            
+            symbol = 'BTC'
+            currency = 'USD'
+            url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
+            headers = {
+    "accept": "application/json",
+    "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+}
+                            
             print (connection_url + endpoint)
-            async with session.post(
-                connection_url + endpoint,params=params 
+            async with session.get(
+                url,headers=headers 
             ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
@@ -630,20 +638,22 @@ async def get_open_interest_aggregated_ohlc(
             endpoint=endpoint, params=headers, connection_url=connection_url
         )
 
-async def get_open_interest_historical(
-    connection_url: str, currency, resolution
-) -> list:
+async def get_open_interest_historical() -> list:
     """
     time_frame = m1 m5 m15 h1 h4 h12 all
     currency = USD or symbol
 
     """
+    
+    symbol = 'BTC'
+    currency = 'USD'
+    resolution ='all'
     # Set endpoint
-    endpoint: str = f"open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}"
+    endpoint: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
     
 
     return await main(
-            endpoint=endpoint, params=headers, connection_url=connection_url
+            endpoint=endpoint, params=headers
         )
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
