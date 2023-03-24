@@ -160,8 +160,9 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
         
             if filter == None:
+                db = db.execute(query_table) 
                 
-                async with db.execute(query_table) as cur:
+                async with db as cur:
                     fetchall =  (await cur.fetchall())
           
                     head = (map(lambda attr : attr[0], cur.description))
