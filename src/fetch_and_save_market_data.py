@@ -74,7 +74,7 @@ async def ohlc():
 if __name__ == "__main__":
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:06").do(ohlc)
+    schedule.every().day.at("12:07").do(ohlc)
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
