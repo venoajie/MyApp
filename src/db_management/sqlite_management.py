@@ -15,15 +15,15 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
     import deribit_get
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
+async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
     """
     """
     
     try:
-        conn = sqlite3.connect(db_name)
-        cur = conn.cursor()
-        conn.commit()
-        conn.close()
+        conn = await sqlite3.connect(db_name)
+        cur = await conn.cursor()
+        await conn.commit()
+        await conn.close()
     
     except Exception as error:
         print (error)
