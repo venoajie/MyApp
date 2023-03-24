@@ -24,29 +24,27 @@ def catch_error(error, idle: int = None) -> list:
     system_tools.catch_error_message(error, idle)
 
 
-def get_currencies() -> float:
+async def get_currencies() -> float:
     """ """
 
     endpoint = f"https://test.deribit.com/api/v2/public/get_currencies?"
     return requests.get(endpoint).json()["result"]
 
 
-def get_instruments(currency) -> float:
+async def get_instruments(connection_url, currency) -> float:
     """ """
 
-    endpoint = (
-        f"https://test.deribit.com/api/v2/public/get_instruments?currency={currency}"
-    )
-    return requests.get(endpoint).json()["result"]
+    result =await get_dbt.get_instruments (connection_url, currency)
+    return result
 
-def check_and_save_every_60_minutes():
+async def check_and_save_every_60_minutes():
     try:
         currencies = get_currencies()
         currencies = ["ETH", "BTC"]
         for currency in currencies:
             print (currency)
             
-            instruments = get_instruments(currency)
+            instruments = await get_instruments(currency)
             
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency
@@ -60,21 +58,11 @@ def check_and_save_every_60_minutes():
     except Exception as error:
         catch_error(error)
 
-async def ohlc():
-    connection_url: str = "https://www.deribit.com/api/v2/"
-    resolution = 15
-    qty_candles = 100
-    ohlc = await get_dbt.get_ohlc(
-        connection_url, "eth-perpetual", resolution, qty_candles
-    )
-    print (ohlc)
-
-    return (ohlc)
-    
 if __name__ == "__main__":
+    connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:07").do(ohlc)
+    schedule.every().day.at("12:15").do(get_instruments (connection_url, currency))
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
