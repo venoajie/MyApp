@@ -114,7 +114,7 @@ async def job(message='stuff', n=1):
     resolution = "m5"
     connection_url: str = "https://open-api.coinglass.com/public/v2/"
 
-    open_interest_historical = await get_dbt.get_open_interest_historical(
+    open_interest_historical = await get_dbt.get_open_interest_aggregated_ohlc(
         connection_url, "eth-perpetual", resolution
     )
     print (open_interest_historical)
