@@ -157,17 +157,19 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     
     try:
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
-            async with db.execute(query_table) as cur:
-
-                head = (map(lambda attr : attr[0], cur.description))
-                headers = list(head)        
-                #res = ( cur.execute((f'{query_table}'),()))
-                #log.error(res)
-
-                fetchall =  (await cur.fetchall())
-                if filter != None:
-                    fetchall =  (await cur.fetchall(), filter_value)
-                #result = list(res)
+        
+            head = (map(lambda attr : attr[0], cur.description))
+            headers = list(head)    
+            if filter == None:
+                
+                async with db.execute(query_table) as cur:
+                    fetchall =  (await cur.fetchall())
+      
+            if filter != None:
+                
+                async with db.execute(query_table, filter_value) as cur:
+                    fetchall =  (await cur.fetchall())
+    
                 
                 for i in fetchall:
                     combine_result.append(dict(zip(headers,i)))
