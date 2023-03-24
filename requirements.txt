@@ -3,6 +3,7 @@ rocketry==2.4.1
 websockets
 orjson
 aiohttp
+aiosqlite
 psutil
 duckdb
 -U fugue[duckdb,sql] 
