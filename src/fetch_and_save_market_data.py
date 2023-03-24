@@ -34,8 +34,8 @@ async def get_currencies() -> float:
 async def get_instruments(connection_url, currency) -> float:
     """ """
 
-    result =await get_dbt.get_instruments (connection_url, currency)
-    return result
+    #result =await get_dbt.get_instruments (connection_url, currency)
+    asyncio .get_dbt.get_instruments (connection_url, currency)
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:23").do(get_instruments (connection_url, currency))
+    schedule.every().day.at("12:30").do(get_instruments (connection_url, currency))
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
