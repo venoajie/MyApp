@@ -160,7 +160,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
             async with db.execute(query_table) as cur:
 
                 log.debug (cur)
-                head = (map(lambda attr : attr[0], await cur.description))
+                head = (map(lambda attr : attr[0], cur.description))
                 headers = list(head)        
                 log.debug (headers)
                 log.debug (query_table)
