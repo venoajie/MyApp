@@ -60,11 +60,22 @@ def check_and_save_every_60_minutes():
     except Exception as error:
         catch_error(error)
 
+async def ohlc():
+    connection_url: str = "https://www.deribit.com/api/v2/"
+    resolution = 15
+    qty_candles = 100
+    ohlc = await get_dbt.get_ohlc(
+        connection_url, "eth-perpetual", resolution, qty_candles
+    )
+    print (ohlc)
+
+    return (ohlc)
+    
 if __name__ == "__main__":
     
-    schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
-    schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
+    #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
+    schedule.every().day.at("12:06").do(ohlc)
+    #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
     
