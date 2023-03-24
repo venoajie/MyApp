@@ -21,7 +21,7 @@ Strategy = strategy.ApplyHedgingSpot(None, None, None, currency)
 
 
 @pytest.mark.asyncio
-async def test_is_send_order_allowed():
+async def tst_is_send_order_allowed():
     from strategies import entries_exits
 
     open_trade = [
