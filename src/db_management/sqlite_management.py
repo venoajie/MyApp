@@ -58,9 +58,9 @@ async def create_tables ():
 
     '''
     '''   
-    db_ops = await db_ops ()
-    log.error (db_ops)
-    with  db_ops as cur:
+    db = await db_ops ()
+    log.error (db)
+    with  db as cur:
         
         await cur.execute("DROP TABLE IF EXISTS mytrades")
         
