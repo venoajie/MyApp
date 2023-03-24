@@ -2,7 +2,8 @@
 
 import sqlite3
 from contextlib import contextmanager
-import asyncio, aiosqlite
+import asyncio
+import aiosqlite
 from loguru import logger as log
 
 def catch_error(error, idle: int = None) -> list:
@@ -20,7 +21,7 @@ async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> 
     """
     
     try:
-        conn = await sqlite3.connect(db_name)
+        conn = await aiosqlite.connect(db_name)
         cur = await conn.cursor()
         await conn.commit()
         await conn.close()
