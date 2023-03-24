@@ -86,6 +86,7 @@ def check_and_save_every_5_minutes():
         my_path = system_tools.provide_path_for_file(
             "openInterestHistorical", currency.lower()
         )
+        print (open_interest_historical)
         pickling.replace_data(my_path, open_interest_historical)
 
         open_interest_symbol = market_data.open_interest_symbol()
