@@ -37,6 +37,7 @@ async def telegram_bot_sendtext(
         bot_token = config.main_dotenv("telegram-failed_order")["BOT_TOKEN"]
 
     if purpose == "failed_order":
+        print(config.main_dotenv("telegram-failed_order"))
         try:
             bot_chatID = config.main_dotenv("telegram-failed_order")[
                 "BOT_CHATID_FAILED_ORDER"
