@@ -1,6 +1,6 @@
 # # -*- coding: utf-8 -*-
 
-#import sqlite3
+import sqlite3
 from contextlib import contextmanager
 import asyncio
 import aiosqlite
@@ -160,13 +160,23 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     try:
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
         
-            db = db.execute(query_table) if filter == None else  db.execute(query_table, filter_value)
-            
-            async with db as cur:
-                fetchall =  (await cur.fetchall())
-        
-                head = (map(lambda attr : attr[0], cur.description))
-                headers = list(head) 
+            if filter == None:
+                
+                async with db.execute(query_table) as cur:
+                    fetchall =  (await cur.fetchall())
+          
+                    head = (map(lambda attr : attr[0], cur.description))
+                    headers = list(head) 
+                    
+            if filter != None:
+                
+                
+                async with db.execute(query_table, filter_value) as cur:
+                    fetchall =  (await cur.fetchall())
+                
+                    head = (map(lambda attr : attr[0], cur.description))
+                    headers = list(head)    
+                
                 
         for i in fetchall:
             combine_result.append(dict(zip(headers,i)))
