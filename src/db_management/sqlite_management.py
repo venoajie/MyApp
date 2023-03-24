@@ -58,7 +58,7 @@ async def create_tables ():
 
     '''
     '''   
-    async with await  aiosqlite.db_ops() as cur:
+    with await  aiosqlite.db_ops() as cur:
         
         await cur.execute("DROP TABLE IF EXISTS mytrades")
         
@@ -111,7 +111,7 @@ async def insert_tables (table_name, params):
     '''   
     try:
             
-        async with await  aiosqlite.db_ops() as cur:
+        with await  aiosqlite.db_ops() as cur:
             
             if 'orders' in table_name:
                 
@@ -154,7 +154,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     combine_result = []
     
     try:
-        async with await aiosqlite.db_ops() as cur:
+        with await aiosqlite.db_ops() as cur:
 
             result = list(await cur.execute((f'{query_table}')))
                 
