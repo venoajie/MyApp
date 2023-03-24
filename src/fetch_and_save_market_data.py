@@ -24,16 +24,25 @@ def catch_error(error, idle: int = None) -> list:
     system_tools.catch_error_message(error, idle)
 
 
-async def get_currencies() -> float:
+async def get_instruments(connection_url, currency) -> float:
+    """ """
+    #connection_url = "https://www.deribit.com/api/v2/"
+
+    result =await get_dbt.get_instruments (connection_url, currency)
+    print (result)
+    return result
+
+
+async def get_currencies(connection_url) -> float:
     """ """
 
-    endpoint = f"https://test.deribit.com/api/v2/public/get_currencies?"
-    return requests.get(endpoint).json()["result"]
-
+    result =await get_dbt.get_currencies (connection_url)
+    print (result)
+    return result
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
     try:
-        currencies = get_currencies()
+        currencies = get_currencies(connection_url)
         currencies = ["ETH", "BTC"]
         for currency in currencies:
             print (currency)
@@ -53,20 +62,12 @@ async def check_and_save_every_60_minutes():
         catch_error(error)
 
 
-async def get_instruments(connection_url, currency) -> float:
-    """ """
-    #connection_url = "https://www.deribit.com/api/v2/"
-
-    result =await get_dbt.get_instruments (connection_url, currency)
-    print (result)
-    return result
-
 if __name__ == "__main__":
     
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:54").do(get_instruments, connection_url, currency)
+    schedule.every().day.at("13:05").do(check_and_save_every_60_minutes)
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
