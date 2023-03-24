@@ -34,17 +34,8 @@ async def get_currencies(connection_url) -> float:
 
     return result
 
-async def get_open_interest_history() -> float:
-    """ """
-
-    result= await get_dbt.get_open_interest_historical ()
-
-    return result
 
 async def check_and_save_every_60_minutes():
-    open_interest_history = await get_open_interest_history()
-    print (open_interest_history)
-    
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     try:
@@ -70,7 +61,7 @@ async def check_and_save_every_60_minutes():
         catch_error(error)
         
         
-async def main() -> None:
+async def get_open_interest_history() -> None:
     headers = {
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
