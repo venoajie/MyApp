@@ -7,6 +7,7 @@ import asyncio
 # installed
 import aioschedule as schedule
 import time
+import aiohttp
 
 # user defined formula
 from utilities import pickling, system_tools
@@ -58,8 +59,22 @@ async def check_and_save_every_60_minutes():
 
     except Exception as error:
         catch_error(error)
+        
+        
+async def main() -> None:
+    payload = {
+    "accept": "application/json",
+    "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+}
+    session = aiohttp.ClientSession()
+    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={self.currency}&time_type={time_frame}&currency={currency}"
 
+    async with session.post(endpoint,
+                            data=payload) as resp:
+        print(await resp.text())
+        
 if __name__ == "__main__":
+    main()
     
     connection_url: str = "https://www.deribit.com/api/v2/"
     
