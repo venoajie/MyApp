@@ -159,17 +159,12 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             async with db.execute(query_table) as cur:
 
-                log.debug (cur)
                 head = (map(lambda attr : attr[0], cur.description))
                 headers = list(head)        
-                log.debug (headers)
-                log.debug (query_table)
                 #res = (await cur.execute((f'{query_table}'),()))
-                #log.debug (res)
+
                 fetchall =  (await cur.fetchall())
                 #result = list(res)
-                    
-                
                 for i in fetchall:
                     combine_result.append(dict(zip(headers,i)))
                 
