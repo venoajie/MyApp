@@ -62,7 +62,7 @@ async def check_and_save_every_60_minutes():
         
         
 async def main() -> None:
-    payload = {
+    header = {
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
@@ -70,10 +70,10 @@ async def main() -> None:
     time_frame = 'm5'
     symbol = 'ETH'
     currency = 'USD'
-    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type={time_frame}&currency={currency}"
+    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type=all&currency={currency}"
 
     async with session.get(endpoint,
-                            data=payload) as resp:
+                            header=header) as resp:
         print(await resp.text())
         
 if __name__ == "__main__":
