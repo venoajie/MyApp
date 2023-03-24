@@ -15,7 +15,7 @@ async  def main() -> list:
     await sqlite_management.create_dataBase_sqlite('databases/trading.sqlite3')
 
     await sqlite_management.create_tables()
-    query=await sqlite_management.querying_table('myTradesOpen', '=', 'filled')
+    query=await sqlite_management.querying_table('myTradesOpen', 'state', '=', 'filled')
     print (query)
         
 if __name__ == "__main__":
