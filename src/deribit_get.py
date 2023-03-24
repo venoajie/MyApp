@@ -84,9 +84,12 @@ async def main_coinGlass(
 "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
                     
+    print (url)
+    print (headers)
     async with session.get(
         url,headers=headers 
     ) as response:
+        print(await response.text())
         # RESToverHTTP Status Code
         status_code: int = response.status
 
