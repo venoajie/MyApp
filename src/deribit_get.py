@@ -12,7 +12,7 @@ from aiohttp.helpers import BasicAuth
 # user defined formula
 from configuration import id_numbering, config
 
-params_coinGlass = {
+headers = {
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
