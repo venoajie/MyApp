@@ -68,12 +68,13 @@ async def main() -> None:
 }
     session = aiohttp.ClientSession()
     time_frame = 'm5'
-    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={currency}&time_type={time_frame}&currency={currency}"
+    symbol = 'ETH'
+    currency = 'USD'
+    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type={time_frame}&currency={currency}"
 
-    async with session.post(endpoint,
+    async with session.get(endpoint,
                             data=payload) as resp:
         print(await resp.text())
-    await session.close()
         
 if __name__ == "__main__":
     asyncio.run(main())
