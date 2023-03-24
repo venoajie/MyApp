@@ -6,3 +6,4 @@ aiohttp
 aiosqlite
 psutil
 duckdb
+python-dotenv
