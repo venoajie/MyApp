@@ -647,7 +647,7 @@ async def get_open_interest_historical(
     
 
     return await main(
-            endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
+            endpoint=endpoint, params=headers, connection_url=connection_url
         )
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
