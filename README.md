@@ -51,6 +51,9 @@ make start # for first time running
     ├── src
     │   ├── configuration
     │   ├── databases
+    │       ├── trading.sqlite3
+    │       ├── exchanges
+    │       ├── market
     │   ├── market_data
     │       ├── get_market_data.py
     │   ├── market_understanding
