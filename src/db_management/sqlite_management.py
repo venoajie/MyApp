@@ -151,7 +151,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
     
-    log.debug(query_table)
+    #log.debug(query_table)
     
     combine_result = []
     
@@ -159,9 +159,10 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             async with db.execute(query_table) as cur:
 
+                log.debug (cur)
                 log.debug (query_table)
-                res = (await cur.fetchall((f'{query_table}')))
-                log.error (await cur.description())
+                res = (await cur.execute((f'{query_table}')))
+                log.error (await cur.fetchall())
                 result = list(res)
                     
                 head = (map(lambda attr : attr[0], await cur.description))
