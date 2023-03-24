@@ -30,13 +30,6 @@ async def get_currencies() -> float:
     endpoint = f"https://test.deribit.com/api/v2/public/get_currencies?"
     return requests.get(endpoint).json()["result"]
 
-
-async def get_instruments(connection_url, currency) -> float:
-    """ """
-
-    #result =await get_dbt.get_instruments (connection_url, currency)
-    asyncio .get_dbt.get_instruments (connection_url, currency)
-
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
     try:
@@ -58,6 +51,13 @@ async def check_and_save_every_60_minutes():
 
     except Exception as error:
         catch_error(error)
+
+
+async def get_instruments(connection_url, currency) -> float:
+    """ """
+
+    result =await get_dbt.get_instruments (connection_url, currency)
+    return result
 
 if __name__ == "__main__":
     
