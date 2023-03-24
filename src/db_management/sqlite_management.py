@@ -60,7 +60,7 @@ async def create_tables ():
 
     '''
     '''   
-    with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
+    async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
         
         await cur.execute("DROP TABLE IF EXISTS mytrades")
         
