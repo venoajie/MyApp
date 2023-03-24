@@ -610,7 +610,7 @@ async def get_open_interest_aggregated_ohlc(
     endpoint: str = f"indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}"
 
     try:
-        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+        return await main(endpoint=endpoint, params=params_coinGlass, connection_url=connection_url)
 
     except:
         return await main(
