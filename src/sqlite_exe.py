@@ -112,7 +112,7 @@ async  def main() -> list:
     query=await sqlite_management.querying_table('ordersOpen', 'price', '=', '1000')
     print (query)
     
-    query=await sqlite_management.querying_table('ordersOpen', 'price', '=', 1000)
+    query=await sqlite_management.querying_table('ordersOpen', 'price', '=', 1610)
     print (query)
     
     query=await sqlite_management.querying_table('myTradesOpen')
