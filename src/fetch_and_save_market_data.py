@@ -44,6 +44,7 @@ def check_and_save_every_60_minutes():
         currencies = get_currencies()
         currencies = ["ETH", "BTC"]
         for currency in currencies:
+            print (currency)
             
             instruments = get_instruments(currency)
             
@@ -63,7 +64,7 @@ if __name__ == "__main__":
     
     schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
     schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
-    schedule.every().day.at("12:01").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
     
