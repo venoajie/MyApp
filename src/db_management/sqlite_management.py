@@ -113,7 +113,7 @@ async def insert_tables (table_name, params):
     '''   
     try:
             
-        with   db_ops() as cur:
+        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
             
             if 'orders' in table_name:
                 
@@ -156,7 +156,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     combine_result = []
     
     try:
-        with  db_ops() as cur:
+        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
 
             result = list(await cur.execute((f'{query_table}')))
                 
