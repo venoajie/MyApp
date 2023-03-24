@@ -47,12 +47,15 @@ async def telegram_bot_sendtext(
 
     if purpose == "general_error":
         try:
-            bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatid"]
-
+            try:
+                bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatid"]
+            except:
+                bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatID"]
         except:
             bot_chatID = config.main_dotenv("telegram-general_error")[
                 "BOT_CHATID_GENERAL_ERROR"
-            ]
+                ]
+            
     connection_url = "https://api.telegram.org/bot"
     print(bot_token)
     print(bot_chatID)
