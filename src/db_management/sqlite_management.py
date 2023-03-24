@@ -157,7 +157,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     
     try:
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
-            async with db.execute("SELECT * FROM blogs") as cur:
+            async with db.execute(query_table) as cur:
 
                 res = (await cur.execute((f'{query_table}')))
                 result = list(res)
