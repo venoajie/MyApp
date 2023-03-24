@@ -94,7 +94,7 @@ async def main(
             endpoint = (connection_url + endpoint)
 
             print (connection_url + endpoint)
-            async with session.get(
+            async with session.post(
                 connection_url + endpoint,headers=headers 
             ) as response:
                 # RESToverHTTP Status Code
