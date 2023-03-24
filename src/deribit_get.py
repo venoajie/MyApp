@@ -95,7 +95,7 @@ async def main(
 
             print (connection_url + endpoint)
             async with session.post(
-                connection_url + endpoint,headers=params 
+                connection_url + endpoint,params=params 
             ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
