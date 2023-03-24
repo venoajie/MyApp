@@ -89,9 +89,6 @@ async def main(
     
     if 'open_interest_history' in endpoint :
         
-        payload: Dict = {
-            "params": params_coinGlass
-        }
         async with aiohttp.ClientSession() as session:
             print (connection_url + endpoint)
             print (connection_url + endpoint+ '877ad9af931048aab7e468bda134942e')
