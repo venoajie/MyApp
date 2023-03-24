@@ -171,13 +171,12 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 
                 async with db.execute(query_table, filter_value) as cur:
                     fetchall =  (await cur.fetchall())
-    
-            
+                
                     head = (map(lambda attr : attr[0], cur.description))
                     headers = list(head)    
-                    
-                for i in fetchall:
-                    combine_result.append(dict(zip(headers,i)))
+                
+        for i in fetchall:
+            combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
         print (error)
