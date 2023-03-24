@@ -86,6 +86,10 @@ async def main(
         "method": f"{endpoint}",
         "params": params,
     }
+    print ('coinglass' in endpoint)
+    print (client_id != None or 'coinglass' in endpoint)
+    print (params)
+    print (endpoint)
 
     if client_id != None or 'coinglass' in endpoint:
         async with aiohttp.ClientSession() as session:
