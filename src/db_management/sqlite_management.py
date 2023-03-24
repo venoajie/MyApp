@@ -76,7 +76,7 @@ def create_tables ():
                                                                     price REAL, \
                                                                     state TEXT, \
                                                                     order_type TEXT, \
-                                                                    timestamp REAL, \
+                                                                    timestamp INTEGER, \
                                                                     trade_seq REAL, \
                                                                     trade_id TEXT, \
                                                                     tick_direction REAL, \
@@ -93,7 +93,7 @@ def create_tables ():
                                                                     stop_price REAL, \
                                                                     order_state TEXT, \
                                                                     order_type TEXT, \
-                                                                    last_update_timestamp REAL, \
+                                                                    last_update_timestamp INTEGER, \
                                                                     order_id TEXT, \
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
