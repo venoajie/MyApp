@@ -24,6 +24,9 @@ async  def main() -> list:
 async def job(message='stuff', n=1):
     print("Asynchronous invocation (%s) of I'm working on:" % n, message)
     await asyncio.sleep(1)
+async def job2(message='AAAAAAAAAAAAAAAAAA', n=1):
+    print("Asynchronous invocation (%s) of I'm working on:" % n, message)
+    await asyncio.sleep(1)
     
 if __name__ == "__main__":
     
@@ -32,7 +35,7 @@ if __name__ == "__main__":
         schedule.every(1).seconds.do(job, n=i)
     schedule.every(5).to(10).days.do(job)
     schedule.every().hour.do(job, message='things')
-    schedule.every().day.at("10:30").do(job)
+    schedule.every().day.at("16:43").do(job2)
 
     loop = asyncio.get_event_loop()
     while True:
