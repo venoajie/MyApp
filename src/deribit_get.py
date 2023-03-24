@@ -91,8 +91,6 @@ async def main(
         
         async with aiohttp.ClientSession() as session:
                     
-            endpoint = (connection_url + endpoint)
-
             print (connection_url + endpoint)
             async with session.post(
                 connection_url + endpoint,params=params 
