@@ -162,6 +162,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 log.debug (cur)
                 log.debug (query_table)
                 res = (await db.execute((f'{query_table}')))
+                log.debug (res)
                 log.error (await cur.fetchall())
                 result = list(res)
                     
