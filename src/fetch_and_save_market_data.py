@@ -74,7 +74,7 @@ async def main() -> None:
         print(await resp.text())
         
 if __name__ == "__main__":
-    main()
+    asyncio.get_event_loop().run_until_complete(main())
     
     connection_url: str = "https://www.deribit.com/api/v2/"
     
