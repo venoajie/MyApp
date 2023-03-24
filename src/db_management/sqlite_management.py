@@ -164,10 +164,10 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 headers = list(head)        
                 log.debug (headers)
                 log.debug (query_table)
-                res = (await cur.execute((f'{query_table}'),()))
-                log.debug (res)
+                #res = (await cur.execute((f'{query_table}'),()))
+                #log.debug (res)
                 fetchall =  (await cur.fetchall())
-                result = list(res)
+                #result = list(res)
                     
                 
                 for i in fetchall:
