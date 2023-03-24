@@ -22,14 +22,14 @@ def catch_error(error, idle: int = None) -> list:
 async def get_instruments(connection_url, currency) -> float:
     """ """
 
-    result =await get_dbt.get_instruments (connection_url, currency)
+    result= await get_dbt.get_instruments (connection_url, currency)
     
     return result
 
 async def get_currencies(connection_url) -> float:
     """ """
 
-    result =await get_dbt.get_currencies (connection_url)
+    result= await get_dbt.get_currencies (connection_url)
 
     return result
 
@@ -54,6 +54,7 @@ async def check_and_save_every_60_minutes():
         my_path_cur = system_tools.provide_path_for_file("currencies")
         
         pickling.replace_data(my_path_cur, currencies)
+        catch_error('update currencies and instruments')
 
     except Exception as error:
         catch_error(error)
@@ -63,8 +64,9 @@ if __name__ == "__main__":
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     schedule.every().hour.do(check_and_save_every_60_minutes)
+    
     schedule.every().day.at("08.01").do(check_and_save_every_60_minutes)
-    #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("08.05").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
     
