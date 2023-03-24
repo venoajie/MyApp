@@ -53,8 +53,8 @@ async def telegram_bot_sendtext(
             ]
     connection_url = "https://api.telegram.org/bot"
     print(bot_token)
-    print(bot_chatID)
     print(purpose)
+    print(bot_chatID)
     endpoint = (
         bot_token
         + ("/sendMessage?chat_id=")
