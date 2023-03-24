@@ -152,6 +152,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
         query_table = f'SELECT  * FROM {table}'
     
     log.warning(query_table)
+    log.warning(filter_value)
     
     combine_result = []
     
@@ -162,15 +163,18 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 
                 async with db.execute(query_table) as cur:
                     fetchall =  (await cur.fetchall())
-      
+          
+                    head = (map(lambda attr : attr[0], cur.description))
+                    headers = list(head) 
+                    
             if filter != None:
                 
                 async with db.execute(query_table, filter_value) as cur:
                     fetchall =  (await cur.fetchall())
     
-        
-                head = (map(lambda attr : attr[0], cur.description))
-                headers = list(head)    
+            
+                    head = (map(lambda attr : attr[0], cur.description))
+                    headers = list(head)    
                     
                 for i in fetchall:
                     combine_result.append(dict(zip(headers,i)))
