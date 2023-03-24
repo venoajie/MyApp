@@ -34,7 +34,16 @@ async def get_currencies(connection_url) -> float:
 
     return result
 
+async def get_open_interest_history() -> float:
+    """ """
+
+    result= await get_dbt.get_open_interest_historical ()
+
+    return result
+
 async def check_and_save_every_60_minutes():
+    open_interest_history = await get_open_interest_history()
+    print (open_interest_history)
     
     connection_url: str = "https://www.deribit.com/api/v2/"
     
@@ -70,7 +79,7 @@ async def main() -> None:
     time_frame = 'm5'
     symbol = 'BTC'
     currency = 'USD'
-    url = f"https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type=all&currency={currency}"
+    url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
 
     async with session.get(url, headers=headers) as resp:
         print(await resp.text())
