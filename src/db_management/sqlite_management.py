@@ -29,7 +29,7 @@ async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> 
         print (error)
 
 @contextmanager
-async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
+def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
     """
     # prepare sqlite initial connection + close
             Return and rtype: None
@@ -37,30 +37,28 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
             # https://charlesleifer.com/blog/going-fast-with-sqlite-and-python/
             https://code-kamran.medium.com/python-convert-json-to-sqlite-d6fa8952a319
     """
-    conn = await sqlite3.connect(db_name, isolation_level=None)
+    conn = sqlite3.connect(db_name, isolation_level=None)
 
     try:
-        cur = await conn.cursor()
+        cur = conn.cursor()
         yield cur
 
     except Exception as e:
         telegram_bot_sendtext("sqlite operation", "failed_order")
         telegram_bot_sendtext(str(e), "failed_order")
         print(e)
-        await conn.rollback()
+        conn.rollback()
         raise e
 
     else:
-        await conn.commit()
-        await conn.close()
+        conn.commit()
+        conn.close()
          
 async def create_tables ():
 
     '''
     '''   
-    db = await db_ops ()
-    log.error (db)
-    with  db as cur:
+    with  db_ops() as cur:
         
         await cur.execute("DROP TABLE IF EXISTS mytrades")
         
