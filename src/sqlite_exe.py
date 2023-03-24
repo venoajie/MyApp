@@ -106,11 +106,12 @@ async  def main() -> list:
     query=await sqlite_management.querying_table('ordersOpen')
     print (query)
     
+    query=await sqlite_management.querying_table('ordersOpen', 'label', '=', 'test')
+    print (query)
+    
     query=await sqlite_management.querying_table('myTradesOpen')
     print (query)
     query=await sqlite_management.querying_table('myTradesOpen', 'state', '=', 'filled')
-    print (query)
-    query=await sqlite_management.querying_table('ordersOpen', 'label', '=', 'test')
     print (query)
         
 if __name__ == "__main__":
