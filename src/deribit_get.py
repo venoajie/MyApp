@@ -86,8 +86,8 @@ async def main(
         "method": f"{endpoint}",
         "params": params,
     }
-    print ('coinglass' in endpoint)
-    print (client_id != None or 'coinglass' in endpoint)
+    print ('open_interest_history?' in endpoint)
+    print (client_id != None or 'open_interest_history?' in endpoint)
     print (params)
     print (endpoint)
 
