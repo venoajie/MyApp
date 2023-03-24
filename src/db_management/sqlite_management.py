@@ -29,7 +29,7 @@ def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
         print (error)
 
 @contextmanager
-def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
+async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
     """
     # prepare sqlite initial connection + close
             Return and rtype: None
@@ -44,17 +44,17 @@ def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         yield cur
 
     except Exception as e:
-        telegram_bot_sendtext("sqlite operation", "failed_order")
-        telegram_bot_sendtext(str(e), "failed_order")
         print(e)
         conn.rollback()
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(str(e), "failed_order")
         raise e
 
     else:
         conn.commit()
         conn.close()
          
-def create_tables ():
+async def create_tables ():
 
     '''
     '''   
@@ -102,10 +102,10 @@ def create_tables ():
             
         except Exception as error:
             print(error)
-            telegram_bot_sendtext("sqlite operation", "failed_create_table")
-            telegram_bot_sendtext("sqlite operation", {create_table})
+            await telegram_bot_sendtext("sqlite operation", "failed_create_table")
+            await telegram_bot_sendtext("sqlite operation", {create_table})
 
-def insert_tables (table_name, params):
+async def insert_tables (table_name, params):
 
     '''
     '''   
@@ -136,10 +136,10 @@ def insert_tables (table_name, params):
             
     except Exception as error:
         print (error)
-        telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
-        telegram_bot_sendtext("sqlite operation", {param})
+        await telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
+        await telegram_bot_sendtext("sqlite operation", {param})
         
-def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
+async def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
             Reference
@@ -167,8 +167,8 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     except Exception as error:
         print (error)
         
-        telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
-        telegram_bot_sendtext("sqlite operation", {query_table})
+        await telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
+        await telegram_bot_sendtext("sqlite operation", {query_table})
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
