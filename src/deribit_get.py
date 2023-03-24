@@ -675,11 +675,11 @@ async def get_open_interest_historical() -> list:
     currency = 'USD'
     resolution ='all'
     # Set endpoint
-    endpoint: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
+    url: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
     
 
     return await main_coinGlass(
-            endpoint=endpoint
+            url=url
         )
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
