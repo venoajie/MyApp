@@ -71,6 +71,31 @@ async def telegram_bot_sendtext(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
+async def main_coinGlass(
+    url: str
+) -> None:
+        
+    async with aiohttp.ClientSession() as session:
+        
+        symbol = 'BTC'
+        currency = 'USD'
+        headers = {
+"accept": "application/json",
+"coinglassSecret": "877ad9af931048aab7e468bda134942e",
+}
+                        
+        async with session.get(
+            url,headers=headers 
+        ) as response:
+            # RESToverHTTP Status Code
+            status_code: int = response.status
+
+            # RESToverHTTP Response Content
+            response: Dict = await response.json()
+
+        return response
+    
+        
 async def main(
     endpoint: str,
     params: str,
@@ -78,6 +103,7 @@ async def main(
     client_id: str = None,
     client_secret: str = None,
 ) -> None:
+    
     id = id_numbering.id(endpoint, endpoint)
 
     payload: Dict = {
@@ -652,8 +678,8 @@ async def get_open_interest_historical() -> list:
     endpoint: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
     
 
-    return await main(
-            endpoint=endpoint, params=headers
+    return await main_coinGlass(
+            endpoint=endpoint
         )
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
