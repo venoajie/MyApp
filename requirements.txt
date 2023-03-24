@@ -6,4 +6,3 @@ aiohttp
 aiosqlite
 psutil
 duckdb
--U fugue[duckdb,sql] 
