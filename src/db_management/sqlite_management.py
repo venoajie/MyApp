@@ -156,17 +156,18 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     combine_result = []
     
     try:
-        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
+        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
+            async with db.execute("SELECT * FROM blogs") as cur:
 
-            result = (await cur.execute((f'{query_table}')))
-            result = list(result)
+                res = (await cur.execute((f'{query_table}')))
+                result = list(res)
+                    
+                head = (map(lambda attr : attr[0], await cur.description))
+                headers = list(head)
+                            
                 
-            headers = (map(lambda attr : attr[0], await cur.description))
-            headers = list(headers)
-                        
-            
-            for i in result:
-                combine_result.append(dict(zip(headers,i)))
+                for i in result:
+                    combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
         print (error)
