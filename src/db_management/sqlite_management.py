@@ -165,7 +165,8 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 #log.error(res)
 
                 fetchall =  (await cur.fetchall())
-                fetchall =  (await cur.fetchall(), filter_value)
+                if filter != None:
+                    fetchall =  (await cur.fetchall(), filter_value)
                 #result = list(res)
                 
                 for i in fetchall:
