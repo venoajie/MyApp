@@ -166,11 +166,11 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 log.debug (query_table)
                 res = (await cur.execute((f'{query_table}'),()))
                 log.debug (res)
-                log.error (await cur.fetchall())
+                fetchall =  (await cur.fetchall())
                 result = list(res)
                     
                 
-                for i in result:
+                for i in fetchall:
                     combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
