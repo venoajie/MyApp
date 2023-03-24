@@ -158,9 +158,11 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     try:
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
 
-            result = list(await cur.execute((f'{query_table}')))
+            result = (await cur.execute((f'{query_table}')))
+            result = list(result)
                 
-            headers = list(map(lambda attr : attr[0], cur.description))
+            headers = (map(lambda attr : attr[0], await cur.description))
+            headers = list(headers)
                         
             
             for i in result:
