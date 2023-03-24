@@ -65,7 +65,7 @@ if __name__ == "__main__":
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:41").do(get_instruments (connection_url, currency))
+    schedule.every().day.at("12:42").do(get_instruments)
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
