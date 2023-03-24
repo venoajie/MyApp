@@ -147,13 +147,12 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
             Reference
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
+    
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator}?' 
     filter_val =(f'{filter_value}',)
+    
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
-    
-    log.debug(query_table)
-    log.warning(filter_value)
     
     combine_result = []
     
