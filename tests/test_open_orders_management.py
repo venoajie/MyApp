@@ -1589,6 +1589,7 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
 
                             if strategy =='supplyDemandShort60A':
                                 if side =='buy':
+                                    
                                     if size == 10:
                                         if net_current_position== 0:
                                             if net_open_orders_limit== 0:
