@@ -28,6 +28,7 @@ async def telegram_bot_sendtext(
     """
 
     tel = config.main_dotenv("telegram-failed_order")
+    print(purpose)
 
     try:
         bot_token = config.main_dotenv("telegram-failed_order")["bot_token"]
@@ -53,7 +54,6 @@ async def telegram_bot_sendtext(
             ]
     connection_url = "https://api.telegram.org/bot"
     print(bot_token)
-    print(purpose)
     print(bot_chatID)
     endpoint = (
         bot_token
