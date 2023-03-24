@@ -95,7 +95,7 @@ async def main(
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 connection_url + endpoint,
-                json=payload,
+                json=params_coinGlass,
             ) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
