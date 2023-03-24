@@ -10,10 +10,10 @@ def catch_error(error, idle: int = None) -> list:
 
     system_tools.catch_error_message(error, idle)
 
-def telegram_bot_sendtext(bot_message: str, purpose: str) -> None:
-    from utilities import telegram_app
 
-    return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
+    import deribit_get
+    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
 def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
     """
