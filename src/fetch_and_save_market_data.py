@@ -60,10 +60,11 @@ async def check_and_save_every_60_minutes():
         catch_error(error)
 
 if __name__ == "__main__":
+    
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("12:17").do(check_and_save_every_60_minutes ())
+    schedule.every().day.at("12:23").do(get_instruments (connection_url, currency))
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
