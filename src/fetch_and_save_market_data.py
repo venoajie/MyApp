@@ -62,17 +62,17 @@ async def check_and_save_every_60_minutes():
         
         
 async def main() -> None:
-    headers = [{
+    headers = {
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
-}]
+}
     session = aiohttp.ClientSession()
     time_frame = 'm5'
     symbol = 'BTC'
     currency = 'USD'
     url = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type=all&currency={currency}"
 
-    async with session.get(url, headers=headers) as resp:
+    async with session.post(url, headers=headers) as resp:
         print(await resp.text())
         
 if __name__ == "__main__":
