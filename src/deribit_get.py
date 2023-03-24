@@ -627,6 +627,8 @@ async def get_open_interest_historical(
     """
     # Set endpoint
     endpoint: str = f"open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}"
+    
+    print (params_coinGlass)
 
     try:
         return await main(endpoint=endpoint, params=params_coinGlass, connection_url=connection_url)
