@@ -75,26 +75,26 @@ async def main_coinGlass(
     url: str
 ) -> None:
         
-    async with aiohttp.ClientSession() as session:
+    session = aiohttp.ClientSession()
         
-        symbol = 'BTC'
-        currency = 'USD'
-        headers = {
+    symbol = 'BTC'
+    currency = 'USD'
+    headers = {
 "accept": "application/json",
 "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
-                        
-        async with session.get(
-            url,headers=headers 
-        ) as response:
-            # RESToverHTTP Status Code
-            status_code: int = response.status
+                    
+    async with session.get(
+        url,headers=headers 
+    ) as response:
+        # RESToverHTTP Status Code
+        status_code: int = response.status
 
-            # RESToverHTTP Response Content
-            response: Dict = await response.json()
+        # RESToverHTTP Response Content
+        response: Dict = await response.json()
 
-        return response
-    
+    return response
+
         
 async def main(
     endpoint: str,
