@@ -2,7 +2,7 @@
 
 import sqlite3
 from contextlib import contextmanager
-import asyncio
+import asyncio, aiosqlite
 from loguru import logger as log
 
 def catch_error(error, idle: int = None) -> list:
