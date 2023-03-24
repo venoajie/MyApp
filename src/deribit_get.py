@@ -8,14 +8,10 @@ from dataclassy import dataclass  # import websockets
 # import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
-from dotenv import load_dotenv
 from os.path import join, dirname
 
 # user defined formula
 from configuration import id_numbering, config
-
-dotenv_path = join(dirname(__file__), ".env")
-load_dotenv(dotenv_path)
 
 params_coinGlass = {
     "accept": "application/json",
