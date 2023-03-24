@@ -120,6 +120,8 @@ def insert_tables (table_name, params):
             # input was in list format. Insert them to db one by one
             if isinstance(params, list):
                 for param in params:
+                    if 'orders' in table_name:
+                        param
                     
                     cur.executemany (f'{insert_table}', [param])
                     
