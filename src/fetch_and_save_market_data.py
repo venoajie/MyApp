@@ -67,7 +67,8 @@ async def main() -> None:
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
     session = aiohttp.ClientSession()
-    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={self.currency}&time_type={time_frame}&currency={currency}"
+    time_frame = 'm5'
+    endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={currency}&time_type={time_frame}&currency={currency}"
 
     async with session.post(endpoint,
                             data=payload) as resp:
