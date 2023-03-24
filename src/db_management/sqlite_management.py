@@ -151,7 +151,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
     
-    #log.debug(query_table)
+    log.warning(query_table)
     
     combine_result = []
     
@@ -166,6 +166,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
 
                 fetchall =  (await cur.fetchall())
                 #result = list(res)
+                
                 for i in fetchall:
                     combine_result.append(dict(zip(headers,i)))
                 
