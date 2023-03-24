@@ -39,10 +39,11 @@ async def get_currencies(connection_url) -> float:
     result =await get_dbt.get_currencies (connection_url)
     print (result)
     return result
+
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
     try:
-        currencies = get_currencies(connection_url)
+        currencies = await get_currencies(connection_url)
         currencies = ["ETH", "BTC"]
         for currency in currencies:
             print (currency)
@@ -67,7 +68,7 @@ if __name__ == "__main__":
     connection_url: str = "https://www.deribit.com/api/v2/"
     
     #schedule.every().hour.do(check_and_save_every_60_minutes, message='things')
-    schedule.every().day.at("13:05").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("13:07").do(check_and_save_every_60_minutes)
     #schedule.every().day.at("12:02").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
