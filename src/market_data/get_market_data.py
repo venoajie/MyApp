@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 # built ins
-import requests
+
+import asyncio
+import aioschedule as schedule
+import time
 from datetime import datetime
 
 # installed
@@ -10,9 +13,7 @@ from dataclassy import dataclass
 
 # user defined formula
 from utilities import time_modification
-
-#
-
+import deribit_get as get_dbt
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -114,3 +115,27 @@ class MarketData:
 
         except Exception as error:
             catch_error(error)
+
+async def job(message='stuff', n=1):
+    resolution = "m5"
+    connection_url: str = "https://open-api.coinglass.com/public/v2/"
+
+    ohlc = await get_dbt.get_open_interest_aggregated_ohlc(
+        connection_url, "eth-perpetual", resolution
+    )
+
+
+if __name__ == "__main__":
+    
+        
+    for i in range(1,3):
+        schedule.every(1).seconds.do(job, n=i)
+    schedule.every(5).to(10).days.do(job)
+    schedule.every().hour.do(job, message='things')
+    schedule.every().day.at("16:43").do(job2)
+
+    loop = asyncio.get_event_loop()
+    while True:
+        loop.run_until_complete(schedule.run_pending())
+        time.sleep(0.1)
+        
