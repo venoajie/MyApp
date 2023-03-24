@@ -52,6 +52,9 @@ async def telegram_bot_sendtext(
                 "BOT_CHATID_GENERAL_ERROR"
             ]
     connection_url = "https://api.telegram.org/bot"
+    print(bot_token)
+    print(bot_chatID)
+    print(purpose)
     endpoint = (
         bot_token
         + ("/sendMessage?chat_id=")
