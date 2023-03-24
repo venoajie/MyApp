@@ -112,6 +112,7 @@ def insert_tables (table_name, params):
         with db_ops() as cur:
             
             if 'orders' in table_name:
+                
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
                 
             if 'myTrades' in table_name:
@@ -120,7 +121,11 @@ def insert_tables (table_name, params):
             # input was in list format. Insert them to db one by one
             if isinstance(params, list):
                 for param in params:
+                    if 'trigger_price' not in list(param):
+                        param['trigger_price']=None
+                        
                     if 'orders' in table_name:
+                        log.error ('trigger_price' not in list(param))
                         log.error (param)
                     
                     cur.executemany (f'{insert_table}', [param])
