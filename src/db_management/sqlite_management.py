@@ -18,6 +18,7 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
 async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
     """
+    https://stackoverflow.com/questions/71729956/aiosqlite-result-object-has-no-attribue-execute
     """
     
     try:
@@ -59,7 +60,7 @@ async def create_tables ():
 
     '''
     '''   
-    with  db_ops() as cur:
+    with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
         
         await cur.execute("DROP TABLE IF EXISTS mytrades")
         
