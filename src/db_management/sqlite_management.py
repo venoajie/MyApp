@@ -102,6 +102,8 @@ def create_tables ():
             
         except Exception as error:
             print(error)
+            telegram_bot_sendtext("sqlite operation", "failed_create_table")
+            telegram_bot_sendtext("sqlite operation", {create_table})
 
 def insert_tables (table_name, params):
 
@@ -122,17 +124,9 @@ def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'trigger_price' not in list(param):
-                        try:
-                            param['trigger_price']=None
-                            param['stop_price']=None
-                        except:
-                            param['trigger_price']=None
-                            param['stop_price']=None
+                        param['trigger_price']=None
+                        param['stop_price']=None
                         
-                    if 'orders' in table_name:
-                        log.error ('trigger_price' not in list(param))
-                        log.error (param)
-                    
                     cur.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
@@ -141,8 +135,9 @@ def insert_tables (table_name, params):
                 cur.executemany (f'{insert_table}', [params])
             
     except Exception as error:
-        log.debug (param)
         print (error)
+        telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
+        telegram_bot_sendtext("sqlite operation", {param})
         
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
@@ -171,6 +166,9 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
                 
     except Exception as error:
         print (error)
+        
+        telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
+        telegram_bot_sendtext("sqlite operation", {query_table})
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
