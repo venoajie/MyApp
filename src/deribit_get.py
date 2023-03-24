@@ -71,9 +71,7 @@ async def telegram_bot_sendtext(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
-async def main_coinGlass(
-    url: str
-) -> None:
+async def main_coinGlass() -> None:
         
     session = aiohttp.ClientSession()
         
@@ -83,6 +81,7 @@ async def main_coinGlass(
 "accept": "application/json",
 "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
+    url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
                     
     print (url)
     print (headers)
@@ -680,7 +679,7 @@ async def get_open_interest_historical() -> list:
     # Set endpoint
     url: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
 
-    return await main_coinGlass(url)
+    return await main_coinGlass()
 
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
     # Set endpoint
