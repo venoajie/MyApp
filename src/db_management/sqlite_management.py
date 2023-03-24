@@ -46,8 +46,9 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         yield cur
 
     except Exception as e:
-        telegram_bot_sendtext("sqlite operation", "failed_order")
-        telegram_bot_sendtext(str(e), "failed_order")
+        
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(str(e), "failed_order")
         print(e)
         await conn.rollback()
         raise e
@@ -110,8 +111,8 @@ async def create_tables ():
             
         except Exception as error:
             print(error)
-            await telegram_bot_sendtext("sqlite operation", "failed_create_table")
-            await telegram_bot_sendtext("sqlite operation", {create_table})
+            await telegram_bot_sendtext("sqlite operation-failed_create_table", "failed_order")
+            await telegram_bot_sendtext(f"sqlite operation-{create_table}","failed_order")
 
 async def insert_tables (table_name, params):
 
@@ -143,8 +144,9 @@ async def insert_tables (table_name, params):
             
     except Exception as error:
         print (error)
-        await telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
-        await telegram_bot_sendtext("sqlite operation", {param})
+        
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation- {param}","failed_order")
         
 async def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
@@ -176,9 +178,9 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                 
     except Exception as error:
         print (error)        
-        await telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
-        await telegram_bot_sendtext("sqlite operation", {query_table})
-        
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
 
