@@ -86,12 +86,34 @@ async def main(
         "method": f"{endpoint}",
         "params": params,
     }
-    print ('open_interest_history?' in endpoint)
-    print (client_id != None or 'open_interest_history?' in endpoint)
-    print (params)
-    print (endpoint)
+    
+    if 'open_interest_history' in endpoint :
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                connection_url + endpoint,
+                auth=params_coinGlass,
+                json=payload,
+            ) as response:
+                # RESToverHTTP Status Code
+                status_code: int = response.status
 
-    if client_id != None or 'coinglass' in endpoint:
+                # RESToverHTTP Response Content
+                response: Dict = await response.json()
+
+            return response
+        
+    if client_id == None:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(connection_url + endpoint) as response:
+                # RESToverHTTP Status Code
+                status_code: int = response.status
+
+                # RESToverHTTP Response Content
+                response: Dict = await response.json()
+
+            return response
+
+    elif:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 connection_url + endpoint,
@@ -106,16 +128,6 @@ async def main(
 
             return response
 
-    if client_id == None:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(connection_url + endpoint) as response:
-                # RESToverHTTP Status Code
-                status_code: int = response.status
-
-                # RESToverHTTP Response Content
-                response: Dict = await response.json()
-
-            return response
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
@@ -628,6 +640,7 @@ async def get_open_interest_historical(
     # Set endpoint
     endpoint: str = f"open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}"
     
+
     return await main(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
