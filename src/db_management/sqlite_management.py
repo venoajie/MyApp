@@ -67,7 +67,7 @@ def create_tables ():
         try:           
             for table in tables:
                 
-                #cur.execute(f"DROP TABLE IF EXISTS {table}")
+                cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -121,15 +121,17 @@ def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'orders' in table_name:
-                        param
+                        log.error (param)
                     
                     cur.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
             else:
+                log.warning (param)
                 cur.executemany (f'{insert_table}', [params])
             
     except Exception as error:
+        log.debug (param)
         print (error)
         
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
