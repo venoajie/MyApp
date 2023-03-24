@@ -113,7 +113,7 @@ async def main(
 
             return response
 
-    elif:
+    else:
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 connection_url + endpoint,
