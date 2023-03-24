@@ -168,9 +168,10 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                     headers = list(head) 
                     
             if filter != None:
-                query_table = f'SELECT  * FROM {table} WHERE  state  = ?' 
+                query_table = f"{query_table}, {filter_value}"
+                log.warning(query_table)
                 
-                async with db.execute(f"{query_table}, {filter_value}") as cur:
+                async with db.execute(query_table) as cur:
                     fetchall =  (await cur.fetchall())
                 
                     head = (map(lambda attr : attr[0], cur.description))
