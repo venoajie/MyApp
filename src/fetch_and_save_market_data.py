@@ -62,10 +62,10 @@ async def check_and_save_every_60_minutes():
         
         
 async def main() -> None:
-    headers = {
+    headers = [{
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
-}
+}]
     session = aiohttp.ClientSession()
     time_frame = 'm5'
     symbol = 'BTC'
