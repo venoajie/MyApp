@@ -122,7 +122,12 @@ def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'trigger_price' not in list(param):
-                        param['trigger_price']=None
+                        try:
+                            param['trigger_price']=None
+                            param['stop_price']=None
+                        except:
+                            param['trigger_price']=None
+                            param['stop_price']=None
                         
                     if 'orders' in table_name:
                         log.error ('trigger_price' not in list(param))
