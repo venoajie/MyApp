@@ -161,8 +161,8 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
 
                 head = (map(lambda attr : attr[0], cur.description))
                 headers = list(head)        
-                res = await cur
-                log.error(res)
+                #res = ( cur.execute((f'{query_table}'),()))
+                #log.error(res)
 
                 fetchall =  (await cur.fetchall())
                 #result = list(res)
