@@ -160,11 +160,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     try:
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
         
-            if filter == None:
-                db = db.execute(query_table) 
-            
-            if filter != None:
-                db = db.execute(query_table, filter_value)
+            db = db.execute(query_table) if filter == None else  db.execute(query_table, filter_value)
             
             async with db as cur:
                 fetchall =  (await cur.fetchall())
