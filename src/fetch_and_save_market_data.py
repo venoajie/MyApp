@@ -73,6 +73,7 @@ async def main() -> None:
     async with session.post(endpoint,
                             data=payload) as resp:
         print(await resp.text())
+    await session.close()
         
 if __name__ == "__main__":
     asyncio.get_event_loop().run_until_complete(main())
