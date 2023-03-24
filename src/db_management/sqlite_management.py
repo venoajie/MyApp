@@ -67,7 +67,7 @@ def create_tables ():
         try:           
             for table in tables:
                 
-                cur.execute(f"DROP TABLE IF EXISTS {table}")
+                #cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -79,7 +79,7 @@ def create_tables ():
                                                                     timestamp INTEGER, \
                                                                     trade_seq INTEGER, \
                                                                     trade_id TEXT, \
-                                                                    tick_direction REAL, \
+                                                                    tick_direction INTEGER, \
                                                                     order_id TEXT, \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
                                                                     fee REAL)'           
@@ -128,8 +128,6 @@ def insert_tables (table_name, params):
                 cur.executemany (f'{insert_table}', [params])
             
     except Exception as error:
-        log.error (insert_table)
-        print (param)
         print (error)
         
 def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
@@ -141,7 +139,11 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator} ?' 
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
+    
     log.debug(query_table)
+    
+    combine_result = []
+    
     try:
         with db_ops() as cur:
 
@@ -149,7 +151,7 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
                 
             headers = list(map(lambda attr : attr[0], cur.description))
                         
-            combine_result = []
+            
             for i in result:
                 combine_result.append(dict(zip(headers,i)))
                 
