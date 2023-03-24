@@ -168,8 +168,8 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
                     headers = list(head) 
                     
             if filter != None:
-                filter_value ="filled"
-                query_table = (f'{query_table}, {filter_value},')
+                filter_value ="filled",
+                query_table = (f'{query_table}, {filter_value}')
                 log.warning(query_table)
                 
                 async with db.execute(query_table) as cur:
