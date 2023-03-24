@@ -73,7 +73,7 @@ async def main() -> None:
     endpoint = f" https://open-api.coinglass.com/public/v2/open_interest_history?symbol={symbol}&time_type=all&currency={currency}"
 
     async with session.get(endpoint,
-                            header=header) as resp:
+                            header) as resp:
         print(await resp.text())
         
 if __name__ == "__main__":
