@@ -629,7 +629,7 @@ async def get_open_interest_historical(
     endpoint: str = f"open_interest_history?symbol={currency}&time_type={resolution}&currency={currency}"
 
     try:
-        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+        return await main(endpoint=endpoint, params=params_coinGlass, connection_url=connection_url)
 
     except:
         return await main(
@@ -640,7 +640,7 @@ async def get_open_interest_symbol(connection_url: str, currency) -> list:
     # Set endpoint
     endpoint: str = f"open_interest?symbol={currency}"
     try:
-        return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+        return await main(endpoint=endpoint, params=params_coinGlass, connection_url=connection_url)
 
     except:
         return await main(
