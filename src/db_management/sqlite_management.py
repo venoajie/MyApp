@@ -162,7 +162,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
             db = db.execute(query_table) if filter == None else db.execute(query_table, filter_val)
         
             if filter == None:
-                async with db.execute(query_table) as cur:
+                async with db  as cur:
                     fetchall =  (await cur.fetchall())
           
                     head = (map(lambda attr : attr[0], cur.description))
