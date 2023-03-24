@@ -148,11 +148,11 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator}?' 
-    filter_value =f'({filter_value})',
+    filter_val =f'({filter_value})',
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
     
-    log.warning(query_table)
+    log.debug(query_table)
     log.warning(filter_value)
     
     combine_result = []
@@ -161,18 +161,16 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
         
             if filter == None:
-                
                 async with db.execute(query_table) as cur:
                     fetchall =  (await cur.fetchall())
           
                     head = (map(lambda attr : attr[0], cur.description))
                     headers = list(head) 
                     
-            if filter != None:
-                
-                
-                async with db.execute(query_table, filter_value) as cur:
+            if filter != None:                
+                async with db.execute(query_table, filter_val) as cur:
                     fetchall =  (await cur.fetchall())
+                    log.info (fetchall)
                 
                     head = (map(lambda attr : attr[0], cur.description))
                     headers = list(head)    
