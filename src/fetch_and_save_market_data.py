@@ -118,6 +118,10 @@ async def job(message='stuff', n=1):
         connection_url, "eth-perpetual", resolution
     )
     print (ohlc)
+    open_interest_historical = await get_dbt.get_open_interest_historical(
+        connection_url, "eth-perpetual", resolution
+    )
+    print (open_interest_historical)
 
 
 if __name__ == "__main__":
