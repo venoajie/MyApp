@@ -44,30 +44,30 @@ def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         yield cur
 
     except Exception as e:
-        print(e)
-        conn.rollback()
         telegram_bot_sendtext("sqlite operation", "failed_order")
         telegram_bot_sendtext(str(e), "failed_order")
+        print(e)
+        conn.rollback()
         raise e
 
     else:
         conn.commit()
         conn.close()
          
-def create_tables ():
+async def create_tables ():
 
     '''
     '''   
-    with  db_ops() as cur:
+    async with aiosqlite.db_ops() as cur:
         
-        cur.execute("DROP TABLE IF EXISTS mytrades")
+        await cur.execute("DROP TABLE IF EXISTS mytrades")
         
         tables= ['myTradesOpen', 'myTradesClosed','ordersOpen', 'ordersClosed','ordersUntrig']
         
         try:           
             for table in tables:
                 
-                cur.execute(f"DROP TABLE IF EXISTS {table}")
+                await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 if 'myTrades' in table:
                     create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -98,20 +98,20 @@ def create_tables ():
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
                 
-                cur.execute (f'{create_table}') 
+                await cur.execute (f'{create_table}') 
             
         except Exception as error:
             print(error)
-            telegram_bot_sendtext("sqlite operation", "failed_create_table")
-            telegram_bot_sendtext("sqlite operation", {create_table})
+            await telegram_bot_sendtext("sqlite operation", "failed_create_table")
+            await telegram_bot_sendtext("sqlite operation", {create_table})
 
-def insert_tables (table_name, params):
+async def insert_tables (table_name, params):
 
     '''
     '''   
     try:
             
-        with db_ops() as cur:
+        async with aiosqlite.db_ops() as cur:
             
             if 'orders' in table_name:
                 
@@ -127,19 +127,19 @@ def insert_tables (table_name, params):
                         param['trigger_price']=None
                         param['stop_price']=None
                         
-                    cur.executemany (f'{insert_table}', [param])
+                    await cur.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
             else:
                 log.warning (param)
-                cur.executemany (f'{insert_table}', [params])
+                await cur.executemany (f'{insert_table}', [params])
             
     except Exception as error:
         print (error)
-        telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
-        telegram_bot_sendtext("sqlite operation", {param})
+        await telegram_bot_sendtext("sqlite operation", "failed_insert_data_to_table")
+        await telegram_bot_sendtext("sqlite operation", {param})
         
-def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
+async def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
             Reference
@@ -154,9 +154,9 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     combine_result = []
     
     try:
-        with  db_ops() as cur:
+        async with aiosqlite.db_ops() as cur:
 
-            result = list(cur.execute((f'{query_table}')))
+            result = list(await cur.execute((f'{query_table}')))
                 
             headers = list(map(lambda attr : attr[0], cur.description))
                         
@@ -167,8 +167,8 @@ def querying_table (table: str = 'mytrades', filter: str = None, operator=None, 
     except Exception as error:
         print (error)
         
-        telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
-        telegram_bot_sendtext("sqlite operation", {query_table})
+        await telegram_bot_sendtext("sqlite operation", "failed_querying_data_from_table")
+        await telegram_bot_sendtext("sqlite operation", {query_table})
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
