@@ -23,7 +23,7 @@ async  def main() -> list:
 
 async def job(message='stuff', n=1):
     print("Asynchronous invocation (%s) of I'm working on:" % n, message)
-    asyncio.sleep(1)
+    await asyncio.sleep(1)
     
 if __name__ == "__main__":
     
