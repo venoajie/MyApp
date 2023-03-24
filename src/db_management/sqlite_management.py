@@ -77,7 +77,7 @@ def create_tables ():
                                                                     state TEXT, \
                                                                     order_type TEXT, \
                                                                     timestamp INTEGER, \
-                                                                    trade_seq REAL, \
+                                                                    trade_seq INTEGER, \
                                                                     trade_id TEXT, \
                                                                     tick_direction REAL, \
                                                                     order_id TEXT, \
