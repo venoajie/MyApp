@@ -90,10 +90,7 @@ async def main(
     if 'open_interest_history' in endpoint :
         
         payload: Dict = {
-            "jsonrpc": "2.0",
-            "id": id,
-            "method": f"{endpoint}",
-            "params": params_coinGlass,
+            "params": params_coinGlass
         }
         async with aiohttp.ClientSession() as session:
             async with session.post(
