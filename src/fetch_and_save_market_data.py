@@ -83,8 +83,8 @@ if __name__ == "__main__":
     
     schedule.every().hour.do(check_and_save_every_60_minutes)
     
-    schedule.every().day.at("08.01").do(check_and_save_every_60_minutes)
-    schedule.every().day.at("08.05").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
     
