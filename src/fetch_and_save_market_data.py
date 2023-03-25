@@ -76,14 +76,14 @@ async def get_open_interest_history() -> None:
         print(await resp.text())
         
 if __name__ == "__main__":
-    asyncio.run(get_open_interest_history())
+    #asyncio.run(get_open_interest_history())
     
-    connection_url: str = "https://www.deribit.com/api/v2/"
+    #connection_url: str = "https://www.deribit.com/api/v2/"
     
-    schedule.every().minute.do(get_open_interest_history)
+    schedule.every().hour.do(check_and_save_every_60_minutes)
     
-    #schedule.every().day.at("08.01").do(check_and_save_every_60_minutes)
-    #schedule.every().day.at("08.05").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("08.01").do(check_and_save_every_60_minutes)
+    schedule.every().day.at("08.05").do(check_and_save_every_60_minutes)
 
     loop = asyncio.get_event_loop()
     
