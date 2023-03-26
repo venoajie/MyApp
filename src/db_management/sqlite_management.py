@@ -60,16 +60,24 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
 async def create_tables ():
 
     '''
+    
+    Naming conventions to ensure portability:
+        - all in lower case (except myTrades to distingush my own trade (private) and exchanges trade (public))
+        - use underscores
+        - when possible, name is started with api endpoint
+        - examples:
+            - db in pickle: eth-myTrades-open
+            - sqlite: myTrades_open -> eth will be resolved through queries
+
+    https://antonz.org/json-virtual-columns/ 
     '''   
     async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
         
-        await cur.execute("DROP TABLE IF EXISTS mytrades")
-        
-        tables= ['myTradesOpen', 
-                 'myTradesClosed',
-                 'ordersOpen',
-                 'ordersClosed',
-                 'ordersUntrig'
+        tables= ['myTrades_open', 
+                 'myTrades_closed',
+                 'orders_open',
+                 'orders_closed',
+                 'orders_untrig'
                  ]
         
         try:           
@@ -117,6 +125,9 @@ async def create_tables ():
 async def insert_tables (table_name, params):
 
     '''
+    alternative insert format (safer):
+    https://stackoverflow.com/questions/56910918/saving-json-data-to-sqlite-python
+    
     '''   
     try:
             
