@@ -533,7 +533,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
-                # og.debug (my_trades_open)
+                log.debug (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
