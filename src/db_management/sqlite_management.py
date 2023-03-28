@@ -85,6 +85,7 @@ async def create_tables (type:str = None):
                  'my_trades_all_json',
                  'orders_all_json',
                  'positions_json',
+                 'portfolio_json',
                  ]
         
         try:           
