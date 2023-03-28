@@ -190,11 +190,27 @@ class StreamAccountData:
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
-                                sqlite_management.insert_table_mytrades('myTradesOpen',my_trades)
+                                
+                                sqlite_management.insert_table_mytrades('my_trades_all_json',my_trades)
+                                sqlite_management.insert_table_mytrades('my_trades_all',my_trades)
                                 my_trades.distribute_trade_transactions(currency)
+
+                                my_trades_path_all = system_tools.provide_path_for_file(
+                                "my_trades", currency, "all"
+                            )
+                                self. appending_data (trades, my_trades_path_all)
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
+                                
+                                sqlite_management.insert_table_mytrades('orders_all_json',my_trades)
+                                sqlite_management.insert_table_mytrades('orders_all',my_trades)           
+                
+                                orders_path_all = system_tools.provide_path_for_file(
+                                "orders", currency, "all")
+                                
+                                self. appending_data (orders, orders_path_all)
+                                
                                 my_orders.distribute_order_transactions(currency)
 
                             if positions:
@@ -203,6 +219,7 @@ class StreamAccountData:
                                     "positions", currency
                                 )
                                 pickling.replace_data(my_path_position, positions)
+                                sqlite_management.insert_table_mytrades('positions_json',positions)
 
                         await syn.get_sub_accounts()
 
@@ -213,6 +230,18 @@ class StreamAccountData:
                     0.1,
                     "WebSocket connection EXCHANGE has broken",
                 )
+
+
+
+    def appending_data(data: dict, my_path_all: str) -> None:
+        """
+        """
+        
+        if isinstance(data, list):
+            for dt in data:
+                pickling.append_data(my_path_all, dt, True)
+        else:
+            pickling.append_data(my_path_all, data, True)
 
     async def establish_heartbeat(self) -> None:
         """
@@ -309,7 +338,6 @@ class StreamAccountData:
 
         log.warning(msg)
         await self.websocket_client.send(json.dumps(msg))
-
 
 def main():
     sub_account = "deribit-147691"
