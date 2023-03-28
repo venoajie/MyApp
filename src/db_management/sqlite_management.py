@@ -5,6 +5,7 @@ from contextlib import contextmanager
 import asyncio
 import aiosqlite
 from loguru import logger as log
+import json
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -188,7 +189,7 @@ async def insert_tables (table_name, params):
                     insert_table_json= f'''INSERT INTO {table_name} (data) VALUES (json('{params}'));'''
                     #INSERT INTO portfolio_json (data) VALUES (json('{"spot_reserve": 0.0, "session_upl": -0.002182}'));;
                     
-                    insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ("{params}"));"""
+                    insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
                     print (f"AAAAA insert_table_json {insert_table_json}")
                     await db.execute (insert_table_json)
                 else:
