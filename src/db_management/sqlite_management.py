@@ -151,11 +151,7 @@ async def insert_tables (table_name, params):
     
     '''   
     try:
-        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAams')
-        print (table_name)
-        print (isinstance(params, list))
-        print ('json' in table_name)
-            
+        
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             
             if 'orders' in table_name:
@@ -171,8 +167,9 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
-                        insert_table_json = ('''INSERT INTO {table_name} VALUES (?)''', ({params},))
-                        print (f"BBBBBB insert_table_json {insert_table_json}")
+                        insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
+
+                        await db.execute (insert_table_json)
                             
                     else:
                             
@@ -186,11 +183,9 @@ async def insert_tables (table_name, params):
             else:
             
                 if 'json' in table_name:
-                    insert_table_json= f'''INSERT INTO {table_name} (data) VALUES (json('{params}'));'''
-                    #INSERT INTO portfolio_json (data) VALUES (json('{"spot_reserve": 0.0, "session_upl": -0.002182}'));;
                     
                     insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
-                    print (f"AAAAA insert_table_json {insert_table_json}")
+
                     await db.execute (insert_table_json)
                 else:
                     await db.executemany (f'{insert_table}', [params])
