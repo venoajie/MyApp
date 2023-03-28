@@ -92,11 +92,11 @@ async def create_tables (type:str = None):
                 
                 await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')
-                log.error ('myTrades' in table)
+                log.error ('myTrades' or 'my_trades' in table)
                 log.warning ('orders' in table)
                 
                 
-                if 'myTrades' in table:
+                if 'myTrades' or 'my_trades' in table:
                     log.debug ('json' in table)
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
