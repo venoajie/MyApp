@@ -57,9 +57,10 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         await conn.commit()
         await conn.close()
          
-async def create_tables ():
+async def create_tables (type:str = None):
 
     '''
+    type: json/None
     
     Naming conventions to ensure portability:
         - all in lower case (except myTrades to distingush my own trade (private) and exchanges trade (public))
@@ -70,14 +71,20 @@ async def create_tables ():
             - sqlite: myTrades_open -> eth will be resolved through queries
 
     https://antonz.org/json-virtual-columns/ 
+    https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     '''   
     async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
         
-        tables= ['myTrades_open', 
-                 'myTrades_closed',
+        tables= ['my_trades_open', 
+                 'my_trades_closed',
+                 'my_trades_all',
                  'orders_open',
+                 'orders_all',
                  'orders_closed',
-                 'orders_untrig'
+                 'orders_untrig',
+                 'my_trades_all_json',
+                 'orders_all_json',
+                 'positions_json',
                  ]
         
         try:           
@@ -86,7 +93,11 @@ async def create_tables ():
                 await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 
                 if 'myTrades' in table:
-                    create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
+                    if  'json' in table:
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
+                                                                    data TEXT)' 
+                    else:
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
                                                                     direction TEXT, \
                                                                     amount REAL, \
@@ -101,7 +112,12 @@ async def create_tables ():
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
                                                                     fee REAL)'           
                 if 'orders' in table:
-                    create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
+                    
+                    if  'json' in table:
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
+                                                                    data TEXT)' 
+                    else:
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
                                                                     direction TEXT, \
                                                                     amount REAL, \
@@ -137,17 +153,25 @@ async def insert_tables (table_name, params):
                 
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
                 
+                insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
+                
             if 'myTrades' in table_name:
-                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'   
+                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
             
             # input was in list format. Insert them to db one by one
             if isinstance(params, list):
                 for param in params:
-                    if 'trigger_price' not in list(param):
-                        param['trigger_price']=None
-                        param['stop_price']=None
+                    if 'json' in table_name:
+                        insert_table_json= f'INSERT INTO {table_name} VALUES json(({param}));' 
+                        await cur.executemany (f'{insert_table_json}')
                         
-                    await cur.executemany (f'{insert_table}', [param])
+                    else:
+                            
+                        if 'trigger_price' not in list(param):
+                            param['trigger_price']=None
+                            param['stop_price']=None
+                            
+                        await cur.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
             else:
