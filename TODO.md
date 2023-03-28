@@ -49,8 +49,7 @@ etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-
 Market structure | [market](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
 Statistic | [statistic](https://medium.com/@yuhui_w/applying-extreme-value-theory-and-survival-analysis-to-trading-hedging-e878f73751f0) |  | | 
 Market psychology | [psychology](https://medium.com/@matthewjinfong/trading-101-second-level-thinking-94bc40cb8074) |  | | 
-
-
+Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali.medium.com/is-there-seasonal-intraday-or-overnight-anomalies-in-bitcoin-11bc71321b9e) |  | | 
 
 
 
