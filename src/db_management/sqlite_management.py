@@ -186,7 +186,7 @@ async def insert_tables (table_name, params):
             
                 if 'json' in table_name:
                     insert_table_json= f'''INSERT INTO {table_name} (data) VALUES (json('{params}'));'''
-                    insert_table_json = f'''INSERT INTO {table_name} VALUES (?), {params},;'''
+                    insert_table_json = f'''INSERT INTO {table_name} VALUES (?), json({params}),;'''
                     print (f"AAAAA insert_table_json {insert_table_json}")
                     await db.execute (insert_table_json)
                 else:
