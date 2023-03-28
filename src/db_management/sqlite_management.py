@@ -99,7 +99,7 @@ async def create_tables (type:str = None):
                 if 'myTrades' or 'my_trades' in table:
                     log.debug ('json' in table)
                     if  'json' in table:
-                        create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
@@ -120,7 +120,7 @@ async def create_tables (type:str = None):
                     log.debug ('json' in table)
                     
                     if  'json' in table:
-                        create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
+                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
