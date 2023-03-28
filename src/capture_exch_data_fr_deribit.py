@@ -167,6 +167,7 @@ class StreamAccountData:
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
                         # log.info (message_channel)
+                        log.debug (data_orders)
 
                         data_orders: list = message["params"]["data"]
                         currency: str = string_modification.extract_currency_from_text(
@@ -178,8 +179,8 @@ class StreamAccountData:
                                 "portfolio", currency
                             )
                             pickling.replace_data(my_path_portfolio, data_orders)
-                            await sqlite_management.insert_tables('portfolio_json',data_orders)
-                            log.info(data_orders)
+                            #await sqlite_management.insert_tables('portfolio_json',data_orders)
+                            #log.info(data_orders)
                         if (
                             message_channel
                             == f"user.changes.any.{currency.upper()}.raw"
@@ -231,8 +232,6 @@ class StreamAccountData:
                     0.1,
                     "WebSocket connection EXCHANGE has broken",
                 )
-
-
 
     def appending_data(data: dict, my_path_all: str) -> None:
         """
