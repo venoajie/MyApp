@@ -329,7 +329,7 @@ class MyTrades:
 
             for data_order in my_trades:
                 data_order = [data_order]
-                numb = numb + len(data_order)
+                #numb = numb + len(data_order)
 
                 log.info(data_order)
 
