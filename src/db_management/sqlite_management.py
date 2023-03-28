@@ -169,9 +169,9 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
-                        insert_table_json= f'INSERT INTO {table_name} VALUES json(({param}));' 
-                        await db.executemany (f'{insert_table_json}')
-                        
+                        insert_table_json = ('''INSERT INTO {table_name} VALUES (?)''', ({params},))
+                        print (f"BBBBBB insert_table_json {insert_table_json}")
+                            
                     else:
                             
                         if 'trigger_price' not in list(param):
@@ -185,8 +185,8 @@ async def insert_tables (table_name, params):
             
                 if 'json' in table_name:
                     insert_table_json= f'''INSERT INTO {table_name} (data) VALUES (json('{params}'));'''
-                    insert_table_json = ('''insert into {table_name} VALUES (?)''', ({params},))
-                    print (insert_table_json)
+                    insert_table_json = ('''INSERT INTO {table_name} VALUES (?)''', ({params},))
+                    print (f"AAAAA insert_table_json {insert_table_json}")
                     await db.execute (insert_table_json)
                 else:
                     await db.executemany (f'{insert_table}', [params])
