@@ -90,14 +90,11 @@ async def create_tables (type:str = None):
         try:           
             for table in tables:
                 
-                await cur.execute(f"DROP TABLE IF EXISTS {table}")
-                log.critical (f'table {table}')
-                log.error ('myTrades' or 'my_trades' in table)
-                log.warning ('orders' in table)
-                
+                #await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                log.critical (f'table {table}')              
                 
                 if 'myTrades' or 'my_trades' in table:
-                    log.debug ('json' in table)
+
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
@@ -152,6 +149,9 @@ async def insert_tables (table_name, params):
     
     '''   
     try:
+        print (params)
+        print (params)
+        print (isinstance(params, list))
             
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
             
@@ -161,7 +161,7 @@ async def insert_tables (table_name, params):
                 
                 insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
                 
-            if 'myTrades' in table_name:
+            if 'myTrades' or 'my_trades' in table_name:
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
             
             # input was in list format. Insert them to db one by one
@@ -181,7 +181,13 @@ async def insert_tables (table_name, params):
                     
             # input is in dict format. Insert them to db directly
             else:
-                await cur.executemany (f'{insert_table}', [params])
+            
+                if 'json' in table_name:
+                    insert_table_json= f'INSERT INTO {table_name} VALUES json(({params}));' 
+                    await cur.executemany (f'{insert_table_json}')
+                else:
+                    await cur.executemany (f'{insert_table}', [params])
+            
             
     except Exception as error:
         print (error)
