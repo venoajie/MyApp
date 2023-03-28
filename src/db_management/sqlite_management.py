@@ -91,8 +91,13 @@ async def create_tables (type:str = None):
             for table in tables:
                 
                 await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                log.critical (f'table {table}')
+                log.error ('myTrades' in table)
+                log.warning ('orders' in table)
+                
                 
                 if 'myTrades' in table:
+                    log.debug ('json' in table)
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
@@ -112,6 +117,7 @@ async def create_tables (type:str = None):
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
                                                                     fee REAL)'           
                 if 'orders' in table:
+                    log.debug ('json' in table)
                     
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table}_{type} (id INTEGER PRIMARY KEY, \
@@ -136,7 +142,7 @@ async def create_tables (type:str = None):
         except Exception as error:
             print(error)
             await telegram_bot_sendtext("sqlite operation-failed_create_table", "failed_order")
-            await telegram_bot_sendtext(f"sqlite operation-{create_table}","failed_order")
+            await telegram_bot_sendtext(f"sqlite operation-create_table","failed_order")
 
 async def insert_tables (table_name, params):
 
