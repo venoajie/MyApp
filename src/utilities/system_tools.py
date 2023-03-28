@@ -58,7 +58,10 @@ def provide_path_for_file(
     exchange = None
 
     if bool(
-        [o for o in ["portfolio", "positions", "sub_accounts"] if (o in end_point)]
+        [o for o in ["portfolio", 
+                     "positions", 
+                     "sub_accounts"
+                     ] if (o in end_point)]
     ):
         exchange: str = "deribit"
         sub_folder: str = f"databases/exchanges/{exchange}/portfolio"
@@ -68,7 +71,7 @@ def provide_path_for_file(
             o
             for o in [
                 "orders",
-                "myTrades",
+                "myTrades",'my_trades'
             ]
             if (o in end_point)
         ]
@@ -87,6 +90,7 @@ def provide_path_for_file(
                 "ohlc",
                 "futures_analysis",
                 "ticker-all",
+                "ticker_all",
                 "ticker",
             ]
             if (o in end_point)
