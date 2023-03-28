@@ -151,8 +151,9 @@ async def insert_tables (table_name, params):
     '''   
     try:
         print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAams')
-        print (params)
+        print (table_name)
         print (isinstance(params, list))
+        print ('json' in table_name)
             
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             
