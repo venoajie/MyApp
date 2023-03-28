@@ -178,6 +178,7 @@ class StreamAccountData:
                                 "portfolio", currency
                             )
                             pickling.replace_data(my_path_portfolio, data_orders)
+                            sqlite_management.insert_table_mytrades('portfolio_json',positions)
                             log.info(data_orders)
                         if (
                             message_channel
