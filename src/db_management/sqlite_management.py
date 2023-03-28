@@ -154,7 +154,7 @@ async def insert_tables (table_name, params):
         print (params)
         print (isinstance(params, list))
             
-        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as cur:
+        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             
             if 'orders' in table_name:
                 
@@ -170,7 +170,7 @@ async def insert_tables (table_name, params):
                 for param in params:
                     if 'json' in table_name:
                         insert_table_json= f'INSERT INTO {table_name} VALUES json(({param}));' 
-                        await cur.executemany (f'{insert_table_json}')
+                        await db.execute (f'{insert_table_json}')
                         
                     else:
                             
@@ -178,7 +178,7 @@ async def insert_tables (table_name, params):
                             param['trigger_price']=None
                             param['stop_price']=None
                             
-                        await cur.executemany (f'{insert_table}', [param])
+                        await db.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
             else:
@@ -186,16 +186,16 @@ async def insert_tables (table_name, params):
                 if 'json' in table_name:
                     insert_table_json= f'INSERT INTO {table_name} VALUES json(({params}));' 
                     print (insert_table_json)
-                    await cur.executemany (f'{insert_table_json}')
+                    await db.execute (f'{insert_table_json}')
                 else:
-                    await cur.executemany (f'{insert_table}', [params])
+                    await db.executemany (f'{insert_table}', [params])
             
             
     except Exception as error:
         print (error)
         
-        await telegram_bot_sendtext("sqlite operation", "failed_order")
-        await telegram_bot_sendtext(f"sqlite operation- {param}","failed_order")
+        await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
+        #await telegram_bot_sendtext(f"sqlite operation","failed_order")
         
 async def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
 
