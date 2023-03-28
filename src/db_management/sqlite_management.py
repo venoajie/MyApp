@@ -150,7 +150,7 @@ async def insert_tables (table_name, params):
     
     '''   
     try:
-        print (params)
+        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAams')
         print (params)
         print (isinstance(params, list))
             
@@ -185,6 +185,7 @@ async def insert_tables (table_name, params):
             
                 if 'json' in table_name:
                     insert_table_json= f'INSERT INTO {table_name} VALUES json(({params}));' 
+                    print (insert_table_json)
                     await cur.executemany (f'{insert_table_json}')
                 else:
                     await cur.executemany (f'{insert_table}', [params])
