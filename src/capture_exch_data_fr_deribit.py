@@ -232,7 +232,7 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-    def appending_data(data: dict, my_path_all: str) -> None:
+    def appending_data(self, data: dict, my_path_all: str) -> None:
         """
         """
         
