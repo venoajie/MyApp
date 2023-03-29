@@ -116,7 +116,7 @@ async def create_tables (type:str = None):
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
                                                                     fee REAL)'           
                 if 'orders' in table:
-                    log.debug ('json' in table)
+                    #log.debug ('json' in table)
                     
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
@@ -158,7 +158,7 @@ async def insert_tables (table_name, params):
                 
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
                 
-                insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
+                #insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
                 
             if 'myTrades' or 'my_trades' in table_name:
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
@@ -172,6 +172,7 @@ async def insert_tables (table_name, params):
                         await db.execute (insert_table_json)
                             
                     else:
+                        print(f' AAAAAAAAAAAAAAAAA {insert_table}')
                             
                         if 'trigger_price' not in list(param):
                             param['trigger_price']=None
@@ -188,6 +189,7 @@ async def insert_tables (table_name, params):
 
                     await db.execute (insert_table_json)
                 else:
+                    print(f' BBBBBBBBBBBBBB {insert_table}')
                     await db.executemany (f'{insert_table}', [params])
             
             
