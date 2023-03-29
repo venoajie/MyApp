@@ -204,8 +204,8 @@ class StreamAccountData:
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
                                 
-                                await sqlite_management.insert_tables('orders_all_json',my_trades)
-                                await sqlite_management.insert_tables('orders_all',my_trades)           
+                                await sqlite_management.insert_tables('orders_all_json',orders)
+                                await sqlite_management.insert_tables('orders_all',orders)           
                 
                                 orders_path_all = system_tools.provide_path_for_file(
                                 "orders", currency, "all")
