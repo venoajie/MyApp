@@ -192,8 +192,8 @@ class StreamAccountData:
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
                                 
-                                await sqlite_management.insert_tables('my_trades_all_json',my_trades)
-                                await sqlite_management.insert_tables('my_trades_all',my_trades)
+                                await sqlite_management.insert_tables('my_trades_all_json',trades)
+                                await sqlite_management.insert_tables('my_trades_all',trades)
                                 my_trades.distribute_trade_transactions(currency)
 
                                 my_trades_path_all = system_tools.provide_path_for_file(
