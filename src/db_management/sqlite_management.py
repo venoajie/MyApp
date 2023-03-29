@@ -95,7 +95,7 @@ async def create_tables (type:str = None):
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')              
                 
-                if 'myTrades' or 'my_trades' in table:
+                if 'myTrades'  in table or 'my_trades' in table:
 
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
@@ -164,7 +164,7 @@ async def insert_tables (table_name, params):
                 
                 #insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
                 
-            if 'myTrades' or 'my_trades' in table_name:
+            if 'myTrades' in table_name or 'my_trades' in table_name:
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
             
             # input was in list format. Insert them to db one by one
