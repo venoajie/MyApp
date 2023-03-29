@@ -153,6 +153,10 @@ async def insert_tables (table_name, params):
     try:
         
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
+            print ('CCCCCCCCCCCCCCCCCCCCCCCCC')
+            print ('orders' in table_name)
+            print ('myTrades' or 'my_trades' in table_name)
+            print ('CCCCCCCCCCCCCCCCCCCCCCCCC')
             
             if 'orders' in table_name:
                 
