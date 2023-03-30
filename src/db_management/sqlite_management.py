@@ -94,6 +94,7 @@ async def create_tables (type:str = None):
                 
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')              
+                log.critical ('myTrades'  in table or 'my_trades' in table)              
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
