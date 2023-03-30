@@ -148,14 +148,14 @@ async def create_tables (type:str = None):
                         if 'myTrades'  in table or 'my_trades' in table:
 
                             # Build an index:
-                            create_index = f'''CREATE INDEX trade_seq_id ON  {table} ('$.trade_seq');'''
+                            create_index = f'''CREATE INDEX id ON  {table} (id);'''
                             print (f'create_index myTrades {create_index}')
                             await cur.execute (f'{create_index}')
                             
                         if 'orders' in table:
 
                             # Build an index:
-                            create_index = f'''CREATE INDEX order_id ON  {table} ('$.order_id');'''
+                            create_index = f'''CREATE INDEX id ON  {table} (id);'''
                             print (f'create_index orders {create_index}')
                             await cur.execute (f'{create_index}')
                         
