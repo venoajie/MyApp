@@ -136,7 +136,20 @@ async def create_tables (type:str = None):
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
                 
-                await cur.execute (f'{create_table}') 
+                    await cur.execute (f'{create_table}') 
+
+                    if  'json' in table:
+
+                        # Define virtual columns:
+                        create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT (VALUE, '$.amount'));'''
+                        await cur.execute (f'{create_table}')
+                        
+                        if 'myTrades'  in table or 'my_trades' in table:
+
+                            # Build an index:
+                            create_index = f'CREATE INDEX trade_seq_id ON  {table} (trade_seq);'
+                            await cur.execute (f'{create_index}')
+                        
             
         except Exception as error:
             print(error)
@@ -153,16 +166,10 @@ async def insert_tables (table_name, params):
     try:
         
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
-            print ('CCCCCCCCCCCCCCCCCCCCCCCCC')
-            print ('orders' in table_name)
-            print ('myTrades' in table_name or 'my_trades' in table_name)
-            print ('CCCCCCCCCCCCCCCCCCCCCCCCC')
             
             if 'orders' in table_name:
                 
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
-                
-                #insert_table_json= f'INSERT INTO {table_name} VALUES json((param));'  
                 
             if 'myTrades' in table_name or 'my_trades' in table_name:
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
@@ -176,7 +183,6 @@ async def insert_tables (table_name, params):
                         await db.execute (insert_table_json)
                             
                     else:
-                        print(f' AAAAAAAAAAAAAAAAA {insert_table}')
                             
                         if 'trigger_price' not in list(param):
                             param['trigger_price']=None
@@ -193,7 +199,6 @@ async def insert_tables (table_name, params):
 
                     await db.execute (insert_table_json)
                 else:
-                    print(f' BBBBBBBBBBBBBB {insert_table}')
                     await db.executemany (f'{insert_table}', [params])
             
             
