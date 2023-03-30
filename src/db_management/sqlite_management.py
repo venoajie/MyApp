@@ -94,14 +94,15 @@ async def create_tables (type:str = None):
                 
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')              
-                log.critical ('myTrades'  in table or 'my_trades' in table)              
+                log.critical ('myTrades'  in table or 'my_trades' in table)     
+                create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount.sum'));'''         
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
-                        create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount.sum'));'''
+                        
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -123,7 +124,7 @@ async def create_tables (type:str = None):
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
-                        create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
+                        #create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
