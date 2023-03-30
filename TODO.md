@@ -24,14 +24,15 @@
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
-Add unit test |- (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
+Add unit test |[Pytest] (https://semaphoreci.com/community/tutorials/testing-python-applications-with-pytest) | Pytest examples and fixtures | | 
+Add unit test | [Pytest](https://medium.com/@geoffreykoh/fun-with-fixtures-for-database-applications-8253eaf1a6d) |  | | 
+RL | [RL](https://medium.com/@sthanikamsanthosh1994/reinforcement-learning-part-8-proximal-policy-optimization-ppo-for-trading-9f1c3431f27d) |  | | 
 Asyncio | [Asyncio](https://python.plainenglish.io/maximizing-performance-with-concurrent-and-parallel-programming-in-python-53f0b3bcd44b) |Ideal situation for asyncio  | | 
 Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3) |  | | 
 Asyncio | [Asyncio](https://medium.com/better-programming/a-hands-on-guide-to-concurrency-in-python-with-asyncio-af33a795d808) |  | | 
-Scheduling | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
-Scheduling | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
-RL | [RL](https://medium.com/@sthanikamsanthosh1994/reinforcement-learning-part-8-proximal-policy-optimization-ppo-for-trading-9f1c3431f27d) |  | | 
 database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
+Orchestration | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
+Orchestration | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
 Orchestration | [airflow](https://medium.com/datareply/airflow-lesser-known-tips-tricks-and-best-practises-cf4d4a90f8f) |  | | 
 Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestration-1f7cdd41634d) |  | | 
 
@@ -50,6 +51,8 @@ Market structure | [market](https://medium.com/coinmonks/market-structure-most-i
 Statistic | [statistic](https://medium.com/@yuhui_w/applying-extreme-value-theory-and-survival-analysis-to-trading-hedging-e878f73751f0) |  | | 
 Market psychology | [psychology](https://medium.com/@matthewjinfong/trading-101-second-level-thinking-94bc40cb8074) |  | | 
 Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali.medium.com/is-there-seasonal-intraday-or-overnight-anomalies-in-bitcoin-11bc71321b9e) |  | | 
+HFT | [hft](https://medium.com/@FMZQuant/digital-currency-high-frequency-strategy-detailed-introduction-f7be078ef53d) |  | | 
+
 
 
 
