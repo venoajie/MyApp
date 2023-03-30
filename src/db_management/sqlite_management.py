@@ -139,30 +139,13 @@ async def create_tables (type:str = None):
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
                 
                     await cur.execute (f'{create_table}') 
-
-                if  'json' in table:
-
-                    # Define virtual columns:
-                    
-                    print (f'create virtual columns {create_table_alter}')
-                    
-                    
-                    if 'myTrades'  in table or 'my_trades' in table:
+                    if  'json' in table:
+                        print (f'create virtual columns {create_table_alter}')
                         await cur.execute (f'{create_table_alter}')
-
-                        # Build an index:
+                        
                         create_index = f'''CREATE INDEX id ON  {table} (id);'''
                         print (f'create_index myTrades {create_index}')
                         await cur.execute (f'{create_index}')
-                        
-                    if 'orders' in table:
-                        await cur.execute (f'{create_table_alter}')
-
-                        # Build an index:
-                        create_index = f'''CREATE INDEX id ON  {table} (id);'''
-                        print (f'create_index orders {create_index}')
-                        await cur.execute (f'{create_index}')
-                    
             
         except Exception as error:
             print(error)
