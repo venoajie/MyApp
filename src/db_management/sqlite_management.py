@@ -100,6 +100,7 @@ async def create_tables (type:str = None):
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
+                        create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -121,6 +122,7 @@ async def create_tables (type:str = None):
                     if  'json' in table:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
                                                                     data TEXT)' 
+                        create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -141,11 +143,12 @@ async def create_tables (type:str = None):
                 if  'json' in table:
 
                     # Define virtual columns:
-                    create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
-                    print (f'create virtual columns {create_table}')
-                    await cur.execute (f'{create_table}')
+                    
+                    print (f'create virtual columns {create_table_alter}')
+                    
                     
                     if 'myTrades'  in table or 'my_trades' in table:
+                        await cur.execute (f'{create_table_alter}')
 
                         # Build an index:
                         create_index = f'''CREATE INDEX id ON  {table} (id);'''
@@ -153,6 +156,7 @@ async def create_tables (type:str = None):
                         await cur.execute (f'{create_index}')
                         
                     if 'orders' in table:
+                        await cur.execute (f'{create_table_alter}')
 
                         # Build an index:
                         create_index = f'''CREATE INDEX id ON  {table} (id);'''
