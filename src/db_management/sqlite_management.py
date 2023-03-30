@@ -139,14 +139,14 @@ async def create_tables (type:str = None):
                                                                     is_liquidation BOOLEAN NOT NULL CHECK (is_liquidation IN (0, 1)), \
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
                 
-                    await cur.execute (f'{create_table}') 
-                    if  'json' in table:
-                        print (f'create virtual columns {create_table_alter}')
-                        await cur.execute (f'{create_table_alter}')
-                        
-                        create_index = f'''CREATE INDEX id ON  {table} (id);'''
-                        print (f'create_index myTrades {create_index}')
-                        await cur.execute (f'{create_index}')
+                await cur.execute (f'{create_table}') 
+                if  'json' in table:
+                    print (f'create virtual columns {create_table_alter}')
+                    await cur.execute (f'{create_table_alter}')
+                    
+                    create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                    print (f'create_index myTrades {create_index}')
+                    await cur.execute (f'{create_index}')
             
         except Exception as error:
             print(error)
