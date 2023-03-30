@@ -92,7 +92,7 @@ async def create_tables (type:str = None):
         try:           
             for table in tables:
                 
-                #await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')              
                 
                 if 'myTrades'  in table or 'my_trades' in table:
@@ -141,7 +141,8 @@ async def create_tables (type:str = None):
                     if  'json' in table:
 
                         # Define virtual columns:
-                        create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT (VALUE, '$.amount'));'''
+                        create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
+                        print (f'create virtual columns {create_table}')
                         await cur.execute (f'{create_table}')
                         
                         if 'myTrades'  in table or 'my_trades' in table:
