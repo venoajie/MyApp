@@ -138,27 +138,27 @@ async def create_tables (type:str = None):
                 
                     await cur.execute (f'{create_table}') 
 
-                    if  'json' in table:
+                if  'json' in table:
 
-                        # Define virtual columns:
-                        create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
-                        print (f'create virtual columns {create_table}')
-                        await cur.execute (f'{create_table}')
+                    # Define virtual columns:
+                    create_table = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
+                    print (f'create virtual columns {create_table}')
+                    await cur.execute (f'{create_table}')
+                    
+                    if 'myTrades'  in table or 'my_trades' in table:
+
+                        # Build an index:
+                        create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                        print (f'create_index myTrades {create_index}')
+                        await cur.execute (f'{create_index}')
                         
-                        if 'myTrades'  in table or 'my_trades' in table:
+                    if 'orders' in table:
 
-                            # Build an index:
-                            create_index = f'''CREATE INDEX id ON  {table} (id);'''
-                            print (f'create_index myTrades {create_index}')
-                            await cur.execute (f'{create_index}')
-                            
-                        if 'orders' in table:
-
-                            # Build an index:
-                            create_index = f'''CREATE INDEX id ON  {table} (id);'''
-                            print (f'create_index orders {create_index}')
-                            await cur.execute (f'{create_index}')
-                        
+                        # Build an index:
+                        create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                        print (f'create_index orders {create_index}')
+                        await cur.execute (f'{create_index}')
+                    
             
         except Exception as error:
             print(error)
