@@ -149,6 +149,11 @@ async def create_tables (type:str = None):
                             # Build an index:
                             create_index = f'CREATE INDEX trade_seq_id ON  {table} (trade_seq);'
                             await cur.execute (f'{create_index}')
+                        if 'orders' in table:
+
+                            # Build an index:
+                            create_index = f'CREATE INDEX order_id ON  {table} (order_id);'
+                            await cur.execute (f'{create_index}')
                         
             
         except Exception as error:
