@@ -107,6 +107,11 @@ async def create_tables (type:str = None):
                                         JSON_EXTRACT (data, '$.direction')='sell'
                                         THEN 
                                         JSON_EXTRACT (data, '$.amount')  * -1
+                                        END),
+                                        (CASE WHEN 
+                                        JSON_EXTRACT (data, '$.direction')='buy'
+                                        THEN 
+                                        JSON_EXTRACT (data, '$.amount')  
                                         END)
                                         ) 
                                         VIRTUAL;
