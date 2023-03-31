@@ -93,12 +93,13 @@ async def create_tables (type:str = None):
             for table in tables:
                 
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
-                log.critical (f'table {table}')              
-                log.critical ('myTrades'  in table or 'my_trades' in table)     
                 create_table_alter = f''' 
                                         ALTER 
                                         TABLE 
                                             {table} 
+                                        ADD COLUMN 
+                                            strategy TEXT 
+                                        JSON_EXTRACT (data, '$.label') 
                                         ADD COLUMN 
                                             sum_pos REAL  
                                         GENERATED ALWAYS AS 
@@ -113,7 +114,6 @@ async def create_tables (type:str = None):
                                         ) 
                                         VIRTUAL;
                                     '''         
-                #create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS SUM(JSON_EXTRACT ('$.amount'));'''         
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
