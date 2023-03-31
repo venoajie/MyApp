@@ -93,27 +93,6 @@ async def create_tables (type:str = None):
             for table in tables:
                 
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
-                create_table_alter = f''' 
-                                        ALTER 
-                                        TABLE 
-                                            {table} 
-                                        ADD COLUMN 
-                                            strategy TEXT AS
-                                        JSON_EXTRACT (data, '$.label') ,
-                                        ADD COLUMN 
-                                            sum_pos REAL  
-                                        GENERATED ALWAYS AS 
-                                        (
-                                        (CASE WHEN 
-                                        JSON_EXTRACT (data, '$.direction')='sell'
-                                        THEN 
-                                        JSON_EXTRACT (data, '$.amount')  * -1
-                                        ELSE 
-                                        JSON_EXTRACT (data, '$.amount')  
-                                        END)
-                                        ) 
-                                        VIRTUAL;
-                                    '''         
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
@@ -169,8 +148,43 @@ async def create_tables (type:str = None):
                 
                 await cur.execute (f'{create_table}') 
                 if  'json' in table:
-                    print (f'create virtual columns {create_table_alter}')
-                    await cur.execute (f'{create_table_alter}')
+                    
+                    create_table_alter_sum_pos = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        sum_pos REAL  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (CASE WHEN 
+                                                    JSON_EXTRACT (data, '$.direction')='sell'
+                                                    THEN 
+                                                    JSON_EXTRACT (data, '$.amount')  * -1
+                                                    ELSE 
+                                                    JSON_EXTRACT (data, '$.amount')  
+                                                    END)
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    ''' 
+                    create_table_alter_label_strategy = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        label_main TEXT  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    round(JSON_EXTRACT (data, '$.label'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''         
+                                                    
+                    print (f'create virtual columns {create_table_alter_sum_pos}')
+                    await cur.execute (f'{create_table_alter_sum_pos}')
+                    await cur.execute (f'{create_table_alter_label_strategy}')
                     
                     create_index = f'''CREATE INDEX id ON  {table} (id);'''
                     print (f'create_index myTrades {create_index}')
