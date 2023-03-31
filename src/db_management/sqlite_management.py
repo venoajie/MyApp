@@ -104,9 +104,9 @@ async def create_tables (type:str = None):
                                         GENERATED ALWAYS AS 
                                         (
                                         (CASE WHEN 
-                                        JSON_EXTRACT (data, '$.direction')='buy'
+                                        JSON_EXTRACT (data, '$.direction')='sell'
                                         THEN 
-                                        JSON_EXTRACT (data, '$.amount')  
+                                        JSON_EXTRACT (data, '$.amount')  * -1
                                         END)
                                         ) 
                                         VIRTUAL;
