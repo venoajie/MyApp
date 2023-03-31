@@ -95,30 +95,50 @@ async def create_tables (type:str = None):
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 log.critical (f'table {table}')              
                 log.critical ('myTrades'  in table or 'my_trades' in table)     
-                create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  GENERATED ALWAYS AS (JSON_EXTRACT (data, '$.amount')) VIRTUAL;'''         
+                create_table_alter = f''' 
+                                        ALTER 
+                                        TABLE 
+                                            {table} 
+                                        ADD COLUMN 
+                                            sum_pos REAL  
+                                        GENERATED ALWAYS AS 
+                                        (JSON_EXTRACT 
+                                            (data, '$.amount' * 1 HAVING '$.direction'='buy')
+                                        ) 
+                                        VIRTUAL;
+                                    '''         
                 #create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS SUM(JSON_EXTRACT ('$.amount'));'''         
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
                     if  'json' in table:
-                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
-                                                                    data TEXT)' 
+                        create_table = f'''
+                                        CREATE 
+                                        TABLE IF NOT EXISTS 
+                                            {table} 
+                                            (id INTEGER PRIMARY KEY, data TEXT)
+                                        ''' 
                         
                     else:
-                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
-                                                                    label TEXT, \
-                                                                    direction TEXT, \
-                                                                    amount REAL, \
-                                                                    price REAL, \
-                                                                    state TEXT, \
-                                                                    order_type TEXT, \
-                                                                    timestamp INTEGER, \
-                                                                    trade_seq INTEGER, \
-                                                                    trade_id TEXT, \
-                                                                    tick_direction INTEGER, \
-                                                                    order_id TEXT, \
-                                                                    api BOOLEAN NOT NULL CHECK (api IN (0, 1)),\
-                                                                    fee REAL)'           
+                        create_table = f'''CREATE 
+                                            TABLE IF NOT EXISTS 
+                                                {table} 
+                                                (instrument_name TEXT,
+                                                label TEXT,
+                                                direction TEXT, 
+                                                amount REAL, 
+                                                price REAL, 
+                                                state TEXT, 
+                                                order_type TEXT,
+                                                timestamp INTEGER,
+                                                trade_seq INTEGER,
+                                                trade_id TEXT, 
+                                                tick_direction INTEGER, 
+                                                order_id TEXT, 
+                                                api BOOLEAN NOT NULL CHECK (api IN (0, 1)),
+                                                fee REAL)
+                                        '''      
+                                                 
                 if 'orders' in table:
                     #log.debug ('json' in table)
                     
@@ -177,7 +197,13 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
-                        insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
+                        insert_table_json = f'''
+                                                INSERT 
+                                                INTO 
+                                                    {table_name} (data) 
+                                                VALUES (json 
+                                                    ('{json.dumps(params)}'));
+                                            '''
 
                         await db.execute (insert_table_json)
                             
