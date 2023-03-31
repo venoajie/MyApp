@@ -92,7 +92,7 @@ async def create_tables (type:str = None):
         try:           
             for table in tables:
                 
-                #await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
@@ -183,8 +183,8 @@ async def create_tables (type:str = None):
                                                     '''         
                                                     
                     print (f'create virtual columns {create_table_alter_sum_pos}')
-                    await cur.execute (f'{create_table_alter_sum_pos}')
                     await cur.execute (f'{create_table_alter_label_strategy}')
+                    await cur.execute (f'{create_table_alter_sum_pos}')
                     
                     create_index = f'''CREATE INDEX id ON  {table} (id);'''
                     print (f'create_index myTrades {create_index}')
