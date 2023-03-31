@@ -98,7 +98,7 @@ async def create_tables (type:str = None):
                                         TABLE 
                                             {table} 
                                         ADD COLUMN 
-                                            strategy TEXT 
+                                            strategy TEXT AS
                                         JSON_EXTRACT (data, '$.label') ,
                                         ADD COLUMN 
                                             sum_pos REAL  
