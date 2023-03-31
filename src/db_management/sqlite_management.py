@@ -176,7 +176,7 @@ async def create_tables (type:str = None):
                                                         label_main TEXT  
                                                     GENERATED ALWAYS AS 
                                                     (
-                                                    round(JSON_EXTRACT (data, '$.label'))
+                                                    ABS (JSON_EXTRACT (data, '$.label'))
                                                     ) 
                                                     VIRTUAL;
                                                     
