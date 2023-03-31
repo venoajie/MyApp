@@ -103,7 +103,7 @@ async def create_tables (type:str = None):
                                             sum_pos REAL  
                                         GENERATED ALWAYS AS 
                                         (JSON_EXTRACT 
-                                            (data, '$.amount' * 1 HAVING '$.direction'='buy')
+                                            ((data, '$.amount')-(data, '$.amount'))
                                         ) 
                                         VIRTUAL;
                                     '''         
