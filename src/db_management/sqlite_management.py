@@ -154,7 +154,7 @@ async def create_tables (type:str = None):
                                                     TABLE 
                                                         {table} 
                                                     ADD COLUMN 
-                                                        sum_pos REAL  
+                                                        amount_dir REAL  
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (CASE WHEN 
