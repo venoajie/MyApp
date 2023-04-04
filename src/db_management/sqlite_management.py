@@ -270,7 +270,7 @@ async def querying_table (table: str = 'mytrades',database: str = "databases/tra
 
     if 'json' in table:
         print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        query_table = f'''SELECT  json_extract (data, '$.data)  FROM {table}'''
+        query_table = f'''SELECT  json_extract (data, '$.data')  FROM {table}'''
     
     combine_result = []
     
