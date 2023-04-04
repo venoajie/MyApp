@@ -335,13 +335,15 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
+        log.critical (label)
+        log.critical (detail_level)
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
             o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
         ])
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 1) == label
+            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
 
         return   result
@@ -499,7 +501,7 @@ class ApplyHedgingSpot:
                 # my trades data
                 my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                 log.error (positions)
-                log.debug (my_trades_open_sqlite)
+                #log.debug (my_trades_open_sqlite)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
