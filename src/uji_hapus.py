@@ -32,6 +32,8 @@ print (net)
 async  def main() -> list:
     """ """
     await sqlite_management.insert_tables ('my_trades_all_json',
+                                 my_trades_open)    
+    await sqlite_management.insert_tables ('my_trades_all',
                                  my_trades_open)
 
 
