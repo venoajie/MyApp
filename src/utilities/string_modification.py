@@ -69,7 +69,6 @@ def extract_currency_from_text(words: str) -> str:
     if "btc" in (words).lower():
         return "btc"
 
-
 def extract_integers_from_text(words: list) -> int:
     """
     Extracting integers from label text
@@ -81,6 +80,24 @@ def extract_integers_from_text(words: list) -> int:
     except:
         return []
 
+
+def parsing_sqlite_json_output (json_load: list) -> int:
+    """
+    parsing_sqlite_json_output
+    
+    References:
+        https://stackoverflow.com/questions/46991650/remove-quotes-from-list-of-dictionaries-in-python
+        https://stackoverflow.com/questions/14611352/malformed-string-valueerror-ast-literal-eval-with-string-representation-of-tup
+    """
+    import ast
+
+    try:
+                
+        result_json =  [i.replace(':false', ':False').replace(':true', ':True') .replace(':null', ':None') for i in json_load] 
+        return ([ast.literal_eval(str(i)) for i in result_json])
+
+    except:
+        return []
 
 def get_strings_before_character(
     words: str, character: str = "-", character_place: int = [0, 2]
