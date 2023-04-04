@@ -254,7 +254,7 @@ async def insert_tables (table_name, params):
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         #await telegram_bot_sendtext(f"sqlite operation","failed_order")
         
-async def querying_table (table: str = 'mytrades', filter: str = None, operator=None,  filter_value=None)->list:
+async def querying_table (table: str = 'mytrades',database: str = "databases/trading.sqlite3", filter: str = None, operator=None,  filter_value=None)->list:
 
     '''
             Reference
@@ -270,7 +270,7 @@ async def querying_table (table: str = 'mytrades', filter: str = None, operator=
     combine_result = []
     
     try:
-        async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
             db = db.execute(query_table) if filter == None else db.execute(query_table, filter_val)
                       
             async with db  as cur:
