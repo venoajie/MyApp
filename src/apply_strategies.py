@@ -346,6 +346,12 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         # log.warning(f'strategy_label {strategy_label}')
+        my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
+        sum_my_trades_open_sqlite: list = [
+            o for o in my_trades_open_sqlite if  str_mod.get_strings_before_character(o['label_main'], "-", 0) = strategy_label
+        ]
+        log.error (sum_my_trades_open_sqlite)
+        
 
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
