@@ -467,6 +467,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
+                log.error (positions)
                 log.debug (my_trades_open)
 
                 # obtain instruments future relevant to strategies
