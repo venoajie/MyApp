@@ -292,72 +292,6 @@ class ApplyHedgingSpot:
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
         return result
 
-    async def check_open_orders_integrity(
-        self, open_orders_from_sub_account_get, open_orders_open_byAPI
-    ) -> None:
-
-        open_order_mgt_sub_account = open_orders_management.MyOrders(
-            open_orders_from_sub_account_get
-        )
-        orders_per_db_equivalent_orders_fr_sub_account = open_order_mgt_sub_account.compare_open_order_per_db_vs_get(
-            open_orders_open_byAPI
-        )
-
-        log.info(f"{orders_per_db_equivalent_orders_fr_sub_account=}")
-
-        if orders_per_db_equivalent_orders_fr_sub_account == False:
-
-            # update open order at db with open orders at sub account
-            my_path_orders_open = system_tools.provide_path_for_file(
-                "orders", self.currency, "open"
-            )
-
-            pickling.replace_data(
-                my_path_orders_open, open_orders_from_sub_account_get, True
-            )
-
-            catch_error(
-                "update open order at db with open orders at sub account", idle=0.1
-            )
-
-    async def check_myTrade_integrity(
-        self, positions_from_get: float, my_trades_open_from_db: list, server_time: int
-    ) -> None:
-        """
-        Ensure record in db summary from get = db from transactions
-
-        Args:
-            positions_from_get (float): Total outstanding position
-            my_trades_open_from_db (list): List of active trading positions
-            server_time (int): Server time from exchange in UNIX format
-
-        Returns:
-            None:
-        """
-
-        #! yes, it seems circular. But its okay for now. FIxed it later
-        myTrades_from_db = await check_data_integrity.myTrades_originally_from_db(
-            self.currency
-        )
-
-        # get the earliest transaction time stamp
-        start_timestamp = myTrades_from_db["time_stamp_to_recover"]
-        log.critical(start_timestamp)
-
-        my_selected_trades_open_from_system = []
-        if start_timestamp:
-            # use the earliest time stamp to fetch data from exchange
-            my_selected_trades_open_from_system = await self.my_trades_time_constrained(
-                start_timestamp, server_time
-            )
-
-        await check_data_integrity.main_enforce_my_trade_db_integrity(
-            self.currency,
-            positions_from_get,
-            my_trades_open_from_db,
-            my_selected_trades_open_from_system,
-        )
-
     async def send_market_order(self, params) -> None:
         """ """
 
@@ -556,23 +490,9 @@ class ApplyHedgingSpot:
                 # Creating an instance of the open order  class
                 open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
 
-                #! CHECK BALANCE AND TRANSACTIONS INTEGRITY. IF NOT PASSED, RESTART PROGRAM TO FIX IT
-
-                # open order integrity
-                await self.check_open_orders_integrity(
-                    open_orders_from_sub_account_get, open_orders_open_byAPI
-                )
-
-                # open trade integrity
-                await self.check_myTrade_integrity(
-                    positions, my_trades_open, server_time
-                )
-
                 await self.search_and_drop_orphan_closed_orders(
                     open_order_mgt, my_trades_open_mgt
                 )
-
-                #! END OF CHECK BALANCE AND TRANSACTIONS INTEGRITY.
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
