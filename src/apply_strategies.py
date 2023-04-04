@@ -2,6 +2,7 @@
 
 # built ins
 import asyncio
+import orjson
 
 # installed
 from dataclassy import dataclass
@@ -127,7 +128,7 @@ class ApplyHedgingSpot:
         result = await sqlite_management.querying_table (table, 
                                                          database
                                                          ) 
-        return  result  
+        return  orjson.loads(result)   
 
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: float
