@@ -331,6 +331,21 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
+    async def sum_my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
+        """ 
+        detail_level: main/individual
+        """
+        if detail_level== 'main':
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
+        ])
+        if detail_level== 'individual':
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 1) == label
+        ])
+
+        return   result
+
     async def is_send_order_allowed(
         self,
         label,
@@ -347,10 +362,8 @@ class ApplyHedgingSpot:
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'strategy_label {strategy_label}')
         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-        sum_my_trades_open_sqlite: list = sum([
-            o['amount_dir'] for o in my_trades_open_sqlite if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == strategy_label
-        ])
-        log.error (sum_my_trades_open_sqlite)
+        sum_my_trades_open_sqlite_main_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
+        log.error (sum_my_trades_open_sqlite_main_strategy)
         
 
         try:
@@ -561,6 +574,9 @@ class ApplyHedgingSpot:
                         ][0]
 
                         log.critical(f" {label}")
+                        
+                        sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
+                        log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = [
                             o for o in my_trades_open if strategy_label in o["label"]
