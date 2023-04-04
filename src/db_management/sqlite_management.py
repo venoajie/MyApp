@@ -262,15 +262,15 @@ async def querying_table (table: str = 'mytrades',database: str = "databases/tra
     ''' 
     
     query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator}?' 
-
-    if 'json' in table:
-        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
-        query_table = f'''SELECT  json_set (json('true'))  FROM {table}'''
         
     filter_val =(f'{filter_value}',)
     
     if filter == None:
         query_table = f'SELECT  * FROM {table}'
+
+    if 'json' in table:
+        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
+        query_table = f'''SELECT  json_set (json('true'))  FROM {table}'''
     
     combine_result = []
     
