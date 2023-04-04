@@ -217,12 +217,13 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
+                        print (param)
                         insert_table_json = f'''
                                                 INSERT 
                                                 INTO 
                                                     {table_name} (data) 
                                                 VALUES (json 
-                                                    ('{json.dumps(params)}'));
+                                                    ('{json.dumps(param)}'));
                                             '''
 
                         await db.execute (insert_table_json)
