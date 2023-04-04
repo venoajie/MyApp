@@ -11,9 +11,10 @@ from loguru import logger as log
 import deribit_get
 from transaction_management.deribit import open_orders_management, myTrades_management
 from utilities import pickling, system_tools, string_modification as str_mod
-from risk_management import check_data_integrity, position_sizing
+from risk_management import  position_sizing
 from configuration import label_numbering, config
 from strategies import entries_exits
+from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -119,6 +120,14 @@ class ApplyHedgingSpot:
     async def compute_notional_value(self, index_price: float, equity: float) -> float:
         """ """
         return index_price * equity
+
+    async def querying_all(self, table: list, 
+                           database: str = "databases/trading.sqlite3") -> list:
+        """ """
+        result = await sqlite_management.querying_table (table, 
+                                                         database
+                                                         ) 
+        return  result  
 
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: float
@@ -467,8 +476,10 @@ class ApplyHedgingSpot:
                 my_trades_open: list = await self.reading_from_db(
                     "myTrades", self.currency, "open"
                 )
+                # my trades data
+                my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                 log.error (positions)
-                log.debug (my_trades_open)
+                log.debug (my_trades_open_sqlite)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
