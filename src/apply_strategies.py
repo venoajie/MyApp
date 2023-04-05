@@ -335,6 +335,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
+        log.info(f" {label=}")
         log.critical(f" {detail_level=}")
         
 
