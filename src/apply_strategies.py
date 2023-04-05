@@ -587,6 +587,7 @@ class ApplyHedgingSpot:
                         ][0]
 
                         log.critical(f" {label}")
+                        log.critical(f" {strategy_label=}")
                         
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'main')
