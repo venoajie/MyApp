@@ -203,9 +203,18 @@ class StreamAccountData:
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
+                                order_state = orders["state"]
+                                log.debug (f'order_state {order_state}')
+                                if order_state == 'cancelled':
+                                    label = orders["label"]
+                                    await sqlite_management.deleting_row('orders_all_json', 
+                                                                         "databases/trading.sqlite3",
+                                                                         "label_main",
+                                                                         "=",
+                                                                         label)
                                 
-                                await sqlite_management.insert_tables('orders_all_json',orders)
-                                await sqlite_management.insert_tables('orders_all',orders)           
+                                await sqlite_management.insert_tables('orders_all_json', orders)
+                                await sqlite_management.insert_tables('orders_all', orders)           
                 
                                 orders_path_all = system_tools.provide_path_for_file(
                                 "orders", currency, "all")
@@ -232,6 +241,20 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
+    async def deleting_cancel_order(self, table: list, 
+                           database: str ,
+                           data,
+                           cancelled_order
+                           ) -> list:
+        """ """
+        result = await sqlite_management.deleting_row (table, 
+                                                         database,
+                                                         data,
+                                                         '=',
+                                                         cancelled_order
+                                                         ) 
+        return  (result)   
+    
     def appending_data(self, data: dict, my_path_all: str) -> None:
         """
         """
