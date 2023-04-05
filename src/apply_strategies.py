@@ -508,7 +508,8 @@ class ApplyHedgingSpot:
                 )
                 # my trades data
                 my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-                log.error (positions)
+                my_trades_open_sqlite_data = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
+                log.error (my_trades_open_sqlite_data)
                 #log.debug (my_trades_open_sqlite)
 
                 # obtain instruments future relevant to strategies
@@ -592,15 +593,7 @@ class ApplyHedgingSpot:
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
-                        open_trade_strategy_label_sqlite = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
-                        open_trade_strategy_label = [
-                            o
-                            for o in open_trade_strategy
-                            if strategy_label_int in o["label"]
-                        ]
-                        log.info (strategy_label_int)
-                        log.error (open_trade_strategy_label)
-                        log.debug (open_trade_strategy_label_sqlite)
+                        open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                         instrument = [
                             o["instrument_name"] for o in open_trade_strategy_label
