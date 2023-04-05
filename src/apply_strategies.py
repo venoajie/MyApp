@@ -335,7 +335,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        
+        log.error (transactions)
         if detail_level== 'main':
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
