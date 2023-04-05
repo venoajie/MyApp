@@ -342,7 +342,7 @@ class ApplyHedgingSpot:
         if detail_level== 'main':
             log.critical(str_mod.get_strings_before_character(label, "-", 0))
             result = 0 if transactions==[] else ([
-            o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
+            o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)
         ])
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
@@ -358,14 +358,10 @@ class ApplyHedgingSpot:
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) \
-                if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
-        ])
+            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level)])
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) \
-                if  str_mod.get_strings_before_character(o['label_main']) == label
-        ])
+            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) ])
 
         return   result
 
