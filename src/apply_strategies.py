@@ -503,7 +503,7 @@ class ApplyHedgingSpot:
                 positions: list = reading_from_database["positions_from_sub_account"]
                 # my trades data
                 my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-                open_orders_sqlite: list = await self.querying_all('open_orders_all_json')
+                open_orders_sqlite: list = await self.querying_all('orders_all_json')
                 log.error (open_orders_sqlite)
 
                 # my trades data
