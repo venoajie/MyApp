@@ -503,15 +503,11 @@ class ApplyHedgingSpot:
                 positions: list = reading_from_database["positions_from_sub_account"]
                 # my trades data
                 my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-                my_trades_open_sqlite_data = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
-                log.error (my_trades_open_sqlite_data)
-                #log.debug (my_trades_open_sqlite)
+                open_orders_sqlite: list = await self.querying_all('open_orders_all_json')
+                log.error (open_orders_sqlite)
 
                 # my trades data
-                my_trades_open: list = await self.reading_from_db(
-                    "myTrades", self.currency, "open"
-                )
-                log.debug (my_trades_open)
+                my_trades_open: list = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
