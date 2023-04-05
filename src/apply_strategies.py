@@ -354,12 +354,12 @@ class ApplyHedgingSpot:
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in self.my_trades_open_sqlite (transactions, label, detail_level) \
+            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) \
                 if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
         ])
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in self.my_trades_open_sqlite (transactions, label, detail_level) \
+            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) \
                 if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
 
