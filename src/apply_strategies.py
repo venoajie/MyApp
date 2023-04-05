@@ -592,6 +592,7 @@ class ApplyHedgingSpot:
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
+                        open_trade_strategy_label_sqlite = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
                         open_trade_strategy_label = [
                             o
                             for o in open_trade_strategy
@@ -599,6 +600,7 @@ class ApplyHedgingSpot:
                         ]
                         log.info (strategy_label_int)
                         log.error (open_trade_strategy_label)
+                        log.debug (open_trade_strategy_label_sqlite)
 
                         instrument = [
                             o["instrument_name"] for o in open_trade_strategy_label
