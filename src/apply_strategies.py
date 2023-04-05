@@ -589,13 +589,14 @@ class ApplyHedgingSpot:
                         log.critical(f" {label}")
                         
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
+                        my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'main')
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = [
                             o for o in my_trades_open if strategy_label in o["label"]
                         ]
-                        log.error (my_trades_open_sqlite_individual_strategy)
+                        log.error (my_trades_open_sqlite_main_strategy)
                         log.debug (open_trade_strategy)
                         open_trade_strategy_label = [
                             o
