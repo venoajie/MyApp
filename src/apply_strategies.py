@@ -335,6 +335,8 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
+        log.critical(f" {detail_level=}")
+        log.critical(str_mod.get_strings_before_character(label))
 
         if detail_level== 'main':
             result = 0 if transactions==[] else ([
