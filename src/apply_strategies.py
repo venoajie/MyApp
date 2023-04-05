@@ -335,12 +335,9 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        log.info(f" {label=}")
-        log.critical(f" {detail_level=}")
-        
 
         if detail_level== 'main':
-            log.critical(str_mod.get_strings_before_character(label, "-", 0))
+
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)
         ])
@@ -587,19 +584,14 @@ class ApplyHedgingSpot:
                         ][0]
 
                         log.critical(f" {label}")
-                        log.critical(f" {strategy_label=}")
                         
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'main')
-                        my_trades_open_sqlite_main_strategy: list = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
+
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
-                        open_trade_strategy = [
-                            o for o in my_trades_open if strategy_label in o["label"]
-                        ]
-                        log.error (my_trades_open_sqlite_main_strategy)
-                        log.debug (open_trade_strategy)
+                        open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                         open_trade_strategy_label = [
                             o
                             for o in open_trade_strategy
