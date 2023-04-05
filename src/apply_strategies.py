@@ -507,16 +507,12 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 my_trades_open: list = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
-                open_orders_open_byAPI: list = str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
-                log.debug (open_orders_open_byAPI)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
-                open_orders_open_byAPI: list = reading_from_database[
-                    "open_orders_open_byAPI"
-                ]
+                open_orders_open_byAPI: list= str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
 
                 log.error (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
