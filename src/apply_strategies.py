@@ -335,18 +335,17 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        log.error (transactions)
+
         if detail_level== 'main':
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
         ])
         if detail_level== 'individual':
-            result = 0 if transactions==[] else sum([
+            result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
 
         return   result
-
 
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
         """ 
