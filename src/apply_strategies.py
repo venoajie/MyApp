@@ -331,6 +331,23 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
+    async def my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
+        """ 
+        detail_level: main/individual
+        """
+        
+        if detail_level== 'main':
+            result = 0 if transactions==[] else ([
+            o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
+        ])
+        if detail_level== 'individual':
+            result = 0 if transactions==[] else sum([
+            o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
+        ])
+
+        return   result
+
+
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
         """ 
         detail_level: main/individual
@@ -338,11 +355,13 @@ class ApplyHedgingSpot:
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
+            o['amount_dir'] for o in self.my_trades_open_sqlite (transactions, label, detail_level) \
+                if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == label
         ])
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
+            o['amount_dir'] for o in self.my_trades_open_sqlite (transactions, label, detail_level) \
+                if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
 
         return   result
@@ -364,21 +383,14 @@ class ApplyHedgingSpot:
         log.warning(f'strategy_label {strategy_label}')
         
         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-        sum_my_trades_open_sqlite_main_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
-        log.error (sum_my_trades_open_sqlite_main_strategy)
+        # get net buy-sell position
+        net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
+        log.error (net_sum_current_position)
 
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
             strategy_label_int = None
-
-        # get net buy-sell position
-        net_sum_current_position = (
-            0
-            if open_trade_strategy == []
-            else open_orders.net_sum_order_size(open_trade_strategy)
-        )
-        log.debug (net_sum_current_position)
 
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(strategy_label)
 
@@ -577,6 +589,8 @@ class ApplyHedgingSpot:
 
                         log.critical(f" {label}")
                         
+                        my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
+                        log.error (my_trades_open_sqlite_individual_strategy)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
