@@ -591,6 +591,7 @@ class ApplyHedgingSpot:
                         
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'main')
+                        my_trades_open_sqlite_main_strategy: list = str_mod.parsing_sqlite_json_output([o['data'] for o in await my_trades_open_sqlite_main_strategy])
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
