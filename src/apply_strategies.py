@@ -381,7 +381,7 @@ class ApplyHedgingSpot:
         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
         # get net buy-sell position
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
-        log.error (net_sum_current_position)
+        
 
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
@@ -597,6 +597,8 @@ class ApplyHedgingSpot:
                             for o in open_trade_strategy
                             if strategy_label_int in o["label"]
                         ]
+                        log.info (strategy_label_int)
+                        log.error (open_trade_strategy_label)
 
                         instrument = [
                             o["instrument_name"] for o in open_trade_strategy_label
