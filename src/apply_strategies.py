@@ -504,10 +504,11 @@ class ApplyHedgingSpot:
                 # my trades data
                 my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
-                log.error (open_orders_sqlite)
 
                 # my trades data
                 my_trades_open: list = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
+                open_orders_open_byAPI: list = str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
+                log.debug (open_orders_open_byAPI)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -517,6 +518,7 @@ class ApplyHedgingSpot:
                     "open_orders_open_byAPI"
                 ]
 
+                log.error (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
