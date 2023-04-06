@@ -225,16 +225,17 @@ class StreamAccountData:
                                                                             "label_main",
                                                                             "=",
                                                                             label)
-                                    
-                                    await sqlite_management.insert_tables('orders_all_json', order)
-                                    await sqlite_management.insert_tables('orders_all', order)           
-                    
-                                    orders_path_all = system_tools.provide_path_for_file(
-                                    "orders", currency, "all")
-                                    
-                                    self. appending_data (order, orders_path_all)
-                                    
-                                    my_orders.distribute_order_transactions(currency)
+                                    else:
+                                        
+                                        await sqlite_management.insert_tables('orders_all_json', order)
+                                        await sqlite_management.insert_tables('orders_all', order)           
+                        
+                                        orders_path_all = system_tools.provide_path_for_file(
+                                        "orders", currency, "all")
+                                        
+                                        self. appending_data (order, orders_path_all)
+                                        
+                                        my_orders.distribute_order_transactions(currency)
 
                             if positions:
                                 # log.error (positions)
