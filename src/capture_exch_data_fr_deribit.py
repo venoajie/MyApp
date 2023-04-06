@@ -218,15 +218,32 @@ class StreamAccountData:
                                         order_state = order["state"]
                 
                                     log.debug (f'order_state {order_state}')
-                                    if order_state == 'cancelled' or order_state == 'filled':
-                                        label = order["label"]
-                                        order_id = order["order_id"]
+                                    if order_state == 'cancelled' \
+                                        or order_state == 'filled'\
+                                            or order_state == 'triggered':
+                                                
+                                        # order id state
+                                        # untriggered: insert
+                                        # {'web': False, 'triggered': False, 'trigger_price': 1874.0, 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}   
+                                           
+                                        # triggered: cancel untrigger, insert trigger
+                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'triggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}    
+                                         
+                                        # open: cancel trigger insert open
+                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32754477205', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768064536, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768064536, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}       
+                                                
+                                        order_id = order["order_id"] if order_state !='triggered' else ["stop_order_id'"]
+                                        log.error (f'order_id {order_id}')
+                                        
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
                                                                             "order_id",
                                                                             "=",
                                                                             order_id)
-                                    if order_state == 'open' or order_state == 'untriggered':
+                                        
+                                    if order_state == 'open' \
+                                        or order_state == 'untriggered'\
+                                            or order_state == 'triggered':
                                         
                                         await sqlite_management.insert_tables('orders_all_json', order)
                                         await sqlite_management.insert_tables('orders_all', order)           
