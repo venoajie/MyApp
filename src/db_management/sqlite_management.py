@@ -289,7 +289,7 @@ async def querying_table (table: str = 'mytrades',
             combine_result.append(dict(zip(headers,i)))
                 
     except Exception as error:
-        print (error)        
+        print (f'querying_table {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
 
@@ -315,6 +315,6 @@ async def deleting_row (table: str = 'mytrades',
                       
                 
     except Exception as error:
-        print (error)        
+        print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
