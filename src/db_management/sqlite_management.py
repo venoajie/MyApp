@@ -181,8 +181,22 @@ async def create_tables (type:str = None):
                                                     VIRTUAL;
                                                     
                                                     '''         
+                    create_table_alter_order_id = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        order_id TEXT  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (JSON_EXTRACT (data, '$.order_id'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''         
                                                     
                     print (f'create virtual columns {create_table_alter_sum_pos}')
+                    await cur.execute (f'{create_table_alter_order_id}')
                     await cur.execute (f'{create_table_alter_label_strategy}')
                     await cur.execute (f'{create_table_alter_sum_pos}')
                     
