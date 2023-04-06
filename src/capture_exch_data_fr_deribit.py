@@ -184,7 +184,7 @@ class StreamAccountData:
                             message_channel
                             == f"user.changes.any.{currency.upper()}.raw"
                         ):
-                            log.info(data_orders)
+                            #log.info(data_orders)
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
@@ -204,9 +204,7 @@ class StreamAccountData:
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
                                
-                                
                                 for order in orders: 
-                                    log.warning (f'orders {order}')
                                         
                                     if "trade_seq" not in order:
                                         # get the order state
@@ -218,11 +216,12 @@ class StreamAccountData:
                                         order_state = order["state"]
                 
                                     log.debug (f'order_state {order_state}')
+                                    log.warning (f'orders {order}')
                                     if order_state == 'cancelled' \
                                         or order_state == 'filled'\
                                             or order_state == 'triggered':
                                                 
-                                        # order id state
+                                        #! EXAMPLES of order id state
                                         # untriggered: insert
                                         # {'web': False, 'triggered': False, 'trigger_price': 1874.0, 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}   
                                            
@@ -405,7 +404,6 @@ def main():
         system_tools.catch_error_message(
             error, 10, "fetch and save EXCHANGE data from deribit"
         )
-
 
 if __name__ == "__main__":
     try:
