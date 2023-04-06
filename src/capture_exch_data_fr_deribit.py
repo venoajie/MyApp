@@ -206,6 +206,17 @@ class StreamAccountData:
                                 log.warning (f'orders {orders}')
                                 order_state = orders["state"]
                                 log.debug (f'order_state {order_state}')
+                                    
+                                if "trade_seq" not in orders:
+                                    # get the order state
+                                    order_state = orders["order_state"]
+
+                                if "trade_seq" in orders:
+
+                                    # get the order state
+                                    order_state = orders["state"]
+            
+                                log.debug (f'order_state {order_state}')
                                 if order_state == 'cancelled':
                                     label = orders["label"]
                                     await sqlite_management.deleting_row('orders_all_json', 
