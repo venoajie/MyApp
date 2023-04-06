@@ -311,7 +311,7 @@ async def deleting_row (table: str = 'mytrades',
     
     try:
         async with  aiosqlite.connect(database, isolation_level=None) as db:
-            db.execute(query_table, filter_val)
+            await db.execute(query_table, filter_val)
                       
                 
     except Exception as error:
