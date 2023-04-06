@@ -883,6 +883,8 @@ async def main():
 
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    log.error(client_id)
+    log.error(client_secret)
 
     connection_url: str = "https://www.deribit.com/api/v2/"
 
@@ -921,7 +923,6 @@ async def main():
 
     except Exception as error:
         catch_error(error, 30)
-
 
 if __name__ == "__main__":
 
