@@ -225,7 +225,7 @@ class StreamAccountData:
                                                                             "label_main",
                                                                             "=",
                                                                             label)
-                                    else:
+                                    if order_state == 'open':
                                         
                                         await sqlite_management.insert_tables('orders_all_json', order)
                                         await sqlite_management.insert_tables('orders_all', order)           
