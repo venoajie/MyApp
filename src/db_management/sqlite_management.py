@@ -305,7 +305,7 @@ async def deleting_row (table: str = 'mytrades',
     '''
     ''' 
     
-    query_table = f'DELETE  * FROM {table} WHERE  {filter} {operator}?' 
+    query_table = f'DELETE  FROM {table} WHERE  {filter} {operator}?' 
         
     filter_val =(f'{filter_value}',)
     
