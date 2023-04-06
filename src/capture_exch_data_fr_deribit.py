@@ -219,7 +219,7 @@ class StreamAccountData:
                 
                                     log.debug (f'order_state {order_state}')
                                     if order_state == 'cancelled':
-                                        label = orders["label"]
+                                        label = order["label"]
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
                                                                             "label_main",
