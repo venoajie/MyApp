@@ -883,6 +883,7 @@ async def main():
 
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    log.error(sub_account)
     log.error(client_id)
     log.error(client_secret)
 
