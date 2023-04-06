@@ -203,39 +203,43 @@ class StreamAccountData:
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
-                                log.warning (f'orders {orders}')
-                                log.warning ("trade_seq" not in orders)
-                                log.warning ("trade_seq"  in orders)
-                                log.warning ("trade_seq" not in orders[0])
-                                log.warning ("trade_seq"  in orders[0])
+                               
+                                
+                                for order in orders: 
+                                    log.warning (f'orders {order}')
                                     
-                                if "trade_seq" not in orders:
-                                    # get the order state
-                                    order_state = orders["order_state"]
+                                    log.error ("trade_seq" not in order)
+                                    log.warning ("trade_seq"  in order)
+                                    log.error ("trade_seq" not in order[0])
+                                    log.warning ("trade_seq"  in order[0])
+                                        
+                                    if "trade_seq" not in order:
+                                        # get the order state
+                                        order_state = order["order_state"]
 
-                                if "trade_seq" in orders:
+                                    if "trade_seq" in order:
 
-                                    # get the order state
-                                    order_state = orders["state"]
-            
-                                log.debug (f'order_state {order_state}')
-                                if order_state == 'cancelled':
-                                    label = orders["label"]
-                                    await sqlite_management.deleting_row('orders_all_json', 
-                                                                         "databases/trading.sqlite3",
-                                                                         "label_main",
-                                                                         "=",
-                                                                         label)
-                                
-                                await sqlite_management.insert_tables('orders_all_json', orders)
-                                await sqlite_management.insert_tables('orders_all', orders)           
+                                        # get the order state
+                                        order_state = order["state"]
                 
-                                orders_path_all = system_tools.provide_path_for_file(
-                                "orders", currency, "all")
-                                
-                                self. appending_data (orders, orders_path_all)
-                                
-                                my_orders.distribute_order_transactions(currency)
+                                    log.debug (f'order_state {order_state}')
+                                    if order_state == 'cancelled':
+                                        label = orders["label"]
+                                        await sqlite_management.deleting_row('orders_all_json', 
+                                                                            "databases/trading.sqlite3",
+                                                                            "label_main",
+                                                                            "=",
+                                                                            label)
+                                    
+                                    await sqlite_management.insert_tables('orders_all_json', order)
+                                    await sqlite_management.insert_tables('orders_all', order)           
+                    
+                                    orders_path_all = system_tools.provide_path_for_file(
+                                    "orders", currency, "all")
+                                    
+                                    self. appending_data (order, orders_path_all)
+                                    
+                                    my_orders.distribute_order_transactions(currency)
 
                             if positions:
                                 # log.error (positions)
