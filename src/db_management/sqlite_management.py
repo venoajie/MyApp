@@ -191,7 +191,7 @@ async def create_tables (type:str = None):
                     await cur.execute (f'{create_index}')
             
         except Exception as error:
-            print(error)
+            print (f'create_tables {error}') 
             await telegram_bot_sendtext("sqlite operation-failed_create_table", "failed_order")
             await telegram_bot_sendtext(f"sqlite operation-create_table","failed_order")
 
@@ -249,7 +249,7 @@ async def insert_tables (table_name, params):
             
             
     except Exception as error:
-        print (error)
+        print (f'insert_tables {error}') 
         
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         #await telegram_bot_sendtext(f"sqlite operation","failed_order")
