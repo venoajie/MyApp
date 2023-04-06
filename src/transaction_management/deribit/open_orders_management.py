@@ -219,7 +219,7 @@ class MyOrders:
         """
 
         try:
-            log.info(order)  # log the order to the log file
+            #log.info(order)  # log the order to the log file
 
             if "trade_seq" not in order:
                 # get the order id
@@ -321,15 +321,15 @@ class MyOrders:
         )
         try:
             if self.open_orders_from_db:
-                log.debug(self.open_orders_from_db)
+                #log.debug(self.open_orders_from_db)
 
                 for order in self.open_orders_from_db:
                     order_state = self.recognizing_order(order)
-                    log.critical(order_state)
+                    #log.critical(order_state)
 
                     if order_state["order_state_open"]:
-                        log.error("ORDER_STATE OPEN")
-                        log.info(f"{order=}")
+                        #log.error("ORDER_STATE OPEN")
+                        #log.info(f"{order=}")
 
                         pickling.append_and_replace_items_based_on_qty(
                             my_path_orders_open, order, 1000, True
@@ -339,10 +339,10 @@ class MyOrders:
                         my_path_orders_else = system_tools.provide_path_for_file(
                             "orders", currency, "else"
                         )
-                        log.critical("ORDER_STATE ELSE")
-                        log.info(f"{order=}")
-                        log.critical(f"{order_state=}")
-                        log.critical(f"{my_path_orders_else=}")
+                        #log.critical("ORDER_STATE ELSE")
+                        #log.info(f"{order=}")
+                        #log.critical(f"{order_state=}")
+                        #log.critical(f"{my_path_orders_else=}")
 
                         order_id = order_state["order_id"]
 
@@ -351,8 +351,8 @@ class MyOrders:
                         item_in_open_orders_open = self.combine_open_orders_based_on_id(
                             open_orders_open, order_id
                         )
-                        log.info(f"{open_orders_open=}")
-                        log.debug(f"{item_in_open_orders_open=}")
+                        #log.info(f"{open_orders_open=}")
+                        #log.debug(f"{item_in_open_orders_open=}")
 
                         item_with_same_id = item_in_open_orders_open[
                             "item_with_same_id"
