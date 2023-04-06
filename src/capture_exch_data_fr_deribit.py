@@ -204,6 +204,10 @@ class StreamAccountData:
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
                                 log.warning (f'orders {orders}')
+                                log.warning ("trade_seq" not in orders)
+                                log.warning ("trade_seq"  in orders)
+                                log.warning ("trade_seq" not in orders[0])
+                                log.warning ("trade_seq"  in orders[0])
                                     
                                 if "trade_seq" not in orders:
                                     # get the order state
