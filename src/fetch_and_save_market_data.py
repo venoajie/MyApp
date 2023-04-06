@@ -80,7 +80,7 @@ if __name__ == "__main__":
     #asyncio.run(get_open_interest_history())
     
     #connection_url: str = "https://www.deribit.com/api/v2/"
-    
+    asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
     schedule.every().hour.do(check_and_save_every_60_minutes)
     
     schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
