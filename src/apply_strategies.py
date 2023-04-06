@@ -51,7 +51,9 @@ class ApplyHedgingSpot:
 
         try:
             private_data = await self.get_private_data()
+            log.info (private_data)
             result: dict = await private_data.get_subaccounts()
+            log.info (result)
         except Exception as error:
             catch_error(error)
         return result["result"]
