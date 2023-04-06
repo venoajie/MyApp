@@ -220,11 +220,12 @@ class StreamAccountData:
                                     log.debug (f'order_state {order_state}')
                                     if order_state == 'cancelled' or order_state == 'filled':
                                         label = order["label"]
+                                        order_id = order["order_id"]
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
-                                                                            "label_main",
+                                                                            "order_id",
                                                                             "=",
-                                                                            label)
+                                                                            order_id)
                                     if order_state == 'open' or order_state == 'untriggered':
                                         
                                         await sqlite_management.insert_tables('orders_all_json', order)
