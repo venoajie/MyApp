@@ -195,9 +195,11 @@ async def create_tables (type:str = None):
                                                     
                                                     '''         
                                                     
-                    print (f'create virtual columns {create_table_alter_sum_pos}')
+                    print (f'create virtual columns {create_table_alter_order_id}')
                     await cur.execute (f'{create_table_alter_order_id}')
+                    print (f'create virtual columns {create_table_alter_label_strategy}')
                     await cur.execute (f'{create_table_alter_label_strategy}')
+                    print (f'create virtual columns {create_table_alter_sum_pos}')
                     await cur.execute (f'{create_table_alter_sum_pos}')
                     
                     create_index = f'''CREATE INDEX id ON  {table} (id);'''
