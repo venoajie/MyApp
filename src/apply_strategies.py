@@ -51,9 +51,8 @@ class ApplyHedgingSpot:
 
         try:
             private_data = await self.get_private_data()
-            log.info (private_data)
             result: dict = await private_data.get_subaccounts()
-            log.info (result)
+
         except Exception as error:
             catch_error(error)
         return result["result"]
@@ -883,13 +882,9 @@ async def main():
 
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    log.error(sub_account)
-    log.error(client_id)
-    log.error(client_secret)
 
     connection_url: str = "https://www.deribit.com/api/v2/"
 
-    #
     try:
         syn = ApplyHedgingSpot(
             connection_url=connection_url,
