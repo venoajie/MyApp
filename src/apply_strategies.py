@@ -103,7 +103,11 @@ class ApplyHedgingSpot:
         result = await sqlite_management.querying_table (table, 
                                                          database
                                                          ) 
-        return  (result)   
+        none_data: None = [0, None, []] 
+        
+        return  {'as_is': (result)   ,
+        'list_data_only': [] if result in none_data \
+                    else str_mod.parsing_sqlite_json_output([o['data'] for o in result])}
 
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: float
@@ -467,16 +471,14 @@ class ApplyHedgingSpot:
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
-                my_trades_open: list = [] if my_trades_open_sqlite in none_data \
-                    else str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
+                my_trades_open: list = my_trades_open_sqlite ['list_data_only']
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
                 #log.error (open_orders_sqlite)
-                open_orders_open_byAPI: list= [] if open_orders_sqlite in none_data \
-                    else str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
+                open_orders_open_byAPI: list= open_orders_sqlite ['list_data_only']
 
                 #log.error (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
