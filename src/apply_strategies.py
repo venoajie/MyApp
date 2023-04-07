@@ -493,11 +493,11 @@ class ApplyHedgingSpot:
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
-                log.error (open_orders_sqlite)
+                #log.error (open_orders_sqlite)
                 open_orders_open_byAPI: list= [] if open_orders_sqlite in none_data \
                     else str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
 
-                log.error (open_orders_open_byAPI)
+                #log.error (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
