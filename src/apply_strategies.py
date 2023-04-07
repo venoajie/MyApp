@@ -187,6 +187,8 @@ class ApplyHedgingSpot:
         len_current_open_orders = open_order_mgt.open_orders_api_basedOn_label_items_qty(
             label_for_filter
         )
+        log.debug(f'len_current_open_orders {len_current_open_orders} \
+            open_order_id {open_order_id}')
 
         if len_current_open_orders != []:
             if len_current_open_orders > 1:
@@ -225,6 +227,10 @@ class ApplyHedgingSpot:
             )
         except:
             open_orders_lastUpdateTStamps: list = []
+            
+        
+        log.debug(f'open_orders_deltaTime {open_orders_deltaTime} {open_orders_deltaTime > three_minute} \
+            open_orders_lastUpdateTStamps {open_orders_lastUpdateTStamps}')    
 
         if open_orders_lastUpdateTStamps != []:
             open_orders_lastUpdateTStamps: list = (
@@ -255,6 +261,8 @@ class ApplyHedgingSpot:
 
         """
         open_orderLabelCLosed = open_order_mgt.open_orderLabelCLosed()
+        log.error(f'open_orderLabelCLosed {open_orderLabelCLosed} \
+            is_closed_label_exist {is_closed_label_exist}')
 
         if open_orderLabelCLosed != None:
             for label_closed in open_orderLabelCLosed:
