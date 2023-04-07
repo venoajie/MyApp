@@ -69,32 +69,6 @@ class ApplyHedgingSpot:
 
         return open_orders_management.MyOrders(open_ordersREST)
 
-    async def my_trades_time_constrained(
-        self, start_timestamp: int, end_timestamp: int
-    ) -> list:
-        """
-        basis to recover data
-        """
-
-        private_data = await self.get_private_data()
-        trades: dict = await private_data.get_user_trades_by_currency_and_time(
-            start_timestamp, end_timestamp
-        )
-
-        try:
-            result = [] if trades == [] else trades["result"]["trades"]
-
-            path_trades_open_recovery = system_tools.provide_path_for_file(
-                "myTrades", self.currency, "all-recovery-point"
-            )
-            pickling.replace_data(path_trades_open_recovery, result, True)
-        except:
-            result = trades["error"]["data"]["reason"]
-            if result == "timestamp_of_archived_trade":
-                log.critical(result)
-
-        return result
-
     async def get_account_summary(self) -> list:
         """ """
 
@@ -507,14 +481,16 @@ class ApplyHedgingSpot:
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
-                my_trades_open: list = [] if my_trades_open_sqlite in none_data else str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
+                my_trades_open: list = [] if my_trades_open_sqlite in none_data \
+                    else str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite])
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
                 log.error (open_orders_sqlite)
-                open_orders_open_byAPI: list= [] if open_orders_sqlite in none_data else str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
+                open_orders_open_byAPI: list= [] if open_orders_sqlite in none_data \
+                    else str_mod.parsing_sqlite_json_output([o['data'] for o in open_orders_sqlite])
 
                 log.error (open_orders_open_byAPI)
                 open_orders_from_sub_account_get = reading_from_database[
@@ -592,9 +568,7 @@ class ApplyHedgingSpot:
                         open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                         open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
-                        instrument = [
-                            o["instrument_name"] for o in open_trade_strategy_label
-                        ][0]
+                        instrument = [o["instrument_name"] for o in open_trade_strategy_label][0]
                         log.critical(f"instrument {instrument}")
 
                         ticker = await self.reading_from_db("ticker", instrument)
@@ -610,9 +584,7 @@ class ApplyHedgingSpot:
                         equity: float = portfolio[0]["equity"]
 
                         # compute notional value
-                        notional: float = await self.compute_notional_value(
-                            index_price, equity
-                        )
+                        notional: float = await self.compute_notional_value(index_price, equity)
 
                         # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                         # log.warning (leverage_and_delta)
@@ -832,47 +804,6 @@ class ApplyHedgingSpot:
 
         except Exception as error:
             catch_error(error, 30)
-
-    async def will_new_open_order_create_over_hedge(
-        self, label, actual_hedging_size: float, min_position_size: float
-    ) -> None:
-        """ """
-
-        try:
-            # refresh open orders
-            reading_from_database: dict = await self.reading_from_database()
-            open_orders_open_byAPI: list = reading_from_database[
-                "open_orders_open_byAPI"
-            ]
-
-            # log.info(f'{open_orders_open_byAPI=}')
-            open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
-            label_open = f"{label}-open"
-            current_open_orders_size = open_order_mgt.open_orders_api_basedOn_label_items_size(
-                label_open
-            )
-            current_open_orders_size = (
-                0 if current_open_orders_size == [] else current_open_orders_size
-            )
-
-            is_over_hedged = (
-                actual_hedging_size + current_open_orders_size < min_position_size
-            )
-            log.info(
-                f"{is_over_hedged=} {actual_hedging_size=} {current_open_orders_size=} {min_position_size=}"
-            )
-
-            if is_over_hedged:
-                open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_max_id(
-                    label_open
-                )
-                log.critical(f"{open_order_id=}")
-
-                await self.cancel_by_order_id(open_order_id)
-
-        except Exception as error:
-            catch_error(error)
-
 
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
