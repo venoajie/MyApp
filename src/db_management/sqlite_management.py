@@ -193,6 +193,19 @@ async def create_tables (type:str = None):
                                                     ) 
                                                     VIRTUAL;
                                                     
+                                                    '''           
+                    create_table_alter_trade_seq = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        trade_seq REAL  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (JSON_EXTRACT (data, '$.trade_seq'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
                                                     '''         
                                                     
                     print (f'create virtual columns {create_table_alter_order_id}')
@@ -203,9 +216,19 @@ async def create_tables (type:str = None):
                     await cur.execute (f'{create_table_alter_sum_pos}')
                     
                     create_index = f'''CREATE INDEX id ON  {table} (id);'''
-                    print (f'create_index myTrades {create_index}')
-                    await cur.execute (f'{create_index}')
-            
+                    
+                    if 'myTrades'  in table or 'my_trades' in table:
+                            
+                        await cur.execute (f'{create_table_alter_trade_seq}')
+                        print (f'create virtual columns {create_table_alter_trade_seq}')
+                    
+                        create_index = f'''CREATE INDEX id ON  {table} (trade_seq);'''
+                        print (f'create_index myTrades {create_index}')
+                
+                    else:
+                        await cur.execute (f'{create_index}')
+                    
+                
         except Exception as error:
             print (f'create_tables {error}') 
             await telegram_bot_sendtext("sqlite operation-failed_create_table", "failed_order")
