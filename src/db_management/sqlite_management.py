@@ -199,7 +199,7 @@ async def create_tables (type:str = None):
                                                     TABLE 
                                                         {table} 
                                                     ADD COLUMN 
-                                                        trade_seq REAL  
+                                                        trade_seq INTEGER  
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (JSON_EXTRACT (data, '$.trade_seq'))
