@@ -1,6 +1,7 @@
 start: fetch-data exe-app
 
 test: 
+	git pull
 	python3 sqlite_exe.py
 	python3 uji_hapus.py
 	sh checkEvents.py
