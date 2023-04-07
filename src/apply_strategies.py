@@ -180,34 +180,6 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
-    async def cancel_redundant_orders_in_same_labels(self, label_for_filter) -> None:
-        """ """
-        open_order_mgt = await self.open_orders_from_exchange()
-
-        len_current_open_orders = open_order_mgt.open_orders_api_basedOn_label_items_qty(
-            label_for_filter
-        )
-        log.debug(f'len_current_open_orders {len_current_open_orders}')
-
-        if len_current_open_orders != []:
-            if len_current_open_orders > 1:
-                open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_max_id(
-                    label_for_filter
-                )
-                log.debug(f'open_order_id {open_order_id}')
-
-                cancel = await self.cancel_by_order_id(open_order_id)
-
-                return cancel
-
-    async def cancel_redundant_orders_in_same_labels_closed_hedge(self) -> None:
-        """ """
-        label_for_filter = "hedgingSpot-closed"
-
-        cancel = await self.cancel_redundant_orders_in_same_labels(label_for_filter)
-        # log.critical(f'{cancel=}')
-        return cancel
-
     async def cancel_orders_based_on_time_threshold(
         self, server_time, label
     ) -> float:
@@ -685,7 +657,6 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_type"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
-                                    await self.cancel_redundant_orders_in_same_labels_closed_hedge()
 
                                 # new order
                                 if (
@@ -858,7 +829,6 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
-        await syn.cancel_redundant_orders_in_same_labels_closed_hedge()
 
         # open_orders_from_exchange = await syn.open_orders_from_exchange ()
 
