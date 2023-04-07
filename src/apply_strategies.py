@@ -357,7 +357,6 @@ class ApplyHedgingSpot:
         # get net buy-sell position
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
         
-
         try:
             strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
         except:
@@ -402,6 +401,12 @@ class ApplyHedgingSpot:
             net_sum_open_orders_strategy_market,
             min_position_size,
         )
+        log.debug(f'net_sum_current_position {net_sum_current_position} \
+            net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit} \
+                net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}\
+                    net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
+        
+        log.warning(f'determine_size_and_side {determine_size_and_side}')
 
         determine_size_and_side[
             "len_order_market"
