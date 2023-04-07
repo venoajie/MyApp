@@ -207,27 +207,27 @@ async def create_tables (type:str = None):
                                                     VIRTUAL;
                                                     
                                                     '''         
-                                                    
-                    print (f'create virtual columns {create_table_alter_order_id}')
-                    await cur.execute (f'{create_table_alter_order_id}')
-                    print (f'create virtual columns {create_table_alter_label_strategy}')
-                    await cur.execute (f'{create_table_alter_label_strategy}')
-                    print (f'create virtual columns {create_table_alter_sum_pos}')
-                    await cur.execute (f'{create_table_alter_sum_pos}')
-                    
-                    create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                    virtual_columns = [create_table_alter_order_id,
+                                       create_table_alter_label_strategy,
+                                       create_table_alter_sum_pos]
                     
                     if 'myTrades'  in table or 'my_trades' in table:
                             
                         await cur.execute (f'{create_table_alter_trade_seq}')
                         print (f'create virtual columns {create_table_alter_trade_seq}')
+                        
+                    for column in virtual_columns:
+                        print (f'create virtual columns {column}')
+                    
+                    create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                    
+                    if 'myTrades'  in table or 'my_trades' in table:
                     
                         create_index = f'''CREATE INDEX id ON  {table} (trade_seq);'''
                         print (f'create_index myTrades {create_index}')
                 
                     else:
                         await cur.execute (f'{create_index}')
-                    
                 
         except Exception as error:
             print (f'create_tables {error}') 
@@ -285,7 +285,6 @@ async def insert_tables (table_name, params):
                     await db.execute (insert_table_json)
                 else:
                     await db.executemany (f'{insert_table}', [params])
-            
             
     except Exception as error:
         print (f'insert_tables {error}') 
@@ -351,7 +350,6 @@ async def deleting_row (table: str = 'mytrades',
     try:
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             await db.execute(query_table, filter_val)
-                      
                 
     except Exception as error:
         print (f'deleting_row {error}')        
