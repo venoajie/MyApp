@@ -1,5 +1,10 @@
 start: fetch-data exe-app
 
+test: 
+	python3 sqlite_exe.py
+	python3 uji_hapus.py
+	python3 checkEvents.py
+
 fetch-data: 
 	nohup python3 fetch_and_save_market_data.py >/dev/null 2>&1 &
 	sleep 3
