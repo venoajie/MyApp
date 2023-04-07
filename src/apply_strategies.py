@@ -105,7 +105,7 @@ class ApplyHedgingSpot:
                                                          ) 
         none_data: None = [0, None, []] 
         
-        return  {'as_is': (result)   ,
+        return  {'all': (result)   ,
         'list_data_only': [] if result in none_data \
                     else str_mod.parsing_sqlite_json_output([o['data'] for o in result])}
 
@@ -340,6 +340,7 @@ class ApplyHedgingSpot:
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
+        log.debug (f'my_trades_open_sqlite {my_trades_open_sqlite}')
         # get net buy-sell position
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
         
