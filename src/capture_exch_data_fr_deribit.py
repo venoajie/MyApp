@@ -193,7 +193,6 @@ class StreamAccountData:
                                 my_trades = myTrades_management.MyTrades(trades)
                                 
                                 await sqlite_management.insert_tables('my_trades_all_json',trades)
-                                await sqlite_management.insert_tables('my_trades_all',trades)
                                 my_trades.distribute_trade_transactions(currency)
 
                                 my_trades_path_all = system_tools.provide_path_for_file(
@@ -245,7 +244,6 @@ class StreamAccountData:
                                             or order_state == 'triggered':
                                         
                                         await sqlite_management.insert_tables('orders_all_json', order)
-                                        await sqlite_management.insert_tables('orders_all', order)           
                         
                                         orders_path_all = system_tools.provide_path_for_file(
                                         "orders", currency, "all")
