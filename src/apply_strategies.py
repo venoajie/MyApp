@@ -228,10 +228,6 @@ class ApplyHedgingSpot:
         except:
             open_orders_lastUpdateTStamps: list = []
             
-        
-        log.debug(f'open_orders_deltaTime {open_orders_deltaTime} {open_orders_deltaTime > three_minute} \
-            open_orders_lastUpdateTStamps {open_orders_lastUpdateTStamps}')    
-
         if open_orders_lastUpdateTStamps != []:
             open_orders_lastUpdateTStamps: list = (
                 open_order_mgt.open_orders_api_last_update_timestamps()
@@ -243,6 +239,10 @@ class ApplyHedgingSpot:
             open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_min_id(
                 label
             )
+
+            
+            log.debug(f'open_orders_deltaTime {open_orders_deltaTime} {open_orders_deltaTime > three_minute} \
+                open_orders_lastUpdateTStamps {open_orders_lastUpdateTStamps}')    
 
             if open_orders_deltaTime > three_minute:
                 await self.cancel_by_order_id(open_order_id)
@@ -283,6 +283,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
 
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
+        log.critical (result)
         return result
 
     async def send_market_order(self, params) -> None:
