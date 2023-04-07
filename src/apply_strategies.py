@@ -261,14 +261,14 @@ class ApplyHedgingSpot:
 
         """
         open_orderLabelCLosed = open_order_mgt.open_orderLabelCLosed()
-        log.error(f'open_orderLabelCLosed {open_orderLabelCLosed} \
-            is_closed_label_exist {is_closed_label_exist}')
+        log.error(f'open_orderLabelCLosed {open_orderLabelCLosed}')
 
         if open_orderLabelCLosed != None:
             for label_closed in open_orderLabelCLosed:
                 is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open(
                     label_closed
                 )
+                log.error(f'is_closed_label_exist {is_closed_label_exist}')
 
                 if is_closed_label_exist == False:
                     open_orders = open_order_mgt.open_orders_api()
