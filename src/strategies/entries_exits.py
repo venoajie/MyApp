@@ -34,7 +34,7 @@ strategies = [
                     "time_frame": 3600,
                     "side": "buy",
                     "entry_price": 1860,
-                    "invalidation_entry_price": 1850,
+                    "invalidation_entry_price": 1830,
                     "take_profit_usd": float(1950),
                     "take_profit_pct": 1 / 100,
                     "quantity_discrete": 15,
