@@ -238,13 +238,16 @@ class StreamAccountData:
                                         #log.error (f'open_orders_sqlite {open_orders_sqlite_list_data}')
                                         is_order_id_in_active_orders = ([o for o in open_orders_sqlite_list_data if o['order_id']== order_id])
                                         log.error (f'is_order_id_in_active_orders {is_order_id_in_active_orders}')
+                                        where_filter = f"order_id"
                                         if is_order_id_in_active_orders== []:
                                             order_id = order["label"] 
-                                            log.error (f'order_id {order_id}')
+                                            where_filter = f"label_main"
+                                            
                                         
+                                        log.error (f'order_id {order_id} where_filter {where_filter}')
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
-                                                                            "order_id",
+                                                                            where_filter,
                                                                             "=",
                                                                             order_id)
                                         
