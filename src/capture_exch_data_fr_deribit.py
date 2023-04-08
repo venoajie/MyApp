@@ -216,7 +216,7 @@ class StreamAccountData:
                 
                                     log.debug (f'order_state {order_state}')
                                     log.critical (f'orders {order}')
-                                    log.warning (f'data_orders {data_orders}')
+                                    #log.warning (f'data_orders {data_orders}')
                                     if order_state == 'cancelled' \
                                         or order_state == 'filled'\
                                             or order_state == 'triggered':
