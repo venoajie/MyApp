@@ -4,7 +4,7 @@ test:
 	git pull
 	python3 sqlite_exe.py
 	python3 uji_hapus.py
-	sh checkEvents.py
+	sh checkEvents.sh
 
 fetch-data: 
 	nohup python3 fetch_and_save_market_data.py >/dev/null 2>&1 &
