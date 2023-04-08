@@ -270,6 +270,7 @@ class StreamAccountData:
                                     "positions", currency
                                 )
                                 pickling.replace_data(my_path_position, positions)
+                                apply_strategies.main()
                                 #await sqlite_management.insert_tables('positions_json',positions)
 
                         await syn.get_sub_accounts()
