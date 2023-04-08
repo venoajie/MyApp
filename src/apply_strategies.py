@@ -312,7 +312,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        log.error (transactions)
+        #log.error (transactions)
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
@@ -341,7 +341,7 @@ class ApplyHedgingSpot:
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
-        log.debug (f'my_trades_open_sqlite {my_trades_open_sqlite}')
+        #log.debug (f'my_trades_open_sqlite {my_trades_open_sqlite}')
         # get net buy-sell position
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
         
