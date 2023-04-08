@@ -87,12 +87,21 @@ async def create_tables (type:str = None):
                  'orders_all_json',
                  'positions_json',
                  'portfolio_json',
+                 'ohlc1_json',
+                 'ohlc3_json',
                  ]
         
         try:           
             for table in tables:
                 
                 await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                
+                create_table = f'''
+                                        CREATE 
+                                        TABLE IF NOT EXISTS 
+                                            {table} 
+                                            (id INTEGER PRIMARY KEY, data TEXT)
+                                        ''' 
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
@@ -147,7 +156,8 @@ async def create_tables (type:str = None):
                                                                     api BOOLEAN NOT NULL CHECK (api IN (0, 1)))'  
                 
                 await cur.execute (f'{create_table}') 
-                if  'json' in table:
+                
+                if  'json' in table and 'ohlc' not in table:
                     
                     create_table_alter_sum_pos = f''' 
                                                     ALTER 
@@ -207,7 +217,6 @@ async def create_tables (type:str = None):
                                                     VIRTUAL;
                                                     
                                                     '''         
-                                                    
                     
                     if 'myTrades'  in table or 'my_trades' in table:
                             
@@ -230,6 +239,25 @@ async def create_tables (type:str = None):
                 
                     else:
                         await cur.execute (f'{create_index}')
+                
+                if  'ohlc' in table:
+                           
+                    create_table_alter_tick = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        tick INTEGER  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (JSON_EXTRACT (data, '$.tick'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''         
+                    create_index = f'''CREATE INDEX tick ON  {table} (tick);'''
+                    await cur.execute (f'{create_table_alter_tick}')
+                    await cur.execute (f'{create_index}')
                     
         except Exception as error:
             print (f'create_tables {error}') 
@@ -353,7 +381,6 @@ async def deleting_row (table: str = 'mytrades',
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             await db.execute(query_table, filter_val)
                       
-                
     except Exception as error:
         print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
