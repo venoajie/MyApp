@@ -265,12 +265,12 @@ class StreamAccountData:
                                         my_orders.distribute_order_transactions(currency)
 
                             if positions:
-                                # log.error (positions)
+                                log.error (positions)
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
                                 )
                                 pickling.replace_data(my_path_position, positions)
-                                apply_strategies.main()
+                                asyncio.get_event_loop().run_until_complete(apply_strategies.main()) 
                                 #await sqlite_management.insert_tables('positions_json',positions)
 
                         await syn.get_sub_accounts()
