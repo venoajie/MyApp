@@ -471,12 +471,14 @@ class ApplyHedgingSpot:
                 positions: list = reading_from_database["positions_from_sub_account"]
                 # my trades data
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+                my_trades_open_all: list = my_trades_open_sqlite['all']
+                my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
                 #log.error (my_trades_open_sqlite)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
-                my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+                
                 #log.error (my_trades_open)
 
                 # obtain instruments future relevant to strategies
@@ -553,10 +555,10 @@ class ApplyHedgingSpot:
 
                         log.critical(f" {label}")
                         
-                        my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_sqlite, label, 'individual')
-                        my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_sqlite, label, 'main')
+                        my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'individual')
+                        my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'main')
 
-                        sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
+                        sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
