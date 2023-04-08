@@ -291,7 +291,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
-    async def my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
+    async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level) -> None:
         """ 
         detail_level: main/individual
         """
@@ -315,10 +315,10 @@ class ApplyHedgingSpot:
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level)])
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level)])
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
-            o['amount_dir'] for o in await self.my_trades_open_sqlite (transactions, label, detail_level) ])
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
 
         return   result
 
@@ -469,7 +469,7 @@ class ApplyHedgingSpot:
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"]
                 # my trades data
-                my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
+                my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 
                 log.error (my_trades_open_sqlite)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
@@ -552,8 +552,8 @@ class ApplyHedgingSpot:
 
                         log.critical(f" {label}")
                         
-                        my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
-                        my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite(my_trades_open_sqlite, label, 'main')
+                        my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_sqlite, label, 'individual')
+                        my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_sqlite, label, 'main')
 
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label, 'individual')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
