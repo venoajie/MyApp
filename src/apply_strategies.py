@@ -312,6 +312,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
+        log.error (transactions)
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
@@ -471,12 +472,12 @@ class ApplyHedgingSpot:
                 # my trades data
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 
-                log.error (my_trades_open_sqlite)
+                #log.error (my_trades_open_sqlite)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                log.error (my_trades_open)
+                #log.error (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
