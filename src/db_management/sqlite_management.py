@@ -221,7 +221,7 @@ async def create_tables (type:str = None):
                     print (f'create virtual columns {create_table_alter_sum_pos}')
                     await cur.execute (f'{create_table_alter_sum_pos}')
                     
-                    create_index = f'''CREATE INDEX id ON  {table} (id);'''
+                    create_index = f'''CREATE INDEX order_id ON  {table} (order_id);'''
                     
                     if 'myTrades'  in table or 'my_trades' in table:
                     
