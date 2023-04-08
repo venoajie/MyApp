@@ -12,7 +12,7 @@ equity_risked_pct_default = 1 / 100 / 4
 
 strategies = [
                 {
-                    "strategy": "supplyDemandShort60A",
+                    "strategy": "supplyDemandShort60D",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "sell",
@@ -29,13 +29,13 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default/2,
                 }, 
                 {
-                    "strategy": "supplyDemandLongB",
+                    "strategy": "supplyDemandLongC",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",
-                    "entry_price": 1860,
+                    "entry_price": 1850,
                     "invalidation_entry_price": 1830,
-                    "take_profit_usd": float(1950),
+                    "take_profit_usd": float(1910),
                     "take_profit_pct": 1 / 100,
                     "quantity_discrete": 15,
                     "cut_loss_usd": 1783,
