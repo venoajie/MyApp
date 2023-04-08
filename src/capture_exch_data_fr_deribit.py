@@ -234,8 +234,9 @@ class StreamAccountData:
                                         order_id = order["order_id"] if order_state !='triggered' else ["stop_order_id'"]
                                         log.error (f'order_id {order_id}')
                                         open_orders_sqlite =  await syn.querying_all('my_trades_all_json')['list_data_only']
-                                        log.error (f'open_orders_sqlite {open_orders_sqlite}')
-                                        is_order_id_in_active_orders = ([o for o in open_orders_sqlite if o['order_id']== order_id])
+                                        open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+                                        log.error (f'open_orders_sqlite {open_orders_sqlite_list_data}')
+                                        is_order_id_in_active_orders = ([o for o in open_orders_sqlite_list_data if o['order_id']== order_id])
                                         log.error (f'is_order_id_in_active_orders {is_order_id_in_active_orders}')
                                         if is_order_id_in_active_orders== []:
                                             order_id = order["label"] 
