@@ -178,6 +178,7 @@ class StreamAccountData:
                                 "portfolio", currency
                             )
                             pickling.replace_data(my_path_portfolio, data_orders)
+                            asyncio.get_event_loop().run_until_complete(apply_strategies.main()) 
                             #await sqlite_management.insert_tables('portfolio_json',data_orders)
                             #log.info(data_orders)
                         if (
@@ -270,7 +271,7 @@ class StreamAccountData:
                                     "positions", currency
                                 )
                                 pickling.replace_data(my_path_position, positions)
-                                asyncio.get_event_loop().run_until_complete(apply_strategies.main()) 
+                                
                                 #await sqlite_management.insert_tables('positions_json',positions)
 
                         await syn.get_sub_accounts()
