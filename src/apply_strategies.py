@@ -612,7 +612,7 @@ class ApplyHedgingSpot:
                                 notional,
                                 strategy_attr["equity_risked_pct"],
                             )
-                            
+                            log.error (f' label {label} min_position_size {min_position_size}')
 
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"] :
@@ -764,15 +764,7 @@ class ApplyHedgingSpot:
                         )
                         
                         if size_is_consistent and open_order_is_consistent:
-                        
-                            min_position_size: float = position_sizing.pos_sizing(
-                            strategy_attr["take_profit_usd"],
-                            strategy_attr["entry_price"],
-                            notional,
-                            strategy_attr["equity_risked_pct"],
-                        )
-                            log.error (f' min_position_size {min_position_size}')
-                            
+                                                        
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]
@@ -784,6 +776,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size,
                             )
+                            log.error (f'strategy_label {strategy_label}')
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]\
@@ -826,6 +819,13 @@ class ApplyHedgingSpot:
                                 #log.critical(f" strategy_attr  {strategy_attr}")
 
                             else:
+                                # determine position sizing-general strategy
+                                min_position_size: float = position_sizing.pos_sizing(
+                                    strategy_attr["take_profit_usd"],
+                                    strategy_attr["entry_price"],
+                                    notional,
+                                    strategy_attr["equity_risked_pct"],
+                                )
 
                                 # determine position sizing-hedging
                                 if "hedgingSpot" in strategy_attr["strategy"]:
