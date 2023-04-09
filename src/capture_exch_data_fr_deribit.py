@@ -233,19 +233,19 @@ class StreamAccountData:
                                         # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32754477205', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768064536, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768064536, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}       
                                                 
                                         order_id = order["order_id"] if order_state !='triggered' else ["stop_order_id'"]
-                                        log.error (f'order_id {order_id}')
+                                        #log.error (f'order_id {order_id}')
                                         open_orders_sqlite =  await syn.querying_all('orders_all_json')
                                         open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
                                         #log.error (f'open_orders_sqlite {open_orders_sqlite_list_data}')
                                         is_order_id_in_active_orders = ([o for o in open_orders_sqlite_list_data if o['order_id']== order_id])
-                                        log.error (f'is_order_id_in_active_orders {is_order_id_in_active_orders}')
+                                        #log.error (f'is_order_id_in_active_orders {is_order_id_in_active_orders}')
                                         where_filter = f"order_id"
                                         if is_order_id_in_active_orders== []:
                                             order_id = order["label"] 
                                             where_filter = f"label_main"
                                             
                                         
-                                        log.error (f'order_id {order_id} where_filter {where_filter}')
+                                        #log.error (f'order_id {order_id} where_filter {where_filter}')
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
                                                                             where_filter,
@@ -266,7 +266,7 @@ class StreamAccountData:
                                         my_orders.distribute_order_transactions(currency)
 
                             if positions:
-                                log.error (positions)
+                                #log.error (positions)
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
                                 )
