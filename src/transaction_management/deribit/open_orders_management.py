@@ -598,12 +598,12 @@ class MyOrders:
             
 
     def cancel_orders_based_on_time_threshold(
-        self, server_time: int, label: str
+        self, server_time: int, label: str, time_threshold: int= None
     ) -> float:
         """ """
         one_minute = 60000
-
-        three_minute = one_minute * 3
+        if time_threshold !=None:
+            time_threshold = one_minute * 3
 
         try:
             open_orders_lastUpdateTStamps: list = (
@@ -624,5 +624,5 @@ class MyOrders:
                 label
             )
 
-            return {'open_orders_deltaTime-exceed_threshold': open_orders_deltaTime > three_minute,
+            return {'open_orders_deltaTime-exceed_threshold': open_orders_deltaTime > time_threshold,
                     'open_order_id': open_order_id}
