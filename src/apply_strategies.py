@@ -620,8 +620,38 @@ class ApplyHedgingSpot:
                                     strategy_attr,
                                     min_position_size,
                                 )
-                                log.warning (f' exit_order_allowed every {exit_order_allowed}')
-                                log.critical(f"open_trade_strategy_label {open_trade_strategy_label}")
+
+                                exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
+                                exit_order_allowed.update({"size": exit_order_allowed["exit_orders_limit_qty"]})
+                                exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
+                                exit_order_allowed.update({"label_numbered": exit_order_allowed["label_closed"]})
+                                
+                                exit_order_allowed.update({"instrument": instrument})
+                                price_transaction =  open_trade_strategy_label[0]['price']
+                                price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
+                                price_threshold_buy =  price_transaction - price_threshold 
+                                price_threshold_sell = price_transaction + price_threshold
+                                log.warning(f" exit_order_allowed  {exit_order_allowed}")
+                                log.critical(f" price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
+
+                                if exit_order_allowed["side"] == 'buy'\
+                                    and exit_order_allowed["len_order_limit"] == 0\
+                                        and best_bid_prc < price_threshold_buy :
+                                        
+                                    exit_order_allowed["entry_price"] = best_bid_prc  
+                                    
+                                    await self.send_limit_order(exit_order_allowed)
+
+                                if exit_order_allowed["side"] == 'sell'\
+                                    and exit_order_allowed["len_order_limit"] == 0\
+                                        and best_ask_prc > price_threshold_buy:
+                                        
+                                    exit_order_allowed["entry_price"] = best_ask_prc 
+                                    await self.send_limit_order(open_order_allowed)
+
+
+
+
 
                             # determine position sizing-general strategy
                             else:
