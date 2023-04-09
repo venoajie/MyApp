@@ -415,12 +415,9 @@ class ApplyHedgingSpot:
         
         log.warning(f'determine_size_and_side {determine_size_and_side}')
 
-        determine_size_and_side[
-            "len_order_market"
-        ] = len_transactions_open_orders_strategy_limit
-        determine_size_and_side[
-            "len_order_limit"
-        ] = len_transactions_open_orders_strategy_market
+        determine_size_and_side["len_order_market"] = len_transactions_open_orders_strategy_limit
+        
+        determine_size_and_side["len_order_limit"] = len_transactions_open_orders_strategy_market
 
         if net_sum_current_position == 0:
             # determine position sizing-hedging
@@ -545,7 +542,6 @@ class ApplyHedgingSpot:
 
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
-                        # log.critical (f'label {label}')
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
