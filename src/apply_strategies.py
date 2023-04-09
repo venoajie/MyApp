@@ -763,70 +763,74 @@ class ApplyHedgingSpot:
                         )
                         
                         if size_is_consistent and open_order_is_consistent:
+                            
+                            if "every4hoursLong" or "every4hoursShort" in strategy_attr["strategy"]:
+                                log.critical(f" strategy_attr  {strategy_attr}")
 
-                            # determine position sizing-general strategy
-                            min_position_size: float = position_sizing.pos_sizing(
-                                strategy_attr["take_profit_usd"],
-                                strategy_attr["entry_price"],
-                                notional,
-                                strategy_attr["equity_risked_pct"],
-                            )
+                            else:
+                                # determine position sizing-general strategy
+                                min_position_size: float = position_sizing.pos_sizing(
+                                    strategy_attr["take_profit_usd"],
+                                    strategy_attr["entry_price"],
+                                    notional,
+                                    strategy_attr["equity_risked_pct"],
+                                )
 
-                            # determine position sizing-hedging
-                            if "hedgingSpot" in strategy_attr["strategy"]:
-                                min_position_size = -notional
-                            log.error(f" strategy_label  {strategy_label}")
-                            open_trade_strategy = [
-                                o for o in my_trades_open if strategy_label in o["label"]
-                            ]
-
-                            open_order_allowed = await self.is_send_order_allowed(
-                                strategy_label,
-                                open_trade_strategy,
-                                open_order_mgt,
-                                strategy_attr,
-                                min_position_size,
-                            )
-
-                            if (
-                                open_order_allowed["main_orders_qty"] != 0
-                                and open_order_allowed["len_order_limit"] == 0
-                            ):
-
-                                exit_order_allowed["instrument"] = instrument
-                                exit_order_allowed["side"] = open_order_allowed["main_orders_side"]
-                                
-                                exit_order_allowed["size"] = open_order_allowed["main_orders_qty"]
-                                
-                                exit_order_allowed["label_numbered"] = open_order_allowed["label"]
-                                
-                                exit_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
-                                
-                                exit_order_allowed["entry_price"] = strategy_attr[
-                                    "entry_price"
+                                # determine position sizing-hedging
+                                if "hedgingSpot" in strategy_attr["strategy"]:
+                                    min_position_size = -notional
+                                log.error(f" strategy_label  {strategy_label}")
+                                open_trade_strategy = [
+                                    o for o in my_trades_open if strategy_label in o["label"]
                                 ]
-                                exit_order_allowed["cut_loss_usd"] = strategy_attr[
-                                    "cut_loss_usd"
-                                ]
-                                exit_order_allowed["take_profit_usd"] = strategy_attr[
-                                    "take_profit_usd"
-                                ]
-                                log.debug (exit_order_allowed["side"] == 'buy')
-                                log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
-                                log.error (exit_order_allowed["side"] == 'sell')
-                                log.debug (best_ask_prc > exit_order_allowed["entry_price"])
-                                
-                                if exit_order_allowed["side"] == 'buy'\
-                                    and exit_order_allowed["entry_price"] < best_bid_prc :
-                                        
-                                    exit_order_allowed["entry_price"] = best_bid_prc - 1
-                                    await self.send_combo_orders(exit_order_allowed)
 
-                                if exit_order_allowed["side"] == 'sell'\
-                                    and best_ask_prc > exit_order_allowed["entry_price"] :
-                                        
-                                    exit_order_allowed["entry_price"] = best_ask_prc + 1
-                                    await self.send_combo_orders(exit_order_allowed)
+                                open_order_allowed = await self.is_send_order_allowed(
+                                    strategy_label,
+                                    open_trade_strategy,
+                                    open_order_mgt,
+                                    strategy_attr,
+                                    min_position_size,
+                                )
+
+                                if (
+                                    open_order_allowed["main_orders_qty"] != 0
+                                    and open_order_allowed["len_order_limit"] == 0
+                                ):
+
+                                    exit_order_allowed["instrument"] = instrument
+                                    exit_order_allowed["side"] = open_order_allowed["main_orders_side"]
+                                    
+                                    exit_order_allowed["size"] = open_order_allowed["main_orders_qty"]
+                                    
+                                    exit_order_allowed["label_numbered"] = open_order_allowed["label"]
+                                    
+                                    exit_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
+                                    
+                                    exit_order_allowed["entry_price"] = strategy_attr[
+                                        "entry_price"
+                                    ]
+                                    exit_order_allowed["cut_loss_usd"] = strategy_attr[
+                                        "cut_loss_usd"
+                                    ]
+                                    exit_order_allowed["take_profit_usd"] = strategy_attr[
+                                        "take_profit_usd"
+                                    ]
+                                    log.debug (exit_order_allowed["side"] == 'buy')
+                                    log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
+                                    log.error (exit_order_allowed["side"] == 'sell')
+                                    log.debug (best_ask_prc > exit_order_allowed["entry_price"])
+                                    
+                                    if exit_order_allowed["side"] == 'buy'\
+                                        and exit_order_allowed["entry_price"] < best_bid_prc :
+                                            
+                                        exit_order_allowed["entry_price"] = best_bid_prc - 1
+                                        await self.send_combo_orders(exit_order_allowed)
+
+                                    if exit_order_allowed["side"] == 'sell'\
+                                        and best_ask_prc > exit_order_allowed["entry_price"] :
+                                            
+                                        exit_order_allowed["entry_price"] = best_ask_prc + 1
+                                        await self.send_combo_orders(exit_order_allowed)
 
                         else:
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
