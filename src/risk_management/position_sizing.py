@@ -56,14 +56,6 @@ def pos_sizing(
     Reference:
         https://
     """
-    print (f'capital {capital}')
-    print (f'pct_loss {pct_loss}')
-    print (f'entry_price {entry_price}')
-    print (f'cut_loss_price {cut_loss_price}')
-    print ((
-                max_loss_allowed(capital, pct_loss)
-                / price_difference(entry_price, cut_loss_price)
-            ))
     return int(
         abs(
             (
