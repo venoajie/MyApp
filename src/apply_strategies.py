@@ -779,7 +779,7 @@ class ApplyHedgingSpot:
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]:
 
-                                strategy_attr["side"] = strategy_attr["main_orders_side"]
+                                strategy_attr.update({"side": strategy_attr["main_orders_side"]})
                                 strategy_attr["size"] = strategy_attr["main_orders_qty"]
                                 strategy_attr["type"] = strategy_attr["main_orders_type"]
                                 if strategy_attr["side"] == 'buy' :
