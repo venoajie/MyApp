@@ -26,7 +26,7 @@ strategies = [
                     "averaging": None,
                     "halt_minute_before_reorder": 60,
                     "equity_risked_usd": None,
-                    "equity_risked_pct": equity_risked_pct_default,
+                    "equity_risked_pct": equity_risked_pct_default*4,
                 },  {
                     "strategy": "every1hoursShort",
                     "instrument": ["PERPETUAL"],
@@ -42,7 +42,7 @@ strategies = [
                     "averaging": None,
                     "halt_minute_before_reorder": 60,
                     "equity_risked_usd": None,
-                    "equity_risked_pct": equity_risked_pct_default,
+                    "equity_risked_pct": equity_risked_pct_default*4,
                 }, {
                     "strategy": "every4hoursLong",
                     "instrument": ["PERPETUAL"],
@@ -58,7 +58,7 @@ strategies = [
                     "averaging": None,
                     "halt_minute_before_reorder": 60*4,
                     "equity_risked_usd": None,
-                    "equity_risked_pct": equity_risked_pct_default*4,
+                    "equity_risked_pct": equity_risked_pct_default*8,
                 },  {
                     "strategy": "every4hoursShort",
                     "instrument": ["PERPETUAL"],
@@ -74,7 +74,7 @@ strategies = [
                     "averaging": None,
                     "halt_minute_before_reorder": 60*4,
                     "equity_risked_usd": None,
-                    "equity_risked_pct": equity_risked_pct_default*4,
+                    "equity_risked_pct": equity_risked_pct_default*8,
                 },  {
                     "strategy": "supplyDemandShort60A",
                     "instrument": ["PERPETUAL"],
