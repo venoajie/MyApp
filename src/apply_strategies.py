@@ -814,6 +814,7 @@ class ApplyHedgingSpot:
                                     await self.send_limit_order(open_order_allowed)
 
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
+                                log.critical(f" strategy_attr  {strategy_attr}")
 
                             else:
                                 # determine position sizing-general strategy
