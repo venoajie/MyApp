@@ -98,26 +98,28 @@ class ApplyHedgingSpot:
         return index_price * equity
 
     async def querying_all(self, table: list, 
-                           database: str = "databases/trading.sqlite3") -> list:
+                           database: str = "databases/trading.sqlite3") -> dict:
         """ """
         result = await sqlite_management.querying_table (table, 
                                                          database
                                                          ) 
         none_data: None = [0, None, []] 
         
-        return  {'all': (result)   ,
-        'list_data_only': [] if result in none_data \
-                    else str_mod.parsing_sqlite_json_output([o['data'] for o in result])}
+        return  dict(
+            all=(result),
+            list_data_only= [] if result in none_data \
+                else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
+                    )
 
     def compute_position_leverage_and_delta(
-        self, notional: float, my_trades_open: float
+        self, notional: float, my_trades_open: dict
     ) -> float:
         
         position_leverage_and_delta = position_sizing.compute_delta(notional, my_trades_open)
-        return {
-            "delta": position_leverage_and_delta['delta'],
-            "leverage": position_leverage_and_delta['leverage'],
-        }
+        return dict(
+            delta= position_leverage_and_delta['delta'],
+            leverage= position_leverage_and_delta['leverage'],
+        )
 
     async def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
@@ -178,6 +180,13 @@ class ApplyHedgingSpot:
         }
 
     #! ########### end of will be deleted ##############################################################################
+
+    async def cancel_by_order_id(self, open_order_id) -> None:
+        private_data = await self.get_private_data()
+
+        result = await private_data.get_cancel_order_byOrderId(open_order_id)
+        log.critical (result)
+        return result
 
     async def current_server_time(self) -> float:
         """ """
@@ -255,18 +264,17 @@ class ApplyHedgingSpot:
                     ][0]
                     await self.cancel_by_order_id(open_order_id)
 
-    async def cancel_by_order_id(self, open_order_id) -> None:
-        private_data = await self.get_private_data()
-
-        result = await private_data.get_cancel_order_byOrderId(open_order_id)
-        log.critical (result)
-        return result
-
     async def send_market_order(self, params) -> None:
         """ """
 
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
+
+    async def send_limit_order(self, params) -> None:
+        """ """
+
+        private_data = await self.get_private_data()
+        await private_data.send_limit_order(params)
 
     def optimising_exit_price(
         self, side, best_bid_prc: float, best_ask_prc: float, exit_price: float = None
@@ -285,12 +293,6 @@ class ApplyHedgingSpot:
                 price = best_ask_prc
         return price
 
-    async def send_limit_order(self, params) -> None:
-        """ """
-
-        private_data = await self.get_private_data()
-        await private_data.send_limit_order(params)
-
     async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level) -> None:
         """ 
         detail_level: main/individual
@@ -299,8 +301,9 @@ class ApplyHedgingSpot:
         if detail_level== 'main':
 
             result = 0 if transactions==[] else ([
-            o for o in transactions if  str_mod.get_strings_before_character(o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)
-        ])
+            o for o in transactions if  str_mod.get_strings_before_character(
+                o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)]
+                                                 )
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
@@ -525,20 +528,13 @@ class ApplyHedgingSpot:
                         # log.critical (f'label {label}')
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(
-                            label, "-", 0
-                        )
+                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
 
-                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(
-                            strategy_label
-                        )
+                        open_order_label = open_order_mgt.open_orders_api_basedOn_label(strategy_label)
 
-                        open_order_label_short = [
-                            o for o in open_order_label if o["direction"] == "sell"
-                        ]
-                        open_order_label_long = [
-                            o for o in open_order_label if o["direction"] == "buy"
-                        ]
+                        open_order_label_short = [o for o in open_order_label if o["direction"] == "sell"]
+                        
+                        open_order_label_long = [o for o in open_order_label if o["direction"] == "buy"]
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
                         strategy_label = str_mod.get_strings_before_character(
@@ -623,10 +619,8 @@ class ApplyHedgingSpot:
 
                             if "hedgingSpot" in strategy_attr["strategy"]:
 
-                                time_threshold: float = (
-                                    strategy_attr["halt_minute_before_reorder"]
-                                    * one_minute
-                                )
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* one_minute)
+                                
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
                                     open_trade_strategy
                                 )
@@ -634,19 +628,17 @@ class ApplyHedgingSpot:
                                 delta_time: int = server_time - open_trade_strategy_max_attr[
                                     "timestamp"
                                 ]
+                                
                                 exceed_threshold_time: int = delta_time > time_threshold
                                 open_trade_strategy_max_attr_price = open_trade_strategy_max_attr[
                                     "max_price"
                                 ]
 
-                                pct_prc = (
-                                    open_trade_strategy_max_attr_price
-                                    * strategy_attr["cut_loss_pct"]
-                                )
+                                pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
+                                
                                 tp_price = open_trade_strategy_max_attr_price - pct_prc
-                                resupply_price = (
-                                    open_trade_strategy_max_attr_price + pct_prc
-                                )
+                                
+                                resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
 
                                 # closing order
                                 if (
@@ -773,18 +765,14 @@ class ApplyHedgingSpot:
                         ):
 
                             exit_order_allowed["instrument"] = instrument
-                            exit_order_allowed["side"] = open_order_allowed[
-                                "main_orders_side"
-                            ]
-                            exit_order_allowed["size"] = open_order_allowed[
-                                "main_orders_qty"
-                            ]
-                            exit_order_allowed["label_numbered"] = open_order_allowed[
-                                "label"
-                            ]
-                            exit_order_allowed[
-                                "label_closed_numbered"
-                            ] = open_order_allowed["label_closed"]
+                            exit_order_allowed["side"] = open_order_allowed["main_orders_side"]
+                            
+                            exit_order_allowed["size"] = open_order_allowed["main_orders_qty"]
+                            
+                            exit_order_allowed["label_numbered"] = open_order_allowed["label"]
+                            
+                            exit_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
+                            
                             exit_order_allowed["entry_price"] = strategy_attr[
                                 "entry_price"
                             ]
@@ -794,8 +782,16 @@ class ApplyHedgingSpot:
                             exit_order_allowed["take_profit_usd"] = strategy_attr[
                                 "take_profit_usd"
                             ]
+                            
+                            if exit_order_allowed["side"] == 'buy'\
+                                and exit_order_allowed["entry_price"] < best_bid_prc :
+                                exit_order_allowed["entry_price"] = best_bid_prc - 1
+                                await self.send_combo_orders(exit_order_allowed)
 
-                            await self.send_combo_orders(exit_order_allowed)
+                            if exit_order_allowed["side"] == 'sell'\
+                                and exit_order_allowed["entry_price"] > best_ask_prc:
+                                exit_order_allowed["entry_price"] = best_ask_prc + 1
+                                await self.send_combo_orders(exit_order_allowed)
 
         except Exception as error:
             catch_error(error, 30)
