@@ -8,10 +8,42 @@ For strategy with many derivatives name (a/b/c):
         contains 'supplyDemandShort60', not exclusively 'supplyDemandShort60'
 """
 
-equity_risked_pct_default = 1 / 100 / 4
+equity_risked_pct_default = 1 / 100 / 4 #.25%
 
 strategies = [
                 {
+                    "strategy": "every4hoursLong",
+                    "instrument": ["PERPETUAL"],
+                    "time_frame": 3600,
+                    "side": "sell",
+                    "entry_price": None,
+                    "invalidation_entry_price": None,
+                    "take_profit_usd": None,
+                    "take_profit_pct": 1/100,
+                    "quantity_discrete": None,
+                    "cut_loss_usd": None,
+                    "cut_loss_pct": None,
+                    "averaging": None,
+                    "halt_minute_before_reorder": 60*4,
+                    "equity_risked_usd": None,
+                    "equity_risked_pct": equity_risked_pct_default*4,
+                },  {
+                    "strategy": "every4hoursShort",
+                    "instrument": ["PERPETUAL"],
+                    "time_frame": 3600,
+                    "side": "sell",
+                    "entry_price": None,
+                    "invalidation_entry_price": None,
+                    "take_profit_usd": None,
+                    "take_profit_pct": 1/100,
+                    "quantity_discrete": None,
+                    "cut_loss_usd": None,
+                    "cut_loss_pct": None,
+                    "averaging": None,
+                    "halt_minute_before_reorder": 60*4,
+                    "equity_risked_usd": None,
+                    "equity_risked_pct": equity_risked_pct_default*4,
+                },  {
                     "strategy": "supplyDemandShort60A",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
