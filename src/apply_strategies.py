@@ -500,7 +500,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                #log.error (my_trades_open)
+                log.error (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -624,7 +624,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
                                 exit_order_allowed.update({"size": open_trade_strategy_label[0]['amount']})
                                 exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
-                                exit_order_allowed.update({"label_numbered": exit_order_allowed["label_closed"]})
+                                exit_order_allowed.update({"label": exit_order_allowed["label_closed"]})
                                 
                                 exit_order_allowed.update({"instrument": open_trade_strategy_label[0]['instrument_name']})
                                 price_transaction =  open_trade_strategy_label[0]['price']
