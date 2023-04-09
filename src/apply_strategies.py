@@ -632,7 +632,7 @@ class ApplyHedgingSpot:
                                 price_threshold_buy =  price_transaction - price_threshold 
                                 price_threshold_sell = price_transaction + price_threshold
                                 log.warning(f" exit_order_allowed  {exit_order_allowed}")
-                                log.critical(f" price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
+                                log.critical(f" price_transaction  {price_transaction} price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
 
                                 if exit_order_allowed["side"] == 'buy'\
                                     and exit_order_allowed["len_order_limit"] == 0\
@@ -647,7 +647,7 @@ class ApplyHedgingSpot:
                                         and best_ask_prc > price_threshold_buy:
                                         
                                     exit_order_allowed["entry_price"] = best_ask_prc 
-                                    await self.send_limit_order(open_order_allowed)
+                                    await self.send_limit_order(exit_order_allowed)
 
 
 
