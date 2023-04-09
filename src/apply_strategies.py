@@ -833,15 +833,11 @@ class ApplyHedgingSpot:
                                     or "every1hoursShort" in strategy_attr["strategy"]\
                                          or "every1hoursLong" in strategy_attr["strategy"]:
                                 
-                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* one_minute)
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 
-                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
-                                    open_trade_strategy
-                                )
+                                minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
 
-                                delta_time: int = server_time - open_trade_strategy_max_attr[
-                                    "timestamp"
-                                ]
+                                delta_time: int = server_time - minimum_transaction_time
                                 
                                 exceed_threshold_time_for_reorder: int = delta_time > time_threshold
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
@@ -852,6 +848,7 @@ class ApplyHedgingSpot:
                                 
                                 open_order_allowed.update({"instrument": instrument})
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
+                                log.critical(f" minimum_transaction_time  {minimum_transaction_time} exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 if open_order_allowed["side"] == 'buy'\
                                     and open_order_allowed["len_order_limit"] == 0\
