@@ -194,7 +194,7 @@ class ApplyHedgingSpot:
         return current_time["result"]
 
     async def cancel_orders_based_on_time_threshold(
-        self, server_time, label
+        self, server_time, label, time_threshold: int= None
     ) -> float:
         """ """
         one_minute = 60000
@@ -829,6 +829,7 @@ class ApplyHedgingSpot:
                                          or "every1hoursLong" in strategy_attr["strategy"]:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
+                                await open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 5)
                                 
                                 minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
 
