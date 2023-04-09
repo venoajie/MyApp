@@ -794,20 +794,21 @@ class ApplyHedgingSpot:
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
                                 open_order_allowed.update({"size": open_order_allowed["main_orders_qty"]})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
+                                open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
 
                                 if open_order_allowed["side"] == 'buy'\
                                     and open_order_allowed["len_order_limit"] == 0\
                                         and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_bid_prc - 1
-                                    await self.send_combo_orders(exit_order_allowed)
+                                    await self.send_limit_order(open_order_allowed)
 
                                 if open_order_allowed["side"] == 'sell'\
                                     and open_order_allowed["len_order_limit"] == 0 \
                                         and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_ask_prc + 1
-                                    await self.send_combo_orders(strategy_attr)
+                                    await self.send_limit_order(open_order_allowed)
 
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
 
