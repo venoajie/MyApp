@@ -764,7 +764,7 @@ class ApplyHedgingSpot:
                         
                         if size_is_consistent and open_order_is_consistent:
                             
-                            if "every4hoursLong" or "every4hoursShort" in strategy_attr["strategy"]:
+                            if "every4hoursLong" in strategy_attr["strategy"] or "every4hoursShort" in strategy_attr["strategy"]:
                                 log.critical(f" strategy_attr  {strategy_attr}")
 
                             else:
