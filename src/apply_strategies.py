@@ -514,7 +514,7 @@ class ApplyHedgingSpot:
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
-                log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_byAPI)}')
+                #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_byAPI)}')
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
