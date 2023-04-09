@@ -413,7 +413,7 @@ class ApplyHedgingSpot:
                 net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}\
                     net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
         
-        log.warning(f'determine_size_and_side {determine_size_and_side}')
+        #log.warning(f'determine_size_and_side {determine_size_and_side}')
 
         determine_size_and_side["len_order_market"] = len_transactions_open_orders_strategy_limit
         
@@ -796,7 +796,7 @@ class ApplyHedgingSpot:
                                 exceed_threshold_time_for_reorder: int = delta_time > time_threshold
 
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
-                                open_order_allowed.update({"size": int(abs(strategy_attr["equity_risked_pct"]  * notional))})
+                                open_order_allowed.update({"size": max(1,int(abs(strategy_attr["equity_risked_pct"]  * notional)))})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
                                 open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                 open_order_allowed.update({"instrument": instrument})
