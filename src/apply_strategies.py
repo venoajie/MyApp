@@ -777,7 +777,9 @@ class ApplyHedgingSpot:
                             )
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
-                                or "every4hoursShort" in strategy_attr["strategy"]:
+                                or "every4hoursShort" in strategy_attr["strategy"]\
+                                    or "every1hoursShort" in strategy_attr["strategy"]\
+                                         or "every1hoursLong" in strategy_attr["strategy"]:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* one_minute)
                                 
