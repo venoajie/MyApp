@@ -265,6 +265,10 @@ class ApplyHedgingSpot:
                     log.critical(f'open_order_id {open_order_id}')
                     await self.cancel_by_order_id(open_order_id)
 
+    async def check_list_before_orderings(self, sum_my_trades_open_sqlite_all_strategy) -> None:
+        """ """
+        return 
+        
     async def send_market_order(self, params) -> None:
         """ """
 
@@ -294,10 +298,11 @@ class ApplyHedgingSpot:
                 price = best_ask_prc
         return price
 
-    async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level) -> None:
+    async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
         """
+        result = 0 if transactions==[] else ([o for o in transactions ])
 
         if detail_level== 'main':
 
@@ -309,10 +314,12 @@ class ApplyHedgingSpot:
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
+        if detail_level== None:
+            result = 0 if transactions==[] else transactions
 
         return   result
 
-    async def sum_my_trades_open_sqlite (self, transactions, label, detail_level) -> None:
+    async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
         """
@@ -324,6 +331,10 @@ class ApplyHedgingSpot:
         if detail_level== 'individual':
             result = 0 if transactions==[] else sum([
             o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
+
+        if detail_level== None:
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label) ])
 
         return   result
 
@@ -473,6 +484,8 @@ class ApplyHedgingSpot:
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"]
+                log.error (f'positions {positions}')
+                log.error (f'portfolio {portfolio}')
                 # my trades data
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
@@ -496,6 +509,7 @@ class ApplyHedgingSpot:
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
+                log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get}')
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
@@ -555,7 +569,9 @@ class ApplyHedgingSpot:
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'individual')
                         my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'main')
 
+                        sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
+                        log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
                         open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
