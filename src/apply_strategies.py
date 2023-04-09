@@ -796,10 +796,11 @@ class ApplyHedgingSpot:
                                 exceed_threshold_time_for_reorder: int = delta_time > time_threshold
 
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
-                                open_order_allowed.update({"size": open_order_allowed["main_orders_qty"]})
+                                open_order_allowed.update({"size": abs(strategy_attr["equity_risked_pct"]  * notional)})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
                                 open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                 open_order_allowed.update({"instrument": instrument})
+                                log.critical(f" open_order_allowed  {open_order_allowed}")
 
                                 if open_order_allowed["side"] == 'buy'\
                                     and open_order_allowed["len_order_limit"] == 0\
@@ -815,7 +816,7 @@ class ApplyHedgingSpot:
                                     open_order_allowed["entry_price"] = best_ask_prc + 1
                                     await self.send_limit_order(open_order_allowed)
 
-                                log.critical(f" open_order_allowed  {open_order_allowed}")
+                                
                                 #log.critical(f" strategy_attr  {strategy_attr}")
 
                             else:
