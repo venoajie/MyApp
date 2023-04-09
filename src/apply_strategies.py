@@ -574,29 +574,29 @@ class ApplyHedgingSpot:
 
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
-                        size_is_consistent = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-                        open_order_is_consistent = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                        size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
+                        open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         
                         if size_is_consistent and open_order_is_consistent:
                             log.error (f'size_is_consistent {size_is_consistent}')
-                            log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
-                            log.error (sum_my_trades_open_sqlite_individual_strategy)
+                            log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
+                                sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')
 
                             open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                             open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
-                            instrument = [o["instrument_name"] for o in open_trade_strategy_label][0]
+                            instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
                             log.critical(f"instrument {instrument}")
 
-                            ticker = await self.reading_from_db("ticker", instrument)
+                            ticker: list = await self.reading_from_db("ticker", instrument)
 
                             # index price
                             index_price: float = ticker[0]["index_price"]
 
                             # get bid and ask price
-                            best_bid_prc = ticker[0]["best_bid_price"]
-                            best_ask_prc = ticker[0]["best_ask_price"]
+                            best_bid_prc: float = ticker[0]["best_bid_price"]
+                            best_ask_prc: float = ticker[0]["best_ask_price"]
 
                             # obtain spot equity
                             equity: float = portfolio[0]["equity"]
@@ -612,7 +612,7 @@ class ApplyHedgingSpot:
                                     or "every1hoursShort" in strategy_attr["strategy"]\
                                          or "every1hoursLong" in strategy_attr["strategy"]:
                                              
-                                min_position_size = -notional
+                                min_position_size: float= -notional
                                 exit_order_allowed = await self.is_send_order_allowed(
                                     label,
                                     open_trade_strategy,
@@ -621,6 +621,7 @@ class ApplyHedgingSpot:
                                     min_position_size,
                                 )
                                 log.warning (f' exit_order_allowed every {exit_order_allowed}')
+                                log.critical(f"open_trade_strategy_label {open_trade_strategy_label}")
 
                             # determine position sizing-general strategy
                             else:
