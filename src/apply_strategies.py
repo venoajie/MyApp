@@ -262,6 +262,7 @@ class ApplyHedgingSpot:
                         for o in open_orders
                         if str(label_closed)[-10:] in o["label"]
                     ][0]
+                    log.critical(f'open_order_id {open_order_id}')
                     await self.cancel_by_order_id(open_order_id)
 
     async def send_market_order(self, params) -> None:
