@@ -622,11 +622,11 @@ class ApplyHedgingSpot:
                                 )
 
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
-                                exit_order_allowed.update({"size": exit_order_allowed["exit_orders_limit_qty"]})
+                                exit_order_allowed.update({"size": open_trade_strategy_label[0]['amount']})
                                 exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
                                 exit_order_allowed.update({"label_numbered": exit_order_allowed["label_closed"]})
                                 
-                                exit_order_allowed.update({"instrument": instrument})
+                                exit_order_allowed.update({"instrument": open_trade_strategy_label[0]['instrument_name']})
                                 price_transaction =  open_trade_strategy_label[0]['price']
                                 price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
                                 price_threshold_buy =  price_transaction - price_threshold 
