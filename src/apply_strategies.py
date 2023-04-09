@@ -265,9 +265,13 @@ class ApplyHedgingSpot:
                     log.critical(f'open_order_id {open_order_id}')
                     await self.cancel_by_order_id(open_order_id)
 
-    async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> None:
+    async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
+
+    async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
+        """ """
+        return len(open_orders_from_sub_account_get) == len(open_orders_open_byAPI)
         
     async def send_market_order(self, params) -> None:
         """ """
@@ -510,7 +514,7 @@ class ApplyHedgingSpot:
                 open_orders_from_sub_account_get = reading_from_database[
                     "open_orders_from_sub_account"
                 ]
-                log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get}')
+                log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_byAPI)}')
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
@@ -573,6 +577,8 @@ class ApplyHedgingSpot:
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
                         size_is_consistent = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
+                        open_order_is_consistent = await self.open_orders_from_sub_account_get(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                        log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         
                         if size_is_consistent:
                             log.error (f'size_is_consistent {size_is_consistent}')
