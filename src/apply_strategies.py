@@ -829,7 +829,11 @@ class ApplyHedgingSpot:
                                          or "every1hoursLong" in strategy_attr["strategy"]:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
-                                open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 5)
+                                check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 5)
+                                log.critical(f" check_cancellation  {check_cancellation}")
+                                is_need_cancel = check_cancellation['open_orders_deltaTime-exceed_threshold']
+                                if is_need_cancel:
+                                    await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                 
                                 minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
 
