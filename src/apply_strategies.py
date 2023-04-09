@@ -796,7 +796,7 @@ class ApplyHedgingSpot:
                                 exceed_threshold_time_for_reorder: int = delta_time > time_threshold
 
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
-                                open_order_allowed.update({"size": abs(strategy_attr["equity_risked_pct"]  * notional)})
+                                open_order_allowed.update({"size": int(abs(strategy_attr["equity_risked_pct"]  * notional))})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
                                 open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                 open_order_allowed.update({"instrument": instrument})
