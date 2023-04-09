@@ -418,10 +418,12 @@ class ApplyHedgingSpot:
         determine_size_and_side["len_order_market"] = len_transactions_open_orders_strategy_limit
         
         determine_size_and_side["len_order_limit"] = len_transactions_open_orders_strategy_market
+        label_open = label_numbering.labelling("open", strategy_label)
+        determine_size_and_side["label"] = label_open
 
         if net_sum_current_position == 0:
             # determine position sizing-hedging
-            label_open = label_numbering.labelling("open", strategy_label)
+            
             strategy_label_int = str_mod.get_strings_before_character(
                 label_open, "-", 2
             )
@@ -429,7 +431,7 @@ class ApplyHedgingSpot:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"
 
             determine_size_and_side["label_closed"] = label_closed
-            determine_size_and_side["label"] = label_open
+            
 
         # the strategy has outstanding position
         if net_sum_current_position != 0 and strategy_label_int != None:
@@ -806,7 +808,7 @@ class ApplyHedgingSpot:
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
                                 open_order_allowed.update({"size": max(1,size)})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
-                                open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
+                                
                                 open_order_allowed.update({"instrument": instrument})
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
 
@@ -815,6 +817,7 @@ class ApplyHedgingSpot:
                                         and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_bid_prc - 1
+                                    open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                     await self.send_limit_order(open_order_allowed)
 
                                 if open_order_allowed["side"] == 'sell'\
@@ -822,6 +825,7 @@ class ApplyHedgingSpot:
                                         and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_ask_prc + 1
+                                    open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                     await self.send_limit_order(open_order_allowed)
 
                                 
