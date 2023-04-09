@@ -577,10 +577,10 @@ class ApplyHedgingSpot:
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
                         size_is_consistent = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-                        open_order_is_consistent = await self.open_orders_from_sub_account_get(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                        open_order_is_consistent = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         
-                        if size_is_consistent:
+                        if size_is_consistent and open_order_is_consistent:
                             log.error (f'size_is_consistent {size_is_consistent}')
                             log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
                             log.error (sum_my_trades_open_sqlite_individual_strategy)
@@ -746,7 +746,7 @@ class ApplyHedgingSpot:
                             if exit_order_allowed["exit_orders_market_qty"] != 0:
                                 log.debug(f"exit_orders_market_type")
                         else:
-                            telegram_bot_sendtext('size is inconsistent', "general_error")
+                            telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                             catch_error(error, 60*30)
                             
                 for instrument in instrument_transactions:
@@ -766,7 +766,7 @@ class ApplyHedgingSpot:
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
                         
-                        if size_is_consistent:
+                        if size_is_consistent and open_order_is_consistent:
 
                             # determine position sizing-general strategy
                             min_position_size: float = position_sizing.pos_sizing(
@@ -832,6 +832,10 @@ class ApplyHedgingSpot:
                                     exit_order_allowed["entry_price"] = best_ask_prc + 1
                                     await self.send_combo_orders(exit_order_allowed)
 
+                        else:
+                            telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                            catch_error(error, 60*30)
+                            
         except Exception as error:
             catch_error(error, 30)
 
