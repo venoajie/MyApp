@@ -15,7 +15,7 @@ strategies = [
                     "strategy": "every4hoursLong",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
-                    "side": "sell",
+                    "side": "buy",
                     "entry_price": None,
                     "invalidation_entry_price": None,
                     "take_profit_usd": None,
