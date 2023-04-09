@@ -764,8 +764,22 @@ class ApplyHedgingSpot:
                         
                         if size_is_consistent and open_order_is_consistent:
                             
-                            if "every4hoursLong" in strategy_attr["strategy"] or "every4hoursShort" in strategy_attr["strategy"]:
+                            open_trade_strategy = [
+                                o for o in my_trades_open if strategy_label in o["label"]
+                            ]
+
+                            open_order_allowed = await self.is_send_order_allowed(
+                                strategy_label,
+                                open_trade_strategy,
+                                open_order_mgt,
+                                strategy_attr,
+                                min_position_size,
+                            )
+                        
+                            if "every4hoursLong" in strategy_attr["strategy"] \
+                                or "every4hoursShort" in strategy_attr["strategy"]:
                                 log.critical(f" strategy_attr  {strategy_attr}")
+                                log.warning(f" open_order_allowed  {open_order_allowed}")
 
                             else:
                                 # determine position sizing-general strategy
@@ -780,17 +794,6 @@ class ApplyHedgingSpot:
                                 if "hedgingSpot" in strategy_attr["strategy"]:
                                     min_position_size = -notional
                                 log.error(f" strategy_label  {strategy_label}")
-                                open_trade_strategy = [
-                                    o for o in my_trades_open if strategy_label in o["label"]
-                                ]
-
-                                open_order_allowed = await self.is_send_order_allowed(
-                                    strategy_label,
-                                    open_trade_strategy,
-                                    open_order_mgt,
-                                    strategy_attr,
-                                    min_position_size,
-                                )
 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
