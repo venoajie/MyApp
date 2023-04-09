@@ -485,8 +485,8 @@ class ApplyHedgingSpot:
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"][0]
                 size_from_positions: float = positions["size"]
-                log.error (f'positions {positions}')
-                log.error (f'portfolio {portfolio}')
+                #log.error (f'positions {positions}')
+                #log.error (f'portfolio {portfolio}')
                 # my trades data
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
