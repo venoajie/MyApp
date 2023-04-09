@@ -572,7 +572,7 @@ class ApplyHedgingSpot:
 
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
-                        size_is_consistent = self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
+                        size_is_consistent = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         log.error (f'size_is_consistent {size_is_consistent}')
                         log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
