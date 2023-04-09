@@ -644,16 +644,11 @@ class ApplyHedgingSpot:
 
                                 if exit_order_allowed["side"] == 'sell'\
                                     and exit_order_allowed["len_order_limit"] == 0\
-                                        and best_ask_prc > price_threshold_buy:
+                                        and best_ask_prc > price_threshold_sell:
                                         
                                     exit_order_allowed["entry_price"] = best_ask_prc 
                                     await self.send_limit_order(exit_order_allowed)
 
-
-
-
-
-                            # determine position sizing-general strategy
                             else:
                                 
                                 min_position_size: float = position_sizing.pos_sizing(
