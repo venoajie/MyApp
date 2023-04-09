@@ -611,10 +611,20 @@ class ApplyHedgingSpot:
                                 or "every4hoursShort" in strategy_attr["strategy"]\
                                     or "every1hoursShort" in strategy_attr["strategy"]\
                                          or "every1hoursLong" in strategy_attr["strategy"]:
-                                pass
+                                             
+                                min_position_size = -notional
+                                exit_order_allowed = await self.is_send_order_allowed(
+                                    label,
+                                    open_trade_strategy,
+                                    open_order_mgt,
+                                    strategy_attr,
+                                    min_position_size,
+                                )
+                                log.warning (f' exit_order_allowed every {exit_order_allowed}')
 
                             # determine position sizing-general strategy
                             else:
+                                
                                 min_position_size: float = position_sizing.pos_sizing(
                                     strategy_attr["take_profit_usd"],
                                     strategy_attr["entry_price"],
@@ -785,7 +795,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size,
                             )
-                            log.error (f'open_order_allowed {open_order_allowed}')
+                            #log.error (f'open_order_allowed {open_order_allowed}')
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]\
