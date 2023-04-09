@@ -498,10 +498,10 @@ class GetPrivateData:
         else:
             if main_side == "buy":
                 closed_side = "sell"
-                trigger_prc = tp_prc - 10
+                trigger_prc = tp_prc - 1
             if main_side == "sell":
                 closed_side = "buy"
-                trigger_prc = tp_prc + 10
+                trigger_prc = tp_prc + 1
 
             order_result = await self.send_order(
                 closed_side, instrument, size, closed_label, None, "stop_market", sl_prc
