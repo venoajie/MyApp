@@ -795,6 +795,7 @@ class ApplyHedgingSpot:
                                 open_order_allowed.update({"size": open_order_allowed["main_orders_qty"]})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
                                 open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
+                                open_order_allowed.update({"instrument": instrument})
 
                                 if open_order_allowed["side"] == 'buy'\
                                     and open_order_allowed["len_order_limit"] == 0\
