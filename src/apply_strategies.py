@@ -265,9 +265,9 @@ class ApplyHedgingSpot:
                     log.critical(f'open_order_id {open_order_id}')
                     await self.cancel_by_order_id(open_order_id)
 
-    async def check_list_before_orderings(self, sum_my_trades_open_sqlite_all_strategy) -> None:
+    async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> None:
         """ """
-        return 
+        return sum_my_trades_open_sqlite_all_strategy == size_from_positions
         
     async def send_market_order(self, params) -> None:
         """ """
@@ -483,7 +483,8 @@ class ApplyHedgingSpot:
                 none_data: None = [0, None, []]  # to capture none
 
                 # fetch positions for all instruments
-                positions: list = reading_from_database["positions_from_sub_account"]
+                positions: list = reading_from_database["positions_from_sub_account"][0]
+                size_from_positions: float = positions["size"]
                 log.error (f'positions {positions}')
                 log.error (f'portfolio {portfolio}')
                 # my trades data
@@ -571,6 +572,8 @@ class ApplyHedgingSpot:
 
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
+                        size_is_consistent = self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
+                        log.error (f'size_is_consistent {size_is_consistent}')
                         log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
                         log.error (sum_my_trades_open_sqlite_individual_strategy)
 
