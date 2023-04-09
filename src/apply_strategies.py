@@ -783,14 +783,20 @@ class ApplyHedgingSpot:
                             exit_order_allowed["take_profit_usd"] = strategy_attr[
                                 "take_profit_usd"
                             ]
+                            log.debug (exit_order_allowed["side"] == 'buy')
+                            log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
+                            log.error (exit_order_allowed["side"] == 'sell')
+                            log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                             
                             if exit_order_allowed["side"] == 'buy'\
                                 and exit_order_allowed["entry_price"] < best_bid_prc :
+                                    
                                 exit_order_allowed["entry_price"] = best_bid_prc - 1
                                 await self.send_combo_orders(exit_order_allowed)
 
                             if exit_order_allowed["side"] == 'sell'\
-                                and exit_order_allowed["entry_price"] > best_ask_prc:
+                                and best_ask_prc > exit_order_allowed["entry_price"] :
+                                    
                                 exit_order_allowed["entry_price"] = best_ask_prc + 1
                                 await self.send_combo_orders(exit_order_allowed)
 
