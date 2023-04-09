@@ -783,7 +783,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size,
                             )
-                            log.error (f'strategy_label {strategy_label}')
+                            log.error (f'open_order_allowed {open_order_allowed}')
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]\
