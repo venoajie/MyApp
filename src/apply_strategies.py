@@ -778,20 +778,36 @@ class ApplyHedgingSpot:
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]:
+                                
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* one_minute)
+                                
+                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
+                                    open_trade_strategy
+                                )
+
+                                delta_time: int = server_time - open_trade_strategy_max_attr[
+                                    "timestamp"
+                                ]
+                                
+                                exceed_threshold_time_for_reorder: int = delta_time > time_threshold
 
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
                                 open_order_allowed.update({"size": open_order_allowed["main_orders_qty"]})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
 
-                                if strategy_attr["side"] == 'buy' :
+                                if open_order_allowed["side"] == 'buy'\
+                                    and open_order_allowed["len_order_limit"] == 0\
+                                        and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_bid_prc - 1
-                                    #await self.send_combo_orders(exit_order_allowed)
+                                    await self.send_combo_orders(exit_order_allowed)
 
-                                if strategy_attr["side"] == 'sell' :
+                                if open_order_allowed["side"] == 'sell'\
+                                    and open_order_allowed["len_order_limit"] == 0 \
+                                        and exceed_threshold_time_for_reorder:
                                         
                                     open_order_allowed["entry_price"] = best_ask_prc + 1
-                                    #await self.send_combo_orders(strategy_attr)
+                                    await self.send_combo_orders(strategy_attr)
 
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
 
