@@ -838,7 +838,8 @@ class ApplyHedgingSpot:
                                 log.critical(f" strategy_label  {strategy_label}")
                                 log.critical(f" open_trade_strategy  {open_trade_strategy}")
                                 
-                                exceed_threshold_time_for_reorder: bool = False
+                                exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
+                                
                                 if open_trade_strategy !=[]:
                                     minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
                                     log.critical(f" minimum_transaction_time  {minimum_transaction_time}")
