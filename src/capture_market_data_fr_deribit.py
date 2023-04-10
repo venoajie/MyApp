@@ -152,7 +152,7 @@ class StreamMarketData:
 
                         # one_minute: int = 60000
                         data_orders: list = message["params"]["data"]
-                        # log.debug(data_orders)
+                        log.debug(data_orders)
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
