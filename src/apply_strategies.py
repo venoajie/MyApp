@@ -830,7 +830,7 @@ class ApplyHedgingSpot:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
-                                log.critical(f" check_cancellation  {check_cancellation}")
+                                #log.critical(f" check_cancellation  {check_cancellation}")
                                 is_need_cancel = check_cancellation['open_orders_deltaTime-exceed_threshold']
                                 if is_need_cancel and check_cancellation['open_order_id'] !=[]:
                                     await self.cancel_by_order_id(check_cancellation['open_order_id'])
@@ -842,11 +842,11 @@ class ApplyHedgingSpot:
                                 
                                 if open_trade_strategy !=[]:
                                     max_transaction_time = max([o['timestamp'] for o in open_trade_strategy])
-                                    log.critical(f" minimum_transaction_time  {max_transaction_time}")
+                                    #log.critical(f" minimum_transaction_time  {max_transaction_time}")
                                     delta_time: int = server_time - max_transaction_time
                                     exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
                                     
-                                log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
+                                #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
                                 open_order_allowed.update({"side": strategy_attr["side"]})
@@ -912,10 +912,10 @@ class ApplyHedgingSpot:
                                     exit_order_allowed["take_profit_usd"] = strategy_attr[
                                         "take_profit_usd"
                                     ]
-                                    log.debug (exit_order_allowed["side"] == 'buy')
-                                    log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
-                                    log.error (exit_order_allowed["side"] == 'sell')
-                                    log.debug (best_ask_prc > exit_order_allowed["entry_price"])
+                                    #log.debug (exit_order_allowed["side"] == 'buy')
+                                    #log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
+                                    #log.error (exit_order_allowed["side"] == 'sell')
+                                    #log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                                     
                                     if exit_order_allowed["side"] == 'buy'\
                                         and exit_order_allowed["entry_price"] < best_bid_prc :
