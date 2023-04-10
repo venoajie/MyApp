@@ -837,13 +837,14 @@ class ApplyHedgingSpot:
                                 
                                 log.critical(f" strategy_label  {strategy_label}")
                                 log.critical(f" open_trade_strategy  {open_trade_strategy}")
-                                minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
-
-                                delta_time: int = server_time - minimum_transaction_time
                                 
-                                exceed_threshold_time_for_reorder: int = delta_time > time_threshold
+                                exceed_threshold_time_for_reorder: bool = False
+                                if open_trade_strategy !=[]:
+                                    minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
+                                    delta_time: int = server_time - minimum_transaction_time
+                                    exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
+                                    
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
-
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
                                 open_order_allowed.update({"size": max(1,size)})
                                 open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
