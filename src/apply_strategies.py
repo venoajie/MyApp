@@ -590,6 +590,7 @@ class ApplyHedgingSpot:
                             log.critical(f"instrument {instrument}")
 
                             ticker: list = await self.reading_from_db("ticker", instrument)
+                            log.error (ticker)
 
                             # index price
                             index_price: float = ticker[0]["index_price"]
