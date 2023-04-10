@@ -59,7 +59,6 @@ make start # for first time running
     │   ├── market_understanding
     │       ├── futures_analysis.py
     │   ├── risk_management
-    │       ├── check_data_integrity.py
     │       ├── position_sizing.py
     │   ├── strategies
     │   ├── transaction_management
