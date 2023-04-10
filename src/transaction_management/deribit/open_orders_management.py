@@ -268,12 +268,12 @@ class MyOrders:
             )
             # log.critical (f'both_sources_are_equivalent {both_sources_are_equivalent} open_order_from_get {open_orders_from_sub_account_get} open_order_from_db {self. open_orders_from_db}')
 
-            if both_sources_are_equivalent == False:
-                info = f"OPEN ORDER DIFFERENT open_order_from_get \
-                        {open_orders_from_sub_account_get}  \
-                            open_order_from_db \
-                                {self. open_orders_from_db} \n "
-                telegram_bot_sendtext(info)
+            #if both_sources_are_equivalent == False:
+            #    info = f"OPEN ORDER DIFFERENT open_order_from_get \
+            #            {open_orders_from_sub_account_get}  \
+            #                open_order_from_db \
+            #                    {self. open_orders_from_db} \n "
+                #telegram_bot_sendtext(info)
             # log.warning (f'difference {difference}')
 
             return both_sources_are_equivalent
