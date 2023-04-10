@@ -835,6 +835,7 @@ class ApplyHedgingSpot:
                                 if is_need_cancel and check_cancellation['open_order_id'] !=[]:
                                     await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                 
+                                log.critical(f" strategy_label  {strategy_label}")
                                 log.critical(f" open_trade_strategy  {open_trade_strategy}")
                                 minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
 
