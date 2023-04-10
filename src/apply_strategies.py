@@ -847,7 +847,7 @@ class ApplyHedgingSpot:
                                 log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
-                                open_order_allowed.update({"side": strategy_attr["main_orders_side"]})
+                                open_order_allowed.update({"side": strategy_attr["side"]})
                                 open_order_allowed.update({"size": max(1,size)})
                                 open_order_allowed.update({"type": "limit"})
                                 
