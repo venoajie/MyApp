@@ -356,7 +356,7 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        log.warning(f'strategy_label {strategy_label}')
+        #log.warning(f'strategy_label {strategy_label}')
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
@@ -847,9 +847,9 @@ class ApplyHedgingSpot:
                                 log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
-                                open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
+                                open_order_allowed.update({"side": strategy_attr["main_orders_side"]})
                                 open_order_allowed.update({"size": max(1,size)})
-                                open_order_allowed.update({"type": open_order_allowed["main_orders_type"]})
+                                open_order_allowed.update({"type": "limit"})
                                 
                                 open_order_allowed.update({"instrument": instrument})
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
