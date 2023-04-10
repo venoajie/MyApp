@@ -841,6 +841,7 @@ class ApplyHedgingSpot:
                                 exceed_threshold_time_for_reorder: bool = False
                                 if open_trade_strategy !=[]:
                                     minimum_transaction_time = min([o['timestamp'] for o in open_trade_strategy])
+                                    log.critical(f" minimum_transaction_time  {minimum_transaction_time}")
                                     delta_time: int = server_time - minimum_transaction_time
                                     exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
                                     
