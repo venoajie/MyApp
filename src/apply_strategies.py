@@ -844,6 +844,8 @@ class ApplyHedgingSpot:
                                     delta_time: int = server_time - minimum_transaction_time
                                     exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
                                     
+                                log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
+
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
                                 open_order_allowed.update({"side": open_order_allowed["main_orders_side"]})
                                 open_order_allowed.update({"size": max(1,size)})
@@ -851,7 +853,6 @@ class ApplyHedgingSpot:
                                 
                                 open_order_allowed.update({"instrument": instrument})
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
-                                log.critical(f" minimum_transaction_time  {minimum_transaction_time} exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 if open_order_allowed["side"] == 'buy'\
                                     and open_order_allowed["len_order_limit"] == 0\
