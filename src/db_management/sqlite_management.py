@@ -183,10 +183,23 @@ async def create_tables (type:str = None):
                                                     TABLE 
                                                         {table} 
                                                     ADD COLUMN 
-                                                        label_main TEXT  
+                                                        label_detail TEXT  
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (JSON_EXTRACT (data, '$.label'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''         
+                    create_table_alter_label_strategy_main = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        label_main TEXT  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (SELECT * from (SELECT REPLACE (label_main,'open-',''), REPLACE (label_main,'closed-','') FROM my_trades_all_json);)
                                                     ) 
                                                     VIRTUAL;
                                                     
