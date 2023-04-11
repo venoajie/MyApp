@@ -190,20 +190,8 @@ async def create_tables (type:str = None):
                                                     ) 
                                                     VIRTUAL;
                                                     
-                                                    '''         
-                    create_table_alter_label_strategy_main = f''' 
-                                                    ALTER 
-                                                    TABLE 
-                                                        {table} 
-                                                    ADD COLUMN 
-                                                        label_main TEXT  
-                                                    GENERATED ALWAYS AS 
-                                                    (
-                                                    SELECT * FROM (SELECT REPLACE ( (JSON_EXTRACT (data, '$.label'),'open-',''), REPLACE (JSON_EXTRACT (data, '$.label'),'closed-','') )as test from my_trades_all_json
-                                                    ) 
-                                                    VIRTUAL;
+                                                    '''    
                                                     
-                                                    '''         
                     create_table_alter_order_id = f''' 
                                                     ALTER 
                                                     TABLE 
@@ -240,8 +228,6 @@ async def create_tables (type:str = None):
                     await cur.execute (f'{create_table_alter_order_id}')
                     print (f'create virtual columns {create_table_alter_label_strategy}')
                     await cur.execute (f'{create_table_alter_label_strategy}')
-                    print (f'create virtual columns {create_table_alter_label_strategy_main}')
-                    await cur.execute (f'{create_table_alter_label_strategy_main}')
                     print (f'create virtual columns {create_table_alter_sum_pos}')
                     await cur.execute (f'{create_table_alter_sum_pos}')
                     
