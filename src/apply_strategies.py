@@ -500,7 +500,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                #log.error (my_trades_open)
+                log.error (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -558,9 +558,9 @@ class ApplyHedgingSpot:
                         strategy_label = str_mod.get_strings_before_character(
                             label, "-", 0
                         )
-                        strategy_label_int = str_mod.get_strings_before_character(
-                            label, "-", 1
-                        )
+                        #strategy_label_int = str_mod.get_strings_before_character(
+                        #    label, "-", 1
+                        #)
 
                         # get startegy details
                         strategy_attr = [
@@ -590,7 +590,7 @@ class ApplyHedgingSpot:
                             log.critical(f"instrument {instrument}")
 
                             ticker: list = await self.reading_from_db("ticker", instrument)
-                            log.error (ticker)
+                            #log.error (ticker)
 
                             # index price
                             index_price: float = ticker[0]["index_price"]
