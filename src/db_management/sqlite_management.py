@@ -199,7 +199,7 @@ async def create_tables (type:str = None):
                                                         label_main TEXT  
                                                     GENERATED ALWAYS AS 
                                                     (
-                                                    (REPLACE (JSON_EXTRACT (data, '$.label'),'open-',''), REPLACE (JSON_EXTRACT (data, '$.label'),'closed-','') FROM my_trades_all_json)
+                                                    (REPLACE ( (label_detail,'open-',''), REPLACE (label_detail,'closed-','') FROM my_trades_all_json)
                                                     ) 
                                                     VIRTUAL;
                                                     
