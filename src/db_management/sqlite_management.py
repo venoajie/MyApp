@@ -238,6 +238,8 @@ async def create_tables (type:str = None):
                         
                     print (f'create virtual columns {create_table_alter_order_id}')
                     await cur.execute (f'{create_table_alter_order_id}')
+                    print (f'create virtual columns {create_table_alter_label_strategy_main}')
+                    await cur.execute (f'{create_table_alter_label_strategy_main}')
                     print (f'create virtual columns {create_table_alter_label_strategy}')
                     await cur.execute (f'{create_table_alter_label_strategy}')
                     print (f'create virtual columns {create_table_alter_sum_pos}')
