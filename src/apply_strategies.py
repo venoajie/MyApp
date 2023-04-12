@@ -342,6 +342,25 @@ class ApplyHedgingSpot:
 
         return   result
 
+    async def my_trades_open_sqlite_closed_transactions (self, transactions, label, detail_level: str = None) -> None:
+        """ 
+        detail_level: main/individual
+        """
+        #log.error (transactions)
+        
+        if detail_level== 'main':
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level)])
+        if detail_level== 'individual':
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
+
+        if detail_level== None:
+            result = 0 if transactions==[] else sum([
+            o['amount_dir'] for o in await self.my_trades_open_sqlite_detailing (transactions, label) ])
+
+        return   result
+
     async def is_send_order_allowed(
         self,
         label,
@@ -493,6 +512,7 @@ class ApplyHedgingSpot:
                 # my trades data
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
+                
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
                 #log.error (my_trades_open_sqlite)
