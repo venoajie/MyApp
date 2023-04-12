@@ -857,15 +857,20 @@ class ApplyHedgingSpot:
                                                         
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
-                            ]           
-                            
+                            ]      
+                            min_position_size: float = position_sizing.pos_sizing(
+                                    strategy_attr["take_profit_usd"],
+                                    strategy_attr["entry_price"],
+                                    notional,
+                                    strategy_attr["equity_risked_pct"],
+                                )     
 
                             log.error(f" strategy_label  {strategy_label}")
                             log.error(f" min_position_size  {min_position_size}")
                             log.critical( "hedgingSpot" in strategy_attr["strategy"])
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                min_position_size = -notional
+                                min_position_size: float = -notional
 
                             log.warning(f" min_position_size  {min_position_size}")
 
