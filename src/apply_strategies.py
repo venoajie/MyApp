@@ -964,7 +964,7 @@ class ApplyHedgingSpot:
                                     #log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                                         
                                     if "hedgingSpot" in strategy_attr["strategy"]:
-                                        open_order_allowed["entry_price"] = best_ask_prc
+                                        open_order_allowed["take_profit_usd"] = best_ask_prc
                                         log.critical(f" open_order_allowed  {open_order_allowed}")
                                         await self.send_limit_order(open_order_allowed)
                                         
