@@ -352,7 +352,7 @@ class ApplyHedgingSpot:
             o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
         log.error (result_transactions)
         result = [] if result_transactions == [] else ([
-            o for o in await result_transactions if sum(o ['amount_dir']) ==0  ])
+            o for o in result_transactions if sum(o ['amount_dir']) ==0  ])
             
         return   result
 
