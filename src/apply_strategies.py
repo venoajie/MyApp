@@ -875,9 +875,9 @@ class ApplyHedgingSpot:
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
                                 log.critical(f" check_cancellation  {check_cancellation}")
 
-                                if check_cancellation['open_orders_deltaTime-exceed_threshold'] !=None \
-                                    and check_cancellation['open_order_id'] !=[]:
-                                    await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                if check_cancellation !=None:
+                                    if check_cancellation['open_order_id'] !=[]:
+                                        await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                 
                                 log.critical(f" strategy_label  {strategy_label}")
                                 #log.critical(f" open_trade_strategy  {open_trade_strategy}")
