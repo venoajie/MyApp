@@ -538,7 +538,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -858,6 +858,11 @@ class ApplyHedgingSpot:
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]
+                            
+
+                            # determine position sizing-hedging
+                            if "hedgingSpot" in strategy_attr["strategy"]:
+                                min_position_size = -notional
 
                             open_order_allowed = await self.is_send_order_allowed(
                                 strategy_label,
@@ -918,21 +923,8 @@ class ApplyHedgingSpot:
                                     open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
                                     await self.send_limit_order(open_order_allowed)
 
-                                
-                                #log.critical(f" strategy_attr  {strategy_attr}")
-
                             else:
-                                # determine position sizing-general strategy
-                                min_position_size: float = position_sizing.pos_sizing(
-                                    strategy_attr["take_profit_usd"],
-                                    strategy_attr["entry_price"],
-                                    notional,
-                                    strategy_attr["equity_risked_pct"],
-                                )
-
-                                # determine position sizing-hedging
-                                if "hedgingSpot" in strategy_attr["strategy"]:
-                                    min_position_size = -notional
+                                
                                 log.error(f" strategy_label  {strategy_label}")
                                 log.error(f" min_position_size  {min_position_size}")
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
