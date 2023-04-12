@@ -858,17 +858,7 @@ class ApplyHedgingSpot:
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]      
-                            log.error(strategy_attr)
-                            log.error(strategy_attr["take_profit_usd"])
-                            log.error(strategy_attr["entry_price"])
-                            log.error(notional)
-                            log.error(strategy_attr["equity_risked_pct"])
-
-                            log.error(f" strategy_label  {strategy_label}")
-                            log.critical( "hedgingSpot" in strategy_attr["strategy"])
-                            # determine position sizing-hedging
-                            #log.error (f'open_order_allowed {open_order_allowed}')
-                        
+                                                    
                             if "every4hoursLong" in strategy_attr["strategy"] \
                                 or "every4hoursShort" in strategy_attr["strategy"]\
                                     or "every1hoursShort" in strategy_attr["strategy"]\
@@ -929,6 +919,7 @@ class ApplyHedgingSpot:
 
                             else:
                                 
+                                # determine position sizing
                                 min_position_size: float = position_sizing.pos_sizing(
                                         strategy_attr["take_profit_usd"],
                                         strategy_attr["entry_price"],
@@ -936,25 +927,18 @@ class ApplyHedgingSpot:
                                         strategy_attr["equity_risked_pct"],
                                     )     
                                 
-                                    
+                                # determine position sizing-hedging
                                 if "hedgingSpot" in strategy_attr["strategy"]:
                                     min_position_size: float = -notional
 
-                                log.warning(f" min_position_size  {min_position_size}")
-
-                           
-                                
-                                log.error(f" min_position_size  {min_position_size}")
                                 open_order_allowed = await self.is_send_order_allowed(
                                 strategy_label,
                                 open_trade_strategy,
                                 open_order_mgt,
                                 strategy_attr,
-                                min_position_size,
-                            )
+                                min_position_size)
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
                                 
-
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
                                     and open_order_allowed["len_order_limit"] == 0
