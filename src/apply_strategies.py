@@ -857,12 +857,17 @@ class ApplyHedgingSpot:
                                                         
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
-                            ]
+                            ]           
                             
 
+                            log.error(f" strategy_label  {strategy_label}")
+                            log.error(f" min_position_size  {min_position_size}")
+                            log.critical( "hedgingSpot" in strategy_attr["strategy"])
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 min_position_size = -notional
+
+                            log.warning(f" min_position_size  {min_position_size}")
 
                             open_order_allowed = await self.is_send_order_allowed(
                                 strategy_label,
@@ -871,6 +876,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size,
                             )
+                            log.critical(f" open_order_allowed  {open_order_allowed}")
                             #log.error (f'open_order_allowed {open_order_allowed}')
                         
                             if "every4hoursLong" in strategy_attr["strategy"] \
@@ -925,9 +931,6 @@ class ApplyHedgingSpot:
 
                             else:
                                 
-                                log.error(f" strategy_label  {strategy_label}")
-                                log.error(f" min_position_size  {min_position_size}")
-                                log.critical(f" open_order_allowed  {open_order_allowed}")
 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
