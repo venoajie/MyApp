@@ -938,6 +938,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size)
                                 log.critical(f" open_order_allowed  {open_order_allowed}")
+                                log.warning(f" exit_order_allowed  {exit_order_allowed}")
                                 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
