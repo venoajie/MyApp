@@ -493,11 +493,13 @@ class MyOrders:
             
                 main_orders_qty = 0
                 main_orders_side =  None
-                order_type_market = "sell"
-                log.warning (f'max_size {max_size} net_sum_current_position {net_sum_current_position}')
-                log.error (net_sum_current_position > max_size)
                 if 'hedgingSpot' in strategy_label:
                     if  net_sum_open_orders_strategy_limit==0:
+                        if net_sum_current_position > max_size:
+                            main_orders_qty = abs(max_size - net_sum_current_position)
+                            main_orders_side =  'sell'
+                            main_orders_type = 'limit'
+                            
                         exit_orders_limit_qty = abs(net_sum_current_position)
                         exit_orders_limit_side = "buy"
                         exit_orders_limit_type = "limit"                
