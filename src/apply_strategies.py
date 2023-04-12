@@ -365,7 +365,7 @@ class ApplyHedgingSpot:
                                                      "=",
                                                      res
                                                      )
-                await sqlite_management.insert_tables('my_trades_closed',[o for o in result_transactions if o['trade_seq'] == res][0])
+                await sqlite_management.insert_tables('my_trades_closed_json',[o for o in result_transactions if o['trade_seq'] == res][0])
         return result 
 
     async def deleting_cancel_order(self, table: list, 
@@ -541,7 +541,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                #log.warning (my_trades_open)
+                log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
