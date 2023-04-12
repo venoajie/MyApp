@@ -938,7 +938,7 @@ class ApplyHedgingSpot:
                                 open_order_mgt,
                                 strategy_attr,
                                 min_position_size)
-                                log.critical(f" open_order_allowed  {open_order_allowed}")
+                                
                                 log.warning(f" exit_order_allowed  {exit_order_allowed}")
                                 
                                 if (
@@ -965,6 +965,7 @@ class ApplyHedgingSpot:
                                         
                                     if "hedgingSpot" in strategy_attr["strategy"]:
                                         open_order_allowed["entry_price"] = best_ask_prc
+                                        log.critical(f" open_order_allowed  {open_order_allowed}")
                                         await self.send_limit_order(open_order_allowed)
                                         
                                     
