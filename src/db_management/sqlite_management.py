@@ -386,3 +386,56 @@ async def deleting_row (table: str = 'mytrades',
         print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+
+async def querying_completed_transactions(database: str = "databases/trading.sqlite3")->list:
+
+    '''
+    ''' 
+    
+    query_table = f'''SELECT  * FROM (select REPLACE(REPLACE (label_detail,'closed-',''), 'open-','') as label_main, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)'''
+    
+    combine_result = []
+    
+    try:
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db = db.execute(query_table)  
+                      
+            async with db  as cur:
+                fetchall =  (await cur.fetchall())
+            
+                head = (map(lambda attr : attr[0], cur.description))
+                headers = list(head)    
+                
+        for i in fetchall:
+            combine_result.append(dict(zip(headers,i)))
+                
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+    return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
+
+async def deleting_row (table: str = 'mytrades',
+                          database: str = "databases/trading.sqlite3", 
+                          filter: str = None, 
+                          operator=None,  
+                          filter_value=None
+                          )->list:
+
+    '''
+    ''' 
+    
+    query_table = f'DELETE  FROM {table} WHERE  {filter} {operator}?' 
+        
+    filter_val =(f'{filter_value}',)
+    
+    try:
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            await db.execute(query_table, filter_val)
+                      
+    except Exception as error:
+        print (f'deleting_row {error}')        
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
