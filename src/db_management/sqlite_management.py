@@ -183,7 +183,7 @@ async def create_tables (type:str = None):
                                                     TABLE 
                                                         {table} 
                                                     ADD COLUMN 
-                                                        label_detail TEXT  
+                                                        label_main TEXT  
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (JSON_EXTRACT (data, '$.label'))
@@ -393,7 +393,7 @@ async def querying_completed_transactions(database: str = "databases/trading.sql
     '''
     ''' 
     
-    query_table = f'''SELECT  * FROM (select REPLACE(REPLACE (label_detail,'closed-',''), 'open-','') as label_main, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)'''
+    query_table = f'''SELECT  * FROM (select REPLACE(REPLACE (label_main,'closed-',''), 'open-','') as label, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)'''
     
     combine_result = []
     
