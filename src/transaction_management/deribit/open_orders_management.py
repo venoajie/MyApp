@@ -471,6 +471,7 @@ class MyOrders:
             
             # ensure sell side always negative
             max_size = max_size * -1 if max_size > 0 else max_size
+            log.warning (f'max_size {max_size}')
 
             # initial_position
             if net_sum_current_position == 0\
@@ -493,6 +494,7 @@ class MyOrders:
                 main_orders_qty = 0
                 main_orders_side =  None
                 order_type_market = "sell"
+                log.error (net_sum_current_position < max_size)
                 if 'hedgingSpot' in strategy_label:
                     if  net_sum_open_orders_strategy_limit==0:
                         exit_orders_limit_qty = abs(net_sum_current_position)
