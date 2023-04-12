@@ -934,6 +934,7 @@ class ApplyHedgingSpot:
                                     min_position_size = -notional
                                 log.error(f" strategy_label  {strategy_label}")
                                 log.error(f" min_position_size  {min_position_size}")
+                                log.critical(f" open_order_allowed  {open_order_allowed}")
 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
