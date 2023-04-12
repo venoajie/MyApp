@@ -879,21 +879,21 @@ class ApplyHedgingSpot:
 
                             log.warning(f" min_position_size  {min_position_size}")
 
-                            open_order_allowed = await self.is_send_order_allowed(
+                           
+                            #log.error (f'open_order_allowed {open_order_allowed}')
+                        
+                            if "every4hoursLong" in strategy_attr["strategy"] \
+                                or "every4hoursShort" in strategy_attr["strategy"]\
+                                    or "every1hoursShort" in strategy_attr["strategy"]\
+                                         or "every1hoursLong" in strategy_attr["strategy"]:                             
+                                
+                                open_order_allowed = await self.is_send_order_allowed(
                                 strategy_label,
                                 open_trade_strategy,
                                 open_order_mgt,
                                 strategy_attr,
                                 min_position_size,
                             )
-                            log.critical(f" open_order_allowed  {open_order_allowed}")
-                            #log.error (f'open_order_allowed {open_order_allowed}')
-                        
-                            if "every4hoursLong" in strategy_attr["strategy"] \
-                                or "every4hoursShort" in strategy_attr["strategy"]\
-                                    or "every1hoursShort" in strategy_attr["strategy"]\
-                                         or "every1hoursLong" in strategy_attr["strategy"]:
-                                
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
                                 log.critical(f" check_cancellation  {check_cancellation}")
@@ -940,6 +940,14 @@ class ApplyHedgingSpot:
                                     await self.send_limit_order(open_order_allowed)
 
                             else:
+                                open_order_allowed = await self.is_send_order_allowed(
+                                strategy_label,
+                                open_trade_strategy,
+                                open_order_mgt,
+                                strategy_attr,
+                                min_position_size,
+                            )
+                                log.critical(f" open_order_allowed  {open_order_allowed}")
                                 
 
                                 if (
