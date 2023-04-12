@@ -358,12 +358,12 @@ class ApplyHedgingSpot:
             for res in result:
                 log.critical (res)
                 await sqlite_management.deleting_row('my_trades_all_json', 
-                                                                            "databases/trading.sqlite3",
-                                                                            where_filter,
-                                                                            "=",
-                                                                            res)
-                
-            
+                                                     "databases/trading.sqlite3",
+                                                     where_filter,
+                                                     "=",
+                                                     res
+                                                     )
+        return result 
 
     async def deleting_cancel_order(self, table: list, 
                            database: str ,
@@ -458,8 +458,7 @@ class ApplyHedgingSpot:
         label_open = label_numbering.labelling("open", strategy_label)
         determine_size_and_side["label"] = label_open
 
-        if net_sum_current_position == 0:
-            # determine position sizing-hedging
+        if net_sum_current_position == 0 and strategy_label_int == None:
             
             strategy_label_int = str_mod.get_strings_before_character(
                 label_open, "-", 2
