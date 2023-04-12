@@ -948,6 +948,7 @@ class ApplyHedgingSpot:
 
                                     open_order_allowed["instrument"] = instrument
                                     open_order_allowed["side"] = open_order_allowed["main_orders_side"]
+                                    open_order_allowed["type"] = open_order_allowed["main_orders_type"]
                                     
                                     open_order_allowed["size"] = open_order_allowed["main_orders_qty"]
                                                                         
@@ -963,7 +964,6 @@ class ApplyHedgingSpot:
                                     #log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                                         
                                     if "hedgingSpot" in strategy_attr["strategy"]:
-                                        open_order_allowed["side"] = open_order_allowed["main_orders_side"]
                                         await self.send_limit_order(open_order_allowed)
                                         
                                     
