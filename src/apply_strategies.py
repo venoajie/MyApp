@@ -678,6 +678,13 @@ class ApplyHedgingSpot:
                                 log.warning(f" exit_order_allowed  {exit_order_allowed}")
                                 log.critical(f" price_transaction  {price_transaction} price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
 
+                                strategy_label_int = str_mod.get_strings_before_character(
+                exit_order_allowed ['label'], "-", 2
+            )
+                                label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+                                log.debug (strategy_label_int)
+                                log.debug (label_closed)
+
                                 if exit_order_allowed["side"] == 'buy'\
                                     and exit_order_allowed["len_order_limit"] == 0\
                                         and best_bid_prc < price_threshold_buy :
