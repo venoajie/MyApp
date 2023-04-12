@@ -949,9 +949,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed["side"] = open_order_allowed["main_orders_side"]
                                     
                                     exit_order_allowed["size"] = open_order_allowed["main_orders_qty"]
-                                    
-                                    exit_order_allowed["label"] = open_order_allowed["label_numbered"]
-                                    
+                                                                        
                                     exit_order_allowed["label_closed"] = open_order_allowed["label_closed_numbered"]
                                     
                                     exit_order_allowed["entry_price"] = strategy_attr[
