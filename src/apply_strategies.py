@@ -394,7 +394,8 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
-        #log.warning(f'strategy_label {strategy_label}')
+        log.warning(f'LABEL {label}')
+        log.warning(f'strategy_label_int {strategy_label_int}')
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
@@ -945,44 +946,39 @@ class ApplyHedgingSpot:
                                     and open_order_allowed["len_order_limit"] == 0
                                 ):
 
-                                    exit_order_allowed["instrument"] = instrument
-                                    exit_order_allowed["side"] = open_order_allowed["main_orders_side"]
+                                    open_order_allowed["instrument"] = instrument
+                                    open_order_allowed["side"] = open_order_allowed["main_orders_side"]
                                     
-                                    exit_order_allowed["size"] = open_order_allowed["main_orders_qty"]
+                                    open_order_allowed["size"] = open_order_allowed["main_orders_qty"]
                                                                         
-                                    exit_order_allowed["label_closed_numbered"] = exit_order_allowed["label_closed"]
-                                    exit_order_allowed["label_numbered"] = open_order_allowed ["label"]
+                                    open_order_allowed["label_closed_numbered"] = exit_order_allowed["label_closed"]
+                                    open_order_allowed["label_numbered"] = open_order_allowed ["label"]
                                     
-                                    exit_order_allowed["entry_price"] = strategy_attr[
-                                        "entry_price"
-                                    ]
-                                    exit_order_allowed["cut_loss_usd"] = strategy_attr[
-                                        "cut_loss_usd"
-                                    ]
-                                    exit_order_allowed["take_profit_usd"] = strategy_attr[
-                                        "take_profit_usd"
-                                    ]
+                                    open_order_allowed["entry_price"] = strategy_attr["entry_price"]
+                                    open_order_allowed["cut_loss_usd"] = strategy_attr["cut_loss_usd"]
+                                    open_order_allowed["take_profit_usd"] = strategy_attr["take_profit_usd"]
                                     #log.debug (exit_order_allowed["side"] == 'buy')
                                     #log.debug (exit_order_allowed["entry_price"] < best_bid_prc )
                                     #log.error (exit_order_allowed["side"] == 'sell')
                                     #log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                                         
                                     if "hedgingSpot" in strategy_attr["strategy"]:
+                                        open_order_allowed["side"] = open_order_allowed["main_orders_side"]
                                         await self.send_limit_order(open_order_allowed)
                                         
                                     
                                     else:
-                                        if exit_order_allowed["side"] == 'buy'\
-                                            and exit_order_allowed["entry_price"] < best_bid_prc :
+                                        if open_order_allowed["side"] == 'buy'\
+                                            and open_order_allowed["entry_price"] < best_bid_prc :
                                                 
-                                            exit_order_allowed["entry_price"] = best_bid_prc - 1
-                                            await self.send_combo_orders(exit_order_allowed)
+                                            open_order_allowed["entry_price"] = best_bid_prc - 1
+                                            await self.send_combo_orders(open_order_allowed)
 
-                                        if exit_order_allowed["side"] == 'sell'\
-                                            and best_ask_prc > exit_order_allowed["entry_price"] :
+                                        if open_order_allowed["side"] == 'sell'\
+                                            and best_ask_prc > open_order_allowed["entry_price"] :
                                                 
-                                            exit_order_allowed["entry_price"] = best_ask_prc + 1
-                                            await self.send_combo_orders(exit_order_allowed)
+                                            open_order_allowed["entry_price"] = best_ask_prc + 1
+                                            await self.send_combo_orders(open_order_allowed)
 
                         else:
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
