@@ -351,11 +351,34 @@ class ApplyHedgingSpot:
         result_transactions = [] if transactions==[] else ([
             o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
         log.error (result_transactions)
-        result = [] if result_transactions == [] else  sum([
-            o['amount_dir']   for o in result_transactions   ])
+        result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
+        if result ==0:
+            result = ([o['trade_seq']   for o in result_transactions ])
+            where_filter = f"trade_seq"
+            for res in result:
+                log.critical (res)
+                await sqlite_management.deleting_row('orders_all_json', 
+                                                                            "databases/trading.sqlite3",
+                                                                            where_filter,
+                                                                            "=",
+                                                                            res)
+                
             
-        return   result
 
+    async def deleting_cancel_order(self, table: list, 
+                           database: str ,
+                           data,
+                           cancelled_order
+                           ) -> list:
+        """ """
+        result = await sqlite_management.deleting_row (table, 
+                                                         database,
+                                                         data,
+                                                         '=',
+                                                         cancelled_order
+                                                         ) 
+        return  (result)   
+    
     async def is_send_order_allowed(
         self,
         label,
