@@ -350,7 +350,7 @@ class ApplyHedgingSpot:
         
         result_transactions = [] if transactions==[] else ([
             o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
-        log.error (result_transactions)
+        #log.error (result_transactions)
         result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
         if result ==0:
             result = ([o['trade_seq']   for o in result_transactions ])
@@ -873,7 +873,7 @@ class ApplyHedgingSpot:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
-                                #log.critical(f" check_cancellation  {check_cancellation}")
+                                log.critical(f" check_cancellation  {check_cancellation}")
                                 is_need_cancel = check_cancellation['open_orders_deltaTime-exceed_threshold']
                                 if is_need_cancel and check_cancellation['open_order_id'] !=[]:
                                     await self.cancel_by_order_id(check_cancellation['open_order_id'])
