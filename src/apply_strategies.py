@@ -858,6 +858,11 @@ class ApplyHedgingSpot:
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]      
+                            log.error(strategy_attr)
+                            log.error(strategy_attr["take_profit_usd"])
+                            log.error(strategy_attr["entry_price"])
+                            log.error(notional)
+                            log.error(strategy_attr["equity_risked_pct"])
                             min_position_size: float = position_sizing.pos_sizing(
                                     strategy_attr["take_profit_usd"],
                                     strategy_attr["entry_price"],
