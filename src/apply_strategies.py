@@ -357,7 +357,7 @@ class ApplyHedgingSpot:
             where_filter = f"trade_seq"
             for res in result:
                 log.critical (res)
-                await sqlite_management.deleting_row('orders_all_json', 
+                await sqlite_management.deleting_row('my_trades_all_json', 
                                                                             "databases/trading.sqlite3",
                                                                             where_filter,
                                                                             "=",
