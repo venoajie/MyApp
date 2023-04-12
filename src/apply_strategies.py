@@ -665,6 +665,7 @@ class ApplyHedgingSpot:
                                     min_position_size,
                                 )
 
+                                log.warning(f" open_trade_strategy  {open_trade_strategy}")
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
                                 exit_order_allowed.update({"size": open_trade_strategy_label[0]['amount']})
                                 exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
@@ -682,6 +683,7 @@ class ApplyHedgingSpot:
                 exit_order_allowed ['label'], "-", 2
             )
                                 label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+                                exit_order_allowed.update({"label": label_closed})
                                 log.debug (strategy_label_int)
                                 log.debug (label_closed)
 
@@ -690,7 +692,8 @@ class ApplyHedgingSpot:
                                         and best_bid_prc < price_threshold_buy :
                                         
                                     exit_order_allowed["entry_price"] = best_bid_prc  
-                                    exit_order_allowed.update({"label": label_closed})
+                                    log.debug (exit_order_allowed)
+                                    
                                     
                                     await self.send_limit_order(exit_order_allowed)
 
@@ -700,7 +703,6 @@ class ApplyHedgingSpot:
                                         
                                     exit_order_allowed["entry_price"] = best_ask_prc 
                                     log.debug (exit_order_allowed)
-                                    exit_order_allowed.update({"label": label_closed})
                                     
                                     await self.send_limit_order(exit_order_allowed)
 
