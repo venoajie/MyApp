@@ -122,8 +122,8 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
-    #@cachetools.func.ttl_cache(maxsize=10, ttl=1/5)
-    async def reading_from_db(
+    @cachetools.func.ttl_cache(maxsize=10, ttl=1/5)
+    def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
         """ """
@@ -147,7 +147,7 @@ class ApplyHedgingSpot:
             "portfolio", self.currency
         )
 
-        ticker_perpetual: list = await self.reading_from_db(
+        ticker_perpetual: list = self.reading_from_db(
             "ticker", f"{(self.currency).upper()}-PERPETUAL"
         )
         path_positions: str = system_tools.provide_path_for_file(
@@ -632,7 +632,7 @@ class ApplyHedgingSpot:
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
                             log.critical(f"instrument {instrument}")
 
-                            ticker: list = await self.reading_from_db("ticker", instrument)
+                            ticker: list =  self.reading_from_db("ticker", instrument)
                             #log.error (ticker)
 
                             # index price
@@ -842,7 +842,7 @@ class ApplyHedgingSpot:
                 for instrument in instrument_transactions:
                     # log.critical(f"{instrument}")
 
-                    ticker = await self.reading_from_db("ticker", instrument)
+                    ticker =  self.reading_from_db("ticker", instrument)
 
                     # get bid and ask price
                     best_bid_prc = ticker[0]["best_bid_price"]
