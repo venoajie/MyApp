@@ -700,11 +700,12 @@ class ApplyHedgingSpot:
                                     notional,
                                     strategy_attr["equity_risked_pct"],
                                 )
-                                log.error (f' label {label} min_position_size {min_position_size}')
 
                                 # determine position sizing-hedging
                                 if "hedgingSpot" in strategy_attr["strategy"] :
                                     min_position_size = -notional
+
+                                log.error (f' label {label} min_position_size {min_position_size}')
 
                                 exit_order_allowed = await self.is_send_order_allowed(
                                     label,
@@ -932,6 +933,7 @@ class ApplyHedgingSpot:
                                 if "hedgingSpot" in strategy_attr["strategy"]:
                                     min_position_size = -notional
                                 log.error(f" strategy_label  {strategy_label}")
+                                log.error(f" min_position_size  {min_position_size}")
 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
