@@ -692,6 +692,7 @@ class ApplyHedgingSpot:
                                         and best_ask_prc > price_threshold_sell:
                                         
                                     exit_order_allowed["entry_price"] = best_ask_prc 
+                                    log.debug (exit_order_allowed)
                                     exit_order_allowed.update({"label": exit_order_allowed["label_closed"]})
                                     
                                     await self.send_limit_order(exit_order_allowed)
