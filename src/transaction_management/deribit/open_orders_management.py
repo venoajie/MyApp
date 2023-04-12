@@ -496,7 +496,7 @@ class MyOrders:
                 if 'hedgingSpot' in strategy_label:
                     if  net_sum_open_orders_strategy_limit==0:
                         if net_sum_current_position > max_size:
-                            main_orders_qty = abs(max_size - net_sum_current_position)
+                            main_orders_qty = abs(int(max_size - net_sum_current_position))
                             main_orders_side =  'sell'
                             main_orders_type = 'limit'
                             
