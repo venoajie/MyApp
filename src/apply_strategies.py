@@ -3,6 +3,7 @@
 # built ins
 import asyncio
 import orjson
+import cachetools.func
 
 # installed
 from dataclassy import dataclass
@@ -121,6 +122,7 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
+    @cachetools.func.ttl_cache(maxsize=10, ttl=1/5)
     async def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
