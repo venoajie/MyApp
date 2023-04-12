@@ -84,6 +84,7 @@ async def create_tables (type:str = None):
                  'orders_closed',
                  'orders_untrig',
                  'my_trades_all_json',
+                 'my_trades_closed_json',
                  'orders_all_json',
                  'positions_json',
                  'portfolio_json',
