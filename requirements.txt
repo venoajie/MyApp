@@ -5,5 +5,6 @@ aiohttp
 aiosqlite
 aioschedule
 psutil
+cachetools
 duckdb
 python-dotenv
