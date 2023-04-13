@@ -351,6 +351,13 @@ class ApplyHedgingSpot:
         
         trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
         for transactions in trades_with_closed_labels:
+            label = str_mod.remove_redundant_elements(
+                    [
+                        str_mod.get_strings_before_character(o["label"])
+                        for o in [transactions]
+                    ]
+                )
+            log.error (label)
             log.error (transactions)
             
             result_transactions = [] if transactions==[] else ([
