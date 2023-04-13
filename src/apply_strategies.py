@@ -381,8 +381,9 @@ class ApplyHedgingSpot:
                                                         "=",
                                                         res
                                                         )
-                    log.debug ([o for o in result_transactions if o['trade_seq'] == res])
-                    await sqlite_management.insert_tables('my_trades_closed_json',[o for o in result_transactions if o['trade_seq'] == res])
+                    result_to_dict = ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
+                    log.error (f' result_to_dict {result_to_dict}')
+                    await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
 
     async def deleting_cancel_order(self, table: list, 
                            database: str ,
