@@ -348,7 +348,10 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        #log.error (transactions)
+        from time import sleep
+        trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
+        log.error (trades_with_closed_labels)
+        sleep (30)
         
         result_transactions = [] if transactions==[] else ([
             o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
