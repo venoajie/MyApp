@@ -976,7 +976,7 @@ class ApplyHedgingSpot:
                                     open_order_allowed["side"] = open_order_allowed["main_orders_side"]
                                     open_order_allowed["type"] = open_order_allowed["main_orders_type"]
                                     
-                                    open_order_allowed["size"] = open_order_allowed["main_orders_qty"]
+                                    open_order_allowed["size"] = max(1, int(open_order_allowed["main_orders_qty"]/10))
                                                                         
                                     open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
                                     open_order_allowed["label_numbered"] = open_order_allowed ["label"]
