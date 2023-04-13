@@ -823,6 +823,7 @@ class ApplyHedgingSpot:
                                             )
                                             await self.send_limit_order(exit_order_allowed)
                                     else:
+                                        log.warning(f"exit_order_allowed limit {exit_order_allowed}")
 
                                         exit_order_allowed["label"] = exit_order_allowed[
                                             "label_closed"
