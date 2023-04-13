@@ -344,7 +344,7 @@ class ApplyHedgingSpot:
 
         return   result
 
-    async def my_trades_open_sqlite_closed_transactions (self, transactions, detail_level: str = None) -> None:
+    async def my_trades_open_sqlite_closed_transactions (self, transactions_all, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
         """
@@ -359,6 +359,11 @@ class ApplyHedgingSpot:
                 )[0]
             log.warning (label)
             log.error (transactions)
+            
+            result = 0 if transactions==[] else ([
+            o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
+        ])
+            log.error (result)
             
             result_transactions = [] if transactions==[] else ([
                 o for o in await self.my_trades_open_sqlite_detailing ([transactions], label, detail_level) ])
