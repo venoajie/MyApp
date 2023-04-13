@@ -354,7 +354,7 @@ class ApplyHedgingSpot:
             log.error (transactions)
             
             result_transactions = [] if transactions==[] else ([
-                o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
+                o for o in await self.my_trades_open_sqlite_detailing ([transactions], label, detail_level) ])
             log.error (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
@@ -547,7 +547,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
