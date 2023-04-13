@@ -351,18 +351,18 @@ class ApplyHedgingSpot:
         
         trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
         for transactions in trades_with_closed_labels:
-            log.error (transactions)
             label = str_mod.remove_redundant_elements(
                     [
                         str_mod.get_strings_before_character(o["label_main"])
                         for o in [transactions]
                     ]
                 )[0]
-            log.error (label)
+            log.warning (label)
+            log.error (transactions)
             
             result_transactions = [] if transactions==[] else ([
                 o for o in await self.my_trades_open_sqlite_detailing ([transactions], label, detail_level) ])
-            log.error (result_transactions)
+            log.debug (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             log.error (f' result {result}')
@@ -592,10 +592,9 @@ class ApplyHedgingSpot:
                         for o in my_trades_open
                     ]
                 )
-
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all,'individual')
-                sleep (30)
+                log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -634,7 +633,7 @@ class ApplyHedgingSpot:
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
                         size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
-                        log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
+                        
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         
                         if size_is_consistent and open_order_is_consistent:
