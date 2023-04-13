@@ -344,7 +344,7 @@ class ApplyHedgingSpot:
 
         return   result
 
-    async def my_trades_open_sqlite_closed_transactions (self, transactions, label, detail_level: str = None) -> None:
+    async def my_trades_open_sqlite_closed_transactions (self, transactions, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
         """
@@ -593,6 +593,10 @@ class ApplyHedgingSpot:
                     ]
                 )
 
+                
+                my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all,'individual')
+                sleep (30)
+
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
 
@@ -628,8 +632,6 @@ class ApplyHedgingSpot:
 
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
-                        my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all, label, 'individual')
-                        sleep (30)
                         size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
