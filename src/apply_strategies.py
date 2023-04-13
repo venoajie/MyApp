@@ -360,13 +360,10 @@ class ApplyHedgingSpot:
             log.warning (label)
             log.error (transactions)
             
-            result = 0 if transactions==[] else ([
+            result_transactions = 0 if transactions==[] else ([
             o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
-            log.error (result)
             
-            result_transactions = [] if transactions==[] else ([
-                o for o in await self.my_trades_open_sqlite_detailing ([transactions], label, detail_level) ])
             log.debug (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
