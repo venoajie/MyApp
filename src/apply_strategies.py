@@ -349,7 +349,7 @@ class ApplyHedgingSpot:
         detail_level: main/individual
         """
         
-        trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
+        trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
         for transactions in trades_with_closed_labels:
             label = str_mod.remove_redundant_elements(
                     [
