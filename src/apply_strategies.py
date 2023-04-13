@@ -965,7 +965,6 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size)
                                 
-                                log.warning(f" open_order_allowed  {open_order_allowed}")
                                 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
@@ -978,7 +977,6 @@ class ApplyHedgingSpot:
                                     
                                     open_order_allowed["size"] = max(1, int(open_order_allowed["main_orders_qty"]/10))
                                                                         
-                                    open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
                                     open_order_allowed["label_numbered"] = open_order_allowed ["label"]
                                     
                                     open_order_allowed["entry_price"] = strategy_attr["entry_price"]
@@ -989,6 +987,7 @@ class ApplyHedgingSpot:
                                     #log.error (exit_order_allowed["side"] == 'sell')
                                     #log.debug (best_ask_prc > exit_order_allowed["entry_price"])
                                         
+                                    log.warning(f" open_order_allowed  {open_order_allowed}")
                                     if "hedgingSpot" in strategy_attr["strategy"]:
                                         open_order_allowed["take_profit_usd"] = best_ask_prc
                                         log.critical(f" open_order_allowed  {open_order_allowed}")
@@ -996,6 +995,8 @@ class ApplyHedgingSpot:
                                         
                                     
                                     else:
+                                        open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
+                                        
                                         if open_order_allowed["side"] == 'buy'\
                                             and open_order_allowed["entry_price"] < best_bid_prc :
                                                 
