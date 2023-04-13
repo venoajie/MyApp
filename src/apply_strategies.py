@@ -824,10 +824,16 @@ class ApplyHedgingSpot:
                                             await self.send_limit_order(exit_order_allowed)
                                     else:
                                         log.warning(f"exit_order_allowed limit {exit_order_allowed}")
+                                        
+                                        strategy_label_int = str_mod.get_strings_before_character(
+                        exit_order_allowed  ['label'], "-", 2
+                    )
+                                        label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+                                        exit_order_allowed.update({"label": label_closed})
+                                        log.debug (strategy_label_int)
+                                        log.debug (label_closed)
 
-                                        exit_order_allowed["label"] = exit_order_allowed[
-                                            "label_closed"
-                                        ]
+                                        exit_order_allowed["label"] = label_closed
                                         exit_order_allowed["side"] = exit_order_allowed[
                                             "exit_orders_limit_side"
                                         ]
