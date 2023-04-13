@@ -951,7 +951,7 @@ class ApplyHedgingSpot:
                                 strategy_attr,
                                 min_position_size)
                                 
-                                log.warning(f" exit_order_allowed  {exit_order_allowed}")
+                                log.warning(f" open_order_allowed  {open_order_allowed}")
                                 
                                 if (
                                     open_order_allowed["main_orders_qty"] != 0
@@ -964,7 +964,7 @@ class ApplyHedgingSpot:
                                     
                                     open_order_allowed["size"] = open_order_allowed["main_orders_qty"]
                                                                         
-                                    open_order_allowed["label_closed_numbered"] = exit_order_allowed["label_closed"]
+                                    open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
                                     open_order_allowed["label_numbered"] = open_order_allowed ["label"]
                                     
                                     open_order_allowed["entry_price"] = strategy_attr["entry_price"]
