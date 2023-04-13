@@ -1,3 +1,5 @@
+[![Python application](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml)
+
 # MyApp
 #### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management.
 
