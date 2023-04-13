@@ -348,28 +348,29 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        from time import sleep
-        trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
-        log.error (trades_with_closed_labels)
-        sleep (30)
         
-        result_transactions = [] if transactions==[] else ([
-            o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
-        log.error (result_transactions)
-        result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
-        log.error (f' result {result}')
-        if result ==0:
-            result = ([o['trade_seq']   for o in result_transactions ])
-            where_filter = f"trade_seq"
-            for res in result:
-                log.critical (res)
-                await sqlite_management.deleting_row('my_trades_all_json', 
-                                                     "databases/trading.sqlite3",
-                                                     where_filter,
-                                                     "=",
-                                                     res
-                                                     )
-                await sqlite_management.insert_tables('my_trades_closed_json',[o for o in result_transactions if o['trade_seq'] == res][0])
+        trades_with_closed_labels = [o for o in transactions if 'closed' in o['label_main'] ]
+        for transactions in trades_with_closed_labels:
+            log.error (transactions)
+            
+            result_transactions = [] if transactions==[] else ([
+                o for o in await self.my_trades_open_sqlite_detailing (transactions, label, detail_level) ])
+            log.error (result_transactions)
+            
+            result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
+            log.error (f' result {result}')
+            if result ==0:
+                result = ([o['trade_seq']   for o in result_transactions ])
+                where_filter = f"trade_seq"
+                for res in result:
+                    log.critical (res)
+                    await sqlite_management.deleting_row('my_trades_all_json', 
+                                                        "databases/trading.sqlite3",
+                                                        where_filter,
+                                                        "=",
+                                                        res
+                                                        )
+                    await sqlite_management.insert_tables('my_trades_closed_json',[o for o in result_transactions if o['trade_seq'] == res][0])
         return result 
 
     async def deleting_cancel_order(self, table: list, 
@@ -514,6 +515,7 @@ class ApplyHedgingSpot:
 
     async def running_strategy(self, server_time) -> float:
         """ """
+        from time import sleep
 
         try:
             # gathering basic data
@@ -620,6 +622,7 @@ class ApplyHedgingSpot:
                         sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
                         sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
                         my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all, label, 'individual')
+                        sleep (30)
                         size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
