@@ -346,7 +346,7 @@ class ApplyHedgingSpot:
 
         return   result
 
-    async def my_trades_open_sqlite_closed_transactions (self, transactions_all, detail_level: str = None) -> None:
+    async def my_trades_open_sqlite_closed_transactions (self, transactions_all) -> None:
         """ 
         detail_level: main/individual
         """
@@ -598,7 +598,7 @@ class ApplyHedgingSpot:
                     ]
                 )
                 
-                my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all,'individual')
+                my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
 
                 # when there are some positions/order, check their appropriateness to the established standard
@@ -1070,6 +1070,9 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
+        my_trades_open_sqlite: dict = await syn.querying_all('my_trades_all_json')
+        my_trades_open_all: list = my_trades_open_sqlite['all']
+        await syn.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
 
         # open_orders_from_exchange = await syn.open_orders_from_exchange ()
 
