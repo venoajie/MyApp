@@ -357,7 +357,7 @@ class ApplyHedgingSpot:
                         str_mod.get_strings_before_character(o["label_main"])
                         for o in [transactions]
                     ]
-                )
+                )[0]
             log.error (label)
             
             result_transactions = [] if transactions==[] else ([
