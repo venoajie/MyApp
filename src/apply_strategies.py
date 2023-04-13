@@ -694,7 +694,7 @@ class ApplyHedgingSpot:
                                 log.critical(f" price_transaction  {price_transaction} price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
 
                                 strategy_label_int = str_mod.get_strings_before_character(
-                exit_order_allowed ['label'], "-", 2
+                open_trade_strategy_label [0] ['label'], "-", 2
             )
                                 label_closed = f"{strategy_label}-closed-{strategy_label_int}"
                                 exit_order_allowed.update({"label": label_closed})
