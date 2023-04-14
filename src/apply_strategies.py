@@ -366,7 +366,7 @@ class ApplyHedgingSpot:
             o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
             
-            log.debug (result_transactions)
+            #log.debug (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             log.error (f' result {result}')
