@@ -368,7 +368,7 @@ class ApplyHedgingSpot:
             o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
             
-            log.debug (result_transactions)
+            #log.debug (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             log.error (f' result {result}')
@@ -562,7 +562,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                #log.warning (my_trades_open)
+                log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -594,8 +594,8 @@ class ApplyHedgingSpot:
                 strategies = entries_exits.strategies
 
                 # fetch label for outstanding trade position/orders
-                log.error ([o for o in my_trades_open])
-                log.error ([o for o in my_trades_open if 'closed' not in o["label"]])
+                #log.error ([o for o in my_trades_open])
+                #log.error ([o for o in my_trades_open if 'closed' not in o["label"]])
                 my_trades_open_remove_closed = [o for o in my_trades_open if 'closed' not in o["label"]]
                 strategy_labels = str_mod.remove_redundant_elements(
                     [
@@ -607,7 +607,7 @@ class ApplyHedgingSpot:
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
                 log.error (f'strategy_labels {strategy_labels}')
-                sleep (10)
+                
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -711,6 +711,7 @@ class ApplyHedgingSpot:
                                 log.debug (strategy_label_int)
                                 log.debug (label_closed)
                                 log.warning(f" exit_order_allowed 1 {exit_order_allowed}")
+                                sleep (10)
 
                                 if exit_order_allowed["side"] == 'buy'\
                                     and exit_order_allowed["len_order_limit"] == 0\
