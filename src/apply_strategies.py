@@ -325,6 +325,7 @@ class ApplyHedgingSpot:
         if detail_level== None:
             result = 0 if transactions==[] else transactions
 
+        log.warning(f'my_trades_open_sqlite_detailing {result}')
         return   result
 
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
@@ -414,6 +415,7 @@ class ApplyHedgingSpot:
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
         log.warning(f'LABEL {label}')
+        log.warning(f'strategy_label {strategy_label}')
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
