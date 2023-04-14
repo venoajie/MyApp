@@ -682,13 +682,13 @@ class ApplyHedgingSpot:
                             if "every" in strategy_attr["strategy"]: 
                                              
                                 min_position_size: float= -notional
-                                exit_order_allowed ={ await self.is_send_order_allowed(
+                                exit_order_allowed = await self.is_send_order_allowed(
                                     label,
                                     open_trade_strategy_label,
                                     open_order_mgt,
                                     strategy_attr,
                                     min_position_size,
-                                )}
+                                )
 
                                 #log.warning(f" open_trade_strategy_label  {open_trade_strategy_label}")
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
