@@ -318,6 +318,7 @@ class ApplyHedgingSpot:
             o for o in transactions if  str_mod.get_strings_before_character(
                 o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)]
                                                  )
+            log.warning(f'my_trades_open_sqlite_detailing {result}')
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
@@ -325,7 +326,7 @@ class ApplyHedgingSpot:
         if detail_level== None:
             result = 0 if transactions==[] else transactions
 
-        log.warning(f'my_trades_open_sqlite_detailing {result}')
+        #
         return   result
 
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
