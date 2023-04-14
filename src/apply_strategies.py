@@ -671,10 +671,7 @@ class ApplyHedgingSpot:
                             # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                             # log.warning (leverage_and_delta)
                             
-                            if "every4hoursLong" in strategy_attr["strategy"] \
-                                or "every4hoursShort" in strategy_attr["strategy"]\
-                                    or "every1hoursShort" in strategy_attr["strategy"]\
-                                         or "every1hoursLong" in strategy_attr["strategy"]:
+                            if "every" in strategy_attr["strategy"]: 
                                              
                                 min_position_size: float= -notional
                                 exit_order_allowed = await self.is_send_order_allowed(
@@ -899,10 +896,7 @@ class ApplyHedgingSpot:
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]      
                                                     
-                            if "every4hoursLong" in strategy_attr["strategy"] \
-                                or "every4hoursShort" in strategy_attr["strategy"]\
-                                    or "every1hoursShort" in strategy_attr["strategy"]\
-                                         or "every1hoursLong" in strategy_attr["strategy"]:                             
+                            if "every" in strategy_attr["strategy"]:                             
                                 
                                 min_position_size: float = -notional
                                 open_order_allowed = await self.is_send_order_allowed(
@@ -960,19 +954,12 @@ class ApplyHedgingSpot:
                             else:
                                 
                                 # determine position sizing
-                                log.critical ("every" in strategy_attr["strategy"])
-                                                
-                                if "every4hoursLong" in strategy_attr["strategy"] \
-                                    or "every4hoursShort" in strategy_attr["strategy"]\
-                                        or "every1hoursShort" in strategy_attr["strategy"]\
-                                            or "every1hoursLong" in strategy_attr["strategy"]:  
-                                    
-                                    min_position_size: float = position_sizing.pos_sizing(
-                                            strategy_attr["take_profit_usd"],
-                                            strategy_attr["entry_price"],
-                                            notional,
-                                            strategy_attr["equity_risked_pct"],
-                                        )     
+                                min_position_size: float = position_sizing.pos_sizing(
+                                        strategy_attr["take_profit_usd"],
+                                        strategy_attr["entry_price"],
+                                        notional,
+                                        strategy_attr["equity_risked_pct"],
+                                    )     
                                 
                                 # determine position sizing-hedging
                                 if "hedgingSpot" in strategy_attr["strategy"]:
