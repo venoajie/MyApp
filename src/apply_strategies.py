@@ -360,7 +360,7 @@ class ApplyHedgingSpot:
                     ]
                 )[0]
             log.warning (label)
-            log.error (transactions)
+            #log.error (transactions)
             
             result_transactions = 0 if transactions==[] else ([
             o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
