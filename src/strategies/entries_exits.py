@@ -12,6 +12,22 @@ equity_risked_pct_default = 1 / 100 / 4 #.25%
 
 strategies = [
                 {
+                    "strategy": "every5mtestLong",
+                    "instrument": ["PERPETUAL"],
+                    "time_frame": 3600,
+                    "side": "buy",
+                    "entry_price": None,
+                    "invalidation_entry_price": None,
+                    "take_profit_usd": None,
+                    "take_profit_pct": 1/100/20,
+                    "quantity_discrete": None,
+                    "cut_loss_usd": None,
+                    "cut_loss_pct": None,
+                    "averaging": None,
+                    "halt_minute_before_reorder": 5,
+                    "equity_risked_usd": None,
+                    "equity_risked_pct": equity_risked_pct_default*8,
+                }, {
                     "strategy": "every1hoursLong",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
