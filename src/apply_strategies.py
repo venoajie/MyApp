@@ -318,7 +318,7 @@ class ApplyHedgingSpot:
             o for o in transactions if  str_mod.get_strings_before_character(
                 o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)]
                                                  )
-            log.warning(f'my_trades_open_sqlite_detailing {result}')
+            #log.warning(f'my_trades_open_sqlite_detailing {result}')
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
             o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
@@ -368,7 +368,7 @@ class ApplyHedgingSpot:
             o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
         ])
             
-            #log.debug (result_transactions)
+            log.debug (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             log.error (f' result {result}')
@@ -603,6 +603,8 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
+                log.error (f'strategy_labels {strategy_labels}')
+                sleep (10)
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -677,13 +679,13 @@ class ApplyHedgingSpot:
                             if "every" in strategy_attr["strategy"]: 
                                              
                                 min_position_size: float= -notional
-                                exit_order_allowed = await self.is_send_order_allowed(
+                                exit_order_allowed ={ await self.is_send_order_allowed(
                                     label,
                                     open_trade_strategy_label,
                                     open_order_mgt,
                                     strategy_attr,
                                     min_position_size,
-                                )
+                                )}
 
                                 #log.warning(f" open_trade_strategy_label  {open_trade_strategy_label}")
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
@@ -691,7 +693,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
                                 
                                 
-                                exit_order_allowed.update({"instrument": open_trade_strategy_label[0]['instrument_name']})
+                                exit_order_allowed.update({"instrument": instrument})
                                 price_transaction =  open_trade_strategy_label[0]['price']
                                 price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
                                 price_threshold_buy =  price_transaction - price_threshold 
