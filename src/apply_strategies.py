@@ -2,7 +2,7 @@
 
 # built ins
 import asyncio
-import orjson
+#import orjson
 import cachetools.func
 
 # installed
@@ -685,7 +685,7 @@ class ApplyHedgingSpot:
                                     min_position_size,
                                 )
 
-                                log.warning(f" open_trade_strategy_label  {open_trade_strategy_label}")
+                                #log.warning(f" open_trade_strategy_label  {open_trade_strategy_label}")
                                 exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
                                 exit_order_allowed.update({"size": open_trade_strategy_label[0]['amount']})
                                 exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
@@ -696,7 +696,6 @@ class ApplyHedgingSpot:
                                 price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
                                 price_threshold_buy =  price_transaction - price_threshold 
                                 price_threshold_sell = price_transaction + price_threshold
-                                log.warning(f" exit_order_allowed  {exit_order_allowed}")
                                 log.critical(f" price_transaction  {price_transaction} price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
 
                                 strategy_label_int = str_mod.get_strings_before_character(
@@ -706,6 +705,7 @@ class ApplyHedgingSpot:
                                 exit_order_allowed.update({"label": label_closed})
                                 log.debug (strategy_label_int)
                                 log.debug (label_closed)
+                                log.warning(f" exit_order_allowed 1 {exit_order_allowed}")
 
                                 if exit_order_allowed["side"] == 'buy'\
                                     and exit_order_allowed["len_order_limit"] == 0\
@@ -722,7 +722,7 @@ class ApplyHedgingSpot:
                                         and best_ask_prc > price_threshold_sell:
                                         
                                     exit_order_allowed["entry_price"] = best_ask_prc 
-                                    log.debug (exit_order_allowed)
+                                    log.warning (exit_order_allowed)
                                     
                                     await self.send_limit_order(exit_order_allowed)
 
@@ -960,12 +960,19 @@ class ApplyHedgingSpot:
                             else:
                                 
                                 # determine position sizing
-                                min_position_size: float = position_sizing.pos_sizing(
-                                        strategy_attr["take_profit_usd"],
-                                        strategy_attr["entry_price"],
-                                        notional,
-                                        strategy_attr["equity_risked_pct"],
-                                    )     
+                                log.critical ("every" in strategy_attr["strategy"])
+                                                
+                                if "every4hoursLong" in strategy_attr["strategy"] \
+                                    or "every4hoursShort" in strategy_attr["strategy"]\
+                                        or "every1hoursShort" in strategy_attr["strategy"]\
+                                            or "every1hoursLong" in strategy_attr["strategy"]:  
+                                    
+                                    min_position_size: float = position_sizing.pos_sizing(
+                                            strategy_attr["take_profit_usd"],
+                                            strategy_attr["entry_price"],
+                                            notional,
+                                            strategy_attr["equity_risked_pct"],
+                                        )     
                                 
                                 # determine position sizing-hedging
                                 if "hedgingSpot" in strategy_attr["strategy"]:
