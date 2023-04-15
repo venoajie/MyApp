@@ -884,7 +884,7 @@ class ApplyHedgingSpot:
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]  
                             
-                            log.critical(f" open_trade_strategy  {open_trade_strategy}")    
+                            log.critical(f" strategy_label  {strategy_label} open_trade_strategy  {open_trade_strategy}")    
                                                     
                             if "every" in strategy_attr["strategy"]:
                                 if open_trade_strategy != []:   
