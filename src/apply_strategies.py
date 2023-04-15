@@ -708,7 +708,7 @@ class ApplyHedgingSpot:
                                             
                                         params.update({"entry_price": best_ask_prc})
                                         
-                                        await self.send_limit_order(exit_order_allowed)
+                                        await self.send_limit_order(params)
 
                                     log.warning (f'params 2 {params}')
 
