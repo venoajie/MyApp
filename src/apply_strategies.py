@@ -557,7 +557,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
-                log.error (my_trades_open_sqlite)
+                #log.error (my_trades_open_sqlite)
                 sleep (10)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
@@ -569,7 +569,7 @@ class ApplyHedgingSpot:
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
-                #log.error (open_orders_sqlite)
+                log.error (open_orders_sqlite)
                 open_orders_open_byAPI: list= open_orders_sqlite ['list_data_only']
 
                 #log.error (open_orders_open_byAPI)
