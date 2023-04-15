@@ -652,6 +652,11 @@ class ApplyHedgingSpot:
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         
                         if size_is_consistent and open_order_is_consistent:
+                            
+                            grid_closed = grid.GridPerpetual(my_trades_open,
+                                                             open_orders_sqlite
+                                                             )
+                            
                             log.error (f'size_is_consistent {size_is_consistent}')
                             log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
                                 sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')
@@ -682,13 +687,9 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
-                                grid_closed = grid.GridPerpetual(my_trades_open,
-                                           open_orders_sqlite,
-                                           open_trade_strategy_label, 
-                                           None
-                          )
+                                
                                              
-                                params = grid_closed.get_params_orders_closed ()
+                                params = grid_closed.get_params_orders_closed (open_trade_strategy)
                                 log.debug (f'params 1 {params}')
 
                                 if params["side"] == 'buy'\
@@ -883,7 +884,7 @@ class ApplyHedgingSpot:
                             ]      
                                                     
                             if "every" in strategy_attr["strategy"]:   
-                                params_order = {}  
+                                params_order = grid_closed.get_params_orders_closed (open_trade_strategy)
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
@@ -906,13 +907,6 @@ class ApplyHedgingSpot:
                                     
                                 #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
-                                size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
-                                params_order.update({"side": strategy_attr["side"]})
-                                params_order.update({"size": max(1,size)})
-                                params_order.update({"type": "limit"})
-                                label_open = label_numbering.labelling("open", strategy_attr["strategy"])
-                                
-                                params_order.update({"instrument": instrument})
                                 log.critical(f" params_order A {params_order}")
 
                                 if params_order["side"] == 'buy'\
