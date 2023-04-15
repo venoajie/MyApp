@@ -653,7 +653,7 @@ class ApplyHedgingSpot:
                         
                         if size_is_consistent and open_order_is_consistent:
                             
-                            grids= grid.GridPerpetual(my_trades_open,
+                            grids= await grid.GridPerpetual(my_trades_open,
                                                              open_orders_sqlite
                                                              )
                             
