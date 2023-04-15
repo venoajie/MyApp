@@ -78,7 +78,7 @@ class GridPerpetual:
         
         # fetch strategies attributes
         if active_trade_item != None \
-            or active_trade_item == []:
+            or active_trade_item != []:
                 
             trade_item = active_trade_item[0]
             side_transaction = trade_item['direction'] 
