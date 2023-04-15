@@ -93,17 +93,17 @@ class GridPerpetual:
                             o for o in strategies if o["strategy"] == strategy_label_main
                         ][0]
 
-            price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
+            price_margin =  price_transaction * strategy_attr["take_profit_pct"] 
             
             label_closed = f"{strategy_label_main}-closed-{strategy_label_int}"
             params_order.update({"label": label_closed})
                     
             if side_transaction == "buy":
                 side = "sell"
-                price_threshold = price_transaction + price_threshold
+                price_threshold = price_transaction + price_margin
             if side_transaction == "sell":
                 side = "buy"
-                price_threshold =  price_transaction - price_threshold
+                price_threshold =  price_transaction - price_margin
             
             open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
             params_order.update({"price_threshold": price_threshold})
