@@ -15,7 +15,7 @@ from transaction_management.deribit import open_orders_management, myTrades_mana
 from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import  position_sizing
 from configuration import label_numbering, config
-from strategies import entries_exits
+from strategies import entries_exits, grid_perpetual as grid
 from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
@@ -558,7 +558,7 @@ class ApplyHedgingSpot:
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
                 #log.error (my_trades_open_sqlite)
-                sleep (10)
+                #sleep (10)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
@@ -682,57 +682,32 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
+                                grid_closed = grid.GridPerpetual(my_trades_open,
+                                           open_orders_sqlite,
+                                           open_trade_strategy_label, 
+                                           None
+                          )
                                              
-                                min_position_size: float= -notional
-                                exit_order_allowed = await self.is_send_order_allowed(
-                                    label,
-                                    open_trade_strategy_label,
-                                    open_order_mgt,
-                                    strategy_attr,
-                                    min_position_size,
-                                )
+                                params = grid_closed.get_params_orders_closed ()
+                                log.debug (f'params 1 {params}')
 
-                                #log.warning(f" open_trade_strategy_label  {open_trade_strategy_label}")
-                                exit_order_allowed.update({"side": exit_order_allowed["exit_orders_limit_side"]})
-                                exit_order_allowed.update({"size": open_trade_strategy_label[0]['amount']})
-                                exit_order_allowed.update({"type": exit_order_allowed["exit_orders_limit_type"]})
-                                
-                                
-                                exit_order_allowed.update({"instrument": instrument})
-                                price_transaction =  open_trade_strategy_label[0]['price']
-                                price_threshold =  price_transaction * strategy_attr["take_profit_pct"] 
-                                price_threshold_buy =  price_transaction - price_threshold 
-                                price_threshold_sell = price_transaction + price_threshold
-                                log.critical(f" price_transaction  {price_transaction} price_threshold_buy  {price_threshold_buy} price_threshold_sell  {price_threshold_sell}")
-
-                                strategy_label_int = str_mod.get_strings_before_character(
-                open_trade_strategy_label [0] ['label'], "-", 2
-            )
-                                label_closed = f"{strategy_label}-closed-{strategy_label_int}"
-                                exit_order_allowed.update({"label": label_closed})
-                                log.debug (strategy_label_int)
-                                log.debug (label_closed)
-                                log.warning(f" exit_order_allowed 1 {exit_order_allowed}")
-                                sleep (10)
-
-                                if exit_order_allowed["side"] == 'buy'\
-                                    and exit_order_allowed["len_order_limit"] == 0\
-                                        and best_bid_prc < price_threshold_buy :
+                                if params["side"] == 'buy'\
+                                    and params["len_order_limit"] == 0\
+                                        and best_bid_prc < params ['price_threshold'] :
                                         
-                                    exit_order_allowed["entry_price"] = best_bid_prc  
-                                    log.debug (exit_order_allowed)
-                                    
+                                    params.update({"entry_price": best_bid_prc})
+                                                                        
+                                    await self.send_limit_order(params)
+
+                                if params["side"] == 'sell'\
+                                    and params["len_order_limit"] == 0\
+                                        and best_ask_prc > params ['price_threshold']:
+                                        
+                                    params.update({"entry_price": best_ask_prc})
                                     
                                     await self.send_limit_order(exit_order_allowed)
 
-                                if exit_order_allowed["side"] == 'sell'\
-                                    and exit_order_allowed["len_order_limit"] == 0\
-                                        and best_ask_prc > price_threshold_sell:
-                                        
-                                    exit_order_allowed["entry_price"] = best_ask_prc 
-                                    log.warning (exit_order_allowed)
-                                    
-                                    await self.send_limit_order(exit_order_allowed)
+                                log.warning (f'params 2 {params}')
 
                             else:
                                 
