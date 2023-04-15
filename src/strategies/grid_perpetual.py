@@ -32,10 +32,10 @@ class GridPerpetual:
     my_trades_open: list
     orders_from_sqlite: list
 
-    async def get_strategy_from_active_trade_item (self) -> list:
+    async def get_strategy_from_active_trade_item (self, active_trade_item) -> list:
         """
         """
-        result = [o['label'] for o in self.active_trade_item][0]
+        result = [o['label'] for o in active_trade_item][0]
         return dict(
             main= str_mod.parsing_label(result)['main'],
             transaction_net= str_mod.parsing_label(result)['transaction_net'])
@@ -81,6 +81,7 @@ class GridPerpetual:
             or active_trade_item != []:
                 
             trade_item = active_trade_item[0]
+            print (f'trade_item {trade_item}')
             side_transaction = trade_item['direction'] 
             price_transaction = trade_item['price'] 
             label_transaction = trade_item['label'] 
@@ -103,15 +104,14 @@ class GridPerpetual:
             if side_transaction == "sell":
                 side = "buy"
                 price_threshold = price_transaction + price_threshold
-
-            len_order = await self. open_orders_as_per_main_label(strategy_label_main)
+            
+            open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
             params_order.update({"price_threshold": price_threshold})
             params_order.update({"side": side})
             params_order.update({"size": trade_item['amount']})
-            params_order.update({"len_order_limit": len_order})
+            params_order.update({"len_order_limit": open_orders_under_same_label_status['len_result']})
             params_order.update({"type": 'limit'})
             params_order.update({"instrument": trade_item['instrument_name']})
-            
         return params_order
 
 
@@ -127,22 +127,26 @@ class GridPerpetual:
                         ][0]
         
 
+        open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label)
         size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
         params_order.update({"side": strategy_attr["side"]})
         params_order.update({"size": max(1,size)})
         params_order.update({"type": "limit"})
-        params_order.update({"len_order_limit": await self.open_orders_as_per_main_label (strategy_label)})
+        params_order.update({"len_order_limit": open_orders_under_same_label_status['len_result']})
         
         return params_order
     
-    async def open_orders_as_per_main_label (self, label_main) -> list:
+    async def open_orders_as_per_main_label (self, label_main: str) -> list:
         """
         """
-
-        return 0 if self.orders_from_sqlite['list_data_only'] == [] \
-            else len([o['label_main'] for o in self.orders_from_sqlite  ['all'] \
+        result =  [] if self.orders_from_sqlite['list_data_only'] == [] \
+            else ([o['label_main'] for o in self.orders_from_sqlite  ['all'] \
                 if  str_mod.parsing_label(o['label_main'])['transaction_status'] == str_mod.parsing_label(label_main) ['transaction_status']
                         ])
+
+        return dict(
+            detail= result,
+            len_result= 0 if result == [] else len (result))
                             
     async def provide_params_for_order(self) -> list:
         """
