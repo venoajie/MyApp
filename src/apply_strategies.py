@@ -653,7 +653,7 @@ class ApplyHedgingSpot:
                         
                         if size_is_consistent and open_order_is_consistent:
                             
-                            grid_closed = grid.GridPerpetual(my_trades_open,
+                            grids= grid.GridPerpetual(my_trades_open,
                                                              open_orders_sqlite
                                                              )
                             
@@ -689,7 +689,7 @@ class ApplyHedgingSpot:
                             if "every" in strategy_attr["strategy"]: 
                                 
                                              
-                                params = grid_closed.get_params_orders_closed (open_trade_strategy)
+                                params = grids.get_params_orders_closed (open_trade_strategy)
                                 log.debug (f'params 1 {params}')
 
                                 if params["side"] == 'buy'\
@@ -884,7 +884,7 @@ class ApplyHedgingSpot:
                             ]      
                                                     
                             if "every" in strategy_attr["strategy"]:   
-                                params_order = grid_closed.get_params_orders_closed (open_trade_strategy)
+                                params_order = grids.get_params_orders_closed (open_trade_strategy)
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
