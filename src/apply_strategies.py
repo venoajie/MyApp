@@ -882,16 +882,9 @@ class ApplyHedgingSpot:
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]      
                                                     
-                            if "every" in strategy_attr["strategy"]:                             
+                            if "every" in strategy_attr["strategy"]:   
+                                params_order = {}  
                                 
-                                min_position_size: float = -notional
-                                open_order_allowed = await self.is_send_order_allowed(
-                                strategy_label,
-                                open_trade_strategy,
-                                open_order_mgt,
-                                strategy_attr,
-                                min_position_size,
-                            )
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
                                 #log.critical(f" check_cancellation  {check_cancellation}")
@@ -914,28 +907,29 @@ class ApplyHedgingSpot:
                                 #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
-                                open_order_allowed.update({"side": strategy_attr["side"]})
-                                open_order_allowed.update({"size": max(1,size)})
-                                open_order_allowed.update({"type": "limit"})
+                                params_order.update({"side": strategy_attr["side"]})
+                                params_order.update({"size": max(1,size)})
+                                params_order.update({"type": "limit"})
+                                label_open = label_numbering.labelling("open", strategy_attr["strategy"])
                                 
-                                open_order_allowed.update({"instrument": instrument})
-                                log.critical(f" open_order_allowed  {open_order_allowed}")
+                                params_order.update({"instrument": instrument})
 
-                                if open_order_allowed["side"] == 'buy'\
-                                    and open_order_allowed["len_order_limit"] == 0\
+                                if params_order["side"] == 'buy'\
+                                    and params_order["len_order_limit"] == 0\
                                         and exceed_threshold_time_for_reorder:
                                         
-                                    open_order_allowed["entry_price"] = best_bid_prc -  .05
-                                    open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
-                                    await self.send_limit_order(open_order_allowed)
+                                    params_order["entry_price"] = best_bid_prc -  .05
+                                    params_order.update({"label_numbered": label_open})
+                                    await self.send_limit_order(params_order)
 
-                                if open_order_allowed["side"] == 'sell'\
-                                    and open_order_allowed["len_order_limit"] == 0 \
+                                if params_order["side"] == 'sell'\
+                                    and params_order["len_order_limit"] == 0 \
                                         and exceed_threshold_time_for_reorder:
                                         
-                                    open_order_allowed["entry_price"] = best_ask_prc +  .05
-                                    open_order_allowed.update({"label_numbered": open_order_allowed["label"]})
-                                    await self.send_limit_order(open_order_allowed)
+                                    params_order["entry_price"] = best_ask_prc +  .05
+                                    params_order.update({"label_numbered": label_open})
+                                    await self.send_limit_order(params_order)
+                                log.critical(f" params_order  {params_order}")
 
                             else:
                                 
