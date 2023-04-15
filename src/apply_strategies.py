@@ -913,7 +913,7 @@ class ApplyHedgingSpot:
                                 #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
 
                                 label_open = label_numbering.labelling("open", strategy_label)
-                                params_order.update({"label_numbered": label_open})
+                                params_order.update({"label": label_open})
                                 params_order.update({"instrument": instrument})
                                 log.critical(f" params_order A {params_order}")
 
