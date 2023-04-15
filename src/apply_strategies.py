@@ -567,6 +567,7 @@ class ApplyHedgingSpot:
                 # my trades data
                 
                 log.warning (my_trades_open)
+                sleep (10)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
