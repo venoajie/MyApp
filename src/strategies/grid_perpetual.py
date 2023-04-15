@@ -79,7 +79,7 @@ class GridPerpetual:
         if active_trade_item != None \
             or active_trade_item == []:
                 
-            trade_item = self.active_trade_item[0]
+            trade_item = active_trade_item[0]
             side_transaction = trade_item['direction'] 
             price_transaction = trade_item['price'] 
             label_transaction = trade_item['label'] 
