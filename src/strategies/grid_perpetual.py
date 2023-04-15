@@ -138,7 +138,7 @@ class GridPerpetual:
     async def open_orders_as_per_main_label (self, label_main) -> list:
         """
         """
-        print (f' orders_from_sqlite {self.orders_from_sqlite}')
+
         return 0 if self.orders_from_sqlite['list_data_only'] == [] \
             else len([o['label_main'] for o in self.orders_from_sqlite  ['all'] \
                 if  str_mod.parsing_label(o['label_main'])['transaction_status'] == str_mod.parsing_label(label_main) ['transaction_status']
