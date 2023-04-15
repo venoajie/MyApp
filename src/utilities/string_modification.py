@@ -151,10 +151,24 @@ def parsing_label(label: str) -> str:
         transaction_net:'hedgingSpot-1671189554374''
 
     """
+    try:
+        get_integer = get_strings_before_character (label, "-", 2)
+    except:
+        get_integer = None
+
+    try:
+        status = get_strings_before_character (label, "-", [0, 1])
+    except:
+        status = None
+
+    try:
+        net =  get_strings_before_character (label)
+    except:
+        net = None
 
     return  {
         "main": get_strings_before_character (label, "-", 0),
-        "int": get_strings_before_character (label, "-", 2),
-        "transaction_status": get_strings_before_character (label, "-", [0, 1]),
-        "transaction_net": get_strings_before_character (label)
+        "int": get_integer,
+        "transaction_status": status,
+        "transaction_net": net
         }
