@@ -882,9 +882,13 @@ class ApplyHedgingSpot:
                                                         
                             open_trade_strategy = [
                                 o for o in my_trades_open if strategy_label in o["label"]
-                            ]      
+                            ]  
+                            
+                            log.critical(f" open_trade_strategy  {open_trade_strategy}")    
                                                     
-                            if "every" in strategy_attr["strategy"]:   
+                            if "every" in strategy_attr["strategy"]\
+                                and open_trade_strategy != []:   
+                                
                                 params_order = await grids.get_params_orders_closed (open_trade_strategy)
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
