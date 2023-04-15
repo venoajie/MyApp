@@ -31,8 +31,6 @@ class GridPerpetual:
     """ """
     my_trades_open: list
     orders_from_sqlite: list
-    active_trade_item: list = None
-    strategy_from_config: str = None
 
     async def get_strategy_from_active_trade_item (self) -> list:
         """
@@ -42,7 +40,7 @@ class GridPerpetual:
             main= str_mod.parsing_label(result)['main'],
             transaction_net= str_mod.parsing_label(result)['transaction_net'])
         
-    async def get_trades_as_per_label(self) -> list:
+    async def get_trades_as_per_label(self, active_trade_item, strategy_from_config) -> list:
         """
         self.strategy_from_config == None: for new order
         self.active_trade_item == None: for closing order
@@ -50,8 +48,8 @@ class GridPerpetual:
         result = []
         try:
             if self.my_trades_open != []:
-                if self.strategy_from_config == None:
-                    label_main = str_mod.parsing_label ([o['label'] for o in self.active_trade_item][0]) ['main']
+                if strategy_from_config == None:
+                    label_main = str_mod.parsing_label ([o['label'] for o in active_trade_item][0]) ['main']
 
                     result =([
                     o for o in self.my_trades_open  ['all'] \
@@ -59,11 +57,11 @@ class GridPerpetual:
                         ]
                             )
                     
-                if self.active_trade_item == None \
-                    or self.active_trade_item == []:
+                if active_trade_item == None \
+                    or active_trade_item == []:
                     result =([
                     o for o in self.my_trades_open ['all'] \
-                        if  str_mod.parsing_label(o['label_main'])['main'] == self.strategy_from_config
+                        if  str_mod.parsing_label(o['label_main'])['main'] == strategy_from_config
                         ]
                             )
         except Exception as error:
@@ -71,15 +69,15 @@ class GridPerpetual:
 
         return result
 
-    async def get_params_orders_closed(self) -> list:
+    async def get_params_orders_closed(self, active_trade_item) -> list:
         """
         """
         params_order = {}
         strategies = entries_exits.strategies
         
         # fetch strategies attributes
-        if self.active_trade_item != None \
-            or self.active_trade_item == []:
+        if active_trade_item != None \
+            or active_trade_item == []:
                 
             trade_item = self.active_trade_item[0]
             side_transaction = trade_item['direction'] 
@@ -115,6 +113,27 @@ class GridPerpetual:
             
         return params_order
 
+
+    async def get_params_orders_open(self, strategy_label, notional) -> list:
+        """
+        """
+        params_order = {}
+        strategies = entries_exits.strategies
+
+        params_order = {}  
+        strategy_attr = [
+                            o for o in strategies if o["strategy"] == strategy_label
+                        ][0]
+        
+
+        size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
+        params_order.update({"side": strategy_attr["side"]})
+        params_order.update({"size": max(1,size)})
+        params_order.update({"type": "limit"})
+        params_order.update({"len_order_limit": await self.open_orders_as_per_main_label (strategy_label)})
+        
+        return params_order
+    
     async def open_orders_as_per_main_label (self, label_main) -> list:
         """
         """
