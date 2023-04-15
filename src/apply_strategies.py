@@ -890,7 +890,7 @@ class ApplyHedgingSpot:
                                                     
                             if "every" in strategy_attr["strategy"]:
                                 
-                                params_order = await grids.get_params_orders_closed (open_trade_strategy)
+                                params_order = await grids.get_params_orders_open (strategy_label, notional)
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                 check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
