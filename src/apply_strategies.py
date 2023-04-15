@@ -695,7 +695,11 @@ class ApplyHedgingSpot:
                                 # avoid reorder closed trades:
                                 # restart after deleting completed trades
                                 # avoid send order for trades with 0 net sum 
-                                test_net_sum_zero_size = sum([ o('amount') for o in open_trade_strategy])
+                                log.debug (f'open_trade_strategy   {open_trade_strategy}')
+                                if len (open_trade_strategy)== 1:
+                                    test_net_sum_zero_size = sum(open_trade_strategy[0][('amount')])
+                                else:
+                                    test_net_sum_zero_size = sum([ o('amount') for o in open_trade_strategy])
                                 log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
                                     
                                 if open_trade_strategy_label != []\
