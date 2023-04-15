@@ -100,10 +100,10 @@ class GridPerpetual:
                     
             if side_transaction == "buy":
                 side = "sell"
-                price_threshold =  price_transaction - price_threshold
+                price_threshold = price_transaction + price_threshold
             if side_transaction == "sell":
                 side = "buy"
-                price_threshold = price_transaction + price_threshold
+                price_threshold =  price_transaction - price_threshold
             
             open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
             params_order.update({"price_threshold": price_threshold})
