@@ -55,5 +55,5 @@ async def test_get_trades_as_per_label():
 
 @pytest.mark.asyncio
 async def test_get_params_orders_closed():
-    result = await grid_str_none.get_params_orders_closed(active_trade_item)   
-    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursLong-closed-1681447421981', 'side': 'sell', 'size': 3.0, 'type': 'limit', 'price_threshold': 2095.6814999999997}
+    result = await grid_str_none.get_params_orders_closed()   
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursLong-closed-1681447421981', 'side': 'sell', 'size': 3.0, 'type': 'limit', 'price_threshold': 2095.6814999999997, 'len_order_limit': 0}
