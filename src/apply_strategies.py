@@ -689,6 +689,7 @@ class ApplyHedgingSpot:
                             if "every" in strategy_attr["strategy"]: 
                                 
                                              
+                                log.debug (f'open_trade_strategy   {open_trade_strategy}')
                                 params = await grids.get_params_orders_closed (open_trade_strategy)
                                 log.debug (f'params 1 {params}')
 
