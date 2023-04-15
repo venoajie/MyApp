@@ -913,6 +913,7 @@ class ApplyHedgingSpot:
                                 label_open = label_numbering.labelling("open", strategy_attr["strategy"])
                                 
                                 params_order.update({"instrument": instrument})
+                                log.critical(f" params_order A {params_order}")
 
                                 if params_order["side"] == 'buy'\
                                     and params_order["len_order_limit"] == 0\
@@ -929,7 +930,7 @@ class ApplyHedgingSpot:
                                     params_order["entry_price"] = best_ask_prc +  .05
                                     params_order.update({"label_numbered": label_open})
                                     await self.send_limit_order(params_order)
-                                log.critical(f" params_order  {params_order}")
+                                log.critical(f" params_order B {params_order}")
 
                             else:
                                 
