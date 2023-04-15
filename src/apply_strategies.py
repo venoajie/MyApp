@@ -557,12 +557,13 @@ class ApplyHedgingSpot:
                 
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
-                #log.error (my_trades_open_sqlite)
+                log.error (my_trades_open_sqlite)
+                sleep (10)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
 
                 # my trades data
                 
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -606,7 +607,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
-                log.error (f'strategy_labels {strategy_labels}')
+                #log.error (f'strategy_labels {strategy_labels}')
                 
 
                 # when there are some positions/order, check their appropriateness to the established standard
