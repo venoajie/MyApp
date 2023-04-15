@@ -533,7 +533,7 @@ class ApplyHedgingSpot:
 
     async def running_strategy(self, server_time) -> float:
         """ """
-        from time import sleep
+        #from time import sleep
 
         try:
             # gathering basic data
@@ -566,8 +566,8 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                log.warning (my_trades_open)
-                sleep (10)
+                #log.warning (my_trades_open)
+                #sleep (10)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
