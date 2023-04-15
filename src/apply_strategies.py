@@ -569,7 +569,7 @@ class ApplyHedgingSpot:
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
-                log.error (open_orders_sqlite)
+                #log.error (open_orders_sqlite)
                 open_orders_open_byAPI: list= open_orders_sqlite ['list_data_only']
 
                 #log.error (open_orders_open_byAPI)
@@ -915,7 +915,7 @@ class ApplyHedgingSpot:
                                 label_open = label_numbering.labelling("open", strategy_label)
                                 params_order.update({"label": label_open})
                                 params_order.update({"instrument": instrument})
-                                log.critical(f" params_order A {params_order}")
+                                #log.critical(f" params_order A {params_order}")
 
                                 if params_order["side"] == 'buy'\
                                     and params_order["len_order_limit"] == 0\
