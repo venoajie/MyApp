@@ -100,14 +100,15 @@ def parsing_sqlite_json_output (json_load: list) -> int:
         return []
 
 def get_strings_before_character(
-    words: str, character: str = "-", character_place: int = [0, 2]
+    label: str, character: str = "-", 
+    character_place: int = [0, 2]
 ) -> str:
     """
 
     Get strings before a character
 
     Args:
-        words (str)
+        label (str)
         character (str)
         character_place (list (default)/int)
 
@@ -122,10 +123,38 @@ def get_strings_before_character(
     """
 
     if isinstance(character_place, list):
-        splitted1 = words.split(character)[character_place[0]]
-        splitted2 = words.split(character)[character_place[1]]
+        splitted1 = label.split(character)[character_place[0]]
+        splitted2 = label.split(character)[character_place[1]]
         splitted = f"{splitted1}-{splitted2}"
     else:
-        splitted = words.split(character)[character_place]
+        splitted = label.split(character)[character_place]
 
     return splitted
+
+
+def parsing_label(label: str) -> str:
+
+    """
+
+
+    Args:
+        label (str)
+        level (str)
+
+    Returns:
+        str
+
+    Example: 'hedgingSpot-open-1671189554374'
+        main: 'hedgingSpot'
+        int = 1671189554374
+        transaction_status:'hedgingSpot-open''
+        transaction_net:'hedgingSpot-1671189554374''
+
+    """
+
+    return  {
+        "main": get_strings_before_character (label, "-", 0),
+        "int": get_strings_before_character (label, "-", 2),
+        "transaction_status": get_strings_before_character (label, "-", [0, 1]),
+        "transaction_net": get_strings_before_character (label)
+        }
