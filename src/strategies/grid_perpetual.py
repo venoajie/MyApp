@@ -74,7 +74,7 @@ class GridPerpetual:
         """
         params_order = {}
         strategies = entries_exits.strategies
-        print (f'active_trade_item {active_trade_item}')
+        #print (f'active_trade_item {active_trade_item}')
         
         # fetch strategies attributes
         if active_trade_item != None \
