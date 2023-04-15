@@ -597,6 +597,7 @@ class ApplyHedgingSpot:
                 # fetch label for outstanding trade position/orders
                 #log.error ([o for o in my_trades_open])
                 #log.error ([o for o in my_trades_open if 'closed' not in o["label"]])
+                log.error (my_trades_open)
                 my_trades_open_remove_closed = [o for o in my_trades_open if 'closed' not in o["label"]]
                 strategy_labels = str_mod.remove_redundant_elements(
                     [
