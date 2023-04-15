@@ -94,6 +94,7 @@ class GridPerpetual:
                         ][0]
 
             price_margin =  price_transaction * strategy_attr["take_profit_pct"] 
+            print (f'price_margin {price_margin}')
             
             label_closed = f"{strategy_label_main}-closed-{strategy_label_int}"
             params_order.update({"label": label_closed})
