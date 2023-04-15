@@ -71,17 +71,17 @@ class GridPerpetual:
 
         return result
 
-    async def get_params_orders_closed(self, active_trade_item) -> list:
+    async def get_params_orders_closed(self) -> list:
         """
         """
         params_order = {}
         strategies = entries_exits.strategies
         
         # fetch strategies attributes
-        if active_trade_item != None \
-            or active_trade_item == []:
+        if self.active_trade_item != None \
+            or self.active_trade_item == []:
                 
-            trade_item = active_trade_item[0]
+            trade_item = self.active_trade_item[0]
             side_transaction = trade_item['direction'] 
             price_transaction = trade_item['price'] 
             label_transaction = trade_item['label'] 
@@ -105,7 +105,7 @@ class GridPerpetual:
                 side = "buy"
                 price_threshold = price_transaction + price_threshold
 
-            len_order = await self. open_orders_as_per_main_label()
+            len_order = await self. open_orders_as_per_main_label(strategy_label_main)
             params_order.update({"price_threshold": price_threshold})
             params_order.update({"side": side})
             params_order.update({"size": trade_item['amount']})
