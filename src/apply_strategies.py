@@ -687,11 +687,11 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
-                                if open_trade_strategy != []:  
+                                if open_trade_strategy_label != []:  
                                     
                                                 
-                                    log.debug (f'open_trade_strategy   {open_trade_strategy}')
-                                    params = await grids.get_params_orders_closed (open_trade_strategy)
+                                    log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+                                    params = await grids.get_params_orders_closed (open_trade_strategy_label)
                                     log.debug (f'params 1 {params}')
 
                                     if params["side"] == 'buy'\
@@ -729,7 +729,7 @@ class ApplyHedgingSpot:
 
                                 exit_order_allowed = await self.is_send_order_allowed(
                                     label,
-                                    open_trade_strategy,
+                                    open_trade_strategy_label,
                                     open_order_mgt,
                                     strategy_attr,
                                     min_position_size,
