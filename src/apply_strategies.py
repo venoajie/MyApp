@@ -386,6 +386,9 @@ class ApplyHedgingSpot:
                     result_to_dict = ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
                     log.debug (f' result_to_dict {result_to_dict}')
                     await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
+                
+                # refreshing data
+                system_tools.sleep_and_restart_program(.1)
 
     async def deleting_cancel_order(self, table: list, 
                            database: str ,
@@ -563,7 +566,7 @@ class ApplyHedgingSpot:
 
                 # my trades data
                 
-                #log.warning (my_trades_open)
+                log.warning (my_trades_open)
 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -687,7 +690,15 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
-                                if open_trade_strategy_label != []:  
+                                
+                                # avoid reorder closed trades:
+                                # restart after deleting completed trades
+                                # avoid send order for trades with 0 net sum 
+                                test_net_sum_zero_size = sum([ o('amount') for o in open_trade_strategy])
+                                log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
+                                    
+                                if open_trade_strategy_label != []\
+                                    and test_net_sum_zero_size != 0:  
                                     
                                                 
                                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
