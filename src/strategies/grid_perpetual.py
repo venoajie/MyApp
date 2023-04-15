@@ -30,36 +30,31 @@ class GridPerpetual:
 
     """ """
 
-    my_trades_open_sqlite: list
-    orders_from_sqlite: list
-    notional: float
-    active_trade_item: list = None
-    stratey_from_config: str = None
-
-    async def get_trades (self) -> list:
-        """
-        """
-        return {'all': self.trades_from_sqlite['all'],
-                'list_data_only': self.trades_from_sqlite['list_data_only']}
-
-    async def strategy_from_active_trade_item (self) -> list:
-        """
-        """
-        return [o['label'] for o in self.active_trade_item][0]
     
+    active_trade_item: list = None
+    strategy_from_config: str = None
+
+    async def get_strategy_from_active_trade_item (self) -> list:
+        """
+        """
+        result = [o['label'] for o in self.active_trade_item][0]
+        return dict(
+            main= str_mod.parsing_label(result)['main'],
+            transaction_net= str_mod.parsing_label(result)['transaction_net'])
+        
     async def get_trades_as_per_label(self) -> list:
         """
         """
         result = []
-        if self.get_trades != []:
+        if self.my_trades_open != []:
             if self.sub_stratey == None:
                 result =([
-                o for o in self.get_trades () ['all'] \
+                o for o in self.my_trades_open  ['all'] \
                     if  str_mod.parsing_label(o['label_main'])['main'] == self.stratey_from_config ]
                                                     )
             if self.active_trade_item == None:
                 result =([
-                o for o in self.get_trades () ['all'] \
+                o for o in self.my_trades_open ['all'] \
                     if  str_mod.parsing_label(o['label_main'])['main'] == self.stratey_from_config ]
                                                     )
 
