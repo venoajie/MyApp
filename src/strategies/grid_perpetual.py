@@ -81,7 +81,7 @@ class GridPerpetual:
             or active_trade_item != []:
                 
             trade_item = active_trade_item[0]
-            print (f'trade_item {trade_item}')
+
             side_transaction = trade_item['direction'] 
             price_transaction = trade_item['price'] 
             label_transaction = trade_item['label'] 
