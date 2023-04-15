@@ -687,29 +687,30 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
-                                
-                                             
-                                log.debug (f'open_trade_strategy   {open_trade_strategy}')
-                                params = await grids.get_params_orders_closed (open_trade_strategy)
-                                log.debug (f'params 1 {params}')
-
-                                if params["side"] == 'buy'\
-                                    and params["len_order_limit"] == 0\
-                                        and best_bid_prc < params ['price_threshold'] :
-                                        
-                                    params.update({"entry_price": best_bid_prc})
-                                                                        
-                                    await self.send_limit_order(params)
-
-                                if params["side"] == 'sell'\
-                                    and params["len_order_limit"] == 0\
-                                        and best_ask_prc > params ['price_threshold']:
-                                        
-                                    params.update({"entry_price": best_ask_prc})
+                                if open_trade_strategy != []:  
                                     
-                                    await self.send_limit_order(exit_order_allowed)
+                                                
+                                    log.debug (f'open_trade_strategy   {open_trade_strategy}')
+                                    params = await grids.get_params_orders_closed (open_trade_strategy)
+                                    log.debug (f'params 1 {params}')
 
-                                log.warning (f'params 2 {params}')
+                                    if params["side"] == 'buy'\
+                                        and params["len_order_limit"] == 0\
+                                            and best_bid_prc < params ['price_threshold'] :
+                                            
+                                        params.update({"entry_price": best_bid_prc})
+                                                                            
+                                        await self.send_limit_order(params)
+
+                                    if params["side"] == 'sell'\
+                                        and params["len_order_limit"] == 0\
+                                            and best_ask_prc > params ['price_threshold']:
+                                            
+                                        params.update({"entry_price": best_ask_prc})
+                                        
+                                        await self.send_limit_order(exit_order_allowed)
+
+                                    log.warning (f'params 2 {params}')
 
                             else:
                                 
@@ -888,49 +889,49 @@ class ApplyHedgingSpot:
                             log.critical("every" in strategy_attr["strategy"])    
                                                     
                             if "every" in strategy_attr["strategy"]:
-                                if open_trade_strategy != []:   
-                                    
-                                    params_order = await grids.get_params_orders_closed (open_trade_strategy)
-                                    
-                                    time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
-                                    check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
-                                    #log.critical(f" check_cancellation  {check_cancellation}")
+                                
+                                params_order = await grids.get_params_orders_closed (open_trade_strategy)
+                                
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
+                                check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
+                                #log.critical(f" check_cancellation  {check_cancellation}")
 
-                                    if check_cancellation !=None:
-                                        if check_cancellation['open_order_id'] !=[]:
-                                            await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                if check_cancellation !=None:
+                                    if check_cancellation['open_order_id'] !=[]:
+                                        await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                
+                                #log.critical(f" strategy_label  {strategy_label}")
+                                #log.critical(f" open_trade_strategy  {open_trade_strategy}")
+                                
+                                exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
+                                
+                                if open_trade_strategy !=[]:
+                                    max_transaction_time = max([o['timestamp'] for o in open_trade_strategy])
+                                    #log.critical(f" minimum_transaction_time  {max_transaction_time}")
+                                    delta_time: int = server_time - max_transaction_time
+                                    exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
                                     
-                                    #log.critical(f" strategy_label  {strategy_label}")
-                                    #log.critical(f" open_trade_strategy  {open_trade_strategy}")
-                                    
-                                    exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
-                                    
-                                    if open_trade_strategy !=[]:
-                                        max_transaction_time = max([o['timestamp'] for o in open_trade_strategy])
-                                        #log.critical(f" minimum_transaction_time  {max_transaction_time}")
-                                        delta_time: int = server_time - max_transaction_time
-                                        exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
+                                #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
+
+                                label_open = label_numbering.labelling("open", strategy_label)
+                                params_order.update({"label_numbered": label_open})
+                                log.critical(f" params_order A {params_order}")
+
+                                if params_order["side"] == 'buy'\
+                                    and params_order["len_order_limit"] == 0\
+                                        and exceed_threshold_time_for_reorder:
                                         
-                                    #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
+                                    params_order["entry_price"] = best_bid_prc -  .05
+                                    
+                                    await self.send_limit_order(params_order)
 
-                                    log.critical(f" params_order A {params_order}")
-
-                                    if params_order["side"] == 'buy'\
-                                        and params_order["len_order_limit"] == 0\
-                                            and exceed_threshold_time_for_reorder:
-                                            
-                                        params_order["entry_price"] = best_bid_prc -  .05
-                                        params_order.update({"label_numbered": label_open})
-                                        await self.send_limit_order(params_order)
-
-                                    if params_order["side"] == 'sell'\
-                                        and params_order["len_order_limit"] == 0 \
-                                            and exceed_threshold_time_for_reorder:
-                                            
-                                        params_order["entry_price"] = best_ask_prc +  .05
-                                        params_order.update({"label_numbered": label_open})
-                                        await self.send_limit_order(params_order)
-                                    log.critical(f" params_order B {params_order}")
+                                if params_order["side"] == 'sell'\
+                                    and params_order["len_order_limit"] == 0 \
+                                        and exceed_threshold_time_for_reorder:
+                                        
+                                    params_order["entry_price"] = best_ask_prc +  .05
+                                    await self.send_limit_order(params_order)
+                                log.critical(f" params_order B {params_order}")
 
                             else:
                                                               
