@@ -363,12 +363,7 @@ class ApplyHedgingSpot:
                     my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                     my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                     result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])
-                    log.debug (f' result_to_dict AAAAAAAAAAA {result_to_dict}')
-                    result_to_dict =  ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
-                    result_to_dict = str_mod.parsing_sqlite_json_output (result_to_dict)
                     log.debug (f' result_to_dict {result_to_dict}')
-                    from time import sleep
-                    sleep (10)
                     where_filter = f"trade_seq"
                     await sqlite_management.deleting_row('my_trades_all_json', 
                                                         "databases/trading.sqlite3",
