@@ -1,7 +1,7 @@
 [![Python application](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml)
 [![Format code](https://github.com/venoajie/MyApp/actions/workflows/format.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/format.yml)
 [![Unit tests](https://github.com/venoajie/MyApp/actions/workflows/coverage.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/coverage.yml)
-![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage/coverage.svg?raw=true)
+[![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage/coverage.svg?raw=true)]
 
 # MyApp
 #### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management.
