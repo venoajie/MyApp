@@ -107,12 +107,14 @@ class GridPerpetual:
                 price_threshold = price_transaction + price_margin
                 order_buy = False
                 order_sell = len_order_limit == 0 and best_ask_prc > price_threshold
+                params_order.update({"entry_price": best_ask_prc})
                 
             if side_transaction == "sell":
                 side = "buy"
                 price_threshold =  price_transaction - price_margin
                 order_sell = False
                 order_buy= len_order_limit == 0 and best_bid_prc < price_threshold
+                params_order.update({"entry_price": best_bid_prc})
             
             
             params_order.update({"price_threshold": price_threshold})
