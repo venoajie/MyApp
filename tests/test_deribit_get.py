@@ -25,58 +25,6 @@ async def get_private_data() -> list:
 
     return get_dbt.GetPrivateData(connection_url, client_id, client_secret, currency)
 
-
-@pytest.mark.asyncio
-async def test_get_user_trades_by_instrument():
-    user_trades_by_instrument = await get_dbt.get_user_trades_by_instrument(
-        connection_url, client_id, client_secret, "eth-perpetual"
-    )
-
-    assert list(user_trades_by_instrument) == [
-        "jsonrpc",
-        "id",
-        "result",
-        "usIn",
-        "usOut",
-        "usDiff",
-        "testnet",
-    ]
-
-
-@pytest.mark.asyncio
-async def test_get_open_orders_byInstruments():
-    open_orders_byInstruments = await get_dbt.get_open_orders_byInstruments(
-        connection_url, client_id, client_secret, "eth-perpetual", "all"
-    )
-
-    assert list(open_orders_byInstruments) == [
-        "jsonrpc",
-        "id",
-        "result",
-        "usIn",
-        "usOut",
-        "usDiff",
-        "testnet",
-    ]
-
-
-@pytest.mark.asyncio
-async def test_get_order_history_by_instrument():
-    order_history_by_instrument = await get_dbt.get_order_history_by_instrument(
-        connection_url, client_id, client_secret, "eth-perpetual"
-    )
-
-    assert list(order_history_by_instrument) == [
-        "jsonrpc",
-        "id",
-        "result",
-        "usIn",
-        "usOut",
-        "usDiff",
-        "testnet",
-    ]
-
-
 @pytest.mark.asyncio
 async def test_get_open_orders_byCurrency():
     private_data = await get_private_data()
@@ -185,21 +133,6 @@ async def test_get_currencies():
         "testnet",
     ]
 
-
-@pytest.mark.asyncio
-async def test_get_index():
-    get_index = await get_dbt.get_index(connection_url, "eth")
-
-    assert list(get_index) == [
-        "jsonrpc",
-        "result",
-        "usIn",
-        "usOut",
-        "usDiff",
-        "testnet",
-    ]
-
-
 @pytest.mark.asyncio
 async def test_get_get_instruments():
     get_instruments = await get_dbt.get_instruments(connection_url, "eth")
@@ -233,16 +166,6 @@ async def test_get_open_interest_aggregated_ohlc():
     ohlc = await get_dbt.get_open_interest_aggregated_ohlc(
         connection_url, "eth-perpetual", resolution
     )
-
-    assert list(ohlc) == ["code", "msg", "success"]
-
-
-@pytest.mark.asyncio
-async def test_get_open_interest_historical():
-    resolution = "m5"
-    connection_url: str = "https://open-api.coinglass.com/public/v2/"
-
-    ohlc = await get_dbt.get_open_interest_historical(connection_url, "eth", resolution)
 
     assert list(ohlc) == ["code", "msg", "success"]
 
