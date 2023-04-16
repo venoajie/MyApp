@@ -501,10 +501,10 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
     for strategy in strategy_labels:
         if "supplyDemandShort60A" in strategy:
             max_size = 8
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             determine_order_size = (
@@ -518,10 +518,10 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == 2
 
             max_size = 12
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             determine_order_size = (
@@ -536,10 +536,10 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
 
         if "supplyDemandLong60A" in strategy:
             max_size = 9
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             determine_order_size = (
@@ -553,10 +553,10 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == 0
 
             max_size = 8
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             determine_order_size = (
@@ -570,10 +570,10 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == -1
 
             max_size = 10
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             determine_order_size = (
@@ -672,14 +672,14 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
                 },
             ]
 
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            net_sum_current_position = trade_based_on_label_strategy[
+            net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
             max_size = 25
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
             determine_order_size = (
@@ -693,7 +693,7 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == 0
 
             max_size = 24
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
             determine_order_size = (
@@ -707,7 +707,7 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == 1
 
             max_size = 27
-            trade_based_on_label_strategy = open_orders.trade_based_on_label_strategy(
+            trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
             determine_order_size = (
@@ -721,7 +721,7 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             assert determine_order_size["remain_exit_orders"] == 0
 
 
-def test_trade_based_on_label_strategy():
+def test_trade_based_on_strategy_label():
     open_orders_source = [
         {
             "web": False,
@@ -899,13 +899,13 @@ def test_trade_based_on_label_strategy():
 
     strategy = "supplyDemandLong60B"
     assert (
-        open_orders.trade_based_on_label_strategy(
+        open_orders.trade_based_on_strategy_label(
             open_orders_source, strategy, "limit"
         )["transaction_label_strategy_type"]
         == open_orders_limit
     )
     assert (
-        open_orders.trade_based_on_label_strategy(
+        open_orders.trade_based_on_strategy_label(
             open_orders_source, strategy, "stop_market"
         )["transaction_label_strategy_type"]
         == open_orders_market
@@ -1486,7 +1486,7 @@ def tst_is_open_trade_has_exit_order():
     for strategy in strategies2:
         if strategy == "supplyDemandShort60A-1678158310813":
             assert (
-                open_orders2.trade_based_on_label_strategy(open_trade2, strategy)[
+                open_orders2.trade_based_on_strategy_label(open_trade2, strategy)[
                     "net_sum_order_size"
                 ]
                 == 0
