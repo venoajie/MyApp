@@ -289,23 +289,6 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
-    def optimising_exit_price(
-        self, side, best_bid_prc: float, best_ask_prc: float, exit_price: float = None
-    ) -> None:
-        """ """
-
-        if exit_price != None:
-            if side == "buy":
-                price = min(exit_price, best_bid_prc)
-            if side == "sell":
-                price = max(exit_price, best_ask_prc)
-        else:
-            if side == "buy":
-                price = best_bid_prc
-            if side == "sell":
-                price = best_ask_prc
-        return price
-
     async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
@@ -597,10 +580,7 @@ class ApplyHedgingSpot:
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
-
-                # fetch label for outstanding trade position/orders
-                #log.error ([o for o in my_trades_open])
-                #log.error ([o for o in my_trades_open if 'closed' not in o["label"]])
+                
                 #log.error (my_trades_open)
                 my_trades_open_remove_closed = [o for o in my_trades_open if 'closed' not in o["label"]]
                 strategy_labels = str_mod.remove_redundant_elements(
@@ -612,8 +592,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
-                #log.error (f'strategy_labels {strategy_labels}')
-                
+                #log.error (f'strategy_labels {strategy_labels}')                
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -701,11 +680,12 @@ class ApplyHedgingSpot:
                                 #log.debug (f'open_trade_strategy   {open_trade_strategy}')
                                     
                                 if open_trade_strategy_label != []\
-                                    and test_net_sum_zero_size != 0:  
-                                    
+                                    and test_net_sum_zero_size != 0:                                      
                                                 
                                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                                    params = await grids.get_params_orders_closed (open_trade_strategy_label)
+                                    params = await grids.get_params_orders_closed (open_trade_strategy_label,
+                                                                                   best_bid_prc,
+                                                                                   best_ask_prc)
                                     #log.debug (f'params 1 {params}')
 
                                     if params["side"] == 'buy'\
