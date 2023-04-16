@@ -345,6 +345,7 @@ async def querying_table (table: str = 'mytrades',
         query_table = f'SELECT  {column} FROM {table}'
     
     combine_result = []
+    print (query_table)
     
     try:
         async with  aiosqlite.connect(database, isolation_level=None) as db:
