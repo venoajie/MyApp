@@ -1624,5 +1624,5 @@ def test_determine_order_size_and_side_for_outstanding_transactions():
                                                     assert calculation_result['exit_orders_limit_type'] == 'limit'
                                                     assert calculation_result['exit_orders_market_qty'] == 0
                                                     assert calculation_result['exit_orders_market_side'] == None
-                                                    assert calculation_result['exit_orders_market_type'] == 'stop_market'
+                                                    assert calculation_result['exit_orders_market_type'] == None
 
