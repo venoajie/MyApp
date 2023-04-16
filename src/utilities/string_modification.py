@@ -165,9 +165,20 @@ def parsing_label(label: str) -> str:
         net =  get_strings_before_character (label)
     except:
         net = None
+    try:
+        main =  get_strings_before_character (label, "-", 0)
+    except:
+        main = None
+        
+
+    side=['Short', 'Long']
+    super_main = [main.replace(o,'') for o in side if o in main]
+    print (super_main)
 
     return  {
-        "main": get_strings_before_character (label, "-", 0),
+        #"super_main":  bool([o not in main for o in side]),
+        "super_main": main if all ([o not in main for o in side]) else super_main[0],
+        "main": main,
         "int": get_integer,
         "transaction_status": status,
         "transaction_net": net
