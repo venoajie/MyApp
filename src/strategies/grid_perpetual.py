@@ -25,43 +25,6 @@ class GridPerpetual:
     my_trades_open: list
     orders_from_sqlite: list
 
-    async def get_strategy_from_active_trade_item (self, active_trade_item) -> list:
-        """
-        """
-        result = [o['label'] for o in active_trade_item][0]
-        return dict(
-            main= str_mod.parsing_label(result)['main'],
-            transaction_net= str_mod.parsing_label(result)['transaction_net'])
-        
-    async def get_trades_as_per_label(self, active_trade_item, strategy_from_config) -> list:
-        """
-        self.strategy_from_config == None: for new order
-        self.active_trade_item == None: for closing order
-        """
-        result = []
-        try:
-            if self.my_trades_open != []:
-                if strategy_from_config == None:
-                    label_main = str_mod.parsing_label ([o['label'] for o in active_trade_item][0]) ['main']
-
-                    result =([
-                    o for o in self.my_trades_open  ['all'] \
-                        if  str_mod.parsing_label(o['label_main'])['main'] == label_main 
-                        ]
-                            )
-                    
-                if active_trade_item == None \
-                    or active_trade_item == []:
-                    result =([
-                    o for o in self.my_trades_open ['all'] \
-                        if  str_mod.parsing_label(o['label_main'])['main'] == strategy_from_config
-                        ]
-                            )
-        except Exception as error:
-            catch_error(error)
-
-        return result
-
     async def get_params_orders_closed(self, active_trade_item, best_bid_prc, best_ask_prc) -> list:
         """
         """
@@ -74,23 +37,23 @@ class GridPerpetual:
             or active_trade_item != []:
                 
             trade_item = active_trade_item[0]
+            
+            label_transaction = trade_item['label']
+            
+            strategy_label_main = str_mod.parsing_label(label_transaction)['main']
+
+            strategy_attr = [o for o in strategies if o["strategy"] == strategy_label_main][0]
 
             side_transaction = trade_item['direction'] 
             price_transaction = trade_item['price'] 
-            label_transaction = trade_item['label'] 
             
-            strategy_label_int = str_mod.parsing_label(label_transaction)['int']
-            strategy_label_transaction_status = str_mod.parsing_label(label_transaction)['transaction_status']
-            strategy_label_main = str_mod.parsing_label(label_transaction)['main']
-            strategy_attr = [
-                            o for o in strategies if o["strategy"] == strategy_label_main
-                        ][0]
-
             price_margin =  price_transaction * strategy_attr["take_profit_pct"] 
-            #print (f'price_margin {price_margin}')
             
-            label_closed = f"{strategy_label_main}-closed-{strategy_label_int}"
+            #get label closed
+            label_closed = await self.get_closed_label (label_transaction)
             params_order.update({"label": label_closed})
+            
+            #get qty open order per label
             open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
             len_order_limit= open_orders_under_same_label_status['len_result']
             params_order.update({"len_order_limit": len_order_limit})
@@ -117,8 +80,8 @@ class GridPerpetual:
             params_order.update({"instrument": trade_item['instrument_name']})
             params_order.update({"order_buy": order_buy})
             params_order.update({"order_sell": order_sell})
+            
         return params_order
-
 
     async def get_params_orders_open(self, strategy_label, notional) -> list:
         """
@@ -149,40 +112,12 @@ class GridPerpetual:
         return dict(
             detail= result,
             len_result= 0 if result == [] else len (result))
-                            
-    async def provide_params_for_order(self) -> list:
-        """
-        """
-
-        result = {}
-        try:
-            if self.my_trades_open != []:
-                if self.strategy_from_config == None:
-                    label_main = str_mod.parsing_label ([o['label'] for o in self.active_trade_item][0]) ['main']
-                    #print (label_main)
-                    result =([
-                    o for o in self.my_trades_open  ['all'] \
-                        if  str_mod.parsing_label(o['label_main'])['main'] == label_main 
-                        ]
-                            )
-                    
-                if self.active_trade_item == None \
-                    or self.active_trade_item == []:
-                    result =([
-                    o for o in self.my_trades_open ['all'] \
-                        if  str_mod.parsing_label(o['label_main'])['main'] == self.strategy_from_config
-                        ]
-                            )
-        except Exception as error:
-            catch_error(error)
-
-        return result    
-    async def is_send_close_order_allowed(self) -> list:
-        """
-        """
-        pass
     
-    async def is_cancel_current_order_allowed(self) -> list:
+    async def get_closed_label(self, label_transaction: str) -> str:
         """
         """
-        pass
+
+        strategy_label_int = str_mod.parsing_label(label_transaction)['int']
+        strategy_label_main = str_mod.parsing_label(label_transaction)['main']
+        
+        return f"{strategy_label_main}-closed-{strategy_label_int}"
