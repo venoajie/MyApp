@@ -901,13 +901,13 @@ def test_trade_based_on_strategy_label():
     assert (
         open_orders.trade_based_on_strategy_label(
             open_orders_source, strategy, "limit"
-        )["transaction_label_strategy_type"]
+        )["transaction_strategy_label_type"]
         == open_orders_limit
     )
     assert (
         open_orders.trade_based_on_strategy_label(
             open_orders_source, strategy, "stop_market"
-        )["transaction_label_strategy_type"]
+        )["transaction_strategy_label_type"]
         == open_orders_market
     )
 
