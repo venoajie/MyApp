@@ -535,23 +535,16 @@ class ApplyHedgingSpot:
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"][0]
                 size_from_positions: float = positions["size"]
-                #log.error (f'positions {positions}')
-                #log.error (f'portfolio {portfolio}')
-                # my trades data
+                
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
                 
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
-                #log.error (my_trades_open_sqlite)
-                #sleep (10)
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
-
-                # my trades data
                 
                 #log.warning (my_trades_open)
-                #sleep (10)
-
+                
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
@@ -567,16 +560,12 @@ class ApplyHedgingSpot:
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
-                my_trades_open_mgt: object = myTrades_management.MyTrades(
-                    my_trades_open
-                )
+                my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
 
                 # Creating an instance of the open order  class
                 open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
 
-                await self.search_and_drop_orphan_closed_orders(
-                    open_order_mgt, my_trades_open_mgt
-                )
+                await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
@@ -610,17 +599,10 @@ class ApplyHedgingSpot:
                         open_order_label_long = [o for o in open_order_label if o["direction"] == "buy"]
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(
-                            label, "-", 0
-                        )
-                        #strategy_label_int = str_mod.get_strings_before_character(
-                        #    label, "-", 1
-                        #)
-
+                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+                        
                         # get startegy details
-                        strategy_attr = [
-                            o for o in strategies if o["strategy"] == strategy_label
-                        ][0]
+                        strategy_attr = [o for o in strategies if o["strategy"] == strategy_label][0]
 
                         log.critical(f" {label}")
                         
@@ -633,14 +615,14 @@ class ApplyHedgingSpot:
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
+                        log.error (f'size_is_consistent {size_is_consistent}')
                         
                         if size_is_consistent and open_order_is_consistent:
                             
                             grids=  grid.GridPerpetual(my_trades_open,
                                                              open_orders_sqlite
                                                              )
-                            
-                            log.error (f'size_is_consistent {size_is_consistent}')
+                                                        
                             log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
                                 sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')
 
@@ -648,8 +630,7 @@ class ApplyHedgingSpot:
                             open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
-                            log.critical(f"instrument {instrument}")
-                        
+                            log.critical(f"instrument {instrument}")                        
                     
                             # avoid reorder closed trades:
                                 # restart after deleting completed trades
