@@ -355,18 +355,22 @@ class ApplyHedgingSpot:
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             log.error (f' result {result}')
             if result ==0:
+                # get trade seq
                 result = ([o['trade_seq']   for o in result_transactions ])
-                where_filter = f"trade_seq"
+                
                 for res in result:
                     log.critical (res)
+                    result_to_dict = str_mod.parsing_sqlite_json_output ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
+                    log.debug (f' result_to_dict {result_to_dict}')
+                    from time import sleep
+                    sleep (10)
+                    where_filter = f"trade_seq"
                     await sqlite_management.deleting_row('my_trades_all_json', 
                                                         "databases/trading.sqlite3",
                                                         where_filter,
                                                         "=",
                                                         res
                                                         )
-                    result_to_dict = ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
-                    log.debug (f' result_to_dict {result_to_dict}')
                     await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
                 
                 # refreshing data
