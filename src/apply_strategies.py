@@ -655,9 +655,17 @@ class ApplyHedgingSpot:
                             
                             if "every" in strategy_attr["strategy"]: 
                                 log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                                    
+                                
+                                my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
+                                my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
+                                my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
+                                is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
+                                log.debug (open_trade_strategy_label[0]['trade_seq'])
+                                log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
+                                                
                                 if open_trade_strategy_label != []\
-                                    and test_net_sum_zero_size != 0:                                  
+                                    and test_net_sum_zero_size != 0\
+                                        and is_closed == False:                                  
                                                                                     
                                     params = await grids.get_params_orders_closed (open_trade_strategy_label,
                                                                                    best_bid_prc,
