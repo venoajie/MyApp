@@ -44,6 +44,9 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
 Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
+MM | [mm](https://medium.com/@degensugarboo/avellaneda-and-stoikov-mm-paper-implementation-b7011b5a7532) |  | | 
+TA | [statistic](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
+TA | [liquidation](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
 VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40) |  | | 
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
