@@ -425,3 +425,8 @@ def test_parsing_sqlite_json_output():
 
     assert string_modification.parsing_sqlite_json_output(data) == expected
     assert string_modification.parsing_sqlite_json_output(element_null) == []
+    data_awal = f'{"trade_seq":122997977,"trade_id":"ETH-167195850","timestamp":1681606929890,"tick_direction":3,"state":"filled","self_trade":false,"risk_reducing":false,"reduce_only":false,"profit_loss":2.46e-06,"price":2087.5,"post_only":true,"order_type":"limit","order_id":"ETH-32898161648","mmp":false,"matching_id":null,"mark_price":2087.25,"liquidity":"M","label":"every5mtestShort-closed-1681604837870","instrument_name":"ETH-PERPETUAL","index_price":2087.71,"fee_currency":"ETH","fee":0.0,"direction":"buy","api":true,"amount":1.0}'
+
+
+    expected= [{'trade_seq': 122997977, 'trade_id': 'ETH-167195850', 'timestamp': 1681606929890, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 2.46e-06, 'price': 2087.5, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32898161648', 'mmp': False, 'matching_id': None, 'mark_price': 2087.25, 'liquidity': 'M', 'label': 'every5mtestShort-closed-1681604837870', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2087.71, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 1.0}]
+    assert string_modification.parsing_sqlite_json_output(data_awal) == expected
