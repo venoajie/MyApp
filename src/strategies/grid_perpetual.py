@@ -2,21 +2,14 @@
 
 # built ins
 import asyncio
-#import orjson
-import cachetools.func
 
 # installed
 from dataclassy import dataclass
-from loguru import logger as log
 
 # user defined formula
 import deribit_get
-from transaction_management.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools, string_modification as str_mod
-from configuration import label_numbering, config
+from utilities import  system_tools, string_modification as str_mod
 from strategies import entries_exits
-from db_management import sqlite_management
-# from market_understanding import futures_analysis
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
@@ -94,7 +87,7 @@ class GridPerpetual:
                         ][0]
 
             price_margin =  price_transaction * strategy_attr["take_profit_pct"] 
-            print (f'price_margin {price_margin}')
+            #print (f'price_margin {price_margin}')
             
             label_closed = f"{strategy_label_main}-closed-{strategy_label_int}"
             params_order.update({"label": label_closed})
@@ -116,7 +109,6 @@ class GridPerpetual:
                 order_buy= len_order_limit == 0 and best_bid_prc < price_threshold
                 params_order.update({"entry_price": best_bid_prc})
             
-            
             params_order.update({"price_threshold": price_threshold})
             params_order.update({"side": side})
             params_order.update({"size": trade_item['amount']})
@@ -135,10 +127,7 @@ class GridPerpetual:
         strategies = entries_exits.strategies
 
         params_order = {}  
-        strategy_attr = [
-                            o for o in strategies if o["strategy"] == strategy_label
-                        ][0]
-        
+        strategy_attr = [ o for o in strategies if o["strategy"] == strategy_label][0]
 
         open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label)
         size = int(abs(strategy_attr["equity_risked_pct"]  * notional))
@@ -170,7 +159,7 @@ class GridPerpetual:
             if self.my_trades_open != []:
                 if self.strategy_from_config == None:
                     label_main = str_mod.parsing_label ([o['label'] for o in self.active_trade_item][0]) ['main']
-                    print (label_main)
+                    #print (label_main)
                     result =([
                     o for o in self.my_trades_open  ['all'] \
                         if  str_mod.parsing_label(o['label_main'])['main'] == label_main 
