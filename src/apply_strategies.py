@@ -650,6 +650,10 @@ class ApplyHedgingSpot:
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
                             log.critical(f"instrument {instrument}")
                         
+                    
+                            # avoid reorder closed trades:
+                                # restart after deleting completed trades
+                                # avoid send order for trades with 0 net sum 
                             test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
                             log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
 
@@ -673,38 +677,21 @@ class ApplyHedgingSpot:
                             # log.warning (leverage_and_delta)
                             
                             if "every" in strategy_attr["strategy"]: 
-                                
-                                # avoid reorder closed trades:
-                                # restart after deleting completed trades
-                                # avoid send order for trades with 0 net sum 
-                                #log.debug (f'open_trade_strategy   {open_trade_strategy}')
+                                log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                                     
                                 if open_trade_strategy_label != []\
-                                    and test_net_sum_zero_size != 0:                                      
-                                                
-                                    log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+                                    and test_net_sum_zero_size != 0:                                  
+                                                                                    
                                     params = await grids.get_params_orders_closed (open_trade_strategy_label,
                                                                                    best_bid_prc,
                                                                                    best_ask_prc)
-                                    #log.debug (f'params 1 {params}')
+                                    log.debug (f'params {params}')
 
-                                    if params["side"] == 'buy'\
-                                        and params["len_order_limit"] == 0\
-                                            and best_bid_prc < params ['price_threshold'] :
-                                            
-                                        params.update({"entry_price": best_bid_prc})
-                                                                            
+                                    if params["order_buy"] :                                                                                                                        
                                         await self.send_limit_order(params)
 
-                                    if params["side"] == 'sell'\
-                                        and params["len_order_limit"] == 0\
-                                            and best_ask_prc > params ['price_threshold']:
-                                            
-                                        params.update({"entry_price": best_ask_prc})
-                                        
+                                    if params["order_sell"]:                                                                                    
                                         await self.send_limit_order(params)
-
-                                    log.warning (f'params 2 {params}')
 
                             else:
                                 
