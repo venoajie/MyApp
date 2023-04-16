@@ -187,7 +187,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
 
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
-        log.critical (result)
+        log.warning (f'CANCEL_by_order_id {result}')
         return result
 
     async def current_server_time(self) -> float:
@@ -670,6 +670,9 @@ class ApplyHedgingSpot:
 
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
                             log.critical(f"instrument {instrument}")
+                        
+                            test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
+                            log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
 
                             ticker: list =  self.reading_from_db("ticker", instrument)
                             #log.error (ticker)
@@ -696,8 +699,6 @@ class ApplyHedgingSpot:
                                 # restart after deleting completed trades
                                 # avoid send order for trades with 0 net sum 
                                 #log.debug (f'open_trade_strategy   {open_trade_strategy}')
-                                test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
-                                log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
                                     
                                 if open_trade_strategy_label != []\
                                     and test_net_sum_zero_size != 0:  
@@ -705,7 +706,7 @@ class ApplyHedgingSpot:
                                                 
                                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                                     params = await grids.get_params_orders_closed (open_trade_strategy_label)
-                                    log.debug (f'params 1 {params}')
+                                    #log.debug (f'params 1 {params}')
 
                                     if params["side"] == 'buy'\
                                         and params["len_order_limit"] == 0\
@@ -898,7 +899,7 @@ class ApplyHedgingSpot:
                                 o for o in my_trades_open if strategy_label in o["label"]
                             ]  
                             
-                            log.critical(f" strategy_label  {strategy_label} open_trade_strategy  {open_trade_strategy}")    
+                            #log.critical(f" strategy_label  {strategy_label} open_trade_strategy  {open_trade_strategy}")    
                                                     
                             if "every" in strategy_attr["strategy"]:
                                 
