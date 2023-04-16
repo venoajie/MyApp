@@ -173,7 +173,6 @@ def parsing_label(label: str) -> str:
 
     side=['Short', 'Long']
     super_main = [main.replace(o,'') for o in side if o in main]
-    print (super_main)
 
     return  {
         #"super_main":  bool([o not in main for o in side]),
