@@ -893,7 +893,7 @@ class ApplyHedgingSpot:
                                         
                                     params_order["entry_price"] = best_ask_prc +  .05
                                     await self.send_limit_order(params_order)
-                                log.critical(f" params_order B {params_order}")
+                                #log.critical(f" params_order B {params_order}")
 
                             else:
                                                               
