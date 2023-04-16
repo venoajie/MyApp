@@ -56,9 +56,31 @@ async def tst_get_trades_as_per_label():
 @pytest.mark.asyncio
 async def test_get_params_orders_closed():
     best_bid_prc= 2095
-    best_ask_prc= 2095
+    best_ask_prc= 2140
+    active_trade_item = [{'trade_seq': 122793232, 'trade_id': 'ETH-166947107', 'timestamp': 1681447691857, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -9.23e-05, 'price': 2116.85, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32867483737', 'mmp': False, 'matching_id': None, 'mark_price': 2117.09, 'liquidity': 'M', 'label': 'every4hoursLong-open-1681447421981', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2117.01, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 3.0}]
+    
     result = await grids.get_params_orders_closed(active_trade_item, best_bid_prc, best_ask_prc)   
-    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursLong-closed-1681447421981', 'side': 'sell', 'size': 3.0, 'type': 'limit', 'price_threshold': 2095.6814999999997, 'len_order_limit': 0}
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursLong-closed-1681447421981', 'side': 'sell', 'size': 3.0, 'type': 'limit', 'price_threshold': 2138.0185, 'len_order_limit': 0, 'entry_price': 2140, 'order_buy': False, 'order_sell': True}
+    
+    best_ask_prc= 2138
+    result = await grids.get_params_orders_closed(active_trade_item, best_bid_prc, best_ask_prc)   
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursLong-closed-1681447421981', 'side': 'sell', 'size': 3.0, 'type': 'limit', 'price_threshold': 2138.0185, 'len_order_limit': 0, 'entry_price': 2138, 'order_buy': False, 'order_sell': False}
+    
+    active_trade_item = [{'trade_seq': 122993401, 'trade_id': 'ETH-167190562', 'timestamp': 1681598206591, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 2095.9, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32897249916', 'mmp': False, 'matching_id': None, 'mark_price': 2095.88, 'liquidity': 'M', 'label': 'every4hoursShort-open-1681598206591', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2095.65, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 3.0}]
+    result = await grids.get_params_orders_closed(active_trade_item, best_bid_prc, best_ask_prc)   
+
+    best_bid_prc= 2095
+    best_ask_prc= 2140
+    active_trade_item = [{'trade_seq': 122993401, 'trade_id': 'ETH-167190562', 'timestamp': 1681598206591, 'tick_direction': 3, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 2095.9, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32897249916', 'mmp': False, 'matching_id': None, 'mark_price': 2095.88, 'liquidity': 'M', 'label': 'every4hoursShort-open-1681598206591', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2095.65, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 3.0}]
+    
+    result = await grids.get_params_orders_closed(active_trade_item, best_bid_prc, best_ask_prc)    
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursShort-closed-1681598206591', 'side': 'buy', 'size': 3.0, 'type': 'limit', 'price_threshold': 2074.9410000000003, 'len_order_limit': 0, 'entry_price': 2095, 'order_buy': False, 'order_sell': False}
+    
+    best_bid_prc= 2074
+    result = await grids.get_params_orders_closed(active_trade_item, best_bid_prc, best_ask_prc)    
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every4hoursShort-closed-1681598206591', 'side': 'buy', 'size': 3.0, 'type': 'limit', 'price_threshold': 2074.9410000000003, 'len_order_limit': 0, 'entry_price': 2074, 'order_buy': True, 'order_sell': False}
+        
+    
     
 @pytest.mark.asyncio
 async def test_open_orders_as_per_main_label():
