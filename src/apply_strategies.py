@@ -122,7 +122,7 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
-    @cachetools.func.ttl_cache(maxsize=10, ttl=1/5)
+    @cachetools.func.ttl_cache(maxsize=10, ttl=1/4)
     def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
@@ -662,7 +662,7 @@ class ApplyHedgingSpot:
                                 is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
                                 log.debug (open_trade_strategy_label[0]['trade_seq'])
                                 log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
-                                log.debug (f'test   {123015436 in [123015436, 123015610]}')
+                               # log.debug (f'test   {123015436 in [123015436, 123015610]}')
                                                 
                                 if open_trade_strategy_label != []\
                                     and test_net_sum_zero_size != 0\
