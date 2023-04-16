@@ -360,7 +360,9 @@ class ApplyHedgingSpot:
                 
                 for res in result:
                     log.critical (res)
-                    result_to_dict = str_mod.parsing_sqlite_json_output ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
+                    result_to_dict =  ([o for o in result_transactions if o['trade_seq'] == res])[0]['data']
+                    log.debug (f' result_to_dict AAAAAAAAAAA {result_to_dict}')
+                    result_to_dict = str_mod.parsing_sqlite_json_output (result_to_dict)
                     log.debug (f' result_to_dict {result_to_dict}')
                     from time import sleep
                     sleep (10)
