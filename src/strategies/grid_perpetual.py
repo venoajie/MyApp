@@ -69,7 +69,7 @@ class GridPerpetual:
 
         return result
 
-    async def get_params_orders_closed(self, active_trade_item) -> list:
+    async def get_params_orders_closed(self, active_trade_item, best_bid_prc, best_ask_prc) -> list:
         """
         """
         params_order = {}
@@ -98,21 +98,31 @@ class GridPerpetual:
             
             label_closed = f"{strategy_label_main}-closed-{strategy_label_int}"
             params_order.update({"label": label_closed})
+            open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
+            len_order_limit= open_orders_under_same_label_status['len_result']
+            params_order.update({"len_order_limit": len_order_limit})
                     
             if side_transaction == "buy":
                 side = "sell"
                 price_threshold = price_transaction + price_margin
+                order_buy = False
+                order_sell = len_order_limit == 0 and best_ask_prc > price_threshold
+                
             if side_transaction == "sell":
                 side = "buy"
                 price_threshold =  price_transaction - price_margin
+                order_sell = False
+                order_buy= len_order_limit == 0 and best_bid_prc < price_threshold
             
-            open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
+            
             params_order.update({"price_threshold": price_threshold})
             params_order.update({"side": side})
             params_order.update({"size": trade_item['amount']})
-            params_order.update({"len_order_limit": open_orders_under_same_label_status['len_result']})
+            
             params_order.update({"type": 'limit'})
             params_order.update({"instrument": trade_item['instrument_name']})
+            params_order.update({"order_buy": order_buy})
+            params_order.update({"order_sell": order_sell})
         return params_order
 
 
