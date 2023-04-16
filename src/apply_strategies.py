@@ -303,7 +303,7 @@ class ApplyHedgingSpot:
             #log.warning(f'my_trades_open_sqlite_detailing {result}')
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
-            o for o in transactions if  str_mod.parsing_label(o['label_main'])['net'] == label
+            o for o in transactions if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label
         ])
         if detail_level== None:
             result = 0 if transactions==[] else transactions
@@ -347,7 +347,7 @@ class ApplyHedgingSpot:
             #log.error (transactions)
             
             result_transactions = 0 if transactions==[] else ([
-            o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['net'] == label
+            o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label
         ])
             
             #log.debug (result_transactions)
