@@ -372,11 +372,20 @@ def test_get_strings_before_character_and_parsing_label():
     result = "hedgingSpot"
     assert (string_modification.get_strings_before_character(label, "-", 0) == result)
     assert (string_modification.parsing_label(label) ['main'] == result)
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
     
     label = "supplyDemandLong60B-closed-1677903684425"
     result = "supplyDemandLong60B"
     assert (string_modification.get_strings_before_character(label, "-", 0) == result)
     assert (string_modification.parsing_label(label) ['main'] == result)
+    result = "supplyDemand60B"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    label = "every5mtestLong-open-1681617021717"
+    result = "every5mtest"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    label = "every5mtestShort-closed-1681617021717"
+    result = "every5mtest"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
     
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60"
@@ -406,6 +415,8 @@ def test_get_strings_before_character_and_parsing_label():
         string_modification.get_strings_before_character(label)
         == result)
     assert (string_modification.parsing_label(label) ['transaction_net'] == result)
+    result = "supplyDemand60"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
 
 def test_parsing_sqlite_json_output():
     element_null = []
