@@ -332,38 +332,29 @@ class ApplyHedgingSpot:
 
     async def my_trades_open_sqlite_closed_transactions (self, transactions_all) -> None:
         """ 
-        detail_level: main/individual
         """
         
         trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
         for transactions in trades_with_closed_labels:
             label = str_mod.remove_redundant_elements(
-                    [
-                        str_mod.get_strings_before_character(o["label_main"])
-                        for o in [transactions]
-                    ]
-                )[0]
-            log.warning (label)
-            #log.error (transactions)
+                    [str_mod.get_strings_before_character(o["label_main"])
+                        for o in [transactions]])[0]
             
             result_transactions = 0 if transactions==[] else ([
-            o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label
-        ])
-            
-            #log.debug (result_transactions)
+            o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
-            log.error (f' result {result}')
+            #log.error (f' result {result}')
             if result ==0:
                 # get trade seq
                 result = ([o['trade_seq']   for o in result_transactions ])
                 
                 for res in result:
-                    log.critical (res)
+                    #log.critical (res)
                     my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                     my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                     result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])
-                    log.debug (f' result_to_dict {result_to_dict}')
+                    #log.debug (f' result_to_dict {result_to_dict}')
                     where_filter = f"trade_seq"
                     await sqlite_management.deleting_row('my_trades_all_json', 
                                                         "databases/trading.sqlite3",
@@ -516,7 +507,6 @@ class ApplyHedgingSpot:
 
     async def running_strategy(self, server_time) -> float:
         """ """
-        #from time import sleep
 
         try:
             # gathering basic data
@@ -661,7 +651,7 @@ class ApplyHedgingSpot:
                                 my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
                                 is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
                                 log.debug (open_trade_strategy_label[0]['trade_seq'])
-                                log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
+                                #log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
                                                 
                                 if open_trade_strategy_label != []\
@@ -822,7 +812,7 @@ class ApplyHedgingSpot:
                                     log.debug(f"exit_orders_market_type")
                         else:
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                            await catch_error('size or open order is inconsistent', 60*30)
+                            await catch_error('size or open order is inconsistent', 60*5)
                             
                 for instrument in instrument_transactions:
                     # log.critical(f"{instrument}")
