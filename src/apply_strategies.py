@@ -297,14 +297,13 @@ class ApplyHedgingSpot:
 
         if detail_level== 'main':
 
-            result = 0 if transactions==[] else ([
-            o for o in transactions if  str_mod.get_strings_before_character(
-                o['label_main'], "-", 0) == str_mod.get_strings_before_character(label, "-", 0)]
-                                                 )
+            result = 0 if transactions==[] \
+                else ([o for o in transactions \
+                    if  str_mod.parsing_label(o['label_main'])['main'] == str_mod.parsing_label(label)['main']])
             #log.warning(f'my_trades_open_sqlite_detailing {result}')
         if detail_level== 'individual':
             result = 0 if transactions==[] else ([
-            o for o in transactions if  str_mod.get_strings_before_character(o['label_main']) == label
+            o for o in transactions if  str_mod.parsing_label(o['label_main'])['net'] == label
         ])
         if detail_level== None:
             result = 0 if transactions==[] else transactions
@@ -348,7 +347,7 @@ class ApplyHedgingSpot:
             #log.error (transactions)
             
             result_transactions = 0 if transactions==[] else ([
-            o for o in transactions_all if  str_mod.get_strings_before_character(o['label_main']) == label
+            o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['net'] == label
         ])
             
             #log.debug (result_transactions)
@@ -400,7 +399,7 @@ class ApplyHedgingSpot:
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
-        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+        strategy_label = str_mod.parsing_label(label)['main']
         log.warning(f'LABEL {label}')
         log.warning(f'strategy_label {strategy_label}')
         
@@ -470,15 +469,12 @@ class ApplyHedgingSpot:
 
         if net_sum_current_position == 0 and strategy_label_int == None:
             
-            strategy_label_int = str_mod.get_strings_before_character(
-                label_open, "-", 2
-            )
+            strategy_label_int = str_mod.parsing_label(label_open)['int']
 
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"
 
             determine_size_and_side["label_closed"] = label_closed
             
-
         # the strategy has outstanding position
         if net_sum_current_position != 0 and strategy_label_int != None:
             label_closed = f"{strategy_label}-closed-{strategy_label_int}"
@@ -772,7 +768,7 @@ class ApplyHedgingSpot:
                                     else:
                                         log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                         
-                                        strategy_label_int = str_mod.get_strings_before_character(exit_order_allowed  ['label'], "-", 2)
+                                        strategy_label_int = str_mod.parsing_label(exit_order_allowed ['label'])['int']
                                         label_closed = f"{strategy_label}-closed-{strategy_label_int}"
                                         exit_order_allowed.update({"label": label_closed})
                                         log.debug (strategy_label_int)
