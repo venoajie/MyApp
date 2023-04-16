@@ -588,23 +588,19 @@ class ApplyHedgingSpot:
 
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
+                        log.critical(f" {label}")
 
                         # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
+                        strategy_label = str_mod.parsing_label(label)['main']
 
                         open_order_label = open_order_mgt.open_orders_api_basedOn_label(strategy_label)
 
                         open_order_label_short = [o for o in open_order_label if o["direction"] == "sell"]
                         
                         open_order_label_long = [o for o in open_order_label if o["direction"] == "buy"]
-
-                        # result example: 'hedgingSpot'/'supplyDemandShort60'
-                        strategy_label = str_mod.get_strings_before_character(label, "-", 0)
                         
                         # get startegy details
-                        strategy_attr = [o for o in strategies if o["strategy"] == strategy_label][0]
-
-                        log.critical(f" {label}")
+                        strategy_attr = [o for o in strategies if o["strategy"] == strategy_label][0]                        
                         
                         my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'individual')
                         my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'main')
@@ -619,25 +615,12 @@ class ApplyHedgingSpot:
                         
                         if size_is_consistent and open_order_is_consistent:
                             
-                            grids=  grid.GridPerpetual(my_trades_open,
-                                                             open_orders_sqlite
-                                                             )
-                                                        
-                            log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
-                                sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')
-
                             open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                             open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
-                            log.critical(f"instrument {instrument}")                        
-                    
-                            # avoid reorder closed trades:
-                                # restart after deleting completed trades
-                                # avoid send order for trades with 0 net sum 
-                            test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
-                            log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
-
+                            log.critical(f"instrument {instrument}")                  
+                            
                             ticker: list =  self.reading_from_db("ticker", instrument)
                             #log.error (ticker)
 
@@ -653,6 +636,19 @@ class ApplyHedgingSpot:
 
                             # compute notional value
                             notional: float = await self.compute_notional_value(index_price, equity)
+                            
+                            grids=  grid.GridPerpetual(my_trades_open,
+                                                             open_orders_sqlite
+                                                             )
+                                                        
+                            log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
+                                sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
+                    
+                            # avoid reorder closed trades:
+                                # restart after deleting completed trades
+                                # avoid send order for trades with 0 net sum 
+                            test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
+                            log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
 
                             # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                             # log.warning (leverage_and_delta)
@@ -668,12 +664,9 @@ class ApplyHedgingSpot:
                                                                                    best_ask_prc)
                                     log.debug (f'params {params}')
 
-                                    if params["order_buy"] :                                                                                                                        
+                                    if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                         await self.send_limit_order(params)
-
-                                    if params["order_sell"]:                                                                                    
-                                        await self.send_limit_order(params)
-
+                                        
                             else:
                                 
                                 min_position_size: float = position_sizing.pos_sizing(
@@ -779,9 +772,7 @@ class ApplyHedgingSpot:
                                     else:
                                         log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                         
-                                        strategy_label_int = str_mod.get_strings_before_character(
-                        exit_order_allowed  ['label'], "-", 2
-                    )
+                                        strategy_label_int = str_mod.get_strings_before_character(exit_order_allowed  ['label'], "-", 2)
                                         label_closed = f"{strategy_label}-closed-{strategy_label_int}"
                                         exit_order_allowed.update({"label": label_closed})
                                         log.debug (strategy_label_int)
@@ -1003,8 +994,6 @@ async def main():
         my_trades_open_sqlite: dict = await syn.querying_all('my_trades_all_json')
         my_trades_open_all: list = my_trades_open_sqlite['all']
         await syn.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
-
-        # open_orders_from_exchange = await syn.open_orders_from_exchange ()
 
     except Exception as error:
         catch_error(error, 30)
