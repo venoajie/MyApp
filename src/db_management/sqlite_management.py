@@ -328,7 +328,8 @@ async def querying_table (table: str = 'mytrades',
                           database: str = "databases/trading.sqlite3", 
                           filter: str = None, 
                           operator=None,  
-                          filter_value=None
+                          filter_value=None,
+                          column='*'
                           )->list:
 
     '''
@@ -336,12 +337,12 @@ async def querying_table (table: str = 'mytrades',
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     ''' 
     
-    query_table = f'SELECT  * FROM {table} WHERE  {filter} {operator}?' 
+    query_table = f'SELECT  {column} FROM {table} WHERE  {filter} {operator}?' 
         
     filter_val =(f'{filter_value}',)
     
     if filter == None:
-        query_table = f'SELECT  * FROM {table}'
+        query_table = f'SELECT  {column} FROM {table}'
     
     combine_result = []
     
