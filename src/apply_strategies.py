@@ -374,17 +374,17 @@ class ApplyHedgingSpot:
                 
                 #combining open vs closed transactions
                 transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
+                log.warning (transactions_under_label_main)
                 
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
 
                 # get trade seq from valid transactions (to be excluded in the next step)
                 result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
+                log.warning (result_transactions_trade_seq)
                 
                 # excluded trades closed labels from above trade seq
-                result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
-                log.warning (transactions_under_label_main)
-                log.warning (result_transactions_trade_seq)
+                result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] != min_closed or 'open' not in o['label_main']  ])
                 log.warning (result_transactions_excess)
                 log.warning (len(result_transactions_excess))
                 for transaction in result_transactions_excess:
