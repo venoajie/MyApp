@@ -357,21 +357,30 @@ class ApplyHedgingSpot:
             
             log.warning (label)
             
-            result_transactions = 0 if transaction==[] else ([
+            transactions_under_label_main = 0 if transaction==[] else ([
             o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
-            log.error (len(result_transactions))
+            log.error (len(transactions_under_label_main))
+            result = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
 
-            if len(result_transactions) >2:
-                min_closed= min([o['trade_seq'] for o in result_transactions if 'closed' in o['label_main'] ])
-                result_transactions = ([o for o in result_transactions if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
-            log.error (result_transactions)
+            if len(transactions_under_label_main) >2:
+                min_closed= min([o['trade_seq'] for o in transactions_under_label_main if 'closed' in o['label_main'] ])
+                transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
+                result = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
+
+                result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
+                result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
+                for transaction in result_transactions_excess:
+                    log.critical (transaction)
+                
+            log.error (transactions_under_label_main)
+            log.warning (result_transactions_excess)
             
-            result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
+            
             #log.error (f' result {result}')
             log.error (result)
             if result ==0 :
                 # get trade seq
-                result = ([o['trade_seq']   for o in result_transactions ])
+                result = ([o['trade_seq']   for o in transactions_under_label_main ])
                 
                 for res in result:
                     #log.critical (res)
@@ -683,6 +692,7 @@ class ApplyHedgingSpot:
                                 #log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
                                 #log.warning (f'my_trades_open_closed_label   {my_trades_open_closed_label} {is_labelled}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
+                                sleep (10)
                                                 
                                 if open_trade_strategy_label != []\
                                     and test_net_sum_zero_size != 0\
