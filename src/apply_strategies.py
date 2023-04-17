@@ -388,7 +388,7 @@ class ApplyHedgingSpot:
                     tstamp= transaction['timestamp']
                     new_label= str_mod.parsing_label(label, tstamp) ['flipping_closed']
                     transaction['label']= new_label
-                    log.critical (transaction)
+                    #log.critical (transaction)
                     
                     where_filter = f"trade_seq"
                     await sqlite_management.deleting_row('my_trades_all_json', 
@@ -401,8 +401,8 @@ class ApplyHedgingSpot:
                     # refreshing data
                     system_tools.sleep_and_restart_program(.1)
                 
-            log.error (transactions_under_label_main)
-            log.error (transactions_under_label_main[0]['data'])
+            #log.error (transactions_under_label_main)
+            #log.error (transactions_under_label_main[0]['data'])
             
             
             #log.error (f' result {result}')
