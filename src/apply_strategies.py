@@ -595,7 +595,7 @@ class ApplyHedgingSpot:
                 
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
                 
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
