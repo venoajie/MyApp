@@ -116,14 +116,11 @@ class ApplyHedgingSpot:
     async def get_net_sum_strategy(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
         """ """
-        log.debug(label)
-        log.debug([o['amount_dir'] for o in my_trades_open_sqlite['all']])
-        result = 0 if my_trades_open_sqlite==[] \
-                else ([o['amount_dir'] for o in my_trades_open_sqlite['all'] \
-                    if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
-        log.debug(result)
-        none_data: None = [0, None, []] 
         
+        result = 0 if my_trades_open_sqlite==[] \
+                else sum([o['amount_dir'] for o in my_trades_open_sqlite['all'] \
+                    if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
+
         return  result
 
     def compute_position_leverage_and_delta(
