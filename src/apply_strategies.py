@@ -398,6 +398,8 @@ class ApplyHedgingSpot:
                                                         trade_seq
                                                         )
                     await sqlite_management.insert_tables('my_trades_all_json',transaction)
+                    # refreshing data
+                    system_tools.sleep_and_restart_program(.1)
                 
             log.error (transactions_under_label_main)
             log.error (transactions_under_label_main[0]['data'])
