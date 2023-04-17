@@ -379,7 +379,7 @@ class ApplyHedgingSpot:
                 net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
 
                 # get trade seq from valid transactions (to be excluded in the next step)
-                result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])[0]
+                result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
                 
                 # excluded trades closed labels from above trade seq
                 result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
