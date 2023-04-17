@@ -386,6 +386,8 @@ def test_get_strings_before_character_and_parsing_label():
     label = "every5mtestShort-closed-1681617021717"
     result = "every5mtest"
     assert (string_modification.parsing_label(label) ['super_main'] == result)
+    result = "1681617021717"
+    assert (string_modification.parsing_label(label) ['int'] == result)
     
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60"
