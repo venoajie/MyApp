@@ -372,7 +372,8 @@ class ApplyHedgingSpot:
                 min_closed= min([o['trade_seq'] for o in transactions_closed ])
                 
                 #combining open vs closed transactions
-                transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
+                transactions_under_label_main = ([o for o in transactions_under_label_main \
+                    if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
                 
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
@@ -385,6 +386,10 @@ class ApplyHedgingSpot:
                 transactions_excess = str_mod.parsing_sqlite_json_output([o['data'] for o in result_transactions_excess])
                 
                 for transaction in transactions_excess:
+                    label = transaction['label']
+                    tstamp= transaction['timestamp']
+                    new_label= str_mod.parsing_label(label, tstamp) ['flipping_closed']
+                    transaction['label']= new_label
                     log.critical (transaction)
                 
             log.error (transactions_under_label_main)
