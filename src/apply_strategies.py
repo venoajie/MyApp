@@ -339,10 +339,7 @@ class ApplyHedgingSpot:
         trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
         #log.warning (trades_with_closed_labels)
         
-        for transaction in trades_with_closed_labels:
-            len_transactions_closed =  len([o for o in transactions_all if o['label_main'] == transaction['label_main'] ])
-            
-            log.critical (len_transactions_closed)
+        for transaction in trades_with_closed_labels:            
             log.warning (transaction)
             label = str_mod.remove_redundant_elements(
                     [str_mod.get_strings_before_character(o["label_main"])
@@ -362,7 +359,7 @@ class ApplyHedgingSpot:
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             #log.error (f' result {result}')
             log.error (result)
-            if result ==0 and False:
+            if result ==0 :
                 # get trade seq
                 result = ([o['trade_seq']   for o in result_transactions ])
                 
@@ -588,7 +585,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
-                sleep (10)
+
                 #log.error (f'strategy_labels {strategy_labels}')                
 
                 # when there are some positions/order, check their appropriateness to the established standard
@@ -838,6 +835,7 @@ class ApplyHedgingSpot:
                             
                 for instrument in instrument_transactions:
                     # log.critical(f"{instrument}")
+                    sleep (10)
 
                     ticker =  self.reading_from_db("ticker", instrument)
 
