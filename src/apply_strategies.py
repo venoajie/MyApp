@@ -354,7 +354,7 @@ class ApplyHedgingSpot:
             o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
             log.error (len(result_transactions))
 
-            if result_transactions >2:
+            if len(result_transactions) >2:
                 min_closed= min([o['trade_seq'] for o in result_transactions if 'closed' in o['label_main'] ])
                 result_transactions = ([o for o in result_transactions if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
             log.error (result_transactions)
