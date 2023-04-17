@@ -2,6 +2,7 @@
 
 # built ins
 import asyncio
+from time import sleep
 #import orjson
 import cachetools.func
 
@@ -334,12 +335,18 @@ class ApplyHedgingSpot:
         """ 
         """
         
+        #get_closed_labels
         trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
+        log.warning (trades_with_closed_labels)
+        
         for transactions in trades_with_closed_labels:
+            log.warning (transactions)
             label = str_mod.remove_redundant_elements(
                     [str_mod.get_strings_before_character(o["label_main"])
                         for o in [transactions]])[0]
             
+            log.warning (label)
+            sleep (10)
             result_transactions = 0 if transactions==[] else ([
             o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
             
@@ -649,14 +656,18 @@ class ApplyHedgingSpot:
                                 my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                                 my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
                                 my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
+                                my_trades_open_label: list =  ([o['label'] for o in my_trades_open])
                                 is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
+                                is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_label
                                 log.debug (open_trade_strategy_label[0]['trade_seq'])
                                 log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
+                                log.warning (f'my_trades_open_label   {my_trades_open_label} {is_labelled}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
                                                 
                                 if open_trade_strategy_label != []\
                                     and test_net_sum_zero_size != 0\
-                                        and is_closed == False:                                  
+                                        and is_closed == False\
+                                            and is_labelled == False:                                  
                                                                                     
                                     params = await grids.get_params_orders_closed (open_trade_strategy_label,
                                                                                    best_bid_prc,
