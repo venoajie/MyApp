@@ -357,12 +357,15 @@ class ApplyHedgingSpot:
                         for o in [transaction]])[0]
             
             # get transactions net
-            transactions_under_label_main = 0 if transaction==[] else ([
-            o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
+            transactions_under_label_main = 0 \
+                if transaction== [] \
+                    else ([o for o in transactions_all \
+                        if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
             
             log.warning (transactions_under_label_main)
             # get net sum of the transactions open and closed
-            net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
+            net_sum = [] if transactions_under_label_main == []\
+                else sum([o['amount_dir'] for o in transactions_under_label_main ])
 
             if len(transactions_under_label_main) >2:
                 
@@ -887,7 +890,7 @@ class ApplyHedgingSpot:
                             
                 for instrument in instrument_transactions:
                     # log.critical(f"{instrument}")
-                    sleep (10)
+                    
 
                     ticker =  self.reading_from_db("ticker", instrument)
 
