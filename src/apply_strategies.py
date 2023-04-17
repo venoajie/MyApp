@@ -390,6 +390,7 @@ class ApplyHedgingSpot:
                     log.critical (result)
                 
             log.error (transactions_under_label_main)
+            log.error (transactions_under_label_main['data'])
             
             
             #log.error (f' result {result}')
