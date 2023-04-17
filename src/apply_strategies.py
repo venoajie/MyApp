@@ -358,10 +358,11 @@ class ApplyHedgingSpot:
                 min_closed= min([o['trade_seq'] for o in result_transactions if 'closed' in o['label_main'] ])
                 result_transactions = ([o for o in result_transactions if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
             log.error (result_transactions)
+            log.error (result)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             #log.error (f' result {result}')
-            if result ==0:
+            if result ==0 and False:
                 # get trade seq
                 result = ([o['trade_seq']   for o in result_transactions ])
                 
