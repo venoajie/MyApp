@@ -118,9 +118,9 @@ class ApplyHedgingSpot:
         """ """
         log.debug(my_trades_open_sqlite)
         log.debug(label)
-        log.debug([o['amount_dir'] for o in my_trades_open_sqlite])
+        log.debug([o['amount_dir'] for o in my_trades_open_sqlite['all']])
         result = 0 if my_trades_open_sqlite==[] \
-                else ([o['amount_dir'] for o in my_trades_open_sqlite \
+                else ([o['amount_dir'] for o in my_trades_open_sqlite['all'] \
                     if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
         none_data: None = [0, None, []] 
         
