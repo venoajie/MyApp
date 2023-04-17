@@ -113,6 +113,16 @@ class ApplyHedgingSpot:
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
 
+    async def get_net_sum_strategy(self, my_trades_open_sqlite: list, 
+                           label: str) -> float:
+        """ """
+        result = 0 if my_trades_open_sqlite==[] \
+                else ([o['amount_dir'] for o in my_trades_open_sqlite \
+                    if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
+        none_data: None = [0, None, []] 
+        
+        return  result
+
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: dict
     ) -> float:
@@ -657,9 +667,11 @@ class ApplyHedgingSpot:
 
                             # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                             # log.warning (leverage_and_delta)
-                            
+                            my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                             if "every" in strategy_attr["strategy"]: 
                                 log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+                                net_sum_strategy = await self.get_net_sum_strategy(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
+                                log.debug (f'net_sum_strategy   {net_sum_strategy}')
                                 
                                 my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                                 my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
@@ -1010,9 +1022,7 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
-        my_trades_open_sqlite: dict = await syn.querying_all('my_trades_all_json')
-        my_trades_open_all: list = my_trades_open_sqlite['all']
-        await syn.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
+        
 
     except Exception as error:
         catch_error(error, 30)
