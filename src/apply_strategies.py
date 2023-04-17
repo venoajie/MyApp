@@ -383,7 +383,7 @@ class ApplyHedgingSpot:
                 # excluded trades closed labels from above trade seq
                 result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
                 
-                for transaction in result_transactions_excess['data']:
+                for transaction in result_transactions_excess:
                     log.critical (transaction)
                 
             log.error (transactions_under_label_main)
