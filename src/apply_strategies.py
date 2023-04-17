@@ -369,6 +369,7 @@ class ApplyHedgingSpot:
 
                 result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
                 result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
+                log.warning (result_transactions_trade_seq)
                 log.warning (result_transactions_excess)
                 for transaction in result_transactions_excess:
                     log.critical (transaction)
