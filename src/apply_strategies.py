@@ -341,6 +341,8 @@ class ApplyHedgingSpot:
         
         for transaction in trades_with_closed_labels:
             len_transactions_closed =  len([o for o in transactions_all if o['label_main'] == transaction['label_main'] ])
+            if len_transactions_closed >1:
+                pass
             
             log.critical (len_transactions_closed)
             log.warning (transaction)
@@ -352,6 +354,8 @@ class ApplyHedgingSpot:
             
             result_transactions = 0 if transaction==[] else ([
             o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
+
+            log.error (result_transactions)
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
             #log.error (f' result {result}')
