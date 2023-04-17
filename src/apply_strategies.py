@@ -377,20 +377,27 @@ class ApplyHedgingSpot:
                 
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
-
-                # get trade seq from valid transactions (to be excluded in the next step)
-                result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
                 
                 # excluded trades closed labels from above trade seq
                 result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
                 transactions_excess = str_mod.parsing_sqlite_json_output([o['data'] for o in result_transactions_excess])
                 
                 for transaction in transactions_excess:
+                    trade_seq = transaction['trade_seq']
                     label = transaction['label']
                     tstamp= transaction['timestamp']
                     new_label= str_mod.parsing_label(label, tstamp) ['flipping_closed']
                     transaction['label']= new_label
                     log.critical (transaction)
+                    
+                    where_filter = f"trade_seq"
+                    await sqlite_management.deleting_row('my_trades_all_json', 
+                                                        "databases/trading.sqlite3",
+                                                        where_filter,
+                                                        "=",
+                                                        trade_seq
+                                                        )
+                    await sqlite_management.insert_tables('my_trades_all_json',transaction)
                 
             log.error (transactions_under_label_main)
             log.error (transactions_under_label_main[0]['data'])
@@ -586,7 +593,7 @@ class ApplyHedgingSpot:
                 
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
                 
-                #log.warning (my_trades_open)
+                log.warning (my_trades_open)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
