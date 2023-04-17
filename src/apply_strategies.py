@@ -116,6 +116,9 @@ class ApplyHedgingSpot:
     async def get_net_sum_strategy(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
         """ """
+        log.debug(my_trades_open_sqlite)
+        log.debug(label)
+        log.debug([o['amount_dir'] for o in my_trades_open_sqlite])
         result = 0 if my_trades_open_sqlite==[] \
                 else ([o['amount_dir'] for o in my_trades_open_sqlite \
                     if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
