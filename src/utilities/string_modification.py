@@ -132,7 +132,7 @@ def get_strings_before_character(
     return splitted
 
 
-def parsing_label(label: str) -> dict:
+def parsing_label(label: str, integer: int= None) -> dict:
 
     """
 
@@ -184,6 +184,16 @@ def parsing_label(label: str) -> dict:
     except:
         super_main = None
 
+    try:
+        if 'Short' in main:
+            flip= main.replace('Short','Long')  
+
+        if 'Long' in main:
+            flip= main.replace('Long','Short')  
+        flipping_closed = f"{flip}-open-{integer}"
+    except:
+        flipping_closed = None
+
     return  {
         #"super_main":  bool([o not in main for o in side]),
         "super_main": None if super_main== None \
@@ -192,5 +202,6 @@ def parsing_label(label: str) -> dict:
         "main": main,
         "int": get_integer,
         "transaction_status": status,
-        "transaction_net": net
+        "transaction_net": net,
+        "flipping_closed": flipping_closed
         }
