@@ -651,7 +651,7 @@ class ApplyHedgingSpot:
                                 my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
                                 is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
                                 log.debug (open_trade_strategy_label[0]['trade_seq'])
-                                #log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
+                                log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
                                                 
                                 if open_trade_strategy_label != []\
