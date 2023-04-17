@@ -351,38 +351,50 @@ class ApplyHedgingSpot:
         
         for transaction in trades_with_closed_labels:            
             log.warning (transaction)
-            label = str_mod.remove_redundant_elements(
+
+            # get label net
+            label_net = str_mod.remove_redundant_elements(
                     [str_mod.parsing_label(o["label_main"])['transaction_net']
                         for o in [transaction]])[0]
             
-            log.warning (label)
-            log.warning (str_mod.parsing_label(transaction['label_main']))
-            log.warning (str_mod.parsing_label(label)['transaction_net'])
-            
+            # get transactions net
             transactions_under_label_main = 0 if transaction==[] else ([
-            o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
+            o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
+            
             log.error ((transactions_under_label_main))
-            result = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
+            log.error (len(transactions_under_label_main))
+            
+            # get net sum of the transactions open and closed
+            net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
 
             if len(transactions_under_label_main) >2:
+                
+                # get minimum trade seq from closed label main (to be paired vs open label)
                 min_closed= min([o['trade_seq'] for o in transactions_under_label_main if 'closed' in o['label_main'] ])
+                
+                #combining open vs closed transactions
                 transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
-                result = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
+                
+                # get net sum of the transactions open and closed
+                net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
 
+                # get trade seq from valid transactions (to be excluded in the next step)
                 result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
-                result_transactions_excess = ([o for o in trades_with_closed_labels if o['trade_seq'] not in result_transactions_trade_seq ])
+                
+                # excluded trades closed labels from above trade seq
+                result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
                 log.warning (result_transactions_trade_seq)
                 log.warning (result_transactions_excess)
+                log.warning (len(result_transactions_excess))
                 for transaction in result_transactions_excess:
                     log.critical (transaction)
                 
             log.error (transactions_under_label_main)
             
             
-            
             #log.error (f' result {result}')
-            log.error (result)
-            if result ==0 :
+            log.error (net_sum)
+            if net_sum ==0 :
                 # get trade seq
                 result = ([o['trade_seq']   for o in transactions_under_label_main ])
                 
