@@ -383,6 +383,7 @@ class ApplyHedgingSpot:
                 
                 # excluded trades closed labels from above trade seq
                 result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] not in result_transactions_trade_seq ])
+                log.warning (transactions_under_label_main)
                 log.warning (result_transactions_trade_seq)
                 log.warning (result_transactions_excess)
                 log.warning (len(result_transactions_excess))
