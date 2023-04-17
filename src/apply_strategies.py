@@ -356,6 +356,7 @@ class ApplyHedgingSpot:
                         for o in [transaction]])[0]
             
             log.warning (label)
+            log.warning (str_mod.parsing_label(label)['transaction_net'])
             
             transactions_under_label_main = 0 if transaction==[] else ([
             o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
