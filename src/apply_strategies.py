@@ -370,7 +370,8 @@ class ApplyHedgingSpot:
             if len(transactions_under_label_main) >2:
                 
                 # get minimum trade seq from closed label main (to be paired vs open label)
-                min_closed= min([o['trade_seq'] for o in transactions_under_label_main if 'closed' in o['label_main'] ])
+                transactions_closed= ([o for o in transactions_under_label_main if 'closed' in o['label_main'] ])
+                min_closed= min([o['trade_seq'] for o in transactions_closed ])
                 
                 #combining open vs closed transactions
                 transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
@@ -384,7 +385,7 @@ class ApplyHedgingSpot:
                 log.warning (result_transactions_trade_seq)
                 
                 # excluded trades closed labels from above trade seq
-                result_transactions_excess = ([o for o in transactions_under_label_main if o['trade_seq'] != min_closed or 'open' not in o['label_main']  ])
+                result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
                 log.warning (result_transactions_excess)
                 log.warning (len(result_transactions_excess))
                 for transaction in result_transactions_excess:
