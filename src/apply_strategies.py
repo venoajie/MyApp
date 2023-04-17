@@ -356,12 +356,10 @@ class ApplyHedgingSpot:
                         for o in [transaction]])[0]
             
             log.warning (label)
-            log.warning ([
-            o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] ])
             
             transactions_under_label_main = 0 if transaction==[] else ([
             o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
-            log.error (len(transactions_under_label_main))
+            log.error ((transactions_under_label_main))
             result = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
 
             if len(transactions_under_label_main) >2:
