@@ -385,7 +385,7 @@ class ApplyHedgingSpot:
                 
                 for transaction in result_transactions_excess:
                     #result= (transaction['data'])
-                    result= str_mod.parsing_sqlite_json_output(transaction)
+                    result= str_mod.parsing_sqlite_json_output([transaction])
                     log.critical (result)
                 
             log.error (transactions_under_label_main)
