@@ -142,12 +142,20 @@ def parsing_label(label: str) -> dict:
     Returns:
         dict
 
-    Example: 'hedgingSpot-open-1671189554374'
+    Example: 
+        'hedgingSpot-open-1671189554374'
         main: 'hedgingSpot'
         super_main: 'hedgingSpot'
         int = 1671189554374
-        transaction_status:'hedgingSpot-open''
-        transaction_net:'hedgingSpot-1671189554374''
+        transaction_status:'hedgingSpot-open'
+        transaction_net:'hedgingSpot-1671189554374'
+        
+        'every5mtestLong-open-1681617021717'
+        main: 'every5mtestLong'
+        super_main: 'every5mtest'
+        int = 1681617021717
+        transaction_status:'every5mtestLong-open''
+        transaction_net:'every5mtestLong-1681617021717''
 
     """
     try:
