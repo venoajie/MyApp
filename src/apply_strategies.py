@@ -347,7 +347,6 @@ class ApplyHedgingSpot:
         
         #get_closed_labels
         trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
-        #log.warning (trades_with_closed_labels)
         
         for transaction in trades_with_closed_labels:            
             log.warning (transaction)
@@ -361,34 +360,30 @@ class ApplyHedgingSpot:
             transactions_under_label_main = 0 if transaction==[] else ([
             o for o in transactions_all if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
             
-            log.error ((transactions_under_label_main))
-            log.error (len(transactions_under_label_main))
-            
             # get net sum of the transactions open and closed
             net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir']   for o in transactions_under_label_main ])
 
             if len(transactions_under_label_main) >2:
                 
-                # get minimum trade seq from closed label main (to be paired vs open label)
+                #get_closed_labels under_label_main
                 transactions_closed= ([o for o in transactions_under_label_main if 'closed' in o['label_main'] ])
+
+                # get minimum trade seq from closed label main (to be paired vs open label)
                 min_closed= min([o['trade_seq'] for o in transactions_closed ])
                 
                 #combining open vs closed transactions
                 transactions_under_label_main = ([o for o in transactions_under_label_main if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
-                log.warning (transactions_under_label_main)
                 
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
 
                 # get trade seq from valid transactions (to be excluded in the next step)
                 result_transactions_trade_seq = ([o['trade_seq'] for o in transactions_under_label_main ])
-                log.warning (result_transactions_trade_seq)
                 
                 # excluded trades closed labels from above trade seq
                 result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
-                log.warning (result_transactions_excess)
-                log.warning (len(result_transactions_excess))
-                for transaction in result_transactions_excess:
+                
+                for transaction in result_transactions_excess['data']:
                     log.critical (transaction)
                 
             log.error (transactions_under_label_main)
