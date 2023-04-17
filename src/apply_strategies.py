@@ -340,9 +340,9 @@ class ApplyHedgingSpot:
         #log.warning (trades_with_closed_labels)
         
         for transaction in trades_with_closed_labels:
-            len_transactions_closed =  ([o for o in transactions_all if o['label_main'] == transaction['label_main'] ])
+            len_transactions_closed =  len([o for o in transactions_all if o['label_main'] == transaction['label_main'] ])
             
-            log.warning (len_transactions_closed)
+            log.critical (len_transactions_closed)
             log.warning (transaction)
             label = str_mod.remove_redundant_elements(
                     [str_mod.get_strings_before_character(o["label_main"])
