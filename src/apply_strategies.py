@@ -108,7 +108,7 @@ class ApplyHedgingSpot:
         none_data: None = [0, None, []] 
         
         return  dict(
-            all=(str_mod.parsing_sqlite_json_output([o for o in result])),
+            all=(result),
             list_data_only= [] if result in none_data \
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
@@ -384,8 +384,10 @@ class ApplyHedgingSpot:
                 result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
                 
                 for transaction in result_transactions_excess:
-                    #result= (transaction['data'])
-                    log.critical (transaction)
+                    result= (transaction['data'])
+                    log.critical (result)
+                    result= str_mod.parsing_sqlite_json_output(result)
+                    log.critical (result)
                 
             log.error (transactions_under_label_main)
             
