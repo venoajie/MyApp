@@ -108,7 +108,7 @@ class ApplyHedgingSpot:
         none_data: None = [0, None, []] 
         
         return  dict(
-            all=(result),
+            all=(str_mod.parsing_sqlite_json_output([o for o in result])),
             list_data_only= [] if result in none_data \
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
