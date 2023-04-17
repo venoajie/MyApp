@@ -664,12 +664,12 @@ class ApplyHedgingSpot:
                                 my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                                 my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
                                 my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
-                                my_trades_open_label: list =  ([o['label'] for o in my_trades_open])
+                                my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
                                 is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
-                                is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_label
+                                is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
                                 log.debug (open_trade_strategy_label[0]['trade_seq'])
                                 log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
-                                log.warning (f'my_trades_open_label   {my_trades_open_label} {is_labelled}')
+                                log.warning (f'my_trades_open_closed_label   {my_trades_open_closed_label} {is_labelled}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
                                                 
                                 if open_trade_strategy_label != []\
