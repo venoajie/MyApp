@@ -132,20 +132,19 @@ def get_strings_before_character(
     return splitted
 
 
-def parsing_label(label: str) -> str:
+def parsing_label(label: str) -> dict:
 
     """
 
-
     Args:
         label (str)
-        level (str)
 
     Returns:
-        str
+        dict
 
     Example: 'hedgingSpot-open-1671189554374'
         main: 'hedgingSpot'
+        super_main: 'hedgingSpot'
         int = 1671189554374
         transaction_status:'hedgingSpot-open''
         transaction_net:'hedgingSpot-1671189554374''
@@ -165,18 +164,23 @@ def parsing_label(label: str) -> str:
         net =  get_strings_before_character (label)
     except:
         net = None
+        
     try:
         main =  get_strings_before_character (label, "-", 0)
     except:
         main = None
-        
 
-    side=['Short', 'Long']
-    super_main = [main.replace(o,'') for o in side if o in main]
+    try:
+        side=['Short', 'Long']
+        super_main = [main.replace(o,'') for o in side if o in main]
+    except:
+        super_main = None
 
     return  {
         #"super_main":  bool([o not in main for o in side]),
-        "super_main": main if all ([o not in main for o in side]) else super_main[0],
+        "super_main": None if super_main== None \
+            else (main if all ([o not in main for o in side]) \
+                else super_main[0]),
         "main": main,
         "int": get_integer,
         "transaction_status": status,
