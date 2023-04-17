@@ -701,12 +701,6 @@ class ApplyHedgingSpot:
                             log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
                                 sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
                     
-                            # avoid reorder closed trades:
-                                # restart after deleting completed trades
-                                # avoid send order for trades with 0 net sum 
-                            test_net_sum_zero_size = sum([ o['amount'] for o in open_trade_strategy])
-                            log.debug (f'test_net_sum_zero_size   {test_net_sum_zero_size}')
-
                             # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                             # log.warning (leverage_and_delta)
                             my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
@@ -725,10 +719,14 @@ class ApplyHedgingSpot:
                                 #log.debug (f'my_trades_closed_trd_seq   {my_trades_closed_trd_seq} {is_closed}')
                                 #log.warning (f'my_trades_open_closed_label   {my_trades_open_closed_label} {is_labelled}')
                                # log.debug (f'test   {123015436 in [123015436, 123015610]}')
-                                sleep (10)
-                                                
+                                sleep (3)
+                    
+                            # avoid reorder closed trades:
+                                # restart after deleting completed trades
+                                # avoid send order for trades with 0 net sum 
+                                                                   
                                 if open_trade_strategy_label != []\
-                                    and test_net_sum_zero_size != 0\
+                                    and net_sum_strategy != 0\
                                         and is_closed == False\
                                             and is_labelled == False:                                  
                                                                                     
@@ -890,7 +888,6 @@ class ApplyHedgingSpot:
                             
                 for instrument in instrument_transactions:
                     # log.critical(f"{instrument}")
-                    
 
                     ticker =  self.reading_from_db("ticker", instrument)
 
