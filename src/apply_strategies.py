@@ -337,17 +337,20 @@ class ApplyHedgingSpot:
         
         #get_closed_labels
         trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
-        log.warning (trades_with_closed_labels)
+        #log.warning (trades_with_closed_labels)
         
-        for transactions in trades_with_closed_labels:
-            log.warning (transactions)
+        for transaction in trades_with_closed_labels:
+            len_transactions_closed =  ([o for o in transactions_all if o['label_main'] == transaction['label_main'] ])
+            
+            log.warning (len_transactions_closed)
+            log.warning (transaction)
             label = str_mod.remove_redundant_elements(
                     [str_mod.get_strings_before_character(o["label_main"])
-                        for o in [transactions]])[0]
+                        for o in [transaction]])[0]
             
             log.warning (label)
-            sleep (10)
-            result_transactions = 0 if transactions==[] else ([
+            
+            result_transactions = 0 if transaction==[] else ([
             o for o in transactions_all if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label])
             
             result = [] if result_transactions == [] else  sum([o['amount_dir']   for o in result_transactions ])
@@ -578,6 +581,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
                 log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
+                sleep (10)
                 #log.error (f'strategy_labels {strategy_labels}')                
 
                 # when there are some positions/order, check their appropriateness to the established standard
