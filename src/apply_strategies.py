@@ -626,7 +626,7 @@ class ApplyHedgingSpot:
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
                 
-                log.error (my_trades_open)
+                #log.error (my_trades_open)
                 log.error ([o["label"] for o in my_trades_open])
                 my_trades_open_remove_closed = [o for o in my_trades_open if 'closed' not in o["label"]]
                 strategy_labels = str_mod.remove_redundant_elements(
