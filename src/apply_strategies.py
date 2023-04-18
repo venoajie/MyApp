@@ -892,8 +892,6 @@ class ApplyHedgingSpot:
                             
                 for instrument in instrument_transactions:
                     try:
-                    # log.critical(f"{instrument}")
-                        
                         
                         ticker =  self.reading_from_db("ticker", instrument)
 
