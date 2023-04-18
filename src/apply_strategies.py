@@ -587,7 +587,7 @@ class ApplyHedgingSpot:
             if portfolio:
                 one_minute: int = 60000  # one minute in millisecond
                 none_data: None = [0, None, []]  # to capture none
-                log.error (reading_from_database["positions_from_sub_account"])
+                #log.error (reading_from_database["positions_from_sub_account"])
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"][0]
@@ -595,13 +595,13 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
-                log.error (my_trades_open_all)
+                #log.error (my_trades_open_all)
                 
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
                 
-                log.warning (my_trades_open)
+                #log.warning (my_trades_open)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
@@ -1037,7 +1037,7 @@ class ApplyHedgingSpot:
 
                         else:
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                            await catch_error('size or open order is inconsistent', 60*30)
+                            await catch_error('size or open order is inconsistent', 60*5)
                             
         except Exception as error:
             catch_error(error, 30)
