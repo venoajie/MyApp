@@ -587,6 +587,7 @@ class ApplyHedgingSpot:
             if portfolio:
                 one_minute: int = 60000  # one minute in millisecond
                 none_data: None = [0, None, []]  # to capture none
+                log.error (reading_from_database["positions_from_sub_account"])
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"][0]
