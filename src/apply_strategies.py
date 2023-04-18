@@ -898,6 +898,12 @@ class ApplyHedgingSpot:
                     # get bid and ask price
                     best_bid_prc = ticker[0]["best_bid_price"]
                     best_ask_prc = ticker[0]["best_ask_price"]
+                    
+                    # index price
+                    index_price: float = ticker[0]["index_price"]
+            
+                    # compute notional value
+                    notional: float = await self.compute_notional_value(index_price, equity)
 
                     # execute each strategy
                     for strategy_attr in strategies:
