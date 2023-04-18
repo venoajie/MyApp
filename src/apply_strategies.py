@@ -594,6 +594,7 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
+                log.error (my_trades_open_all)
                 
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                 
