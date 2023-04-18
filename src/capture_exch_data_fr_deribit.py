@@ -169,6 +169,7 @@ class StreamAccountData:
                         # log.info (message_channel)
 
                         data_orders: list = message["params"]["data"]
+                        log.info (message_channel)
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
