@@ -300,25 +300,22 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
-    async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level: str = None) -> None:
+    async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level: str = None) -> list:
         """ 
         detail_level: main/individual
         """
-        log.error (transactions)
-        result = 0 if transactions==[] else ([o for o in transactions ])
-
         if detail_level== 'main':
 
-            result = 0 if transactions==[] \
+            result = [] if transactions==[] \
                 else ([o for o in transactions \
                     if  str_mod.parsing_label(o['label_main'])['main'] == str_mod.parsing_label(label)['main']])
             #log.warning(f'my_trades_open_sqlite_detailing {result}')
         if detail_level== 'individual':
-            result = 0 if transactions==[] else ([
+            result = [] if transactions==[] else ([
             o for o in transactions if  str_mod.parsing_label(o['label_main'])['transaction_net'] == label
         ])
         if detail_level== None:
-            result = 0 if transactions==[] else transactions
+            result = [] if transactions==[] else transactions
 
         #
         return   result
