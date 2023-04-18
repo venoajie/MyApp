@@ -637,14 +637,13 @@ class ApplyHedgingSpot:
                         for o in my_trades_open_remove_closed
                     ]
                 )
-                
-                my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
-                log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
-
                 #log.error (f'strategy_labels {strategy_labels}')                
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
+                    
+                    my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
+                    log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
 
                     # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
                     for label in strategy_labels:
