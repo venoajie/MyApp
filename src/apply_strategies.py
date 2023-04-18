@@ -902,6 +902,9 @@ class ApplyHedgingSpot:
                     # index price
                     index_price: float = ticker[0]["index_price"]
             
+                    # obtain spot equity
+                    equity: float = portfolio[0]["equity"]
+            
                     # compute notional value
                     notional: float = await self.compute_notional_value(index_price, equity)
 
