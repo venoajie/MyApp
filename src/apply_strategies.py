@@ -324,7 +324,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        #log.error (transactions)
+        log.error (transactions)
         
         if detail_level== 'main':
             result = 0 if transactions==[] else sum([
