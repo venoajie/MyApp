@@ -461,12 +461,10 @@ class ApplyHedgingSpot:
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
         strategy_label = str_mod.parsing_label(label)['main']
-        log.warning(f'LABEL {label}')
-        log.warning(f'strategy_label {strategy_label}')
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
-        #log.debug (f'my_trades_open_sqlite {my_trades_open_sqlite}')
+
         # get net buy-sell position
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
         
@@ -475,7 +473,7 @@ class ApplyHedgingSpot:
         except:
             strategy_label_int = None
 
-        log.warning(f'strategy_label_int {strategy_label_int}')
+        log.warning(f'LABEL {label} strategy_label {strategy_label} strategy_label_int {strategy_label_int}')
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(strategy_label)
 
         # get net buy-sell order limit
