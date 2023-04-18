@@ -304,6 +304,7 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
+        log.error (transactions)
         result = 0 if transactions==[] else ([o for o in transactions ])
 
         if detail_level== 'main':
