@@ -281,8 +281,8 @@ class ApplyHedgingSpot:
 
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
-        #log.debug (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
-        #log.debug (f' size_from_positions {size_from_positions}')
+        log.debug (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
+        log.debug (f' size_from_positions {size_from_positions}')
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
