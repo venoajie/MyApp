@@ -639,7 +639,9 @@ class ApplyHedgingSpot:
                         for o in my_trades_open_remove_closed
                     ]
                 )
-                log.error (f'strategy_labels {strategy_labels}')                
+                log.error (f'strategy_labels {strategy_labels}')   
+                
+                grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite)             
 
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
@@ -698,9 +700,7 @@ class ApplyHedgingSpot:
                             # compute notional value
                             notional: float = await self.compute_notional_value(index_price, equity)
                             
-                            grids=  grid.GridPerpetual(my_trades_open,
-                                                             open_orders_sqlite
-                                                             )
+                            
                                                         
                             log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
                                 sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
