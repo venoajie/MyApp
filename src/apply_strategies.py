@@ -906,20 +906,16 @@ class ApplyHedgingSpot:
                             strategy_attr["halt_minute_before_reorder"] * one_minute
                         )
                         
-                        sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
-                        sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
+                        sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                         size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         
                         log.error (f'open_order_is_consistent {open_order_is_consistent}')
                         log.error (f'size_is_consistent {size_is_consistent}')
                         
-                        
                         if size_is_consistent and open_order_is_consistent:
                                                         
-                            open_trade_strategy = [
-                                o for o in my_trades_open if strategy_label in o["label"]
-                            ]  
+                            open_trade_strategy = [o for o in my_trades_open if strategy_label in o["label"]]  
                             
                             #log.critical(f" strategy_label  {strategy_label} open_trade_strategy  {open_trade_strategy}")    
                                                     
