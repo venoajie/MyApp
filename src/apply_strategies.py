@@ -1046,10 +1046,10 @@ class ApplyHedgingSpot:
                                                     open_order_allowed["entry_price"] = best_ask_prc + 1
                                                     await self.send_combo_orders(open_order_allowed)
 
-                            else:
-                                log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
-                                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                                await catch_error('size or open order is inconsistent', 30)
+                                else:
+                                    log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
+                                    await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                                    await catch_error('size or open order is inconsistent', 30)
                                 
                     except Exception as error:
                         await catch_error(error)
