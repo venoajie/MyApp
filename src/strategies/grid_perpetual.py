@@ -113,7 +113,7 @@ class GridPerpetual:
             net_size = abs(current_net_position_size - current_proposed_size)
             print (f' sell net_size {net_size}')
             
-            if current_net_position_size <0 :
+            if current_net_position_size <=0 :
                 new_size = current_proposed_size
                 
             if current_net_position_size >0:
@@ -129,7 +129,7 @@ class GridPerpetual:
             net_size = abs(current_net_position_size + current_proposed_size)
             print (f' buy net_size {net_size}')
             
-            if current_net_position_size >0 :
+            if current_net_position_size >= 0 :
                 new_size = current_proposed_size
             if current_net_position_size <0:
                 if  abs(current_net_position_size) == net_size:
