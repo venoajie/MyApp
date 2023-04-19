@@ -100,6 +100,40 @@ class GridPerpetual:
         params_order.update({"len_order_limit": open_orders_under_same_label_status['len_result']})
         
         return params_order
+
+    async def adjusting_size_open_order(self, current_side, current_proposed_size, current_net_position_size) -> list:
+        """
+        """
+
+        if current_side == 'sell':
+            
+            net_size = abs(current_net_position_size - current_proposed_size)
+            
+            if current_net_position_size <0 :
+                new_size = current_proposed_size
+                
+            if current_net_position_size >0:
+                if net_size == abs(current_proposed_size):
+                    new_size = current_proposed_size
+                elif abs(current_net_position_size) > abs(current_proposed_size):
+                    new_size = int(max(current_proposed_size, current_proposed_size * 2, (net_size * 25/100)))
+                else:
+                    new_size = current_proposed_size
+                
+        if current_side == 'buy':
+            
+            net_size = abs(current_net_position_size + current_proposed_size)
+            
+            if current_net_position_size >0 :
+                new_size = current_proposed_size
+            if current_net_position_size <0:
+                if  abs(current_net_position_size) == net_size:
+                    new_size = current_proposed_size
+                elif net_size > abs(current_proposed_size):
+                    new_size = int(max(current_proposed_size, current_proposed_size * 2, (net_size * 25/100)))
+                else:
+                    new_size = current_proposed_size
+        return new_size
     
     async def open_orders_as_per_main_label (self, label_main: str) -> list:
         """
