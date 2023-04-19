@@ -416,6 +416,7 @@ class ApplyHedgingSpot:
                 if net_sum ==0 :
                     # get trade seq
                     result = ([o['trade_seq']   for o in transactions_under_label_main ])
+                    log.critical (f' result sum 0 {result}')
                     
                     for res in result:
                         #log.critical (res)
