@@ -104,10 +104,14 @@ class GridPerpetual:
     async def adjusting_size_open_order(self, current_side, current_proposed_size, current_net_position_size) -> list:
         """
         """
+        print (f' current_side {current_side}')
+        print (f' current_proposed_size {current_proposed_size}')
+        print (f' current_net_position_size {current_net_position_size}')
 
         if current_side == 'sell':
             
             net_size = abs(current_net_position_size - current_proposed_size)
+            print (f' sell net_size {net_size}')
             
             if current_net_position_size <0 :
                 new_size = current_proposed_size
@@ -123,6 +127,7 @@ class GridPerpetual:
         if current_side == 'buy':
             
             net_size = abs(current_net_position_size + current_proposed_size)
+            print (f' buy net_size {net_size}')
             
             if current_net_position_size >0 :
                 new_size = current_proposed_size
