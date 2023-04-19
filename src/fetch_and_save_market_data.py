@@ -31,9 +31,8 @@ async def get_currencies(connection_url) -> float:
     """ """
 
     result= await get_dbt.get_currencies (connection_url)
-
-    return result
-
+    
+    return  ([o['currency'] for o in result ['result']])
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
@@ -42,7 +41,7 @@ async def check_and_save_every_60_minutes():
         
         currencies = ["ETH", "BTC"]
         currencies = await get_currencies(connection_url)
-        print (currencies)
+        #print (currencies)
         
         for currency in currencies:
             
@@ -52,7 +51,7 @@ async def check_and_save_every_60_minutes():
                 "instruments", currency
             )
             print (f' currency {currency}')
-            print (f' currency {instruments}')
+            print (f' currency {currency}')
             
             pickling.replace_data(my_path_instruments, instruments)
 
