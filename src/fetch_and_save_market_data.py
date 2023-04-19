@@ -32,7 +32,7 @@ async def get_currencies(connection_url) -> float:
 
     result= await get_dbt.get_currencies (connection_url)
     
-    return  ([o['currency'] for o in result ['result']])
+    return  result
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
@@ -40,8 +40,9 @@ async def check_and_save_every_60_minutes():
     try:
         
         currencies = ["ETH", "BTC"]
-        currencies = await get_currencies(connection_url)
-        #print (currencies)
+        get_currencies = await get_currencies(connection_url)
+        currencies=  ([o['currency'] for o in get_currencies ['result']])
+        print (currencies)
         
         for currency in currencies:
             
