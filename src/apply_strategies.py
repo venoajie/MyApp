@@ -284,6 +284,7 @@ class ApplyHedgingSpot:
 
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
         """ """
+        log.critical (f' open_orders_from_sub_account_get {len(open_orders_from_sub_account_get)} open_orders_open_byAPI {len(open_orders_open_byAPI)}')
         return len(open_orders_from_sub_account_get) == len(open_orders_open_byAPI)
         
     async def send_market_order(self, params) -> None:
