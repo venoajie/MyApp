@@ -16,12 +16,10 @@ from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
 from market_understanding import futures_analysis
 
-
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
-
 
 class StreamMarketData:
 
@@ -86,20 +84,7 @@ class StreamMarketData:
             instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
             instruments_name: list = [o["instrument_name"] for o in instruments_kind]
 
-            # self.loop.create_task(
-            #    self.ws_operation(
-            #        operation="subscribe",
-            #        ws_channel=f"deribit_price_index.{currency.lower()}_usd",
-            #    )
-            # )
-
             for instrument in instruments_name:
-                # self.loop.create_task(
-                #    self.ws_operation(
-                #        operation='subscribe',
-                #        ws_channel=f'book.{instrument}.none.20.100ms'
-                #        )
-                #    )
 
                 self.loop.create_task(
                     self.ws_operation(
@@ -340,7 +325,6 @@ class StreamMarketData:
         log.warning(msg)
         await self.websocket_client.send(json.dumps(msg))
 
-
 def main():
     try:
         StreamMarketData()
@@ -349,7 +333,6 @@ def main():
         system_tools.catch_error_message(
             error, 10, "fetch and save MARKET data from deribit"
         )
-
 
 if __name__ == "__main__":
     try:
