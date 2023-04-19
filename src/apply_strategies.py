@@ -933,6 +933,13 @@ class ApplyHedgingSpot:
                                     if "every" in strategy_attr["strategy"]:
                                         
                                         params_order = await grids.get_params_orders_open (strategy_label, notional)
+                                        log.warning(f" params_order 1  {params_order}")
+                                        
+                                        adjusting_size_open_order = await grids.adjusting_size_open_order (params_order["side"], 
+                                                                                              params_order["size"], net_sum_strategy)
+                                        
+                                        params_order["size"] = adjusting_size_open_order
+                                        log.critical(f" params_order adjusting_size_open_order  {params_order}")
                                         
                                         time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
                                         check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, one_minute * 30)
@@ -989,7 +996,7 @@ class ApplyHedgingSpot:
                                         strategy_attr,
                                         min_position_size)
                                         
-                                        log.warning(f" open_order_allowed 1  {open_order_allowed}")
+                                        #log.warning(f" open_order_allowed 1  {open_order_allowed}")
                                         
                                         
                                         if (
