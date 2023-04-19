@@ -678,7 +678,7 @@ class ApplyHedgingSpot:
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                 await self.send_limit_order(params)
-                                sleep (5)
+                                system_tools.sleep_and_restart_program(5)
                                 
                     else:
                         
@@ -783,7 +783,7 @@ class ApplyHedgingSpot:
                                         "open", strategy_label
                                     )
                                     await self.send_limit_order(exit_order_allowed)
-                                    sleep (5)
+                                    system_tools.sleep_and_restart_program(5)
                             else:
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
@@ -809,7 +809,7 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_qty"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
-                                    sleep (5)
+                                    
 
                                 # log.warning(f"exit_order_allowed limit {exit_order_allowed}")
 
@@ -825,6 +825,8 @@ class ApplyHedgingSpot:
                                     ]
                                     await self.send_market_order(exit_order_allowed)
                                     sleep (5)
+                                    
+                                system_tools.sleep_and_restart_program(5)
 
                         if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
