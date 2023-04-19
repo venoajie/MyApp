@@ -584,6 +584,7 @@ class ApplyHedgingSpot:
                                    open_orders_from_sub_account_get,
                                    open_orders_open_byAPI,
                                    open_order_mgt,
+                                   grids,
                                    server_time) -> float:
         """ """
         one_minute = 60000
@@ -833,6 +834,7 @@ class ApplyHedgingSpot:
                                    open_orders_from_sub_account_get,
                                    open_orders_open_byAPI,
                                    open_order_mgt,
+                                   grids,
                                    server_time)
                 # when there are some positions/order, check their appropriateness to the established standard
                 if strategy_labels != []:
