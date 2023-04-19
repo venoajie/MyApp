@@ -117,12 +117,9 @@ class ApplyHedgingSpot:
     async def get_net_sum_strategy(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
         """ """
-        
-        result = 0 if my_trades_open_sqlite==[] \
+        return  0 if my_trades_open_sqlite==[] \
                 else sum([o['amount_dir'] for o in my_trades_open_sqlite['all'] \
                     if  str_mod.parsing_label(o['label_main'])['super_main'] == str_mod.parsing_label(label)['super_main']])
-
-        return  result
 
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: dict
@@ -917,6 +914,8 @@ class ApplyHedgingSpot:
                                 time_threshold: float = (
                                     strategy_attr["halt_minute_before_reorder"] * one_minute
                                 )
+                                net_sum_strategy = await self.get_net_sum_strategy(my_trades_open_sqlite, strategy_label)
+                                log.debug (f'net_sum_strategy   {net_sum_strategy}')
                                 
                                 sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                                 size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
