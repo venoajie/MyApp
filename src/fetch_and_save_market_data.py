@@ -57,7 +57,7 @@ async def check_and_save_every_60_minutes():
         my_path_cur = system_tools.provide_path_for_file("currencies")
         
         pickling.replace_data(my_path_cur, currencies)
-        catch_error('update currencies and instruments')
+        #catch_error('update currencies and instruments')
 
     except Exception as error:
         catch_error(error)
