@@ -51,6 +51,8 @@ async def check_and_save_every_60_minutes():
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency
             )
+            print (f' currency {currency}')
+            print (f' currency {instruments}')
             
             pickling.replace_data(my_path_instruments, instruments)
 
