@@ -469,7 +469,7 @@ class ApplyHedgingSpot:
         net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
         
         try:
-            strategy_label_int = str_mod.get_strings_before_character(label, "-", 1)
+            strategy_label_int = str_mod.parsing_label(label)['int']
         except:
             strategy_label_int = None
 
@@ -675,8 +675,8 @@ class ApplyHedgingSpot:
                                 size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                                 open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                                 
-                                log.error (f'open_order_is_consistent {open_order_is_consistent}')
-                                log.error (f'size_is_consistent {size_is_consistent}')
+                                #log.error (f'open_order_is_consistent {open_order_is_consistent}')
+                                #log.error (f'size_is_consistent {size_is_consistent}')
                                 
                                 if size_is_consistent and open_order_is_consistent:
                                                                 
@@ -735,7 +735,6 @@ class ApplyHedgingSpot:
                                                 
                                             params_order["entry_price"] = best_ask_prc +  .05
                                             await self.send_limit_order(params_order)
-                                        #log.critical(f" params_order B {params_order}")
 
                                     else:
                                                                     
@@ -750,8 +749,7 @@ class ApplyHedgingSpot:
                                         strategy_attr,
                                         min_position_size)
                                         
-                                        #log.warning(f" open_order_allowed 1  {open_order_allowed}")
-                                        
+                                        log.warning(f" open_order_allowed 1  {open_order_allowed}")
                                         
                                         if (
                                             open_order_allowed["main_orders_qty"] != 0
