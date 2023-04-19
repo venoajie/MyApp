@@ -313,7 +313,6 @@ class ApplyHedgingSpot:
         if detail_level== None:
             result = [] if transactions==[] else transactions
 
-        #
         return   result
 
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
@@ -456,7 +455,7 @@ class ApplyHedgingSpot:
         except:
             label_int = None
 
-        #log.warning(f'LABEL {label} strategy_label {strategy_label} strategy_label_int {strategy_label_int}')
+        log.warning(f'LABEL {label_main} label_main {label_main} label_int {label_int}')
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(label_main)
 
         # get net buy-sell order limit
