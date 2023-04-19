@@ -645,18 +645,16 @@ class ApplyHedgingSpot:
 
                     # compute notional value
                     notional: float = await self.compute_notional_value(index_price, equity)
+                
+                    net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
                                                 
-                    log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} \
-                        sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
+                    log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
             
                     # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                     # log.warning (leverage_and_delta)
                     my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                     if "every" in strategy_attr["strategy"]: 
                         log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                        net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
-                        log.debug (f'net_sum_strategy   {net_sum_strategy}')
-                        
                         my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                         my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
                         my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
