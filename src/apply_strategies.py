@@ -114,7 +114,7 @@ class ApplyHedgingSpot:
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
 
-    async def get_net_sum_strategy(self, my_trades_open_sqlite: list, 
+    async def get_net_sum_strategy_super_main(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
         """ """
         return  0 if my_trades_open_sqlite==[] \
@@ -367,6 +367,8 @@ class ApplyHedgingSpot:
                 net_sum = [] if transactions_under_label_main == []\
                     else sum([o['amount_dir'] for o in transactions_under_label_main ])
 
+                log.warning (net_sum)
+                log.warning (len(transactions_under_label_main))
                 if len(transactions_under_label_main) >2:
                     
                     #get_closed_labels under_label_main
@@ -392,7 +394,7 @@ class ApplyHedgingSpot:
                         tstamp= transaction['timestamp']
                         new_label= str_mod.parsing_label(label, tstamp) ['flipping_closed']
                         transaction['label']= new_label
-                        #log.critical (transaction)
+                        log.critical (transaction)
                         
                         where_filter = f"trade_seq"
                         await sqlite_management.deleting_row('my_trades_all_json', 
@@ -668,7 +670,7 @@ class ApplyHedgingSpot:
                                 time_threshold: float = (
                                     strategy_attr["halt_minute_before_reorder"] * one_minute
                                 )
-                                net_sum_strategy = await self.get_net_sum_strategy(my_trades_open_sqlite, strategy_label)
+                                net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                                 log.debug (f'net_sum_strategy   {net_sum_strategy}')
                                 
                                 sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
@@ -870,7 +872,7 @@ class ApplyHedgingSpot:
                                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                                 if "every" in strategy_attr["strategy"]: 
                                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                                    net_sum_strategy = await self.get_net_sum_strategy(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
+                                    net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
                                     log.debug (f'net_sum_strategy   {net_sum_strategy}')
                                     
                                     my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
