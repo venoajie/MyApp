@@ -588,7 +588,6 @@ class ApplyHedgingSpot:
                                    grids,
                                    server_time) -> float:
         """ """
-
                     
         my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
         log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
@@ -623,10 +622,8 @@ class ApplyHedgingSpot:
                 open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                 instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
-                #log.critical(f"instrument {instrument}")                  
                 
                 ticker: list =  self.reading_from_db("ticker", instrument)
-                #log.error (ticker)
 
                 if ticker !=[]:
                         
@@ -698,9 +695,7 @@ class ApplyHedgingSpot:
                             min_position_size,
                         )
                         exit_order_allowed["instrument"] = instrument
-
-                        # log.warning(f'exit_order_allowed {exit_order_allowed}')
-                        # log.warning( "hedgingSpot" in strategy_attr["strategy"])
+                        
                         if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
 
                             len_open_order_label_short = (
@@ -708,28 +703,20 @@ class ApplyHedgingSpot:
                                 if open_order_label_short == []
                                 else len(open_order_label_short)
                             )
-                            len_open_order_label_long = (
-                                0
-                                if open_order_label_long == []
-                                else len(open_order_label_long)
-                            )
+                            len_open_order_label_long = (0 if open_order_label_long == []  
+                                                         else len(open_order_label_long))
 
                             if "hedgingSpot" in strategy_attr["strategy"]:
 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* ONE_MINUTE)
                                 
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
-                                    open_trade_strategy
-                                )
+                                    open_trade_strategy)
 
-                                delta_time: int = server_time - open_trade_strategy_max_attr[
-                                    "timestamp"
-                                ]
+                                delta_time: int = server_time - open_trade_strategy_max_attr["timestamp"]
                                 
                                 exceed_threshold_time: int = delta_time > time_threshold
-                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr[
-                                    "max_price"
-                                ]
+                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
 
                                 pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
                                 
