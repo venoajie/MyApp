@@ -40,8 +40,8 @@ async def check_and_save_every_60_minutes():
     try:
         
         currencies = ["ETH", "BTC"]
-        get_currencies = await get_currencies(connection_url)
-        currencies=  ([o['currency'] for o in get_currencies ['result']])
+        get_currencies_all = await get_currencies(connection_url)
+        currencies=  ([o['currency'] for o in get_currencies_all ['result']])
         print (currencies)
         
         for currency in currencies:
