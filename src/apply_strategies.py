@@ -887,6 +887,7 @@ class ApplyHedgingSpot:
                                     if exit_order_allowed["exit_orders_market_qty"] != 0:
                                         log.debug(f"exit_orders_market_type")
                         else:
+                            log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                             await catch_error('size or open order is inconsistent', 30)
                             
@@ -1046,6 +1047,7 @@ class ApplyHedgingSpot:
                                                     await self.send_combo_orders(open_order_allowed)
 
                             else:
+                                log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                                 await catch_error('size or open order is inconsistent', 30)
                                 
