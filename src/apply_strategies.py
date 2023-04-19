@@ -887,7 +887,7 @@ class ApplyHedgingSpot:
                                         log.debug(f"exit_orders_market_type")
                         else:
                             await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                            await catch_error('size or open order is inconsistent', 60*5)
+                            await catch_error('size or open order is inconsistent', 30)
                             
                 for instrument in instrument_transactions:
                     try:
@@ -1046,7 +1046,7 @@ class ApplyHedgingSpot:
 
                             else:
                                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                                await catch_error('size or open order is inconsistent', 60*5)
+                                await catch_error('size or open order is inconsistent', 30)
                                 
                     except Exception as error:
                         await catch_error(error)
