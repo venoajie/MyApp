@@ -390,6 +390,15 @@ def test_get_strings_before_character_and_parsing_label():
     assert (string_modification.parsing_label(label) ['int'] == result)
     result = "every5mtestLong-open-1677473096"
     assert (string_modification.parsing_label(label, 1677473096) ['flipping_closed'] == result)
+    label = "every5mtestShort"
+    result = "every5mtest"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    label = "every5mtestLong"
+    result = "every5mtest"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    label = "hedgingSpot"
+    result = "hedgingSpot"
+    assert (string_modification.parsing_label(label) ['super_main'] == result)
     
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60"
