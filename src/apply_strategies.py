@@ -4,7 +4,6 @@
 import asyncio
 from time import sleep
 #import orjson
-import cachetools.func
 
 # installed
 from dataclassy import dataclass
@@ -133,7 +132,6 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
-    @cachetools.func.ttl_cache(maxsize=10, ttl=1/4)
     def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
@@ -405,10 +403,6 @@ class ApplyHedgingSpot:
                         await sqlite_management.insert_tables('my_trades_all_json',transaction)
                         # refreshing data
                         system_tools.sleep_and_restart_program(.1)
-                    
-                #log.error (transactions_under_label_main)
-                #log.error (transactions_under_label_main[0]['data'])
-                
                 
                 #log.error (f' result {result}')
                 log.error (net_sum)
@@ -434,20 +428,6 @@ class ApplyHedgingSpot:
                     
                     # refreshing data
                     system_tools.sleep_and_restart_program(.1)
-
-    async def deleting_cancel_order(self, table: list, 
-                           database: str ,
-                           data,
-                           cancelled_order
-                           ) -> list:
-        """ """
-        result = await sqlite_management.deleting_row (table, 
-                                                         database,
-                                                         data,
-                                                         '=',
-                                                         cancelled_order
-                                                         ) 
-        return  (result)   
     
     async def is_send_order_allowed(
         self,
@@ -462,21 +442,21 @@ class ApplyHedgingSpot:
         """
 
         # formatting label: strategy & int. Result example: 'hedgingSpot'/'supplyDemandShort60'
-        strategy_label = str_mod.parsing_label(label)['main']
+        label_main = str_mod.parsing_label(label)['main']
         
         my_trades_open_sqlite_init: list = await self.querying_all('my_trades_all_json')
         my_trades_open_sqlite: list = my_trades_open_sqlite_init['all']
 
         # get net buy-sell position
-        net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, strategy_label, 'main')
+        net_sum_current_position: list = await self.sum_my_trades_open_sqlite(my_trades_open_sqlite, label_main, 'main')
         
         try:
-            strategy_label_int = str_mod.parsing_label(label)['int']
+            label_int = str_mod.parsing_label(label)['int']
         except:
-            strategy_label_int = None
+            label_int = None
 
         #log.warning(f'LABEL {label} strategy_label {strategy_label} strategy_label_int {strategy_label_int}')
-        open_orders_strategy = open_orders.open_orders_api_basedOn_label(strategy_label)
+        open_orders_strategy = open_orders.open_orders_api_basedOn_label(label_main)
 
         # get net buy-sell order limit
         open_orders_strategy_limit = [
@@ -525,20 +505,20 @@ class ApplyHedgingSpot:
         determine_size_and_side["len_order_market"] = len_transactions_open_orders_strategy_limit
         
         determine_size_and_side["len_order_limit"] = len_transactions_open_orders_strategy_market
-        label_open = label_numbering.labelling("open", strategy_label)
+        label_open = label_numbering.labelling("open", label_main)
         determine_size_and_side["label"] = label_open
 
-        if net_sum_current_position == 0 and strategy_label_int == None:
+        if net_sum_current_position == 0 and label_int == None:
             
-            strategy_label_int = str_mod.parsing_label(label_open)['int']
+            label_int = str_mod.parsing_label(label_open)['int']
 
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+            label_closed = f"{label_main}-closed-{label_int}"
 
             determine_size_and_side["label_closed"] = label_closed
             
         # the strategy has outstanding position
-        if net_sum_current_position != 0 and strategy_label_int != None:
-            label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+        if net_sum_current_position != 0 and label_int != None:
+            label_closed = f"{label_main}-closed-{label_int}"
 
             determine_size_and_side["label_closed"] = label_closed
 
@@ -548,7 +528,7 @@ class ApplyHedgingSpot:
                 size_as_per_label = [
                     o["amount"]
                     for o in open_trade_strategy
-                    if strategy_label_int in o["label"]
+                    if label_int in o["label"]
                 ][0]
 
                 open_trade_hedging_price_max = max(
@@ -561,7 +541,7 @@ class ApplyHedgingSpot:
                 ]
 
                 if (
-                    strategy_label_int
+                    label_int
                     in [o["label"] for o in open_trade_hedging_selected][0]
                 ):
                     determine_size_and_side["exit_orders_limit_qty"] = size_as_per_label
@@ -573,7 +553,7 @@ class ApplyHedgingSpot:
 
 
     async def closing_transactions(self, 
-                                   strategy_labels,
+                                   label_transactions,
                                    instrument, 
                                    portfolio, 
                                    strategies, 
@@ -593,26 +573,25 @@ class ApplyHedgingSpot:
         log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
 
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
-        for label in strategy_labels:
+        for label in label_transactions:
             log.critical(f" {label}")
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
-            strategy_label = str_mod.parsing_label(label)['main']
+            label_main = str_mod.parsing_label(label)['main']
 
-            open_order_label = open_order_mgt.open_orders_api_basedOn_label(strategy_label)
+            open_order_label = open_order_mgt.open_orders_api_basedOn_label(label_main)
 
             open_order_label_short = [o for o in open_order_label if o["direction"] == "sell"]
             
             open_order_label_long = [o for o in open_order_label if o["direction"] == "buy"]
             
             # get startegy details
-            strategy_attr = [o for o in strategies if o["strategy"] == strategy_label][0]                        
+            strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]                        
             
             my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'individual')
             my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'main')
 
             sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
-            sum_my_trades_open_sqlite_individual_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label, 'individual')
             size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
             open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
             
@@ -642,7 +621,7 @@ class ApplyHedgingSpot:
                 
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
                                                 
-                    log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} sum_my_trades_open_sqlite_individual_strategy {sum_my_trades_open_sqlite_individual_strategy}')      
+                    log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
                     my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                     if "every" in strategy_attr["strategy"]: 
@@ -762,7 +741,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed[
                                         "label"
                                     ] = label_numbering.labelling(
-                                        "open", strategy_label
+                                        "open", label_main
                                     )
                                     await self.send_limit_order(exit_order_allowed)
                                     system_tools.sleep_and_restart_program(5)
@@ -770,7 +749,7 @@ class ApplyHedgingSpot:
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
                                 strategy_label_int = str_mod.parsing_label(exit_order_allowed ['label'])['int']
-                                label_closed = f"{strategy_label}-closed-{strategy_label_int}"
+                                label_closed = f"{label_main}-closed-{strategy_label_int}"
                                 exit_order_allowed.update({"label": label_closed})
                                 log.debug (strategy_label_int)
                                 log.debug (label_closed)
@@ -881,9 +860,9 @@ class ApplyHedgingSpot:
                             
                             time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                             check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
-                            #log.critical(f" check_cancellation  {check_cancellation}")
 
                             if check_cancellation !=None:
+                                log.critical(f" check_cancellation  {check_cancellation}")
                                 if check_cancellation['open_order_id'] !=[]:
                                     await self.cancel_by_order_id(check_cancellation['open_order_id'])
                             
