@@ -81,3 +81,77 @@ async def test_get_closed_label():
     result = await grids.get_closed_label(label_main)
     assert result   ==  'every5mtestLong-closed-1681568392078'
     
+@pytest.mark.asyncio
+async def test_adjusting_size_open_order():
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -18
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  4
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -14
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  3
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -11
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  2
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -9
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  2
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -7
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  2
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -5
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  2
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -3
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  2
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -1
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  1
+    
+    current_side= 'buy'
+    current_proposed_size= 1
+    current_net_position_size= -2
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   ==  1
+    
+    current_side= 'sell'
+    current_proposed_size= 1
+    current_net_position_size= 18
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   == 4
+    
+    current_side= 'sell'
+    current_proposed_size= 1
+    current_net_position_size= 1
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   == 1
+    
+    current_side= 'sell'
+    current_proposed_size= 1
+    current_net_position_size= 3
+    result = await grids.adjusting_size_open_order(current_side, current_proposed_size, current_net_position_size)
+    assert result   == 2
+    
