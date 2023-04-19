@@ -661,8 +661,6 @@ class ApplyHedgingSpot:
                         my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
                         is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
                         is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
-                    
-                        sleep (3)
             
                     # avoid reorder closed trades:
                         # restart after deleting completed trades
@@ -680,6 +678,7 @@ class ApplyHedgingSpot:
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                 await self.send_limit_order(params)
+                                sleep (5)
                                 
                     else:
                         
@@ -762,6 +761,7 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_type"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
+                                    sleep (5)
 
                                 # new order
                                 if (
@@ -783,6 +783,7 @@ class ApplyHedgingSpot:
                                         "open", strategy_label
                                     )
                                     await self.send_limit_order(exit_order_allowed)
+                                    sleep (5)
                             else:
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
@@ -808,6 +809,7 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_qty"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
+                                    sleep (5)
 
                                 # log.warning(f"exit_order_allowed limit {exit_order_allowed}")
 
@@ -822,6 +824,7 @@ class ApplyHedgingSpot:
                                         "exit_orders_market_qty"
                                     ]
                                     await self.send_market_order(exit_order_allowed)
+                                    sleep (5)
 
                         if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
@@ -939,6 +942,7 @@ class ApplyHedgingSpot:
                                     
                                 params_order["entry_price"] = best_ask_prc +  .05
                                 await self.send_limit_order(params_order)
+                                sleep (5)
 
                         else:
                                                         
@@ -981,6 +985,7 @@ class ApplyHedgingSpot:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
                                     await self.send_limit_order(open_order_allowed)
+                                    sleep (5)
                                     
                                 
                                 else:
