@@ -283,7 +283,7 @@ class ApplyHedgingSpot:
 
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
         """ """
-        log.critical (f' open_orders_from_sub_account_get {len(open_orders_from_sub_account_get)} open_orders_open_byAPI {len(open_orders_open_byAPI)}')
+        #log.critical (f' open_orders_from_sub_account_get {len(open_orders_from_sub_account_get)} open_orders_open_byAPI {len(open_orders_open_byAPI)}')
         return len(open_orders_from_sub_account_get) == len(open_orders_open_byAPI)
         
     async def send_market_order(self, params) -> None:
@@ -475,7 +475,7 @@ class ApplyHedgingSpot:
         except:
             strategy_label_int = None
 
-        log.warning(f'LABEL {label} strategy_label {strategy_label} strategy_label_int {strategy_label_int}')
+        #log.warning(f'LABEL {label} strategy_label {strategy_label} strategy_label_int {strategy_label_int}')
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(strategy_label)
 
         # get net buy-sell order limit
