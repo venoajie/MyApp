@@ -452,10 +452,12 @@ class ApplyHedgingSpot:
         
         try:
             label_int = str_mod.parsing_label(label)['int']
+            log.warning(f'LABEL {label} label_main {label_main} label_int {label_int}')
+            
         except:
             label_int = None
 
-        log.warning(f'LABEL {label_main} label_main {label_main} label_int {label_int}')
+        log.warning(f'LABEL {label} label_main {label_main} label_int {label_int}')
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(label_main)
 
         # get net buy-sell order limit
