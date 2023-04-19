@@ -724,7 +724,7 @@ class ApplyHedgingSpot:
 
                             if "hedgingSpot" in strategy_attr["strategy"]:
 
-                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* one_minute)
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* ONE_MINUTE)
                                 
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
                                     open_trade_strategy
@@ -872,7 +872,7 @@ class ApplyHedgingSpot:
                     strategy_label = strategy_attr["strategy"]
                     log.critical (strategy_label)
                     time_threshold: float = (
-                        strategy_attr["halt_minute_before_reorder"] * one_minute
+                        strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE
                     )
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                     log.debug (f'net_sum_strategy   {net_sum_strategy}')
@@ -901,7 +901,7 @@ class ApplyHedgingSpot:
                             params_order["size"] = adjusting_size_open_order
                             log.critical(f" params_order adjusting_size_open_order  {params_order}")
                             
-                            time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * one_minute)
+                            time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                             check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
                             #log.critical(f" check_cancellation  {check_cancellation}")
 
@@ -1023,7 +1023,7 @@ class ApplyHedgingSpot:
 
             # to avoid error if index price/portfolio = []/None
             if portfolio:
-                one_minute: int = 60000  # one minute in millisecond
+                ONE_MINUTE: int = 60000  # one minute in millisecond
                   # to capture none
                 #log.error (reading_from_database["positions_from_sub_account"])
 
