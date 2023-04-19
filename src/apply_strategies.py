@@ -347,6 +347,8 @@ class ApplyHedgingSpot:
             
             for transaction in trades_with_closed_labels:            
                 log.warning (transaction)
+                message = f'closed trans {transaction}'
+                await telegram_bot_sendtext(message, "general_error")
 
                 # get label net
                 label_net = str_mod.remove_redundant_elements(
