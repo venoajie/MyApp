@@ -668,8 +668,8 @@ class ApplyHedgingSpot:
                         size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
                         
-                        log.error (f'open_order_is_consistent {open_order_is_consistent}')
-                        log.error (f'size_is_consistent {size_is_consistent}')
+                        #log.error (f'open_order_is_consistent {open_order_is_consistent}')
+                        #log.error (f'size_is_consistent {size_is_consistent}')
                         
                         if size_is_consistent and open_order_is_consistent:
                             
@@ -677,7 +677,7 @@ class ApplyHedgingSpot:
                             open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                             instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
-                            log.critical(f"instrument {instrument}")                  
+                            #log.critical(f"instrument {instrument}")                  
                             
                             ticker: list =  self.reading_from_db("ticker", instrument)
                             #log.error (ticker)
@@ -889,9 +889,9 @@ class ApplyHedgingSpot:
                             
                 for instrument in instrument_transactions:
                     try:
+                        ticker =  self.reading_from_db("ticker", instrument)
+                        
                         if ticker !=[]:
-                            
-                            ticker =  self.reading_from_db("ticker", instrument)
 
                             # get bid and ask price
                             best_bid_prc = ticker[0]["best_bid_price"]
