@@ -1,7 +1,6 @@
 [![Python application](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/python-app.yml)
 [![Format code](https://github.com/venoajie/MyApp/actions/workflows/format.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/format.yml)
 [![Unit tests](https://github.com/venoajie/MyApp/actions/workflows/coverage.yml/badge.svg)](https://github.com/venoajie/MyApp/actions/workflows/coverage.yml)
-[![code coverage](https://raw.githubusercontent.com/USER/REPO/coverage/coverage.svg?raw=true)]
 
 # MyApp
 #### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management.
@@ -12,14 +11,14 @@
 
 ## Current feature list:
 - [x] Automatic **hedging** for equity balances in crypto spot
+- [x] Grid trading (continously send orders to market based on position/time)
 - [x] Back up database to cloud and local
 - [x] Send automatic order based on pre-defined manual target
 
 ## Transaction flow:
-- Fetch both market and exchange data through websocket and temporary save them in pickle format
-    Why pickle: it is easy. Data can be saved as is to its format without further modification. Also, it is fast.
+- Fetch both market and exchange data through websocket and temporary save them either sqlite3 or in pickle format.
 - Modify market data for further analysis
-- Check the balance in cryto currency. Check whether they have properly hedged
+- Check the balance in crypto currency. Check whether they have properly hedged
 - Determine parameters for risk management at configuration files (especially, max risk per transaction as the basis for position sizing)
 - Frequently check market condition and current asset position. Send/cancel order based on them
 - Frequently: check current position based on time (every x seconds using sleep function as well as scheduler) and events (by captured any changes taken place at balance/position using rsync)
