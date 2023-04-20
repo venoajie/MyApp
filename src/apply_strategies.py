@@ -1023,7 +1023,7 @@ class ApplyHedgingSpot:
                 strategy_labels =  [] if my_trades_open_remove_closed == [] \
                     else str_mod.remove_redundant_elements(
                     [
-                        str_mod.parsing_label(o["transaction_net"])
+                        str_mod.parsing_label(o["label"])['net']
                         for o in my_trades_open_remove_closed
                     ]
                 )
