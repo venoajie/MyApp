@@ -691,7 +691,7 @@ class ApplyHedgingSpot:
 
                             if "hedgingSpot" in strategy_attr["strategy"]:
 
-                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"]* ONE_MINUTE)
+                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
                                 
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
                                     open_trade_strategy)
@@ -794,7 +794,7 @@ class ApplyHedgingSpot:
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                await catch_error('size or open order is inconsistent', 30)
+                await catch_error('size or open order is inconsistent', 10)
             
     async def opening_transactions(self, 
                                    instrument, 
@@ -956,7 +956,7 @@ class ApplyHedgingSpot:
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                        await catch_error('size or open order is inconsistent', 30)
+                        await catch_error('size or open order is inconsistent',5)
                     
         except Exception as error:
             await catch_error(error)
