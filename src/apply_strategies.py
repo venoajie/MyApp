@@ -676,7 +676,7 @@ class ApplyHedgingSpot:
                         exit_order_allowed["instrument"] = instrument
 
                         log.error (f' label {label}')
-                        label_id= str_mod.parsing_label(label)('int')
+                        label_id= str_mod.parsing_label(label)['int']
                         label_closed = f'''{strategy_attr["strategy"]}-'closed'-{label_id}'''
                         log.error (f' label {label} label_closed {label_closed} label_closed {label_closed} min_position_size {min_position_size}')
                         
