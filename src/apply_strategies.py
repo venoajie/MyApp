@@ -666,8 +666,6 @@ class ApplyHedgingSpot:
                         if "hedgingSpot" in strategy_attr["strategy"] :
                             min_position_size = -notional
 
-                        log.error (f' label {label} min_position_size {min_position_size}')
-
                         exit_order_allowed = await self.is_send_order_allowed(
                             label,
                             open_trade_strategy_label,
@@ -676,6 +674,9 @@ class ApplyHedgingSpot:
                             min_position_size,
                         )
                         exit_order_allowed["instrument"] = instrument
+
+                        label_transaction = str_mod.parsing_label(exit_order_allowed ['label'])['int']
+                        log.error (f' label {label} label_transaction {label_transaction} min_position_size {min_position_size}')
                         
                         if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
 
@@ -1022,7 +1023,7 @@ class ApplyHedgingSpot:
                 strategy_labels =  [] if my_trades_open_remove_closed == [] \
                     else str_mod.remove_redundant_elements(
                     [
-                        str_mod.get_strings_before_character(o["label"])
+                        str_mod.parsing_label(o["net"])
                         for o in my_trades_open_remove_closed
                     ]
                 )
