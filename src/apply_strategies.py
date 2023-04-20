@@ -675,8 +675,11 @@ class ApplyHedgingSpot:
                         )
                         exit_order_allowed["instrument"] = instrument
 
-                        label_transaction = str_mod.parsing_label(exit_order_allowed ['label'])
-                        log.error (f' label {label} label_transaction {label_transaction} min_position_size {min_position_size}')
+                        label_id= str_mod.parsing_label(exit_order_allowed ['label'])('int')
+                        label_status = str_mod.parsing_label(exit_order_allowed ['label'])['transaction_status']
+                        label_transaction = f'{label_status}-{label_id}'
+                        label_closed = str_mod.parsing_label(label_transaction)['flipping_closed']
+                        log.error (f' label {label} label_transaction {label_transaction} label_closed {label_closed} min_position_size {min_position_size}')
                         
                         if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
 
@@ -713,9 +716,7 @@ class ApplyHedgingSpot:
                                     and len_open_order_label_long < 1
                                 ):
                                     exit_order_allowed["entry_price"] = best_bid_prc
-                                    exit_order_allowed["label"] = exit_order_allowed[
-                                        "label_closed"
-                                    ]
+                                    exit_order_allowed["label"] = label_transaction
                                     exit_order_allowed["side"] = exit_order_allowed[
                                         "exit_orders_limit_side"
                                     ]
