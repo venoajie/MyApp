@@ -675,7 +675,7 @@ class ApplyHedgingSpot:
                         )
                         exit_order_allowed["instrument"] = instrument
 
-                        label_transaction = str_mod.parsing_label(exit_order_allowed ['label'])['int']
+                        label_transaction = str_mod.parsing_label(exit_order_allowed ['label'])
                         log.error (f' label {label} label_transaction {label_transaction} min_position_size {min_position_size}')
                         
                         if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
