@@ -12,12 +12,12 @@
 
 ### In Progress
 
-- [ ] Categorised trade and open orders based on their labels  
 - [ ] Add unit test  
 
 ### Done ✓
 
 - [x] Automatic **hedging** for equity balance in crypto spot  
+- [x] Categorised trade and open orders based on their labels  
 
 ### Reading Material/to be implemented 
 - Programming related  
