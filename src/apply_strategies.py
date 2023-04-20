@@ -714,7 +714,7 @@ class ApplyHedgingSpot:
                                     and len_open_order_label_long < 1
                                 ):
                                     exit_order_allowed["entry_price"] = best_bid_prc
-                                    exit_order_allowed["label"] = label_transaction
+                                    exit_order_allowed["label"] = label_closed
                                     exit_order_allowed["side"] = exit_order_allowed[
                                         "exit_orders_limit_side"
                                     ]
