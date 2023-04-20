@@ -39,20 +39,15 @@ async def check_and_save_every_60_minutes():
     
     try:
         
-        currencies = ["ETH", "BTC"]
         get_currencies_all = await get_currencies(connection_url)
         currencies=  ([o['currency'] for o in get_currencies_all ['result']])
-        print (currencies)
         
         for currency in currencies:
             
             instruments = await get_instruments(connection_url, currency)
             
             my_path_instruments = system_tools.provide_path_for_file(
-                "instruments", currency
-            )
-            print (f' currency {currency}')
-            print (f' currency {currency}')
+                "instruments", currency)
             
             pickling.replace_data(my_path_instruments, instruments)
 
@@ -63,7 +58,6 @@ async def check_and_save_every_60_minutes():
 
     except Exception as error:
         catch_error(error)
-        
         
 async def get_open_interest_history() -> None:
     headers = {
