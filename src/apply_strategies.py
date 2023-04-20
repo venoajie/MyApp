@@ -675,12 +675,9 @@ class ApplyHedgingSpot:
                         )
                         exit_order_allowed["instrument"] = instrument
 
-                        log.error (exit_order_allowed ['label'])
-                        label_id= str_mod.parsing_label(exit_order_allowed ['label'])('int')
-                        label_status = str_mod.parsing_label(exit_order_allowed ['label'])['transaction_status']
-                        label_transaction = f'{label_status}-{label_id}'
-                        label_closed = str_mod.parsing_label(label_transaction)['flipping_closed']
-                        log.error (f' label {label} label_transaction {label_transaction} label_closed {label_closed} min_position_size {min_position_size}')
+                        label_id= str_mod.parsing_label(label)('int')
+                        label_closed = f'''{strategy_attr["strategy"]}-'closed'-{label_id}'''
+                        log.error (f' label {label} label_closed {label_closed} label_closed {label_closed} min_position_size {min_position_size}')
                         
                         if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
 
