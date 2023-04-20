@@ -452,7 +452,6 @@ class ApplyHedgingSpot:
         
         try:
             label_int = str_mod.parsing_label(label)['int']
-            log.warning(f'LABEL {label} label_main {label_main} label_int {label_int}')
             
         except:
             label_int = None
