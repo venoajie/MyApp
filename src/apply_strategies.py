@@ -155,10 +155,6 @@ class ApplyHedgingSpot:
         path_portfolio: str = system_tools.provide_path_for_file(
             "portfolio", self.currency
         )
-
-        ticker_perpetual: list = self.reading_from_db(
-            "ticker", f"{(self.currency).upper()}-PERPETUAL"
-        )
         path_positions: str = system_tools.provide_path_for_file(
             "positions", self.currency
         )
@@ -185,8 +181,7 @@ class ApplyHedgingSpot:
             "positions": positions,
             "positions_from_sub_account": positions_from_sub_account,
             "open_orders_from_sub_account": open_orders_from_sub_account,
-            "portfolio": portfolio,
-            "ticker_perpetual": ticker_perpetual[0],
+            "portfolio": portfolio
         }
 
     #! ########### end of will be deleted ##############################################################################
