@@ -159,7 +159,10 @@ def parsing_label(label: str, integer: int= None) -> dict:
 
     """
     try:
-        get_integer = get_strings_before_character (label, "-", 2)
+        try:
+            get_integer = get_strings_before_character (label, "-", 2)
+        except:
+            get_integer = get_strings_before_character (label, "-", 1)
     except:
         get_integer = None
 
