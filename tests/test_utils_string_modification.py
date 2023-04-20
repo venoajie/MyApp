@@ -371,6 +371,7 @@ def test_get_strings_before_character_and_parsing_label():
     label = "hedgingSpot-open-1671189554374"
     result = "hedgingSpot"
     assert (string_modification.get_strings_before_character(label, "-", 0) == result)
+    assert (string_modification.parsing_label(label) ['int'] == '1671189554374')
     assert (string_modification.parsing_label(label) ['main'] == result)
     assert (string_modification.parsing_label(label) ['super_main'] == result)
     
