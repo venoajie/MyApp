@@ -675,8 +675,8 @@ class ApplyHedgingSpot:
                         )
                         exit_order_allowed["instrument"] = instrument
 
-                        label_id= str_mod.parsing_label(exit_order_allowed ['label'])('int')
                         log.error (exit_order_allowed ['label'])
+                        label_id= str_mod.parsing_label(exit_order_allowed ['label'])('int')
                         label_status = str_mod.parsing_label(exit_order_allowed ['label'])['transaction_status']
                         label_transaction = f'{label_status}-{label_id}'
                         label_closed = str_mod.parsing_label(label_transaction)['flipping_closed']
