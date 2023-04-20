@@ -382,7 +382,12 @@ class ApplyHedgingSpot:
                     transactions_under_label_main = ([o for o in transactions_under_label_main \
                         if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
                     
+                    if len(transactions_open)>1:
+                        transactions_under_label_main = ([o for o in transactions_under_label_main \
+                        if o['trade_seq'] == min_closed or o['trade_seq'] == min_open  ])
+                        
                     log.critical (f'transactions_under_label_main {transactions_under_label_main}')
+                    log.critical (f'transactions_open {transactions_open}')
                     # get net sum of the transactions open and closed
                     net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
                     
