@@ -13,6 +13,7 @@ equity_risked_pct_default = 1 / 100 / 4 #.25%
 strategies = [
                 {
                     "strategy": "every5mtestLong",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",
@@ -29,6 +30,7 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default*8,
                 },{
                     "strategy": "every5mtestShort",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "sell",
@@ -45,6 +47,7 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default*8,
                 }, {
                     "strategy": "every1hoursLong",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",
@@ -61,6 +64,7 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default*8,
                 },  {
                     "strategy": "every1hoursShort",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "sell",
@@ -77,6 +81,7 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default*8,
                 }, {
                     "strategy": "every4hoursLong",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",
@@ -93,6 +98,7 @@ strategies = [
                     "equity_risked_pct": equity_risked_pct_default*16,
                 },  {
                     "strategy": "every4hoursShort",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "sell",
@@ -110,6 +116,7 @@ strategies = [
                 }, 
                 {
                     "strategy": "hedgingSpot",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 900,
                     "side": "sell",
@@ -131,6 +138,7 @@ strategies = [
 
 test = [{
                     "strategy": "supplyDemandShort60A",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "sell",
@@ -148,6 +156,7 @@ test = [{
                 }, 
                 {
                     "strategy": "supplyDemandLongB",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",
@@ -165,6 +174,7 @@ test = [{
                 },
                 {
                     "strategy": "supplyDemandLongD",
+                    "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
                     "side": "buy",

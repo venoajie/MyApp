@@ -288,7 +288,7 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
-                        print (param)
+                        #print (param)
                         insert_table_json = f'''
                                                 INSERT 
                                                 INTO 
@@ -387,7 +387,6 @@ async def deleting_row (table: str = 'mytrades',
         print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
-
 
 async def querying_completed_transactions(database: str = "databases/trading.sqlite3")->list:
 
