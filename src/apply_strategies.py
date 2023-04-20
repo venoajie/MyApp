@@ -148,10 +148,6 @@ class ApplyHedgingSpot:
             "sub_accounts", self.currency
         )
 
-        path_orders_open: str = system_tools.provide_path_for_file(
-            "orders", self.currency, "open"
-        )
-
         path_portfolio: str = system_tools.provide_path_for_file(
             "portfolio", self.currency
         )
@@ -177,7 +173,6 @@ class ApplyHedgingSpot:
             portfolio = pickling.read_data(path_portfolio)
 
         return {
-            "open_orders_open_byAPI": pickling.read_data(path_orders_open),
             "positions": positions,
             "positions_from_sub_account": positions_from_sub_account,
             "open_orders_from_sub_account": open_orders_from_sub_account,
