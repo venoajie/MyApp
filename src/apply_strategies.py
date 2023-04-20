@@ -371,13 +371,18 @@ class ApplyHedgingSpot:
                     #get_closed_labels under_label_main
                     transactions_closed= ([o for o in transactions_under_label_main if 'closed' in o['label_main'] ])
 
-                    # get minimum trade seq from closed label main (to be paired vs open label)
+                    #get_closed_labels under_label_main
+                    transactions_open= ([o for o in transactions_under_label_main if 'open' in o['label_main'] ])
+
+                    # get minimum trade seq from closed/open label main (to be paired vs open/closed label)
                     min_closed= min([o['trade_seq'] for o in transactions_closed ])
+                    min_open= min([o['trade_seq'] for o in transactions_open ])
                     
                     #combining open vs closed transactions
                     transactions_under_label_main = ([o for o in transactions_under_label_main \
                         if o['trade_seq'] == min_closed or 'open' in o['label_main'] ])
                     
+                    log.critical (f'transactions_under_label_main {transactions_under_label_main}')
                     # get net sum of the transactions open and closed
                     net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
                     
