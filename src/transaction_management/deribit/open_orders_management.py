@@ -617,8 +617,8 @@ class MyOrders:
         except:
             open_orders_lastUpdateTStamps: list = []
 
-        log.warning(label)
-        log.error(open_orders_lastUpdateTStamps)
+        #log.warning(label)
+        #log.error(open_orders_lastUpdateTStamps)
         if open_orders_lastUpdateTStamps != []:
             open_orders_lastUpdateTStamps: list = (
                 self.open_orders_api_last_update_timestamps()
