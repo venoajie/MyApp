@@ -333,6 +333,11 @@ class ApplyHedgingSpot:
 
         return   result
 
+    def hedged_value_to_notional (self, hedged_value: float, notional: float) -> float:
+        """ 
+        """        
+        return abs(hedged_value/notional)
+    
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
@@ -676,6 +681,7 @@ class ApplyHedgingSpot:
                     notional: float = await self.compute_notional_value(index_price, equity)
                 
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
+                    
                                                 
                     log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
@@ -750,6 +756,8 @@ class ApplyHedgingSpot:
                                                          else len(open_order_label_long))
 
                             if "hedgingSpot" in strategy_attr["strategy"]:
+                                
+                                hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
                                 
@@ -766,6 +774,7 @@ class ApplyHedgingSpot:
                                 tp_price = open_trade_strategy_max_attr_price - pct_prc
                                 
                                 resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
+                                log.critical (f' hedged_value_to_notional {hedged_value_to_notional}')
                                 log.critical (f' exit_order_allowed {exit_order_allowed}')
 
                                 # closing order
