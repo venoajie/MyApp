@@ -360,8 +360,10 @@ class ApplyHedgingSpot:
         """
                 
         #get_closed_labels
+        
         if transactions_all !=[]:
             trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
+            log.warning (f'trades_with_closed_labels {trades_with_closed_labels}')
             
             for transaction in trades_with_closed_labels:            
                 log.warning (transaction)
