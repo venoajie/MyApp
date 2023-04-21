@@ -223,7 +223,6 @@ class ApplyHedgingSpot:
                 label
             )
 
-            
             log.debug(f'open_orders_deltaTime {open_orders_deltaTime} {open_orders_deltaTime > three_minute} \
                 open_orders_lastUpdateTStamps {open_orders_lastUpdateTStamps}')    
 
@@ -265,32 +264,28 @@ class ApplyHedgingSpot:
 
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
-        #log.debug (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
-        #log.debug (f' size_from_positions {size_from_positions}')
+
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
-    async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
+    async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_from_db) -> bool:
         """ """
-        #log.critical (f' open_orders_from_sub_account_get {len(open_orders_from_sub_account_get)} open_orders_open_byAPI {len(open_orders_open_byAPI)}')
+
         len_open_orders_from_sub_account_get = len(open_orders_from_sub_account_get)
         
-        len_open_orders_open_byAPI = len(open_orders_open_byAPI)
+        len_open_orders_open_from_db = len(open_orders_open_from_db)
         
-        return len_open_orders_from_sub_account_get == len_open_orders_open_byAPI
+        return len_open_orders_from_sub_account_get == len_open_orders_open_from_db
         
-    async def resolving_inconsistent_open_orders(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> None:
+    async def resolving_inconsistent_open_orders(self, open_orders_from_sub_account_get, open_orders_open_from_db) -> None:
         """ """
-        log.error (open_orders_open_byAPI)
-        log.error (open_orders_from_sub_account_get)
 
-        if open_orders_open_byAPI == []:
+        if open_orders_open_from_db == []:
             for order in open_orders_from_sub_account_get:
-                log.debug (order)
                 await sqlite_management.insert_tables('orders_all_json',order)  
     
         else:
-            if open_orders_open_byAPI != []:
-                for order in open_orders_open_byAPI:
+            if open_orders_open_from_db != []:
+                for order in open_orders_open_from_db:
                     log.error (order)
                     where_filter = f"order_id"
                     order_id = order['order_id']
@@ -301,8 +296,9 @@ class ApplyHedgingSpot:
                                                             order_id)
                     
             for order in open_orders_from_sub_account_get:
-                log.warning (order)
                 await sqlite_management.insert_tables('orders_all_json',order)    
+
+        system_tools.sleep_and_restart_program(.1)
 
     async def send_market_order(self, params) -> None:
         """ """
@@ -354,10 +350,13 @@ class ApplyHedgingSpot:
 
         return   result
 
-    async def my_trades_open_sqlite_closed_transactions (self, transactions_all) -> None:
+    async def clean_up_closed_transactions (self, transactions_all) -> None:
         """ 
+        closed transactions: buy and sell in the same label id = 0. When flagged:
+        1. remove them from db for open transactions/my_trades_all_json
+        2. move them to table for closed transactions/my_trades_closed_json
         """
-        
+                
         #get_closed_labels
         if transactions_all !=[]:
             trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
@@ -582,7 +581,6 @@ class ApplyHedgingSpot:
 
         return determine_size_and_side
 
-
     async def closing_transactions(self, 
                                    label_transactions,
                                    instrument, 
@@ -594,14 +592,14 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    open_orders_from_sub_account_get,
-                                   open_orders_open_byAPI,
+                                   open_orders_open_from_db,
                                    open_order_mgt,
                                    grids,
                                    server_time) -> float:
         """ """
                     
-        my_trades_open_sqlite_closed_transactions: list = await self.my_trades_open_sqlite_closed_transactions(my_trades_open_all)
-        log.error (f'my_trades_open_sqlite_closed_transactions {my_trades_open_sqlite_closed_transactions}')
+        clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
+        log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
         for label in label_transactions:
@@ -624,7 +622,7 @@ class ApplyHedgingSpot:
 
             sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
             size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-            open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
+            open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
             
             if size_is_consistent and open_order_is_consistent:
                 
@@ -788,32 +786,18 @@ class ApplyHedgingSpot:
                                 log.debug (label_closed)
 
                                 exit_order_allowed["label"] = label_closed
-                                exit_order_allowed["side"] = exit_order_allowed[
-                                    "exit_orders_limit_side"
-                                ]
+                                exit_order_allowed["side"] = exit_order_allowed["exit_orders_limit_side"]
 
                                 if exit_order_allowed["len_order_limit"] == 0:
-                                    exit_order_allowed["type"] = exit_order_allowed[
-                                        "exit_orders_limit_type"
-                                    ]
-                                    exit_order_allowed[
-                                        "take_profit_usd"
-                                    ] = strategy_attr["take_profit_usd"]
-                                    exit_order_allowed["size"] = exit_order_allowed[
-                                        "exit_orders_limit_qty"
-                                    ]
+                                    exit_order_allowed["type"] = exit_order_allowed["exit_orders_limit_type"]
+                                    exit_order_allowed["take_profit_usd"] = strategy_attr["take_profit_usd"]
+                                    exit_order_allowed["size"] = exit_order_allowed["exit_orders_limit_qty"]
                                     await self.send_limit_order(exit_order_allowed)
 
                                 if exit_order_allowed["len_order_market"] == 0:
-                                    exit_order_allowed["cut_loss_usd"] = strategy_attr[
-                                        "cut_loss_usd"
-                                    ]
-                                    exit_order_allowed["type"] = exit_order_allowed[
-                                        "exit_orders_market_type"
-                                    ]
-                                    exit_order_allowed["size"] = exit_order_allowed[
-                                        "exit_orders_market_qty"
-                                    ]
+                                    exit_order_allowed["cut_loss_usd"] = strategy_attr["cut_loss_usd"]
+                                    exit_order_allowed["type"] = exit_order_allowed["exit_orders_market_type"]
+                                    exit_order_allowed["size"] = exit_order_allowed["exit_orders_market_qty"]
                                     await self.send_market_order(exit_order_allowed)
                                     sleep (5)
                                     
@@ -835,10 +819,10 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    open_orders_from_sub_account_get,
-                                   open_orders_open_byAPI,
+                                   open_orders_open_from_db,
                                    open_order_mgt,
                                    grids,
-                                   server_time) -> float:
+                                   server_time) -> None:
         """ """
 
         try:
@@ -864,17 +848,15 @@ class ApplyHedgingSpot:
                     # result example: 'hedgingSpot'
                     strategy_label = strategy_attr["strategy"]
                     log.critical (strategy_label)
-                    time_threshold: float = (
-                        strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE
-                    )
+                    time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                     log.debug (f'net_sum_strategy   {net_sum_strategy}')
                     
                     sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                     size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-                    open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                    open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
                     if open_order_is_consistent == False:
-                        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
                     
                     if size_is_consistent and open_order_is_consistent:
                                                     
@@ -1026,21 +1008,18 @@ class ApplyHedgingSpot:
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
                 # open orders data
-                #log.error (open_orders_sqlite)
-                open_orders_open_byAPI: list= open_orders_sqlite ['list_data_only']
+                open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
 
-                #log.error (open_orders_open_byAPI)
-                open_orders_from_sub_account_get = reading_from_database[
-                    "open_orders_from_sub_account"
-                ]
-                #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_byAPI)}')
+                #log.error (open_orders_open_from_db)
+                open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+                #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
                 my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
 
                 # Creating an instance of the open order  class
-                open_order_mgt = open_orders_management.MyOrders(open_orders_open_byAPI)
+                open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
 
                 await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
 
@@ -1076,7 +1055,7 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    open_orders_from_sub_account_get,
-                                   open_orders_open_byAPI,
+                                   open_orders_open_from_db,
                                    open_order_mgt,
                                    grids,
                                    server_time)
@@ -1094,7 +1073,7 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    open_orders_from_sub_account_get,
-                                   open_orders_open_byAPI,
+                                   open_orders_open_from_db,
                                    open_order_mgt,
                                    grids,
                                    server_time)
@@ -1141,7 +1120,6 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
-        
 
     except Exception as error:
         catch_error(error, 30)
