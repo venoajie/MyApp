@@ -1092,7 +1092,6 @@ class ApplyHedgingSpot:
                                    my_trades_open_all, 
                                    my_trades_open,
                                    size_from_positions, 
-                                   open_orders_from_sub_account_get,
                                    server_time)
                     
                 # closing transactions
