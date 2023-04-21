@@ -83,7 +83,7 @@ class StreamMarketData:
                     "instruments", currency
                 )
                 instruments_raw = pickling.read_data(my_path_instruments)
-                instruments = instruments_raw ['result']
+                instruments = instruments_raw [0] ['result']
 
                 instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
                 instruments_name: list = [o["instrument_name"] for o in instruments_kind]
