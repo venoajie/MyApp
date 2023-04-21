@@ -681,7 +681,6 @@ class ApplyHedgingSpot:
             
                     my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                             
-                            
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
                     log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                     
@@ -866,7 +865,6 @@ class ApplyHedgingSpot:
             log.critical (f' open_orders_open_from_db {open_orders_open_from_db}')
             ticker =  self.reading_from_db("ticker", instrument)
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
-            
             
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
             
@@ -1136,6 +1134,9 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    server_time)
+                
+                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
+                log.error (f'clean_up_closed_transactions 2 {clean_up_closed_transactions}')
                 
         except Exception as error:
             catch_error(error, 30)
