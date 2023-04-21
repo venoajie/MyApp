@@ -150,7 +150,7 @@ class GridPerpetual:
 
         print (f' 151 label_main  {label_main}')
         print (f' 152 open_orders_as_per_main_label  {result}')
-        print (self.orders_from_sqlite['list_data_only'])
+        #print (self.orders_from_sqlite['list_data_only'])
         print ([o  for o in self.orders_from_sqlite  ['all'] ])
         print (str_mod.parsing_label(label_main) ['transaction_status'])
         return dict(
