@@ -22,6 +22,19 @@ orders_from_sqlite = {
             {'id': 2, 'data': '{"web":false,"time_in_force":"good_til_cancelled","risk_reducing":false,"replaced":false,"reject_post_only":false,"reduce_only":false,"profit_loss":0.0,"price":2102.6,"post_only":true,"order_type":"limit","order_state":"open","order_id":"ETH-32892551169","mmp":false,"max_show":1.0,"last_update_timestamp":1681568392163,"label":"every5mtestLong-open-1681568392126","is_liquidation":false,"instrument_name":"ETH-PERPETUAL","filled_amount":0.0,"direction":"buy","creation_timestamp":1681568392163,"commission":0.0,"average_price":0.0,"api":true,"amount":1.0}', 'order_id': 'ETH-32892551169', 'label_main': 'every5mtestLong-open-1681568392126', 'amount_dir': 1.0}], 
         'list_data_only': [
             {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 2102.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32892551162', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1681568392117, 'label': 'every5mtestLong-open-1681568392078', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1681568392117, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}, {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 2102.6, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32892551169', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1681568392163, 'label': 'every5mtestLong-open-1681568392126', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1681568392163, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}]}
+
+                 
+orders_from_sqlite2 = {
+        'all': [
+            {'id': 1, 'data': '{"web": false, "time_in_force": "good_til_cancelled", "risk_reducing": false, "replaced": false, "reject_post_only": false, "reduce_only": false, "profit_loss": 0.0, "price": 1931.95, "post_only": true, "order_type": "limit", "order_state": "open", "order_id": "ETH-32990829637", "mmp": false, "max_show": 4.0, "last_update_timestamp": 1682058485602, "label": "every1hoursShort-open-1682058485562", "is_liquidation": false, "instrument_name": "ETH-PERPETUAL", "filled_amount": 0.0, "direction": "sell", "creation_timestamp": 1682058485602, "commission": 0.0, "average_price": 0.0, "api": true, "amount": 4.0}', 'order_id': 'ETH-32990829637', 'label_main': 'every1hoursShort-open-1682058485562', 'amount_dir': 4.0
+             }, 
+            {'id': 2, 'data': '{"web": false, "time_in_force": "good_til_cancelled", "risk_reducing": false, "replaced": false, "reject_post_only": false, "reduce_only": false, "profit_loss": 0.0, "price": 1931.95, "post_only": true, "order_type": "limit", "order_state": "open", "order_id": "ETH-32990829565", "mmp": false, "max_show": 4.0, "last_update_timestamp": 1682058484601, "label": "every1hoursShort-open-1682058484564", "is_liquidation": false, "instrument_name": "ETH-PERPETUAL", "filled_amount": 0.0, "direction": "sell", "creation_timestamp": 1682058484601, "commission": 0.0, "average_price": 0.0, "api": true, "amount": 4.0}', 'order_id': 'ETH-32990829565', 'label_main': 'every1hoursShort-open-1682058484564', 'amount_dir': 4.0
+             }
+            ], 
+        'list_data_only': [
+            {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1931.95, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32990829637', 'mmp': False, 'max_show': 4.0, 'last_update_timestamp': 1682058485602, 'label': 'every1hoursShort-open-1682058485562', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1682058485602, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 4.0}, {'web': False, 'time_in_force': 'good_til_cancelled', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1931.95, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32990829565', 'mmp': False, 'max_show': 4.0, 'last_update_timestamp': 1682058484601, 'label': 'every1hoursShort-open-1682058484564', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'sell', 'creation_timestamp': 1682058484601, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 4.0}
+            ]
+        }
 notional= 78
 active_trade_item = [{'trade_seq': 122793232, 'trade_id': 'ETH-166947107', 'timestamp': 1681447691857, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -9.23e-05, 'price': 2116.85, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32867483737', 'mmp': False, 'matching_id': None, 'mark_price': 2117.09, 'liquidity': 'M', 'label': 'every4hoursLong-open-1681447421981', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2117.01, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 3.0}]
 
@@ -29,6 +42,9 @@ strategy_from_config = 'every4hoursLong'
 
 grids = grid.GridPerpetual(my_trades_open,
                            orders_from_sqlite
+                           )
+grids2 = grid.GridPerpetual(my_trades_open,
+                           orders_from_sqlite2
                            )
 strategy_from_config_none = None
 
@@ -74,7 +90,10 @@ async def test_open_orders_as_per_main_label():
     label_main = 'every1hoursLong-open-1681568392126'
     result = await grids.open_orders_as_per_main_label(label_main)   
     assert result['len_result']  ==  0
-        
+    label_main = 'every1hoursShort-open-1682058485562'
+    result = await grids2.open_orders_as_per_main_label(label_main)   
+    assert result['len_result']  ==  2
+
 @pytest.mark.asyncio
 async def test_get_closed_label():
     label_main = 'every5mtestLong-open-1681568392078'
