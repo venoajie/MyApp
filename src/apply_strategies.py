@@ -621,7 +621,7 @@ class ApplyHedgingSpot:
             log.critical(f" {label}")
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
-            check_orders_with_the_same_labels= grids.open_orders_as_per_main_label(label_main)
+            check_orders_with_the_same_labels= grids.open_orders_as_per_main_label(label)
             log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
             if check_orders_with_the_same_labels ['len'] > 0:
                 cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
