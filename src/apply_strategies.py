@@ -677,14 +677,20 @@ class ApplyHedgingSpot:
                     log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
                     my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+                            
+                            
+                    check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
+                    log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
+                    
+                    log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+                    my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
+                    my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
+                    my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
+                    my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
+                    is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
+                    is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
+                    
                     if "every" in strategy_attr["strategy"]: 
-                        log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                        my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
-                        my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
-                        my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
-                        my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
-                        is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
-                        is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
             
                     # avoid reorder closed trades:
                         # restart after deleting completed trades
@@ -857,6 +863,8 @@ class ApplyHedgingSpot:
             log.critical (f' open_orders_open_from_db {open_orders_open_from_db}')
             ticker =  self.reading_from_db("ticker", instrument)
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
+            
+            
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
             
             open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
@@ -883,8 +891,18 @@ class ApplyHedgingSpot:
 
                 # execute each strategy
                 for strategy_attr in strategies:
-                    # result example: 'hedgingSpot'
                     strategy_label = strategy_attr["strategy"]
+                    check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
+                    
+                    if check_orders_with_the_same_labels ['len_result'] > 0:
+                        log.warning( [o for o in open_orders_open_from_db if o['label'] in strategy_label ])
+                        cancelled_id= [o for o in open_orders_open_from_db if o['label'] in strategy_label ]
+                        log.warning(f" cancelled_id {cancelled_id}")
+                        await self.cancel_by_order_id(cancelled_id[0])
+                        system_tools.sleep_and_restart_program(.1)
+                
+                    # result example: 'hedgingSpot'
+                    
                     log.critical (strategy_label)
                     time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
