@@ -132,7 +132,6 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
-
     def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
@@ -266,6 +265,8 @@ class ApplyHedgingSpot:
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
 
+        log.warning (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
+        log.warning (f' size_from_positions {size_from_positions}')
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_from_db) -> bool:
