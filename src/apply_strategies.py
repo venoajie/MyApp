@@ -623,7 +623,7 @@ class ApplyHedgingSpot:
             
             check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
             log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
-            if check_orders_with_the_same_labels ['len'] > 0:
+            if check_orders_with_the_same_labels ['len_result'] > 0:
                 cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
                 log.warning(f" cancelled_id {cancelled_id}")
                 await self.cancel_by_order_id(cancelled_id[0])
