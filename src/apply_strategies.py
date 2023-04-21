@@ -885,6 +885,7 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                        system_tools.sleep_and_restart_program(.1)
                             
                             exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
                             
@@ -924,7 +925,18 @@ class ApplyHedgingSpot:
                             sleep (3)
 
                         else:
-                                                        
+                                     
+                            check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
+
+                            if check_cancellation !=None:
+                                log.critical(f" check_cancellation  {check_cancellation}")
+                                log.critical(check_cancellation['open_orders_deltaTime-exceed_threshold'] \
+                                    and check_cancellation['open_order_id'] !=[])
+                                if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
+                                    and check_cancellation['open_order_id'] !=[]:
+                                        await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                        system_tools.sleep_and_restart_program(.1)
+                                                           
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 min_position_size: float = -notional
