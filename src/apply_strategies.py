@@ -1023,6 +1023,7 @@ class ApplyHedgingSpot:
                 
                 open_orders_sqlite: list = await self.querying_all('orders_all_json')
                 
+                log.warning (open_orders_sqlite)
                 #log.warning (my_trades_open)
                 
                 # obtain instruments future relevant to strategies
