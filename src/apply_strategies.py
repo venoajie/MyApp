@@ -619,7 +619,7 @@ class ApplyHedgingSpot:
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
         for label in label_transactions:
             log.critical(f" {label}")
-            grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
+            grids=  await grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             check_orders_with_the_same_labels= grids.open_orders_as_per_main_label(label)
             log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
