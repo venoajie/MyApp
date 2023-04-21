@@ -20,6 +20,7 @@ from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
 ONE_MINUTE: int = 60000
+ONE_PCT: float = 1/100
 NONE_DATA: None = [0, None, []]
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -755,10 +756,10 @@ class ApplyHedgingSpot:
                             len_open_order_label_long = (0 if open_order_label_long == []  
                                                          else len(open_order_label_long))
 
-                            if "hedgingSpot" in strategy_attr["strategy"]:
+                            hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
+                            log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
+                            if "hedgingSpot" in strategy_attr["strategy"] and hedged_value_to_notional > 80 * ONE_PCT:
                                 
-                                hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
-
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
                                 
                                 open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
@@ -774,7 +775,7 @@ class ApplyHedgingSpot:
                                 tp_price = open_trade_strategy_max_attr_price - pct_prc
                                 
                                 resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
-                                log.critical (f' hedged_value_to_notional {hedged_value_to_notional}')
+                                
                                 log.critical (f' exit_order_allowed {exit_order_allowed}')
 
                                 # closing order
