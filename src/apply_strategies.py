@@ -758,7 +758,8 @@ class ApplyHedgingSpot:
 
                             hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
                             log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
-                            if "hedgingSpot" in strategy_attr["strategy"] and hedged_value_to_notional > 80 * ONE_PCT:
+                            if "hedgingSpot" in strategy_attr["strategy"] \
+                                and hedged_value_to_notional > 80 * ONE_PCT:
                                 
                                 time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
                                 
@@ -817,31 +818,6 @@ class ApplyHedgingSpot:
                                     )
                                     await self.send_limit_order(exit_order_allowed)
                                     system_tools.sleep_and_restart_program(1)
-                            else:
-                                log.warning(f"exit_order_allowed limit {exit_order_allowed}")
-                                
-                                strategy_label_int = str_mod.parsing_label(exit_order_allowed ['label'])['int']
-                                label_closed = f"{label_main}-closed-{strategy_label_int}"
-                                exit_order_allowed.update({"label": label_closed})
-                                log.debug (strategy_label_int)
-                                log.debug (label_closed)
-
-                                exit_order_allowed["label"] = label_closed
-                                exit_order_allowed["side"] = exit_order_allowed["exit_orders_limit_side"]
-
-                                if exit_order_allowed["len_order_limit"] == 0:
-                                    exit_order_allowed["type"] = exit_order_allowed["exit_orders_limit_type"]
-                                    exit_order_allowed["take_profit_usd"] = strategy_attr["take_profit_usd"]
-                                    exit_order_allowed["size"] = exit_order_allowed["exit_orders_limit_qty"]
-                                    await self.send_limit_order(exit_order_allowed)
-
-                                if exit_order_allowed["len_order_market"] == 0:
-                                    exit_order_allowed["cut_loss_usd"] = strategy_attr["cut_loss_usd"]
-                                    exit_order_allowed["type"] = exit_order_allowed["exit_orders_market_type"]
-                                    exit_order_allowed["size"] = exit_order_allowed["exit_orders_market_qty"]
-                                    await self.send_market_order(exit_order_allowed)
-                                    
-                                system_tools.sleep_and_restart_program(1)
 
                         if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
