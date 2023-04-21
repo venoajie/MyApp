@@ -54,7 +54,7 @@ class GridPerpetual:
             params_order.update({"label": label_closed})
             
             #get qty open order per label
-            open_orders_under_same_label_status = await self.open_orders_as_per_main_label (strategy_label_main)
+            open_orders_under_same_label_status = await self.open_orders_as_per_main_label (label_transaction)
             len_order_limit= open_orders_under_same_label_status['len_result']
             params_order.update({"len_order_limit": len_order_limit})
                     
@@ -148,6 +148,11 @@ class GridPerpetual:
                 if  str_mod.parsing_label(o['label_main'])['transaction_status'] == str_mod.parsing_label(label_main) ['transaction_status']
                         ])
 
+        if str_mod.parsing_label(label_main) ['transaction_status'] == None:
+            result =  [] if self.orders_from_sqlite['list_data_only'] == [] \
+            else ([o['label'] for o in self.orders_from_sqlite  ['list_data_only'] \
+                if  str_mod.parsing_label(o['label'])['main'] == str_mod.parsing_label(label_main) ['main'] ])
+            
         print (f' 151 label_main  {label_main}')
         print (f' 152 open_orders_as_per_main_label  {result}')
         #print (self.orders_from_sqlite['list_data_only'])
