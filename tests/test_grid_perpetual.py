@@ -93,6 +93,9 @@ async def test_open_orders_as_per_main_label():
     label_main = 'every1hoursShort-open-1682058485562'
     result = await grids2.open_orders_as_per_main_label(label_main)   
     assert result['len_result']  ==  2
+    label_main = 'every1hoursShort'
+    result = await grids2.open_orders_as_per_main_label(label_main)   
+    assert result['len_result']  ==  2
 
 @pytest.mark.asyncio
 async def test_get_closed_label():
