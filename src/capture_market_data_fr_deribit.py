@@ -249,6 +249,7 @@ class StreamMarketData:
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
                         pickling.replace_data(my_path_ticker, ticker_change)
+                        
         except Exception as error:
             system_tools.catch_error_message(
                 error,
