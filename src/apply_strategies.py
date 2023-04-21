@@ -1083,15 +1083,15 @@ class ApplyHedgingSpot:
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-
+                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
+                log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
                 #log.error (open_orders_open_from_db)
-                open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+                #open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
                 #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
                 my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
-
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
@@ -1105,11 +1105,8 @@ class ApplyHedgingSpot:
                     [
                         str_mod.parsing_label(o["label"])['transaction_net']
                         for o in my_trades_open_remove_closed
-                    ]
-                )
+                    ])
                 #log.error (f'strategy_labels {strategy_labels}')   
-                
-                 
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
