@@ -299,7 +299,7 @@ class ApplyHedgingSpot:
             for order in open_orders_from_sub_account_get:
                 await sqlite_management.insert_tables('orders_all_json',order)    
 
-        system_tools.sleep_and_restart_program(.1)
+        system_tools.sleep_and_restart_program(1)
 
     async def send_market_order(self, params) -> None:
         """ """
@@ -432,7 +432,7 @@ class ApplyHedgingSpot:
                                                             )
                         await sqlite_management.insert_tables('my_trades_all_json',transaction)
                         # refreshing data
-                        system_tools.sleep_and_restart_program(.1)
+                        system_tools.sleep_and_restart_program(1)
                 
                 #log.error (f' result {result}')
                 log.error (net_sum)
@@ -457,7 +457,7 @@ class ApplyHedgingSpot:
                         await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
                     
                     # refreshing data
-                    system_tools.sleep_and_restart_program(.1)
+                    system_tools.sleep_and_restart_program(1)
     
     async def is_send_order_allowed(
         self,
@@ -627,7 +627,7 @@ class ApplyHedgingSpot:
                 cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
                 log.warning(f" cancelled_id {cancelled_id}")
                 await self.cancel_by_order_id(cancelled_id[0])
-                system_tools.sleep_and_restart_program(.1)
+                system_tools.sleep_and_restart_program(1)
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
@@ -708,7 +708,7 @@ class ApplyHedgingSpot:
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                 await self.send_limit_order(params)
-                                system_tools.sleep_and_restart_program(5)
+                                system_tools.sleep_and_restart_program(1)
                                 
                     else:
                         
@@ -804,7 +804,7 @@ class ApplyHedgingSpot:
                                         "open", label_main
                                     )
                                     await self.send_limit_order(exit_order_allowed)
-                                    system_tools.sleep_and_restart_program(5)
+                                    system_tools.sleep_and_restart_program(1)
                             else:
                                 log.warning(f"exit_order_allowed limit {exit_order_allowed}")
                                 
@@ -829,7 +829,7 @@ class ApplyHedgingSpot:
                                     exit_order_allowed["size"] = exit_order_allowed["exit_orders_market_qty"]
                                     await self.send_market_order(exit_order_allowed)
                                     
-                                system_tools.sleep_and_restart_program(5)
+                                system_tools.sleep_and_restart_program(1)
 
                         if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
@@ -893,13 +893,14 @@ class ApplyHedgingSpot:
                 for strategy_attr in strategies:
                     strategy_label = strategy_attr["strategy"]
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
+                    log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                     
                     if check_orders_with_the_same_labels ['len_result'] > 0:
                         log.warning( [o for o in open_orders_open_from_db if o['label'] in strategy_label ])
                         cancelled_id= [o for o in open_orders_open_from_db if o['label'] in strategy_label ]
                         log.warning(f" cancelled_id {cancelled_id}")
                         await self.cancel_by_order_id(cancelled_id[0])
-                        system_tools.sleep_and_restart_program(.1)
+                        system_tools.sleep_and_restart_program(1)
                 
                     # result example: 'hedgingSpot'
                     
@@ -941,7 +942,7 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                        system_tools.sleep_and_restart_program(.1)
+                                        system_tools.sleep_and_restart_program(1)
                             
                             exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
                             
@@ -967,7 +968,7 @@ class ApplyHedgingSpot:
                                 log.critical(best_bid_prc)
                                 
                                 await self.send_limit_order(params_order)
-                                system_tools.sleep_and_restart_program(.1)
+                                system_tools.sleep_and_restart_program(1)
 
                             if params_order["side"] == 'sell'\
                                 and params_order["len_order_limit"] == 0 \
@@ -978,7 +979,7 @@ class ApplyHedgingSpot:
                                 log.critical(f" params_order  {params_order}")
                                 log.critical(best_ask_prc)
                                 await self.send_limit_order(params_order)
-                                system_tools.sleep_and_restart_program(.1)
+                                system_tools.sleep_and_restart_program(1)
 
                         else:
                                      
@@ -991,7 +992,7 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                        system_tools.sleep_and_restart_program(.1)
+                                        system_tools.sleep_and_restart_program(1)
                                                            
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
@@ -1027,7 +1028,7 @@ class ApplyHedgingSpot:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
                                     await self.send_limit_order(open_order_allowed)
-                                    system_tools.sleep_and_restart_program(.1)
+                                    system_tools.sleep_and_restart_program(1)
                                 
                                 else:
                                     open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
@@ -1043,7 +1044,7 @@ class ApplyHedgingSpot:
                                             
                                         open_order_allowed["entry_price"] = best_ask_prc + 1
                                         await self.send_combo_orders(open_order_allowed)
-                                    system_tools.sleep_and_restart_program(.1)
+                                    system_tools.sleep_and_restart_program(1)
 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
