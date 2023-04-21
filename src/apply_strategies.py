@@ -827,7 +827,6 @@ class ApplyHedgingSpot:
 
         try:
             ticker =  self.reading_from_db("ticker", instrument)
-            log.error (f' {ticker}')
             
             if ticker !=[]:
 
