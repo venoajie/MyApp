@@ -1060,12 +1060,12 @@ class ApplyHedgingSpot:
 
                 # Creating an instance of the my-Trade class
                 my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
-                
+
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
                 
-                #log.error (my_trades_open)
+                log.error (my_trades_open)
                 #log.error ([o["label"] for o in my_trades_open])
                 my_trades_open_remove_closed = [] if my_trades_open == [] \
                     else [o for o in my_trades_open if 'closed' not in o["label"]]
