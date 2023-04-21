@@ -1058,7 +1058,7 @@ class ApplyHedgingSpot:
                         for o in my_trades_open_remove_closed
                     ]
                 )
-                log.error (f'strategy_labels {strategy_labels}')   
+                #log.error (f'strategy_labels {strategy_labels}')   
                 
                 grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite)  
             
