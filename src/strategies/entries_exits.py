@@ -12,6 +12,24 @@ equity_risked_pct_default = 1 / 100 / 4 #.25%
 
 strategies = [
                 {
+                    "strategy": "hedgingSpot",
+                    "status": "active",
+                    "instrument": ["PERPETUAL"],
+                    "time_frame": 900,
+                    "side": "sell",
+                    "entry_price": 1000,
+                    "invalidation_entry_price": None,
+                    "take_profit_usd": (1 / 100) / 15,
+                    "take_profit_pct": (1 / 100)/2,
+                    "quantity_discrete": 15,
+                    "averaging": (5 / 100),
+                    "cut_loss_usd": 15,
+                    "cut_loss_pct": (3 / 100),
+                    "halt_minute_before_reorder": 60 * 4,
+                    "equity_risked_usd": 60,
+                    "equity_risked_pct": (1 / 100),
+                },
+                {
                     "strategy": "every5mtestLong",
                     "status": "active",
                     "instrument": ["PERPETUAL"],
@@ -114,24 +132,7 @@ strategies = [
                     "equity_risked_usd": None,
                     "equity_risked_pct": equity_risked_pct_default*16,
                 }, 
-                {
-                    "strategy": "hedgingSpot",
-                    "status": "active",
-                    "instrument": ["PERPETUAL"],
-                    "time_frame": 900,
-                    "side": "sell",
-                    "entry_price": 1000,
-                    "invalidation_entry_price": None,
-                    "take_profit_usd": (1 / 100) / 15,
-                    "take_profit_pct": (1 / 100)/2,
-                    "quantity_discrete": 15,
-                    "averaging": (5 / 100),
-                    "cut_loss_usd": 15,
-                    "cut_loss_pct": (3 / 100),
-                    "halt_minute_before_reorder": 60 * 4,
-                    "equity_risked_usd": 60,
-                    "equity_risked_pct": (1 / 100),
-                }
+                
                 
                 ]
 
