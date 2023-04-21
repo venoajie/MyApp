@@ -148,7 +148,9 @@ class GridPerpetual:
                 if  str_mod.parsing_label(o['label_main'])['transaction_status'] == str_mod.parsing_label(label_main) ['transaction_status']
                         ])
 
-        print (f' open_orders_as_per_main_label  {result}')
+        print (f' 151 label_main  {label_main}')
+        print (f' 152 open_orders_as_per_main_label  {result}')
+        print (self.orders_from_sqlite['list_data_only'])
         return dict(
             detail= result,
             len_result= 0 if result == [] else len (result))
