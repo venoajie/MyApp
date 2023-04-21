@@ -67,155 +67,164 @@ class StreamMarketData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-            # Establish Heartbeat
-            await self.establish_heartbeat()
+            try:
 
-            # Start Authentication Refresh Task
-            self.loop.create_task(self.ws_refresh_auth())
+                # Establish Heartbeat
+                await self.establish_heartbeat()
 
-            currencies = ["ETH", "BTC"]
-            # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
-            currency = "ETH"
+                # Start Authentication Refresh Task
+                self.loop.create_task(self.ws_refresh_auth())
 
-            my_path_instruments = system_tools.provide_path_for_file(
-                "instruments", currency
-            )
-            instruments = pickling.read_data(my_path_instruments)
-            instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
-            instruments_name: list = [o["instrument_name"] for o in instruments_kind]
+                currencies = ["ETH", "BTC"]
+                # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
+                currency = "ETH"
 
-            for instrument in instruments_name:
-
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation="subscribe",
-                        ws_channel=f"incremental_ticker.{instrument}",
-                    )
+                my_path_instruments = system_tools.provide_path_for_file(
+                    "instruments", currency
                 )
+                instruments = pickling.read_data(my_path_instruments)
+                log.error (instruments)
+                instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
+                instruments_name: list = [o["instrument_name"] for o in instruments_kind]
 
-            while self.websocket_client.open:
-                # Receive WebSocket messages
-                message: bytes = await self.websocket_client.recv()
-                message: dict = orjson.loads(message)
-                message_channel: str = None
-                # log.warning(message)
-                if "id" in list(message):
-                    if message["id"] == 9929:
-                        if self.refresh_token is None:
-                            log.debug("Successfully authenticated WebSocket Connection")
+                for instrument in instruments_name:
 
-                        else:
-                            log.info(
-                                "Successfully refreshed the authentication of the WebSocket Connection"
-                            )
-
-                        self.refresh_token = message["result"]["refresh_token"]
-
-                        # Refresh Authentication well before the required datetime
-                        if message["testnet"]:
-                            expires_in: int = 300
-                        else:
-                            expires_in: int = message["result"]["expires_in"] - 240
-
-                        self.refresh_token_expiry_time = datetime.utcnow() + timedelta(
-                            seconds=expires_in
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"incremental_ticker.{instrument}",
                         )
+                    )
 
-                    elif message["id"] == 8212:
-                        # Avoid logging Heartbeat messages
-                        continue
+                while self.websocket_client.open:
+                    # Receive WebSocket messages
+                    message: bytes = await self.websocket_client.recv()
+                    message: dict = orjson.loads(message)
+                    message_channel: str = None
+                    # log.warning(message)
+                    if "id" in list(message):
+                        if message["id"] == 9929:
+                            if self.refresh_token is None:
+                                log.debug("Successfully authenticated WebSocket Connection")
 
-                elif "method" in list(message):
-                    # Respond to Heartbeat Message
-                    if message["method"] == "heartbeat":
-                        await self.heartbeat_response()
+                            else:
+                                log.info(
+                                    "Successfully refreshed the authentication of the WebSocket Connection"
+                                )
 
-                if "params" in list(message):
-                    if message["method"] != "heartbeat":
-                        message_channel = message["params"]["channel"]
-                        # log.info (message_channel)
+                            self.refresh_token = message["result"]["refresh_token"]
 
-                        # one_minute: int = 60000
-                        data_orders: list = message["params"]["data"]
-                        log.debug(data_orders)
-                        currency: str = string_modification.extract_currency_from_text(
-                            message_channel
-                        )
+                            # Refresh Authentication well before the required datetime
+                            if message["testnet"]:
+                                expires_in: int = 300
+                            else:
+                                expires_in: int = message["result"]["expires_in"] - 240
 
-                        instrument_ticker = (message_channel)[19:]
-                        if message_channel == f"incremental_ticker.{instrument_ticker}":
-                            my_path_futures_analysis = system_tools.provide_path_for_file(
-                                "futures_analysis", currency
+                            self.refresh_token_expiry_time = datetime.utcnow() + timedelta(
+                                seconds=expires_in
                             )
-                            my_path_ticker = system_tools.provide_path_for_file(
-                                "ticker", instrument_ticker
+
+                        elif message["id"] == 8212:
+                            # Avoid logging Heartbeat messages
+                            continue
+
+                    elif "method" in list(message):
+                        # Respond to Heartbeat Message
+                        if message["method"] == "heartbeat":
+                            await self.heartbeat_response()
+
+                    if "params" in list(message):
+                        if message["method"] != "heartbeat":
+                            message_channel = message["params"]["channel"]
+                            # log.info (message_channel)
+
+                            # one_minute: int = 60000
+                            data_orders: list = message["params"]["data"]
+                            log.debug(data_orders)
+                            currency: str = string_modification.extract_currency_from_text(
+                                message_channel
                             )
-                            try:
-                                await self.distribute_ticker_result_as_per_data_type(
-                                    my_path_ticker, data_orders, instrument_ticker
-                                )
 
-                                symbol_index: str = f"{currency}_usd"
-                                my_path_index: str = system_tools.provide_path_for_file(
-                                    "index", symbol_index
+                            instrument_ticker = (message_channel)[19:]
+                            if message_channel == f"incremental_ticker.{instrument_ticker}":
+                                my_path_futures_analysis = system_tools.provide_path_for_file(
+                                    "futures_analysis", currency
                                 )
-                                index_price: list = pickling.read_data(my_path_index)
-                                ticker_instrument: list = pickling.read_data(
-                                    my_path_ticker
+                                my_path_ticker = system_tools.provide_path_for_file(
+                                    "ticker", instrument_ticker
                                 )
-                                if ticker_instrument != []:
-                                    # log.error(ticker_instrument)
-                                    instrument_name = ticker_instrument[0][
-                                        "instrument_name"
-                                    ]
-                                    instrument: list = [
-                                        o
-                                        for o in instruments_kind
-                                        if o["instrument_name"] == instrument_name
-                                    ][0]
-
-                                    # combine analysis of each instrument futures result
-                                    tickers = futures_analysis.combining_individual_futures_analysis(
-                                        index_price[0]["price"],
-                                        instrument,
-                                        ticker_instrument[0],
-                                    )
-                                    ticker_all: list = pickling.read_data(
-                                        my_path_futures_analysis
+                                try:
+                                    await self.distribute_ticker_result_as_per_data_type(
+                                        my_path_ticker, data_orders, instrument_ticker
                                     )
 
-                                    if ticker_all == None:
-                                        pickling.replace_data(
-                                            my_path_futures_analysis, ticker_all
-                                        )
-                                    else:
-                                        ticker_all: list = [
-                                            o
-                                            for o in ticker_all
-                                            if o["instrument_name"] != instrument_ticker
+                                    symbol_index: str = f"{currency}_usd"
+                                    my_path_index: str = system_tools.provide_path_for_file(
+                                        "index", symbol_index
+                                    )
+                                    index_price: list = pickling.read_data(my_path_index)
+                                    ticker_instrument: list = pickling.read_data(
+                                        my_path_ticker
+                                    )
+                                    if ticker_instrument != []:
+                                        # log.error(ticker_instrument)
+                                        instrument_name = ticker_instrument[0][
+                                            "instrument_name"
                                         ]
+                                        instrument: list = [
+                                            o
+                                            for o in instruments_kind
+                                            if o["instrument_name"] == instrument_name
+                                        ][0]
 
-                                        #! double file operation. could be further improved
-                                        pickling.replace_data(
-                                            my_path_futures_analysis, ticker_all
+                                        # combine analysis of each instrument futures result
+                                        tickers = futures_analysis.combining_individual_futures_analysis(
+                                            index_price[0]["price"],
+                                            instrument,
+                                            ticker_instrument[0],
+                                        )
+                                        ticker_all: list = pickling.read_data(
+                                            my_path_futures_analysis
                                         )
 
-                                        pickling.append_and_replace_items_based_on_qty(
-                                            my_path_futures_analysis, tickers, 100
-                                        )
+                                        if ticker_all == None:
+                                            pickling.replace_data(
+                                                my_path_futures_analysis, ticker_all
+                                            )
+                                        else:
+                                            ticker_all: list = [
+                                                o
+                                                for o in ticker_all
+                                                if o["instrument_name"] != instrument_ticker
+                                            ]
 
-                            except Exception as error:
-                                system_tools.catch_error_message(error)
-                                system_tools.catch_error_message(
-                                    "WebSocket connection - failed to process data"
-                                )
+                                            #! double file operation. could be further improved
+                                            pickling.replace_data(
+                                                my_path_futures_analysis, ticker_all
+                                            )
 
-                                continue
+                                            pickling.append_and_replace_items_based_on_qty(
+                                                my_path_futures_analysis, tickers, 100
+                                            )
 
-            else:
-                log.info("WebSocket connection has broken.")
+                                except Exception as error:
+                                    system_tools.catch_error_message(error)
+                                    system_tools.catch_error_message(
+                                        "WebSocket connection - failed to process data"
+                                    )
+
+                                    continue
+
+                else:
+                    log.info("WebSocket connection has broken.")
+                    system_tools.catch_error_message(
+                        error, 0.1, "WebSocket connection MARKET has broken"
+                    )
+
+            except Exception as error:
                 system_tools.catch_error_message(
-                    error, 0.1, "WebSocket connection MARKET has broken"
+                    error,
+                    "WebSocket connection - failed to capture market data from Deribit",
                 )
 
     async def distribute_ticker_result_as_per_data_type(
