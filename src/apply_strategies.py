@@ -132,6 +132,7 @@ class ApplyHedgingSpot:
             leverage= position_leverage_and_delta['leverage'],
         )
 
+
     def reading_from_db(
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
@@ -619,11 +620,19 @@ class ApplyHedgingSpot:
         for label in label_transactions:
             log.critical(f" {label}")
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
+            
+            check_orders_with_the_same_labels= grids.open_orders_as_per_main_label(label_main)
+            log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
+            if check_orders_with_the_same_labels ['len'] > 0:
+                cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
+                log.warning(f" cancelled_id {cancelled_id}")
+                await self.cancel_by_order_id(cancelled_id[0])
+                system_tools.sleep_and_restart_program(.1)
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
 
-            open_order_label = open_order_mgt.open_orders_api_basedOn_label(label_main)
+            open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
 
             open_order_label_short = [o for o in open_order_label if o["direction"] == "sell"]
             
