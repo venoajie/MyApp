@@ -82,8 +82,9 @@ class StreamMarketData:
                 my_path_instruments = system_tools.provide_path_for_file(
                     "instruments", currency
                 )
-                instruments = pickling.read_data(my_path_instruments)
-                log.error (instruments)
+                instruments_raw = pickling.read_data(my_path_instruments)
+                instruments = instruments_raw ['result']
+
                 instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
                 instruments_name: list = [o["instrument_name"] for o in instruments_kind]
 
@@ -223,7 +224,7 @@ class StreamMarketData:
 
             except Exception as error:
                 system_tools.catch_error_message(
-                    error,
+                    error, 10,
                     "WebSocket connection - failed to capture market data from Deribit",
                 )
 
