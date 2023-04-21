@@ -845,6 +845,7 @@ class ApplyHedgingSpot:
             
             open_orders_sqlite: list = await self.querying_all('orders_all_json')
             open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+            log.critical (f' open_orders_open_from_db {open_orders_open_from_db}')
             ticker =  self.reading_from_db("ticker", instrument)
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
