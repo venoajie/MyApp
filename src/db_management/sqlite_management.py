@@ -95,7 +95,7 @@ async def create_tables (type:str = None):
         try:           
             for table in tables:
                 
-                await cur.execute(f"DROP TABLE IF EXISTS {table}")
+                #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 
                 create_table = f'''
                                         CREATE 
