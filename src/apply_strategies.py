@@ -272,8 +272,38 @@ class ApplyHedgingSpot:
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> bool:
         """ """
         #log.critical (f' open_orders_from_sub_account_get {len(open_orders_from_sub_account_get)} open_orders_open_byAPI {len(open_orders_open_byAPI)}')
-        return len(open_orders_from_sub_account_get) == len(open_orders_open_byAPI)
+        len_open_orders_from_sub_account_get = len(open_orders_from_sub_account_get)
         
+        len_open_orders_open_byAPI = len(open_orders_open_byAPI)
+        
+        return len_open_orders_from_sub_account_get == len_open_orders_open_byAPI
+        
+    async def resolving_inconsistent_open_orders(self, open_orders_from_sub_account_get, open_orders_open_byAPI) -> None:
+        """ """
+        log.error (open_orders_open_byAPI)
+        log.error (open_orders_from_sub_account_get)
+
+        if open_orders_open_byAPI == []:
+            for order in open_orders_from_sub_account_get:
+                log.debug (order)
+                await sqlite_management.insert_tables('orders_all_json',order)  
+    
+        else:
+            if open_orders_open_byAPI != []:
+                for order in open_orders_open_byAPI:
+                    log.error (order)
+                    where_filter = f"order_id"
+                    order_id = order['order_id']
+                    await sqlite_management.deleting_row('orders_all_json', 
+                                                            "databases/trading.sqlite3",
+                                                            where_filter,
+                                                            "=",
+                                                            order_id)
+                    
+            for order in open_orders_from_sub_account_get:
+                log.warning (order)
+                await sqlite_management.insert_tables('orders_all_json',order)    
+
     async def send_market_order(self, params) -> None:
         """ """
 
@@ -843,6 +873,8 @@ class ApplyHedgingSpot:
                     sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                     size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                     open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_byAPI)
+                    if open_order_is_consistent == False:
+                        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_byAPI)
                     
                     if size_is_consistent and open_order_is_consistent:
                                                     
