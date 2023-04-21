@@ -591,19 +591,34 @@ class ApplyHedgingSpot:
                                    my_trades_open_all, 
                                    my_trades_open,
                                    size_from_positions, 
-                                   open_orders_from_sub_account_get,
-                                   open_orders_open_from_db,
-                                   open_order_mgt,
-                                   grids,
                                    server_time) -> float:
         """ """
                     
+        reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
+
+        my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+        my_trades_open_all: list = my_trades_open_sqlite['all']
+        #log.error (my_trades_open_all)
+        
+        my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+        
+        open_orders_sqlite: list = await self.querying_all('orders_all_json')
+
+        # open orders data
+        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+
+        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+        #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
+
+        # Creating an instance of the open order  class
+        open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
 
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
         for label in label_transactions:
             log.critical(f" {label}")
+            grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
@@ -753,7 +768,6 @@ class ApplyHedgingSpot:
                                         "exit_orders_limit_type"
                                     ]
                                     await self.send_limit_order(exit_order_allowed)
-                                    sleep (5)
 
                                 # new order
                                 if (
@@ -799,7 +813,6 @@ class ApplyHedgingSpot:
                                     exit_order_allowed["type"] = exit_order_allowed["exit_orders_market_type"]
                                     exit_order_allowed["size"] = exit_order_allowed["exit_orders_market_qty"]
                                     await self.send_market_order(exit_order_allowed)
-                                    sleep (5)
                                     
                                 system_tools.sleep_and_restart_program(5)
 
@@ -818,15 +831,30 @@ class ApplyHedgingSpot:
                                    my_trades_open_all, 
                                    my_trades_open,
                                    size_from_positions, 
-                                   open_orders_from_sub_account_get,
-                                   open_orders_open_from_db,
-                                   open_order_mgt,
-                                   grids,
                                    server_time) -> None:
         """ """
 
         try:
+            reading_from_database: dict = await self.reading_from_database()
+        
+            my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+            my_trades_open_all: list = my_trades_open_sqlite['all']
+            #log.error (my_trades_open_all)
+            
+            my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+            
+            open_orders_sqlite: list = await self.querying_all('orders_all_json')
+            open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
             ticker =  self.reading_from_db("ticker", instrument)
+            grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
+            open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
+            
+            open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+            #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
+        
+            # Creating an instance of the my-Trade class
+            my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
+            await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
             
             if ticker !=[]:
 
@@ -911,6 +939,7 @@ class ApplyHedgingSpot:
                                 log.critical(best_bid_prc)
                                 
                                 await self.send_limit_order(params_order)
+                                system_tools.sleep_and_restart_program(.1)
 
                             if params_order["side"] == 'sell'\
                                 and params_order["len_order_limit"] == 0 \
@@ -921,8 +950,7 @@ class ApplyHedgingSpot:
                                 log.critical(f" params_order  {params_order}")
                                 log.critical(best_ask_prc)
                                 await self.send_limit_order(params_order)
-                            
-                            sleep (3)
+                                system_tools.sleep_and_restart_program(.1)
 
                         else:
                                      
@@ -971,7 +999,7 @@ class ApplyHedgingSpot:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
                                     await self.send_limit_order(open_order_allowed)
-                                    sleep (5)                                    
+                                    system_tools.sleep_and_restart_program(.1)
                                 
                                 else:
                                     open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
@@ -987,6 +1015,7 @@ class ApplyHedgingSpot:
                                             
                                         open_order_allowed["entry_price"] = best_ask_prc + 1
                                         await self.send_combo_orders(open_order_allowed)
+                                    system_tools.sleep_and_restart_program(.1)
 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -1017,20 +1046,11 @@ class ApplyHedgingSpot:
                 
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
-                #log.error (my_trades_open_all)
-                
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                
-                open_orders_sqlite: list = await self.querying_all('orders_all_json')
-                
-                log.warning (open_orders_sqlite)
-                #log.warning (my_trades_open)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-                # open orders data
-                open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
 
                 #log.error (open_orders_open_from_db)
                 open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
@@ -1039,11 +1059,7 @@ class ApplyHedgingSpot:
 
                 # Creating an instance of the my-Trade class
                 my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
-
-                # Creating an instance of the open order  class
-                open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
-
-                await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
+                
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
@@ -1061,7 +1077,7 @@ class ApplyHedgingSpot:
                 )
                 #log.error (f'strategy_labels {strategy_labels}')   
                 
-                grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite)  
+                 
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
@@ -1077,9 +1093,6 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions, 
                                    open_orders_from_sub_account_get,
-                                   open_orders_open_from_db,
-                                   open_order_mgt,
-                                   grids,
                                    server_time)
                     
                 # closing transactions
@@ -1094,10 +1107,6 @@ class ApplyHedgingSpot:
                                    my_trades_open_all, 
                                    my_trades_open,
                                    size_from_positions, 
-                                   open_orders_from_sub_account_get,
-                                   open_orders_open_from_db,
-                                   open_order_mgt,
-                                   grids,
                                    server_time)
                 
         except Exception as error:
