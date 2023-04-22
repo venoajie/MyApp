@@ -169,7 +169,6 @@ async def test_get_open_interest_aggregated_ohlc():
 
     assert list(ohlc) == ["code", "msg", "success"]
 
-
 @pytest.mark.asyncio
 async def test_get_open_interest_symbol():
     connection_url: str = "https://open-api.coinglass.com/public/v2/"
@@ -177,7 +176,6 @@ async def test_get_open_interest_symbol():
     open_interest = await get_dbt.get_open_interest_symbol(connection_url, "eth")
 
     assert list(open_interest) == ["code", "msg", "success"]
-
 
 @pytest.mark.asyncio
 async def test_telegram_bot_sendtext():
