@@ -650,3 +650,13 @@ async def tst_is_send_order_allowed():
 
             assert is_send_order_allowed["send_buy_order_allowed"] == False
             assert is_send_order_allowed["send_sell_order_allowed"] == False
+
+
+@pytest.mark.asyncio
+async def test_get_open_interest_symbol():
+    hedged_value = 10
+    notional = 10
+    
+    result = await Strategy.hedged_value_to_notional(
+                hedged_value, notional)
+    assert result == False
