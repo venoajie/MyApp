@@ -887,10 +887,11 @@ class ApplyHedgingSpot:
                     
                     if check_orders_with_the_same_labels ['len_result'] > 1:
                         log.warning( [o for o in open_orders_open_from_db if strategy_label in o['label']  ])
-                        cancelled_id= [o['order_id'] for o in open_orders_open_from_db if strategy_label in o['label']] [0]
-                        log.warning(f" cancelled_id {cancelled_id}")
-                        await self.cancel_by_order_id(cancelled_id)
-                        system_tools.sleep_and_restart_program(1)
+                        cancelled_id= [o['order_id'] for o in open_orders_open_from_db if strategy_label in o['label']]
+                        for id in cancelled_id:
+                            log.warning(f" id {id}")
+                            await self.cancel_by_order_id(id)
+                            system_tools.sleep_and_restart_program(1)
                 
                     # result example: 'hedgingSpot'
                     
