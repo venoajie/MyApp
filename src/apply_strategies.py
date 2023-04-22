@@ -755,9 +755,12 @@ class ApplyHedgingSpot:
                             )
                             len_open_order_label_long = (0 if open_order_label_long == []  
                                                          else len(open_order_label_long))
+                            tp_price = open_trade_strategy_label[0]['price'] - (open_trade_strategy_label[0]['price'] * strategy_attr["take_profit_pct"])
+                            #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
 
                             hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
                             log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
+                            log.critical (f' tp_price {tp_price} {best_bid_prc} {best_bid_prc < tp_price}')
                             if "hedgingSpot" in strategy_attr["strategy"] \
                                 and hedged_value_to_notional > 80 * ONE_PCT:
                                 
@@ -773,7 +776,7 @@ class ApplyHedgingSpot:
 
                                 pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
                                 
-                                tp_price = open_trade_strategy_max_attr_price - pct_prc
+                                #tp_price = open_trade_strategy_max_attr_price - pct_prc
                                 
                                 resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
                                 
