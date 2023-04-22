@@ -47,6 +47,7 @@ Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/applicatio
 MM | [mm](https://medium.com/@degensugarboo/avellaneda-and-stoikov-mm-paper-implementation-b7011b5a7532) |  | | 
 TA | [statistic](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
 TA | [liquidation](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
+TA | [Moving Average](https://algo-trading.medium.com/moving-average-exotic-use-30c15562ceed) |  | | 
 VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40) |  | | 
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
