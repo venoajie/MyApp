@@ -1057,13 +1057,16 @@ class ApplyHedgingSpot:
                 #log.error ([o["label"] for o in my_trades_open])
                 my_trades_open_remove_closed = [] if my_trades_open == [] \
                     else [o for o in my_trades_open if 'closed' not in o["label"]]
-                strategy_labels =  [] if my_trades_open_remove_closed == [] \
+                    
+                transaction_net_label =  [] if my_trades_open_remove_closed == [] \
                     else str_mod.remove_redundant_elements(
                     [
                         str_mod.parsing_label(o["label"])['transaction_net']
                         for o in my_trades_open_remove_closed
-                    ])
-                log.error (f'strategy_labels {strategy_labels}')   
+                    ]
+                    )
+                    
+                log.error (f'transaction_net_label {transaction_net_label}')   
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
@@ -1081,9 +1084,9 @@ class ApplyHedgingSpot:
                                    server_time)
                     
                 # closing transactions
-                if strategy_labels != []:
+                if transaction_net_label != []:
                     await self.closing_transactions( 
-                                   strategy_labels,
+                                   transaction_net_label,
                                    instrument, 
                                    portfolio, 
                                    strategies, 
