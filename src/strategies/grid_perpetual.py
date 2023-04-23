@@ -162,7 +162,7 @@ class GridPerpetual:
         #print (f' 152 open_orders_as_per_main_label  {result}')
         #print (self.orders_from_sqlite['list_data_only'])
         #print ([o  for o in self.orders_from_sqlite  ['all'] ])
-        print (str_mod.parsing_label(label_main) ['transaction_status'])
+        #print (str_mod.parsing_label(label_main) ['transaction_status'])
         return dict(
             detail= result,
             len_result= 0 if result == [] else len (result))
@@ -198,9 +198,9 @@ class GridPerpetual:
         if current_side == 'buy':
             
             net_size = abs(current_net_position_size + current_proposed_size)
-            print (f' buy net_size {net_size}')
-            print (f' buy current_net_position_size {current_net_position_size}')
-            print (f' buy net_size > abs(current_proposed_size) {net_size > abs(current_proposed_size)}')
+           #print (f' buy net_size {net_size}')
+           # print (f' buy current_net_position_size {current_net_position_size}')
+            #print (f' buy net_size > abs(current_proposed_size) {net_size > abs(current_proposed_size)}')
             
             if current_net_position_size >= 0 :
                 tp_factor= 1
