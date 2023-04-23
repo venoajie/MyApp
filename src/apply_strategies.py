@@ -915,10 +915,10 @@ class ApplyHedgingSpot:
                             
                             params_order = await grids.get_params_orders_open (strategy_label, notional)
                             
-                            adjusting_size_open_order = await grids.adjusting_size_open_order (params_order["side"], 
-                                                                                    params_order["size"], net_sum_strategy)
+                            #adjusting_size_open_order = await grids.adjusting_size_open_order (params_order["side"], 
+                            #                                                        params_order["size"], net_sum_strategy)
                             
-                            params_order["size"] = adjusting_size_open_order
+                           # params_order["size"] = adjusting_size_open_order
                             
                             time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                             check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
