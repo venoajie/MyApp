@@ -212,3 +212,41 @@ class GridPerpetual:
                 else:
                     tp_factor= 1
         return tp_factor
+    
+    
+    async def adjusting_waiting_time_open_order(self, current_side, current_proposed_size, current_net_position_size) -> float:
+        """
+        """
+
+        if current_side == 'sell':
+            
+            net_size = abs(current_net_position_size - current_proposed_size)
+            #print (f' sell net_size {net_size}')
+            
+            if current_net_position_size <=0 :
+                waiting_time_factor = 1
+                
+            if current_net_position_size >0:
+                if net_size == abs(current_proposed_size):
+                    waiting_time_factor = 1
+                elif abs(current_net_position_size) > abs(current_proposed_size):
+                    waiting_time_factor = 1
+                else:
+                    waiting_time_factor = 1
+                
+        if current_side == 'buy':
+            
+            net_size = abs(current_net_position_size + current_proposed_size)
+            #print (f' buy net_size {net_size}')
+            
+            if current_net_position_size >= 0 :
+                waiting_time_factor = 1
+            if current_net_position_size <0:
+                if  abs(current_net_position_size) == net_size:
+                    waiting_time_factor = 1
+                elif net_size > abs(current_proposed_size):
+                    waiting_time_factor = 1
+                else:
+                    waiting_time_factor = 1
+        return waiting_time_factor
+    
