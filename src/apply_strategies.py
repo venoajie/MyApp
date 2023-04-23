@@ -186,7 +186,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
 
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
-        log.warning (f'CANCEL_by_order_id {result}')
+        log.info (f'CANCEL_by_order_id {result}')
         return result
 
     async def current_server_time(self) -> float:
@@ -711,8 +711,9 @@ class ApplyHedgingSpot:
                                     and is_labelled == False:                                  
                                                                             
                             params = await grids.get_params_orders_closed (open_trade_strategy_label,
-                                                                        best_bid_prc,
-                                                                        best_ask_prc)
+                                                                           net_sum_strategy,
+                                                                           best_bid_prc,
+                                                                           best_ask_prc)
                             log.debug (f'params {params}')
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
@@ -909,27 +910,20 @@ class ApplyHedgingSpot:
                     if size_is_consistent and open_order_is_consistent:
                                                     
                         open_trade_strategy = [o for o in my_trades_open if strategy_label in o["label"]]  
-                        
-                        #log.critical(f" strategy_label  {strategy_label} open_trade_strategy  {open_trade_strategy}")    
-                                                
+                                                                        
                         if "every" in strategy_attr["strategy"]:
                             
                             params_order = await grids.get_params_orders_open (strategy_label, notional)
-                            log.warning(f" params_order 1  {params_order}")
                             
                             adjusting_size_open_order = await grids.adjusting_size_open_order (params_order["side"], 
                                                                                     params_order["size"], net_sum_strategy)
                             
                             params_order["size"] = adjusting_size_open_order
-                            log.critical(f" params_order adjusting_size_open_order  {params_order}")
                             
                             time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                             check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
 
                             if check_cancellation !=None:
-                                log.critical(f" check_cancellation  {check_cancellation}")
-                                log.critical(check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                                    and check_cancellation['open_order_id'] !=[])
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
@@ -939,24 +933,19 @@ class ApplyHedgingSpot:
                             
                             if open_trade_strategy !=[]:
                                 max_transaction_time = max([o['timestamp'] for o in open_trade_strategy])
-                                #log.critical(f" minimum_transaction_time  {max_transaction_time}")
+
                                 delta_time: int = server_time - max_transaction_time
                                 exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
                                 
-                            #log.critical(f" exceed_threshold_time_for_reorder  {exceed_threshold_time_for_reorder}")
-
                             label_open = label_numbering.labelling("open", strategy_label)
                             params_order.update({"label": label_open})
                             params_order.update({"instrument": instrument})
-                            #log.critical(f" params_order A {params_order}")
 
                             if params_order["side"] == 'buy'\
                                 and params_order["len_order_limit"] == 0\
                                     and exceed_threshold_time_for_reorder:
                                     
                                 params_order["entry_price"] = best_bid_prc - .05
-                                log.critical(f" params_order  {params_order}")
-                                log.critical(best_bid_prc)
                                 
                                 await self.send_limit_order(params_order)
                                 system_tools.sleep_and_restart_program(1)
@@ -967,8 +956,6 @@ class ApplyHedgingSpot:
                                     
                                 params_order["entry_price"] = best_ask_prc +  .05
                                 
-                                log.critical(f" params_order  {params_order}")
-                                log.critical(best_ask_prc)
                                 await self.send_limit_order(params_order)
                                 system_tools.sleep_and_restart_program(1)
 
@@ -977,9 +964,6 @@ class ApplyHedgingSpot:
                             check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
 
                             if check_cancellation !=None:
-                                log.critical(f" check_cancellation  {check_cancellation}")
-                                log.critical(check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                                    and check_cancellation['open_order_id'] !=[])
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
@@ -1015,28 +999,13 @@ class ApplyHedgingSpot:
                                 open_order_allowed["take_profit_usd"] = strategy_attr["take_profit_usd"]
                                     
                                 log.warning(f" open_order_allowed 2  {open_order_allowed}")
+                                
                                 if "hedgingSpot" in strategy_attr["strategy"]:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
                                     await self.send_limit_order(open_order_allowed)
                                     system_tools.sleep_and_restart_program(1)
                                 
-                                else:
-                                    open_order_allowed["label_closed_numbered"] = open_order_allowed["label_closed"]
-                                    
-                                    if open_order_allowed["side"] == 'buy'\
-                                        and open_order_allowed["entry_price"] < best_bid_prc :
-                                            
-                                        open_order_allowed["entry_price"] = best_bid_prc - 1
-                                        await self.send_combo_orders(open_order_allowed)
-
-                                    if open_order_allowed["side"] == 'sell'\
-                                        and best_ask_prc > open_order_allowed["entry_price"] :
-                                            
-                                        open_order_allowed["entry_price"] = best_ask_prc + 1
-                                        await self.send_combo_orders(open_order_allowed)
-                                    system_tools.sleep_and_restart_program(1)
-
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
