@@ -6,6 +6,7 @@
 
 - [ ] Create multiple environments (for production and testing)  
 - [ ] Add integration tests  
+- [ ] Smart grid trading
 - [ ] Fully implementing asynchronous  
   - [ ] Using task  
   - [ ] Scheduling  
@@ -18,6 +19,7 @@
 
 - [x] Automatic **hedging** for equity balance in crypto spot  
 - [x] Categorised trade and open orders based on their labels  
+- [x] Basic grid trading
 
 ### Reading Material/to be implemented 
 - Programming related  
