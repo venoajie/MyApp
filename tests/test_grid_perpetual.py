@@ -57,6 +57,19 @@ grid_act_trd_none = grid.GridPerpetual(my_trades_open,
                                        )
 @pytest.mark.asyncio
 async def test_get_params_orders_closed():
+    best_bid_prc= 1869.24
+    best_ask_prc= 1869.24
+    active_trade_item = [{'trade_seq': 123753040, 'trade_id': 'ETH-168130917', 'timestamp': 1682245158199, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1869.15, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-33022684688', 'mmp': False, 'matching_id': None, 'mark_price': 1869.24, 'liquidity': 'M', 'label': 'every5mtestShort-open-1682245078601', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1869.24, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 1.0}]
+    
+    current_net_position_size= 1
+    result = await grids.get_params_orders_closed(active_trade_item, current_net_position_size, best_bid_prc, best_ask_prc)   
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every5mtestShort-closed-1682245078601', 'side': 'buy', 'size': 1.0, 'type': 'limit', 'price_threshold': 1865.4117, 'len_order_limit': 0, 'entry_price': 1869.24, 'order_buy': False, 'order_sell': False}
+    
+    current_net_position_size= 6
+    result = await grids.get_params_orders_closed(active_trade_item, current_net_position_size, best_bid_prc, best_ask_prc)   
+    assert result  ==  {'instrument': 'ETH-PERPETUAL', 'label': 'every5mtestShort-closed-1682245078601', 'side': 'buy', 'size': 1.0, 'type': 'limit', 'price_threshold': 1861.6734000000001, 'len_order_limit': 0, 'entry_price': 1869.24, 'order_buy': False, 'order_sell': False}
+    
+    
     best_bid_prc= 2095
     best_ask_prc= 2160
     active_trade_item = [{'trade_seq': 122793232, 'trade_id': 'ETH-166947107', 'timestamp': 1681447691857, 'tick_direction': 2, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': -9.23e-05, 'price': 2116.85, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32867483737', 'mmp': False, 'matching_id': None, 'mark_price': 2117.09, 'liquidity': 'M', 'label': 'every4hoursLong-open-1681447421981', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 2117.01, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'buy', 'api': True, 'amount': 3.0}]
