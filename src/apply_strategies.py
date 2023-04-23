@@ -1063,7 +1063,7 @@ class ApplyHedgingSpot:
                         str_mod.parsing_label(o["label"])['transaction_net']
                         for o in my_trades_open_remove_closed
                     ])
-                #log.error (f'strategy_labels {strategy_labels}')   
+                log.error (f'strategy_labels {strategy_labels}')   
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
