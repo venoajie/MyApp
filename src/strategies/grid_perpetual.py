@@ -25,7 +25,7 @@ class GridPerpetual:
     my_trades_open: list
     orders_from_sqlite: list
 
-    async def get_params_orders_closed(self, active_trade_item, best_bid_prc, best_ask_prc) -> list:
+    async def get_params_orders_closed(self, active_trade_item, current_net_position_size, best_bid_prc, best_ask_prc) -> list:
         """
         """
         params_order = {}
@@ -56,9 +56,12 @@ class GridPerpetual:
             #get qty open order per label
             open_orders_under_same_label_status = await self.open_orders_as_per_main_label (label_transaction)
             len_order_limit= open_orders_under_same_label_status['len_result']
+            size= trade_item['amount']
             params_order.update({"len_order_limit": len_order_limit})
                     
             if side_transaction == "buy":
+                adj_tp= await self.adjusting_tp_closed_order(side_transaction, size, current_net_position_size) 
+                price_margin =  price_transaction * strategy_attr["take_profit_pct"] * adj_tp
                 side = "sell"
                 price_threshold = price_transaction + price_margin
                 order_buy = False
@@ -66,6 +69,8 @@ class GridPerpetual:
                 params_order.update({"entry_price": best_ask_prc})
                 
             if side_transaction == "sell":
+                adj_tp= await self.adjusting_tp_closed_order(side_transaction, size, current_net_position_size) 
+                price_margin =  price_transaction * strategy_attr["take_profit_pct"]  * adj_tp
                 side = "buy"
                 price_threshold =  price_transaction - price_margin
                 order_sell = False
@@ -74,7 +79,7 @@ class GridPerpetual:
             
             params_order.update({"price_threshold": price_threshold})
             params_order.update({"side": side})
-            params_order.update({"size": trade_item['amount']})
+            params_order.update({"size": size})
             
             params_order.update({"type": 'limit'})
             params_order.update({"instrument": trade_item['instrument_name']})
@@ -101,7 +106,7 @@ class GridPerpetual:
         
         return params_order
 
-    async def adjusting_size_open_order(self, current_side, current_proposed_size, current_net_position_size) -> list:
+    async def adjusting_size_open_order(self, current_side, current_proposed_size, current_net_position_size) -> float:
         """
         """
         #print (f' current_side {current_side}')
@@ -153,8 +158,8 @@ class GridPerpetual:
             else ([o['label'] for o in self.orders_from_sqlite  ['list_data_only'] \
                 if  str_mod.parsing_label(o['label'])['main'] == str_mod.parsing_label(label_main) ['main'] ])
             
-        print (f' 151 label_main  {label_main}')
-        print (f' 152 open_orders_as_per_main_label  {result}')
+        #print (f' 151 label_main  {label_main}')
+        #print (f' 152 open_orders_as_per_main_label  {result}')
         #print (self.orders_from_sqlite['list_data_only'])
         #print ([o  for o in self.orders_from_sqlite  ['all'] ])
         print (str_mod.parsing_label(label_main) ['transaction_status'])
@@ -170,3 +175,40 @@ class GridPerpetual:
         strategy_label_main = str_mod.parsing_label(label_transaction)['main']
         
         return f"{strategy_label_main}-closed-{strategy_label_int}"
+
+    async def adjusting_tp_closed_order(self, current_side, current_proposed_size, current_net_position_size) -> dict:
+        """
+        """
+        if current_side == 'sell':
+            
+            net_size = abs(current_net_position_size - current_proposed_size)
+            #print (f' sell net_size {net_size}')
+            
+            if current_net_position_size <=0 :
+                tp_factor= 1
+                
+            if current_net_position_size >0:
+                if net_size == abs(current_proposed_size):
+                    tp_factor= 1
+                elif abs(current_net_position_size) > abs(current_proposed_size):
+                    tp_factor= 2
+                else:
+                    tp_factor= 1
+                
+        if current_side == 'buy':
+            
+            net_size = abs(current_net_position_size + current_proposed_size)
+            print (f' buy net_size {net_size}')
+            print (f' buy current_net_position_size {current_net_position_size}')
+            print (f' buy net_size > abs(current_proposed_size) {net_size > abs(current_proposed_size)}')
+            
+            if current_net_position_size >= 0 :
+                tp_factor= 1
+            if current_net_position_size <0:
+                if  abs(current_net_position_size) == net_size:
+                    tp_factor= 1
+                elif net_size > abs(current_proposed_size):
+                    tp_factor= 2
+                else:
+                    tp_factor= 1
+        return tp_factor
