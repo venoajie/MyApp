@@ -170,9 +170,8 @@ class StreamMarketData:
                                     now_unix = time_modification.convert_time_to_unix (now_utc)
                                     start_timestamp = now_unix - 60000 * qty_candles
                                     
-                                    ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument}&resolution={resolution}&start_timestamp={start_timestamp}')
+                                    ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name=ETH-PERPETUAL&resolution={resolution}&start_timestamp={start_timestamp}')
                                     try:            
-                                        log.warning (instrument)
 
                                         ohlc_request= requests.get(ohlc_endPoint).json()#['result']
                                         log.warning (ohlc_request)
