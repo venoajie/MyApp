@@ -443,3 +443,23 @@ async def deleting_row (table: str = 'mytrades',
         print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+
+async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
+                          database: str = "databases/trading.sqlite3", 
+                          operator='MAX',  
+                          )->list:
+
+    '''
+    ''' 
+                
+    try:
+        query_table = f'SELECT {operator}(tick) FROM {table}' 
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            result= await db.execute(query_table)
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+    return result
