@@ -2,7 +2,7 @@
 
 # built ins
 import asyncio
-from time import sleep
+#from time import sleep
 #import orjson
 
 # installed
@@ -51,6 +51,26 @@ class ApplyHedgingSpot:
                 self.connection_url, self.client_id, self.client_secret, self.currency
             )
 
+    async def get_account_balances_and_transactions_from_exchanges(self) -> list:
+        """ """
+
+        try:
+            private_data = await self.get_private_data()
+            result_sub_account: dict = await private_data.get_subaccounts()
+            result_open_orders: dict = await private_data.get_open_orders_byCurrency()
+            result_account_summary: dict =  await private_data.get_account_summary()
+            result_get_positions: dict =  await private_data.get_positions()
+
+        except Exception as error:
+            catch_error(error)
+            
+        return dict(
+            sub_account= result_sub_account["result"],
+            open_orders= result_open_orders["result"],
+            account_summary= result_account_summary["result"],
+            get_positions= result_get_positions["result"],
+            open_orders_instance= open_orders_management.MyOrders(result_open_orders["result"]))
+        
     async def get_sub_accounts(self) -> list:
         """ """
 
@@ -82,15 +102,6 @@ class ApplyHedgingSpot:
         account_summary: dict = await private_data.get_account_summary()
 
         return account_summary["result"]
-
-    async def get_positions(self) -> list:
-        """ """
-
-        private_data = await self.get_private_data()
-
-        result: dict = await private_data.get_positions()
-
-        return result["result"]
 
     async def send_combo_orders(self, params) -> None:
         """ """
@@ -1140,7 +1151,10 @@ async def main():
         server_time = await syn.current_server_time()
 
         # resupply sub account db
+        account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
+        sub_accounts = account_balances_and_transactions_from_exchanges ['sub_account']
         sub_accounts = await syn.get_sub_accounts()
+        log.error (f' sub_accounts {sub_accounts}')
 
         my_path_sub_account = system_tools.provide_path_for_file(
             "sub_accounts", currency
