@@ -610,7 +610,7 @@ class ApplyHedgingSpot:
         #log.error (f'label_transaction_net {label_transaction_net}')
         #log.error ([o  for o in label_transaction_net])
 
-        label_transaction_main = ([str_mod.parsing_label(o) for o in label_transaction_net])
+        label_transaction_main = ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
 
         log.error (f'label_transaction_main {label_transaction_main}')   
         for label in label_transaction_main:
