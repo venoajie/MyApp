@@ -179,7 +179,7 @@ class StreamMarketData:
                                         
                                         for data in ohlc_request:
                                             item_data= ohlc_request[data]
-                                            len_item_data= len(len_item_data)
+                                            len_item_data= len(item_data)
                                             log.error (data)
                                             log.error (item_data)
                                             log.error (len_item_data)
