@@ -606,6 +606,23 @@ class ApplyHedgingSpot:
                     
         reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
+
+        my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+        my_trades_open_all: list = my_trades_open_sqlite['all']
+        #log.error (my_trades_open_all)
+        
+        my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+        
+        open_orders_sqlite: list = await self.querying_all('orders_all_json')
+
+        # open orders data
+        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+
+        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+        #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
+
+        # Creating an instance of the open order  class
+        open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)        
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
@@ -623,23 +640,13 @@ class ApplyHedgingSpot:
                 transaction =  [o for o in my_trades_open if o["price"] == min_price]
             
             log.error (f'transaction {transaction}')   
+            
+            label = [
+                        str_mod.parsing_label(o["label"])['transaction_net']
+                        for o in transaction
+                    ][0]
 
-        my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
-        my_trades_open_all: list = my_trades_open_sqlite['all']
-        #log.error (my_trades_open_all)
-        
-        my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-        
-        open_orders_sqlite: list = await self.querying_all('orders_all_json')
-
-        # open orders data
-        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
-
-        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
-        #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
-
-        # Creating an instance of the open order  class
-        open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
+            log.error (f'label AAAAAAAAAAAAAAAA {label}')   
 
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
         for label in label_transaction_net:
