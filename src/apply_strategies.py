@@ -780,9 +780,7 @@ class ApplyHedgingSpot:
                                 open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
 
                                 pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
-                                
-                                #tp_price = open_trade_strategy_max_attr_price - pct_prc
-                                
+                                                                
                                 resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
                                 
                                 log.critical (f' exit_order_allowed {exit_order_allowed}')
