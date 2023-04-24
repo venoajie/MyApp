@@ -628,27 +628,23 @@ class ApplyHedgingSpot:
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
 
         for label in label_transaction_main:
-            log.error (f'label {label}')   
+
             get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
             min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
 
-            log.error (f'max_price {max_price} min_price {min_price}') 
             if 'Short' in label or 'hedging' in label:
                 transaction =  [o for o in my_trades_open if o["price"] == max_price]
             if 'Long' in label:
                 transaction =  [o for o in my_trades_open if o["price"] == min_price]
-            
-            log.error (f'transaction {transaction}')   
-            
+                        
             label = [
                         str_mod.parsing_label(o["label"])['transaction_net']
                         for o in transaction
                     ][0]
 
-            log.error (f'label AAAAAAAAAAAAAAAA {label}')   
-
             log.critical(f" {label}")
+            log.error (f'max_price {max_price} min_price {min_price}') 
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
@@ -703,7 +699,6 @@ class ApplyHedgingSpot:
                     notional: float = await self.compute_notional_value(index_price, equity)
                 
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, open_trade_strategy_label[0]['label'] )
-                    
                                                 
                     log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
