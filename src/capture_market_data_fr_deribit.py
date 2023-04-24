@@ -157,7 +157,7 @@ class StreamMarketData:
                             
                             if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                 
-                                last_tick_fr_sqlite= await sqlite_management.get_last_tick()
+                                last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
                                 last_tick_fr_data_orders= data_orders['tick']
 
                                 if last_tick_fr_sqlite!= None \
