@@ -209,7 +209,8 @@ async def create_tables (type:str = None):
                                                     ) 
                                                     VIRTUAL;
                                                     
-                                                    '''           
+                                                    '''        
+                                                       
                     create_table_alter_trade_seq = f''' 
                                                     ALTER 
                                                     TABLE 
@@ -219,6 +220,20 @@ async def create_tables (type:str = None):
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (JSON_EXTRACT (data, '$.trade_seq'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''         
+                       
+                    create_table_alter_price = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        price REAL  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (JSON_EXTRACT (data, '$.price'))
                                                     ) 
                                                     VIRTUAL;
                                                     
@@ -235,6 +250,8 @@ async def create_tables (type:str = None):
                     await cur.execute (f'{create_table_alter_label_strategy}')
                     print (f'create virtual columns {create_table_alter_sum_pos}')
                     await cur.execute (f'{create_table_alter_sum_pos}')
+                    print (f'create virtual columns {create_table_alter_price}')
+                    await cur.execute (f'{create_table_alter_price}')
                     
                     create_index = f'''CREATE INDEX order_id ON  {table} (order_id);'''
                     
@@ -444,8 +461,7 @@ async def deleting_row (table: str = 'mytrades',
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
 
-
-async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
+async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
                           database: str = "databases/trading.sqlite3", 
                           operator='MAX',  
                           )->list:
@@ -470,3 +486,30 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
         return 0 if result== None else int(result[0] * 1)
     except:
         return None
+    
+    
+async def count_rows (table: str = 'ohlc1_eth_perp_json',
+                      database: str = "databases/trading.sqlite3")->list:
+
+    '''
+    ''' 
+                    
+    try:
+        query_table = f'SELECT COUNT (tick) FROM {table}' 
+
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db= await db.execute(query_table)
+            
+            async with db  as cur:
+                result =  (await cur.fetchone())
+
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
+
+    try:
+        return 0 if result== None else int(result)
+    except:
+        return None
+    
+    
