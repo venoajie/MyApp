@@ -149,12 +149,12 @@ class StreamMarketData:
 
                             # one_minute: int = 60000
                             data_orders: list = message["params"]["data"]
-                            log.debug(data_orders)
+                            #log.debug(data_orders)
                             currency: str = string_modification.extract_currency_from_text(
                                 message_channel
                             )
                             if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                log.warning(message)
+                                log.warning(data_orders)
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
