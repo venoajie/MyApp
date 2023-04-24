@@ -380,7 +380,14 @@ def test_get_strings_before_character_and_parsing_label():
     label = "hedgingSpot-1681899738961"
     result = "1681899738961"
     assert (string_modification.parsing_label(label) ['int'] == result)
+        
+    label = "supplyDemandLong60B-1677903684425"
+    result = "supplyDemandLong60B"
+    assert (string_modification.parsing_label(label) ['main'] == result)
     
+    label = "hedgingSpot-1671189554374"
+    result = "hedgingSpot"
+    assert (string_modification.parsing_label(label) ['main'] == result)
     
     label = "supplyDemandLong60B-closed-1677903684425"
     result = "supplyDemandLong60B"
