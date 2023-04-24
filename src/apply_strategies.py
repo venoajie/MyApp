@@ -592,7 +592,7 @@ class ApplyHedgingSpot:
         return determine_size_and_side
 
     async def closing_transactions(self, 
-                                   label_transactions,
+                                   label_transaction_net,
                                    instrument, 
                                    portfolio, 
                                    strategies, 
@@ -607,6 +607,20 @@ class ApplyHedgingSpot:
         reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
+
+        label_transaction_main =  str_mod.remove_redundant_elements(
+            [str_mod.parsing_label(o["label"])['main']
+                for o in label_transaction_net])
+
+        log.error (f'label_transaction_main {label_transaction_main}')   
+        for label in label_transaction_main:
+            log.error (f'label {label}')   
+            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_all if o["label"] == label]
+            max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
+            min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
+            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_all if o["label"] == label]
+            log.error (f'get_prices_in_label_transaction_main {get_prices_in_label_transaction_main}') 
+            get_max_value_in_label_transaction_main_short_side =  [o for o in my_trades_open_all if o["price"] == label]
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
         my_trades_open_all: list = my_trades_open_sqlite['all']
@@ -626,7 +640,7 @@ class ApplyHedgingSpot:
         open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
 
         # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
-        for label in label_transactions:
+        for label in label_transaction_net:
             log.critical(f" {label}")
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
@@ -1057,17 +1071,7 @@ class ApplyHedgingSpot:
                 #log.error ([o["label"] for o in my_trades_open])
                 my_trades_open_remove_closed_labels = [] if my_trades_open == [] \
                     else [o for o in my_trades_open if 'closed' not in o["label"]]
-                    
-                label_transaction_main =  [] if my_trades_open_remove_closed_labels == [] \
-                    else str_mod.remove_redundant_elements(
-                    [
-                        str_mod.parsing_label(o["label"])['main']
-                        for o in my_trades_open_remove_closed_labels
-                    ]
-                    )
-
-                log.error (f'label_transaction_main {label_transaction_main}')   
-                    
+                                        
                 label_transaction_net =  [] if my_trades_open_remove_closed_labels == [] \
                     else str_mod.remove_redundant_elements(
                     [
@@ -1075,7 +1079,6 @@ class ApplyHedgingSpot:
                         for o in my_trades_open_remove_closed_labels
                     ]
                     )
-                    
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
