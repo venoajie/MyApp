@@ -71,17 +71,6 @@ class ApplyHedgingSpot:
             get_positions= result_get_positions["result"],
             open_orders_instance= open_orders_management.MyOrders(result_open_orders["result"]))
         
-    async def get_sub_accounts(self) -> list:
-        """ """
-
-        try:
-            private_data = await self.get_private_data()
-            result: dict = await private_data.get_subaccounts()
-
-        except Exception as error:
-            catch_error(error)
-        return result["result"]
-
     async def get_open_orders_from_exchange(self) -> list:
         """ """
         private_data = await self.get_private_data()
@@ -210,8 +199,13 @@ class ApplyHedgingSpot:
     ) -> float:
         """ """
         three_minute = ONE_MINUTE* 3
+        account_balances_and_transactions_from_exchanges= await self.get_account_balances_and_transactions_from_exchanges()
+        open_orders_from_exch = account_balances_and_transactions_from_exchanges['open_orders']
+        log.error (f' open_orders_from_exch {open_orders_from_exch}')
 
         open_orders_from_exch = await self.get_open_orders_from_exchange()
+        log.warning (f' open_orders_from_exch {open_orders_from_exch}')
+        
         open_order_mgt = open_orders_management.MyOrders(open_orders_from_exch)
         open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
         open_order_mgt = open_orders_management.MyOrders(open_order_label)
@@ -1153,9 +1147,6 @@ async def main():
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
         sub_accounts = account_balances_and_transactions_from_exchanges ['sub_account']
-        log.warning (f' sub_accounts {sub_accounts}')
-        sub_accounts = await syn.get_sub_accounts()
-        log.error (f' sub_accounts {sub_accounts}')
 
         my_path_sub_account = system_tools.provide_path_for_file(
             "sub_accounts", currency
