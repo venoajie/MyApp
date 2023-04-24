@@ -71,18 +71,6 @@ class ApplyHedgingSpot:
             get_positions= result_get_positions["result"],
             open_orders_instance= open_orders_management.MyOrders(result_open_orders["result"]))
         
-    async def get_open_orders_from_exchange(self) -> list:
-        """ """
-        private_data = await self.get_private_data()
-        open_ordersREST: dict = await private_data.get_open_orders_byCurrency()
-        return open_ordersREST["result"]
-
-    async def open_orders_from_exchange(self) -> object:
-        """ """
-        open_ordersREST: list = await self.get_open_orders_from_exchange()
-
-        return open_orders_management.MyOrders(open_ordersREST)
-
     async def get_account_summary(self) -> list:
         """ """
 
@@ -201,10 +189,6 @@ class ApplyHedgingSpot:
         three_minute = ONE_MINUTE* 3
         account_balances_and_transactions_from_exchanges= await self.get_account_balances_and_transactions_from_exchanges()
         open_orders_from_exch = account_balances_and_transactions_from_exchanges['open_orders']
-        log.error (f' open_orders_from_exch {open_orders_from_exch}')
-
-        open_orders_from_exch = await self.get_open_orders_from_exchange()
-        log.warning (f' open_orders_from_exch {open_orders_from_exch}')
         
         open_order_mgt = open_orders_management.MyOrders(open_orders_from_exch)
         open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
