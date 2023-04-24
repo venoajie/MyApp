@@ -608,7 +608,7 @@ class ApplyHedgingSpot:
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
-        label_transaction_main =  str_mod.remove_redundant_elements(
+        label_transaction_main = (
             [str_mod.parsing_label(o["label"])['main']
                 for o in label_transaction_net])
 
