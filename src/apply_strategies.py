@@ -1055,18 +1055,27 @@ class ApplyHedgingSpot:
                 
                 #log.error (my_trades_open)
                 #log.error ([o["label"] for o in my_trades_open])
-                my_trades_open_remove_closed = [] if my_trades_open == [] \
+                my_trades_open_remove_closed_labels = [] if my_trades_open == [] \
                     else [o for o in my_trades_open if 'closed' not in o["label"]]
                     
-                transaction_net_label =  [] if my_trades_open_remove_closed == [] \
+                label_transaction_main =  [] if my_trades_open_remove_closed_labels == [] \
+                    else str_mod.remove_redundant_elements(
+                    [
+                        str_mod.parsing_label(o["label"])['main']
+                        for o in my_trades_open_remove_closed_labels
+                    ]
+                    )
+
+                log.error (f'label_transaction_main {label_transaction_main}')   
+                    
+                label_transaction_net =  [] if my_trades_open_remove_closed_labels == [] \
                     else str_mod.remove_redundant_elements(
                     [
                         str_mod.parsing_label(o["label"])['transaction_net']
-                        for o in my_trades_open_remove_closed
+                        for o in my_trades_open_remove_closed_labels
                     ]
                     )
                     
-                log.error (f'transaction_net_label {transaction_net_label}')   
             
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
@@ -1084,9 +1093,9 @@ class ApplyHedgingSpot:
                                    server_time)
                     
                 # closing transactions
-                if transaction_net_label != []:
+                if label_transaction_net != []:
                     await self.closing_transactions( 
-                                   transaction_net_label,
+                                   label_transaction_net,
                                    instrument, 
                                    portfolio, 
                                    strategies, 
