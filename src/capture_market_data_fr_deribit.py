@@ -97,10 +97,11 @@ class StreamMarketData:
                         )
                     )
 
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation="subscribe",
-                            ws_channel=f"chart.trades.{instrument}.1",
+                    if 'PERPETUAL' in instrument:
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.1",
                         )
                     )
 
@@ -144,7 +145,7 @@ class StreamMarketData:
                     if "params" in list(message):
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
-                            # log.info (message_channel)
+                            log.info (message_channel)
 
                             # one_minute: int = 60000
                             data_orders: list = message["params"]["data"]
