@@ -161,7 +161,7 @@ class StreamMarketData:
 
                                 log.warning(last_tick_fr_sqlite== last_tick_fr_data_orders)
                                 log.warning(data_orders)
-                                if last_tick_fr_sqlite== last_tick_fr_data_orders:
+                                if last_tick_fr_sqlite!= None and last_tick_fr_sqlite== last_tick_fr_data_orders:
                                     where_filter = f"tick"
                                     await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
                                                             "databases/trading.sqlite3",
