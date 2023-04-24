@@ -452,12 +452,15 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
 
     '''
     ''' 
-                
+                    
     try:
         query_table = f'SELECT {operator} (tick) FROM {table}' 
         print (query_table)
         async with  aiosqlite.connect(database, isolation_level=None) as db:
-            result= await db.execute(query_table)
+            db= await db.execute(query_table)
+            
+            async with db  as cur:
+                result =  (await cur.fetchall())
             print (result)
     except Exception as error:
         print (f'querying_table {error}')   
