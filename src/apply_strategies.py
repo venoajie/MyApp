@@ -1163,7 +1163,8 @@ async def main():
             server_time, label_hedging
         )
         
-        await count_and_delete_ohlc_rows(190)
+        # capping sqlite rows
+        await count_and_delete_ohlc_rows()
 
     except Exception as error:
         catch_error(error, 30)
