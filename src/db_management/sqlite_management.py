@@ -455,16 +455,16 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
                     
     try:
         query_table = f'SELECT {operator} (tick) FROM {table}' 
-        print (query_table)
+
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             db= await db.execute(query_table)
             
             async with db  as cur:
                 result =  (await cur.fetchall())
-            print (result)
+
     except Exception as error:
         print (f'querying_table {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
 
-    return result[0] * 1
+    return int(result[0] * 1)
