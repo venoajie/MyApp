@@ -607,6 +607,8 @@ class ApplyHedgingSpot:
         reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
+        log.error (f'label_transaction_net {label_transaction_net}')
+        log.error ([o  for o in label_transaction_net])
 
         label_transaction_main = (
             [str_mod.parsing_label(o ['main'])
