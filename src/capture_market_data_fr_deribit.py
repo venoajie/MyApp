@@ -157,8 +157,8 @@ class StreamMarketData:
                             if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                 
                                 last_tick= await sqlite_management.get_last_tick()
-                                await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                 log.warning(last_tick)
+                                await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                 log.warning(data_orders)
                                 
 
