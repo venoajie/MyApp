@@ -510,7 +510,7 @@ async def count_rows (table: str = 'ohlc1_eth_perp_json',
         await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
 
     try:
-        return 0 if result== None else int(result)
+        return 0 if result== None else int(result[0])
     except:
         return None
     
