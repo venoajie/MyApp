@@ -11,7 +11,7 @@ def catch_error(error, idle: int = None) -> list:
     
 async  def main() -> list:
     """ """
-    #await sqlite_management.create_dataBase_sqlite('databases/trading.sqlite3')
+    await sqlite_management.create_dataBase_sqlite('databases/trading.sqlite3')
 
     await sqlite_management.create_tables()
     #query=await sqlite_management.querying_table('myTradesOpen', 'state', '=', 'filled')
