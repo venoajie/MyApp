@@ -174,8 +174,11 @@ class StreamMarketData:
                                     try:            
 
                                         ohlc_request= requests.get(ohlc_endPoint).json()['result']
-                                        log.warning (ohlc_request)
+                                        #log.warning (ohlc_request)
+                                        result ={}
+                                        
                                         for data in ohlc_request:
+                                            log.error (data)
                                             await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
 
                                     except Exception as error:
