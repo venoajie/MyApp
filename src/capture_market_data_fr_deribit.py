@@ -15,6 +15,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering
 from market_understanding import futures_analysis
+from db_management import sqlite_management
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
@@ -154,7 +155,9 @@ class StreamMarketData:
                                 message_channel
                             )
                             if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                await sqlite_management.insert_tables('my_trades_all_json',trades)
                                 log.warning(data_orders)
+                                
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
