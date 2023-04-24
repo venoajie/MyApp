@@ -609,7 +609,7 @@ class ApplyHedgingSpot:
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = (
-            [str_mod.parsing_label(o["label"])['main']
+            [str_mod.parsing_label(o ['main'])
                 for o in label_transaction_net])
 
         log.error (f'label_transaction_main {label_transaction_main}')   
