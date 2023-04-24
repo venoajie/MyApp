@@ -120,12 +120,12 @@ class StreamAccountData:
                         server_time = await syn.current_server_time()
 
                         if self.refresh_token is None:
-                            await syn.get_sub_accounts()
+                            #await syn.get_sub_accounts()
                             log.debug("Successfully authenticated WebSocket Connection")
 
                         else:
                             # resupply sub account db
-                            await syn.get_sub_accounts()
+                            #await syn.get_sub_accounts()
 
                             server_time = await syn.current_server_time()
 
