@@ -159,7 +159,27 @@ class StreamMarketData:
                                 
                                 last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
                                 last_tick_fr_data_orders= data_orders['tick']
+                                
+                                if last_tick_fr_sqlite== None:
+                                    from utilities import time_modification
+                                    import requests
+                                    ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={end_timestamp}&instrument_name={self.symbol}&resolution={resolution}&start_timestamp={start_timestamp}')
+        
+                                    resolution=1
+                                    qty_candles=6000
+                                    now_utc = datetime.now()
+                                    now_unix = time_modification.convert_time_to_unix (now_utc)
+                                    start_timestamp = now_unix - 60000 * qty_candles
+                                    
+                                    try:            
+                                        ohlc_request= requests.get(ohlc_endPoint(resolution, start_timestamp, now_unix)).json()['result']
+                                        log.warning (ohlc_request)
+                                        for data in ohlc_request:
+                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
 
+                                    except Exception as error:
+                                        system_tools.catch_error_message(error, 10,"WebSocket connection - failed to get ohlc",)
+                                    
                                 if last_tick_fr_sqlite!= None \
                                     and last_tick_fr_sqlite== last_tick_fr_data_orders:
                                         
