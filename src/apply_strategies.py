@@ -582,7 +582,6 @@ class ApplyHedgingSpot:
 
     async def closing_transactions(self, 
                                    label_transaction_net,
-                                   instrument, 
                                    portfolio, 
                                    strategies, 
                                    my_trades_open_mgt,
@@ -1090,7 +1089,6 @@ class ApplyHedgingSpot:
                 if label_transaction_net != []:
                     await self.closing_transactions( 
                                    label_transaction_net,
-                                   instrument, 
                                    portfolio, 
                                    strategies, 
                                    my_trades_open_mgt,
