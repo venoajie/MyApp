@@ -275,7 +275,7 @@ class StreamAccountData:
                                 
                                 #await sqlite_management.insert_tables('positions_json',positions)
 
-                        await syn.get_sub_accounts()
+                        #await syn.get_sub_accounts()
 
             else:
                 log.info("WebSocket connection has broken.")
