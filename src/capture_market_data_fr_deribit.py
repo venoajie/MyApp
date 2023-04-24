@@ -172,7 +172,7 @@ class StreamMarketData:
                                     
                                     ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument}&resolution={resolution}&start_timestamp={start_timestamp}')
                                     try:            
-                                        ohlc_request= requests.get(ohlc_endPoint).json()['result']
+                                        ohlc_request= requests.get(ohlc_endPoint).json()#['result']
                                         log.warning (ohlc_request)
                                         for data in ohlc_request:
                                             await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
