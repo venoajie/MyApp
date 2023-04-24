@@ -1163,7 +1163,7 @@ async def main():
             server_time, label_hedging
         )
         
-        count_and_delete_ohlc_rows()
+        count_and_delete_ohlc_rows(190)
 
     except Exception as error:
         catch_error(error, 30)
