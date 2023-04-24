@@ -165,7 +165,7 @@ class StreamMarketData:
                                     import requests
         
                                     resolution=1
-                                    qty_candles=6000
+                                    qty_candles=1
                                     now_utc = datetime.now()
                                     now_unix = time_modification.convert_time_to_unix (now_utc)
                                     start_timestamp = now_unix - 60000 * qty_candles
