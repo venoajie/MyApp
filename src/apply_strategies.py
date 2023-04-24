@@ -1153,6 +1153,7 @@ async def main():
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
         sub_accounts = account_balances_and_transactions_from_exchanges ['sub_account']
+        log.warning (f' sub_accounts {sub_accounts}')
         sub_accounts = await syn.get_sub_accounts()
         log.error (f' sub_accounts {sub_accounts}')
 
