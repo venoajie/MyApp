@@ -460,7 +460,7 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
             db= await db.execute(query_table)
             
             async with db  as cur:
-                result =  (await cur.fetchall())
+                result =  (await cur.fetchone())
 
     except Exception as error:
         print (f'querying_table {error}')   
