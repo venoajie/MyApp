@@ -467,4 +467,4 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
 
-    return result
+    return result[0] * 1
