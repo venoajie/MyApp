@@ -160,7 +160,7 @@ class StreamMarketData:
                                 last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
                                 last_tick_fr_data_orders= data_orders['tick']
                                 
-                                if last_tick_fr_sqlite== None:
+                                if last_tick_fr_sqlite== None and False:
                                     from utilities import time_modification
                                     import requests
         
