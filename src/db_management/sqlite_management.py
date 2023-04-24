@@ -487,7 +487,6 @@ async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
     except:
         return None
     
-    
 async def count_rows (table: str = 'ohlc1_eth_perp_json',
                       database: str = "databases/trading.sqlite3")->list:
 
@@ -496,14 +495,12 @@ async def count_rows (table: str = 'ohlc1_eth_perp_json',
                     
     try:
         query_table = f'SELECT COUNT (tick) FROM {table}' 
-        print (f'query_table {query_table}')
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             db= await db.execute(query_table)
             
             async with db  as cur:
                 result =  (await cur.fetchone())
-                print (f'query_table {result}')
 
     except Exception as error:
         print (f'querying_table {error}')   
