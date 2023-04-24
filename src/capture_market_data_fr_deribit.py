@@ -110,7 +110,7 @@ class StreamMarketData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    log.warning(message)
+                    #log.warning(message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             if self.refresh_token is None:
@@ -153,6 +153,8 @@ class StreamMarketData:
                             currency: str = string_modification.extract_currency_from_text(
                                 message_channel
                             )
+                            if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                log.warning(message)
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
