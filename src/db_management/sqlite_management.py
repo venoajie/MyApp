@@ -464,8 +464,6 @@ async def get_last_tick (table: str = 'ohlc1_eth_perp_json',
 
     except Exception as error:
         print (f'querying_table {error}')   
-        await telegram_bot_sendtext("sqlite operation", "failed_order")
-        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
 
-    print(result)
     return int(result[0] * 1)
