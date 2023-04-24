@@ -618,9 +618,14 @@ class ApplyHedgingSpot:
             get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_all if o["label"] == label]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
             min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
-            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_all if o["label"] == label]
             log.error (f'get_prices_in_label_transaction_main {get_prices_in_label_transaction_main}') 
-            get_max_value_in_label_transaction_main_short_side =  [o for o in my_trades_open_all if o["price"] == label]
+            log.error (f'max_price {max_price} min_price {min_price}') 
+            if 'Short' in label:
+                transaction =  [o for o in my_trades_open_all if o["price"] == max_price]
+            if 'Long' in label:
+                transaction =  [o for o in my_trades_open_all if o["price"] == min_price]
+            
+            log.error (f'transaction {transaction}')   
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
         my_trades_open_all: list = my_trades_open_sqlite['all']
