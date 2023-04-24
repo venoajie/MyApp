@@ -155,7 +155,7 @@ class StreamMarketData:
                                 message_channel
                             )
                             if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                await sqlite_management.insert_tables('my_trades_all_json',data_orders)
+                                await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                 log.warning(data_orders)
                                 
 
