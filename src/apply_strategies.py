@@ -648,8 +648,6 @@ class ApplyHedgingSpot:
 
             log.error (f'label AAAAAAAAAAAAAAAA {label}')   
 
-        # result example: 'hedgingSpot-1678610144572'/'supplyDemandShort60-1678753445244'
-        for label in label_transaction_net:
             log.critical(f" {label}")
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
