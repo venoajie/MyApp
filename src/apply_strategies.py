@@ -1102,6 +1102,26 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error, 30)
 
+async def count_and_delete_ohlc_rows(rows_threshold: int = 10000):
+    table= 'ohlc1_eth_perp_json'                      
+    database: str = "databases/trading.sqlite3"
+
+    rows= await sqlite_management.count_rows(table)
+    log.error (rows)
+    log.error (rows >rows_threshold)
+    if rows >rows_threshold:
+
+        where_filter = f"tick"
+        first_tick_fr_sqlite= await sqlite_management.get_min_max_tick(table, database, 'MIN')
+        log.error (first_tick_fr_sqlite)
+        await sqlite_management.deleting_row(table, 
+                                            database,
+                                            where_filter,
+                                            "=",
+                                            first_tick_fr_sqlite
+                                            )
+
+
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
 
@@ -1142,6 +1162,8 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
+        
+        count_and_delete_ohlc_rows()
 
     except Exception as error:
         catch_error(error, 30)
