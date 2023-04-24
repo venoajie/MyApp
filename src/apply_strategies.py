@@ -613,7 +613,7 @@ class ApplyHedgingSpot:
         log.error (f'label_transaction_main {label_transaction_main}')   
         for label in label_transaction_main:
             log.error (f'label {label}')   
-            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if o["label"] == label]
+            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if str_mod.parsing_label(o["label"]) == label]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
             min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
             log.error (f'get_prices_in_label_transaction_main {get_prices_in_label_transaction_main}') 
