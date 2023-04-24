@@ -145,7 +145,7 @@ class StreamMarketData:
                     if "params" in list(message):
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
-                            log.info (message_channel)
+                            #log.info (message_channel)
 
                             # one_minute: int = 60000
                             data_orders: list = message["params"]["data"]
