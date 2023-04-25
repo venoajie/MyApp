@@ -19,6 +19,7 @@ from dash.dependencies import Input, Output
 from tpo_helper import get_ticksize, abc, get_mean, get_rf, get_context, get_contextnow
 import numpy as np
 from datetime import timedelta
+from loguru import logger as log
 # from transform import transform_live, transform_hist
 # from alpha_dataframe import get_data
 
@@ -63,7 +64,7 @@ dfhist = get_rf(dfhist.copy())
 dfhist = dfhist.resample(str(freq)+'min').agg({'symbol': 'last', 'datetime': 'first', 'Open': 'first', 'High': 'max',
                                                'Low': 'min', 'Close': 'last', 'Volume': 'sum', 'rf': 'sum'})
 dfhist = dfhist.dropna()
-
+log.error (dfhist)
 # slice df based on days_to_display parameter
 dt1 = dfhist.index[-1]
 sday1 = dt1 - timedelta(days_to_display)
