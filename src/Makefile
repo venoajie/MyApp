@@ -1,4 +1,8 @@
-start: fetch-data exe-app
+start: create-db fetch-data exe-app
+
+create-db: 
+	python3 sqlite_exe.py
+	python3 insert_initial_ohlc.py
 
 test: 
 	git pull
