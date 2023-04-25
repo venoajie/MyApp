@@ -221,7 +221,7 @@ def transform_nested_dict_to_list(list_example) -> dict:
     for k in range(len_tick):
 
         dict_result=dict (volume= list_example['volume'][k],
-                       ticks= list_example['tick'][k],
+                       tick= list_example['ticks'][k],
                        open= list_example['open'][k],
                        low= list_example['low'][k],
                        high= list_example['high'][k],
