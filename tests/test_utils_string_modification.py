@@ -466,9 +466,9 @@ def test_parsing_sqlite_json_output():
     assert string_modification.parsing_sqlite_json_output(element_null) == []
      
 def test_transform_nested_dict_to_list():
-    data= {'volume': [29.217675, 51.877503], 'ticks': [1682338500000, 1682338560000], 'status': 'ok', 'open': [1852.05, 1850.8], 'low': [1850.8, 1850.75], 'high': [1852.05, 1851.05], 'cost': [54090.0, 96016.0], 'close': [1850.85, 1850.9]}
+    data= {'volume': [29.217675, 51.877503], 'tick': [1682338500000, 1682338560000], 'status': 'ok', 'open': [1852.05, 1850.8], 'low': [1850.8, 1850.75], 'high': [1852.05, 1851.05], 'cost': [54090.0, 96016.0], 'close': [1850.85, 1850.9]}
     
-    expected= [{'volume': 29.217675, 'ticks': 1682338500000, 'open': 1852.05, 'low': 1850.8, 'high': 1852.05, 'cost': 54090.0, 'close': 1850.85},
+    expected= [{'volume': 29.217675, 'tick': 1682338500000, 'open': 1852.05, 'low': 1850.8, 'high': 1852.05, 'cost': 54090.0, 'close': 1850.85},
     {'volume': 51.877503, 'ticks': 1682338560000, 'open': 1850.8, 'low': 1850.75, 'high': 1851.05, 'cost': 96016.0, 'close': 1850.9}]
     
     assert string_modification.transform_nested_dict_to_list(data) == expected
