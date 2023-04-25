@@ -273,7 +273,7 @@ async def create_tables (type:str = None):
                                                         tick INTEGER  
                                                     GENERATED ALWAYS AS 
                                                     (
-                                                    (JSON_EXTRACT (data, '$.ticks'))
+                                                    (JSON_EXTRACT (data, '$.tick'))
                                                     ) 
                                                     VIRTUAL;
                                                     
