@@ -44,7 +44,7 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
         system_tools.catch_error_message(error, 10,"WebSocket connection - failed to get ohlc",)
     
 
-def main():
+async def main():
     try:
         insert_ohlc()
 
@@ -55,7 +55,7 @@ def main():
 
 if __name__ == "__main__":
     try:
-        main()
+        asyncio.get_event_loop().run_until_complete(main())
 
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())

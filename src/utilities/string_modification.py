@@ -208,3 +208,26 @@ def parsing_label(label: str, integer: int= None) -> dict:
         "transaction_net": net,
         "flipping_closed": flipping_closed
         }
+
+def transform_nested_dict_to_list(list_example) -> dict:
+
+    """
+
+    """
+    len_tick=len (list_example['volume'])
+
+    my_list =[]
+    
+    for k in range(len_tick):
+
+        dict_result=dict (volume= list_example['volume'][k],
+                       ticks= list_example['ticks'][k],
+                       open= list_example['open'][k],
+                       low= list_example['low'][k],
+                       high= list_example['high'][k],
+                       cost= list_example['cost'][k],
+                       close= list_example['close'][k])
+        
+        my_list.append(dict_result)
+    
+    return  my_list
