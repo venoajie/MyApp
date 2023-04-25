@@ -46,7 +46,7 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
 
 async def main():
     try:
-        insert_ohlc()
+        await insert_ohlc()
 
     except Exception as error:
         system_tools.catch_error_message(
