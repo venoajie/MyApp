@@ -112,8 +112,8 @@ else:
 
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
 log.error (dfnflist)
-dfohlc30 = [group[1] for group in df.groupby(dfohlc30.index.date)]  #
-log.warning (dfohlc30)
+dfnflist = [group[1] for group in df.groupby(dfohlc30.index.date)]  #
+log.warning (dfnflist)
 
 dates = []
 for d in range(0, len(dfnflist)):
