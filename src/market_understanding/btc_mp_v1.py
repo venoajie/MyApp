@@ -1,3 +1,5 @@
+import asyncio
+
 from MP import MpFunctions
 import requests
 import dash
@@ -89,6 +91,11 @@ mode = 'tpo'  # for volume --> 'vol'
 trading_hr = 24  # Default for BTC USD or Forex
 day_back = 0  # -1 While testing sometimes maybe you don't want current days data then use -1
 # ticksz = 28 # If you want to use manual tick size then uncomment this. Really small number means convoluted alphabets (TPO)
+log.error (df)
+loop = asyncio.get_event_loop()
+ohlc30= loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
+dfohlc30= transform_result_to_data_frame (ohlc30)
+log.warning (dfohlc30)
 ticksz = (get_ticksize(df.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
 textsize = 10
 
