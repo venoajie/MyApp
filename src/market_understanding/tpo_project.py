@@ -41,8 +41,10 @@ async def querying_all(table: list,
     """ """
     from utilities import string_modification as str_mod
     result =  await sqlite_management.querying_table (table,  database ) 
+    result_cleaned =  str_mod.parsing_sqlite_json_output([o['data'] for o in result])
+    log.warning (result_cleaned)
     
-    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])
+    return   result_cleaned
                 
 def transform_result_to_data_frame (data: object):
     
