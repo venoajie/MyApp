@@ -36,11 +36,11 @@ days_to_display = 10  # Number of last n days you want on the screen to display
 mode = 'tpo'  # for volume --> 'vol'
 
 
-def querying_all(table: list, 
+async def querying_all(table: list, 
                         database: str = "databases/trading.sqlite3") -> dict:
     """ """
     from utilities import string_modification as str_mod
-    result =  sqlite_management.querying_table (table,  database ) 
+    result =  await sqlite_management.querying_table (table,  database ) 
     
     return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                 
