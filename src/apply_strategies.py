@@ -303,6 +303,12 @@ class ApplyHedgingSpot:
 
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
+        
+        reading_from_database: dict = await self.reading_from_database()
+        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+        open_orders_sqlite: list = await self.querying_all('orders_all_json')
+        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
 
     async def my_trades_open_sqlite_detailing (self, transactions, label, detail_level: str = None) -> list:
         """ 
@@ -726,7 +732,6 @@ class ApplyHedgingSpot:
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                 await self.send_limit_order(params)
-                                system_tools.sleep_and_restart_program(1)
                                 
                     else:
                         
@@ -827,7 +832,6 @@ class ApplyHedgingSpot:
                                         "open", label_main
                                     )
                                     await self.send_limit_order(exit_order_allowed)
-                                    system_tools.sleep_and_restart_program(1)
 
                         if exit_order_allowed["exit_orders_market_qty"] != 0:
                             log.debug(f"exit_orders_market_type")
@@ -954,7 +958,6 @@ class ApplyHedgingSpot:
                                 params_order["entry_price"] = best_bid_prc - .05
                                 
                                 await self.send_limit_order(params_order)
-                                system_tools.sleep_and_restart_program(1)
 
                             if params_order["side"] == 'sell'\
                                 and params_order["len_order_limit"] == 0 \
@@ -963,7 +966,6 @@ class ApplyHedgingSpot:
                                 params_order["entry_price"] = best_ask_prc +  .05
                                 
                                 await self.send_limit_order(params_order)
-                                system_tools.sleep_and_restart_program(1)
 
                         else:
                                      
@@ -1010,7 +1012,6 @@ class ApplyHedgingSpot:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
                                     await self.send_limit_order(open_order_allowed)
-                                    system_tools.sleep_and_restart_program(1)
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
