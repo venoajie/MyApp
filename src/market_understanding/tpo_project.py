@@ -51,21 +51,20 @@ def transform_result_to_data_frame (data: object):
     log.error (df)
 
     # Column name standardization
-    df	= 	df.rename(columns={'tick':'date','open': 'open','high': 'high', 'low': 'low',
-                            'close': 'close','volume': 'volume','cost': 'costUsd' })
+    df	= 	df.rename(columns={'tick':'datetime','Open': 'open','high': 'High', 'low': 'Low',
+                            'close': 'Close','volume': 'Volume','cost': 'costUsd' })
     
     # Filter relevant data
-    df = df.loc[:,['date', 'open', 'high', 'low', 'close',  'volume', 'costUsd']]
+    df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
-    for col in ('open', 'high', 'low', 'close', 'volume', 'costUsd'):
+    for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
         df[col] = df[col].astype(np.float32)
         
-    print (df)
     # Set index
-    tsidx = pd.DatetimeIndex(pd.to_datetime(df['date'], unit='ms'), dtype='datetime64[ns]')
-    df.set_index(df['date'], inplace=True)
-    df = df.drop(columns=['date'])
-    df.index.names = ['date']
+    tsidx = pd.DatetimeIndex(pd.to_datetime(df['datetime'], unit='ms'), dtype='datetime64[ns]')
+    df.set_index(df['datetime'], inplace=True)
+    df = df.drop(columns=['datetime'])
+    df.index.names = ['datetime']
     df = df.iloc[::-1].reset_index()   
     return df   
 
