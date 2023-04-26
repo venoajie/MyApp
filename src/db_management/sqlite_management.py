@@ -533,18 +533,15 @@ def query_pd (table_name: str, field: str = None):
     
     #transform dataframe to dict
     result = result.to_dict('records')
-    result1 = ([o['data'] for o in result])
-    print('BBBBBBBBBBBBBBBBBBBB')      
-    print(result1)      
-                    
+    result_cleaned = ([o['data'] for o in result])
 
-    pd.json_normalize(result, record_path=['data']) 
+    pd.json_normalize(result_cleaned) 
     print('AAAAAAAAAAAAAAAAAAAAAAAA')      
-    print(result)      
+    print(result_cleaned)      
     
     #close connection sqlite
     con.close()     
 
-    return  result
+    return  result_cleaned
     
     
