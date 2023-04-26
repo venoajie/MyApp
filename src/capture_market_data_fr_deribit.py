@@ -170,6 +170,7 @@ class StreamMarketData:
                                 
                                 if last_tick_fr_sqlite!= None:
                                     database= "databases/trading.sqlite3"
+                                    log.critical(message_channel)
                                     log.warning(last_tick_fr_sqlite)
                                     log.error(last_tick_fr_sqlite== last_tick_fr_data_orders)
                                     
