@@ -20,6 +20,7 @@ from market_understanding.tpo_helper import get_ticksize, abc, get_mean, get_rf,
 import numpy as np
 from datetime import timedelta
 from loguru import logger as log
+from db_management import sqlite_management
 # from transform import transform_live, transform_hist
 # from alpha_dataframe import get_data
 
@@ -36,7 +37,8 @@ mode = 'tpo'  # for volume --> 'vol'
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
-
+ohlc30= sqlite_management.query_pd ('ohlc30_eth_perp_json')
+log.warning (ohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
@@ -65,7 +67,7 @@ dfhist = get_rf(dfhist.copy())
 dfhist = dfhist.resample(str(freq)+'min').agg({'symbol': 'last', 'datetime': 'first', 'Open': 'first', 'High': 'max',
                                                'Low': 'min', 'Close': 'last', 'Volume': 'sum', 'rf': 'sum'})
 dfhist = dfhist.dropna()
-log.error (dfhist)
+#log.error (dfhist)
 # slice df based on days_to_display parameter
 dt1 = dfhist.index[-1]
 sday1 = dt1 - timedelta(days_to_display)
