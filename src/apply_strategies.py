@@ -620,7 +620,7 @@ class ApplyHedgingSpot:
             log.debug (f'label {label}')
 
             my_trades_open_strategy =  [o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
-            log.debug (my_trades_open_strategy)
+            #log.debug (my_trades_open_strategy)
             get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_strategy]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
             min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
