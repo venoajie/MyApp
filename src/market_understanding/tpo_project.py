@@ -80,7 +80,8 @@ dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
 print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
 print (dfhist)
 
-dfhist.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
+log.warning (dfohlc30)
+dfohlc30.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
 log.debug (dfohlc30)
 
 ticksz = get_ticksize(dfhist, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
