@@ -520,11 +520,11 @@ def query_pd (table_name: str, field: str = None):
     # https://pythonspeed.com/articles/pandas-sql-chunking/
     """
     import pandas as pd
-    from utilities import string_modification as str_mod
             
     # Read sqlite query results into a pandas DataFrame
     con = sqlite3.connect('databases/trading.sqlite3')
     query_table = f'SELECT *  FROM {table_name}' 
+    
     if field != None:
         query_table = f'SELECT {field}  FROM {table_name}' 
     
@@ -533,11 +533,10 @@ def query_pd (table_name: str, field: str = None):
     
     #transform dataframe to dict
     result = result.to_dict('records')
+    
     result_cleaned = ([o['data'] for o in result])
 
     pd.json_normalize(result_cleaned) 
-    print('AAAAAAAAAAAAAAAAAAAAAAAA')      
-    print(result_cleaned)      
     
     #close connection sqlite
     con.close()     
