@@ -50,7 +50,7 @@ def transform_result_to_data_frame (data: object):
     df = pd.DataFrame(data)
 
     # Column name standardization
-    df	= 	df.rename(columns={'tick':'datetime','Open': 'open','high': 'High', 'low': 'Low',
+    df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
     
     log.error (df)
