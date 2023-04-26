@@ -55,6 +55,7 @@ def transform_result_to_data_frame (data: object):
 
     # transform unix date to utc
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
+    df['datetime'] = df['datetime'].dt.strftime('%d-%m-%Y %I:%M:%S')
 
     # Filter relevant data
     df['symbol']='ETH-PERP'
