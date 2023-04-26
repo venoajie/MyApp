@@ -54,7 +54,8 @@ def transform_result_to_data_frame (data: object):
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
     
     # Filter relevant data
-    df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
+    df['symbol']='ETH-PERP'
+    df = df.loc[:,['datetime', 'symbol', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
     for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
         df[col] = df[col].astype(np.float32)
@@ -84,7 +85,7 @@ log.debug (dfohlc30)
 
 ticksz = get_ticksize(dfhist, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
 symbol = dfhist.symbol[0]
-print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+print ("CCCCCCCCCCCCCCCCCCCC")
 log.warning (ticksz)
 log.warning (symbol)
 
@@ -110,7 +111,7 @@ print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
 print (dfhist)
 
 dfohlc30 = datetime(dfohlc30)
-print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+print ("BBBBBBBBBBB")
 print (dfohlc30)
 
 mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
