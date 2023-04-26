@@ -153,53 +153,35 @@ class StreamMarketData:
                             #log.debug(data_orders)
                             currency: str = string_modification.extract_currency_from_text(
                                 message_channel
-                            )
+                            )                            
                             
-                            if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                            if "chart.trades.ETH-PERPETUAL." in message_channel:
                                 
                                 last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
                                 last_tick_fr_data_orders= data_orders['tick']
                                 
-                                if last_tick_fr_sqlite== None and False:
-                                    from utilities import time_modification
-                                    import requests
-        
-                                    resolution=1
-                                    qty_candles=1
-                                    now_utc = datetime.now()
-                                    now_unix = time_modification.convert_time_to_unix (now_utc)
-                                    start_timestamp = now_unix - 60000 * qty_candles
-                                    
-                                    ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name=ETH-PERPETUAL&resolution={resolution}&start_timestamp={start_timestamp}')
-                                    try:            
-
-                                        ohlc_request= requests.get(ohlc_endPoint).json()['result']
-                                        log.warning (ohlc_request)
-                                        result ={}
-                                        
-                                        for data in ohlc_request:
-                                            item_data= ohlc_request[data]
-                                            len_item_data= len(item_data)
-                                            log.error (data)
-                                            log.error (item_data)
-                                            log.error (len_item_data)
-                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
-
-                                    except Exception as error:
-                                        system_tools.catch_error_message(error, 10,"WebSocket connection - failed to get ohlc",)
-                                    
                                 if last_tick_fr_sqlite!= None \
                                     and last_tick_fr_sqlite== last_tick_fr_data_orders:
                                         
                                     where_filter = f"tick"
                                     
-                                    await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
+                                    if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                        await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
                                                             "databases/trading.sqlite3",
                                                             where_filter,
                                                             "=",
                                                             last_tick_fr_sqlite)
+                                        await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
+                                        
+                                    if message_channel == "chart.trades.ETH-PERPETUAL.30":
+                                        await sqlite_management.deleting_row('ohlc30_eth_perp_json', 
+                                                            "databases/trading.sqlite3",
+                                                            where_filter,
+                                                            "=",
+                                                            last_tick_fr_sqlite)
+                                        await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
                                     
-                                await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
+                                
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
