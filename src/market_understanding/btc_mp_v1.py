@@ -38,11 +38,11 @@ def transform_result_to_data_frame (data: object):
     # transform unix date to utc
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
     
-    df['Open'].round(decimals = 2)
-    df['High'].round(decimals = 2)
-    df['Low'].round(decimals = 2)
-    df['Close'].round(decimals = 2)
-    df['volume'].round(decimals = 2)
+    df['Open']= df['Open'].round(decimals = 2)
+    df['High']= df['High'].round(decimals = 2)
+    df['Low']= df['Low'].round(decimals = 2)
+    df['Close']= df['Close'].round(decimals = 2)
+    df['volume']= df['volume'].round(decimals = 2)
 
     for col in ('Open', 'High', 'Low', 'Close',  'volume'):
         df[col] = df[col].astype(np.float32)
