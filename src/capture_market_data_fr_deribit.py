@@ -159,12 +159,15 @@ class StreamMarketData:
                                 
                                 log.error(f'message_channel {message_channel}')
                                 last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
-                                log.error(f'last_tick_fr_sqlite {last_tick_fr_sqlite}')
-                                last_tick_fr_data_orders= data_orders['tick']
-                                log.error(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')
+                                #log.error(f'last_tick_fr_sqlite {last_tick_fr_sqlite}')
+                                last_tick_fr_data_orders= data_orders['tick']                                
                                 
                                 if last_tick_fr_sqlite!= None:
+                                    
+                                    
+                                    
                                     if last_tick_fr_sqlite== last_tick_fr_data_orders:
+                                        log.error(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')
                                             
                                         where_filter = f"tick"
                                         
@@ -182,7 +185,8 @@ class StreamMarketData:
                                                                 "=",
                                                                 last_tick_fr_sqlite)
                                     
-                                    else:                                                                        
+                                    else:        
+                                        log.warning(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')                                                                
                                         if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                             await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                             
