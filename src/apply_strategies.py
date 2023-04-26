@@ -286,7 +286,7 @@ class ApplyHedgingSpot:
         else:
             if open_orders_open_from_db != []:
                 for order in open_orders_open_from_db:
-                    log.error (order)
+                    #log.error (order)
                     where_filter = f"order_id"
                     order_id = order['order_id']
                     await sqlite_management.deleting_row('orders_all_json', 
@@ -297,8 +297,6 @@ class ApplyHedgingSpot:
                     
             for order in open_orders_from_sub_account_get:
                 await sqlite_management.insert_tables('orders_all_json',order)    
-
-        system_tools.sleep_and_restart_program(1)
 
     async def send_market_order(self, params) -> None:
         """ """
