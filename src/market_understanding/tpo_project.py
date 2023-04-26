@@ -55,11 +55,12 @@ def transform_result_to_data_frame (data: object):
     
     # Filter relevant data
     df['symbol']='ETH-PERP'
-    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
     for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
         df[col] = df[col].astype(np.float32)
         
+    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
+    
     # Set index
     tsidx = pd.DatetimeIndex(pd.to_datetime(df['datetime'], unit='ms'), dtype='datetime64[ns]')
     df.set_index(df['datetime'], inplace=True)
