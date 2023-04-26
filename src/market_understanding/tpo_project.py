@@ -114,12 +114,22 @@ dfhist = datetime(dfhist)
 print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
 print (dfhist)
 
+mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
+trading_hr = mean_val['session_hr']
+
+log.warning (f' mean_val {mean_val}')
+log.warning (f' trading_hr {trading_hr}')
+
 dfohlc30 = datetime(dfohlc30)
 print ("BBBBBBBBBBB")
 print (dfohlc30)
 
 mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
 trading_hr = mean_val['session_hr']
+
+log.error (f' mean_val {mean_val}')
+log.error (f' trading_hr {trading_hr}')
+
 # !!! get rotational factor
 dfhist = get_rf(dfhist.copy())
 # !!! resample to desire time frequency. For TPO charts 30 min is optimal
