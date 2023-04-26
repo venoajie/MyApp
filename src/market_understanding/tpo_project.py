@@ -58,7 +58,7 @@ def transform_result_to_data_frame (data: object):
     df['datetime'] = df['datetime'].dt.strftime('%Y%m%d %I:%M:%S')
 
     # Filter relevant data
-    df['symbol']='ETH-PERP'
+    df['symbol']='_NF1'
 
     for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
         df[col] = df[col].astype(np.float32)
