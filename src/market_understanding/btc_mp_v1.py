@@ -111,9 +111,9 @@ else:
     symbol = 'ETH-USD Live'
 
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
-log.error (dfnflist)
+#log.error (dfnflist)
 dfnflist = [group[1] for group in dfohlc30.groupby(dfohlc30.index.date)]  #
-log.warning (dfnflist)
+#log.warning (dfnflist)
 
 dates = []
 for d in range(0, len(dfnflist)):
