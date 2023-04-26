@@ -35,6 +35,7 @@ days_to_display = 10  # Number of last n days you want on the screen to display
 mode = 'tpo'  # for volume --> 'vol'
 
 dfhist = pd.read_csv('history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
+log.debug (dfhist)
 
 # Check the sample file. Match the format exactly else code will not run.
 
