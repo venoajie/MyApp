@@ -46,7 +46,8 @@ async def querying_all(table: list,
                 
 def transform_result_to_data_frame (data: object):
     
-    df = pd.DataFrame.from_dict(data)
+    log.debug (data)
+    df = pd.DataFrame(data)
     log.error (df)
 
     # Column name standardization
@@ -73,7 +74,7 @@ log.debug (dfhist)
 loop = asyncio.get_event_loop()
 ohlc30= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
 #log.warning (ohlc30)
-dfohlc30= transform_result_to_data_frame (ohlc30[0])
+dfohlc30= transform_result_to_data_frame (ohlc30)
 log.warning (dfohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
