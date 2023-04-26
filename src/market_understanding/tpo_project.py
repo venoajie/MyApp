@@ -46,14 +46,14 @@ async def querying_all(table: list,
                 
 def transform_result_to_data_frame (data: object):
     
-    log.debug (data)
+    #log.debug (data)
     df = pd.DataFrame(data)
-    log.error (df)
 
     # Column name standardization
     df	= 	df.rename(columns={'tick':'datetime','Open': 'open','high': 'High', 'low': 'Low',
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
     
+    log.error (df)
     # Filter relevant data
     df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
