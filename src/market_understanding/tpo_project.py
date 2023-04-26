@@ -52,7 +52,7 @@ def transform_result_to_data_frame (data: object):
     # Column name standardization
     df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
-    df['datetime'] = pd.to_datetime(df['datetime'],unit='s')
+    df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
     log.error (df)
     
     # Filter relevant data
