@@ -530,12 +530,14 @@ def query_pd (table_name: str, field: str = None):
     
     #fetch all
     result = pd.read_sql_query(query_table, con)  
-    pd.json_normalize(result) 
-    print(result)      
     
     #transform dataframe to dict
     result = result.to_dict('records')
 
+    pd.json_normalize(result) 
+    print('AAAAAAAAAAAAAAAAAAAAAAAA')      
+    print(result)      
+    
     #close connection sqlite
     con.close()     
 
