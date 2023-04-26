@@ -37,7 +37,6 @@ avglen = 10  # num days mean to get values
 days_to_display = 10  # Number of last n days you want on the screen to display
 mode = 'tpo'  # for volume --> 'vol'
 
-
 async def querying_all(table: list, 
                         database: str = "databases/trading.sqlite3") -> dict:
     """ """
@@ -65,13 +64,6 @@ def transform_result_to_data_frame (data: object):
         df[col] = df[col].astype(np.float32)
         
     df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
-    
-    # Set index
-    #tsidx = pd.DatetimeIndex(pd.to_datetime(df['datetime'], unit='ms'), dtype='datetime64[ns]')
-    #df.set_index(df['datetime'], inplace=True)
-    #df = df.drop(columns=['datetime'])
-    #df.index.names = ['datetime']
-    #df = df.iloc[::-1].reset_index()   
 
     return df   
 
@@ -116,11 +108,11 @@ def datetime(dfhist):
 dfhist = datetime(dfhist)
 
 print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
-print (dfhist)
+#print (dfhist)
 
 dfohlc30 = datetime(dfohlc30)
 print ("BBBBBBBBBBB")
-print (dfohlc30)
+#print (dfohlc30)
 
 mean_val = get_mean(dfohlc30, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
 trading_hr = mean_val['session_hr']
