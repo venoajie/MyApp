@@ -471,7 +471,7 @@ async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
     ''' 
                     
     try:
-        query_table = f'SELECT {operator} (ticks) FROM {table}' 
+        query_table = f'SELECT {operator} (tick) FROM {table}' 
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             db= await db.execute(query_table)
