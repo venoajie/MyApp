@@ -986,7 +986,7 @@ class ApplyHedgingSpot:
                             strategy_attr,
                             min_position_size)
                             
-                            log.warning(f" open_order_allowed 1  {open_order_allowed}")
+                            #log.warning(f" open_order_allowed 1  {open_order_allowed}")
                             
                             if (
                                 open_order_allowed["main_orders_qty"] != 0
@@ -1004,7 +1004,7 @@ class ApplyHedgingSpot:
                                 open_order_allowed["cut_loss_usd"] = strategy_attr["cut_loss_usd"]
                                 open_order_allowed["take_profit_usd"] = strategy_attr["take_profit_usd"]
                                     
-                                log.warning(f" open_order_allowed 2  {open_order_allowed}")
+                                #log.warning(f" open_order_allowed 2  {open_order_allowed}")
                                 
                                 if "hedgingSpot" in strategy_attr["strategy"]:
                                     open_order_allowed["take_profit_usd"] = best_ask_prc
