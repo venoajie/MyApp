@@ -170,7 +170,10 @@ class StreamMarketData:
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(table_ohlc30)
 
                                 last_tick_fr_data_orders= data_orders['tick']                                
-                                
+                                log.critical  (message_channel)
+                                log.error  (f' last_tick30_fr_sqlite== last_tick_fr_data_orders {last_tick30_fr_sqlite== last_tick_fr_data_orders}')
+                                log.error  (f' last_tick30_fr_sqlite {last_tick30_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
+                                log.debug  (table_ohlc30 != None or table_ohlc1 != None)
                                 if table_ohlc30 != None or table_ohlc1 != None:
                                     database= "databases/trading.sqlite3"
                                     where_filter = f"tick"                                    
