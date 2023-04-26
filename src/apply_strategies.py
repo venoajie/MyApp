@@ -833,7 +833,7 @@ class ApplyHedgingSpot:
                             log.debug(f"exit_orders_market_type")
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
-                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                 await catch_error('size or open order is inconsistent', 10)
             
     async def opening_transactions(self, 
@@ -1014,7 +1014,7 @@ class ApplyHedgingSpot:
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
-                        await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                        #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                         await catch_error('size or open order is inconsistent',5)
                     
         except Exception as error:
