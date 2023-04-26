@@ -37,7 +37,7 @@ mode = 'tpo'  # for volume --> 'vol'
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
-ohlc30= sqlite_management.query_pd ('ohlc30_eth_perp_json')
+ohlc30= sqlite_management.query_pd ('ohlc30_eth_perp_json', 'data')
 log.warning (ohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
