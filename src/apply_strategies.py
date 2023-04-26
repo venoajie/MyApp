@@ -618,6 +618,7 @@ class ApplyHedgingSpot:
 
         for label in label_transaction_main:
             log.debug (f'label {label}')
+            log.debug ([o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label])
 
             get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
