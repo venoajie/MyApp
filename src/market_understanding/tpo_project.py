@@ -46,7 +46,7 @@ async def querying_all(table: list,
                 
 def transform_result_to_data_frame (data: object):
     
-    df = pd.DataFrame.from_dict(data[0])
+    df = pd.DataFrame.from_dict(data)
     log.error (df)
 
     # Column name standardization
