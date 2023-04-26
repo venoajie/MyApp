@@ -33,19 +33,16 @@ def transform_result_to_data_frame (data: object):
 
     # Column name standardization
     df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
-                            'close': 'Close','volume': 'VolumeCur','cost': 'Volume' })
+                            'close': 'Close','volume': 'VolumeCur','cost': 'volume' })
 
     # transform unix date to utc
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
-    df['datetime'] = df['datetime'].dt.strftime('%Y%m%d %I:%M:%S')
 
-    # Filter relevant data
-    df['symbol']='_NF1'
-
-    for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
+    for col in ('Open', 'High', 'Low', 'Close',  'volume'):
         df[col] = df[col].astype(np.float32)
         
-    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
+    df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'volume']]
+    df = df.set_index(df['datetime'], drop=True, inplace=False)
 
     return df   
 
