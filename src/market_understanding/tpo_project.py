@@ -65,7 +65,7 @@ def transform_result_to_data_frame (data: object):
     df = df.drop(columns=['datetime'])
     df.index.names = ['datetime']
     df = df.iloc[::-1].reset_index()   
-    log.error (df)
+
     return df   
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
@@ -133,7 +133,7 @@ def live_merge(dfli):
 
 
 # get live data from external source, it is not inside loop so it gets called 1 time only to make sure historical data is in sync
-dfli = pd.read_csv('live.txt')  # provided the sample file. To check live updates are working, add data in live.txt
+dfli = pd.read_csv('market_understanding/live.txt')  # provided the sample file. To check live updates are working, add data in live.txt
 df_final = live_merge(dfli)
 df_final.iloc[:, 2:] = df_final.iloc[:, 2:].apply(pd.to_numeric)
 
