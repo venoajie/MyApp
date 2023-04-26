@@ -39,7 +39,7 @@ def transform_result_to_data_frame (data: object):
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
     
     for col in ('Open', 'High', 'Low', 'Close',  'volume'):
-        df[col] = df[col].astype(np.float32).round(2).to_numpy()
+        df[col] = df[col].astype(np.float32).round(2).to_dict()
     
     df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'volume']]
     df = df.set_index(df['datetime'], drop=True, inplace=False)
