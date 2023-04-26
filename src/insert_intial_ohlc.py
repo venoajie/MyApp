@@ -49,7 +49,7 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
 async def main():
     try:
         resolutions= [1,30]
-        instrument_name= 'PERPETUAL'
+        instrument_name= 'ETH-PERPETUAL'
         qty_candles= 6000
         for res in resolutions:
             await insert_ohlc(instrument_name, res, qty_candles )
