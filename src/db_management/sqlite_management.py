@@ -541,6 +541,6 @@ def query_pd (table_name: str, field: str = None):
     #close connection sqlite
     con.close()     
 
-    return  result_cleaned
+    return  pd.json_normalize(result_cleaned) 
     
     
