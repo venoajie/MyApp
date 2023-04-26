@@ -102,8 +102,8 @@ log.error (ticksz)
 log.error (textsize)
 ticksz = (get_ticksize(dfohlc30.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
 textsize = 10
-log.error (ticksz)
-log.error (textsize)
+log.warning (ticksz)
+log.warning (textsize)
 
 if day_back != 0:
     symbol = 'Historical Mode'
@@ -111,6 +111,9 @@ else:
     symbol = 'BTC-USD Live'
 
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
+log.error (dfnflist)
+dfohlc30 = [group[1] for group in df.groupby(dfohlc30.index.date)]  #
+log.warning (dfohlc30)
 
 dates = []
 for d in range(0, len(dfnflist)):
