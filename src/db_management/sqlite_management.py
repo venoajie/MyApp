@@ -535,7 +535,7 @@ def query_pd (table_name: str, field: str = None):
     result = result.to_dict('records')
     
     result_cleaned = ([o['data'] for o in result])
-    pd.json_normalize(result_cleaned) 
+
     #close connection sqlite
     con.close()     
 
