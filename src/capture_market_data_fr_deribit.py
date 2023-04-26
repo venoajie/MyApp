@@ -164,47 +164,46 @@ class StreamMarketData:
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel:
                                 
-                                table_ohlc1= "ohlc1_eth_perp_json"
-                                table_ohlc30= "ohlc30_eth_perp_json"
-                                last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(table_ohlc1)
-                                last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(table_ohlc30)
+                                DATABASE= "databases/trading.sqlite3"
+                                TABLE_OHLC1= "ohlc1_eth_perp_json"
+                                TABLE_OHLC30= "ohlc30_eth_perp_json"
+                                
+                                last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
+                                last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
-                                last_tick_fr_data_orders= data_orders['tick']                                
-                                log.critical  (message_channel)
-                                log.error  (f' last_tick30_fr_sqlite== last_tick_fr_data_orders {last_tick30_fr_sqlite== last_tick_fr_data_orders}')
-                                log.error  (f' last_tick30_fr_sqlite {last_tick30_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
-                                log.debug  (table_ohlc30 != None or table_ohlc1 != None)
-                                if table_ohlc30 != None or table_ohlc1 != None:
-                                    database= "databases/trading.sqlite3"
+                                last_tick_fr_data_orders= data_orders['tick']     
+                                
+                                if TABLE_OHLC30 != None or TABLE_OHLC1 != None:                                    
+                                    
                                     where_filter = f"tick"                                    
                                     
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:
+                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:                                            
                                             
-                                            
-                                            await sqlite_management.deleting_row(table_ohlc1, 
-                                                                    database,
+                                            await sqlite_management.deleting_row(TABLE_OHLC1, 
+                                                                    DATABASE,
                                                                     where_filter,
                                                                     "=",
                                                                     last_tick1_fr_sqlite)
-                                            await sqlite_management.insert_tables(table_ohlc1,data_orders)
+                                            
+                                            await sqlite_management.insert_tables(TABLE_OHLC1,data_orders)
                                             
                                         else:
-                                            await sqlite_management.insert_tables(table_ohlc1, data_orders)
+                                            await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
                                             
                                     if message_channel == "chart.trades.ETH-PERPETUAL.30":
                                         if last_tick30_fr_sqlite== last_tick_fr_data_orders:
                                             
-                                            await sqlite_management.deleting_row(table_ohlc30, 
-                                                                database,
+                                            await sqlite_management.deleting_row(TABLE_OHLC30, 
+                                                                DATABASE,
                                                                 where_filter,
                                                                 "=",
                                                                 last_tick30_fr_sqlite)
                                             
-                                            await sqlite_management.insert_tables(table_ohlc30, data_orders)
+                                            await sqlite_management.insert_tables(TABLE_OHLC30, data_orders)
                                     
                                         else:
-                                            await sqlite_management.insert_tables(table_ohlc30, data_orders)
+                                            await sqlite_management.insert_tables(TABLE_OHLC30, data_orders)
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
