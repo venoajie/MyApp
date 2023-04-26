@@ -533,7 +533,7 @@ def query_pd (table_name: str, field: str = None):
     
     #transform dataframe to dict
     result = result.to_dict('records')
-    result = str_mod.parsing_sqlite_json_output(result)
+    result = str_mod.parsing_sqlite_json_output([result])
 
     pd.json_normalize(result, record_path=['data']) 
     print('AAAAAAAAAAAAAAAAAAAAAAAA')      
