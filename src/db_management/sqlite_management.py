@@ -520,7 +520,7 @@ def query_pd (table_name: str, field: str = None):
     # https://pythonspeed.com/articles/pandas-sql-chunking/
     """
     import pandas as pd
-    import sqlite3
+    from utilities import string_modification as str_mod
             
     # Read sqlite query results into a pandas DataFrame
     con = sqlite3.connect('databases/trading.sqlite3')
@@ -533,8 +533,9 @@ def query_pd (table_name: str, field: str = None):
     
     #transform dataframe to dict
     result = result.to_dict('records')
+    result = str_mod.parsing_sqlite_json_output(result)
 
-    pd.json_normalize([result], record_path=['data']) 
+    pd.json_normalize(result, record_path=['data']) 
     print('AAAAAAAAAAAAAAAAAAAAAAAA')      
     print(result)      
     
