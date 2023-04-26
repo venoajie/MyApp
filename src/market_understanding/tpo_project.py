@@ -52,9 +52,10 @@ def transform_result_to_data_frame (data: object):
     # Column name standardization
     df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
+
+    # transform unix date to utc
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
-    log.error (df)
-    
+
     # Filter relevant data
     df['symbol']='ETH-PERP'
 
@@ -74,7 +75,7 @@ def transform_result_to_data_frame (data: object):
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 loop = asyncio.get_event_loop()
-ohlc30= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
+ohlc30= loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
 #log.warning (ohlc30)
 dfohlc30= transform_result_to_data_frame (ohlc30)
 #log.warning (dfohlc30)
