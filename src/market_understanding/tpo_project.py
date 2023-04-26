@@ -55,7 +55,7 @@ def transform_result_to_data_frame (data: object):
     
     # Filter relevant data
     df['symbol']='ETH-PERP'
-    df = df.loc[:,['datetime', 'symbol', 'Open', 'High', 'Low', 'Close',  'Volume']]
+    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
     for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
         df[col] = df[col].astype(np.float32)
@@ -91,7 +91,7 @@ log.warning (symbol)
 
 ticksz = get_ticksize(dfohlc30, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
 log.debug (ticksz)
-symbol = 'ETH-PERP'
+symbol = dfhist.symbol[0]
 log.debug (symbol)
 
 def datetime(dfhist):
