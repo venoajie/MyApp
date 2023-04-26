@@ -107,10 +107,11 @@ def datetime(dfhist):
 dfhist = datetime(dfhist)
 
 print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
-log.warning (dfhist)
+print (dfhist)
 
 dfohlc30 = datetime(dfohlc30)
-log.error (dfohlc30)
+print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+print (dfohlc30)
 
 mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
 trading_hr = mean_val['session_hr']
