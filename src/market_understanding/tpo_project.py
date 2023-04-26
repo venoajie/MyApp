@@ -16,7 +16,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from tpo_helper import get_ticksize, abc, get_mean, get_rf, get_context, get_contextnow
+from market_understanding.tpo_helper import get_ticksize, abc, get_mean, get_rf, get_context, get_contextnow
 import numpy as np
 from datetime import timedelta
 from loguru import logger as log
