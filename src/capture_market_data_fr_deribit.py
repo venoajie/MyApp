@@ -163,28 +163,31 @@ class StreamMarketData:
                                 last_tick_fr_data_orders= data_orders['tick']
                                 log.error(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')
                                 
-                                if last_tick_fr_sqlite!= None \
-                                    and last_tick_fr_sqlite== last_tick_fr_data_orders:
+                                if last_tick_fr_sqlite!= None:
+                                    if last_tick_fr_sqlite== last_tick_fr_data_orders:
+                                            
+                                        where_filter = f"tick"
                                         
-                                    where_filter = f"tick"
+                                        if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                            await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
+                                                                "databases/trading.sqlite3",
+                                                                where_filter,
+                                                                "=",
+                                                                last_tick_fr_sqlite)
+                                            
+                                        if message_channel == "chart.trades.ETH-PERPETUAL.30":
+                                            await sqlite_management.deleting_row('ohlc30_eth_perp_json', 
+                                                                "databases/trading.sqlite3",
+                                                                where_filter,
+                                                                "=",
+                                                                last_tick_fr_sqlite)
                                     
-                                    if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                        await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
-                                                            "databases/trading.sqlite3",
-                                                            where_filter,
-                                                            "=",
-                                                            last_tick_fr_sqlite)
-                                        await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
-                                        
-                                    if message_channel == "chart.trades.ETH-PERPETUAL.30":
-                                        await sqlite_management.deleting_row('ohlc30_eth_perp_json', 
-                                                            "databases/trading.sqlite3",
-                                                            where_filter,
-                                                            "=",
-                                                            last_tick_fr_sqlite)
-                                        await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
-                                    
-                                
+                                    else:                                                                        
+                                        if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
+                                            
+                                        if message_channel == "chart.trades.ETH-PERPETUAL.30":
+                                            await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
 
                             instrument_ticker = (message_channel)[19:]
                             if message_channel == f"incremental_ticker.{instrument_ticker}":
