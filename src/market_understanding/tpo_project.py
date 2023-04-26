@@ -38,10 +38,7 @@ mode = 'tpo'  # for volume --> 'vol'
 
 def transform_result_to_data_frame (data: object):
     
-
-    pd.json_normalize(data) 
-
-    df = pd.DataFrame.from_dict(data)
+    df = pd.DataFrame.from_dict(data[0])
     log.error (df)
 
     # Column name standardization
