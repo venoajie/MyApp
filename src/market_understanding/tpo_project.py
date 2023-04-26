@@ -42,10 +42,7 @@ async def querying_all(table: list,
     """ """
     from utilities import string_modification as str_mod
     result =  await sqlite_management.querying_table (table,  database ) 
-    result_cleaned =  str_mod.parsing_sqlite_json_output([o['data'] for o in result])
-    log.warning (result_cleaned)
-    
-    return   result_cleaned
+    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])  
                 
 def transform_result_to_data_frame (data: object):
     
@@ -76,7 +73,7 @@ log.debug (dfhist)
 loop = asyncio.get_event_loop()
 ohlc30= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
 #log.warning (ohlc30)
-dfohlc30= transform_result_to_data_frame (ohlc30)
+dfohlc30= transform_result_to_data_frame (ohlc30[0])
 log.warning (dfohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
