@@ -160,6 +160,7 @@ class StreamMarketData:
                                 log.error(f'message_channel {message_channel}')
                                 last_tick_fr_sqlite= await sqlite_management.get_min_max_tick()
                                 log.error(f'last_tick_fr_sqlite {last_tick_fr_sqlite}')
+                                log.error(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')
                                 last_tick_fr_data_orders= data_orders['tick']
                                 
                                 if last_tick_fr_sqlite!= None \
