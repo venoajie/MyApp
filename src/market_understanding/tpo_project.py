@@ -77,7 +77,8 @@ dfohlc30= transform_result_to_data_frame (ohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
-log.warning (dfhist)
+print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+print (dfhist)
 
 dfhist.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
 log.debug (dfohlc30)
