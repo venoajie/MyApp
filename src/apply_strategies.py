@@ -614,8 +614,10 @@ class ApplyHedgingSpot:
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
+        log.error (f'label_transaction_main {label_transaction_main}')
 
         for label in label_transaction_main:
+            log.debug (f'label {label}')
 
             get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
