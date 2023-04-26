@@ -73,9 +73,9 @@ def transform_result_to_data_frame (data: object):
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
 ohlc30= querying_all ('ohlc30_eth_perp_json')
-#log.warning (ohlc30)
-dfohlc30= transform_result_to_data_frame (ohlc30)
-log.warning (dfohlc30)
+log.warning (ohlc30)
+#dfohlc30= transform_result_to_data_frame (ohlc30)
+#log.warning (dfohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
