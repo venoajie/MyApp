@@ -46,7 +46,11 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
 
 async def main():
     try:
-        await insert_ohlc()
+        resolutions= [1,30]
+        instrument_name= 'PERPETUAL'
+        qty_candles= 6000
+        for res in resolutions:
+            await insert_ohlc(instrument_name, res, qty_candles )
 
     except Exception as error:
         system_tools.catch_error_message(
