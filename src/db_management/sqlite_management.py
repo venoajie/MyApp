@@ -533,7 +533,9 @@ def query_pd (table_name: str, field: str = None):
     
     #transform dataframe to dict
     result = result.to_dict('records')
-    result = ([o['data'] for o in result])
+    result1 = ([o['data'] for o in result])
+    print('BBBBBBBBBBBBBBBBBBBB')      
+    print(result1)      
                     
 
     pd.json_normalize(result, record_path=['data']) 
