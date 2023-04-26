@@ -39,6 +39,7 @@ mode = 'tpo'  # for volume --> 'vol'
 def transform_result_to_data_frame (data: object):
 
     df = pd.DataFrame(data)
+    log.info (df)
 
     # Column name standardization
     df	= 	df.rename(columns={'tick':'date','open': 'open','high': 'high', 'low': 'low',
