@@ -65,11 +65,11 @@ def transform_result_to_data_frame (data: object):
     df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
     
     # Set index
-    tsidx = pd.DatetimeIndex(pd.to_datetime(df['datetime'], unit='ms'), dtype='datetime64[ns]')
-    df.set_index(df['datetime'], inplace=True)
-    df = df.drop(columns=['datetime'])
-    df.index.names = ['datetime']
-    df = df.iloc[::-1].reset_index()   
+    #tsidx = pd.DatetimeIndex(pd.to_datetime(df['datetime'], unit='ms'), dtype='datetime64[ns]')
+    #df.set_index(df['datetime'], inplace=True)
+    #df = df.drop(columns=['datetime'])
+    #df.index.names = ['datetime']
+    #df = df.iloc[::-1].reset_index()   
 
     return df   
 
@@ -85,6 +85,7 @@ dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
 
 #log.warning (dfohlc30)
 dfohlc30.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
+log.warning (dfhist)
 log.debug (dfohlc30)
 
 ticksz = get_ticksize(dfhist, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
