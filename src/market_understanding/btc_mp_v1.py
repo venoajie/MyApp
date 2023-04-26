@@ -79,9 +79,9 @@ def get_data(url):
     return df
 
 
-url_30m = "https://www.binance.com/api/v1/klines?symbol=BTCBUSD&interval=30m"  # 10 days history 30 min ohlcv
+url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
 df = get_data(url_30m)
-df.to_csv('btcusd30m.csv', index=False)
+df.to_csv('ethusd30m.csv', index=False)
 
 # params
 context_days = len([group[1] for group in df.groupby(df.index.date)])  # Number of days used for context
@@ -108,7 +108,7 @@ log.warning (textsize)
 if day_back != 0:
     symbol = 'Historical Mode'
 else:
-    symbol = 'BTC-USD Live'
+    symbol = 'ETH-USD Live'
 
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
 log.error (dfnflist)
