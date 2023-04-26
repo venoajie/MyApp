@@ -33,6 +33,7 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
     try:            
 
         log.warning (ohlc_endPoint)
+        log.warning (requests.get(ohlc_endPoint).json())
         ohlc_request= requests.get(ohlc_endPoint).json()['result']
         result= string_modification.transform_nested_dict_to_list(ohlc_request)
         log.warning (result)
