@@ -26,7 +26,7 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
 
     now_utc = datetime.now()
     now_unix = time_modification.convert_time_to_unix (now_utc)
-    start_timestamp = now_unix - 60000 * qty_candles
+    start_timestamp = now_unix - (60000*resolution) * qty_candles
     
     ohlc_endPoint=  (f' https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name}&resolution={resolution}&start_timestamp={start_timestamp}')
     
