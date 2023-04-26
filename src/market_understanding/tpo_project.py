@@ -53,7 +53,6 @@ def transform_result_to_data_frame (data: object):
     df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
                             'close': 'Close','volume': 'Volume','cost': 'costUsd' })
     
-    log.error (df)
     # Filter relevant data
     df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
@@ -66,6 +65,7 @@ def transform_result_to_data_frame (data: object):
     df = df.drop(columns=['datetime'])
     df.index.names = ['datetime']
     df = df.iloc[::-1].reset_index()   
+    log.error (df)
     return df   
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
