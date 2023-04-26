@@ -90,6 +90,7 @@ async def create_tables (type:str = None):
                  'ohlc3_eth_perp_json',
                  'ohlc5_eth_perp_json',
                  'ohlc15_eth_perp_json',
+                 'ohlc30_eth_perp_json',
                  'ohlc1H_eth_perp_json',
                  'positions_json',
                  'portfolio_json',
