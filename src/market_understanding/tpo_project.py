@@ -90,7 +90,7 @@ log.warning (symbol)
 
 ticksz = get_ticksize(dfohlc30, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
 log.debug (ticksz)
-symbol = dfohlc30.symbol[0]
+symbol = 'ETH-PERP'
 log.debug (symbol)
 
 def datetime(dfhist):
@@ -105,6 +105,13 @@ def datetime(dfhist):
 
 
 dfhist = datetime(dfhist)
+
+print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+log.warning (dfhist)
+
+dfohlc30 = datetime(dfohlc30)
+log.error (dfohlc30)
+
 mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
 trading_hr = mean_val['session_hr']
 # !!! get rotational factor
