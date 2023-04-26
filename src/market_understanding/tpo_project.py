@@ -24,7 +24,7 @@ from loguru import logger as log
 from db_management import sqlite_management
 # from transform import transform_live, transform_hist
 # from alpha_dataframe import get_data
-pandas.set_option('display.max_rows', 500)
+pd.set_option('display.max_rows', 500)
 
 app = dash.Dash(__name__)
 
