@@ -30,7 +30,7 @@ strategies = [
                     "equity_risked_pct": (1 / 100),
                 },
                 {
-                    "strategy": "every5mtestLong",
+                    "strategy": "every5mLong",
                     "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
@@ -47,7 +47,7 @@ strategies = [
                     "equity_risked_usd": None,
                     "equity_risked_pct": equity_risked_pct_default*8,
                 },{
-                    "strategy": "every5mtestShort",
+                    "strategy": "every5mShort",
                     "status": "active",
                     "instrument": ["PERPETUAL"],
                     "time_frame": 3600,
