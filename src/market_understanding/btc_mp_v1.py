@@ -33,7 +33,7 @@ def transform_result_to_data_frame (data: object):
 
     # Column name standardization
     df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
-                            'close': 'Close','volume': 'VolumeCur','cost': 'volume' })
+                            'close': 'Close','volume': 'volume','cost': 'cost' })
 
     # transform unix date to utc
     df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
