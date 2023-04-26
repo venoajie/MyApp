@@ -175,6 +175,14 @@ class ApplyHedgingSpot:
 
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
         log.info (f'CANCEL_by_order_id {result}')
+        
+        reading_from_database: dict = await self.reading_from_database()
+        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+        open_orders_sqlite: list = await self.querying_all('orders_all_json')
+        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+        
+        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
+        
         return result
 
     async def current_server_time(self) -> float:
@@ -651,7 +659,6 @@ class ApplyHedgingSpot:
                 cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
                 log.warning(f" cancelled_id {cancelled_id}")
                 await self.cancel_by_order_id(cancelled_id[0])
-                system_tools.sleep_and_restart_program(1)
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
@@ -902,7 +909,6 @@ class ApplyHedgingSpot:
                         for id in cancelled_id:
                             log.warning(f" id {id}")
                             await self.cancel_by_order_id(id)
-                            system_tools.sleep_and_restart_program(1)
                 
                     # result example: 'hedgingSpot'
                     
@@ -937,7 +943,6 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                        system_tools.sleep_and_restart_program(1)
                             
                             exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
                             
@@ -975,7 +980,6 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                        system_tools.sleep_and_restart_program(1)
                                                            
                             # determine position sizing-hedging
                             if "hedgingSpot" in strategy_attr["strategy"]:
