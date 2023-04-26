@@ -163,6 +163,7 @@ class StreamMarketData:
                                 last_tick_fr_data_orders= data_orders['tick']                                
                                 
                                 if last_tick_fr_sqlite!= None:
+                                    database= "databases/trading.sqlite3"
                                     
                                     if last_tick_fr_sqlite== last_tick_fr_data_orders:
                                             
@@ -170,24 +171,26 @@ class StreamMarketData:
                                         
                                         if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                             await sqlite_management.deleting_row('ohlc1_eth_perp_json', 
-                                                                "databases/trading.sqlite3",
+                                                                database,
                                                                 where_filter,
                                                                 "=",
                                                                 last_tick_fr_sqlite)
+                                            
                                             await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                             
                                         if message_channel == "chart.trades.ETH-PERPETUAL.30":
                                             await sqlite_management.deleting_row('ohlc30_eth_perp_json', 
-                                                                "databases/trading.sqlite3",
+                                                                database,
                                                                 where_filter,
                                                                 "=",
                                                                 last_tick_fr_sqlite)
+                                            
                                             await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
                                     
                                     else:        
 
                                         if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
+                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json', data_orders)
                                             
                                         if message_channel == "chart.trades.ETH-PERPETUAL.30":
                                             await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
