@@ -12,7 +12,9 @@ import math
 
 def get_ticksize(data, freq=30):
     # data = df
+    print (f" data {data}")
     numlen = int(len(data)/2)
+    print (f" numlen {numlen}")
     # sample size for calculating ticksize = 50% of most recent data
     tztail = data.tail(numlen).copy()
     tztail['tz'] = tztail.Close.rolling(freq).std()  # std. dev of 30 period rolling
