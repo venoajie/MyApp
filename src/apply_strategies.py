@@ -618,16 +618,17 @@ class ApplyHedgingSpot:
 
         for label in label_transaction_main:
             log.debug (f'label {label}')
-            log.debug ([o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label])
 
-            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
+            my_trades_open_strategy =  [o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
+            log.debug (my_trades_open_strategy)
+            get_prices_in_label_transaction_main =  [o['price'] for o in my_trades_open_strategy]
             max_price =  0 if get_prices_in_label_transaction_main == [] else max(get_prices_in_label_transaction_main)
             min_price =  0 if get_prices_in_label_transaction_main == [] else min(get_prices_in_label_transaction_main)
 
             if 'Short' in label or 'hedging' in label:
-                transaction =  [o for o in my_trades_open if o["price"] == max_price]
+                transaction =  [o for o in my_trades_open_strategy if o["price"] == max_price]
             if 'Long' in label:
-                transaction =  [o for o in my_trades_open if o["price"] == min_price]
+                transaction =  [o for o in my_trades_open_strategy if o["price"] == min_price]
                         
             label = [
                         str_mod.parsing_label(o["label"])['transaction_net']
