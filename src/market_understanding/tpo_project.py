@@ -36,6 +36,14 @@ days_to_display = 10  # Number of last n days you want on the screen to display
 mode = 'tpo'  # for volume --> 'vol'
 
 
+def querying_all(table: list, 
+                        database: str = "databases/trading.sqlite3") -> dict:
+    """ """
+    from utilities import string_modification as str_mod
+    result =  sqlite_management.querying_table (table,  database ) 
+    
+    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])
+                
 def transform_result_to_data_frame (data: object):
     
     df = pd.DataFrame.from_dict(data[0])
@@ -62,7 +70,7 @@ def transform_result_to_data_frame (data: object):
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
-ohlc30= sqlite_management.query_pd ('ohlc30_eth_perp_json', 'data')
+ohlc30= querying_all ('ohlc30_eth_perp_json')
 #log.warning (ohlc30)
 dfohlc30= transform_result_to_data_frame (ohlc30)
 log.warning (dfohlc30)
