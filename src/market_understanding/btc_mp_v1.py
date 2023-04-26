@@ -43,6 +43,7 @@ def transform_result_to_data_frame (data: object):
     df['Low']= df['Low'].round(decimals = 2)
     df['Close']= df['Close'].round(decimals = 2)
     df['volume']= df['volume'].round(decimals = 2)
+    print(df)
 
     for col in ('Open', 'High', 'Low', 'Close',  'volume'):
         df[col] = df[col].astype(np.float32)
