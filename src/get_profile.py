@@ -12,7 +12,7 @@ from loguru import logger as log
 import deribit_get
 from utilities import  system_tools, string_modification as str_mod
 from db_management import sqlite_management
-from market_understanding import tpo_project
+from market_understanding import tpo_project, tpo_helper
 # from market_understanding import futures_analysis
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
