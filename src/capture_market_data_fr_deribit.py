@@ -177,6 +177,7 @@ class StreamMarketData:
                                                                 where_filter,
                                                                 "=",
                                                                 last_tick_fr_sqlite)
+                                            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data_orders)
                                             
                                         if message_channel == "chart.trades.ETH-PERPETUAL.30":
                                             await sqlite_management.deleting_row('ohlc30_eth_perp_json', 
@@ -184,6 +185,7 @@ class StreamMarketData:
                                                                 where_filter,
                                                                 "=",
                                                                 last_tick_fr_sqlite)
+                                            await sqlite_management.insert_tables('ohlc30_eth_perp_json', data_orders)
                                     
                                     else:        
                                         log.warning(f'last_tick_fr_sqlite== last_tick_fr_data_orders {last_tick_fr_sqlite== last_tick_fr_data_orders}')                                                                
