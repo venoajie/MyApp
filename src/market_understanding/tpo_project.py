@@ -77,16 +77,21 @@ dfohlc30= transform_result_to_data_frame (ohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
-print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
-print (dfhist)
 
-log.warning (dfohlc30)
+#log.warning (dfohlc30)
 dfohlc30.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
 log.debug (dfohlc30)
 
 ticksz = get_ticksize(dfhist, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
 symbol = dfhist.symbol[0]
+print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
+log.warning (ticksz)
+log.warning (symbol)
 
+ticksz = get_ticksize(dfohlc30, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
+log.debug (ticksz)
+symbol = dfohlc30.symbol[0]
+log.debug (symbol)
 
 def datetime(dfhist):
     """
