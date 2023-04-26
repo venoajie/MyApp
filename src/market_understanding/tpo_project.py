@@ -9,6 +9,7 @@ twitter.com/beinghorizontal
 beta version
 
 """
+import asyncio
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -72,7 +73,8 @@ def transform_result_to_data_frame (data: object):
 
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
-ohlc30= querying_all ('ohlc30_eth_perp_json')
+loop = asyncio.get_event_loop()
+ohlc30= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
 log.warning (ohlc30)
 #dfohlc30= transform_result_to_data_frame (ohlc30)
 #log.warning (dfohlc30)
