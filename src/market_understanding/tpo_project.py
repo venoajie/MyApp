@@ -35,10 +35,36 @@ avglen = 10  # num days mean to get values
 days_to_display = 10  # Number of last n days you want on the screen to display
 mode = 'tpo'  # for volume --> 'vol'
 
+
+def transform_result_to_data_frame (data: object):
+
+    df = pd.DataFrame(data)
+
+    # Column name standardization
+    df	= 	df.rename(columns={'tick':'date','open': 'open','high': 'high', 'low': 'low',
+                            'close': 'close','volume': 'volume','cost': 'costUsd' })
+    
+    # Filter relevant data
+    df = df.loc[:,['date', 'open', 'high', 'low', 'close',  'volume', 'costUsd']]
+
+    for col in ('open', 'high', 'low', 'close', 'volume', 'costUsd'):
+        df[col] = df[col].astype(np.float32)
+        
+    print (df)
+    # Set index
+    tsidx = pd.DatetimeIndex(pd.to_datetime(df['date'], unit='ms'), dtype='datetime64[ns]')
+    df.set_index(df['date'], inplace=True)
+    df = df.drop(columns=['date'])
+    df.index.names = ['date']
+    df = df.iloc[::-1].reset_index()   
+    return df   
+
 dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 log.debug (dfhist)
 ohlc30= sqlite_management.query_pd ('ohlc30_eth_perp_json', 'data')
-log.warning (ohlc30)
+#log.warning (ohlc30)
+dfohlc30= transform_result_to_data_frame (ohlc30)
+log.warning (dfohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
