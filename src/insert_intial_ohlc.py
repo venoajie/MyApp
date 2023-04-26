@@ -39,8 +39,11 @@ async def insert_ohlc(instrument_name: str='ETH-PERPETUAL', resolution: int =1, 
         #log.warning (result)
         
         for data in result:
-            #log.error (data)
-            await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
+            if resolution==1:
+                await sqlite_management.insert_tables('ohlc1_eth_perp_json',data)
+
+            if resolution==30:
+                await sqlite_management.insert_tables('ohlc30_eth_perp_json',data)
 
     except Exception as error:
         system_tools.catch_error_message(error, 10,"WebSocket connection - failed to get ohlc",)
