@@ -529,7 +529,8 @@ def query_pd (table_name: str, field: str = None):
         query_table = f'SELECT {field}  FROM {table_name}' 
     
     #fetch all
-    result = pd.read_sql_query(query_table, con)         
+    result = pd.read_sql_query(query_table, con)   
+    print(result)      
     
     #transform dataframe to dict
     result = result.to_dict('records')
