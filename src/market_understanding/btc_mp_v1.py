@@ -9,10 +9,43 @@ import plotly.graph_objs as go
 import datetime as dt
 import numpy as np
 import warnings
+from loguru import logger as log
+from db_management import sqlite_management
 
 warnings.filterwarnings('ignore')
 
 app = dash.Dash(__name__)
+
+
+async def querying_all(table: list, 
+                        database: str = "databases/trading.sqlite3") -> dict:
+    """ """
+    from utilities import string_modification as str_mod
+    result =  await sqlite_management.querying_table (table,  database ) 
+    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])  
+                
+def transform_result_to_data_frame (data: object):
+    
+    #log.debug (data)
+    df = pd.DataFrame(data)
+
+    # Column name standardization
+    df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
+                            'close': 'Close','volume': 'VolumeCur','cost': 'Volume' })
+
+    # transform unix date to utc
+    df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
+    df['datetime'] = df['datetime'].dt.strftime('%Y%m%d %I:%M:%S')
+
+    # Filter relevant data
+    df['symbol']='_NF1'
+
+    for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
+        df[col] = df[col].astype(np.float32)
+        
+    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
+
+    return df   
 
 def get_ticksize(data, freq=30):
     # data = dflive30
