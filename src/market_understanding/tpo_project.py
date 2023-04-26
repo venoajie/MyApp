@@ -92,7 +92,7 @@ log.warning (symbol)
 
 ticksz = get_ticksize(dfohlc30, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
 log.debug (ticksz)
-symbol = dfhist.symbol[0]
+symbol = dfohlc30.symbol[0]
 log.debug (symbol)
 
 def datetime(dfhist):
