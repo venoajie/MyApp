@@ -8,7 +8,7 @@ from dataclassy import dataclass  # import websockets
 # import json, orjson
 import aiohttp
 from aiohttp.helpers import BasicAuth
-
+from loguru import logger as log
 # user defined formula
 from configuration import id_numbering, config
 
@@ -192,11 +192,13 @@ class GetPrivateData:
         endpoint: str = "private/get_subaccounts_details"
 
         params = {"currency": self.currency, "with_open_orders": True}
+        log.error ('get_subaccounts')
 
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_account_summary(self):
         params = {"currency": self.currency, "extended": True}
+        log.error ('get_account_summary')
 
         # Set endpoint
         endpoint: str = "private/get_account_summary"
@@ -207,6 +209,7 @@ class GetPrivateData:
         
         # Set endpoint
         endpoint: str = "private/get_positions"
+        log.error ('get_positions')
 
         params = {"currency": self.currency}
 
