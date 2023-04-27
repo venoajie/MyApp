@@ -140,15 +140,10 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    power1 = ranking.power1  # Non-normalised IB strength
-    power = ranking.power  # Normalised IB strength for dynamic shape size for markers at bottom
     breakdown = df_updated_rank[1]
-    dh_list = ranking.highd
-    dl_list = ranking.lowd
 
     listmp = listmp_hist + listmp_live
 
-    df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
     for inc in range(value[1] - value[0]):
