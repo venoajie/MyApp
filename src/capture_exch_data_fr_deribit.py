@@ -173,7 +173,7 @@ class StreamAccountData:
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
                             private_data = await self.get_private_data(currency)
-                            result_open_orders: dict =  private_data.get_open_orders_byCurrency()
+                            result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
                             log.error (result_open_orders)
 
                             if trades:
