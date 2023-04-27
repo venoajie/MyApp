@@ -96,7 +96,7 @@ app.layout = html.Div(
 )
 
 
-@app.callback(
+@app.callback(Output(component_id='beinghorizontal', component_property='figure'),
               [Input('interval-component', 'n_intervals'),
                Input('slider', 'value')
                ])
