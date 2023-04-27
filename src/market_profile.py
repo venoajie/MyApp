@@ -5,6 +5,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 import pandas as pd
+import plotly.graph_objs as go
 import datetime as dt
 import numpy as np
 import warnings
@@ -42,6 +43,7 @@ def get_data(url):
     df = df.set_index('datetime', inplace=False, drop=False)
     return df
 
+
 url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
 df = get_data(url_30m)
 df.to_csv('ethusd30m.csv', index=False)
@@ -57,6 +59,11 @@ day_back = 0  # -1 While testing sometimes maybe you don't want current days dat
 ticksz = (get_ticksize(df.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
 textsize = 10
 
+if day_back != 0:
+    symbol = 'Historical Mode'
+else:
+    symbol = 'BTC-USD Live'
+
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
 
 dates = []
@@ -66,12 +73,16 @@ for d in range(0, len(dfnflist)):
 date_time_close = dt.datetime.today().strftime('%Y-%m-%d') + ' ' + '23:59:59'
 append_dt = pd.Timestamp(date_time_close)
 dates.append(append_dt)
+date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4',
+                                                 'text-orientation': 'upright'}} for h in range(0, len(dates))}
+
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
 
 app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
+        dcc.Link('Twitter', href='https://twitter.com/beinghorizontal'),
         html.Br(),
         dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
         html.H4('@beinghorizontal'),
@@ -85,6 +96,7 @@ app.layout = html.Div(
             html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
+                            marks=date_mark,
                             min=0,
                             max=len(dates),
                             step=None,
