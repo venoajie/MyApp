@@ -187,6 +187,7 @@ def update_graph(n, value):
             my_rgb = 'rgba(23, {power}, 3, 0.5)'.format(power=abs(252))
 
         brk_f_list_maj = []
+        print (f'breakdown.columns {breakdown.columns}')
         f = 0
         for f in range(len(breakdown.columns)):
             brk_f_list_min = []
@@ -196,8 +197,10 @@ def update_graph(n, value):
             brk_f_list_maj.append(brk_f_list_min)
 
         breakdown_values = ''  # for bubble callouts
+        print (f'brk_f_list_maj[i] {brk_f_list_maj[i]}')
         for st in brk_f_list_maj[i]:
             breakdown_values += st
+            print (f'breakdown_values {breakdown_values}')
         commentary_text = (
         '<br />Insights:<br />High: {}<br />Low: {}<br />Day_Range: {}<br />VAH:  {}<br /> POC:  {}<br /> VAL:  {}<br /> Balance Target:  '
         '{}<br /> Day Type:  {}<br />strength: {}%<br /><br />strength BreakDown:  {}<br />{}<br />{}'.format(
