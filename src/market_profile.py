@@ -82,7 +82,6 @@ app.layout = html.Div(
             n_intervals=0
         ),
         html.P([
-            html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
                             min=0,
@@ -100,10 +99,7 @@ app.layout = html.Div(
               [Input('interval-component', 'n_intervals'),
                Input('slider', 'value')
                ])
-def update_graph(n):
-    log.error (n)
-    log.debug (value)
-    value= ([len(dates) - 2, len(dates) - 1])
+def update_graph(n, value):
     
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
