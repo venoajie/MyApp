@@ -74,7 +74,6 @@ app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
         html.Br(),
-        html.H4('@beinghorizontal'),
         dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
