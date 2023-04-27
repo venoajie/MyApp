@@ -66,9 +66,6 @@ for d in range(0, len(dfnflist)):
 date_time_close = dt.datetime.today().strftime('%Y-%m-%d') + ' ' + '23:59:59'
 append_dt = pd.Timestamp(date_time_close)
 dates.append(append_dt)
-date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4',
-                                                 'text-orientation': 'upright'}} for h in range(0, len(dates))}
-
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
 
@@ -89,7 +86,6 @@ app.layout = html.Div(
             html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
-                            marks=date_mark,
                             min=0,
                             max=len(dates),
                             step=None,
