@@ -9,7 +9,7 @@ import plotly.graph_objs as go
 import datetime as dt
 import numpy as np
 import warnings
-
+from loguru import logger as log
 warnings.filterwarnings('ignore')
 
 app = dash.Dash(__name__)
@@ -151,6 +151,7 @@ def update_graph(n, value):
 
     df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
+    log.warning (f' DFList {DFList}')
 
     fig = go.Figure(data=[go.Candlestick(x=df3.index,
 
