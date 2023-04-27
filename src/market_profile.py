@@ -82,6 +82,7 @@ app.layout = html.Div(
             n_intervals=0
         ),
         html.P([
+            html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
                             marks=date_mark,
@@ -89,7 +90,10 @@ app.layout = html.Div(
                             max=len(dates),
                             step=None,
                             value=[len(dates) - 2, len(dates) - 1])
-        ])
+        ], style={'width': '80%',
+                  'fontSize': '14px',
+                  'padding-left': '100px',
+                  'display': 'inline-block'})
     ])
 )
 
