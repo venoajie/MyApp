@@ -30,6 +30,10 @@ def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
+def sleep_and_restart(idle: int = None) -> list:
+    """ """
+    system_tools.sleep_and_restart_program(idle)
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -844,7 +848,7 @@ class ApplyHedgingSpot:
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                await catch_error('size or open order is inconsistent', 10)
+                await sleep_and_restart (5)
             
     async def opening_transactions(self, 
                                    instrument, 
@@ -1017,7 +1021,7 @@ class ApplyHedgingSpot:
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                        await catch_error('size or open order is inconsistent',5)
+                        await sleep_and_restart (5)
                     
         except Exception as error:
             await catch_error(error)
