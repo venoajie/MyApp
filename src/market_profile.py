@@ -132,7 +132,7 @@ def update_graph(n, value):
 
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
-    value=[len(dates) - 2, len(dates) - 1]
+    #value=[len(dates) - 2, len(dates) - 1]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
