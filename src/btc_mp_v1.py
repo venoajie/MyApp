@@ -1,6 +1,6 @@
 import asyncio
 
-from market_understanding.MP import MpFunctions
+from MP import MpFunctions
 import requests
 import dash
 import dash_core_components as dcc
