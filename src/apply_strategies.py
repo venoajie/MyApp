@@ -1159,6 +1159,7 @@ async def main():
             "sub_accounts", currency
         )
         pickling.replace_data(my_path_sub_account, sub_accounts)
+        log.error (f'sub_accounts {sub_accounts}')
 
         # execute strategy
         await syn.running_strategy(server_time)
