@@ -194,7 +194,7 @@ class StreamAccountData:
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
-                                log.debug (f'my_orders {my_orders}')
+                                #log.debug (f'my_orders {my_orders}')
                                
                                 for order in orders: 
                                     log.warning (f'order {order}')
@@ -263,7 +263,7 @@ class StreamAccountData:
                             log.debug (f' order sqlite AFTER {open_orders_sqlite_list_data}')
                             #! ###########################################################
                             if positions:
-                                log.debug (f'positions {positions}')
+                                log.error (f'positions {positions}')
 
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
