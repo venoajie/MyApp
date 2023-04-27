@@ -103,6 +103,8 @@ app.layout = html.Div(
 def update_graph(n, value):
     log.error (n)
     log.debug (value)
+    value= ([len(dates) - 2, len(dates) - 1])
+    
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
 
