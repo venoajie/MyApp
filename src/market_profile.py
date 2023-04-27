@@ -72,9 +72,7 @@ mplist = mp.get_context()
 app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
-        dcc.Link('Twitter', href='https://twitter.com/beinghorizontal'),
         html.Br(),
-        dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
         html.H4('@beinghorizontal'),
         dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
