@@ -152,17 +152,6 @@ def update_graph(n, value):
     df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
-
-    fig = go.Figure(data=[go.Candlestick(x=df3.index,
-
-                                         open=df3['Open'],
-                                         high=df3['High'],
-                                         low=df3['Low'],
-                                         close=df3['Close'],
-                                         showlegend=True,
-                                         name=symbol,
-                                         opacity=0.3)])  # To make candlesticks more prominent increase the opacity
-
     for inc in range(value[1] - value[0]):
         i = value[0]
         # inc = 0 # for debug
@@ -178,17 +167,6 @@ def update_graph(n, value):
             df_mp['close'] > irank.vallist, df_mp['close'] < irank.vahlist), 'green', 'white')
 
         df_mp = df_mp.set_index('i_date', inplace=False)
-
-        # print(df_mp.index)
-        fig.add_trace(
-            go.Scattergl(x=df_mp.index, y=df_mp.close, mode="text", text=df_mp.alphabets,
-                         showlegend=False, textposition="top right",
-                         textfont=dict(family="verdana", size=textsize, color=df_mp.color)))
-
-        if power1[i] < 0:
-            my_rgb = 'rgba({power}, 3, 252, 0.5)'.format(power=abs(165))
-        else:
-            my_rgb = 'rgba(23, {power}, 3, 0.5)'.format(power=abs(252))
 
         brk_f_list_maj = []
         #log. (f'breakdown.columns {breakdown.columns}')
@@ -209,7 +187,7 @@ def update_graph(n, value):
         log.debug (f' irank {irank}')
 
         # plot(fig, auto_open=True) # For debugging
-    return (fig)
+    return 
 
 
 if __name__ == '__main__':
