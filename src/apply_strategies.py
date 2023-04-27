@@ -536,11 +536,6 @@ class ApplyHedgingSpot:
             net_sum_open_orders_strategy_market,
             min_position_size,
         )
-        log.debug(f'net_sum_current_position {net_sum_current_position} \
-            net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit} \
-                net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}\
-                    net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
-        
         #log.warning(f'determine_size_and_side {determine_size_and_side}')
 
         determine_size_and_side["len_order_market"] = len_transactions_open_orders_strategy_limit
@@ -626,10 +621,10 @@ class ApplyHedgingSpot:
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
-        log.error (f'label_transaction_main {label_transaction_main}')
+        #log.error (f'label_transaction_main {label_transaction_main}')
 
         for label in label_transaction_main:
-            log.debug (f'label {label}')
+            #log.debug (f'label {label}')
 
             my_trades_open_strategy =  [o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
             #log.debug (my_trades_open_strategy)
@@ -797,7 +792,7 @@ class ApplyHedgingSpot:
                                                                 
                                 resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
                                 
-                                log.critical (f' exit_order_allowed {exit_order_allowed}')
+                                #log.critical (f' exit_order_allowed {exit_order_allowed}')
 
                                 # closing order
                                 if (
