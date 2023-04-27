@@ -80,7 +80,12 @@ def get_data(url):
 
 
 url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
-df = get_data(url_30m)
+
+loop = asyncio.get_event_loop()
+df= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
+dfohlc30= transform_result_to_data_frame (df)
+log.warning (df)
+
 df.to_csv('ethusd30m.csv', index=False)
 
 # params
@@ -91,19 +96,8 @@ mode = 'tpo'  # for volume --> 'vol'
 trading_hr = 24  # Default for BTC USD or Forex
 day_back = 0  # -1 While testing sometimes maybe you don't want current days data then use -1
 # ticksz = 28 # If you want to use manual tick size then uncomment this. Really small number means convoluted alphabets (TPO)
-log.error (df)
-loop = asyncio.get_event_loop()
-ohlc30= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
-dfohlc30= transform_result_to_data_frame (ohlc30)
-log.warning (dfohlc30)
 ticksz = (get_ticksize(df.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
 textsize = 10
-log.error (ticksz)
-log.error (textsize)
-ticksz = (get_ticksize(dfohlc30.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
-textsize = 10
-log.warning (ticksz)
-log.warning (textsize)
 
 if day_back != 0:
     symbol = 'Historical Mode'
@@ -112,8 +106,6 @@ else:
 
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
 #log.error (dfnflist)
-dfnflist = [group[1] for group in dfohlc30.groupby(dfohlc30.index.date)]  #
-#log.warning (dfnflist)
 
 dates = []
 for d in range(0, len(dfnflist)):
@@ -167,8 +159,12 @@ def update_graph(n, value):
     distribution_hist = mplist[1]
 
     url_1m = "https://www.binance.com/api/v1/klines?symbol=BTCBUSD&interval=1m"
+    
+    loop = asyncio.get_event_loop()
+    df= loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
+    df_live1= transform_result_to_data_frame (df)
 
-    df_live1 = get_data(url_1m)  # this line fetches new data for current day
+    #df_live1 = get_data(url_1m)  # this line fetches new data for current day
     df_live1 = df_live1.dropna()
 
     dflive30 = df_live1.resample('30min').agg({'datetime': 'last', 'Open': 'first', 'High': 'max', 'Low': 'min',
