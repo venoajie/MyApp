@@ -78,7 +78,6 @@ date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4
 
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
-print (f' mplist {mplist}')
 
 app.layout = html.Div(
     html.Div([
@@ -133,7 +132,7 @@ def update_graph(n, value):
                          session_hr=trading_hr)
 
     mplist_live = mplive.get_context()
-    print (f' mplive 1 {mplist_live}')
+
     listmp_live = mplist_live[0]  # it will be in list format so take [0] slice for current day MP data frame
     df_distribution_live = mplist_live[1]
     df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
@@ -152,7 +151,6 @@ def update_graph(n, value):
     df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
-
     for inc in range(value[1] - value[0]):
         i = value[0]
         # inc = 0 # for debug
@@ -169,11 +167,6 @@ def update_graph(n, value):
 
         df_mp = df_mp.set_index('i_date', inplace=False)
 
-        if power1[i] < 0:
-            my_rgb = 'rgba({power}, 3, 252, 0.5)'.format(power=abs(165))
-        else:
-            my_rgb = 'rgba(23, {power}, 3, 0.5)'.format(power=abs(252))
-
         brk_f_list_maj = []
         #log. (f'breakdown.columns {breakdown.columns}')
         f = 0
@@ -184,24 +177,7 @@ def update_graph(n, value):
                     brk_f_list_min.append(index + str(': ') + str(rows[f]) + '<br />')
             brk_f_list_maj.append(brk_f_list_min)
 
-        breakdown_values = ''  # for bubble callouts
-        log.debug (f'brk_f_list_maj[i] {brk_f_list_maj[i]}')
-        for st in brk_f_list_maj[i]:
-            breakdown_values += st
-            #log.info (f'st {st}')
-        log.error (f' breakdown_values {breakdown_values}')
         log.debug (f' irank {irank}')
-        commentary_text = (
-        '<br />Insights:<br />High: {}<br />Low: {}<br />Day_Range: {}<br />VAH:  {}<br /> POC:  {}<br /> VAL:  {}<br /> Balance Target:  '
-        '{}<br /> Day Type:  {}<br />strength: {}%<br /><br />strength BreakDown:  {}<br />{}<br />{}'.format(
-            dh_list[i], dl_list[i],round(dh_list[i]- dl_list[i],2),
-            irank.vahlist,
-            irank.poclist, irank.vallist, irank.btlist, irank.daytype, irank.power, '',
-            '-------------------', breakdown_values))
-
-
-
-
 
 if __name__ == '__main__':
     app.run_server(port=8000, host='127.0.0.1',
