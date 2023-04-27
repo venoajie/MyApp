@@ -172,7 +172,8 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
-                            result_open_orders: dict = await self.get_private_data.get_open_orders_byCurrency()
+                            private_data = await self.get_private_data(currency)
+                            result_open_orders: dict =  private_data.get_open_orders_byCurrency(currency)
                             log.error (result_open_orders)
 
                             if trades:
@@ -268,14 +269,14 @@ class StreamAccountData:
                 )
                 
                 
-    async def get_private_data(self) -> list:
+    async def get_private_data(self, currency) -> list:
         """
         Provide class object to access private get API
         """
         import deribit_get
         
         return deribit_get.GetPrivateData(
-                self.connection_url, self.client_id, self.client_secret, self.currency
+                self.connection_url, self.client_id, self.client_secret, currency
             )
 
     async def deleting_cancel_order(self, table: list, 
