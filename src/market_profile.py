@@ -96,10 +96,9 @@ app.layout = html.Div(
 
 @app.callback(Output(component_id='beinghorizontal', component_property='figure'),
               [Input('interval-component', 'n_intervals'),
-               Input('slider')
+               Input('slider', 'value')
                ])
-def update_graph(n):
-    value=[len(dates) - 2, len(dates) - 1]
+def update_graph(n, value):
     
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
@@ -132,6 +131,8 @@ def update_graph(n):
     listmp = listmp_hist + listmp_live
 
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
+    
+    value=[len(dates) - 2, len(dates) - 1]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
