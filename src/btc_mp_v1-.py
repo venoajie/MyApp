@@ -78,7 +78,7 @@ date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4
 
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
-print (f' mp {mp}')
+print (f' mplist {mplist}')
 
 app.layout = html.Div(
     html.Div([
@@ -131,9 +131,9 @@ def update_graph(n, value):
     ticksz_live = (get_ticksize(dflive30.copy(), freq=2))
     mplive = MpFunctions(data=dflive30.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz_live,
                          session_hr=trading_hr)
-    print (f' mplive 1 {mplive}')
+
     mplist_live = mplive.get_context()
-    print (f' mplive 1 {mplive}')
+    print (f' mplive 1 {mplist_live}')
     listmp_live = mplist_live[0]  # it will be in list format so take [0] slice for current day MP data frame
     df_distribution_live = mplist_live[1]
     df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
