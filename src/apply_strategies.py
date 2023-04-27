@@ -647,8 +647,8 @@ class ApplyHedgingSpot:
                         for o in transaction
                     ][0]
 
-            log.critical(f" {label}")
-            log.error (f'max_price {max_price} min_price {min_price}') 
+            log.critical(f" {label} max_price {max_price} min_price {min_price}")
+
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
