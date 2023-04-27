@@ -78,6 +78,7 @@ date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4
 
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
+print (f' mplist {mplist}')
 
 app.layout = html.Div(
     html.Div([
@@ -132,7 +133,7 @@ def update_graph(n, value):
                          session_hr=trading_hr)
 
     mplist_live = mplive.get_context()
-
+    print (f' mplive 1 {mplist_live}')
     listmp_live = mplist_live[0]  # it will be in list format so take [0] slice for current day MP data frame
     df_distribution_live = mplist_live[1]
     df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
@@ -140,12 +141,28 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
+    power1 = ranking.power1  # Non-normalised IB strength
+    power = ranking.power  # Normalised IB strength for dynamic shape size for markers at bottom
     breakdown = df_updated_rank[1]
+    dh_list = ranking.highd
+    dl_list = ranking.lowd
 
     listmp = listmp_hist + listmp_live
 
+    df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
+
+    fig = go.Figure(data=[go.Candlestick(x=df3.index,
+
+                                         open=df3['Open'],
+                                         high=df3['High'],
+                                         low=df3['Low'],
+                                         close=df3['Close'],
+                                         showlegend=True,
+                                         name=symbol,
+                                         opacity=0.3)])  # To make candlesticks more prominent increase the opacity
+
     for inc in range(value[1] - value[0]):
         i = value[0]
         # inc = 0 # for debug
@@ -162,6 +179,17 @@ def update_graph(n, value):
 
         df_mp = df_mp.set_index('i_date', inplace=False)
 
+        # print(df_mp.index)
+        fig.add_trace(
+            go.Scattergl(x=df_mp.index, y=df_mp.close, mode="text", text=df_mp.alphabets,
+                         showlegend=False, textposition="top right",
+                         textfont=dict(family="verdana", size=textsize, color=df_mp.color)))
+
+        if power1[i] < 0:
+            my_rgb = 'rgba({power}, 3, 252, 0.5)'.format(power=abs(165))
+        else:
+            my_rgb = 'rgba(23, {power}, 3, 0.5)'.format(power=abs(252))
+
         brk_f_list_maj = []
         #log. (f'breakdown.columns {breakdown.columns}')
         f = 0
@@ -172,7 +200,17 @@ def update_graph(n, value):
                     brk_f_list_min.append(index + str(': ') + str(rows[f]) + '<br />')
             brk_f_list_maj.append(brk_f_list_min)
 
+        breakdown_values = ''  # for bubble callouts
+        log.debug (f'brk_f_list_maj[i] {brk_f_list_maj[i]}')
+        for st in brk_f_list_maj[i]:
+            breakdown_values += st
+            #log.info (f'st {st}')
+        log.error (f' breakdown_values {breakdown_values}')
         log.debug (f' irank {irank}')
+
+        # plot(fig, auto_open=True) # For debugging
+    return (fig)
+
 
 if __name__ == '__main__':
     app.run_server(port=8000, host='127.0.0.1',
