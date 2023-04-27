@@ -75,7 +75,11 @@ mplist = mp.get_context()
 app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
+        dcc.Link('Twitter', href='https://twitter.com/beinghorizontal'),
         html.Br(),
+        dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
+        html.H4('@beinghorizontal'),
+        dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
             interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
@@ -96,6 +100,7 @@ app.layout = html.Div(
                   'display': 'inline-block'})
     ])
 )
+
 
 @app.callback(Output(component_id='beinghorizontal', component_property='figure'),
               [Input('interval-component', 'n_intervals'),
