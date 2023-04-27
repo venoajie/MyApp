@@ -74,7 +74,6 @@ app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
         html.Br(),
-        dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
             interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
@@ -87,9 +86,7 @@ app.layout = html.Div(
                             max=len(dates),
                             step=None,
                             value=[len(dates) - 2, len(dates) - 1])
-        ], style={'width': '80%',
-                  'fontSize': '14px',
-                  'padding-left': '100px',
+        ], style={
                   'display': 'inline-block'})
     ])
 )
