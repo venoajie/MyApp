@@ -75,18 +75,13 @@ mplist = mp.get_context()
 app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
-        dcc.Link('Twitter', href='https://twitter.com/beinghorizontal'),
         html.Br(),
-        dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
-        html.H4('@beinghorizontal'),
-        dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
             interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
             n_intervals=0
         ),
         html.P([
-            html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
                             marks=date_mark,
@@ -94,10 +89,7 @@ app.layout = html.Div(
                             max=len(dates),
                             step=None,
                             value=[len(dates) - 2, len(dates) - 1])
-        ], style={'width': '80%',
-                  'fontSize': '14px',
-                  'padding-left': '100px',
-                  'display': 'inline-block'})
+        ])
     ])
 )
 
