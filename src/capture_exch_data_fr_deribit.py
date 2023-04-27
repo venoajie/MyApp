@@ -114,15 +114,14 @@ class StreamAccountData:
                             self.connection_url,
                             self.client_id,
                             self.client_secret,
-                            currency,
-                        )
+                            currency
+                            )
 
                         if self.refresh_token is None:
                             #await syn.get_sub_accounts()
                             log.debug("Successfully authenticated WebSocket Connection")
 
                         else:
-                            
                             log.info(
                                 "Successfully refreshed the authentication of the WebSocket Connection"
                             )
@@ -173,6 +172,8 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
+                            account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
+                            log.critical (account_balances_and_transactions_from_exchanges)
                             try:
                                 orders2 = data_orders["open_orders"]
                                 log.critical (f'orders2 {orders2}')
