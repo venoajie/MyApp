@@ -145,7 +145,7 @@ class ApplyHedgingSpot:
         )
         positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        log.critical(f' SUB ACCOUNT {sub_account}')
+        #log.critical(f' SUB ACCOUNT {sub_account}')
         positions_from_sub_account = sub_account[0]["positions"]
         open_orders_from_sub_account = sub_account[0]["open_orders"]
         portfolio = pickling.read_data(path_portfolio)
