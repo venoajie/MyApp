@@ -73,6 +73,7 @@ app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
         html.Br(),
+        dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
         html.H4('@beinghorizontal'),
         dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
@@ -95,13 +96,12 @@ app.layout = html.Div(
     ])
 )
 
+
 @app.callback(Output(component_id='beinghorizontal', component_property='figure'),
               [Input('interval-component', 'n_intervals'),
                Input('slider', 'value')
                ])
 def update_graph(n, value):
-    log.error (n)
-    log.debug (n)
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
 
@@ -151,7 +151,7 @@ def update_graph(n, value):
         df_mp = df_mp.set_index('i_date', inplace=False)
 
         brk_f_list_maj = []
-
+        #log. (f'breakdown.columns {breakdown.columns}')
         f = 0
         for f in range(len(breakdown.columns)):
             brk_f_list_min = []
