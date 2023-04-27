@@ -151,7 +151,7 @@ class StreamAccountData:
                 if "params" in list(message):
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
-                        # log.info (message_channel)
+                        log.critical (message_channel)
 
                         data_orders: list = message["params"]["data"]
                         log.info (data_orders)
@@ -173,6 +173,8 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
+                            orders2 = data_orders["open_orders"]
+                            log.critical (f'orders2 {orders2}')
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
@@ -187,9 +189,10 @@ class StreamAccountData:
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
+                                log.debug (f'my_orders {my_orders}')
                                
                                 for order in orders: 
-                                    log.error (f' {order}')
+                                    log.warning (f'order {order}')
                                     log.error (f'order_state {order_state}')
                                     log.error ("trade_seq" not in order)
                                     log.error ("trade_seq" in order)
@@ -249,6 +252,7 @@ class StreamAccountData:
                                         my_orders.distribute_order_transactions(currency)
 
                             if positions:
+                                log.debug (f'positions {positions}')
 
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
