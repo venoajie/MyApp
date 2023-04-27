@@ -189,6 +189,10 @@ class StreamAccountData:
                                 my_orders = open_orders_management.MyOrders(orders)
                                
                                 for order in orders: 
+                                    log.error (f' {order}')
+                                    log.error (f'order_state {order_state}')
+                                    log.error ("trade_seq" not in order)
+                                    log.error ("trade_seq" in order)
                                         
                                     if "trade_seq" not in order:
                                         # get the order state
