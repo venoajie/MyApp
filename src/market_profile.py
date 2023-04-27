@@ -74,6 +74,7 @@ app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
         html.Br(),
+        dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
             interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
