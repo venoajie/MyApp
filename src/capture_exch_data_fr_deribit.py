@@ -196,7 +196,6 @@ class StreamAccountData:
                                
                                 for order in orders: 
                                     log.warning (f'order {order}')
-                                    log.error (f'order_state {order_state}')
                                     log.error ("trade_seq" not in order)
                                     log.error ("trade_seq" in order)
                                         
@@ -208,6 +207,8 @@ class StreamAccountData:
 
                                         # get the order state
                                         order_state = order["state"]
+
+                                    log.error (f'order_state {order_state}')
                                     
                                     if order_state == 'cancelled' \
                                         or order_state == 'filled'\
