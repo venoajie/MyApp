@@ -151,7 +151,7 @@ def update_graph(n, value):
 
     df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
-    log.warning (f' DFList {DFList}')
+    
 
     fig = go.Figure(data=[go.Candlestick(x=df3.index,
 
@@ -204,7 +204,8 @@ def update_graph(n, value):
         print (f'brk_f_list_maj[i] {brk_f_list_maj[i]}')
         for st in brk_f_list_maj[i]:
             breakdown_values += st
-            print (f'breakdown_values {breakdown_values}')
+            log.info (f'st {st}')
+        log.error (f' breakdown_values {breakdown_values}')
         commentary_text = (
         '<br />Insights:<br />High: {}<br />Low: {}<br />Day_Range: {}<br />VAH:  {}<br /> POC:  {}<br /> VAL:  {}<br /> Balance Target:  '
         '{}<br /> Day Type:  {}<br />strength: {}%<br /><br />strength BreakDown:  {}<br />{}<br />{}'.format(
