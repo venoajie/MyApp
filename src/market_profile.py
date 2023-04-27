@@ -96,7 +96,7 @@ app.layout = html.Div(
 )
 
 
-@app.callback(Output(component_id='beinghorizontal', component_property='figure'),
+@app.callback(
               [Input('interval-component', 'n_intervals'),
                Input('slider', 'value')
                ])
@@ -150,7 +150,7 @@ def update_graph(n, value):
         df_mp = df_mp.set_index('i_date', inplace=False)
 
         brk_f_list_maj = []
-        #log. (f'breakdown.columns {breakdown.columns}')
+
         f = 0
         for f in range(len(breakdown.columns)):
             brk_f_list_min = []
