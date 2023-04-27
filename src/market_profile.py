@@ -96,9 +96,10 @@ app.layout = html.Div(
 
 @app.callback(Output(component_id='beinghorizontal', component_property='figure'),
               [Input('interval-component', 'n_intervals'),
-               Input('slider', 'value')
+               Input('slider')
                ])
-def update_graph(n, value):
+def update_graph(n):
+    value=[len(dates) - 2, len(dates) - 1]
     
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
