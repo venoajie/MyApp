@@ -264,7 +264,7 @@ class ApplyHedgingSpot:
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
 
-        log.warning (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_positions}')
+        log.warning (f' size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_positions}')
 
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
