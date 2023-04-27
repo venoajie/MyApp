@@ -175,6 +175,11 @@ class StreamAccountData:
                             private_data = await self.get_private_data(currency)
                             result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
                             log.error (result_open_orders)
+                            #! ###########################################################
+                            open_orders_sqlite =  await syn.querying_all('orders_all_json')
+                            open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+                            log.warning (f' order sqlite BEFORE {open_orders_sqlite_list_data}')
+                            #! ###########################################################
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
@@ -252,6 +257,11 @@ class StreamAccountData:
                                         
                                         my_orders.distribute_order_transactions(currency)
 
+                            #! ###########################################################
+                            open_orders_sqlite =  await syn.querying_all('orders_all_json')
+                            open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+                            log.debug (f' order sqlite AFTER {open_orders_sqlite_list_data}')
+                            #! ###########################################################
                             if positions:
                                 log.debug (f'positions {positions}')
 
