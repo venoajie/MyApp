@@ -172,13 +172,8 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
-                            account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
-                            log.critical (account_balances_and_transactions_from_exchanges)
-                            try:
-                                orders2 = data_orders["open_orders"]
-                                log.critical (f'orders2 {orders2}')
-                            except:
-                                log.critical (f'PASSSSSSSSSSSSSSSSSSSSSS')
+                            result_open_orders: dict = await self.get_private_data.get_open_orders_byCurrency()
+                            log.error (result_open_orders)
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
@@ -271,6 +266,17 @@ class StreamAccountData:
                     0.1,
                     "WebSocket connection EXCHANGE has broken",
                 )
+                
+                
+    async def get_private_data(self) -> list:
+        """
+        Provide class object to access private get API
+        """
+        import deribit_get
+        
+        return deribit_get.GetPrivateData(
+                self.connection_url, self.client_id, self.client_secret, self.currency
+            )
 
     async def deleting_cancel_order(self, table: list, 
                            database: str ,
