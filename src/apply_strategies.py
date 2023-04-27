@@ -273,6 +273,7 @@ class ApplyHedgingSpot:
         len_open_orders_from_sub_account_get = len(open_orders_from_sub_account_get)
         
         len_open_orders_open_from_db = len(open_orders_open_from_db)
+        log.warning (f' len_open_orders_from_sub_account_get {len_open_orders_from_sub_account_get} len_open_orders_open_from_db {len_open_orders_open_from_db}')
         
         return len_open_orders_from_sub_account_get == len_open_orders_open_from_db
         
@@ -647,11 +648,15 @@ class ApplyHedgingSpot:
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
-            log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
+            
             if check_orders_with_the_same_labels ['len_result'] > 1:
+                log.critical(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                 cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
                 log.warning(f" cancelled_id {cancelled_id}")
-                await self.cancel_by_order_id(cancelled_id[0])
+
+                for id in cancelled_id:
+                    log.warning(f" id {id}")
+                    await self.cancel_by_order_id(id)
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
@@ -894,16 +899,14 @@ class ApplyHedgingSpot:
                 for strategy_attr in strategies:
                     strategy_label = strategy_attr["strategy"]
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
-                    log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                     
                     if check_orders_with_the_same_labels ['len_result'] > 1:
+                        log.critical(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                         log.warning( [o for o in open_orders_open_from_db if strategy_label in o['label']  ])
                         cancelled_id= [o['order_id'] for o in open_orders_open_from_db if strategy_label in o['label']]
                         for id in cancelled_id:
                             log.warning(f" id {id}")
                             await self.cancel_by_order_id(id)
-                
-                    # result example: 'hedgingSpot'
                     
                     log.critical (strategy_label)
                     time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
