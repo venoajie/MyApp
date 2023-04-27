@@ -66,6 +66,7 @@ for d in range(0, len(dfnflist)):
 date_time_close = dt.datetime.today().strftime('%Y-%m-%d') + ' ' + '23:59:59'
 append_dt = pd.Timestamp(date_time_close)
 dates.append(append_dt)
+log.critical([len(dates) - 2, len(dates) - 1])
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
 
