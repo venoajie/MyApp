@@ -173,8 +173,11 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
-                            orders2 = data_orders["open_orders"]
-                            log.critical (f'orders2 {orders2}')
+                            try:
+                                orders2 = data_orders["open_orders"]
+                                log.critical (f'orders2 {orders2}')
+                            except:
+                                log.critical (f'PASSSSSSSSSSSSSSSSSSSSSS')
 
                             if trades:
                                 my_trades = myTrades_management.MyTrades(trades)
