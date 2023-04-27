@@ -66,7 +66,6 @@ for d in range(0, len(dfnflist)):
 date_time_close = dt.datetime.today().strftime('%Y-%m-%d') + ' ' + '23:59:59'
 append_dt = pd.Timestamp(date_time_close)
 dates.append(append_dt)
-
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
 
@@ -74,6 +73,7 @@ app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
         html.Br(),
+        html.H4('@beinghorizontal'),
         dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
             id='interval-component',
@@ -81,6 +81,7 @@ app.layout = html.Div(
             n_intervals=0
         ),
         html.P([
+            html.Label("Time Period"),
             dcc.RangeSlider(id='slider',
                             pushable=1,
                             min=0,
@@ -131,8 +132,6 @@ def update_graph(n, value):
     listmp = listmp_hist + listmp_live
 
     DFList = [group[1] for group in df2.groupby(df2.index.date)]
-    
-    #value=[len(dates) - 2, len(dates) - 1]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
