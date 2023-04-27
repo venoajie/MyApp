@@ -86,7 +86,9 @@ app.layout = html.Div(
                             max=len(dates),
                             step=None,
                             value=[len(dates) - 2, len(dates) - 1])
-        ], style={
+        ], style={'width': '80%',
+                  'fontSize': '14px',
+                  'padding-left': '100px',
                   'display': 'inline-block'})
     ])
 )
