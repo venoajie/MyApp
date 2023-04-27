@@ -100,7 +100,8 @@ app.layout = html.Div(
                Input('slider', 'value')
                ])
 def update_graph(n, value):
-    
+    log.error (n)
+    log.debug (n)
     listmp_hist = mplist[0]
     distribution_hist = mplist[1]
 
