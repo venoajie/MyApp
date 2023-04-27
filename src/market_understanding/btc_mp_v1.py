@@ -83,7 +83,7 @@ url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  #
 
 loop = asyncio.get_event_loop()
 df= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
-dfohlc30= transform_result_to_data_frame (df)
+df= transform_result_to_data_frame (df)
 log.warning (df)
 
 df.to_csv('ethusd30m.csv', index=False)
