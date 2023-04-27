@@ -263,8 +263,8 @@ class ApplyHedgingSpot:
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
 
-        log.warning (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy}')
-        log.warning (f' size_from_positions {size_from_positions}')
+        log.warning (f' sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_positions}')
+
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
     async def is_open_orders_consistent(self, open_orders_from_sub_account_get, open_orders_open_from_db) -> bool:
@@ -496,7 +496,7 @@ class ApplyHedgingSpot:
         except:
             label_int = None
 
-        log.warning(f'LABEL {label} label_main {label_main} label_int {label_int}')
+        #log.warning(f'LABEL {label} label_main {label_main} label_int {label_int}')
         open_orders_strategy = open_orders.open_orders_api_basedOn_label(label_main)
 
         # get net buy-sell order limit
@@ -708,7 +708,7 @@ class ApplyHedgingSpot:
                     my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                             
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
-                    log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
+                    #log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                     
                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                     my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
@@ -778,8 +778,8 @@ class ApplyHedgingSpot:
                             #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
 
                             hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
-                            log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
-                            log.critical (f' tp_price {tp_price} {best_bid_prc} {best_bid_prc < tp_price}')
+                            #log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
+                            #log.critical (f' tp_price {tp_price} {best_bid_prc} {best_bid_prc < tp_price}')
                             if "hedgingSpot" in strategy_attr["strategy"] \
                                 and hedged_value_to_notional > 80 * ONE_PCT:
                                 
