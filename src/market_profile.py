@@ -7,6 +7,7 @@ import datetime as dt
 import numpy as np
 from loguru import logger as log
 from db_management import sqlite_management
+
 #import dash
 #import dash_core_components as dcc
 #import dash_html_components as html
@@ -163,8 +164,12 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
+    log.debug (f' ranking {ranking}')
     
     value=[len(dates) - 2, len(dates) - 1]
+    
+    
+    my_list =[]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
@@ -174,6 +179,16 @@ def update_graph(n, value):
         irank = ranking.iloc[i]  # select single row from ranking df
 
         log.debug (f' irank {irank}')
+        
+        #dict_result=dict (volume= list_example['volume'][k],
+        #               tick= list_example['ticks'][k],
+        #               open= list_example['open'][k],
+        #               low= list_example['low'][k],
+        #               high= list_example['high'][k],
+        #               cost= list_example['cost'][k],
+        #               close= list_example['close'][k])
+        
+        #my_list.append(dict_result)
         
     return 
 
