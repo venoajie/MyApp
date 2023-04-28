@@ -1,9 +1,12 @@
+import asyncio
+
 from market_understanding.MP import MpFunctions
 import requests
 import pandas as pd
 import datetime as dt
 import numpy as np
 from loguru import logger as log
+from db_management import sqlite_management
 #import dash
 #import dash_core_components as dcc
 #import dash_html_components as html
@@ -14,6 +17,35 @@ from loguru import logger as log
 
 #app = dash.Dash(__name__)
 
+async def querying_all(table: list, 
+                        database: str = "databases/trading.sqlite3") -> dict:
+    """ """
+    from utilities import string_modification as str_mod
+    result =  await sqlite_management.querying_table (table,  database ) 
+    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])  
+                
+def transform_result_to_data_frame (data: object):
+    
+    #log.debug (data)
+    df = pd.DataFrame(data)
+
+    # Column name standardization
+    df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
+                            'close': 'Close','volume': 'volume','cost': 'cost' })
+
+    # transform unix date to utc
+    df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
+    
+    df = df.loc[:,['datetime', 'Open', 'High', 'Low', 'Close',  'volume']]
+    df = df.set_index(df['datetime'], drop=True, inplace=False)
+    
+    df['Open']= df['Open'].round(decimals = 2)
+    df['High']= df['High'].round(decimals = 2)
+    df['Low']= df['Low'].round(decimals = 2)
+    df['Close']= df['Close'].round(decimals = 2)
+    df['volume']= df['volume'].round(decimals = 2)
+    
+    return df   
 def get_ticksize(data, freq=30):
     # data = dflive30
     numlen = int(len(data) / 2)
@@ -45,6 +77,11 @@ def get_data(url):
 
 url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
 df = get_data(url_30m)
+
+loop = asyncio.get_event_loop()
+df= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
+df= transform_result_to_data_frame (df)
+
 df.to_csv('ethusd30m.csv', index=False)
 
 # params
