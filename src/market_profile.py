@@ -75,14 +75,9 @@ def get_data(url):
     df = df.set_index('datetime', inplace=False, drop=False)
     return df
 
-url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
-df = get_data(url_30m)
-
 loop = asyncio.get_event_loop()
 df= loop.run_until_complete(querying_all("ohlc30_eth_perp_json"))
 df= transform_result_to_data_frame (df)
-
-df.to_csv('ethusd30m.csv', index=False)
 
 # params
 context_days = len([group[1] for group in df.groupby(df.index.date)])  # Number of days used for context
@@ -104,8 +99,8 @@ for d in range(0, len(dfnflist)):
 date_time_close = dt.datetime.today().strftime('%Y-%m-%d') + ' ' + '23:59:59'
 append_dt = pd.Timestamp(date_time_close)
 dates.append(append_dt)
-date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4',
-                                                 'text-orientation': 'upright'}} for h in range(0, len(dates))}
+#date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4',
+#                                                 'text-orientation': 'upright'}} for h in range(0, len(dates))}
 
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
@@ -218,7 +213,7 @@ def get_market_profile():
         
         irank = ranking.iloc[i]  # select single row from ranking df
 
-        log.debug (f' irank {irank}')
+    log.debug (f' irank {irank}')
 
 if __name__ == '__main__':
     log.warning ('START')
