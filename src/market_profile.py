@@ -191,11 +191,10 @@ def update_graph(n, value):
 def get_market_profile():
 
     distribution_hist = mplist[1]
-
-    url_1m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=1m"
-
-    df_live1 = get_data(url_1m)  # this line fetches new data for current day
-    df_live1 = df_live1.dropna()
+    
+    df= loop.run_until_complete(querying_all("ohlc30_eth_perp_json")) # this line fetches new data for current day
+    df= transform_result_to_data_frame (df)
+    df_live1 = df.dropna()
 
     dflive30 = df_live1.resample('30min').agg({'datetime': 'last', 'Open': 'first', 'High': 'max', 'Low': 'min',
                                                'Close': 'last', 'volume': 'sum'})
