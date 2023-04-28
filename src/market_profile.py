@@ -167,9 +167,6 @@ def update_graph(n, value):
     ranking = df_updated_rank[0]
     value=[len(dates) - 2, len(dates) - 1]
     
-    
-    
-    
     for inc in range(value[1] - value[0]):
         i = value[0]
         
@@ -217,22 +214,20 @@ def get_market_profile():
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    ranking.head(106)
-    print (f' ranking {ranking}')
-        
-    value=[len(dates) - 2, len(dates) - 1]
-    my_list =[]
+    
+    value= [len(dates) - 2, len(dates) - 1]
+    
     for inc in range(value[1] - value[0]):
         i = value[0]
         
         i += inc
         
         irank = ranking.iloc[i]  # select single row from ranking df
-        log.debug (f' i {i}')
-        log.debug (f' irank {irank}')
-    print (f' df {irank.to_dict()}')
+    
+    return irank.to_dict()
 
 if __name__ == '__main__':
     log.warning ('START')
-    get_market_profile()
+    market_profile= get_market_profile()
+    print (market_profile)
     log.warning ('DONE')
