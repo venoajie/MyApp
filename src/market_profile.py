@@ -131,20 +131,57 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
+    
     value=[len(dates) - 2, len(dates) - 1]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
-        # inc = 0 # for debug
-        # i = value[0]
-
+        
         i += inc
+        
         irank = ranking.iloc[i]  # select single row from ranking df
 
         log.debug (f' irank {irank}')
         
     return 
 
+def get_market_profile():
+
+    distribution_hist = mplist[1]
+
+    url_1m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=1m"
+
+    df_live1 = get_data(url_1m)  # this line fetches new data for current day
+    df_live1 = df_live1.dropna()
+
+    dflive30 = df_live1.resample('30min').agg({'datetime': 'last', 'Open': 'first', 'High': 'max', 'Low': 'min',
+                                               'Close': 'last', 'volume': 'sum'})
+    df2 = pd.concat([df, dflive30])
+    df2 = df2.drop_duplicates('datetime')
+
+    ticksz_live = (get_ticksize(dflive30.copy(), freq=2))
+    mplive = MpFunctions(data=dflive30.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz_live,
+                         session_hr=trading_hr)
+
+    mplist_live = mplive.get_context()
+
+    df_distribution_live = mplist_live[1]
+    df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
+    df_distribution_concat = df_distribution_concat.reset_index(inplace=False, drop=True)
+
+    df_updated_rank = mp.get_dayrank()
+    ranking = df_updated_rank[0]
+    
+    value=[len(dates) - 2, len(dates) - 1]
+    
+    for inc in range(value[1] - value[0]):
+        i = value[0]
+        
+        i += inc
+        
+        irank = ranking.iloc[i]  # select single row from ranking df
+
+        log.debug (f' irank {irank}')
+
 if __name__ == '__main__':
-    app.run_server(port=8000, host='127.0.0.1',
-                   debug=True)  # debug=False if executing from ipython(vscode/Pycharm/Spyder)
+    get_market_profile()
