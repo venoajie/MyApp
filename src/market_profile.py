@@ -115,7 +115,7 @@ app.layout = html.Div(
                Input('slider', 'value')
                ])
 def update_graph(n, value):
-    listmp_hist = mplist[0]
+
     distribution_hist = mplist[1]
 
     url_1m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=1m"
@@ -134,23 +134,13 @@ def update_graph(n, value):
 
     mplist_live = mplive.get_context()
     print (f' mplive 1 {mplist_live}')
-    listmp_live = mplist_live[0]  # it will be in list format so take [0] slice for current day MP data frame
+
     df_distribution_live = mplist_live[1]
     df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
     df_distribution_concat = df_distribution_concat.reset_index(inplace=False, drop=True)
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    power1 = ranking.power1  # Non-normalised IB strength
-    power = ranking.power  # Normalised IB strength for dynamic shape size for markers at bottom
-    breakdown = df_updated_rank[1]
-    dh_list = ranking.highd
-    dl_list = ranking.lowd
-
-    listmp = listmp_hist + listmp_live
-
-    df3 = df2[(df2.index >= dates[value[0]]) & (df2.index <= dates[value[1]])]
-    DFList = [group[1] for group in df2.groupby(df2.index.date)]
     
     for inc in range(value[1] - value[0]):
         i = value[0]
@@ -158,32 +148,9 @@ def update_graph(n, value):
         # i = value[0]
 
         i += inc
-        df1 = DFList[i].copy()
-        df_mp = listmp[i]
         irank = ranking.iloc[i]  # select single row from ranking df
-        df_mp['i_date'] = df1['datetime'][0]
-        # # @todo: background color for text
-        df_mp['color'] = np.where(np.logical_and(
-            df_mp['close'] > irank.vallist, df_mp['close'] < irank.vahlist), 'green', 'white')
 
-        df_mp = df_mp.set_index('i_date', inplace=False)
 
-        brk_f_list_maj = []
-        #log. (f'breakdown.columns {breakdown.columns}')
-        f = 0
-        for f in range(len(breakdown.columns)):
-            brk_f_list_min = []
-            for index, rows in breakdown.iterrows():
-                if rows[f] != 0:
-                    brk_f_list_min.append(index + str(': ') + str(rows[f]) + '<br />')
-            brk_f_list_maj.append(brk_f_list_min)
-
-        breakdown_values = ''  # for bubble callouts
-        log.debug (f'brk_f_list_maj[i] {brk_f_list_maj[i]}')
-        for st in brk_f_list_maj[i]:
-            breakdown_values += st
-            #log.info (f'st {st}')
-        log.error (f' breakdown_values {breakdown_values}')
         log.debug (f' irank {irank}')
 
         # plot(fig, auto_open=True) # For debugging
