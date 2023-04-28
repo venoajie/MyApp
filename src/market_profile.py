@@ -1,18 +1,18 @@
 from market_understanding.MP import MpFunctions
 import requests
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
 import pandas as pd
-import plotly.graph_objs as go
 import datetime as dt
 import numpy as np
-import warnings
 from loguru import logger as log
-warnings.filterwarnings('ignore')
+#import dash
+#import dash_core_components as dcc
+#import dash_html_components as html
+#from dash.dependencies import Input, Output
+#import plotly.graph_objs as go
+#import warnings
+#warnings.filterwarnings('ignore')
 
-app = dash.Dash(__name__)
+#app = dash.Dash(__name__)
 
 def get_ticksize(data, freq=30):
     # data = dflive30
@@ -73,38 +73,38 @@ date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
 
-app.layout = html.Div(
-    html.Div([
-        dcc.Location(id='url', refresh=False),
-        html.Br(),
-        html.H4('@beinghorizontal'),
-        dcc.Graph(id='beinghorizontal'),
-        dcc.Interval(
-            id='interval-component',
-            interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
-            n_intervals=0
-        ),
-        html.P([
-            html.Label("Time Period"),
-            dcc.RangeSlider(id='slider',
-                            pushable=1,
-                            marks=date_mark,
-                            min=0,
-                            max=len(dates),
-                            step=None,
-                            value=[len(dates) - 2, len(dates) - 1])
-        ], style={'width': '80%',
-                  'fontSize': '14px',
-                  'padding-left': '100px',
-                  'display': 'inline-block'})
-    ])
-)
+#app.layout = html.Div(
+#    html.Div([
+#        dcc.Location(id='url', refresh=False),
+#        html.Br(),
+#        html.H4('@beinghorizontal'),
+#        dcc.Graph(id='beinghorizontal'),
+#        dcc.Interval(
+#            id='interval-component',
+#            interval=5 * 1000,  # Reduce the time if you want frequent updates 5000 = 5 sec
+#            n_intervals=0
+#        ),
+#       html.P([
+#            html.Label("Time Period"),
+#            dcc.RangeSlider(id='slider',
+#                            pushable=1,
+#                            marks=date_mark,
+#                            min=0,
+#                            max=len(dates),
+#                            step=None,
+#                            value=[len(dates) - 2, len(dates) - 1])
+#        ], style={'width': '80%',
+#                  'fontSize': '14px',
+#                  'padding-left': '100px',
+#                  'display': 'inline-block'})
+#    ])
+#)
 
 
-@app.callback(Output(component_id='beinghorizontal', component_property='figure'),
-              [Input('interval-component', 'n_intervals'),
-               Input('slider', 'value')
-               ])
+#@app.callback(Output(component_id='beinghorizontal', component_property='figure'),
+#              [Input('interval-component', 'n_intervals'),
+#               Input('slider', 'value')
+#               ])
 def update_graph(n, value):
 
     distribution_hist = mplist[1]
