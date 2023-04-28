@@ -164,7 +164,7 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    log.debug (f' ranking {ranking}')
+    log.error (f' ranking {ranking}')
     
     value=[len(dates) - 2, len(dates) - 1]
     
