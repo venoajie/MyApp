@@ -17,6 +17,7 @@ from db_management import sqlite_management
 #warnings.filterwarnings('ignore')
 
 #app = dash.Dash(__name__)
+pd.set_option('display.max_rows', None)
 
 async def querying_all(table: list, 
                         database: str = "databases/trading.sqlite3") -> dict:
@@ -227,8 +228,8 @@ def get_market_profile():
         i += inc
         
         irank = ranking.iloc[i]  # select single row from ranking df
-
-    log.debug (f' irank {irank}')
+        log.debug (f' i {i}')
+        log.debug (f' irank {irank}')
 
 if __name__ == '__main__':
     log.warning ('START')
