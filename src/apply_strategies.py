@@ -313,6 +313,18 @@ class ApplyHedgingSpot:
     async def send_limit_order(self, params) -> None:
         """ """
 
+        reading_from_database: dict = await self.reading_from_database()
+        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
+        open_orders_sqlite: list = await self.querying_all('orders_all_json')
+        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+        
+        #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
+        open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+        
+        if open_order_is_consistent == False:
+            await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
+            await sleep_and_restart (5)
+        
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
         
