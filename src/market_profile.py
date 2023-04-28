@@ -184,4 +184,6 @@ def get_market_profile():
         log.debug (f' irank {irank}')
 
 if __name__ == '__main__':
+    log.warning ('START')
     get_market_profile()
+    log.warning ('DONE')
