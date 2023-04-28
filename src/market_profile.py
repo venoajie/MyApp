@@ -43,7 +43,6 @@ def get_data(url):
     df = df.set_index('datetime', inplace=False, drop=False)
     return df
 
-
 url_30m = "https://www.binance.com/api/v1/klines?symbol=ETHBUSD&interval=30m"  # 10 days history 30 min ohlcv
 df = get_data(url_30m)
 df.to_csv('ethusd30m.csv', index=False)
@@ -59,11 +58,6 @@ day_back = 0  # -1 While testing sometimes maybe you don't want current days dat
 ticksz = (get_ticksize(df.copy(), freq=freq))*2  # Algorithm will calculate the optimal tick size based on volatility
 textsize = 10
 
-if day_back != 0:
-    symbol = 'Historical Mode'
-else:
-    symbol = 'BTC-USD Live'
-
 dfnflist = [group[1] for group in df.groupby(df.index.date)]  #
 
 dates = []
@@ -78,14 +72,11 @@ date_mark = {str(h): {'label': str(h), 'style': {'color': 'blue', 'fontsize': '4
 
 mp = MpFunctions(data=df.copy(), freq=freq, style=mode, avglen=avglen, ticksize=ticksz, session_hr=trading_hr)
 mplist = mp.get_context()
-print (f' mplist {mplist}')
 
 app.layout = html.Div(
     html.Div([
         dcc.Location(id='url', refresh=False),
-        dcc.Link('Twitter', href='https://twitter.com/beinghorizontal'),
         html.Br(),
-        dcc.Link('python source code', href='http://www.github.com/beinghorizontal'),
         html.H4('@beinghorizontal'),
         dcc.Graph(id='beinghorizontal'),
         dcc.Interval(
@@ -133,7 +124,6 @@ def update_graph(n, value):
                          session_hr=trading_hr)
 
     mplist_live = mplive.get_context()
-    print (f' mplive 1 {mplist_live}')
 
     df_distribution_live = mplist_live[1]
     df_distribution_concat = pd.concat([distribution_hist, df_distribution_live], axis=0)
@@ -150,12 +140,9 @@ def update_graph(n, value):
         i += inc
         irank = ranking.iloc[i]  # select single row from ranking df
 
-
         log.debug (f' irank {irank}')
-
-        # plot(fig, auto_open=True) # For debugging
+        
     return 
-
 
 if __name__ == '__main__':
     app.run_server(port=8000, host='127.0.0.1',
