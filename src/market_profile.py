@@ -164,12 +164,10 @@ def update_graph(n, value):
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    log.error (f' ranking {ranking}')
-    
     value=[len(dates) - 2, len(dates) - 1]
     
     
-    my_list =[]
+    
     
     for inc in range(value[1] - value[0]):
         i = value[0]
@@ -218,9 +216,10 @@ def get_market_profile():
 
     df_updated_rank = mp.get_dayrank()
     ranking = df_updated_rank[0]
-    
+    log.error (f' ranking {ranking}')
+        
     value=[len(dates) - 2, len(dates) - 1]
-    
+    my_list =[]
     for inc in range(value[1] - value[0]):
         i = value[0]
         
