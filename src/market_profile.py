@@ -230,6 +230,7 @@ def get_market_profile():
         irank = ranking.iloc[i]  # select single row from ranking df
         log.debug (f' i {i}')
         log.debug (f' irank {irank}')
+    print (f' df {irank.to_dict()}')
 
 if __name__ == '__main__':
     log.warning ('START')
