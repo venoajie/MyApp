@@ -605,6 +605,35 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         await telegram_bot_sendtext("sqlite operation", "failed replace_row")
 
     
+async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
+                          database: str = "databases/trading.sqlite3"
+                          )->list:
+
+    '''
+    ''' 
+                     
+    try:
+        last_tick1_fr_sqlite= await get_min_max_tick(table)
+        
+        query_table= f'SELECT open_interest FROM {table} WHERE tick is {last_tick1_fr_sqlite}' 
+        print (f' query_table {query_table}')
+        print (f' last_tick1_fr_sqlite {last_tick1_fr_sqlite}')
+        
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db= await db.execute(query_table)
+            
+            async with db  as cur:
+                result =  (await cur.fetchone())
+
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
+
+    try:
+        return 0 if result== None else int(result[0] * 1)
+    except:
+        return None
+    
     
     
     
