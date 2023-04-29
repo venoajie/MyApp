@@ -112,7 +112,17 @@ async def create_tables (type:str = None):
                 if 'myTrades'  in table or 'my_trades' in table:
 
                     if  'json' in table:
-                        create_table = f'''
+                         if  'ohlc1' in table:
+                             
+                             create_table = f'''
+                                        CREATE 
+                                        TABLE IF NOT EXISTS 
+                                            {table} 
+                                            (id INTEGER PRIMARY KEY, data TEXT, open_interest REAL)
+                                        ''' 
+                         else:
+                                                         
+                             create_table = f'''
                                         CREATE 
                                         TABLE IF NOT EXISTS 
                                             {table} 
@@ -540,5 +550,61 @@ def query_pd (table_name: str, field: str = None):
     con.close()     
 
     return  result_cleaned
+
+
+async def add_additional_column (column_name, dataType, table: str = 'ohlc1_eth_perp_json',
+                      database: str = "databases/trading.sqlite3")->list:
+
+    '''
+    ''' 
+                    
+    try:
+        query_table = f'ALTER TABLE {table} ADD {column_name} {dataType}' 
+
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db= await db.execute(query_table)
+            
+            async with db  as cur:
+                result =  (await cur.fetchone())
+
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
+
+    try:
+        return 0 if result== None else int(result[0])
+    except:
+        return None
+    
+    
+async def replace_row (new_value: dict, column_name: str='data', table: str = 'ohlc1_eth_perp_json',
+                      database: str = "databases/trading.sqlite3", 
+                          filter: str = None, 
+                          operator=None,  
+                          filter_value=None)->list:
+
+    '''
+    ''' 
+                    
+    try:
+        query_table = f'UPDATE {table} SET {column_name} = json_replace({column_name}, {new_value}  WHERE  {filter} {operator}?'
+        filter_val =(f'{filter_value}',)
+
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db= await db.execute(query_table, filter_val)
+            
+            async with db  as cur:
+                result =  (await cur.fetchone())
+
+    except Exception as error:
+        print (f'replace_row {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed replace_row")
+
+    try:
+        return 0 if result== None else int(result[0])
+    except:
+        return None
+    
+    
     
     
