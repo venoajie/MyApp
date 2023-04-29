@@ -588,7 +588,7 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
                     
     try:
         #UPDATE ohlc1_eth_perp_json SET data = json_replace('{"volume":36.475044,"tick":1682755380000,"open":1905.7,"low":1905.55,"high":1905.7,"cost":69506.0,#"close":1905.55}') WHERE id is 9542;
-        query_table = f'UPDATE {table} SET {column_name} = json_replace({new_value})  WHERE  {filter} {operator}?'
+        query_table = f'''UPDATE {table} SET {column_name} = json_replace('{new_value}')  WHERE  {filter} {operator}?'''
         filter_val =(f'{filter_value}',)
         print (f'query_table {query_table}')
 
