@@ -160,15 +160,18 @@ class StreamMarketData:
                             
                             currency: str = string_modification.extract_currency_from_text(
                                 message_channel
-                            )                            
+                            )                      
+                        
+                            TABLE_OHLC1= "ohlc1_eth_perp_json"
+                            TABLE_OHLC30= "ohlc30_eth_perp_json"      
+                            
+                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel:
                                 
                                 DATABASE= "databases/trading.sqlite3"
-                                TABLE_OHLC1= "ohlc1_eth_perp_json"
-                                TABLE_OHLC30= "ohlc30_eth_perp_json"
                                 
-                                last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
+                                
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
                                 last_tick_fr_data_orders= data_orders['tick']     
@@ -218,8 +221,20 @@ class StreamMarketData:
                                 #log.warning (data_orders)
                                 try:
                                     if 'open_interest' in data_orders: 
-                                        log.error (data_orders['open_interest'])
+                                        open_interest= data_orders['open_interest']
+                                        log.error (open_interest)
                                         log.warning (data_orders['timestamp'])
+                                        where_filter = f"tick"    
+                                    
+                                        await sqlite_management.replace_row(open_interest,
+                                                                            'open_interest',
+                                                                            TABLE_OHLC1, 
+                                                                            DATABASE,
+                                                                            where_filter,
+                                                                            "is",
+                                                                            last_tick1_fr_sqlite
+                                                                            )
+                                            
                                     await self.distribute_ticker_result_as_per_data_type(
                                         my_path_ticker, data_orders, instrument_ticker
                                     )
