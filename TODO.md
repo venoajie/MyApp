@@ -62,6 +62,7 @@ Market psychology | [psychology](https://medium.com/@matthewjinfong/trading-101-
 Strategy | [strategy](https://medium.com/coinmonks/interview-with-a-pro-trader-how-to-profitably-scalp-bitcoin-1b3e2e7749a0) |  | | 
 Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali.medium.com/is-there-seasonal-intraday-or-overnight-anomalies-in-bitcoin-11bc71321b9e) |  | | 
 HFT | [hft](https://medium.com/@FMZQuant/digital-currency-high-frequency-strategy-detailed-introduction-f7be078ef53d) |  | | 
+OI | [open interest](https://www.youtube.com/watch?v=-JI6KCK81Nw) |  | | 
 
 
 
