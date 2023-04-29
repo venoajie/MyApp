@@ -186,8 +186,8 @@ class StreamMarketData:
                                                                                 TABLE_OHLC1, 
                                                                                 DATABASE,
                                                                                 where_filter,
-                                                                                "=",
-                                                                                last_tick30_fr_sqlite
+                                                                                "is",
+                                                                                last_tick1_fr_sqlite
                                                                                 )
                                             
                                         else:
