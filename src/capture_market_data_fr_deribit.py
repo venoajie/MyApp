@@ -243,8 +243,9 @@ class StreamMarketData:
                                 try:
                                     
                                     if 'open_interest' in data_orders: 
+                                        log.warning (data_orders)
                                         open_interest= data_orders['open_interest']
-                                        log.error (open_interest)
+                                        log.error (f" open_interest {open_interest}")
                                         log.warning (data_orders['timestamp'])
                                         where_filter = f"tick"    
                                     
