@@ -215,10 +215,10 @@ class StreamMarketData:
                                 my_path_ticker = system_tools.provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
-                                log.warning (data_orders)
+                                #log.warning (data_orders)
                                 try:
                                     if 'open_interest' in data_orders: 
-                                        log.warning (data_orders['open_interest'])
+                                        log.error (data_orders['open_interest'])
                                         log.warning (data_orders['timestamp'])
                                     await self.distribute_ticker_result_as_per_data_type(
                                         my_path_ticker, data_orders, instrument_ticker
