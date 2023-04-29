@@ -160,7 +160,9 @@ class StreamMarketData:
                             
                             currency: str = string_modification.extract_currency_from_text(
                                 message_channel
-                            )                      
+                            )      
+                            
+                            DATABASE= "databases/trading.sqlite3"                
                         
                             TABLE_OHLC1= "ohlc1_eth_perp_json"
                             TABLE_OHLC30= "ohlc30_eth_perp_json"      
@@ -169,7 +171,7 @@ class StreamMarketData:
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel:
                                 
-                                DATABASE= "databases/trading.sqlite3"
+                                
                                 
                                 
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
