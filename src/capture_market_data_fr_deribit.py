@@ -179,7 +179,7 @@ class StreamMarketData:
                                     
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                         if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
-                                            log.error (data_orders)                                  
+                                            #log.error (data_orders)                                  
                                             
                                             await sqlite_management.replace_row(data_orders,
                                                                                 'data',
@@ -215,6 +215,7 @@ class StreamMarketData:
                                 my_path_ticker = system_tools.provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
+                                log.warning (data_orders)
                                 try:
                                     await self.distribute_ticker_result_as_per_data_type(
                                         my_path_ticker, data_orders, instrument_ticker
