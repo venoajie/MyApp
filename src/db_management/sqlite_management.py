@@ -585,15 +585,17 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
 
     '''
     ''' 
-    #UPDATE ohlc1_eth_perp_json SET data = json_replace('{"volume":36.475044,"tick":1682755380000,"open":1905.7,"low":1905.55,"high":1905.7,"cost":69506.0,"close":1905.55}') WHERE id is 9542;
-    
-    # UPDATE ohlc1_eth_perp_json SET data = json_replace('{"volume": 2.964326, "tick": 1682759400000, "open": 1902.65, "low": 1902.3, "high": 1902.75, "cost": 5640.0, "close": 1902.7}'  WHERE  tick is 1682759400000;
-
                     
     try:
-        #UPDATE ohlc1_eth_perp_json SET data = json_replace('{"volume":36.475044,"tick":1682755380000,"open":1905.7,"low":1905.55,"high":1905.7,"cost":69506.0,#"close":1905.55}') WHERE id is 9542;
-        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.tick') {operator} {filter_value};"""
-        #print (f'query_table {query_table}')
+        
+        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.tick') {operator} 
+        
+        {filter_value};"""
+        
+        if column_name=='open_interest':
+            query_table = f"""UPDATE {table} SET {column_name} = ('{(new_value)}')  {filter}  JSON_EXTRACT (data, '$.tick') {operator} {filter_value};"""
+        
+        print (f'query_table {query_table}')
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             await db.execute(query_table)
