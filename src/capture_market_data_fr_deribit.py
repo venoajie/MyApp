@@ -178,15 +178,17 @@ class StreamMarketData:
                                     where_filter = f"tick"                                    
                                     
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:                                            
+                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
+                                            log.error (data_orders)                                  
                                             
-                                            await sqlite_management.deleting_row(TABLE_OHLC1, 
-                                                                    DATABASE,
-                                                                    where_filter,
-                                                                    "=",
-                                                                    last_tick1_fr_sqlite)
-                                            
-                                            await sqlite_management.insert_tables(TABLE_OHLC1,data_orders)
+                                            await sqlite_management.replace_row(data_orders,
+                                                                                'data',
+                                                                                TABLE_OHLC1, 
+                                                                                DATABASE,
+                                                                                where_filter,
+                                                                                "=",
+                                                                                last_tick30_fr_sqlite
+                                                                                )
                                             
                                         else:
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
