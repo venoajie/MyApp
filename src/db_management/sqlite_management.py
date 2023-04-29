@@ -588,12 +588,12 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
                     
     try:
         
-        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.tick') {operator} 
+        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} 
         
         {filter_value};"""
         
         if column_name=='open_interest':
-            query_table = f"""UPDATE {table} SET {column_name} = ('{(new_value)}')  {filter}  JSON_EXTRACT (data, '$.tick') {operator} {filter_value};"""
+            query_table = f"""UPDATE {table} SET {column_name} = ('{(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
         
         print (f'query_table {query_table}')
 
