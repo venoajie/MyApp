@@ -169,10 +169,7 @@ class StreamMarketData:
                             
                             last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
                             
-                            if "chart.trades.ETH-PERPETUAL." in message_channel:
-                                
-                                
-                                
+                            if "chart.trades.ETH-PERPETUAL." in message_channel:                                
                                 
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
@@ -196,7 +193,29 @@ class StreamMarketData:
                                                                                 )
                                             
                                         else:
+                                                
+                                            #get open interest last value
+                                            try:
+                                                open_interest_last_value1= sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                        
+                                            except:
+                                                open_interest_last_value1= None
+                                        
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
+                                            
+                                            open_interest_last_value2= sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                            
+                                            log.error(f' open_interest_last_value1 {open_interest_last_value1} open_interest_last_value2 {open_interest_last_value2}')
+                                            
+                                            if open_interest_last_value2== None:
+                                                await sqlite_management.replace_row(open_interest_last_value1,
+                                                                            'open_interest',
+                                                                            TABLE_OHLC1, 
+                                                                            DATABASE,
+                                                                            where_filter,
+                                                                            "is",
+                                                                            last_tick1_fr_sqlite
+                                                                            )
                                             
                                     if message_channel == "chart.trades.ETH-PERPETUAL.30":
                                         if last_tick30_fr_sqlite== last_tick_fr_data_orders:
@@ -222,6 +241,7 @@ class StreamMarketData:
                                 )
                                 #log.warning (data_orders)
                                 try:
+                                    
                                     if 'open_interest' in data_orders: 
                                         open_interest= data_orders['open_interest']
                                         log.error (open_interest)
