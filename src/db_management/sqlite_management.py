@@ -587,7 +587,7 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
     ''' 
                     
     try:
-        query_table = f'UPDATE {table} SET {column_name} = json_replace({column_name}, {new_value}  WHERE  {filter} {operator}?'
+        query_table = f'UPDATE {table} SET {column_name} = json_replace({new_value}  WHERE  {filter} {operator}?'
         filter_val =(f'{filter_value}',)
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
