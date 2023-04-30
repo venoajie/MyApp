@@ -183,14 +183,15 @@ class StreamMarketData:
                                         
                                         log.critical(f' OPEN INTEREST 1') 
                                         log.debug (message_channel)   
-                                        log.debug (data_orders) 
+
                                         log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
                                         
-                                        open_interest_last_value1= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
-                                        log.warning(f' open_interest_last_value1 WWWWWWWWWWWWWWWWWWWWWWWWW {open_interest_last_value1}')
-                                        # filling current ohlc table with updated data
-                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
-                                            #log.error (data_orders)                                  
+                                        # get current oi
+                                        open_interest_last_value= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                        log.warning(f' open_interest_last_value1 WWWWWWWWWWWWWWWWWWWWWWWWW {open_interest_last_value}')
+                                        
+                                        # refilling current ohlc table with updated data
+                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:           
                                             
                                             await sqlite_management.replace_row(data_orders,
                                                                                 'data',
@@ -201,25 +202,18 @@ class StreamMarketData:
                                                                                 last_tick1_fr_sqlite
                                                                                 )
                                             
+                                        # new tick ohlc
                                         else:
-                                                
-                                            #get open interest last value
-                                            try:
-                                                open_interest_last_value1= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
-                                                log.warning(f' open_interest_last_value1 AAAAAAAAAAAAAAAAAAAAAAAAA {open_interest_last_value1}')
-                                                
-                                            except:
-                                                log.warning(f' open_interest_last_value1 BBBBBBBBBBBBBBBBBBBBBBBBB {open_interest_last_value1}')
-                                                open_interest_last_value1= None
-                                        
+                                                                                        
+                                            # insert new ohlc data
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
                                             
-                                            open_interest_last_value2= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
-                                            
-                                            log.error(f' open_interest_last_value1 {open_interest_last_value1} open_interest_last_value2 {open_interest_last_value2} {open_interest_last_value2== None}')
-                                            
-                                            if open_interest_last_value2== None:
-                                                await sqlite_management.replace_row(open_interest_last_value1,
+                                            # update last tick
+                                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
+                                            log.error(f' last_tick1_fr_sqlite AAAAAAAAAAAAAAAAAAAAAA {last_tick1_fr_sqlite}')
+
+                                            # insert open interest in previous tick to the new tick
+                                            await sqlite_management.replace_row(open_interest_last_value,
                                                                             'open_interest',
                                                                             TABLE_OHLC1, 
                                                                             DATABASE,
