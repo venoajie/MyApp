@@ -171,8 +171,6 @@ class StreamMarketData:
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel: 
                                 
-                                                              
-                                
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
                                 last_tick_fr_data_orders= data_orders['tick']     
@@ -182,15 +180,6 @@ class StreamMarketData:
                                     where_filter = f"tick"                                
                                     
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                                        
-                                        log.critical(f' OPEN INTEREST 1') 
-                                        log.debug (message_channel)   
-
-                                        log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
-                                        
-                                        # get current oi
-                                        open_interest_last_value= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
-                                        log.warning(f' open_interest_last_value1 WWWWWWWWWWWWWWWWWWWWWWWWW {open_interest_last_value}')
                                         
                                         # refilling current ohlc table with updated data
                                         if last_tick1_fr_sqlite== last_tick_fr_data_orders:           
@@ -206,6 +195,12 @@ class StreamMarketData:
                                             
                                         # new tick ohlc
                                         else:
+                                            log.critical(f' OPEN INTEREST 1')
+                                            log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
+                                        
+                                            # get current oi
+                                            open_interest_last_value= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                            log.warning(f' open_interest_last_value1 WWWWWWWWWWWWWWWWWWWWWWWWW {open_interest_last_value}')
                                                                                         
                                             # insert new ohlc data
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
@@ -253,7 +248,6 @@ class StreamMarketData:
                                         log.warning (data_orders) 
                                         if 'open_interest' in data_orders:
                                             log.critical(f' OPEN INTEREST 2 / update') 
-                                                 
                                                                                             
                                             open_interest= data_orders['open_interest']
                                             log.error (f" open_interest {open_interest}")
