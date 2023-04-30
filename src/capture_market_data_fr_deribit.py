@@ -167,9 +167,11 @@ class StreamMarketData:
                             TABLE_OHLC1= "ohlc1_eth_perp_json"
                             TABLE_OHLC30= "ohlc30_eth_perp_json"     
                             
+                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1) 
+                            
                             if "chart.trades.ETH-PERPETUAL." in message_channel: 
                                 
-                                last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)                               
+                                                              
                                 
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
