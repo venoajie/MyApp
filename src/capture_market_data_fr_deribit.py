@@ -249,8 +249,6 @@ class StreamMarketData:
                                                                     
                                     if 'open_interest' in data_orders:
                                         
-                                        log.critical ('perpetual' in data_orders['instrument_name'])
-                                        
                                         if 'perpetual' in data_orders['instrument_name']: 
                                                 
                                             log.critical(f' OPEN INTEREST 2 / update') 
