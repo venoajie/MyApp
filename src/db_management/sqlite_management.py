@@ -597,8 +597,7 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         
         if column_name=='open_interest':
             query_table = f"""UPDATE {table} SET {column_name} = ('{(value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
-        
-        print (f'query_table {query_table}')
+            print (f'query_table {query_table}')
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             await db.execute(query_table)
