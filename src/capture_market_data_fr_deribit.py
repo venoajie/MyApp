@@ -177,9 +177,12 @@ class StreamMarketData:
                                 
                                 if TABLE_OHLC30 != None or TABLE_OHLC1 != None:                                    
                                     
-                                    where_filter = f"tick"                                    
+                                    where_filter = f"tick"     
+                                    log.critical(f' OPEN INTEREST 1')                               
                                     
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                                        log.debug (data_orders) 
+                                        log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
                                         if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
                                             #log.error (data_orders)                                  
                                             
@@ -245,6 +248,7 @@ class StreamMarketData:
                                 try:
                                     
                                     if 'open_interest' in data_orders: 
+                                        log.critical(f' OPEN INTEREST 1 / update') 
                                         log.warning (data_orders)
                                         open_interest= data_orders['open_interest']
                                         log.error (f" open_interest {open_interest}")
