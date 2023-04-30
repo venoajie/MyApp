@@ -250,28 +250,32 @@ class StreamMarketData:
                                 )
                                 #log.warning (data_orders)
                                 try:
-                                    log.warning ('open_interest' in data_orders)
-                                    log.warning ('perpetual' in data_orders['instrument_name'])
+                                    log.critical ('open_interest' in data_orders)  
+                                    log.warning (data_orders)                             
                                     
-                                    if 'open_interest' in data_orders \
-                                        and 'perpetual' in data_orders['instrument_name']: 
-                                            
-                                        log.critical(f' OPEN INTEREST 2 / update') 
-                                        log.warning (data_orders)
-                                        open_interest= data_orders['open_interest']
-                                        log.error (f" open_interest {open_interest}")
-                                        #log.warning (data_orders['timestamp'])
-                                        where_filter = f"tick"    
                                     
-                                        await sqlite_management.replace_row(open_interest,
-                                                                            'open_interest',
-                                                                            TABLE_OHLC1, 
-                                                                            DATABASE,
-                                                                            where_filter,
-                                                                            "is",
-                                                                            last_tick1_fr_sqlite
-                                                                            )
+                                    if 'open_interest' in data_orders:
+                                        
+                                        log.critical ('perpetual' in data_orders['instrument_name'])
+                                        
+                                        if 'perpetual' in data_orders['instrument_name']: 
+                                                
+                                            log.critical(f' OPEN INTEREST 2 / update') 
                                             
+                                            open_interest= data_orders['open_interest']
+                                            log.error (f" open_interest {open_interest}")
+                                            #log.warning (data_orders['timestamp'])
+                                            where_filter = f"tick"    
+                                        
+                                            await sqlite_management.replace_row(open_interest,
+                                                                                'open_interest',
+                                                                                TABLE_OHLC1, 
+                                                                                DATABASE,
+                                                                                where_filter,
+                                                                                "is",
+                                                                                last_tick1_fr_sqlite
+                                                                                )
+                                                
                                     await self.distribute_ticker_result_as_per_data_type(
                                         my_path_ticker, data_orders, instrument_ticker
                                     )
