@@ -560,6 +560,7 @@ async def add_additional_column (column_name, dataType, table: str = 'ohlc1_eth_
                     
     try:
         query_table = f'ALTER TABLE {table} ADD {column_name} {dataType}' 
+        
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             db= await db.execute(query_table)
@@ -593,13 +594,13 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         {filter_value};"""
         
         if column_name=='open_interest':
-            query_table = f"""UPDATE {table} SET {column_name} = ('{(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
+            query_table = f"""UPDATE {table} SET {column_name} = float('{(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
         
         print (f'query_table {query_table}')
 
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             await db.execute(query_table)
-
+#CREATE INDEX tick_index ON  ohlc1_eth_perp_json (tick);
     except Exception as error:
         print (f'replace_row {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed replace_row")
@@ -611,7 +612,7 @@ async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
 
     '''
     ''' 
-                     
+        #            ALTER TABLE ohlc1_eth_perp_json ADD offset_oi REAL AS () 
     try:
         last_tick1_fr_sqlite= await get_min_max_tick(table)
         
