@@ -185,6 +185,8 @@ class StreamMarketData:
                                         log.debug (message_channel)   
                                         log.debug (data_orders) 
                                         log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
+                                        
+                                        # filling current ohlc table with updated data
                                         if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
                                             #log.error (data_orders)                                  
                                             
@@ -249,7 +251,9 @@ class StreamMarketData:
                                 #log.warning (data_orders)
                                 try:
                                     
-                                    if 'open_interest' in data_orders: 
+                                    if 'open_interest' in data_orders \
+                                        and 'perpetual' in data_orders['instrument_name']: 
+                                            
                                         log.critical(f' OPEN INTEREST 2 / update') 
                                         log.warning (data_orders)
                                         open_interest= data_orders['open_interest']
