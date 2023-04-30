@@ -247,12 +247,12 @@ class StreamMarketData:
                                 #log.warning (data_orders)
                                 try:            
                                                                     
-                                    if 'open_interest' in data_orders:
-                                        
-                                        if 'perpetual' in data_orders['instrument_name']: 
-                                                
+                                    if 'perpetual' in data_orders['instrument_name']: 
+                                        log.warning (data_orders) 
+                                        if 'open_interest' in data_orders:
                                             log.critical(f' OPEN INTEREST 2 / update') 
-                                            
+                                                 
+                                                                                            
                                             open_interest= data_orders['open_interest']
                                             log.error (f" open_interest {open_interest}")
                                             #log.warning (data_orders['timestamp'])
