@@ -197,15 +197,17 @@ class StreamMarketData:
                                             #get open interest last value
                                             try:
                                                 open_interest_last_value1= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                                
                                         
                                             except:
+                                                log.warning(f' open_interest_last_value1 AAAAAAAAAAAAAAAAAAAAAAAAA {open_interest_last_value1}')
                                                 open_interest_last_value1= None
                                         
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
                                             
                                             open_interest_last_value2= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
                                             
-                                            log.error(f' open_interest_last_value1 {open_interest_last_value1} open_interest_last_value2 {open_interest_last_value2}')
+                                            log.error(f' open_interest_last_value1 {open_interest_last_value1} open_interest_last_value2 {open_interest_last_value2} {open_interest_last_value2== None}')
                                             
                                             if open_interest_last_value2== None:
                                                 await sqlite_management.replace_row(open_interest_last_value1,
