@@ -165,11 +165,11 @@ class StreamMarketData:
                             DATABASE= "databases/trading.sqlite3"                
                         
                             TABLE_OHLC1= "ohlc1_eth_perp_json"
-                            TABLE_OHLC30= "ohlc30_eth_perp_json"      
+                            TABLE_OHLC30= "ohlc30_eth_perp_json"     
                             
-                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
-                            
-                            if "chart.trades.ETH-PERPETUAL." in message_channel:                                
+                            if "chart.trades.ETH-PERPETUAL." in message_channel: 
+                                
+                                last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)                               
                                 
                                 last_tick30_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC30)
 
@@ -244,7 +244,7 @@ class StreamMarketData:
                                 my_path_ticker = system_tools.provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
-                                #log.warning (data_orders)
+                                log.debug (data_orders)
                                 try:            
                                                                     
                                     if 'perpetual' in data_orders['instrument_name']: 
