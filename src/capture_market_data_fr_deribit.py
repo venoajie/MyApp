@@ -186,6 +186,8 @@ class StreamMarketData:
                                         log.debug (data_orders) 
                                         log.error(f' last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
                                         
+                                        open_interest_last_value1= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
+                                        log.warning(f' open_interest_last_value1 WWWWWWWWWWWWWWWWWWWWWWWWW {open_interest_last_value1}')
                                         # filling current ohlc table with updated data
                                         if last_tick1_fr_sqlite== last_tick_fr_data_orders:          
                                             #log.error (data_orders)                                  
