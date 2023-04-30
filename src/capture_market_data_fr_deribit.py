@@ -253,9 +253,8 @@ class StreamMarketData:
                                 #log.warning (data_orders)
                                 try:
                                     log.critical ('open_interest' in data_orders)  
-                                    log.warning (data_orders)                             
-                                    
-                                    
+                                    #log.warning (data_orders)                           
+                                                                    
                                     if 'open_interest' in data_orders:
                                         
                                         log.critical ('perpetual' in data_orders['instrument_name'])
