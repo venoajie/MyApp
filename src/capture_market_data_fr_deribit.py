@@ -248,7 +248,7 @@ class StreamMarketData:
                                 try:
                                     
                                     if 'open_interest' in data_orders: 
-                                        log.critical(f' OPEN INTEREST 1 / update') 
+                                        log.critical(f' OPEN INTEREST 2 / update') 
                                         log.warning (data_orders)
                                         open_interest= data_orders['open_interest']
                                         log.error (f" open_interest {open_interest}")
