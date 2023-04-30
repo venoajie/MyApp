@@ -250,6 +250,8 @@ class StreamMarketData:
                                 )
                                 #log.warning (data_orders)
                                 try:
+                                    log.warning ('open_interest' in data_orders)
+                                    log.warning ('perpetual' in data_orders['instrument_name'])
                                     
                                     if 'open_interest' in data_orders \
                                         and 'perpetual' in data_orders['instrument_name']: 
