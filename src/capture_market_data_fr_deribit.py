@@ -201,10 +201,10 @@ class StreamMarketData:
                                             #get open interest last value
                                             try:
                                                 open_interest_last_value1= await sqlite_management.get_last_open_interest (TABLE_OHLC1, DATABASE)
-                                                
-                                        
-                                            except:
                                                 log.warning(f' open_interest_last_value1 AAAAAAAAAAAAAAAAAAAAAAAAA {open_interest_last_value1}')
+                                                
+                                            except:
+                                                log.warning(f' open_interest_last_value1 BBBBBBBBBBBBBBBBBBBBBBBBB {open_interest_last_value1}')
                                                 open_interest_last_value1= None
                                         
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
