@@ -593,6 +593,7 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         
         {filter_value};"""
         
+        print (f'new_value {new_value}')
         value= float(new_value[0])
         print (f'value {value}')
         
