@@ -245,9 +245,7 @@ class StreamMarketData:
                                     "ticker", instrument_ticker
                                 )
                                 #log.warning (data_orders)
-                                try:
-                                    log.critical ('open_interest' in data_orders)  
-                                    #log.warning (data_orders)                           
+                                try:            
                                                                     
                                     if 'open_interest' in data_orders:
                                         
