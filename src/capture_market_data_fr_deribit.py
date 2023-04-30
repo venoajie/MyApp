@@ -244,10 +244,10 @@ class StreamMarketData:
                                 my_path_ticker = system_tools.provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
-                                log.debug (data_orders)
+                                #log.debug (data_orders)
                                 try:            
                                                                     
-                                    if 'perpetual' in data_orders['instrument_name']: 
+                                    if 'PERPETUAL' in data_orders['instrument_name']: 
                                         log.warning (data_orders) 
                                         if 'open_interest' in data_orders:
                                             log.critical(f' OPEN INTEREST 2 / update') 
