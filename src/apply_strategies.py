@@ -1132,6 +1132,7 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 10000):
     for table in tables:
 
         rows= await sqlite_management.count_rows(table)
+        log.warning(f' table {table} rows {rows}')
         
         if rows >rows_threshold:
 
