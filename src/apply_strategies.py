@@ -1137,13 +1137,21 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 10000):
         if rows >rows_threshold:
 
             where_filter = f"tick"
-            first_tick_fr_sqlite= await sqlite_management.get_min_max_tick(table, database, 'MIN')
+            first_tick_query= await sqlite_management.querying_arithmetic_operator ('tick', 'MIN', table)
+            log.warning (first_tick_query)
+            first_tick_fr_sqlite= await sqlite_management.executing_query_with_return(first_tick_query)
+            log.warning (first_tick_query)
+            log.warning (first_tick_fr_sqlite)
+            first_tick= first_tick_fr_sqlite[0]['MIN (tick)']
+            log.warning (first_tick)
+            first_tick= await sqlite_management.get_min_max_tick(table, database, 'MIN')
+            log.error (first_tick)
 
             await sqlite_management.deleting_row(table, 
                                                 database,
                                                 where_filter,
                                                 "=",
-                                                first_tick_fr_sqlite
+                                                first_tick
                                                 )
 
 async def main():
