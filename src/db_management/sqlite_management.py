@@ -499,7 +499,7 @@ def querying_open_interest (price: str= 'close',
                             table: str = 'ohlc1_eth_perp_json'
                             )->str:    
     
-    return f'''SELECT tick, JSON_EXTRACT (data, '$.volume'), JSON_EXTRACT (data, '$.{price}'), open_interest, \
+    return f'''SELECT tick, JSON_EXTRACT (data, '$.volume') AS volume, JSON_EXTRACT (data, '$.{price}')  AS close, open_interest, \
         (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}'''
     
 def querying_arithmetic_operator(item: str,
