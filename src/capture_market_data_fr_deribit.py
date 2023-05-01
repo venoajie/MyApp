@@ -338,7 +338,7 @@ class StreamMarketData:
                     "WebSocket connection - failed to capture market data from Deribit",
                 )
 
-    async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> None:
+    async def last_tick_fr_sqlite(self, last_tick_query_ohlc1) -> None:
         """ """
         try:
             last_tick1_fr_sqlite= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
