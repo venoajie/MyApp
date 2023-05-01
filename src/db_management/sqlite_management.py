@@ -497,35 +497,6 @@ async def count_rows (table: str = 'ohlc1_eth_perp_json',
         return None
     
     
-def query_pd (table_name: str, field: str = None):
-    """
-    # fetch tickers from sqlite3 by pandas and transform them to dict
-    # https://medium.com/@sayahfares19/making-pandas-fly-6-pandas-best-practices-to-save-memory-energy-8d09e9d52488
-    # https://pythonspeed.com/articles/pandas-sql-chunking/
-    """
-    import pandas as pd
-            
-    # Read sqlite query results into a pandas DataFrame
-    con = sqlite3.connect('databases/trading.sqlite3')
-    query_table = f'SELECT *  FROM {table_name}' 
-    
-    if field != None:
-        query_table = f'SELECT {field}  FROM {table_name}' 
-    
-    #fetch all
-    result = pd.read_sql_query(query_table, con)  
-    
-    #transform dataframe to dict
-    result = result.to_dict('records')
-    
-    result_cleaned = ([o['data'] for o in result])
-
-    #close connection sqlite
-    con.close()     
-
-    return  result_cleaned
-
-
 async def add_additional_column (column_name, dataType, table: str = 'ohlc1_eth_perp_json',
                       database: str = "databases/trading.sqlite3")->list:
 
@@ -683,5 +654,31 @@ async def executing_general_query (query_table,
 
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
     
+def query_pd (table_name: str, field: str = None):
+    """
+    # fetch tickers from sqlite3 by pandas and transform them to dict
+    # https://medium.com/@sayahfares19/making-pandas-fly-6-pandas-best-practices-to-save-memory-energy-8d09e9d52488
+    # https://pythonspeed.com/articles/pandas-sql-chunking/
+    """
+    import pandas as pd
+            
+    # Read sqlite query results into a pandas DataFrame
+    con = sqlite3.connect('databases/trading.sqlite3')
+    query_table = f'SELECT *  FROM {table_name}' 
     
+    if field != None:
+        query_table = f'SELECT {field}  FROM {table_name}' 
     
+    #fetch all
+    result = pd.read_sql_query(query_table, con)  
+    
+    #transform dataframe to dict
+    result = result.to_dict('records')
+    
+    result_cleaned = ([o['data'] for o in result])
+
+    #close connection sqlite
+    con.close()     
+
+    return  result_cleaned
+
