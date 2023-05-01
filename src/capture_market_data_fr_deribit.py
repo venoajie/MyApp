@@ -182,7 +182,7 @@ class StreamMarketData:
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                         
                                         # refilling current ohlc table with updated data
-                                        if last_tick1_fr_sqlite== last_tick_fr_data_orders:           
+                                        if last_tick1_fr_sqlite == last_tick_fr_data_orders:           
                                             
                                             await sqlite_management.replace_row(data_orders,
                                                                                 'data',
