@@ -29,7 +29,7 @@ open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", datab
 #print (open_interest)
 df= transform_result_to_data_frame (open_interest)
 df['sum']= df['delta_oi'].rolling(5, min_periods=1).sum()
-df.open_interest.pct_change()
+df['pct_chg']= (df['sum']/df['open_interest'].shift(1))*100
 
 if __name__ == '__main__':
     log.warning ('START')
