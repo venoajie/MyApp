@@ -168,12 +168,7 @@ class StreamMarketData:
                             TABLE_OHLC30= "ohlc30_eth_perp_json"     
                             last_tick_query_ohlc1= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
             
-                            last_tick1_fr_sqlite= await sqlite_management.exceuting_query_with_return(last_tick_query_ohlc1)
-                            last_tick1_fr_sqlite= last_tick1_fr_sqlite[0]['MAX (tick)']
-                            log.warning(f' last_tick1_fr_sqlite ZZZZZZZZZZZZZZ {last_tick1_fr_sqlite}')
-                            
-                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1) 
-                            log.error(f' last_tick1_fr_sqlite BBBBBBBBBBBB {last_tick1_fr_sqlite}')
+                            last_tick1_fr_sqlite= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel: 
                                 
@@ -213,7 +208,7 @@ class StreamMarketData:
                                             
                                             # update last tick
                                             
-                                            last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1)
+                                            last_tick1_fr_sqlite= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
                                             log.error(f' last_tick1_fr_sqlite AAAAAAAAAAAAAAAAAAAAAA {last_tick1_fr_sqlite}')
 
                                             # insert open interest in previous tick to the new tick
@@ -343,6 +338,18 @@ class StreamMarketData:
                     "WebSocket connection - failed to capture market data from Deribit",
                 )
 
+    async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> None:
+        """ """
+        try:
+            last_tick1_fr_sqlite= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
+
+        except Exception as error:
+            system_tools.catch_error_message(
+                error,
+                "WebSocket connection - failed to fetch last_tick_fr_sqlite",
+            )
+        return  last_tick1_fr_sqlite[0]['MAX (tick)']
+    
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
     ) -> None:
