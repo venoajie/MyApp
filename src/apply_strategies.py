@@ -1134,6 +1134,7 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
         count_rows_query= await sqlite_management.querying_arithmetic_operator('tick', 'COUNT', table)
         log.critical(f' count_rows_query {count_rows_query}')
         rows= await sqlite_management.executing_query_with_return(count_rows_query)
+        rows= rows[0]['COUNT (tick)']
         log.critical(f' rows {rows}')
         rows= await sqlite_management.count_rows(table)
         log.warning(f' rows {rows}')
