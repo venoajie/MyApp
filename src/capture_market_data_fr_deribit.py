@@ -343,7 +343,7 @@ class StreamMarketData:
         except Exception as error:
             system_tools.catch_error_message(
                 error,
-                "WebSocket connection - failed to fetch last_tick_fr_sqlite",
+                "Capture market data - failed to fetch last_tick_fr_sqlite",
             )
         return  last_tick1_fr_sqlite[0]['MAX (tick)']
     
