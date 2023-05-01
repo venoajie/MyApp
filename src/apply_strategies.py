@@ -1132,7 +1132,7 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
     for table in tables:
 
         rows= await sqlite_management.count_rows(table)
-        log.warning(f' table {table} rows {rows}')
+        #log.warning(f' table {table} rows {rows}')
         
         if rows >rows_threshold:
 
@@ -1167,9 +1167,6 @@ async def main():
             currency=currency,
         )
 
-        # capping sqlite rows
-        await count_and_delete_ohlc_rows()
-
         # get deribit server time
         server_time = await syn.current_server_time()
 
@@ -1185,6 +1182,9 @@ async def main():
 
         # execute strategy
         await syn.running_strategy(server_time)
+
+        # capping sqlite rows
+        await count_and_delete_ohlc_rows()
 
         # hedging: check for over hedged and over-bought
         label_hedging = "hedgingSpot"
