@@ -168,7 +168,8 @@ class StreamMarketData:
                             TABLE_OHLC30= "ohlc30_eth_perp_json"     
                             last_tick_query_ohlc1= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
             
-                            last_tick1_fr_sqlite= await sqlite_management.exceuting_query_with_return(last_tick_query_ohlc1)[0]['MAX (tick)']
+                            last_tick1_fr_sqlite= await sqlite_management.exceuting_query_with_return(last_tick_query_ohlc1)
+                            last_tick1_fr_sqlite= last_tick1_fr_sqlite[0]['MAX (tick)']
                             log.warning(f' last_tick1_fr_sqlite ZZZZZZZZZZZZZZ {last_tick1_fr_sqlite}')
                             
                             last_tick1_fr_sqlite= await sqlite_management.get_min_max_tick(TABLE_OHLC1) 
