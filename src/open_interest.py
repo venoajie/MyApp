@@ -12,8 +12,10 @@ async def querying_all(table: list,
                         database: str = "databases/trading.sqlite3") -> dict:
     """ """
     from utilities import string_modification as str_mod
-    result =  await sqlite_management.querying_table (table,  database ) 
-    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])  
+    query= sqlite_management.querying_open_interest ('close',table)
+    
+    result =  await sqlite_management.executing_query_with_return (query, None, None, database) 
+    return   result 
                 
 def transform_result_to_data_frame (data: object):
     
@@ -21,10 +23,11 @@ def transform_result_to_data_frame (data: object):
     df = pd.DataFrame(data)
     
     return df   
-
+database= "databases/trading.sqlite3"
 loop = asyncio.get_event_loop()
-df= loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
-df= transform_result_to_data_frame (df)
+open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", database))
+print (open_interest)
+df= transform_result_to_data_frame (open_interest)
 
 if __name__ == '__main__':
     log.warning ('START')
