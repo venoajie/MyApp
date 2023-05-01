@@ -471,32 +471,6 @@ async def deleting_row (table: str = 'mytrades',
         print (f'deleting_row {error}')        
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
-
-async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
-                          database: str = "databases/trading.sqlite3", 
-                          operator='MAX',  
-                          )->list:
-
-    '''
-    ''' 
-                    
-    try:
-        query_table = f'SELECT {operator} (tick) FROM {table}' 
-
-        async with  aiosqlite.connect(database, isolation_level=None) as db:
-            db= await db.execute(query_table)
-            
-            async with db  as cur:
-                result =  (await cur.fetchone())
-
-    except Exception as error:
-        print (f'querying_table {error}')   
-        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
-
-    try:
-        return 0 if result== None else int(result[0] * 1)
-    except:
-        return None
     
 async def count_rows (table: str = 'ohlc1_eth_perp_json',
                       database: str = "databases/trading.sqlite3")->list:
@@ -605,6 +579,32 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         await telegram_bot_sendtext("sqlite operation", "failed replace_row")
 
     
+async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
+                          database: str = "databases/trading.sqlite3", 
+                          operator='MAX',  
+                          )->list:
+
+    '''
+    ''' 
+                    
+    try:
+        query_table = f'SELECT {operator} (tick) FROM {table}' 
+
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db= await db.execute(query_table)
+            
+            async with db  as cur:
+                result =  (await cur.fetchone())
+
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
+
+    try:
+        return 0 if result== None else int(result[0] * 1)
+    except:
+        return None
+    
 async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
                           database: str = "databases/trading.sqlite3"
                           )->list:
@@ -633,7 +633,102 @@ async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
         return 0 if result== None else int(result[0] * 1)
     except:
         return None
+       
+async def querying_open_interest (price: str= 'close',
+                                  table: str = 'ohlc1_eth_perp_json',
+                                  database: str = "databases/trading.sqlite3",
+                                  )->list:
+
+    '''
+    ''' 
     
+    return f'''SELECT tick, volume, JSON_EXTRACT (data, '$.{price}'), open_interest, (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}'''
+    
+async def querying_arithmetic_operator(item,
+                                       operator: str = "MAX",
+                                       table: str = 'ohlc1_eth_perp_json',
+                                       )->str:
+    '''
+    ''' 
+    return f'SELECT {operator} ({item}) FROM {table}' 
+    
+async def exceuting_query_with_return (query_table,
+                                       filter: str = None, 
+                                       filter_value=None,
+                                       database: str = "databases/trading.sqlite3"
+                                        )->list:
+
+    '''
+            Reference
+            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+                        
+            Return type: 'list'/'dataframe'
+            
+    ''' 
+            
+    filter_val =(f'{filter_value}',)
+    
+    combine_result = []
+    
+    try:
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db = db.execute(query_table) if filter == None else db.execute(query_table, filter_val)
+                    
+            async with db  as cur:
+                fetchall =  (await cur.fetchall())
+            
+                head = (map(lambda attr : attr[0], cur.description))
+                headers = list(head)    
+                
+        for i in fetchall:
+            combine_result.append(dict(zip(headers,i)))
+            
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+    return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
+
+async def exceuting_general_query (query_table,
+                         table: str = 'mytrades',
+                          database: str = "databases/trading.sqlite3", 
+                          filter: str = None, 
+                          operator=None,  
+                          filter_value=None
+                          )->list:
+
+    '''
+            Reference
+            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+    ''' 
+            
+    filter_val =(f'{filter_value}',)
+    
+    if filter == None:
+        query_table = f'SELECT  * FROM {table}'
+    
+    combine_result = []
+    
+    try:
+        async with  aiosqlite.connect(database, isolation_level=None) as db:
+            db = db.execute(query_table) if filter == None else db.execute(query_table, filter_val)
+                      
+            async with db  as cur:
+                fetchall =  (await cur.fetchall())
+            
+                head = (map(lambda attr : attr[0], cur.description))
+                headers = list(head)    
+                
+        for i in fetchall:
+            combine_result.append(dict(zip(headers,i)))
+                
+    except Exception as error:
+        print (f'querying_table {error}')   
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
+
+    return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
     
     
     
