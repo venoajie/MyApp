@@ -19,7 +19,6 @@ async def querying_all(table: list,
                 
 def transform_result_to_data_frame (data: object):
     
-    #log.debug (data)
     df = pd.DataFrame(data)
     
     return df   
@@ -27,10 +26,10 @@ database= "databases/trading.sqlite3"
 loop = asyncio.get_event_loop()
 open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", database))
 print (open_interest)
-df= transform_result_to_data_frame (open_interest)
+#df= transform_result_to_data_frame (open_interest)
 
 if __name__ == '__main__':
     log.warning ('START')
     #market_profile= get_market_profile()
-    print (df)
+    print (open_interest)
     log.warning ('DONE')
