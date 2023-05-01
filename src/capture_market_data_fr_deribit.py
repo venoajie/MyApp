@@ -197,17 +197,12 @@ class StreamMarketData:
                                             
                                         # new tick ohlc
                                         else:
-                                        
-                                            # get current oi
+                                            # prepare query
                                             open_interest_last_value_query= await sqlite_management.querying_last_open_interest (last_tick1_fr_sqlite, 
                                                                                                                                  TABLE_OHLC1)
                                             
+                                            # get current oi
                                             open_interest_last_value= await self.last_open_interest_fr_sqlite (open_interest_last_value_query)
-                                            log.error (f' open_interest_last_value {open_interest_last_value}')
-                                            open_interest_last_value= await sqlite_management.get_last_open_interest (last_tick1_fr_sqlite,
-                                                                                                                      TABLE_OHLC1, 
-                                                                                                                      DATABASE)
-                                            log.error (f' open_interest_last_value {open_interest_last_value}')
                                                                                         
                                             # insert new ohlc data
                                             await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
