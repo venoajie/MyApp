@@ -1131,7 +1131,12 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
     
     for table in tables:
 
+        count_rows_query= await sqlite_management.querying_arithmetic_operator('tick', 'COUNT', table)
+        log.critical(f' count_rows_query {count_rows_query}')
+        rows= await sqlite_management.executing_query_with_return(count_rows_query)
+        log.critical(f' rows {rows}')
         rows= await sqlite_management.count_rows(table)
+        log.warning(f' rows {rows}')
         #log.warning(f' table {table} rows {rows}')
         
         if rows >rows_threshold:
@@ -1180,11 +1185,12 @@ async def main():
         pickling.replace_data(my_path_sub_account, sub_accounts)
         #log.error (f'sub_accounts {sub_accounts}')
 
-        # execute strategy
-        await syn.running_strategy(server_time)
-
         # capping sqlite rows
         await count_and_delete_ohlc_rows()
+        sleep_and_restart (10)
+
+        # execute strategy
+        await syn.running_strategy(server_time)
 
         # hedging: check for over hedged and over-bought
         label_hedging = "hedgingSpot"
