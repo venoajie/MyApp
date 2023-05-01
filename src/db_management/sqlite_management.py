@@ -652,7 +652,7 @@ async def querying_arithmetic_operator(item,
     ''' 
     return f'SELECT {operator} ({item}) FROM {table}' 
     
-async def exceuting_query_with_return (query_table,
+async def executing_query_with_return (query_table,
                                        filter: str = None, 
                                        filter_value=None,
                                        database: str = "databases/trading.sqlite3"
@@ -690,7 +690,7 @@ async def exceuting_query_with_return (query_table,
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
-async def exceuting_general_query (query_table,
+async def executing_general_query (query_table,
                          table: str = 'mytrades',
                           database: str = "databases/trading.sqlite3", 
                           filter: str = None, 
