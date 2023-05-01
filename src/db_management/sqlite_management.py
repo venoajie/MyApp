@@ -577,67 +577,10 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
     except Exception as error:
         print (f'replace_row {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed replace_row")
-
-    
-async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
-                          database: str = "databases/trading.sqlite3", 
-                          operator='MAX',  
-                          )->list:
-
-    '''
-    ''' 
-                    
-    try:
-        query_table = f'SELECT {operator} (tick) FROM {table}' 
-
-        async with  aiosqlite.connect(database, isolation_level=None) as db:
-            db= await db.execute(query_table)
-            
-            async with db  as cur:
-                result =  (await cur.fetchone())
-
-    except Exception as error:
-        print (f'querying_table {error}')   
-        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
-
-    try:
-        return 0 if result== None else int(result[0] * 1)
-    except:
-        return None
-    
-async def get_last_open_interest (last_tick,
-                                  table: str = 'ohlc1_eth_perp_json',
-                                  database: str = "databases/trading.sqlite3"
-                                  )->list:
-
-    '''
-    ''' 
-        #            ALTER TABLE ohlc1_eth_perp_json ADD offset_oi REAL AS () 
-    try:
-        print (last_tick)
-        last_tick1_fr_sqlite= await get_min_max_tick(table)
-        print (last_tick1_fr_sqlite)
-        
-        query_table= f'SELECT open_interest FROM {table} WHERE tick is {last_tick1_fr_sqlite}' 
-        
-        async with  aiosqlite.connect(database, isolation_level=None) as db:
-            db= await db.execute(query_table)
-            
-            async with db  as cur:
-                result =  (await cur.fetchone())
-
-    except Exception as error:
-        print (f'querying_table {error}')   
-        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
-
-    try:
-        return 0 if result== None else int(result[0] * 1)
-    except:
-        return None
        
        
 async def querying_last_open_interest (last_tick: int,
-                                  table: str = 'ohlc1_eth_perp_json')->list:
+                                       table: str = 'ohlc1_eth_perp_json')->str:
 
     '''
     ''' 
@@ -646,13 +589,13 @@ async def querying_last_open_interest (last_tick: int,
     
 async def querying_open_interest (price: str= 'close',
                                   table: str = 'ohlc1_eth_perp_json',
-                                  database: str = "databases/trading.sqlite3",
-                                  )->list:
+                                  )->str:
 
     '''
     ''' 
     
-    return f'''SELECT tick, volume, JSON_EXTRACT (data, '$.{price}'), open_interest, (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}'''
+    return f'''SELECT tick, volume, JSON_EXTRACT (data, '$.{price}'), open_interest, \
+        (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}'''
     
 async def querying_arithmetic_operator(item,
                                        operator: str = "MAX",
