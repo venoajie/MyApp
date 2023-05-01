@@ -167,9 +167,9 @@ class StreamMarketData:
                             TABLE_OHLC30: str= "ohlc30_eth_perp_json"   
                             WHERE_FILTER_TICK: str = "tick"  
                             
-                            last_tick_query_ohlc1: str= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
+                            last_tick_query_ohlc1: str=  sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
                             
-                            last_tick_query_ohlc30: str= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC30)
+                            last_tick_query_ohlc30: str=  sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC30)
             
                             last_tick1_fr_sqlite: int= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
                             
@@ -196,7 +196,7 @@ class StreamMarketData:
                                         # new tick ohlc
                                         else:
                                             # prepare query
-                                            open_interest_last_value_query= await sqlite_management.querying_last_open_interest (last_tick1_fr_sqlite, 
+                                            open_interest_last_value_query= sqlite_management.querying_last_open_interest (last_tick1_fr_sqlite, 
                                                                                                                                  TABLE_OHLC1)
                                             
                                             # get current oi
