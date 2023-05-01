@@ -33,5 +33,5 @@ df['sum']= df['delta_oi'].rolling(15, min_periods=1).sum()/df['open_interest']
 if __name__ == '__main__':
     log.warning ('START')
     #market_profile= get_market_profile()
-    print (df.tail (1500))
+    print (df.tail (150))
     log.warning ('DONE')
