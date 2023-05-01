@@ -224,11 +224,11 @@ class StreamMarketData:
                                         if last_tick30_fr_sqlite== last_tick_fr_data_orders:
                                             
                                             await sqlite_management.deleting_row(TABLE_OHLC30, 
-                                                                DATABASE,
-                                                                where_filter,
-                                                                "=",
-                                                                last_tick30_fr_sqlite)
-                                            
+                                                                                DATABASE,
+                                                                                where_filter,
+                                                                                "=",
+                                                                                last_tick30_fr_sqlite)
+                                                            
                                             await sqlite_management.insert_tables(TABLE_OHLC30, data_orders)
                                     
                                         else:
