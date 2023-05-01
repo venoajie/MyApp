@@ -28,10 +28,10 @@ loop = asyncio.get_event_loop()
 open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", database))
 #print (open_interest)
 df= transform_result_to_data_frame (open_interest)
-df['sum']= df['delta_oi'].rolling(15, min_periods=1).sum()/df['open_interest']
+df['pct_chg']= df['delta_oi'].rolling(15, min_periods=1).sum()/df['open_interest']
 
 if __name__ == '__main__':
     log.warning ('START')
     #market_profile= get_market_profile()
-    print (df.tail (50))
+    print (df.tail (-1))
     log.warning ('DONE')
