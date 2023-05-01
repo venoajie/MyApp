@@ -118,6 +118,7 @@ class StreamMarketData:
                     message: dict = orjson.loads(message)
                     message_channel: str = None
                     #log.warning(message)
+                    
                     if "id" in list(message):
                         if message["id"] == 9929:
                             if self.refresh_token is None:
@@ -154,7 +155,6 @@ class StreamMarketData:
                             message_channel = message["params"]["channel"]
                             #log.info (message_channel)
 
-                            # one_minute: int = 60000
                             data_orders: list = message["params"]["data"]
                             #log.debug(data_orders)
                             
@@ -162,25 +162,23 @@ class StreamMarketData:
                                 message_channel
                             )      
                             
-                            DATABASE= "databases/trading.sqlite3"                
-                        
-                            TABLE_OHLC1= "ohlc1_eth_perp_json"
-                            TABLE_OHLC30= "ohlc30_eth_perp_json"     
+                            DATABASE: str= "databases/trading.sqlite3"           
+                            TABLE_OHLC1: str= "ohlc1_eth_perp_json"
+                            TABLE_OHLC30: str= "ohlc30_eth_perp_json"   
+                            WHERE_FILTER_TICK: str = "tick"  
                             
-                            last_tick_query_ohlc1= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
+                            last_tick_query_ohlc1: str= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC1)
                             
-                            last_tick_query_ohlc30= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC30)
+                            last_tick_query_ohlc30: str= await sqlite_management.querying_arithmetic_operator ('tick', 'MAX', TABLE_OHLC30)
             
-                            last_tick1_fr_sqlite= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
+                            last_tick1_fr_sqlite: int= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel:                                 
                                 
-                                last_tick_fr_data_orders= data_orders['tick']     
+                                last_tick_fr_data_orders: int= data_orders['tick']     
                                 
                                 if TABLE_OHLC30 != None or TABLE_OHLC1 != None:                                    
-                                    
-                                    where_filter = f"tick"                                
-                                    
+                                                                        
                                     if message_channel == "chart.trades.ETH-PERPETUAL.1":
                                         
                                         # refilling current ohlc table with updated data
@@ -190,7 +188,7 @@ class StreamMarketData:
                                                                                 'data',
                                                                                 TABLE_OHLC1, 
                                                                                 DATABASE,
-                                                                                where_filter,
+                                                                                WHERE_FILTER_TICK,
                                                                                 "is",
                                                                                 last_tick1_fr_sqlite
                                                                                 )
@@ -205,19 +203,20 @@ class StreamMarketData:
                                             open_interest_last_value= await self.last_open_interest_fr_sqlite (open_interest_last_value_query)
                                                                                         
                                             # insert new ohlc data
-                                            await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
+                                            await sqlite_management.insert_tables(TABLE_OHLC1, 
+                                                                                  data_orders)
                                             
                                             # update last tick                                            
                                             last_tick1_fr_sqlite= await self.last_tick_fr_sqlite(last_tick_query_ohlc1)
 
                                             # insert open interest in previous tick to the new tick
                                             await sqlite_management.replace_row(open_interest_last_value,
-                                                                            'open_interest',
-                                                                            TABLE_OHLC1, 
-                                                                            DATABASE,
-                                                                            where_filter,
-                                                                            "is",
-                                                                            last_tick1_fr_sqlite
+                                                                                'open_interest',
+                                                                                TABLE_OHLC1, 
+                                                                                DATABASE,
+                                                                                WHERE_FILTER_TICK,
+                                                                                "is",
+                                                                                last_tick1_fr_sqlite
                                                                             )
                                             
                                     if message_channel == "chart.trades.ETH-PERPETUAL.30":
@@ -228,7 +227,7 @@ class StreamMarketData:
                                             
                                             await sqlite_management.deleting_row(TABLE_OHLC30, 
                                                                                 DATABASE,
-                                                                                where_filter,
+                                                                                WHERE_FILTER_TICK,
                                                                                 "=",
                                                                                 last_tick30_fr_sqlite)
                                                             
@@ -242,6 +241,7 @@ class StreamMarketData:
                                 my_path_futures_analysis = system_tools.provide_path_for_file(
                                     "futures_analysis", currency
                                 )
+                                
                                 my_path_ticker = system_tools.provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
@@ -253,14 +253,12 @@ class StreamMarketData:
                                         if 'open_interest' in data_orders:
                                                                                             
                                             open_interest= data_orders['open_interest']
-
-                                            where_filter = f"tick"    
                                         
                                             await sqlite_management.replace_row(open_interest,
                                                                                 'open_interest',
                                                                                 TABLE_OHLC1, 
                                                                                 DATABASE,
-                                                                                where_filter,
+                                                                                WHERE_FILTER_TICK,
                                                                                 "is",
                                                                                 last_tick1_fr_sqlite
                                                                                 )
