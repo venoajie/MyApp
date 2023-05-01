@@ -33,5 +33,5 @@ df['sum']= 0 if df['delta_oi']==0 else df['delta_oi'].rolling(15, min_periods=1)
 if __name__ == '__main__':
     log.warning ('START')
     #market_profile= get_market_profile()
-    print (df.tail (50))
+    print (df.tail (1500))
     log.warning ('DONE')
