@@ -58,6 +58,46 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
         await conn.commit()
         await conn.close()
          
+def create_table_json (table)->str:
+
+    '''
+    ''' 
+    query= f'''
+                CREATE 
+                TABLE IF NOT EXISTS 
+                    {table} 
+                    (id INTEGER PRIMARY KEY, data TEXT)
+            '''
+                    
+    if  'ohlc1' in table:
+                query = f'''
+                        CREATE 
+                        TABLE IF NOT EXISTS 
+                            {table} 
+                            (id INTEGER PRIMARY KEY, data TEXT, open_interest REAL)
+                        ''' 
+    return  query
+
+def create_virtual_table (table: str, item: str, item_data_type: str)->str:
+
+    '''
+    ''' 
+    query= f''' 
+            ALTER 
+            TABLE 
+                {table} 
+            ADD COLUMN 
+                {item} {item_data_type}  
+            GENERATED ALWAYS AS 
+            (
+            (JSON_EXTRACT (data, '$.{item}'))
+            ) 
+            VIRTUAL;
+            
+            '''   
+    
+    return  query
+
 async def create_tables (type:str = None):
 
     '''
@@ -102,32 +142,12 @@ async def create_tables (type:str = None):
                 
                 #await cur.execute(f"DROP TABLE IF EXISTS {table}")
                 
-                create_table = f'''
-                                        CREATE 
-                                        TABLE IF NOT EXISTS 
-                                            {table} 
-                                            (id INTEGER PRIMARY KEY, data TEXT)
-                                        ''' 
+                create_table = create_table_json (table)
                 
                 if 'myTrades'  in table or 'my_trades' in table:
 
                     if  'json' in table:
-                         if  'ohlc1' in table:
-                             
-                             create_table = f'''
-                                        CREATE 
-                                        TABLE IF NOT EXISTS 
-                                            {table} 
-                                            (id INTEGER PRIMARY KEY, data TEXT, open_interest REAL)
-                                        ''' 
-                         else:
-                                                         
-                             create_table = f'''
-                                        CREATE 
-                                        TABLE IF NOT EXISTS 
-                                            {table} 
-                                            (id INTEGER PRIMARY KEY, data TEXT)
-                                        ''' 
+                         create_table = create_table_json (table)
                         
                     else:
                         create_table = f'''CREATE 
@@ -153,9 +173,8 @@ async def create_tables (type:str = None):
                     #log.debug ('json' in table)
                     
                     if  'json' in table:
-                        create_table = f'CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY, \
-                                                                    data TEXT)' 
-                        #create_table_alter = f''' ALTER TABLE {table}  ADD COLUMN sum_pos REAL  AS (JSON_EXTRACT ('$.amount'));'''
+                        create_table = create_table_json (table)
+
                     else:
                         create_table = f'CREATE TABLE IF NOT EXISTS {table} (instrument_name TEXT, \
                                                                     label TEXT, \
@@ -208,47 +227,11 @@ async def create_tables (type:str = None):
                                                     
                                                     '''    
                                                     
-                    create_table_alter_order_id = f''' 
-                                                    ALTER 
-                                                    TABLE 
-                                                        {table} 
-                                                    ADD COLUMN 
-                                                        order_id TEXT  
-                                                    GENERATED ALWAYS AS 
-                                                    (
-                                                    (JSON_EXTRACT (data, '$.order_id'))
-                                                    ) 
-                                                    VIRTUAL;
-                                                    
-                                                    '''        
+                    create_table_alter_order_id = create_virtual_table (table, 'order_id', 'TEXT')
                                                        
-                    create_table_alter_trade_seq = f''' 
-                                                    ALTER 
-                                                    TABLE 
-                                                        {table} 
-                                                    ADD COLUMN 
-                                                        trade_seq INTEGER  
-                                                    GENERATED ALWAYS AS 
-                                                    (
-                                                    (JSON_EXTRACT (data, '$.trade_seq'))
-                                                    ) 
-                                                    VIRTUAL;
-                                                    
-                                                    '''         
+                    create_table_alter_trade_seq = create_virtual_table (table, 'trade_seq', 'INTEGER')
                        
-                    create_table_alter_price = f''' 
-                                                    ALTER 
-                                                    TABLE 
-                                                        {table} 
-                                                    ADD COLUMN 
-                                                        price REAL  
-                                                    GENERATED ALWAYS AS 
-                                                    (
-                                                    (JSON_EXTRACT (data, '$.price'))
-                                                    ) 
-                                                    VIRTUAL;
-                                                    
-                                                    '''         
+                    create_table_alter_price = create_virtual_table (table, 'price', 'REAL')
                     
                     if 'myTrades'  in table or 'my_trades' in table:
                             
@@ -276,19 +259,8 @@ async def create_tables (type:str = None):
                 
                 if  'ohlc' in table:
                            
-                    create_table_alter_tick = f''' 
-                                                    ALTER 
-                                                    TABLE 
-                                                        {table} 
-                                                    ADD COLUMN 
-                                                        tick INTEGER  
-                                                    GENERATED ALWAYS AS 
-                                                    (
-                                                    (JSON_EXTRACT (data, '$.tick'))
-                                                    ) 
-                                                    VIRTUAL;
+                    create_table_alter_tick = create_virtual_table (table, 'tick', 'INTEGER')
                                                     
-                                                    '''         
                     create_index = f'''CREATE INDEX tick ON  {table} (tick);'''
                     await cur.execute (f'{create_table_alter_tick}')
                     await cur.execute (f'{create_index}')
@@ -320,14 +292,8 @@ async def insert_tables (table_name, params):
             if isinstance(params, list):
                 for param in params:
                     if 'json' in table_name:
-                        #print (param)
-                        insert_table_json = f'''
-                                                INSERT 
-                                                INTO 
-                                                    {table_name} (data) 
-                                                VALUES (json 
-                                                    ('{json.dumps(param)}'));
-                                            '''
+
+                        insert_table_json =f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
 
                         await db.execute (insert_table_json)
                             
@@ -347,6 +313,7 @@ async def insert_tables (table_name, params):
                     insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
 
                     await db.execute (insert_table_json)
+                    
                 else:
                     await db.executemany (f'{insert_table}', [params])
             
@@ -472,31 +439,6 @@ async def deleting_row (table: str = 'mytrades',
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
     
-async def count_rows (table: str = 'ohlc1_eth_perp_json',
-                      database: str = "databases/trading.sqlite3")->list:
-
-    '''
-    ''' 
-                    
-    try:
-        query_table = f'SELECT COUNT (tick) FROM {table}' 
-
-        async with  aiosqlite.connect(database, isolation_level=None) as db:
-            db= await db.execute(query_table)
-            
-            async with db  as cur:
-                result =  (await cur.fetchone())
-
-    except Exception as error:
-        print (f'querying_table {error}')   
-        await telegram_bot_sendtext("sqlite operation", "failed get_last_tick")
-
-    try:
-        return 0 if result== None else int(result[0])
-    except:
-        return None
-    
-    
 async def add_additional_column (column_name, dataType, table: str = 'ohlc1_eth_perp_json',
                       database: str = "databases/trading.sqlite3")->list:
 
@@ -520,7 +462,6 @@ async def add_additional_column (column_name, dataType, table: str = 'ohlc1_eth_
         return 0 if result== None else int(result[0])
     except:
         return None
-    
     
 async def replace_row (new_value: dict, column_name: str='data', table: str = 'ohlc1_eth_perp_json',
                       database: str = "databases/trading.sqlite3", 
@@ -549,31 +490,23 @@ async def replace_row (new_value: dict, column_name: str='data', table: str = 'o
         print (f'replace_row {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed replace_row")
        
-       
-async def querying_last_open_interest (last_tick: int,
-                                       table: str = 'ohlc1_eth_perp_json')->str:
-
-    '''
-    ''' 
+def querying_last_open_interest (last_tick: int,
+                                 table: str = 'ohlc1_eth_perp_json')->str:
     
     return f'SELECT open_interest FROM {table} WHERE tick is {last_tick}' 
     
-async def querying_open_interest (price: str= 'close',
-                                  table: str = 'ohlc1_eth_perp_json',
-                                  )->str:
-
-    '''
-    ''' 
+def querying_open_interest (price: str= 'close',
+                            table: str = 'ohlc1_eth_perp_json'
+                            )->str:    
     
     return f'''SELECT tick, volume, JSON_EXTRACT (data, '$.{price}'), open_interest, \
         (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}'''
     
-async def querying_arithmetic_operator(item,
-                                       operator: str = "MAX",
-                                       table: str = 'ohlc1_eth_perp_json',
-                                       )->str:
-    '''
-    ''' 
+def querying_arithmetic_operator(item: str,
+                                 operator: str = "MAX",
+                                 table: str = 'ohlc1_eth_perp_json'
+                                 )->float:
+    
     return f'SELECT {operator} ({item}) FROM {table}' 
     
 async def executing_query_with_return (query_table,
