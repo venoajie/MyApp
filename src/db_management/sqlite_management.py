@@ -605,19 +605,20 @@ async def get_min_max_tick (table: str = 'ohlc1_eth_perp_json',
     except:
         return None
     
-async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
-                          database: str = "databases/trading.sqlite3"
-                          )->list:
+async def get_last_open_interest (last_tick,
+                                  table: str = 'ohlc1_eth_perp_json',
+                                  database: str = "databases/trading.sqlite3"
+                                  )->list:
 
     '''
     ''' 
         #            ALTER TABLE ohlc1_eth_perp_json ADD offset_oi REAL AS () 
     try:
+        print (last_tick)
         last_tick1_fr_sqlite= await get_min_max_tick(table)
+        print (last_tick1_fr_sqlite)
         
         query_table= f'SELECT open_interest FROM {table} WHERE tick is {last_tick1_fr_sqlite}' 
-        #print (f' query_table {query_table}')
-        #print (f' last_tick1_fr_sqlite {last_tick1_fr_sqlite}')
         
         async with  aiosqlite.connect(database, isolation_level=None) as db:
             db= await db.execute(query_table)
@@ -634,6 +635,15 @@ async def get_last_open_interest (table: str = 'ohlc1_eth_perp_json',
     except:
         return None
        
+       
+async def querying_last_open_interest (last_tick: int,
+                                  table: str = 'ohlc1_eth_perp_json')->list:
+
+    '''
+    ''' 
+    
+    return f'SELECT open_interest FROM {table} WHERE tick is {last_tick}' 
+    
 async def querying_open_interest (price: str= 'close',
                                   table: str = 'ohlc1_eth_perp_json',
                                   database: str = "databases/trading.sqlite3",
