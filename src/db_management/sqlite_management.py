@@ -688,6 +688,13 @@ async def exceuting_query_with_return (query_table,
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
 
+    if 'querying_arithmetic_operator' in query_table:
+        
+        try:
+            return 0 if combine_result== None else int(combine_result[0] * 1)
+        except:
+            return None
+        
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
 async def exceuting_general_query (query_table,
