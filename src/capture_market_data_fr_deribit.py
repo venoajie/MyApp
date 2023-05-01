@@ -202,8 +202,7 @@ class StreamMarketData:
                                             open_interest_last_value_query= await sqlite_management.querying_last_open_interest (last_tick1_fr_sqlite, 
                                                                                                                                  TABLE_OHLC1)
                                             
-                                            log.warning (f' open_interest_last_value_query {open_interest_last_value_query}')
-                                            open_interest_last_value= await sqlite_management.executing_query_with_return (open_interest_last_value_query)
+                                            open_interest_last_value= await self.last_open_interest_fr_sqlite (open_interest_last_value_query)
                                             log.error (f' open_interest_last_value {open_interest_last_value}')
                                             open_interest_last_value= await sqlite_management.get_last_open_interest (last_tick1_fr_sqlite,
                                                                                                                       TABLE_OHLC1, 
@@ -344,7 +343,19 @@ class StreamMarketData:
                     "WebSocket connection - failed to capture market data from Deribit",
                 )
 
-    async def last_tick_fr_sqlite(self, last_tick_query_ohlc1) -> None:
+    async def last_open_interest_fr_sqlite(self, last_tick_query_ohlc1) -> float:
+        """ """
+        try:
+            last_open_interest= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
+
+        except Exception as error:
+            system_tools.catch_error_message(
+                error,
+                "Capture market data - failed to fetch last open_interest",
+            )
+        return  last_open_interest[0]['open_interest']
+    
+    async def last_tick_fr_sqlite(self, last_tick_query_ohlc1) -> int:
         """ """
         try:
             last_tick1_fr_sqlite= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
