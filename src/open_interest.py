@@ -7,7 +7,7 @@ import datetime as dt
 import numpy as np
 from loguru import logger as log
 from db_management import sqlite_management
-
+pd.set_option('display.max_rows', None)
 async def querying_all(table: list, 
                         database: str = "databases/trading.sqlite3") -> dict:
     """ """
@@ -33,5 +33,5 @@ df['pct_chg']= df['delta_oi'].rolling(15, min_periods=1).sum()/df['open_interest
 if __name__ == '__main__':
     log.warning ('START')
     #market_profile= get_market_profile()
-    print (df.tail (-1))
+    print (df )
     log.warning ('DONE')
