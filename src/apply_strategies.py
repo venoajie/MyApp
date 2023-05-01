@@ -1131,19 +1131,14 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
     
     for table in tables:
 
-        count_rows_query= await sqlite_management.querying_arithmetic_operator('tick', 'COUNT', table)
-        log.critical(f' count_rows_query {count_rows_query}')
+        count_rows_query=  sqlite_management.querying_arithmetic_operator('tick', 'COUNT', table)
         rows= await sqlite_management.executing_query_with_return(count_rows_query)
         rows= rows[0]['COUNT (tick)']
-        log.critical(f' rows {rows}')
-        rows= await sqlite_management.count_rows(table)
-        log.warning(f' rows {rows}')
-        #log.warning(f' table {table} rows {rows}')
-        
+
         if rows >rows_threshold:
 
             where_filter = f"tick"
-            first_tick_query= await sqlite_management.querying_arithmetic_operator ('tick', 'MIN', table)
+            first_tick_query= sqlite_management.querying_arithmetic_operator ('tick', 'MIN', table)
             first_tick_fr_sqlite= await sqlite_management.executing_query_with_return(first_tick_query)
             first_tick= first_tick_fr_sqlite[0]['MIN (tick)']
 
@@ -1186,10 +1181,6 @@ async def main():
         pickling.replace_data(my_path_sub_account, sub_accounts)
         #log.error (f'sub_accounts {sub_accounts}')
 
-        # capping sqlite rows
-        await count_and_delete_ohlc_rows()
-        sleep_and_restart (10)
-
         # execute strategy
         await syn.running_strategy(server_time)
 
@@ -1199,6 +1190,9 @@ async def main():
         await syn.cancel_orders_based_on_time_threshold(
             server_time, label_hedging
         )
+
+        # capping sqlite rows
+        await count_and_delete_ohlc_rows()
         
     except Exception as error:
         catch_error(error, 30)
