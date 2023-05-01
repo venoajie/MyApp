@@ -687,13 +687,6 @@ async def exceuting_query_with_return (query_table,
         print (f'querying_table {error}')   
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}","failed_order")
-
-    if any('MAX','MIN') in query_table:
-        
-        try:
-            return 0 if combine_result== None else int(combine_result[0] * 1)
-        except:
-            return None
         
     return 0 if (combine_result ==[] or  combine_result == None ) else  (combine_result)
 
