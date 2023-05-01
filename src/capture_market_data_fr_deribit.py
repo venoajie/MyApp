@@ -200,8 +200,7 @@ class StreamMarketData:
                                         
                                             # get current oi
                                             open_interest_last_value_query= await sqlite_management.querying_last_open_interest (last_tick1_fr_sqlite, 
-                                                                                                                        TABLE_OHLC1,
-                                                                                                                        DATABASE)
+                                                                                                                                 TABLE_OHLC1)
                                             
                                             log.warning (f' open_interest_last_value_query {open_interest_last_value_query}')
                                             open_interest_last_value= await sqlite_management.executing_query_with_return (open_interest_last_value_query)
