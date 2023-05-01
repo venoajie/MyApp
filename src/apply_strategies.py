@@ -1124,7 +1124,7 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error, 30)
 
-async def count_and_delete_ohlc_rows(rows_threshold: int = 5000):
+async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
     
     tables= ['ohlc1_eth_perp_json', 'ohlc30_eth_perp_json']                   
     database: str = "databases/trading.sqlite3"
@@ -1138,14 +1138,8 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 5000):
 
             where_filter = f"tick"
             first_tick_query= await sqlite_management.querying_arithmetic_operator ('tick', 'MIN', table)
-            log.warning (first_tick_query)
             first_tick_fr_sqlite= await sqlite_management.executing_query_with_return(first_tick_query)
-            log.warning (first_tick_query)
-            log.warning (first_tick_fr_sqlite)
             first_tick= first_tick_fr_sqlite[0]['MIN (tick)']
-            log.warning (first_tick)
-            first_tick= await sqlite_management.get_min_max_tick(table, database, 'MIN')
-            log.error (first_tick)
 
             await sqlite_management.deleting_row(table, 
                                                 database,
