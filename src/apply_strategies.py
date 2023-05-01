@@ -1124,7 +1124,7 @@ class ApplyHedgingSpot:
         except Exception as error:
             catch_error(error, 30)
 
-async def count_and_delete_ohlc_rows(rows_threshold: int = 10000):
+async def count_and_delete_ohlc_rows(rows_threshold: int = 5000):
     
     tables= ['ohlc1_eth_perp_json', 'ohlc30_eth_perp_json']                   
     database: str = "databases/trading.sqlite3"
@@ -1173,6 +1173,9 @@ async def main():
             currency=currency,
         )
 
+        # capping sqlite rows
+        await count_and_delete_ohlc_rows()
+
         # get deribit server time
         server_time = await syn.current_server_time()
 
@@ -1196,9 +1199,6 @@ async def main():
             server_time, label_hedging
         )
         
-        # capping sqlite rows
-        await count_and_delete_ohlc_rows()
-
     except Exception as error:
         catch_error(error, 30)
 
