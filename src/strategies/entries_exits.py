@@ -29,7 +29,13 @@ strategies = [
                     "equity_risked_usd": 60,
                     "equity_risked_pct": (1 / 100),
                 },
-                {
+                 
+                
+                
+                ]
+
+
+test = [{
                     "strategy": "every5mLong",
                     "status": "active",
                     "instrument": ["PERPETUAL"],
@@ -131,13 +137,8 @@ strategies = [
                     "halt_minute_before_reorder": 60*4,
                     "equity_risked_usd": None,
                     "equity_risked_pct": equity_risked_pct_default*16,
-                }, 
-                
-                
-                ]
-
-
-test = [{
+                },
+                {
                     "strategy": "supplyDemandShort60A",
                     "status": "active",
                     "instrument": ["PERPETUAL"],
