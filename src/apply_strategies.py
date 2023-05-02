@@ -612,6 +612,7 @@ class ApplyHedgingSpot:
                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                     my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                     my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
+                    log.error (f'my_trades_closed   {my_trades_closed}')
                     my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
                     my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
                     is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
@@ -797,6 +798,7 @@ class ApplyHedgingSpot:
                 # execute each strategy
                 for strategy_attr in strategies:
                     strategy_label = strategy_attr["strategy"]
+                    
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
                     
                     if check_orders_with_the_same_labels ['len_result'] > 1:
@@ -815,6 +817,7 @@ class ApplyHedgingSpot:
                     sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                     size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
                     open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+                    
                     if open_order_is_consistent == False:
                         await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
                     
@@ -832,12 +835,6 @@ class ApplyHedgingSpot:
                            # params_order["size"] = adjusting_size_open_order
                             
                             time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
-                            check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
-
-                            if check_cancellation !=None:
-                                if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                                    and check_cancellation['open_order_id'] !=[]:
-                                        await self.cancel_by_order_id(check_cancellation['open_order_id'])
                             
                             exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
                             
@@ -868,17 +865,12 @@ class ApplyHedgingSpot:
                                 await self.send_limit_order(params_order)
 
                         else:
-                                     
-                            check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
-
-                            if check_cancellation !=None:
-                                if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                                    and check_cancellation['open_order_id'] !=[]:
-                                        await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                                      
+                                                                                           
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 log.warning(check_orders_with_the_same_labels)
-                                current_outstanding_order_len= len(check_orders_with_the_same_labels)                                
+                                current_outstanding_order_len= len(check_orders_with_the_same_labels)
+                                
+                                #basic hedging                                
                                 send_order: dict = hedging_spot.is_send_order_allowed (notional,
                                                                                         best_ask_prc,
                                                                                         size_from_positions, 
@@ -898,6 +890,14 @@ class ApplyHedgingSpot:
                                     # send limit order
                                     await self.send_limit_order(params)
 
+                        #placed at the end of opening code to ensure db consistency
+                        check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
+
+                        if check_cancellation !=None:
+                            if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
+                                and check_cancellation['open_order_id'] !=[]:
+                                    await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
