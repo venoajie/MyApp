@@ -47,6 +47,7 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
 Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
 MM | [mm](https://medium.com/@degensugarboo/avellaneda-and-stoikov-mm-paper-implementation-b7011b5a7532) |  | | 
+TA | [statistic](https://towardsdatascience.com/programmatic-identification-of-support-resistance-trend-lines-with-python-d797a4a90530) |  | | 
 TA | [statistic](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
 TA | [liquidation](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
 TA | [Moving Average](https://algo-trading.medium.com/moving-average-exotic-use-30c15562ceed) |  | | 
