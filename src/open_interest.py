@@ -32,6 +32,8 @@ df.fillna(0)
 #df['sum']= df['delta_oi'].rolling(5, min_periods=1).sum()
 df['ma_3'] = (df['open_interest'].rolling(window=3).mean()).astype(int, errors='ignore')
 df['ma_5'] = (df['open_interest'].rolling(window=5).mean()).astype(int, errors='ignore')
+df['curent>ma_3'] = df['open_interest'] > df['ma_3']
+df['curent>ma_5'] = df['open_interest'] > df['ma_5']
 #df['pct_chg']= (df['sum']/df['open_interest'].shift(1))*100
 
 if __name__ == '__main__':
