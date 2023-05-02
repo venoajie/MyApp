@@ -877,11 +877,12 @@ class ApplyHedgingSpot:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                                       
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                
+                                log.warning(check_orders_with_the_same_labels)
+                                current_outstanding_order_len= len(check_orders_with_the_same_labels)                                
                                 send_order: dict = hedging_spot.is_send_order_allowed (notional,
                                                                                         best_ask_prc,
                                                                                         size_from_positions, 
-                                                                                        0,
+                                                                                        current_outstanding_order_len,
                                                                                         strategy_attr
                                                                                         )
                                 
