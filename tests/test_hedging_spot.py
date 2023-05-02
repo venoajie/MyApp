@@ -8,7 +8,7 @@ def test_get_basic_opening_paramaters():
     
     notional = 100
     
-    strategy_attributes_for_hedging=  [o for o in strategy_attributes if 'hedgingSpot' in strategy_attributes  ]
+    strategy_attributes_for_hedging=  [o for o in strategy_attributes if strategy_attributes['strategy']== 'hedgingSpot'  ]
     
     result =  hedging.get_basic_opening_paramaters(notional, strategy_attributes_for_hedging)
     
