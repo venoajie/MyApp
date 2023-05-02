@@ -29,8 +29,8 @@ open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", datab
 #print (open_interest)
 df= transform_result_to_data_frame (open_interest)
 #df['sum']= df['delta_oi'].rolling(5, min_periods=1).sum()
-df['ma_3'] = (df['open_interest'].rolling(window=3).mean()).astype(float)
-df['ma_5'] = (df['open_interest'].rolling(window=5).mean()).astype(float)
+df['ma_3'] = (df['open_interest'].rolling(window=3).mean()).astype(int)
+df['ma_5'] = (df['open_interest'].rolling(window=5).mean()).astype(int)
 #df['pct_chg']= (df['sum']/df['open_interest'].shift(1))*100
 
 if __name__ == '__main__':
