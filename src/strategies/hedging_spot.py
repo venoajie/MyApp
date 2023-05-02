@@ -67,7 +67,7 @@ def is_send_order_allowed (notional: float,
 
         label_open = label_numbering.labelling("open", label_main)
 
-        params.update({"label_numbered": label_open})
+        params.update({"label": label_open})
        
         params['size']= min(params['size'], 
                             int(notional-current_size)
