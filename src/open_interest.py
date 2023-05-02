@@ -28,9 +28,9 @@ loop = asyncio.get_event_loop()
 open_interest= loop.run_until_complete(querying_all("ohlc1_eth_perp_json", database))
 #print (open_interest)
 df= transform_result_to_data_frame (open_interest)
-df['sum']= df['delta_oi'].rolling(5, min_periods=1).sum()
-df['ma_3'] = df['open_interest'].rolling(window=3).mean()
-df['ma_5'] = df['open_interest'].rolling(window=5).mean()
+#df['sum']= df['delta_oi'].rolling(5, min_periods=1).sum()
+df['ma_3'] = int(df['open_interest'].rolling(window=3).mean())
+df['ma_5'] = int(df['open_interest'].rolling(window=5).mean())
 #df['pct_chg']= (df['sum']/df['open_interest'].shift(1))*100
 
 if __name__ == '__main__':
