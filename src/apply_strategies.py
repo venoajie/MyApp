@@ -882,8 +882,7 @@ class ApplyHedgingSpot:
                                                                                         best_ask_prc,
                                                                                         size_from_positions, 
                                                                                         0,
-                                                                                        strategy_attr,
-                                                                                        instrument
+                                                                                        strategy_attr
                                                                                         )
                                 
                                 if send_order['order_allowed']:
