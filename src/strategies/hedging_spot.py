@@ -63,8 +63,8 @@ def is_send_order_allowed (notional: float,
                                              ask_price
                                              )
         
-        label_main= strategy_attributes_for_hedging[0]['strategy']
         print (f' strategy_attributes_for_hedging {strategy_attributes_for_hedging}')
+        label_main= strategy_attributes_for_hedging[0]['strategy']
         label_main= strategy_attributes_for_hedging[0]['strategy']
 
         label_open = label_numbering.labelling("open", label_main)
