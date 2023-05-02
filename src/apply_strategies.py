@@ -875,23 +875,12 @@ class ApplyHedgingSpot:
                                 if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
                                     and check_cancellation['open_order_id'] !=[]:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                                           
-                            # determine position sizing-hedging
-                            if "hedgingSpot" in strategy_attr["strategy"]:
-                                min_position_size: float = -notional
-
-                            open_order_allowed = await self.is_send_order_allowed(
-                            strategy_label,
-                            open_trade_strategy,
-                            open_order_mgt,
-                            strategy_attr,
-                            min_position_size)
-                        
+                                                      
                             if "hedgingSpot" in strategy_attr["strategy"]:
                                 await self.opening_hedging(notional, 
                                                             best_ask_prc, 
                                                             size_from_positions, 
-                                                            open_order_allowed["len_order_limit"], 
+                                                            0, 
                                                             strategy_attr) 
                                     #open_order_allowed["take_profit_usd"] = best_ask_prc
                                     #log.critical(f" open_order_allowed  {open_order_allowed}")
