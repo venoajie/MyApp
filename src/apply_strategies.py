@@ -612,7 +612,6 @@ class ApplyHedgingSpot:
                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                     my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
                     my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
-                    log.error (f'my_trades_closed   {my_trades_closed}')
                     my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
                     my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
                     is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
