@@ -877,15 +877,27 @@ class ApplyHedgingSpot:
                                         await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                                       
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                await self.opening_hedging(notional, 
-                                                            best_ask_prc, 
-                                                            size_from_positions, 
-                                                            0, 
-                                                            strategy_attr) 
-                                    #open_order_allowed["take_profit_usd"] = best_ask_prc
-                                    #log.critical(f" open_order_allowed  {open_order_allowed}")
-                                    #await self.send_limit_order(open_order_allowed)
                                 
+                                send_order: dict = hedging_spot.is_send_order_allowed (notional,
+                                                                                        best_ask_prc,
+                                                                                        size_from_positions, 
+                                                                                        0,
+                                                                                        strategy_attr,
+                                                                                        instrument
+                                                                                        )
+                                
+                                if send_order['order_allowed']:
+                                    
+                                    # get parameter orders
+                                    params= send_order['order_parameters']
+                                    
+                                    # update param orders with instrument
+                                    params.update({"instrument": instrument})
+                                    log.warning (send_order)
+                                    
+                                    # send limit order
+                                    await self.send_limit_order(params)
+
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
@@ -893,25 +905,6 @@ class ApplyHedgingSpot:
                     
         except Exception as error:
             await catch_error(error)
-
-
-    async def opening_hedging(self, notional, ask_price, current_size, current_outstanding_order_len, strategy_attributes_for_hedging) -> None:
-        """ """
-
-        try:
-            send_order: dict = hedging_spot.is_send_order_allowed (notional,
-                                                                   ask_price,
-                                                                   current_size, 
-                                                                   current_outstanding_order_len,
-                                                                   strategy_attributes_for_hedging
-                                                                   )
-            log.warning (send_order)
-            if send_order['order_allowed']:
-                await self.send_limit_order(send_order['order_parameters'])
-                    
-        except Exception as error:
-            await catch_error(error)
-
 
     async def running_strategy(self, server_time) -> float:
         """ """
