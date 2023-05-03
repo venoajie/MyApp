@@ -242,7 +242,7 @@ def is_send_exit_order_allowed (notional: float,
     
     transaction= selected_transaction[0]
     last_transaction_price= transaction['price']
-    tp_pct= strategy_attributes_for_hedging[["take_profit_pct"]]
+    tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
     
     tp_price_reached= is_transaction_price_minus_below_threshold(last_transaction_price,
                                                                       bid_price,
