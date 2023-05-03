@@ -722,7 +722,7 @@ class ApplyHedgingSpot:
                             current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
                             
                             #basic hedging                                
-                            send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
+                            send_order: dict = basic_grid.is_send_open_order_allowed (notional,
                                                                                     best_ask_prc,best_bid_prc,
                                                                                     size_from_positions, 
                                                                                     current_outstanding_order_len,
