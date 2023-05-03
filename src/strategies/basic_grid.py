@@ -84,7 +84,7 @@ def is_send_open_order_allowed (notional: float,
         params.update({"side": strategy_attributes_for_hedging['side']})
         if params['side']=='sell':
             params.update({"entry_price": ask_price})
-        if params['side']=='sell':
+        if params['side']=='buy':
             params.update({"entry_price": bid_price})
     
     return dict(order_allowed= order_allowed,
