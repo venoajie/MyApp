@@ -15,7 +15,7 @@ from transaction_management.deribit import open_orders_management, myTrades_mana
 from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import  position_sizing
 from configuration import label_numbering, config
-from strategies import entries_exits, grid_perpetual as grid, hedging_spot
+from strategies import entries_exits, grid_perpetual as grid, hedging_spot, basic_grid
 from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
@@ -195,39 +195,6 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
-    async def search_and_drop_orphan_closed_orders(
-        self, open_order_mgt: object, my_trades_open_mgt: object
-    ) -> None:
-        """
-        For every strategy, there are 1 SL and 1 TP.
-        When  1 of them was executed, the other should be cancelled
-
-        closed-labelled open order, has:
-        - open order that have not executed yet. This is ok
-        - open trade waiting to close. This is ok
-        - no open order nor open trade. . This is NOT ok. If it found, cancel it
-
-        """
-        open_orderLabelCLosed = open_order_mgt.open_orderLabelCLosed()
-        log.error(f'open_orderLabelCLosed {open_orderLabelCLosed}')
-
-        if open_orderLabelCLosed != None:
-            for label_closed in open_orderLabelCLosed:
-                is_closed_label_exist = my_trades_open_mgt.closed_open_order_label_in_my_trades_open(
-                    label_closed
-                )
-                log.error(f'is_closed_label_exist {is_closed_label_exist}')
-
-                if is_closed_label_exist == False:
-                    open_orders = open_order_mgt.open_orders_api()
-                    open_order_id = [
-                        o["order_id"]
-                        for o in open_orders
-                        if str(label_closed)[-10:] in o["label"]
-                    ][0]
-                    log.critical(f'open_order_id {open_order_id}')
-                    await self.cancel_by_order_id(open_order_id)
-
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
 
@@ -341,19 +308,12 @@ class ApplyHedgingSpot:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
         """
-                
-        #get_closed_labels
-        
+                        
         if transactions_all !=[]:
             trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
-            #log.warning (f'trades_with_closed_labels {trades_with_closed_labels}')
             
-            for transaction in trades_with_closed_labels:            
-                log.warning (transaction)
-                message = f'closed trans {transaction}'
-                log.warning (f'{message}')
-                #await telegram_bot_sendtext(message, "general_error")
-
+            for transaction in trades_with_closed_labels:      
+                
                 # get label net
                 label_net = str_mod.remove_redundant_elements(
                         [str_mod.parsing_label(o["label_main"])['transaction_net']
@@ -365,13 +325,10 @@ class ApplyHedgingSpot:
                         else ([o for o in transactions_all \
                             if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
                 
-                log.warning (transactions_under_label_main)
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == []\
                     else sum([o['amount_dir'] for o in transactions_under_label_main ])
 
-                log.warning (net_sum)
-                log.warning (len(transactions_under_label_main))
                 if len(transactions_under_label_main) >2:
                     
                     #get_closed_labels under_label_main
@@ -391,9 +348,7 @@ class ApplyHedgingSpot:
                     if len(transactions_open)>1:
                         transactions_under_label_main = ([o for o in transactions_under_label_main \
                         if o['trade_seq'] == min_closed or o['trade_seq'] == min_open  ])
-                        
-                    log.critical (f'transactions_under_label_main {transactions_under_label_main}')
-                    log.critical (f'transactions_open {transactions_open}')
+                    
                     # get net sum of the transactions open and closed
                     net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
                     
@@ -407,7 +362,6 @@ class ApplyHedgingSpot:
                         tstamp= transaction['timestamp']
                         new_label= str_mod.parsing_label(label, tstamp) ['flipping_closed']
                         transaction['label']= new_label
-                        log.critical (transaction)
                         
                         where_filter = f"trade_seq"
                         await sqlite_management.deleting_row('my_trades_all_json', 
@@ -417,22 +371,21 @@ class ApplyHedgingSpot:
                                                             trade_seq
                                                             )
                         await sqlite_management.insert_tables('my_trades_all_json',transaction)
+                        
                         # refreshing data
                         system_tools.sleep_and_restart_program(1)
                 
-                #log.error (f' result {result}')
-                log.error (net_sum)
                 if net_sum ==0 :
+                    
                     # get trade seq
                     result = ([o['trade_seq']   for o in transactions_under_label_main ])
-                    log.critical (f' result sum 0 {result}')
                     
                     for res in result:
-                        #log.critical (res)
+
                         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])
-                        #log.debug (f' result_to_dict {result_to_dict}')
+
                         where_filter = f"trade_seq"
                         await sqlite_management.deleting_row('my_trades_all_json', 
                                                             "databases/trading.sqlite3",
@@ -449,20 +402,19 @@ class ApplyHedgingSpot:
                                    label_transaction_net,
                                    portfolio, 
                                    strategies, 
-                                   my_trades_open_mgt,
                                    my_trades_open_sqlite, 
                                    my_trades_open_all, 
                                    my_trades_open,
-                                   size_from_positions, 
-                                   server_time) -> float:
+                                   size_from_positions
+                                   ) -> float:
         """ """
                     
+        log.critical (f'CLOSING TRANSACTIONS')
         reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
         my_trades_open_all: list = my_trades_open_sqlite['all']
-        #log.error (my_trades_open_all)
         
         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
         
@@ -472,14 +424,12 @@ class ApplyHedgingSpot:
         open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
 
         open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
-        #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
 
         # Creating an instance of the open order  class
         open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)        
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
-        #log.error (f'label_transaction_main {label_transaction_main}')
 
         for label in label_transaction_main:
             #log.debug (f'label {label}')
@@ -594,36 +544,34 @@ class ApplyHedgingSpot:
 
                             if params["order_buy"] or params["order_sell"]:                                                                                                                        
                                 await self.send_limit_order(params)
-                                
-                    else:
+                         
+                    len_open_order_label_short = (
+                        0
+                        if open_order_label_short == []
+                        else len(open_order_label_short)
+                    )
+                    len_open_order_label_long = (0 if open_order_label_long == []  
+                                                    else len(open_order_label_long))
+                    #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
+                    current_outstanding_order_len= (check_orders_with_the_same_labels)['len_result']
+                    
+                    if "hedgingSpot" in strategy_attr["strategy"] :
                         
-                        len_open_order_label_short = (
-                            0
-                            if open_order_label_short == []
-                            else len(open_order_label_short)
-                        )
-                        len_open_order_label_long = (0 if open_order_label_long == []  
-                                                        else len(open_order_label_long))
-                        #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
-                        current_outstanding_order_len= (check_orders_with_the_same_labels)['len_result']
+                        # closing order
+                        closed_order= hedging_spot.is_send_exit_order_allowed (notional,
+                                                                                best_bid_prc,
+                                                                                size_from_positions, 
+                                                                                len_open_order_label_long,
+                                                                                open_trade_strategy_label,
+                                                                                strategy_attr
+                                                                                )
+                        log.warning (f' closed_order {closed_order}')
                         
-                        if "hedgingSpot" in strategy_attr["strategy"] :
+                        if closed_order['order_allowed']:
+                            # get parameter orders
+                            params= closed_order['order_parameters']
                             
-                            # closing order
-                            closed_order= hedging_spot.is_send_exit_order_allowed (notional,
-                                                                                    best_bid_prc,
-                                                                                    size_from_positions, 
-                                                                                    len_open_order_label_long,
-                                                                                    open_trade_strategy_label,
-                                                                                    strategy_attr
-                                                                                    )
-                            log.warning (f' closed_order {closed_order}')
-                            
-                            if closed_order['order_allowed']:
-                                # get parameter orders
-                                params= closed_order['order_parameters']
-                                
-                                await self.send_limit_order(params)
+                            await self.send_limit_order(params)
 
 
             else:
@@ -643,6 +591,7 @@ class ApplyHedgingSpot:
         """ """
 
         try:
+            log.critical (f'OPENING TRANSACTIONS')
             reading_from_database: dict = await self.reading_from_database()
         
             my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
@@ -654,22 +603,18 @@ class ApplyHedgingSpot:
             open_orders_sqlite: list = await self.querying_all('orders_all_json')
             open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
             
-            ticker =  self.reading_from_db("ticker", instrument)
+            ticker: list =  self.reading_from_db("ticker", instrument)
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
             
             open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
         
-            # Creating an instance of the my-Trade class
-            my_trades_open_mgt: object = myTrades_management.MyTrades(my_trades_open)
-            await self.search_and_drop_orphan_closed_orders(open_order_mgt, my_trades_open_mgt)
-            
             if ticker !=[]:
 
                 # get bid and ask price
-                best_bid_prc = ticker[0]["best_bid_price"]
-                best_ask_prc = ticker[0]["best_ask_price"]
+                best_bid_prc: float = ticker[0]["best_bid_price"]
+                best_ask_prc: float = ticker[0]["best_ask_price"]
                 
                 # index price
                 index_price: float = ticker[0]["index_price"]
@@ -683,18 +628,17 @@ class ApplyHedgingSpot:
                 # execute each strategy
                 for strategy_attr in strategies:
                     strategy_label = strategy_attr["strategy"]
+
+                    log.critical (f' {strategy_label}')
                     
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
                     
                     if check_orders_with_the_same_labels ['len_result'] > 1:
-                        log.critical(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
-                        log.warning( [o for o in open_orders_open_from_db if strategy_label in o['label']  ])
+                        
                         cancelled_id= [o['order_id'] for o in open_orders_open_from_db if strategy_label in o['label']]
                         for id in cancelled_id:
-                            log.warning(f" id {id}")
                             await self.cancel_by_order_id(id)
                     
-                    log.critical (strategy_label)
                     time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                     log.debug (f'net_sum_strategy   {net_sum_strategy}')
@@ -748,31 +692,54 @@ class ApplyHedgingSpot:
                                 params_order["entry_price"] = best_ask_prc +  .05
                                 
                                 await self.send_limit_order(params_order)
+                                                                                        
+                        if "hedgingSpot" in strategy_attr["strategy"]:
 
-                        else:
-                                                                                           
-                            if "hedgingSpot" in strategy_attr["strategy"]:
+                            current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
+                            
+                            #basic hedging                                
+                            send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
+                                                                                    best_ask_prc,
+                                                                                    size_from_positions, 
+                                                                                    current_outstanding_order_len,
+                                                                                    strategy_attr
+                                                                                    )
+                            
+                            if send_order['order_allowed']:
+                                
+                                # get parameter orders
+                                params= send_order['order_parameters']
+                                
+                                # update param orders with instrument
+                                params.update({"instrument": instrument})
+                                
+                                # send limit order
+                                await self.send_limit_order(params)
+                                
+                                                               
+                        if "basicGrid" in strategy_attr["strategy"]:
 
-                                current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
+                            current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
+                            
+                            #basic hedging                                
+                            send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
+                                                                                    best_ask_prc,best_bid_prc,
+                                                                                    size_from_positions, 
+                                                                                    current_outstanding_order_len,
+                                                                                    strategy_attr
+                                                                                    )
+                            
+                            log.debug (send_order)
+                            if send_order['order_allowed']:
                                 
-                                #basic hedging                                
-                                send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
-                                                                                        best_ask_prc,
-                                                                                        size_from_positions, 
-                                                                                        current_outstanding_order_len,
-                                                                                        strategy_attr
-                                                                                        )
+                                # get parameter orders
+                                params= send_order['order_parameters']
                                 
-                                if send_order['order_allowed']:
-                                    
-                                    # get parameter orders
-                                    params= send_order['order_parameters']
-                                    
-                                    # update param orders with instrument
-                                    params.update({"instrument": instrument})
-                                    
-                                    # send limit order
-                                    await self.send_limit_order(params)
+                                # update param orders with instrument
+                                params.update({"instrument": instrument})
+                                
+                                # send limit order
+                                await self.send_limit_order(params)
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
@@ -860,12 +827,11 @@ class ApplyHedgingSpot:
                                    label_transaction_net,
                                    portfolio, 
                                    strategies, 
-                                   my_trades_open_mgt,
                                    my_trades_open_sqlite, 
                                    my_trades_open_all, 
                                    my_trades_open,
-                                   size_from_positions, 
-                                   server_time)
+                                   size_from_positions
+                                   )
                 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions 2 {clean_up_closed_transactions}')
