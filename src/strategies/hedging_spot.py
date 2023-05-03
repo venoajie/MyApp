@@ -65,9 +65,7 @@ def are_size_and_order_appropriate_for_ordering (notional: float,
     Returns:
         bool
 
-    """
-    print(f' notional {notional} current_size {abs(current_size)} current_size < notional  {abs(current_size) < notional }')
-    
+    """   
     return abs(current_size) < notional and current_outstanding_order_len== 0
         
 def get_label (status: str, label_main_or_label_transactions: str) -> str:
