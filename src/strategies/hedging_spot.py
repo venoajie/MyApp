@@ -253,7 +253,6 @@ def is_send_exit_order_allowed (notional: float,
                                                                               current_size,
                                                                               MIN_HEDGING_RATIO
                                                                               )
-
     no_outstanding_order= current_outstanding_order_len < 1
 
     order_allowed= tp_price_reached\
