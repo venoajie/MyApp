@@ -71,12 +71,31 @@ def test_get_labels():
     assert result   ==  'hedgingSpot-closed-1683065013136'
 
 def test_price_pct():
-    price =  1800
     pct_threshold: float=3/100
-    result =  hedging.price_plus_pct(price, pct_threshold)
-    assert result   ==  1854.0
+
+    price =  1916.4
     result =  hedging.price_minus_pct(price, pct_threshold)
-    assert result   ==   1746.0
+    assert result   ==   1858.9080000000001
+
+    bid_price =  1858
+    result =  hedging.is_transaction_price_minus_below_threshold(price, bid_price, pct_threshold)
+    assert result   ==  True
+    
+    bid_price =  1859
+    result =  hedging.is_transaction_price_minus_below_threshold(price, bid_price, pct_threshold)
+    assert result   ==  False
+
+    result =  hedging.price_plus_pct(price, pct_threshold)
+    assert result   ==  1973.892
+    
+    ask_price =  1974
+    result =  hedging.is_transaction_price_plus_above_threshold(price, ask_price, pct_threshold)
+    assert result   ==  True
+
+    ask_price =  1973
+    result =  hedging.is_transaction_price_plus_above_threshold(price, ask_price, pct_threshold)
+    assert result   ==  False
+
     
 def test_close_order():
 
@@ -88,15 +107,14 @@ def test_close_order():
                   "instrument_name":"ETH-PERPETUAL","index_price":1915.34,"fee_currency":"ETH",
                   "fee":0.0,"direction":"sell","api":True,"amount":1.0}]
     
-    bid_price =  1800
+    bid_price =  1856
     pct_threshold: float=3/100
     last_transaction_price =  transaction [0]['price']
     result =  hedging.is_transaction_price_minus_below_threshold(last_transaction_price, bid_price, pct_threshold)
     assert result   ==  True
-    bid_price2 =  1900
+    bid_price2 =  1859
     result =  hedging.is_transaction_price_minus_below_threshold(last_transaction_price, bid_price2, pct_threshold)
     assert result   ==  False
-
 
     result =  hedging.get_basic_closing_paramaters(transaction)
     
