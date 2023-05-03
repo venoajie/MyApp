@@ -66,6 +66,7 @@ def are_size_and_order_appropriate_for_ordering (notional: float,
         bool
 
     """
+    print(f' notional {notional} current_size {current_size} current_size < notional  {current_size < notional }')
     
     return current_size < notional and current_outstanding_order_len== 0
         
