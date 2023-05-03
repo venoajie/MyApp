@@ -96,7 +96,7 @@ def is_send_exit_order_allowed (ask_price: float,
     transaction= selected_transaction[0]
     last_transaction_price= transaction['price']
     tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
-    transaction_side= transaction['side']
+    transaction_side= transaction['direction']
     
     if transaction_side=='sell':
         tp_price_reached= hedging_spot.is_transaction_price_minus_below_threshold(last_transaction_price,
