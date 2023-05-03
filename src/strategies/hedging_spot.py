@@ -161,59 +161,6 @@ def is_transaction_price_minus_below_threshold(last_transaction_price: float,
 def is_minimum_waiting_time_has_exceeded(last_transaction_timestamp: int)-> bool:    
     return
 
-def is_send_additional_order_allowed (notional: float, 
-                                      last_transaction_price: float,
-                                      ask_price: float,
-                                      current_outstanding_order_len: int,
-                                      strategy_attributes_for_hedging,
-                                      time_threshold,
-                                      threshold: float=3/100
-                                      )-> bool:
-    """
-
-    Args:
-
-    Returns:
-        dict
-
-    """
-    
-    ONE_MINUTE= 60000
-    WAITING_MINUTE= 15
-    time_stamp= transaction['timestamp']
-    exit_order_allowed["size"] = int(
-                                        max(notional * 10 / 100, 2)
-                                    )
-    order_allowed= is_last_transaction_price_plus_exceed_current_price (last_transaction_price,
-                                                                        ask_price,
-                                                                        threshold
-                                                                        )
-    
-    time_threshold: float = (strategy_attributes_for_hedging["halt_minute_before_reorder"] * ONE_MINUTE * WAITING_MINUTE)
-
-    delta_time: int = server_time - time_stamp
-    
-    waiting_time_has_passed: int = delta_time > time_threshold
-    
-    if order_allowed:
-        
-        params= get_basic_opening_paramaters(notional, 
-                                             ask_price
-                                             )
-        
-        label_main= strategy_attributes_for_hedging['strategy']
-
-        label_open = get_label ('open', label_main) 
-
-        params.update({"label": label_open})
-       
-        params['size']= min(params['size'], 
-                            int(notional-current_size)
-                            )
-    
-    return dict(order_allowed= order_allowed,
-                order_parameters= [] if order_allowed== False else params)
-    
 def hedged_value_to_notional (notional: float, hedged_value: float) -> float:
     """ 
     """        
@@ -268,3 +215,57 @@ def is_send_exit_order_allowed (notional: float,
         
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
+    
+def is_send_additional_order_allowed (notional: float, 
+                                      last_transaction_price: float,
+                                      ask_price: float,
+                                      current_outstanding_order_len: int,
+                                      strategy_attributes_for_hedging,
+                                      time_threshold,
+                                      threshold: float=3/100
+                                      )-> bool:
+    """
+
+    Args:
+
+    Returns:
+        dict
+
+    """
+    
+    ONE_MINUTE= 60000
+    WAITING_MINUTE= 15
+    time_stamp= transaction['timestamp']
+    exit_order_allowed["size"] = int(
+                                        max(notional * 10 / 100, 2)
+                                    )
+    order_allowed= is_last_transaction_price_plus_exceed_current_price (last_transaction_price,
+                                                                        ask_price,
+                                                                        threshold
+                                                                        )
+    
+    time_threshold: float = (strategy_attributes_for_hedging["halt_minute_before_reorder"] * ONE_MINUTE * WAITING_MINUTE)
+
+    delta_time: int = server_time - time_stamp
+    
+    waiting_time_has_passed: int = delta_time > time_threshold
+    
+    if order_allowed:
+        
+        params= get_basic_opening_paramaters(notional, 
+                                             ask_price
+                                             )
+        
+        label_main= strategy_attributes_for_hedging['strategy']
+
+        label_open = get_label ('open', label_main) 
+
+        params.update({"label": label_open})
+       
+        params['size']= min(params['size'], 
+                            int(notional-current_size)
+                            )
+    
+    return dict(order_allowed= order_allowed,
+                order_parameters= [] if order_allowed== False else params)
+    
