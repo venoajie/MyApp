@@ -195,43 +195,6 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
-    async def cancel_orders_based_on_time_threshold(
-        self, server_time, label, time_threshold: int= None
-    ) -> float:
-        """ """
-        three_minute = ONE_MINUTE* 3
-        account_balances_and_transactions_from_exchanges= await self.get_account_balances_and_transactions_from_exchanges()
-        open_orders_from_exch = account_balances_and_transactions_from_exchanges['open_orders']
-        
-        open_order_mgt = open_orders_management.MyOrders(open_orders_from_exch)
-        open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
-        open_order_mgt = open_orders_management.MyOrders(open_order_label)
-
-        try:
-            open_orders_lastUpdateTStamps: list = (
-                open_order_mgt.open_orders_api_last_update_timestamps()
-            )
-        except:
-            open_orders_lastUpdateTStamps: list = []
-            
-        if open_orders_lastUpdateTStamps != []:
-            open_orders_lastUpdateTStamps: list = (
-                open_order_mgt.open_orders_api_last_update_timestamps()
-            )
-
-            open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
-            open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min
-
-            open_order_id: list = open_order_mgt.open_orders_api_basedOn_label_last_update_timestamps_min_id(
-                label
-            )
-
-            log.debug(f'open_orders_deltaTime {open_orders_deltaTime} {open_orders_deltaTime > three_minute} \
-                open_orders_lastUpdateTStamps {open_orders_lastUpdateTStamps}')    
-
-            if open_orders_deltaTime > three_minute:
-                await self.cancel_by_order_id(open_order_id)
-
     async def search_and_drop_orphan_closed_orders(
         self, open_order_mgt: object, my_trades_open_mgt: object
     ) -> None:
@@ -856,9 +819,7 @@ class ApplyHedgingSpot:
 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
-                #log.error (open_orders_open_from_db)
-                #open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
-                #log.warning (f'open_orders_from_sub_account_get {open_orders_from_sub_account_get} {len(open_orders_from_sub_account_get)} {len(open_orders_open_from_db)}')
+
                 # ?################################## end of gathering basic data #####################################
 
                 # Creating an instance of the my-Trade class
@@ -966,7 +927,12 @@ async def main():
             "sub_accounts", currency
         )
         pickling.replace_data(my_path_sub_account, sub_accounts)
+        
+        # get deribit server time
+        server_time = await syn.current_server_time()
+
         #log.error (f'sub_accounts {sub_accounts}')
+        syn.running_strategy(server_time)
 
         # capping sqlite rows
         await count_and_delete_ohlc_rows()
