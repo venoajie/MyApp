@@ -1,8 +1,6 @@
 # # -*- coding: utf-8 -*-
 
-def get_basic_opening_paramaters(notional: float, 
-                                 ask_price: float
-                                 ) -> dict:
+def get_basic_opening_paramaters(notional: float,  ask_price: float) -> dict:
     """
 
     Args:
@@ -100,11 +98,11 @@ def get_label (status: str, label_main_or_label_transactions: str) -> str:
     return label
         
 def is_send_open_order_allowed (notional: float,
-                            ask_price: float,
-                            current_size: int, 
-                            current_outstanding_order_len: int,
-                            strategy_attributes_for_hedging
-                            ) -> dict:
+                                ask_price: float,
+                                current_size: int, 
+                                current_outstanding_order_len: int,
+                                strategy_attributes_for_hedging 
+                                ) -> dict:
     """
 
     Args:
@@ -138,18 +136,13 @@ def is_send_open_order_allowed (notional: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
 
-def pct_price_in_usd(price: float,
-                     pct_threshold: float)-> bool:    
+def pct_price_in_usd(price: float, pct_threshold: float)-> bool:    
     return price * pct_threshold
 
-def price_plus_pct(price: float,
-                     pct_threshold: float)-> float:    
-    print(f'price + pct_price_in_usd (price, pct_threshold) {price + pct_price_in_usd (price, pct_threshold)}')
+def price_plus_pct(price: float, pct_threshold: float)-> float:    
     return price + pct_price_in_usd (price, pct_threshold)
 
-def price_minus_pct(price: float,
-                     pct_threshold: float)-> float:    
-    print(f'price - pct_price_in_usd (price, pct_threshold) {price - pct_price_in_usd (price, pct_threshold)}')
+def price_minus_pct(price: float, pct_threshold: float)-> float:    
     return price - pct_price_in_usd (price, pct_threshold)
 
 def is_transaction_price_minus_below_threshold(last_transaction_price: float,
@@ -159,9 +152,9 @@ def is_transaction_price_minus_below_threshold(last_transaction_price: float,
     return price_minus_pct (last_transaction_price, pct_threshold) > current_price
 
 def is_transaction_price_plus_above_threshold(last_transaction_price: float,
-                                                        current_price: float,
-                                                        pct_threshold: float
-                                                        )-> bool:    
+                                              current_price: float,
+                                              pct_threshold: float
+                                              )-> bool:    
     return price_plus_pct (last_transaction_price, pct_threshold) < current_price
 
 def is_minimum_waiting_time_has_exceeded(last_transaction_timestamp: int)-> bool:    
@@ -172,7 +165,10 @@ def hedged_value_to_notional (notional: float, hedged_value: float) -> float:
     """        
     return abs(hedged_value/notional)
     
-def is_hedged_value_to_notional_exceed_threshold (notional: float, hedged_value: float, threshold : float) -> float:
+def is_hedged_value_to_notional_exceed_threshold (notional: float, 
+                                                  hedged_value: float, 
+                                                  threshold : float
+                                                  ) -> float:
     """ 
     """        
     return hedged_value_to_notional (notional, hedged_value) > threshold
