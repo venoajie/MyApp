@@ -672,27 +672,6 @@ class ApplyHedgingSpot:
                                 
                                 await self.send_limit_order(params)
 
-                            open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
-
-                            pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
-                                                            
-                            resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
-                            time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
-                            
-                            open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
-                                open_trade_strategy)
-
-                            delta_time: int = server_time - open_trade_strategy_max_attr["timestamp"]
-                            
-                            exceed_threshold_time: int = delta_time > time_threshold
-                            # new order
-                            if (
-                                best_ask_prc > resupply_price
-                                and exceed_threshold_time
-                                and len_open_order_label_short < 1
-                            ) and False:
-
-                                await self.send_limit_order(exit_order_allowed)
 
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -722,6 +701,7 @@ class ApplyHedgingSpot:
             open_orders_sqlite: list = await self.querying_all('orders_all_json')
             open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
             #log.critical (f' open_orders_open_from_db {open_orders_open_from_db}')
+            log.critical (f' open_orders_sqlite {open_orders_sqlite}')
             ticker =  self.reading_from_db("ticker", instrument)
             grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
