@@ -809,24 +809,22 @@ class ApplyHedgingSpot:
                                     
                                     # update param orders with instrument
                                     params.update({"instrument": instrument})
-                                    log.warning (send_order)
                                     
                                     # send limit order
                                     await self.send_limit_order(params)
-
-                        #placed at the end of opening code to ensure db consistency
-                        check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
-
-                        if check_cancellation !=None:
-                            if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                                and check_cancellation['open_order_id'] !=[]:
-                                    await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                         await sleep_and_restart (5)
-                    
+
+                    #placed at the end of opening code to ensure db consistency
+                    check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
+
+                    if check_cancellation !=None:
+                        if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
+                            and check_cancellation['open_order_id'] !=[]:
+                                await self.cancel_by_order_id(check_cancellation['open_order_id'])
+                                                
         except Exception as error:
             await catch_error(error)
 
@@ -960,9 +958,6 @@ async def main():
             currency=currency,
         )
 
-        # get deribit server time
-        server_time = await syn.current_server_time()
-
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
         sub_accounts = account_balances_and_transactions_from_exchanges ['sub_account']
@@ -972,16 +967,6 @@ async def main():
         )
         pickling.replace_data(my_path_sub_account, sub_accounts)
         #log.error (f'sub_accounts {sub_accounts}')
-
-        # execute strategy
-        await syn.running_strategy(server_time)
-
-        # hedging: check for over hedged and over-bought
-        label_hedging = "hedgingSpot"
-
-        await syn.cancel_orders_based_on_time_threshold(
-            server_time, label_hedging
-        )
 
         # capping sqlite rows
         await count_and_delete_ohlc_rows()
