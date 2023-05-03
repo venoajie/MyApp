@@ -654,7 +654,6 @@ class ApplyHedgingSpot:
                         log.warning (len_open_order_label_short)
                         log.warning (current_outstanding_order_len)
 
-
                         if "hedgingSpot" in strategy_attr["strategy"] :
                             
                             # closing order
