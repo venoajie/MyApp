@@ -657,12 +657,6 @@ class ApplyHedgingSpot:
 
                         if "hedgingSpot" in strategy_attr["strategy"] :
                             
-                            open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
-
-                            pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
-                                                            
-                            resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
-                            
                             # closing order
                             closed_order= hedging_spot.is_send_exit_order_allowed (notional,
                                                                                     best_bid_prc,
@@ -679,6 +673,11 @@ class ApplyHedgingSpot:
                                 
                                 await self.send_limit_order(params)
 
+                            open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
+
+                            pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
+                                                            
+                            resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
                             time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
                             
                             open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
