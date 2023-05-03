@@ -190,8 +190,13 @@ def is_send_exit_order_allowed (notional: float,
     """
     MIN_HEDGING_RATIO= .8
     
+    # transform to dict
     transaction= selected_transaction[0]
+    
+     # get price
     last_transaction_price= transaction['price']
+    
+    # get take profit pct
     tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
     
     tp_price_reached= is_transaction_price_minus_below_threshold(last_transaction_price,
@@ -211,6 +216,7 @@ def is_send_exit_order_allowed (notional: float,
     
     if order_allowed:
         
+        # get transaction parameters
         params= get_basic_closing_paramaters(selected_transaction)
         params.update({"entry_price": bid_price})
         params.update({"instrument":  transaction['instrument_name']})
