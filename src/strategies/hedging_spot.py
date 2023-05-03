@@ -66,9 +66,9 @@ def are_size_and_order_appropriate_for_ordering (notional: float,
         bool
 
     """
-    print(f' notional {notional} current_size {current_size} current_size < notional  {current_size < notional }')
+    print(f' notional {notional} current_size {abs(current_size)} current_size < notional  {abs(current_size) < notional }')
     
-    return current_size < notional and current_outstanding_order_len== 0
+    return abs(current_size) < notional and current_outstanding_order_len== 0
         
 def get_label (status: str, label_main_or_label_transactions: str) -> str:
     """
@@ -115,7 +115,7 @@ def is_send_open_order_allowed (notional: float,
         dict
 
     """
-    
+
     order_allowed= are_size_and_order_appropriate_for_ordering (notional,
                                                                 current_size,
                                                                 current_outstanding_order_len
