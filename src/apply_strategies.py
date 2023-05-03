@@ -617,7 +617,7 @@ class ApplyHedgingSpot:
                                                                                     open_trade_strategy_label,
                                                                                     strategy_attr
                                                                                     )
-                            log.warning (closed_order)
+                            log.warning (f' closed_order {closed_order}')
                             
                             if closed_order['order_allowed']:
                                 # get parameter orders
