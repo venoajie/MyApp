@@ -700,7 +700,7 @@ class ApplyHedgingSpot:
                             #basic hedging                                
                             send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
                                                                                     best_ask_prc,
-                                                                                    size_from_positions, 
+                                                                                    net_sum_strategy, 
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )
@@ -724,7 +724,7 @@ class ApplyHedgingSpot:
                             #basic hedging                                
                             send_order: dict = basic_grid.is_send_open_order_allowed (notional,
                                                                                     best_ask_prc,best_bid_prc,
-                                                                                    size_from_positions, 
+                                                                                    net_sum_strategy, 
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )
