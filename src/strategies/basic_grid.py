@@ -1,4 +1,5 @@
 # # -*- coding: utf-8 -*-
+from strategies import hedging_spot
 
 def get_basic_opening_paramaters(notional: float) -> dict:
     """
@@ -36,20 +37,6 @@ def are_size_and_order_appropriate_for_ordering (current_size: float,
     
     return abs(current_size) == 0 and current_outstanding_order_len== 0
 
-def get_label (status: str, label_main_or_label_transactions: str) -> str:
-    """
-
-    Args:
-    status: open/close
-
-    Returns:
-        bool
-
-    """
-    from strategies import hedging_spot
-    
-    return hedging_spot.get_label(status, label_main_or_label_transactions)
-
 def is_send_open_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
@@ -78,7 +65,7 @@ def is_send_open_order_allowed (notional: float,
         
         label_main= strategy_attributes_for_hedging['strategy']
 
-        label_open = get_label ('open', label_main) 
+        label_open = hedging_spot.get_label ('open', label_main) 
 
         params.update({"label": label_open})
         params.update({"side": strategy_attributes_for_hedging['side']})
@@ -87,5 +74,55 @@ def is_send_open_order_allowed (notional: float,
         if params['side']=='buy':
             params.update({"entry_price": bid_price})
     
+    return dict(order_allowed= order_allowed,
+                order_parameters= [] if order_allowed== False else params)
+    
+    
+def is_send_exit_order_allowed (ask_price: float,
+                                bid_price: float,
+                                current_outstanding_order_len: int,
+                                selected_transaction,
+                                strategy_attributes_for_hedging,
+                                ) -> dict:
+    """
+
+    Args:
+
+    Returns:
+        dict
+
+    """
+    
+    transaction= selected_transaction[0]
+    last_transaction_price= transaction['price']
+    tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
+    transaction_side= transaction['side']
+    
+    if transaction_side=='sell':
+        tp_price_reached= hedging_spot.is_transaction_price_minus_below_threshold(last_transaction_price,
+                                                                      bid_price,
+                                                                      tp_pct
+                                                                      )
+        params.update({"entry_price": bid_price})
+        
+    if transaction_side=='buy':
+        tp_price_reached= hedging_spot.is_transaction_price_plus_above_threshold(last_transaction_price,
+                                                                      ask_price,
+                                                                      tp_pct
+                                                                      )
+        params.update({"entry_price": ask_price})
+        params['side']='sell'
+    
+    no_outstanding_order= current_outstanding_order_len < 1
+
+    order_allowed= tp_price_reached\
+            and no_outstanding_order 
+    
+    if order_allowed:
+        
+        params= hedging_spot.get_basic_closing_paramaters(selected_transaction)
+        
+        params.update({"instrument":  transaction['instrument_name']})
+        
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
