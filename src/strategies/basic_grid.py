@@ -65,11 +65,13 @@ def is_send_open_order_allowed (notional: float,
         dict
 
     """
+    print(f'current_size {current_size} current_outstanding_order_len {current_outstanding_order_len}')
 
     order_allowed= are_size_and_order_appropriate_for_ordering (current_size,
                                                                 current_outstanding_order_len
                                                                 )
     
+    print(f'order_allowed {order_allowed}')
     if order_allowed:
         
         params= get_basic_opening_paramaters(notional)
