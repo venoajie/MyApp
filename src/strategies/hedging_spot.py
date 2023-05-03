@@ -144,10 +144,12 @@ def pct_price_in_usd(price: float,
 
 def price_plus_pct(price: float,
                      pct_threshold: float)-> float:    
+    print(f'price + pct_price_in_usd (price, pct_threshold) {price + pct_price_in_usd (price, pct_threshold)}')
     return price + pct_price_in_usd (price, pct_threshold)
 
 def price_minus_pct(price: float,
                      pct_threshold: float)-> float:    
+    print(f'price - pct_price_in_usd (price, pct_threshold) {price - pct_price_in_usd (price, pct_threshold)}')
     return price - pct_price_in_usd (price, pct_threshold)
 
 def is_transaction_price_minus_below_threshold(last_transaction_price: float,
