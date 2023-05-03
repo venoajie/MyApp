@@ -53,19 +53,18 @@ def is_send_open_order_allowed (notional: float,
 
     """
 
-    order_allowed= are_size_and_order_appropriate_for_ordering (current_size,
-                                                                current_outstanding_order_len
-                                                                )
+    order_allowed= are_size_and_order_appropriate_for_ordering (current_size, current_outstanding_order_len)
     
     if order_allowed:
         
+        # get transaction parameters
         params= get_basic_opening_paramaters(notional)
         
+        # get transaction label and update the respective parameters
         label_main= strategy_attributes_for_hedging['strategy']
-
         label_open = hedging_spot.get_label ('open', label_main) 
-
         params.update({"label": label_open})
+        
         params.update({"side": strategy_attributes_for_hedging['side']})
         if params['side']=='sell':
             params.update({"entry_price": ask_price})
@@ -74,7 +73,6 @@ def is_send_open_order_allowed (notional: float,
     
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
-    
     
 def is_send_exit_order_allowed (ask_price: float,
                                 bid_price: float,
@@ -90,11 +88,18 @@ def is_send_exit_order_allowed (ask_price: float,
         dict
 
     """
-    
+    # transform to dict
     transaction= selected_transaction[0]
+    
+    # get price
     last_transaction_price= transaction['price']
-    tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
+    
     transaction_side= transaction['direction']
+
+    # get take profit pct
+    tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
+
+    # get transaction parameters
     params= hedging_spot.get_basic_closing_paramaters(selected_transaction)
     
     if transaction_side=='sell':
