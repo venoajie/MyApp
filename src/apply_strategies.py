@@ -634,13 +634,6 @@ class ApplyHedgingSpot:
                                 
                     else:
                         
-                        min_position_size: float = position_sizing.pos_sizing(
-                            strategy_attr["take_profit_usd"],
-                            strategy_attr["entry_price"],
-                            notional,
-                            strategy_attr["equity_risked_pct"],
-                        )
-
                         len_open_order_label_short = (
                             0
                             if open_order_label_short == []
@@ -650,10 +643,7 @@ class ApplyHedgingSpot:
                                                         else len(open_order_label_long))
                         #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
                         current_outstanding_order_len= (check_orders_with_the_same_labels)['len_result']
-                        log.warning (len_open_order_label_long)
-                        log.warning (len_open_order_label_short)
-                        log.warning (current_outstanding_order_len)
-
+                        
                         if "hedgingSpot" in strategy_attr["strategy"] :
                             
                             # closing order
