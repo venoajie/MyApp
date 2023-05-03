@@ -932,7 +932,7 @@ async def main():
         server_time = await syn.current_server_time()
 
         #log.error (f'sub_accounts {sub_accounts}')
-        syn.running_strategy(server_time)
+        await syn.running_strategy(server_time)
 
         # capping sqlite rows
         await count_and_delete_ohlc_rows()
