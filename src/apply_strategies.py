@@ -353,11 +353,6 @@ class ApplyHedgingSpot:
 
         return   result
 
-    def hedged_value_to_notional (self, hedged_value: float, notional: float) -> float:
-        """ 
-        """        
-        return abs(hedged_value/notional)
-    
     async def sum_my_trades_open_sqlite (self, transactions, label, detail_level: str = None) -> None:
         """ 
         detail_level: main/individual
@@ -646,99 +641,61 @@ class ApplyHedgingSpot:
                             strategy_attr["equity_risked_pct"],
                         )
 
-                        # determine position sizing-hedging
-                        if "hedgingSpot" in strategy_attr["strategy"] :
-                            min_position_size = -notional
-
-                        exit_order_allowed = await self.is_send_order_allowed(
-                            label,
-                            open_trade_strategy_label,
-                            open_order_mgt,
-                            strategy_attr,
-                            min_position_size,
+                        len_open_order_label_short = (
+                            0
+                            if open_order_label_short == []
+                            else len(open_order_label_short)
                         )
-                        exit_order_allowed["instrument"] = instrument
+                        len_open_order_label_long = (0 if open_order_label_long == []  
+                                                        else len(open_order_label_long))
+                        #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
+                        current_outstanding_order_len= len(check_orders_with_the_same_labels)
+                        log.warning (len_open_order_label_long)
+                        log.warning (len_open_order_label_short)
+                        log.warning (current_outstanding_order_len)
 
-                        #log.error (f' label {label}')
-                        label_id= str_mod.parsing_label(label)['int']
-                        label_closed = f'''{strategy_attr["strategy"]}-closed-{label_id}'''
-                        #log.error (f' label {label} label_closed {label_closed} label_closed {label_closed} min_position_size {min_position_size}')
-                        
-                        if exit_order_allowed["exit_orders_limit_qty"] not in NONE_DATA:
 
-                            len_open_order_label_short = (
-                                0
-                                if open_order_label_short == []
-                                else len(open_order_label_short)
-                            )
-                            len_open_order_label_long = (0 if open_order_label_long == []  
-                                                         else len(open_order_label_long))
-                            tp_price = open_trade_strategy_label[0]['price'] - (open_trade_strategy_label[0]['price'] * strategy_attr["take_profit_pct"])
-                            #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
+                        if "hedgingSpot" in strategy_attr["strategy"] :
+                            
+                            open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
 
-                            hedged_value_to_notional = self.hedged_value_to_notional(net_sum_strategy, notional)
-                            #log.critical (f' hedged_value_to_notional {hedged_value_to_notional} {hedged_value_to_notional > 80 * ONE_PCT}')
-                            #log.critical (f' tp_price {tp_price} {best_bid_prc} {best_bid_prc < tp_price}')
-                            if "hedgingSpot" in strategy_attr["strategy"] \
-                                and hedged_value_to_notional > 80 * ONE_PCT:
+                            pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
+                                                            
+                            resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
+                            
+                            # closing order
+                            closed_order= hedging_spot.is_send_exit_order_allowed (notional,
+                                                                                    best_bid_prc,
+                                                                                    size_from_positions, 
+                                                                                    len_open_order_label_long,
+                                                                                    open_trade_strategy_label,
+                                                                                    strategy_attr
+                                                                                    )
+                            log.warning (closed_order)
+                            
+                            if closed_order['order_allowed']:
+                                # get parameter orders
+                                params= closed_order['order_parameters']
                                 
-                                time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
-                                
-                                open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
-                                    open_trade_strategy)
+                                await self.send_limit_order(params)
 
-                                delta_time: int = server_time - open_trade_strategy_max_attr["timestamp"]
-                                
-                                exceed_threshold_time: int = delta_time > time_threshold
-                                open_trade_strategy_max_attr_price = open_trade_strategy_max_attr["max_price"]
+                            time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE * 15)
+                            
+                            open_trade_strategy_max_attr = my_trades_open_mgt.my_trades_max_price_attributes_filteredBy_label(
+                                open_trade_strategy)
 
-                                pct_prc = (open_trade_strategy_max_attr_price * strategy_attr["cut_loss_pct"])
-                                                                
-                                resupply_price = (open_trade_strategy_max_attr_price + pct_prc)
-                                
-                                #log.critical (f' exit_order_allowed {exit_order_allowed}')
+                            delta_time: int = server_time - open_trade_strategy_max_attr["timestamp"]
+                            
+                            exceed_threshold_time: int = delta_time > time_threshold
+                            # new order
+                            if (
+                                best_ask_prc > resupply_price
+                                and exceed_threshold_time
+                                and len_open_order_label_short < 1
+                            ) and False:
 
-                                # closing order
-                                if (
-                                    best_bid_prc < tp_price
-                                    and len_open_order_label_long < 1
-                                ):
-                                    exit_order_allowed["entry_price"] = best_bid_prc
-                                    exit_order_allowed["label"] = label_closed
-                                    exit_order_allowed["side"] = exit_order_allowed[
-                                        "exit_orders_limit_side"
-                                    ]
-                                    exit_order_allowed["size"] = exit_order_allowed[
-                                        "exit_orders_limit_qty"
-                                    ]
-                                    exit_order_allowed["type"] = exit_order_allowed[
-                                        "exit_orders_limit_type"
-                                    ]
-                                    await self.send_limit_order(exit_order_allowed)
+                                await self.send_limit_order(exit_order_allowed)
 
-                                # new order
-                                if (
-                                    best_ask_prc > resupply_price
-                                    and exceed_threshold_time
-                                    and len_open_order_label_short < 1
-                                ):
-
-                                    exit_order_allowed["entry_price"] = best_ask_prc
-                                    exit_order_allowed["take_profit_usd"] = best_ask_prc
-                                    exit_order_allowed["side"] = "sell"
-                                    exit_order_allowed["type"] = "limit"
-                                    exit_order_allowed["size"] = int(
-                                        max(notional * 10 / 100, 2)
-                                    )
-                                    exit_order_allowed[
-                                        "label"
-                                    ] = label_numbering.labelling(
-                                        "open", label_main
-                                    )
-                                    await self.send_limit_order(exit_order_allowed)
-
-                        if exit_order_allowed["exit_orders_market_qty"] != 0:
-                            log.debug(f"exit_orders_market_type")
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
@@ -870,7 +827,7 @@ class ApplyHedgingSpot:
                                 current_outstanding_order_len= len(check_orders_with_the_same_labels)
                                 
                                 #basic hedging                                
-                                send_order: dict = hedging_spot.is_send_order_allowed (notional,
+                                send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
                                                                                         best_ask_prc,
                                                                                         size_from_positions, 
                                                                                         current_outstanding_order_len,
