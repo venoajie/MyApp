@@ -791,8 +791,8 @@ class ApplyHedgingSpot:
                         else:
                                                                                            
                             if "hedgingSpot" in strategy_attr["strategy"]:
-                                log.warning(check_orders_with_the_same_labels)
-                                current_outstanding_order_len= len(check_orders_with_the_same_labels)
+
+                                current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
                                 
                                 #basic hedging                                
                                 send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
