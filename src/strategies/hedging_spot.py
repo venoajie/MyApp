@@ -155,7 +155,6 @@ def is_transaction_price_minus_below_threshold(last_transaction_price: float,
                                                         current_price: float,
                                                         pct_threshold: float
                                                         )-> bool:    
-    print(f' price_minus_pct {price_minus_pct (last_transaction_price, pct_threshold)}')
     return price_minus_pct (last_transaction_price, pct_threshold) > current_price
 
 def is_minimum_waiting_time_has_exceeded(last_transaction_timestamp: int)-> bool:    
