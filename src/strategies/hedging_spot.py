@@ -254,7 +254,6 @@ def is_send_exit_order_allowed (notional: float,
                                                                               MIN_HEDGING_RATIO
                                                                               )
     no_outstanding_order= current_outstanding_order_len < 1
-    print(f' tp_price_reached {tp_price_reached} hedged_value_is_still_safe {hedged_value_is_still_safe} no_outstanding_order {no_outstanding_order}')
 
     order_allowed= tp_price_reached\
         and hedged_value_is_still_safe\
