@@ -562,6 +562,25 @@ class ApplyHedgingSpot:
                     #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
                     current_outstanding_order_len= (check_orders_with_the_same_labels)['len_result']
                     
+                    if "basicGrid" in strategy_attr["strategy"]:
+
+                        current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
+                        
+                        #basic hedging                                
+                        closed_order: dict = basic_grid.is_send_exit_order_allowed (best_ask_prc,
+                                                                                  best_bid_prc,
+                                                                                  current_outstanding_order_len,
+                                                                                  open_trade_strategy_label,
+                                                                                  strategy_attr
+                                                                                )
+                        log.warning (f' closed_order basicGrid {closed_order}')
+                        
+                        if closed_order['order_allowed']:
+                            # get parameter orders
+                            params= closed_order['order_parameters']
+                            
+                            await self.send_limit_order(params)
+
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
                         # closing order
@@ -572,7 +591,7 @@ class ApplyHedgingSpot:
                                                                                 open_trade_strategy_label,
                                                                                 strategy_attr
                                                                                 )
-                        log.warning (f' closed_order {closed_order}')
+                        log.warning (f' closed_order hedgingSpot {closed_order}')
                         
                         if closed_order['order_allowed']:
                             # get parameter orders
