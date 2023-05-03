@@ -114,6 +114,7 @@ def is_send_exit_order_allowed (ask_price: float,
         params.update({"entry_price": ask_price})
         params['side']='sell'
     
+    print(f'tp_price_reached {tp_price_reached}')
     no_outstanding_order= current_outstanding_order_len < 1
 
     order_allowed= tp_price_reached\
