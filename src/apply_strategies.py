@@ -26,10 +26,6 @@ NONE_DATA: None = [0, None, []]
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-def catch_error(error, idle: int = None) -> None:
-    """ """
-    system_tools.catch_error_message(error, idle)
-
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
@@ -66,7 +62,7 @@ class ApplyHedgingSpot:
             result_get_positions: dict =  await private_data.get_positions()
 
         except Exception as error:
-            catch_error(error)
+            await raise_error(error)
             
         return dict(
             sub_account= result_sub_account["result"],
@@ -864,7 +860,7 @@ class ApplyHedgingSpot:
                 log.error (f'clean_up_closed_transactions 2 {clean_up_closed_transactions}')
                 
         except Exception as error:
-            catch_error(error, 30)
+            await raise_error(error, 30)
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
     
@@ -909,8 +905,6 @@ async def main():
             client_secret=client_secret,
             currency=currency,
         )
-        error= 'AAAAAAAAAAAAAAAAAAA'
-        await raise_error(error, 30)
         
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
@@ -931,7 +925,7 @@ async def main():
         await count_and_delete_ohlc_rows()
         
     except Exception as error:
-        catch_error(error, 30)
+        await raise_error(error, 30)
 
 if __name__ == "__main__":
 
@@ -939,7 +933,7 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main())
 
     except KeyboardInterrupt:
-        catch_error(KeyboardInterrupt)
+        system_tools.catch_error_message (KeyboardInterrupt)
 
     except Exception as error:
-        catch_error(error, 30)
+        system_tools.catch_error_message (error, 30)
