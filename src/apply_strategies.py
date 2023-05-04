@@ -30,6 +30,10 @@ def catch_error(error, idle: int = None) -> None:
     """ """
     system_tools.catch_error_message(error, idle)
 
+async def raise_error(error, idle: int = None) -> None:
+    """ """
+    await system_tools.raise_error_message(error, idle)
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -905,6 +909,8 @@ async def main():
             client_secret=client_secret,
             currency=currency,
         )
+        error= 'AAAAAAAAAAAAAAAAAAA'
+        await raise_error(error, 30)
         
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
