@@ -26,13 +26,17 @@ NONE_DATA: None = [0, None, []]
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-def catch_error(error, idle: int = None) -> list:
+def catch_error(error, idle: int = None) -> None:
     """ """
     system_tools.catch_error_message(error, idle)
 
-def sleep_and_restart(idle: int = None) -> list:
+def sleep_and_restart(idle: int = None) -> None:
     """ """
     system_tools.sleep_and_restart_program(idle)
+
+async def sleep_and_restart_program(idle: int = None) -> None:
+    """ """
+    await system_tools.sleep_and_restart (idle)
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -260,7 +264,7 @@ class ApplyHedgingSpot:
         
         if open_order_is_consistent == False:
             await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
-            await sleep_and_restart (5)
+            await system_tools.sleep_and_restart (5)
         
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
@@ -380,7 +384,7 @@ class ApplyHedgingSpot:
                         await sqlite_management.insert_tables('my_trades_all_json',transaction)
                         
                         # refreshing data
-                        system_tools.sleep_and_restart_program(1)
+                        await system_tools.sleep_and_restart(1)
                 
                 if net_sum ==0 :
                     
@@ -403,7 +407,7 @@ class ApplyHedgingSpot:
                         await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
                     
                     # refreshing data
-                    system_tools.sleep_and_restart_program(1)
+                    await system_tools.sleep_and_restart(1)
     
     async def closing_transactions(self, 
                                    label_transaction_net,
@@ -603,7 +607,7 @@ class ApplyHedgingSpot:
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                await sleep_and_restart (5)
+                await system_tools.sleep_and_restart (5)
             
     async def opening_transactions(self, 
                                    instrument, 
@@ -770,7 +774,7 @@ class ApplyHedgingSpot:
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                        await sleep_and_restart (5)
+                        await system_tools.sleep_and_restart (5)
 
                     #placed at the end of opening code to ensure db consistency
                     check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
