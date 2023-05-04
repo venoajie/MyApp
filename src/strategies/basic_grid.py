@@ -74,11 +74,25 @@ def is_send_open_order_allowed (notional: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
+def transaction_attributes (selected_transaction: list)-> bool:
+    """
+
+    Args:
+
+    Returns:
+        bool
+
+    """
+    len_transaction= len(selected_transaction)
+    
+    return  dict(len_transaction= len_transaction,
+                order_parameters= [] if order_allowed== False else params)
+
 def is_send_exit_order_allowed (ask_price: float,
                                 bid_price: float,
                                 current_outstanding_order_len: int,
-                                selected_transaction,
-                                strategy_attributes_for_hedging,
+                                selected_transaction: list,
+                                strategy_attributes_for_hedging: list,
                                 ) -> dict:
     """
 
@@ -127,5 +141,90 @@ def is_send_exit_order_allowed (ask_price: float,
         
         params.update({"instrument":  transaction['instrument_name']})
         
+    return dict(order_allowed= order_allowed,
+                order_parameters= [] if order_allowed== False else params)
+    
+def size_adjustment (len_transaction: int)-> float:
+    """
+
+    Args:
+
+    Returns:
+        bool
+
+    """
+
+    if len_transaction== 0:
+        adjusting_factor= 1
+    
+    elif len_transaction== 1:
+        adjusting_factor= 2/3
+            
+    elif len_transaction== 2:
+        adjusting_factor= 1/3
+    
+    else:
+        adjusting_factor= 0
+    
+    return adjusting_factor
+    
+def is_send_additional_order_allowed (notional: float,
+                            ask_price: float,
+                            bid_price: float,
+
+                            selected_transaction: list,
+                            strategy_attributes_for_hedging: list
+                            ) -> dict:
+    """
+
+    Args:
+
+    Returns:
+        dict
+
+    """
+
+    # transform to dict
+    transaction= selected_transaction[0]
+    current_outstanding_order_len= len(selected_transaction)
+    
+    order_allowed= current_outstanding_order_len== 0
+    
+    if order_allowed:
+        
+        # get transaction parameters
+        params= get_basic_opening_paramaters(notional)
+        
+        # get transaction label and update the respective parameters
+        label_main= strategy_attributes_for_hedging['strategy']
+        label_open = hedging_spot.get_label ('open', label_main) 
+        params.update({"label": label_open})
+        
+        params.update({"side": strategy_attributes_for_hedging['side']})
+        
+        len_transaction= len(selected_transaction)
+        
+        params["size"]= int(transaction['amount'] * size_adjustment(len_transaction))
+        
+        pct_threshold= (1/100)/2
+            
+        if params['side']=='sell':
+            params.update({"entry_price": ask_price})
+
+            transaction_price_exceed_threshold = hedging_spot.is_transaction_price_plus_above_threshold (transaction['price'], 
+                                                                                                         ask_price,
+                                                                                                         pct_threshold) 
+            if transaction_price_exceed_threshold== False:
+                order_allowed== False
+                
+        if params['side']=='buy':
+            params.update({"entry_price": bid_price})
+            
+            transaction_price_exceed_threshold = hedging_spot.is_transaction_price_minus_below_threshold (transaction['price'], 
+                                                                                                          bid_price, 
+                                                                                                          pct_threshold) 
+            if transaction_price_exceed_threshold== False:
+                order_allowed== False
+    
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
