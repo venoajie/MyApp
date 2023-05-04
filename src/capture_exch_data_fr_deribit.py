@@ -272,12 +272,11 @@ class StreamAccountData:
                                 
             else:
                 log.info("WebSocket connection has broken.")
-                system_tools.catch_error_message(
+                await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
                     0.1,
                     "WebSocket connection EXCHANGE has broken",
                 )
-                
                 
     async def get_private_data(self, currency) -> list:
         """
