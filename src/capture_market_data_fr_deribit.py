@@ -317,8 +317,8 @@ class StreamMarketData:
                                             )
 
                                 except Exception as error:
-                                    system_tools.catch_error_message(error)
-                                    system_tools.catch_error_message(
+                                    log.error(error)
+                                    await system_tools.raise_error_message(
                                         "WebSocket connection - failed to process data"
                                     )
                                     
@@ -326,12 +326,12 @@ class StreamMarketData:
 
                 else:
                     log.info("WebSocket connection has broken.")
-                    system_tools.catch_error_message(
+                    await system_tools.raise_error_message(
                         error, 0.1, "WebSocket connection MARKET has broken"
                     )
 
             except Exception as error:
-                system_tools.catch_error_message(
+                await system_tools.raise_error_message(
                     error, 10,
                     "WebSocket connection - failed to capture market data from Deribit",
                 )
@@ -342,7 +342,7 @@ class StreamMarketData:
             last_open_interest= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
 
         except Exception as error:
-            system_tools.catch_error_message(
+            await system_tools.raise_error_message(
                 error,
                 "Capture market data - failed to fetch last open_interest",
             )
@@ -354,7 +354,7 @@ class StreamMarketData:
             last_tick1_fr_sqlite= await sqlite_management.executing_query_with_return(last_tick_query_ohlc1)
 
         except Exception as error:
-            system_tools.catch_error_message(
+            await system_tools.raise_error_message(
                 error,
                 "Capture market data - failed to fetch last_tick_fr_sqlite",
             )
@@ -383,7 +383,7 @@ class StreamMarketData:
                         pickling.replace_data(my_path_ticker, ticker_change)
                         
         except Exception as error:
-            system_tools.catch_error_message(
+            await system_tools.raise_error_message(
                 error,
                 "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
             )
