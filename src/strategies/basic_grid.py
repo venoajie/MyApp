@@ -208,6 +208,7 @@ def is_send_additional_order_allowed (notional: float,
         params["size"]= int(transaction['amount'] * size_adjustment(len_transaction))
         
         pct_threshold= (1/100)/2
+        print (f' transaction_side {transaction_side}')
             
         if transaction_side =='sell':
             params.update({"entry_price": ask_price})
