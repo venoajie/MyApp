@@ -457,7 +457,7 @@ class ApplyHedgingSpot:
                         for o in transaction
                     ][0]
 
-            log.critical(f" {label} max_price {max_price} min_price {min_price}")
+            log.critical(f" {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}")
 
             grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
