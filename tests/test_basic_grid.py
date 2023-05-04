@@ -37,6 +37,7 @@ def test_is_send_additional_order_allowed():
     notional= 14.68
     ask_price= 1950
     bid_price= 1800
+    current_outstanding_order_len= 0
     
     strategy_attributes=  [o for o in strategy_attributes_entry if 'basicGridLong' in o ['strategy']  ]
     
@@ -45,6 +46,7 @@ def test_is_send_additional_order_allowed():
     result =  grid.is_send_additional_order_allowed(notional,
                                                     ask_price,
                                                     bid_price,
+                                                    current_outstanding_order_len,
                                                     selected_transaction,
                                                     strategy_attributes)
     
