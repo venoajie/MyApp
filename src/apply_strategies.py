@@ -563,8 +563,7 @@ class ApplyHedgingSpot:
                         current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
                         
                         #basic hedging                                
-                        closed_order: dict = basic_grid.is_send_exit_order_allowed (best_ask_prc,
-                                                                                  best_bid_prc,
+                        closed_order: dict = basic_grid.is_send_exit_order_allowed (best_ask_prc,best_bid_prc,
                                                                                   current_outstanding_order_len,
                                                                                   open_trade_strategy_label,
                                                                                   strategy_attr
@@ -576,6 +575,14 @@ class ApplyHedgingSpot:
                             params= closed_order['order_parameters']
                             
                             await self.send_limit_order(params)
+
+
+                        send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
+                                                                                                      best_ask_prc,best_bid_prc,
+                                                                                                      open_trade_strategy_label,
+                                                                                                      strategy_attr
+                                                                                                        )
+                        log.warning (f' send_additional_order basicGrid {send_additional_order}')
 
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
@@ -763,6 +770,7 @@ class ApplyHedgingSpot:
                                 
                                 # send limit order
                                 await self.send_limit_order(params)
+                                
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
