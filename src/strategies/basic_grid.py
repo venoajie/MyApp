@@ -190,6 +190,8 @@ def is_send_additional_order_allowed (notional: float,
     order_allowed= current_outstanding_order_len== 0 \
         and selected_transaction !=[]
     
+    print (f' current_outstanding_order_len {current_outstanding_order_len} selected_transaction {selected_transaction}')
+    
     if order_allowed:
         transaction_side= transaction['direction']
         
