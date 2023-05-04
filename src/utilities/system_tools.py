@@ -289,6 +289,58 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
         sys.exit()
 
 
+async def raise_error_message(error: str, idle: float = None, message: str = None) -> None:
+    """
+
+    Capture & emit error message
+    Optional: Send error message to telegram server
+
+    Args:
+        idle (float): seconds of the program halted before restarted. None: restart is not needed
+        message (str): error message
+
+    Returns:
+        None
+
+    Reference:
+        https://medium.com/pipeline-a-data-engineering-resource/prettify-your-python-logs-with-loguru-a7630ef48d87
+
+    """
+
+    import traceback
+    from utilities import telegram_app
+    from loguru import logger as log
+
+    info = f"{error} \n \n {traceback.format_exc()}"
+
+    if message != None:
+        info = f"{message} \n \n {error} \n \n {traceback.format_exc()}"
+
+    if error == True:  # to respond 'def is_current_file_running'  result
+        sys.exit(1)
+
+    if error == "server rejected WebSocket connection: HTTP 503":
+        log.critical(f"{error}")
+        telegram_app.telegram_bot_sendtext(
+            "server rejected WebSocket connection: HTTP 503"
+        )
+
+    log.critical(f"{error}")
+    log.debug(traceback.format_exc())
+
+    log.add(
+        "error.log", backtrace=True, diagnose=True
+    )  # Caution, may leak sensitive data in prod
+
+    telegram_app.telegram_bot_sendtext(info)
+
+    if idle != None:
+        log.info(f"restart {idle} seconds after error")
+        await sleep_and_restart (idle)
+
+    else:
+        sys.exit()
+        
 def check_file_attributes(filepath: str) -> None:
     """
 
