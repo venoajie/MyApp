@@ -30,14 +30,6 @@ def catch_error(error, idle: int = None) -> None:
     """ """
     system_tools.catch_error_message(error, idle)
 
-def sleep_and_restart(idle: int = None) -> None:
-    """ """
-    system_tools.sleep_and_restart_program(idle)
-
-async def sleep_and_restart_program(idle: int = None) -> None:
-    """ """
-    await system_tools.sleep_and_restart (idle)
-
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -914,8 +906,6 @@ async def main():
             currency=currency,
         )
         
-        await system_tools.sleep_and_restart (5)
-
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
         sub_accounts = account_balances_and_transactions_from_exchanges ['sub_account']
