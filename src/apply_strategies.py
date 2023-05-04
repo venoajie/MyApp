@@ -913,6 +913,8 @@ async def main():
             client_secret=client_secret,
             currency=currency,
         )
+        
+        await system_tools.sleep_and_restart (5)
 
         # resupply sub account db
         account_balances_and_transactions_from_exchanges= await syn.get_account_balances_and_transactions_from_exchanges()
