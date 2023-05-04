@@ -187,19 +187,20 @@ def is_send_additional_order_allowed (notional: float,
     # transform to dict
     transaction= selected_transaction[0]
     
+    
     order_allowed= current_outstanding_order_len== 0 \
         and selected_transaction !=[]
     
-    print (f' current_outstanding_order_len {current_outstanding_order_len} selected_transaction {selected_transaction}')
-    
     if order_allowed:
-        transaction_side= transaction['direction']
+        transaction= selected_transaction[0]
+        strategy_attributes= strategy_attributes[0]
         
         # get transaction parameters
         params= get_basic_opening_paramaters(notional)
         
         # get transaction label and update the respective parameters
         label_main= strategy_attributes['strategy']
+        transaction_side= transaction['direction']
         label_open = hedging_spot.get_label ('open', label_main) 
         params.update({"label": label_open})
         
