@@ -171,9 +171,8 @@ def size_adjustment (len_transaction: int)-> float:
 def is_send_additional_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
-
                             selected_transaction: list,
-                            strategy_attributes_for_hedging: list
+                            strategy_attributes: list
                             ) -> dict:
     """
 
@@ -188,19 +187,21 @@ def is_send_additional_order_allowed (notional: float,
     transaction= selected_transaction[0]
     current_outstanding_order_len= len(selected_transaction)
     
-    order_allowed= current_outstanding_order_len== 0
+    order_allowed= current_outstanding_order_len== 0 \
+        and selected_transaction !=[]
     
     if order_allowed:
+        transaction_side= transaction['direction']
         
         # get transaction parameters
         params= get_basic_opening_paramaters(notional)
         
         # get transaction label and update the respective parameters
-        label_main= strategy_attributes_for_hedging['strategy']
+        label_main= strategy_attributes['strategy']
         label_open = hedging_spot.get_label ('open', label_main) 
         params.update({"label": label_open})
         
-        params.update({"side": strategy_attributes_for_hedging['side']})
+        params.update({"side": strategy_attributes['side']})
         
         len_transaction= len(selected_transaction)
         
@@ -208,7 +209,7 @@ def is_send_additional_order_allowed (notional: float,
         
         pct_threshold= (1/100)/2
             
-        if params['side']=='sell':
+        if transaction_side =='sell':
             params.update({"entry_price": ask_price})
 
             transaction_price_exceed_threshold = hedging_spot.is_transaction_price_plus_above_threshold (transaction['price'], 
@@ -217,7 +218,7 @@ def is_send_additional_order_allowed (notional: float,
             if transaction_price_exceed_threshold== False:
                 order_allowed== False
                 
-        if params['side']=='buy':
+        if transaction_side=='buy':
             params.update({"entry_price": bid_price})
             
             transaction_price_exceed_threshold = hedging_spot.is_transaction_price_minus_below_threshold (transaction['price'], 
