@@ -777,7 +777,7 @@ class ApplyHedgingSpot:
                                 await self.cancel_by_order_id(check_cancellation['open_order_id'])
                                                 
         except Exception as error:
-            await catch_error(error)
+            await raise_error(error)
 
     async def running_strategy(self, server_time) -> float:
         """ """
