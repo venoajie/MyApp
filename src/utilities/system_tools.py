@@ -2,7 +2,7 @@
 
 import os, sys
 from time import sleep
-
+import asyncio
 
 def get_platform() -> str:
     """
@@ -214,6 +214,27 @@ def sleep_and_restart_program(idle: float = None) -> None:
     python = sys.executable
     os.execl(python, python, *sys.argv)
 
+async def sleep_and_restart(idle: float = None) -> None:
+    """
+
+    Halt the program for some seconds and restart it
+
+    Args:
+        idle (float): seconds of the program halted before restarted.
+        None: restart is not needed
+
+    Returns:
+        None
+
+    """
+
+    if idle != None:
+        print(f" sleep for {idle} seconds")
+        await asyncio.sleep(idle)
+
+    print(f"restart")
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 def catch_error_message(error: str, idle: float = None, message: str = None) -> None:
     """
