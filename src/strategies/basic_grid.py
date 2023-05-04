@@ -171,6 +171,7 @@ def size_adjustment (len_transaction: int)-> float:
 def is_send_additional_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
+                            current_outstanding_order_len,
                             selected_transaction: list,
                             strategy_attributes: list
                             ) -> dict:
@@ -185,7 +186,6 @@ def is_send_additional_order_allowed (notional: float,
 
     # transform to dict
     transaction= selected_transaction[0]
-    current_outstanding_order_len= len(selected_transaction)
     
     order_allowed= current_outstanding_order_len== 0 \
         and selected_transaction !=[]
