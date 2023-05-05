@@ -172,6 +172,7 @@ def is_send_additional_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
                             current_outstanding_order_len,
+                            len_my_trades_open_sqlite_main_strategy,
                             selected_transaction: list,
                             strategy_attributes: list,
                             pct_threshold: float
@@ -207,11 +208,10 @@ def is_send_additional_order_allowed (notional: float,
         
         params.update({"side": strategy_attributes['side']})
         
-        len_transaction= len(selected_transaction)
-        size_adjusted= size_adjustment(len_transaction)
+        size_adjusted= size_adjustment(len_my_trades_open_sqlite_main_strategy)
         
         params["size"]= int(transaction['amount'] * size_adjusted)
-        print (f'len_transaction {len_transaction} size_adjusted {size_adjusted}')
+        print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted}')
             
         if transaction_side =='sell':
             params.update({"entry_price": ask_price})
