@@ -203,6 +203,7 @@ def is_send_additional_order_allowed (notional: float,
         transaction_side= transaction['direction']
         label_open = hedging_spot.get_label ('open', label_main) 
         params.update({"label": label_open})
+        params.update({"instrument": transaction['instrument_name']})
         
         params.update({"side": strategy_attributes['side']})
         
