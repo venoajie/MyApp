@@ -232,13 +232,13 @@ def is_send_additional_order_allowed (notional: float,
         if size_adjusted== 0:
             ONE_MINUTE= 60000
             WAITING_MINUTE= 60
-            time_multiply= len_my_trades_open_sqlite_main_strategy - MAX_FACTOR
+            time_multiply= max(1, len_my_trades_open_sqlite_main_strategy - MAX_FACTOR)
             time_threshold: float =  time_multiply * ONE_MINUTE * WAITING_MINUTE
             time_stamp= transaction['timestamp']
             minimum_waiting_time_has_passed= is_minimum_waiting_time_has_passed (server_time, 
                                                                                  time_stamp, 
                                                                                  time_threshold)
-            AVG_PCT= 1/100
+            AVG_PCT= 1/100 * time_multiply
             transaction_price= transaction['price']
                     
             if transaction_side=='sell':
@@ -256,7 +256,11 @@ def is_send_additional_order_allowed (notional: float,
                                                                             AVG_PCT
                                                                             )
             print (f'minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} time_threshold {time_threshold} {time_multiply} transaction_price {transaction_price} averaging_price_reached {averaging_price_reached} ')
-            order_allowed= False
+            
+            if minimum_waiting_time_has_passed and averaging_price_reached:
+                order_allowed= True
+            else:
+                order_allowed= False
             
         else:    
             if transaction_side =='sell':
