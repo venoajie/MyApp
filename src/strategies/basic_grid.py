@@ -210,7 +210,7 @@ def is_send_additional_order_allowed (notional: float,
         
         size_adjusted= size_adjustment(len_my_trades_open_sqlite_main_strategy)
         
-        params["size"]= int(transaction['amount'] * size_adjusted)
+        params["size"]= max(1, (int(transaction['amount'] * size_adjusted)))
         print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted}')
             
         if size_adjusted== 0:
