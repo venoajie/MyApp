@@ -588,8 +588,9 @@ class ApplyHedgingSpot:
                         pct_threshold= 1/100
                         len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
                         max_size_my_trades_open_sqlite_main_strategy= max([o['amount'] for o in my_trades_open_strategy])
+                        max_time_stamp_my_trades_open_sqlite_main_strategy= max([o['timestamp'] for o in my_trades_open_strategy])
                         log.debug(my_trades_open_strategy)
-                        log.debug(max_size_my_trades_open_sqlite_main_strategy)
+                        log.debug(f' max_size_my_trades_open_sqlite_main_strategy {max_size_my_trades_open_sqlite_main_strategy} max_time_stamp_my_trades_open_sqlite_main_strategy {max_time_stamp_my_trades_open_sqlite_main_strategy}')
                         
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
@@ -597,6 +598,7 @@ class ApplyHedgingSpot:
                                                                                                       len_my_trades_open_sqlite_main_strategy,
                                                                                                       max_size_my_trades_open_sqlite_main_strategy,
                                                                                                       open_trade_strategy_label,
+                                                                                                      max_time_stamp_my_trades_open_sqlite_main_strategy,
                                                                                                       strategy_attr,
                                                                                                       pct_threshold,
                                                                                                       server_time
