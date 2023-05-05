@@ -190,12 +190,10 @@ def is_send_additional_order_allowed (notional: float,
     print (f' strategy_attributes {strategy_attributes}')
     
     order_allowed= current_outstanding_order_len== 0  \
-        and selected_transaction !=[] \
-            and strategy_attributes !=[]
+        and selected_transaction !=[] 
     
     if order_allowed:
         transaction= selected_transaction[0]
-        strategy_attributes= strategy_attributes[0]
         
         # get transaction parameters
         params= get_basic_opening_paramaters(notional)
