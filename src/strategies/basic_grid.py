@@ -75,20 +75,6 @@ def is_send_open_order_allowed (notional: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
-def transaction_attributes (selected_transaction: list)-> bool:
-    """
-
-    Args:
-
-    Returns:
-        bool
-
-    """
-    len_transaction= len(selected_transaction)
-    
-    return  dict(len_transaction= len_transaction,
-                order_parameters= [] if order_allowed== False else params)
-
 def is_send_exit_order_allowed (ask_price: float,
                                 bid_price: float,
                                 current_outstanding_order_len: int,
@@ -191,7 +177,6 @@ def is_minimum_waiting_time_has_passed (server_time, time_stamp, time_threshold)
         bool
 
     """
-
     
     return delta_time (server_time, time_stamp) > time_threshold
 
@@ -253,7 +238,24 @@ def is_send_additional_order_allowed (notional: float,
             minimum_waiting_time_has_passed= is_minimum_waiting_time_has_passed (server_time, 
                                                                                  time_stamp, 
                                                                                  time_threshold)
-            print (f'minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} time_threshold {time_threshold} {time_multiply}')
+            AVG_PCT= 1/100
+            transaction_price= transaction['price']
+                    
+            if transaction_side=='sell':
+                averaging_price_reached= hedging_spot.is_transaction_price_plus_above_threshold(transaction_price,
+                                                                            ask_price,
+                                                                            AVG_PCT
+                                                                            )
+                
+                params.update({"entry_price": bid_price})
+                
+            if transaction_side=='buy':
+                
+                averaging_price_reached= hedging_spot.is_transaction_price_minus_below_threshold(transaction_price,
+                                                                            bid_price,
+                                                                            AVG_PCT
+                                                                            )
+            print (f'minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} time_threshold {time_threshold} {time_multiply} transaction_price {transaction_price} averaging_price_reached {averaging_price_reached} ')
             order_allowed= False
             
         else:    
