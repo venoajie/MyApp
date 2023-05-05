@@ -186,6 +186,12 @@ def parsing_label(label: str, integer: int= None) -> dict:
         super_main = [main.replace(o,'') for o in side if o in main]
     except:
         super_main = None
+        
+    try:
+        closed_to_open= f'{main}-open-{get_integer}'
+        
+    except:
+        closed_to_open = None
 
     try:
         if 'Short' in main:
@@ -206,7 +212,8 @@ def parsing_label(label: str, integer: int= None) -> dict:
         "int": get_integer,
         "transaction_status": status,
         "transaction_net": net,
-        "flipping_closed": flipping_closed
+        "flipping_closed": flipping_closed,
+        "closed_to_open": closed_to_open
         }
 
 def transform_nested_dict_to_list(list_example) -> dict:
@@ -221,7 +228,7 @@ def transform_nested_dict_to_list(list_example) -> dict:
     for k in range(len_tick):
 
         dict_result=dict (volume= list_example['volume'][k],
-                       tick= list_example['ticks'][k],
+                       tick= list_example['tick'][k],
                        open= list_example['open'][k],
                        low= list_example['low'][k],
                        high= list_example['high'][k],
