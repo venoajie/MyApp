@@ -173,7 +173,8 @@ def is_send_additional_order_allowed (notional: float,
                             bid_price: float,
                             current_outstanding_order_len,
                             selected_transaction: list,
-                            strategy_attributes: list
+                            strategy_attributes: list,
+                            pct_threshold: float
                             ) -> dict:
     """
 
@@ -183,11 +184,10 @@ def is_send_additional_order_allowed (notional: float,
         dict
 
     """
+    pct_threshold= (1/100)/2
 
     # transform to dict
     transaction= selected_transaction[0]    
-    
-    print (f' strategy_attributes {strategy_attributes}')
     
     order_allowed= current_outstanding_order_len== 0  \
         and selected_transaction !=[] 
@@ -210,7 +210,6 @@ def is_send_additional_order_allowed (notional: float,
         
         params["size"]= int(transaction['amount'] * size_adjustment(len_transaction))
         
-        pct_threshold= (1/100)/2
         print (f' transaction_side {transaction_side}')
             
         if transaction_side =='sell':
