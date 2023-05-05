@@ -185,11 +185,13 @@ def is_send_additional_order_allowed (notional: float,
     """
 
     # transform to dict
-    transaction= selected_transaction[0]
+    transaction= selected_transaction[0]    
     
+    print (f' strategy_attributes {strategy_attributes}')
     
-    order_allowed= current_outstanding_order_len== 0 \
-        and selected_transaction !=[]
+    order_allowed= current_outstanding_order_len== 0  \
+        and selected_transaction !=[] \
+            and strategy_attributes !=[]
     
     if order_allowed:
         transaction= selected_transaction[0]
