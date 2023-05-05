@@ -401,6 +401,10 @@ def test_get_strings_before_character_and_parsing_label():
     label = "every5mtestShort-closed-1681617021717"
     result = "every5mtest"
     assert (string_modification.parsing_label(label) ['super_main'] == result)
+    
+    result = "every5mtestShort-open-1681617021717"
+    assert (string_modification.parsing_label(label) ['closed_to_open'] == result)
+    
     result = "1681617021717"
     assert (string_modification.parsing_label(label) ['int'] == result)
     result = "every5mtestLong-open-1677473096"
@@ -437,6 +441,10 @@ def test_get_strings_before_character_and_parsing_label():
     assert (string_modification.get_strings_before_character(label, "-", [0, 1]) == result)
     assert (string_modification.parsing_label(label) ['transaction_status'] == result)
 
+
+    result = "supplyDemandShort60-open-1677473096"
+    assert (string_modification.parsing_label(label) ['closed_to_open'] == result)
+    
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60-1677473096"
     assert (
@@ -466,9 +474,9 @@ def test_parsing_sqlite_json_output():
     assert string_modification.parsing_sqlite_json_output(element_null) == []
      
 def test_transform_nested_dict_to_list():
-    data= {'volume': [29.217675, 51.877503], 'ticks': [1682338500000, 1682338560000], 'status': 'ok', 'open': [1852.05, 1850.8], 'low': [1850.8, 1850.75], 'high': [1852.05, 1851.05], 'cost': [54090.0, 96016.0], 'close': [1850.85, 1850.9]}
+    data= {'volume': [29.217675, 51.877503], 'tick': [1682338500000, 1682338560000], 'status': 'ok', 'open': [1852.05, 1850.8], 'low': [1850.8, 1850.75], 'high': [1852.05, 1851.05], 'cost': [54090.0, 96016.0], 'close': [1850.85, 1850.9]}
     
     expected= [{'volume': 29.217675, 'tick': 1682338500000, 'open': 1852.05, 'low': 1850.8, 'high': 1852.05, 'cost': 54090.0, 'close': 1850.85},
-    {'volume': 51.877503, 'ticks': 1682338560000, 'open': 1850.8, 'low': 1850.75, 'high': 1851.05, 'cost': 96016.0, 'close': 1850.9}]
+    {'volume': 51.877503, 'tick': 1682338560000, 'open': 1850.8, 'low': 1850.75, 'high': 1851.05, 'cost': 96016.0, 'close': 1850.9}]
     
     assert string_modification.transform_nested_dict_to_list(data) == expected
