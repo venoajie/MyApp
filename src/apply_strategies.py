@@ -198,6 +198,19 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
+    async def if_order_is_true(self, order, instrument: str==None) -> float:
+        """ """
+        if order['order_allowed']:
+            
+            # get parameter orders
+            params= order['order_parameters']
+            
+            if instrument != None:
+                # update param orders with instrument
+                params.update({"instrument": instrument})
+                
+            await self.send_limit_order(params)
+            
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
 
@@ -570,12 +583,8 @@ class ApplyHedgingSpot:
                                                                                 )
                         log.warning (f' closed_order basicGrid {closed_order}')
                         
-                        if closed_order['order_allowed']:
-                            # get parameter orders
-                            params= closed_order['order_parameters']
-                            
-                            await self.send_limit_order(params)
-
+                        await self.if_order_is_true(closed_order)
+                        
                         pct_threshold= 1/100
                         
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
@@ -587,12 +596,8 @@ class ApplyHedgingSpot:
                                                                                                         )
                         log.warning (f' send_additional_order basicGrid {send_additional_order}')
 
-                        if send_additional_order['order_allowed']:
-                            # get parameter orders
-                            params= send_additional_order['order_parameters']
-                            
-                            #await self.send_limit_order(params)
-                            
+                        await self.if_order_is_true(send_additional_order)
+                                                        
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
                         # closing order
@@ -605,12 +610,7 @@ class ApplyHedgingSpot:
                                                                                 )
                         log.warning (f' closed_order hedgingSpot {closed_order}')
                         
-                        if closed_order['order_allowed']:
-                            # get parameter orders
-                            params= closed_order['order_parameters']
-                            
-                            await self.send_limit_order(params)
-
+                        await self.if_order_is_true(closed_order)
 
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -744,18 +744,8 @@ class ApplyHedgingSpot:
                                                                                     strategy_attr
                                                                                     )
                             
-                            if send_order['order_allowed']:
-                                
-                                # get parameter orders
-                                params= send_order['order_parameters']
-                                
-                                # update param orders with instrument
-                                params.update({"instrument": instrument})
-                                
-                                # send limit order
-                                await self.send_limit_order(params)
-                                
-                                                               
+                            await self.if_order_is_true(send_order)
+                            
                         if "basicGrid" in strategy_attr["strategy"]:
 
                             current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
@@ -769,16 +759,8 @@ class ApplyHedgingSpot:
                                                                                     )
                             
                             log.debug (send_order)
-                            if send_order['order_allowed']:
-                                
-                                # get parameter orders
-                                params= send_order['order_parameters']
-                                
-                                # update param orders with instrument
-                                params.update({"instrument": instrument})
-                                
-                                # send limit order
-                                await self.send_limit_order(params)
+                            
+                            await self.if_order_is_true(send_order)
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
