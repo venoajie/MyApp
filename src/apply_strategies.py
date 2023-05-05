@@ -198,7 +198,7 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
-    async def if_order_is_true(self, order, instrument: str==None) -> float:
+    async def if_order_is_true(self, order, instrument: str = None) -> float:
         """ """
         log.debug (order)
         if order['order_allowed']:
