@@ -585,8 +585,8 @@ class ApplyHedgingSpot:
                         await self.if_order_is_true(closed_order)
                         
                         pct_threshold= 1/100
-                        len_my_trades_open_sqlite_main_strategy= len(my_trades_open_sqlite_main_strategy)
-                        log.debug(my_trades_open_sqlite_main_strategy)
+                        len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
+                        log.debug(my_trades_open_strategy)
                         
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
