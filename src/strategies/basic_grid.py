@@ -1,7 +1,7 @@
 # # -*- coding: utf-8 -*-
 from strategies import hedging_spot
 
-def get_basic_opening_paramaters(notional: float) -> dict:
+def get_basic_opening_paramaters(notional: float, PCT_SIZE_TO_NOTIONAL: float) -> dict:
     """
 
     Args:
@@ -10,7 +10,6 @@ def get_basic_opening_paramaters(notional: float) -> dict:
         dict
 
     """
-    PCT_SIZE_TO_NOTIONAL= .5
     
     #provide placeholder for params
     params= {}
@@ -58,7 +57,9 @@ def is_send_open_order_allowed (notional: float,
     if order_allowed:
         
         # get transaction parameters
-        params= get_basic_opening_paramaters(notional)
+        PCT_SIZE_TO_NOTIONAL= .5
+        
+        params= get_basic_opening_paramaters(notional, PCT_SIZE_TO_NOTIONAL)
         
         # get transaction label and update the respective parameters
         label_main= strategy_attributes_for_hedging['strategy']
@@ -168,6 +169,32 @@ def size_adjustment (len_transaction: int)-> float:
     
     return adjusting_factor
     
+def delta_time (server_time, time_stamp)-> int:
+    """
+
+    Args:
+
+    Returns:
+        int
+
+    """
+
+    
+    return server_time - time_stamp
+
+def is_minimum_waiting_time_has_passed (server_time, time_stamp, time_threshold)-> bool:
+    """
+
+    Args:
+
+    Returns:
+        bool
+
+    """
+
+    
+    return delta_time (server_time, time_stamp) > time_threshold
+
 def is_send_additional_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
@@ -176,7 +203,8 @@ def is_send_additional_order_allowed (notional: float,
                             max_size_my_trades_open_sqlite_main_strategy,
                             selected_transaction: list,
                             strategy_attributes: list,
-                            pct_threshold: float
+                            pct_threshold: float,
+                            server_time: int
                             ) -> dict:
     """
 
@@ -186,7 +214,6 @@ def is_send_additional_order_allowed (notional: float,
         dict
 
     """
-    pct_threshold= (1/100)/2
 
     # transform to dict
     transaction= selected_transaction[0]    
@@ -195,10 +222,12 @@ def is_send_additional_order_allowed (notional: float,
         and selected_transaction !=[] 
     
     if order_allowed:
+        PCT_SIZE_TO_NOTIONAL= .5
+        
         transaction= selected_transaction[0]
         
         # get transaction parameters
-        params= get_basic_opening_paramaters(notional)
+        params= get_basic_opening_paramaters(notional, PCT_SIZE_TO_NOTIONAL)
         
         # get transaction label and update the respective parameters
         label_main= strategy_attributes['strategy']
@@ -215,6 +244,10 @@ def is_send_additional_order_allowed (notional: float,
         print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted} {params}')
             
         if size_adjusted== 0:
+            time_stamp= transaction['time_stamp']
+            minimum_waiting_time_has_passed= is_minimum_waiting_time_has_passed (server_time, 
+                                                                                 time_stamp, 
+                                                                                 time_threshold)
             order_allowed= False
             
         else:    
