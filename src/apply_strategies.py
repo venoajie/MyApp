@@ -586,7 +586,7 @@ class ApplyHedgingSpot:
                         
                         pct_threshold= 1/100
                         len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
-                        max_size_my_trades_open_sqlite_main_strategy= ([o['amount'] for o in my_trades_open_strategy])
+                        max_size_my_trades_open_sqlite_main_strategy= max([o['amount'] for o in my_trades_open_strategy])
                         log.debug(my_trades_open_strategy)
                         log.debug(max_size_my_trades_open_sqlite_main_strategy)
                         
@@ -594,6 +594,7 @@ class ApplyHedgingSpot:
                                                                                                       best_ask_prc,best_bid_prc,
                                                                                                       current_outstanding_order_len,
                                                                                                       len_my_trades_open_sqlite_main_strategy,
+                                                                                                      max_size_my_trades_open_sqlite_main_strategy,
                                                                                                       open_trade_strategy_label,
                                                                                                       strategy_attr,
                                                                                                       pct_threshold
