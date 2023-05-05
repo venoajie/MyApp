@@ -576,14 +576,23 @@ class ApplyHedgingSpot:
                             
                             await self.send_limit_order(params)
 
+                        pct_threshold= 1/100
+                        
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
                                                                                                       current_outstanding_order_len,
                                                                                                       open_trade_strategy_label,
-                                                                                                      strategy_attr
+                                                                                                      strategy_attr,
+                                                                                                      pct_threshold
                                                                                                         )
                         log.warning (f' send_additional_order basicGrid {send_additional_order}')
 
+                        if send_additional_order['order_allowed']:
+                            # get parameter orders
+                            params= send_additional_order['order_parameters']
+                            
+                            #await self.send_limit_order(params)
+                            
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
                         # closing order
