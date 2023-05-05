@@ -211,25 +211,31 @@ def is_send_additional_order_allowed (notional: float,
         size_adjusted= size_adjustment(len_my_trades_open_sqlite_main_strategy)
         
         params["size"]= int(transaction['amount'] * size_adjusted)
+        print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted}')
             
-        if transaction_side =='sell':
-            params.update({"entry_price": ask_price})
+        if size_adjusted== 0:
+            order_allowed= False
             
-            transaction_price_exceed_threshold = hedging_spot.is_transaction_price_plus_above_threshold (transaction['price'], 
-                                                                                                         ask_price,
-                                                                                                         pct_threshold) 
-            if transaction_price_exceed_threshold== False or size_adjusted== 0:
-                order_allowed== False
+        else:    
+            if transaction_side =='sell':
+                params.update({"entry_price": ask_price})
                 
-        if transaction_side=='buy':
-            params.update({"entry_price": bid_price})
-            
-            transaction_price_exceed_threshold = hedging_spot.is_transaction_price_minus_below_threshold (transaction['price'], 
-                                                                                                          bid_price, 
-                                                                                                          pct_threshold) 
-            if transaction_price_exceed_threshold== False or size_adjusted== 0:
-                order_allowed== False
-        print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted} transaction_price_exceed_threshold {transaction_price_exceed_threshold}')
+                transaction_price_exceed_threshold = hedging_spot.is_transaction_price_plus_above_threshold (transaction['price'], 
+                                                                                                            ask_price,
+                                                                                                            pct_threshold) 
+                if transaction_price_exceed_threshold== False :
+                    order_allowed= False
+                    
+            if transaction_side=='buy':
+                params.update({"entry_price": bid_price})
+                
+                transaction_price_exceed_threshold = hedging_spot.is_transaction_price_minus_below_threshold (transaction['price'], 
+                                                                                                            bid_price, 
+                                                                                                            pct_threshold) 
+                if transaction_price_exceed_threshold== False :
+                    order_allowed= False
+             
+            print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} transaction_price_exceed_threshold {transaction_price_exceed_threshold}')
     
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
