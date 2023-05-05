@@ -576,7 +576,6 @@ class ApplyHedgingSpot:
                             
                             await self.send_limit_order(params)
 
-
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
                                                                                                       current_outstanding_order_len,
