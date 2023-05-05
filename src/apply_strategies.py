@@ -422,7 +422,8 @@ class ApplyHedgingSpot:
                                    my_trades_open_sqlite, 
                                    my_trades_open_all, 
                                    my_trades_open,
-                                   size_from_positions
+                                   size_from_positions,
+                                   server_time
                                    ) -> float:
         """ """
                     
@@ -597,7 +598,8 @@ class ApplyHedgingSpot:
                                                                                                       max_size_my_trades_open_sqlite_main_strategy,
                                                                                                       open_trade_strategy_label,
                                                                                                       strategy_attr,
-                                                                                                      pct_threshold
+                                                                                                      pct_threshold,
+                                                                                                      server_time
                                                                                                         )
                         await self.if_order_is_true(send_additional_order)
                                                         
@@ -849,7 +851,8 @@ class ApplyHedgingSpot:
                                    my_trades_open_sqlite, 
                                    my_trades_open_all, 
                                    my_trades_open,
-                                   size_from_positions
+                                   size_from_positions,
+                                   server_time
                                    )
                 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
