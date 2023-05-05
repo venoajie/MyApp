@@ -376,6 +376,7 @@ class ApplyHedgingSpot:
                     
                     # get net sum of the transactions open and closed
                     net_sum = [] if transactions_under_label_main == [] else  sum([o['amount_dir'] for o in transactions_under_label_main ])
+                    log.critical(transactions_under_label_main)
                     
                     # excluded trades closed labels from above trade seq
                     result_transactions_excess = ([o for o in transactions_closed if o['trade_seq'] != min_closed ])
@@ -419,6 +420,28 @@ class ApplyHedgingSpot:
                                                             res
                                                             )
                         await sqlite_management.insert_tables('my_trades_closed_json',result_to_dict)
+                
+                if net_sum !=0 :
+                    
+                    # get trade seq
+                    result = ([o['trade_seq']   for o in transactions_under_label_main ])
+                    
+                    for res in result:
+
+                        my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
+                        my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+                        result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
+                        result_to_dict['label'] =  str_mod.parsing_label(result_to_dict['label'])['closed_to_open']
+                        log.critical(result_to_dict)
+
+                        where_filter = f"trade_seq"
+                        await sqlite_management.deleting_row('my_trades_all_json', 
+                                                            "databases/trading.sqlite3",
+                                                            where_filter,
+                                                            "=",
+                                                            res
+                                                            )
+                        await sqlite_management.insert_tables('my_trades_all_json',result_to_dict)
                     
                     # refreshing data
                     await system_tools.sleep_and_restart(1)
