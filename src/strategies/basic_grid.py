@@ -209,13 +209,10 @@ def is_send_additional_order_allowed (notional: float,
         len_transaction= len(selected_transaction)
         
         params["size"]= int(transaction['amount'] * size_adjustment(len_transaction))
-        
-        print (f' transaction_side {transaction_side}')
             
         if transaction_side =='sell':
             params.update({"entry_price": ask_price})
-            print (f' transaction_side {transaction_side} params {params}')
-
+            
             transaction_price_exceed_threshold = hedging_spot.is_transaction_price_plus_above_threshold (transaction['price'], 
                                                                                                          ask_price,
                                                                                                          pct_threshold) 
@@ -224,7 +221,6 @@ def is_send_additional_order_allowed (notional: float,
                 
         if transaction_side=='buy':
             params.update({"entry_price": bid_price})
-            print (f' transaction_side {transaction_side} params {params}')
             
             transaction_price_exceed_threshold = hedging_spot.is_transaction_price_minus_below_threshold (transaction['price'], 
                                                                                                           bid_price, 
