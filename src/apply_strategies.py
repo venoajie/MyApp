@@ -198,6 +198,14 @@ class ApplyHedgingSpot:
         current_time = await deribit_get.get_server_time(self.connection_url)
         return current_time["result"]
 
+
+    async def transform_wrong_closed_trading_to_open (self, wrong_transaction) -> float:
+        """ """
+        
+        open_label= f'''{str_mod.parsing_label({wrong_transaction})}['main']-open-{str_mod.parsing_label({wrong_transaction})}['int']'''
+        
+        return open_label
+
     async def if_order_is_true(self, order, instrument: str = None) -> float:
         """ """
         log.debug (order)
