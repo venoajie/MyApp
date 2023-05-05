@@ -200,6 +200,7 @@ class ApplyHedgingSpot:
 
     async def if_order_is_true(self, order, instrument: str==None) -> float:
         """ """
+        log.debug (order)
         if order['order_allowed']:
             
             # get parameter orders
@@ -580,9 +581,7 @@ class ApplyHedgingSpot:
                                                                                   current_outstanding_order_len,
                                                                                   open_trade_strategy_label,
                                                                                   strategy_attr
-                                                                                )
-                        log.warning (f' closed_order basicGrid {closed_order}')
-                        
+                                                                                )                        
                         await self.if_order_is_true(closed_order)
                         
                         pct_threshold= 1/100
@@ -594,8 +593,6 @@ class ApplyHedgingSpot:
                                                                                                       strategy_attr,
                                                                                                       pct_threshold
                                                                                                         )
-                        log.warning (f' send_additional_order basicGrid {send_additional_order}')
-
                         await self.if_order_is_true(send_additional_order)
                                                         
                     if "hedgingSpot" in strategy_attr["strategy"] :
@@ -607,9 +604,7 @@ class ApplyHedgingSpot:
                                                                                 len_open_order_label_long,
                                                                                 open_trade_strategy_label,
                                                                                 strategy_attr
-                                                                                )
-                        log.warning (f' closed_order hedgingSpot {closed_order}')
-                        
+                                                                                )                        
                         await self.if_order_is_true(closed_order)
 
             else:
@@ -742,9 +737,8 @@ class ApplyHedgingSpot:
                                                                                     net_sum_strategy_main, 
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
-                                                                                    )
-                            
-                            await self.if_order_is_true(send_order)
+                                                                                    )                            
+                            await self.if_order_is_true(send_order, instrument)
                             
                         if "basicGrid" in strategy_attr["strategy"]:
 
@@ -756,11 +750,8 @@ class ApplyHedgingSpot:
                                                                                     net_sum_strategy_main, 
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
-                                                                                    )
-                            
-                            log.debug (send_order)
-                            
-                            await self.if_order_is_true(send_order)
+                                                                                    )                            
+                            await self.if_order_is_true(send_order, instrument)
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
