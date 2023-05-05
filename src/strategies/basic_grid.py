@@ -145,7 +145,7 @@ def is_send_exit_order_allowed (ask_price: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
-def size_adjustment (len_transaction: int)-> float:
+def size_adjustment (len_transaction: int, max_factor)-> float:
     """
 
     Args:
@@ -159,10 +159,10 @@ def size_adjustment (len_transaction: int)-> float:
         adjusting_factor= 1
     
     elif len_transaction== 1:
-        adjusting_factor= 2/3
+        adjusting_factor= 2/max_factor
             
     elif len_transaction== 2:
-        adjusting_factor= 1/3
+        adjusting_factor= 1/max_factor
     
     else:
         adjusting_factor= 0
@@ -223,6 +223,7 @@ def is_send_additional_order_allowed (notional: float,
     
     if order_allowed:
         PCT_SIZE_TO_NOTIONAL= .5
+        MAX_FACTOR= 3
         
         transaction= selected_transaction[0]
         
@@ -238,16 +239,21 @@ def is_send_additional_order_allowed (notional: float,
         
         params.update({"side": strategy_attributes['side']})
         
-        size_adjusted= size_adjustment(len_my_trades_open_sqlite_main_strategy)
+        size_adjusted= size_adjustment(len_my_trades_open_sqlite_main_strategy, MAX_FACTOR)
         
         params["size"]= max(1, (int(max_size_my_trades_open_sqlite_main_strategy * size_adjusted)))
         print (f'len_transaction {len_my_trades_open_sqlite_main_strategy} size_adjusted {size_adjusted} {params}')
             
         if size_adjusted== 0:
+            ONE_MINUTE= 60000
+            WAITING_MINUTE= 60
+            time_multiply= len_my_trades_open_sqlite_main_strategy - MAX_FACTOR
+            time_threshold: float =  time_multiply * ONE_MINUTE * WAITING_MINUTE
             time_stamp= transaction['time_stamp']
             minimum_waiting_time_has_passed= is_minimum_waiting_time_has_passed (server_time, 
                                                                                  time_stamp, 
                                                                                  time_threshold)
+            print (f'minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} time_threshold {time_threshold} {time_multiply}')
             order_allowed= False
             
         else:    
