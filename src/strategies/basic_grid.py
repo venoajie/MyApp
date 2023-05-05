@@ -249,7 +249,7 @@ def is_send_additional_order_allowed (notional: float,
             WAITING_MINUTE= 60
             time_multiply= len_my_trades_open_sqlite_main_strategy - MAX_FACTOR
             time_threshold: float =  time_multiply * ONE_MINUTE * WAITING_MINUTE
-            time_stamp= transaction['time_stamp']
+            time_stamp= transaction['timestamp']
             minimum_waiting_time_has_passed= is_minimum_waiting_time_has_passed (server_time, 
                                                                                  time_stamp, 
                                                                                  time_threshold)
