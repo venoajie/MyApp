@@ -56,6 +56,7 @@ VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-exe
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
 ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-learning-technology-in-trading-912b565ca8b8) |  | | 
 ML | [machine-learning](https://trading-data-analysis.pro/volume-by-price-as-a-dynamic-feature-for-training-ai-algorithms-for-trading-ef015b3d1adf) |  | | 
+ML | [machine-learning](https://medium.com/@trademaster.ntu/introduction-to-trademaster-a-new-standard-of-reinforcement-learning-framework-for-quantitative-67f7133485e2) |  | | 
 ML | [machine-learning](https://medium.datadriveninvestor.com/unleashing-the-power-of-tensorflow-for-quantitative-investing-a8476705ba0d) |  | | 
 RL | [reinforcement-learning](http://onepagecode.s3-website-us-east-1.amazonaws.com/) |  | | 
 etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
@@ -67,6 +68,8 @@ Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali
 HFT | [hft](https://medium.com/@FMZQuant/digital-currency-high-frequency-strategy-detailed-introduction-f7be078ef53d) |  | | 
 MP | [market profile](https://medium.com/coinmonks/high-probability-scalping-setups-with-sessions-initial-balance-and-session-volume-profile-83af17f0a5a) |  | | 
 OI | [open interest](https://www.youtube.com/watch?v=-JI6KCK81Nw) |  | | 
+
+
 
 
 
