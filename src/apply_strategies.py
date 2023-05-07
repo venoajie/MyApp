@@ -291,6 +291,7 @@ class ApplyHedgingSpot:
         # fetch positions for all instruments
         positions: list = reading_from_database["positions_from_sub_account"][0]
         size_from_positions: float = 0 if positions == [] else positions["size"]
+        log.error (f'open_orders_sqlite {open_orders_sqlite}')
         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
         proforma_size: int = await self.check_proforma_size( size_from_positions, 
                                                              sum_current_open_order,
