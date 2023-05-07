@@ -284,6 +284,7 @@ class ApplyHedgingSpot:
         open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
         open_orders_sqlite: list = await self.querying_all('orders_all_json')
         open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
+        log.error (f'open_orders_sqlite {open_orders_sqlite}')
         
         #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
@@ -291,7 +292,6 @@ class ApplyHedgingSpot:
         # fetch positions for all instruments
         positions: list = reading_from_database["positions_from_sub_account"][0]
         size_from_positions: float = 0 if positions == [] else positions["size"]
-        log.error (f'open_orders_sqlite {open_orders_sqlite}')
         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
         proforma_size: int = await self.check_proforma_size( size_from_positions, 
                                                              sum_current_open_order,
