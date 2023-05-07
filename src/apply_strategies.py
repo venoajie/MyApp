@@ -277,7 +277,7 @@ class ApplyHedgingSpot:
     async def send_limit_order(self, params) -> None:
         """ """
 
-        sum_next_open_order= params['amount']
+        sum_next_open_order= params['size']
         
         
         reading_from_database: dict = await self.reading_from_database()
