@@ -265,9 +265,21 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
 
+    async def check_proforma_size(self,
+                                  current_size, 
+                                  sum_current_open_order,
+                                  sum_next_open_order) -> float:
+        """ """
+        
+        return current_size + sum_current_open_order + sum_next_open_order
+
+
     async def send_limit_order(self, params) -> None:
         """ """
 
+        sum_next_open_order= params['amount']
+        
+        
         reading_from_database: dict = await self.reading_from_database()
         open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
         open_orders_sqlite: list = await self.querying_all('orders_all_json')
@@ -276,6 +288,14 @@ class ApplyHedgingSpot:
         #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
         
+        # fetch positions for all instruments
+        positions: list = reading_from_database["positions_from_sub_account"][0]
+        size_from_positions: float = 0 if positions == [] else positions["size"]
+        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
+        proforma_size: int = await self.check_proforma_size( size_from_positions, 
+                                                             sum_current_open_order,
+                                                             sum_next_open_order)
+        log.error (f'proforma_size {proforma_size}')
         if open_order_is_consistent == False:
             await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
             await system_tools.sleep_and_restart (5)
