@@ -679,7 +679,7 @@ class ApplyHedgingSpot:
                         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
                         label_and_size= await self.querying_label_and_size()
                         sum_next_open_order= send_additional_order['order_parameters']['size']
-                        proforma_size: int = await self.check_proforma_size( label_and_size,
+                        proforma_size: int = self.check_proforma_size( label_and_size,
                                                                             notional,
                                                                             size_from_positions, 
                                                              sum_current_open_order,
