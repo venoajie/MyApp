@@ -273,7 +273,7 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
 
-    def check_proforma_size(self,
+    def check_proforma_size(self,label_and_size,
                             notional,
                             open_position: list,
                             current_size, 
@@ -281,9 +281,11 @@ class ApplyHedgingSpot:
                             sum_next_open_order
                             ) -> int:
         """ """
+        
         proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
         relevant_label= ['hedging', 'basicGrid']
-        relevant_open_trade= ([o for o in open_position if relevant_label in o['label']])
+        relevant_open_trade= ([o for o in label_and_size if relevant_label in o['label']])
+        log.error (relevant_open_trade)
         
         return dict(
             position=   (current_size + sum_current_open_order + sum_next_open_order),
@@ -308,7 +310,9 @@ class ApplyHedgingSpot:
         positions: list = reading_from_database["positions_from_sub_account"][0]
         size_from_positions: float = 0 if positions == [] else positions["size"]
         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-        proforma_size: int = await self.check_proforma_size( size_from_positions, 
+        label_and_size= await self.querying_label_and_size()
+        proforma_size: int = await self.check_proforma_size(label_and_size,
+                                                            size_from_positions, 
                                                              sum_current_open_order,
                                                              sum_next_open_order)
         log.error (f'proforma_size {proforma_size}')
@@ -873,9 +877,6 @@ class ApplyHedgingSpot:
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                label_and_size= await self.querying_label_and_size()
-                
-                log.error (label_and_size)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
