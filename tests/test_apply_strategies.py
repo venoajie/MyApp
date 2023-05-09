@@ -3,7 +3,6 @@ import src.apply_strategies as strategy
 import asyncio
 import pytest
 
-
 def parse_dotenv(sub_account) -> dict:
     from src.configuration import config
 
@@ -18,7 +17,6 @@ currency: str = "eth"
 connection_url: str = "https://www.deribit.com/api/v2/"
 
 Strategy = strategy.ApplyHedgingSpot(None, None, None, currency)
-
 
 @pytest.mark.asyncio
 async def tst_is_send_order_allowed():
@@ -650,4 +648,28 @@ async def tst_is_send_order_allowed():
 
             assert is_send_order_allowed["send_buy_order_allowed"] == False
             assert is_send_order_allowed["send_sell_order_allowed"] == False
+            
+            
+def test_check_proforma_size():
+    current_size= -9
+    sum_current_open_order= 0
+    sum_next_open_order= 1
+    notional= 14
+    
+    proforma_size=  Strategy.check_proforma_size(notional,
+                                                 current_size, 
+                                                 sum_current_open_order,
+                                                 sum_next_open_order)
+    assert proforma_size["proforma_size"]   == -8
+    assert proforma_size["additional_order"]   == -6
+
+    sum_next_open_order= -8
+
+    proforma_size=  Strategy.check_proforma_size(notional,
+                                                 current_size, 
+                                                 sum_current_open_order,
+                                                 sum_next_open_order)
+    assert proforma_size["proforma_size"]   == -8
+    assert proforma_size["additional_order"]   == 2
+
 
