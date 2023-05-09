@@ -108,9 +108,8 @@ class ApplyHedgingSpot:
                                         database: str = "databases/trading.sqlite3") -> dict:
         """ """
         table =  sqlite_management.querying_label_and_size () 
-        result = await sqlite_management.executing_query_with_return (table, 
-                                                         database
-                                                         ) 
+        log.warning(table)
+        result = await sqlite_management.executing_query_with_return (table, database) 
         
         return  [] if result in NONE_DATA  else (result)
 
