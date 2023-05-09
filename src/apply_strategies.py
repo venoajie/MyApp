@@ -284,9 +284,10 @@ class ApplyHedgingSpot:
         
         proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
         relevant_label= ['hedging' , 'basicGrid']
-        relevant_open_trade= [o for o in label_and_size if all(letter in o for letter in relevant_label)]
+        relevant_open_trade= [o for o in label_and_size if any(relevant_label in o['label_main'])]
 
         log.error (relevant_open_trade)
+        log.error (label_and_size)
         
         return dict(
             position=   (current_size + sum_current_open_order + sum_next_open_order),
