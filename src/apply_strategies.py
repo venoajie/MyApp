@@ -287,9 +287,10 @@ class ApplyHedgingSpot:
         relevant_open_trade= (
         [
             o
-            for o in relevant_label
-            if (o in label_and_size)
-        ])
+            for o in label_and_size
+            if (relevant_label in o)
+        ]
+    )
         log.error (relevant_open_trade)
         
         return dict(
