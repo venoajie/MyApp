@@ -100,11 +100,19 @@ class ApplyHedgingSpot:
         return  dict(
             all= [] if result in NONE_DATA \
                 else (result),
-            certain_data= [] if result in NONE_DATA \
-                else (([o['label_main'] for o in result])),
             list_data_only= [] if result in NONE_DATA \
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
+
+    async def querying_label_and_size(self,
+                                        database: str = "databases/trading.sqlite3") -> dict:
+        """ """
+        table =  sqlite_management.querying_label_and_size () 
+        result = await sqlite_management.executing_query_with_return (table, 
+                                                         database
+                                                         ) 
+        
+        return  [] if result in NONE_DATA  else (result)
 
     async def get_net_sum_strategy_super_main(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
@@ -462,7 +470,7 @@ class ApplyHedgingSpot:
                         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
                         result_to_dict['label'] =  str_mod.parsing_label(result_to_dict['label'])['closed_to_open']
-                        log.critical(result_to_dict['certain_data'])
+
                         where_filter = f"trade_seq"
                         await sqlite_management.deleting_row('my_trades_all_json', 
                                                             "databases/trading.sqlite3",
@@ -493,7 +501,6 @@ class ApplyHedgingSpot:
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
 
-        log.warning (my_trades_open_sqlite['certain_data'])
         my_trades_open_all: list = my_trades_open_sqlite['all']
         
         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
@@ -868,6 +875,9 @@ class ApplyHedgingSpot:
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
                 my_trades_open_all: list = my_trades_open_sqlite['all']
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
+                label_and_size= await self.querying_label_and_size()
+                
+                log.error (label_and_size)
                 
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
