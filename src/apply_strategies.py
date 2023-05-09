@@ -663,11 +663,6 @@ class ApplyHedgingSpot:
                         log.debug(my_trades_open_strategy)
                         log.debug(f' max_size_my_trades_open_sqlite_main_strategy {max_size_my_trades_open_sqlite_main_strategy} max_time_stamp_my_trades_open_sqlite_main_strategy {max_time_stamp_my_trades_open_sqlite_main_strategy}')
                         
-                        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-                        sum_next_open_order= params['size']
-                        proforma_size: int = await self.check_proforma_size( size_from_positions, 
-                                                             sum_current_open_order,
-                                                             sum_next_open_order)
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
                                                                                                       current_outstanding_order_len,
@@ -681,6 +676,15 @@ class ApplyHedgingSpot:
                                                                                                         )
                         await self.if_order_is_true(send_additional_order)
                                                         
+                        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
+                        label_and_size= await self.querying_label_and_size()
+                        sum_next_open_order= send_additional_order['size']
+                        proforma_size: int = await self.check_proforma_size( label_and_size,
+                                                                            size_from_positions, 
+                                                             sum_current_open_order,
+                                                             sum_next_open_order)
+                        log.error (f'proforma_size {proforma_size}')
+                        
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
                         # closing order
