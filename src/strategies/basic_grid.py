@@ -180,20 +180,6 @@ def is_minimum_waiting_time_has_passed (server_time, time_stamp, time_threshold)
     
     return delta_time (server_time, time_stamp) > time_threshold
 
-
-def check_proforma_size (current_size, sum_current_open_order, sum_next_open_order)-> bool:
-    """
-
-    Args:
-
-    Returns:
-        bool
-
-    """
-    
-    
-    return current_size + sum_current_open_order + sum_next_open_order
-
 def is_send_additional_order_allowed (notional: float,
                             ask_price: float,
                             bid_price: float,
@@ -220,7 +206,7 @@ def is_send_additional_order_allowed (notional: float,
     
     order_allowed= current_outstanding_order_len== 0  \
         and selected_transaction !=[] 
-    
+        
     if order_allowed:
         PCT_SIZE_TO_NOTIONAL= .5
         MAX_FACTOR= 3
