@@ -265,14 +265,22 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
 
-    async def check_proforma_size(self,
-                                  current_size, 
-                                  sum_current_open_order,
-                                  sum_next_open_order) -> float:
+    def check_proforma_size(self,
+                            notional,
+                            open_position: list,
+                            current_size, 
+                            sum_current_open_order,
+                            sum_next_open_order
+                            ) -> int:
         """ """
+        proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
+        relevant_label= ['hedging', 'basicGrid']
+        relevant_open_trade= ([o for o in open_position if relevant_label in o['label']])
         
-        return current_size + sum_current_open_order + sum_next_open_order
-
+        return dict(
+            position=   (current_size + sum_current_open_order + sum_next_open_order),
+            proforma_size=   (current_size + sum_current_open_order + sum_next_open_order),
+            additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
 
     async def send_limit_order(self, params) -> None:
         """ """
@@ -284,7 +292,6 @@ class ApplyHedgingSpot:
         open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
         open_orders_sqlite: list = await self.querying_all('orders_all_json')
         open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
-        log.error (f'open_orders_sqlite {open_orders_sqlite}')
         
         #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
@@ -484,6 +491,7 @@ class ApplyHedgingSpot:
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
+        log.warning (my_trades_open_sqlite)
         my_trades_open_all: list = my_trades_open_sqlite['all']
         
         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
@@ -644,6 +652,11 @@ class ApplyHedgingSpot:
                         log.debug(my_trades_open_strategy)
                         log.debug(f' max_size_my_trades_open_sqlite_main_strategy {max_size_my_trades_open_sqlite_main_strategy} max_time_stamp_my_trades_open_sqlite_main_strategy {max_time_stamp_my_trades_open_sqlite_main_strategy}')
                         
+                        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
+                        sum_next_open_order= params['size']
+                        proforma_size: int = await self.check_proforma_size( size_from_positions, 
+                                                             sum_current_open_order,
+                                                             sum_next_open_order)
                         send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
                                                                                                       best_ask_prc,best_bid_prc,
                                                                                                       current_outstanding_order_len,
