@@ -674,8 +674,7 @@ class ApplyHedgingSpot:
                                                                                                       pct_threshold,
                                                                                                       server_time
                                                                                                         )
-                        await self.if_order_is_true(send_additional_order)
-                                                        
+                                      
                         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
                         label_and_size= await self.querying_label_and_size()
                         sum_next_open_order= send_additional_order['size']
@@ -683,8 +682,11 @@ class ApplyHedgingSpot:
                                                                             size_from_positions, 
                                                              sum_current_open_order,
                                                              sum_next_open_order)
+                        
                         log.error (f'proforma_size {proforma_size}')
                         
+                        await self.if_order_is_true(send_additional_order)
+                                          
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
                         # closing order
