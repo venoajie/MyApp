@@ -463,7 +463,6 @@ class ApplyHedgingSpot:
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
                         result_to_dict['label'] =  str_mod.parsing_label(result_to_dict['label'])['closed_to_open']
                         log.critical(result_to_dict['certain_data'])
-
                         where_filter = f"trade_seq"
                         await sqlite_management.deleting_row('my_trades_all_json', 
                                                             "databases/trading.sqlite3",
@@ -493,7 +492,8 @@ class ApplyHedgingSpot:
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
-        log.warning (my_trades_open_sqlite)
+
+        log.warning (my_trades_open_sqlite['certain_data'])
         my_trades_open_all: list = my_trades_open_sqlite['all']
         
         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
