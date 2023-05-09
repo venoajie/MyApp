@@ -101,7 +101,7 @@ class ApplyHedgingSpot:
             all= [] if result in NONE_DATA \
                 else (result),
             certain_data= [] if result in NONE_DATA \
-                else (([o for o in [result] ])),
+                else (([o for o in result])),
             list_data_only= [] if result in NONE_DATA \
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
