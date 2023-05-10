@@ -28,7 +28,7 @@ def get_basic_opening_paramaters(proforma_size: int) -> dict:
         
     return params
 
-async def querying_label_and_size(self, table) -> dict:
+async def querying_label_and_size(table) -> dict:
     """ """
     
     NONE_DATA: None = [0, None, []]
@@ -38,14 +38,12 @@ async def querying_label_and_size(self, table) -> dict:
     
     return  [] if result in NONE_DATA  else (result)
 
-async def check_proforma_size(self,
-                        notional,
-                        sum_next_open_order: int= 0
-                        ) -> int:
+async def check_proforma_size(notional,
+                              sum_next_open_order: int= 0) -> int:
     """ """
 
-    label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
-    label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
+    label_and_size_open_trade= await querying_label_and_size('my_trades_all_json')
+    label_and_size_current_open_order= await querying_label_and_size('orders_all_json')
     relevant_label= ['hedging' , 'basicGrid']
     relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
     sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
