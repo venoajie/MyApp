@@ -286,6 +286,7 @@ class ApplyHedgingSpot:
         relevant_label= ['hedging' , 'basicGrid']
         relevant_open_trade= [o for o in label_and_size if ([r for r in relevant_label if r in o['label_main']])]
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
+        current_size= sum([o['amount_dir'] for o in label_and_size])
 
         log.error (relevant_open_trade)
         log.warning (sum_relevant_open_trade)
