@@ -6,6 +6,7 @@ import asyncio
 # user defined formula
 from strategies import hedging_spot
 from db_management import sqlite_management
+from loguru import logger as log
 
 def get_basic_opening_paramaters(proforma_size: int) -> dict:
     """
