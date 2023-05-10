@@ -46,34 +46,77 @@ def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
         else [o for o in transaction_summary_from_sqlite if 'hedging' not in o['label_main']] 
 
     return  dict(
-        all= [] if result in [] \
-            else (result),
-        sum_non_hedging = 0 if result in  [] \
-            else sum([o['amount_dir'] for o in result])
+        all= [] if result in [] else (result),
+        sum_non_hedging = 0 if result in  [] else sum([o['amount_dir'] for o in result])
                 )
 
-async def check_proforma_size(notional,
-                              sum_next_open_order: int= 0) -> int:
+def non_hedging_transactions(label_and_size_open_trade) -> dict:
+    """ """
+    
+    relevant_label= ['hedging' , 'basicGrid']
+
+    return  [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
+
+def get_size(sum_non_hedging_open_trade, sum_non_hedging_open_order, sum_next_open_order) -> dict:
+    """ """
+    
+    return (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
+
+async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
     """ """
 
     label_and_size_open_trade= await querying_label_and_size('my_trades_all_json')
+    
     label_and_size_current_open_order= await querying_label_and_size('orders_all_json')
-    relevant_label= ['hedging' , 'basicGrid']
-    relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
-
-    log.error(label_and_size_current_open_order)
-
+    
     sum_non_hedging_open_trade= non_hedging_transactions(label_and_size_open_trade)['sum_non_hedging']
 
     sum_non_hedging_open_order= non_hedging_transactions(label_and_size_current_open_order)['sum_non_hedging']
-
-    current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
-
-    proforma_size=   (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
+    
+    proforma_size=   get_size (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
     
     return dict(
         position=  proforma_size,
         proforma_size=   proforma_size,
         sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
-        additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
+        order_size= max(1, abs(proforma_size * 50/100))
+    )
     
+async def is_send_open_order_allowed (ask_price: float,
+                                      bid_price: float,
+                                      current_outstanding_order_len: int,
+                                      sum_next_open_order
+                                      ) -> dict:
+    """
+
+    Args:
+
+    Returns:
+        dict
+
+    """
+
+    order_allowed=  current_outstanding_order_len== 0
+    
+    proforma_size= await get_proforma_attributes(sum_next_open_order)
+    
+    if order_allowed:
+        
+        params= get_basic_opening_paramaters(proforma_size)
+        
+        # get transaction label and update the respective parameters
+        label_open = hedging_spot.get_label ('open', 'balancing') 
+        params.update({"label": label_open})
+        
+        params.update({"size": abs(proforma_size['order_size'])})
+        
+        if proforma_size['order_size']>0:
+            params.update({"entry_price": ask_price})
+            params.update({"side": "sell"})
+            
+        if proforma_size['order_size']<0:
+            params.update({"entry_price": bid_price})
+            params.update({"side": "buy"})
+    
+    return dict(order_allowed= order_allowed,
+                order_parameters= [] if order_allowed== False else params)
