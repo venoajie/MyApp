@@ -673,6 +673,7 @@ class ApplyHedgingSpot:
                                                                                                         )
                                       
                         log.error (send_additional_order)
+                        log.error (open_orders_sqlite['all'])
                         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
                         label_and_size= await self.querying_label_and_size()
                         sum_next_open_order= send_additional_order['order_parameters']['size']
