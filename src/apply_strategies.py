@@ -226,8 +226,9 @@ class ApplyHedgingSpot:
             sum_next_open_order= params['size']
             open_orders_sqlite: list = await self.querying_all('orders_all_json')
             sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-            label_and_size= await self.querying_label_and_size()
-            proforma_size: int =  self.check_proforma_size(label_and_size,
+            open_trade_label_and_size= await self.querying_label_and_size('my_trades_all_json')
+            open_order_label_and_size= await self.querying_label_and_size('orders_all_json')
+            proforma_size: int =  self.check_proforma_size(open_trade_label_and_size,
                                                                 notional, 
                                                                 sum_current_open_order,
                                                                 sum_next_open_order)
@@ -280,21 +281,23 @@ class ApplyHedgingSpot:
         await private_data.send_market_order(params)
 
     def check_proforma_size(self,
-                            label_and_size,
+                            label_and_size_open_trade,
                             notional,
-                            sum_current_open_order,
+                            label_and_size_current_open_order,
                             sum_next_open_order
                             ) -> int:
         """ """
         
         relevant_label= ['hedging' , 'basicGrid']
-        relevant_open_trade= [o for o in label_and_size if ([r for r in relevant_label if r in o['label_main']])]
-        non_hedging_open_trade= [o for o in label_and_size if 'hedging' not in o['label_main']]
+        relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
+        non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
+        non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
         sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
+        sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
-        current_size= sum([o['amount_dir'] for o in label_and_size])
+        current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
 
-        proforma_size=   (sum_non_hedging_open_trade + sum_current_open_order + sum_next_open_order)
+        proforma_size=   (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
         
         return dict(
             position=  proforma_size,
@@ -675,11 +678,12 @@ class ApplyHedgingSpot:
                         log.error (send_additional_order)
                         log.error (open_orders_sqlite['all'])
                         sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-                        label_and_size= await self.querying_label_and_size()
+                        label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
+                        label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
                         sum_next_open_order= send_additional_order['order_parameters']['size']
-                        proforma_size: int = self.check_proforma_size( label_and_size,
+                        proforma_size: int = self.check_proforma_size( label_and_size_open_trade,
                                                                             notional,
-                                                                            sum_current_open_order,
+                                                                            label_and_size_current_open_order,
                                                                             sum_next_open_order)
                         
                         log.error (f'proforma_size {proforma_size}')
