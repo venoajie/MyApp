@@ -611,7 +611,7 @@ class ApplyHedgingSpot:
                                                                                   open_trade_strategy_label,
                                                                                   strategy_attr
                                                                                 )                        
-                        await self.if_order_is_true(closed_order, notional)
+                        await self.if_order_is_true(closed_order)
                         
                         pct_threshold= 1/100
                         len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
@@ -640,7 +640,7 @@ class ApplyHedgingSpot:
                         
                         log.error (f'proforma_size {proforma_size}')
                         
-                        await self.if_order_is_true(send_additional_order, notional)
+                        await self.if_order_is_true(send_additional_order)
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
@@ -652,7 +652,7 @@ class ApplyHedgingSpot:
                                                                                 open_trade_strategy_label,
                                                                                 strategy_attr
                                                                                 )                        
-                        await self.if_order_is_true(closed_order, notional)
+                        await self.if_order_is_true(closed_order)
 
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -785,7 +785,7 @@ class ApplyHedgingSpot:
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )                            
-                            await self.if_order_is_true(send_order, notional, instrument)
+                            await self.if_order_is_true(send_order, instrument)
                             
                         if "basicGrid" in strategy_attr["strategy"]:
 
@@ -798,7 +798,7 @@ class ApplyHedgingSpot:
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )                            
-                            await self.if_order_is_true(send_order, notional, instrument)
+                            await self.if_order_is_true(send_order, instrument)
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
