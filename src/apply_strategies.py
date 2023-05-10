@@ -203,7 +203,7 @@ class ApplyHedgingSpot:
         
         return open_label
 
-    async def if_order_is_true(self, order, notional, instrument: str = None) -> float:
+    async def if_order_is_true(self, order, instrument: str = None) -> float:
         """ """
         log.debug (order)
         if order['order_allowed']:
@@ -215,9 +215,6 @@ class ApplyHedgingSpot:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
                 
-            proforma_size: int = await balancer.check_proforma_size(notional, 
-                                                           params['size'])
-            log.error (f'proforma_size {proforma_size}')
             await self.send_limit_order(params)
             
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
@@ -637,7 +634,8 @@ class ApplyHedgingSpot:
                                       
                         log.error (send_additional_order)
                         sum_next_open_order= send_additional_order['order_parameters']['size']
-                        proforma_size: int = await balancer.check_proforma_size(notional,
+                        
+                        proforma_size: int = await balancer.is_send_open_order_allowed (best_ask_prc, best_bid_prc, 
                                                                       sum_next_open_order)
                         
                         log.error (f'proforma_size {proforma_size}')
