@@ -230,7 +230,7 @@ class ApplyHedgingSpot:
             open_orders_sqlite: list = await self.querying_all('orders_all_json')
             sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
             label_and_size= await self.querying_label_and_size()
-            proforma_size: int = await self.check_proforma_size(label_and_size,
+            proforma_size: int =  self.check_proforma_size(label_and_size,
                                                                 notional, 
                                                                 sum_current_open_order,
                                                                 sum_next_open_order)
