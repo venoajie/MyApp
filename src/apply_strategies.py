@@ -15,7 +15,7 @@ from transaction_management.deribit import open_orders_management, myTrades_mana
 from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import  position_sizing
 from configuration import label_numbering, config
-from strategies import entries_exits, grid_perpetual as grid, hedging_spot, basic_grid
+from strategies import entries_exits, grid_perpetual as grid, hedging_spot, basic_grid, temporary_balancing as balancer
 from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
@@ -101,14 +101,6 @@ class ApplyHedgingSpot:
             list_data_only= [] if result in NONE_DATA \
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
-
-    async def querying_label_and_size(self, table) -> dict:
-        """ """
-        query =  sqlite_management.querying_label_and_size (table) 
-        result = await sqlite_management.executing_query_with_return (query) 
-        
-        return  [] if result in NONE_DATA  else (result)
-
     async def get_net_sum_strategy_super_main(self, my_trades_open_sqlite: list, 
                            label: str) -> float:
         """ """
@@ -223,7 +215,7 @@ class ApplyHedgingSpot:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
                 
-            proforma_size: int =  self.check_proforma_size(notional, 
+            proforma_size: int = await balancer.check_proforma_size(notional, 
                                                            params['size'])
             log.error (f'proforma_size {proforma_size}')
             await self.send_limit_order(params)
@@ -272,36 +264,6 @@ class ApplyHedgingSpot:
 
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
-
-    async def check_proforma_size(self,
-                            notional,
-                            sum_next_open_order: int= 0
-                            ) -> int:
-        """ """
-
-        label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
-        label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
-        relevant_label= ['hedging' , 'basicGrid']
-        relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
-        sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
-
-        log.error(label_and_size_current_open_order)
-
-        non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
-        sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
-
-        non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
-        sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
-
-        current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
-
-        proforma_size=   (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
-        
-        return dict(
-            position=  proforma_size,
-            proforma_size=   proforma_size,
-            sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
-            additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
 
     async def send_limit_order(self, params) -> None:
         """ """       
@@ -675,7 +637,7 @@ class ApplyHedgingSpot:
                                       
                         log.error (send_additional_order)
                         sum_next_open_order= send_additional_order['order_parameters']['size']
-                        proforma_size: int = await self.check_proforma_size(notional,
+                        proforma_size: int = await balancer.check_proforma_size(notional,
                                                                       sum_next_open_order)
                         
                         log.error (f'proforma_size {proforma_size}')
