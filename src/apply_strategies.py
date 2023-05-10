@@ -102,10 +102,10 @@ class ApplyHedgingSpot:
                 else str_mod.parsing_sqlite_json_output([o['data'] for o in result])
                     )
 
-    async def querying_label_and_size(self) -> dict:
+    async def querying_label_and_size(self, table) -> dict:
         """ """
-        table =  sqlite_management.querying_label_and_size () 
-        result = await sqlite_management.executing_query_with_return (table) 
+        query =  sqlite_management.querying_label_and_size (table) 
+        result = await sqlite_management.executing_query_with_return (query) 
         
         return  [] if result in NONE_DATA  else (result)
 
