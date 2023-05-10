@@ -291,6 +291,7 @@ class ApplyHedgingSpot:
         relevant_label= ['hedging' , 'basicGrid']
         relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
         non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
+        log.error(label_and_size_current_open_order)
         non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
         sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
         sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
@@ -676,10 +677,8 @@ class ApplyHedgingSpot:
                                                                                                         )
                                       
                         log.error (send_additional_order)
-                        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
                         label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
                         label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
-                        log.error (label_and_size_current_open_order)
                         sum_next_open_order= send_additional_order['order_parameters']['size']
                         proforma_size: int = self.check_proforma_size( label_and_size_open_trade,
                                                                             notional,
