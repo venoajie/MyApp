@@ -228,9 +228,12 @@ class ApplyHedgingSpot:
             sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
             open_trade_label_and_size= await self.querying_label_and_size('my_trades_all_json')
             open_order_label_and_size= await self.querying_label_and_size('orders_all_json')
-            proforma_size: int =  self.check_proforma_size(open_trade_label_and_size,
+
+            label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
+            label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
+            proforma_size: int =  self.check_proforma_size(label_and_size_open_trade,
                                                                 notional, 
-                                                                sum_current_open_order,
+                                                                label_and_size_current_open_order,
                                                                 sum_next_open_order)
             log.error (f'proforma_size {proforma_size}')
             await self.send_limit_order(params)
