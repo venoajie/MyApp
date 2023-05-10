@@ -75,7 +75,7 @@ async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
     sum_non_hedging_open_order= non_hedging_transactions(label_and_size_current_open_order)['sum_non_hedging']
     len_non_hedging_open_order= non_hedging_transactions(label_and_size_current_open_order)['len_non_hedging']
     
-    proforma_size=   get_size (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
+    proforma_size=   get_size (sum_non_hedging_open_trade, sum_non_hedging_open_order, sum_next_open_order)
     
     return dict(
         position=  proforma_size,
