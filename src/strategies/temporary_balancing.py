@@ -39,6 +39,19 @@ async def querying_label_and_size(table) -> dict:
     
     return  [] if result in NONE_DATA  else (result)
 
+def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
+    """ """
+    
+    result = [] if transaction_summary_from_sqlite == [] \
+        else [o for o in transaction_summary_from_sqlite if 'hedging' not in o['label_main']] 
+
+    return  dict(
+        all= [] if result in [] \
+            else (result),
+        sum_non_hedging = 0 if result in  [] \
+            else sum([o['amount_dir'] for o in result])
+                )
+
 async def check_proforma_size(notional,
                               sum_next_open_order: int= 0) -> int:
     """ """
@@ -47,15 +60,12 @@ async def check_proforma_size(notional,
     label_and_size_current_open_order= await querying_label_and_size('orders_all_json')
     relevant_label= ['hedging' , 'basicGrid']
     relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
-    sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
 
     log.error(label_and_size_current_open_order)
 
-    non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
-    sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
+    sum_non_hedging_open_trade= non_hedging_transactions(label_and_size_open_trade)['sum_non_hedging']
 
-    non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
-    sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
+    sum_non_hedging_open_order= non_hedging_transactions(label_and_size_current_open_order)['sum_non_hedging']
 
     current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
 
