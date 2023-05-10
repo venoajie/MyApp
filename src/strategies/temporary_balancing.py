@@ -99,6 +99,7 @@ async def is_send_open_order_allowed (ask_price: float,
 
     
     proforma = await get_proforma_attributes(sum_next_open_order)
+    print (f'proforma {proforma}')
 
     order_allowed=  proforma['len_non_hedging_open_order']== 0
     
