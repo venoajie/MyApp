@@ -81,7 +81,7 @@ async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
     
     return dict(
         open_trade_attributes=  label_and_size_open_trade,
-        len_non_hedging_open_order=   non_hedging_open_orders['len_non_hedging'],
+        len_balancing_only_open_order=   non_hedging_open_orders['len_balancing_only'],
         sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
         order_size= max(1, int(proforma_size * 50/100))
     )
@@ -102,7 +102,7 @@ async def is_send_open_order_allowed (ask_price: float,
     
     proforma = await get_proforma_attributes(sum_next_open_order)
 
-    order_allowed=  proforma['len_balancing_only']== 0
+    order_allowed=  proforma['len_balancing_only_open_order']== 0
     
     if order_allowed:
         
