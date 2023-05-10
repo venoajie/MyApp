@@ -655,9 +655,30 @@ def test_check_proforma_size():
     sum_current_open_order= 0
     sum_next_open_order= 1
     notional= 14
+    label_and_size= [
+        {'label_main': 'hedgingSpot-open-1683325847986', 'amount_dir': -1.0, 'price': 1989.35}, 
+        {'label_main': 'hedgingSpot-open-1683326247485', 'amount_dir': -1.0, 'price': 1991.2}, 
+        {'label_main': 'hedgingSpot-open-1683326255504', 'amount_dir': -1.0, 'price': 1992.0}, 
+        {'label_main': 'hedgingSpot-open-1683326383058', 'amount_dir': -1.0, 'price': 1992.1}, 
+        {'label_main': 'hedgingSpot-open-1683326402037', 'amount_dir': -1.0, 'price': 1992.35}, 
+        {'label_main': 'hedgingSpot-open-1683326403879', 'amount_dir': -1.0, 'price': 1992.55}, 
+        {'label_main': 'hedgingSpot-open-1683327581085', 'amount_dir': -1.0, 'price': 1991.2}, 
+        {'label_main': 'hedgingSpot-open-1683327640651', 'amount_dir': -1.0, 'price': 1991.7}, 
+        {'label_main': 'hedgingSpot-open-1683327642513', 'amount_dir': -1.0, 'price': 1991.75},
+        {'label_main': 'hedgingSpot-open-1683327657621', 'amount_dir': -1.0, 'price': 1992.0}, 
+        {'label_main': 'hedgingSpot-open-1683327702350', 'amount_dir': -1.0, 'price': 1992.35}, 
+        {'label_main': 'hedgingSpot-open-1683327790448', 'amount_dir': -1.0, 'price': 1993.2},
+        {'label_main': 'hedgingSpot-open-1683327797865', 'amount_dir': -1.0, 'price': 1993.3},
+        {'label_main': 'hedgingSpot-open-1683327825799', 'amount_dir': -1.0, 'price': 1993.55}, 
+        {'label_main': 'hedgingSpot-open-1683327907785', 'amount_dir': -1.0, 'price': 1994.4}, 
+        {'label_main': 'basicGridLong-open-1683333416910', 'amount_dir': 7.0, 'price': 2016.45},
+        {'label_main': 'basicGridLong-open-1683335195012', 'amount_dir': 4.0, 'price': 1995.4}, 
+        {'label_main': 'basicGridLong-open-1683343595469', 'amount_dir': 2.0, 'price': 1974.0}, 
+        {'label_main': 'basicGridShort-open-1683360293381', 'amount_dir': -7.0, 'price': 1933.9}
+        ]
     
-    proforma_size=  Strategy.check_proforma_size(notional,
-                                                 current_size, 
+    proforma_size=  Strategy.check_proforma_size(label_and_size,
+                                                 notional,
                                                  sum_current_open_order,
                                                  sum_next_open_order)
     assert proforma_size["proforma_size"]   == -8
@@ -665,8 +686,8 @@ def test_check_proforma_size():
 
     sum_next_open_order= -8
 
-    proforma_size=  Strategy.check_proforma_size(notional,
-                                                 current_size, 
+    proforma_size=  Strategy.check_proforma_size(label_and_size,
+                                                 notional,
                                                  sum_current_open_order,
                                                  sum_next_open_order)
     assert proforma_size["proforma_size"]   == -8
