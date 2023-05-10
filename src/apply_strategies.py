@@ -281,6 +281,7 @@ class ApplyHedgingSpot:
                             sum_next_open_order
                             ) -> int:
         """ """
+        log.debug (current_size)
         
         proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
         relevant_label= ['hedging' , 'basicGrid']
@@ -288,7 +289,7 @@ class ApplyHedgingSpot:
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
         current_size= sum([o['amount_dir'] for o in label_and_size])
 
-        log.error (relevant_open_trade)
+        log.error (current_size)
         log.warning (sum_relevant_open_trade)
         #log.error (label_and_size)
         
