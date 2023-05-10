@@ -81,7 +81,7 @@ async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
         position=  proforma_size,
         len_non_hedging_open_order=   len_non_hedging_open_order,
         sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
-        order_size= max(1, abs(proforma_size * 50/100))
+        order_size= max(1, int(proforma_size * 50/100))
     )
     
 async def is_send_open_order_allowed (ask_price: float,
