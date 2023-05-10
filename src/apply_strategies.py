@@ -93,9 +93,7 @@ class ApplyHedgingSpot:
     async def querying_all(self, table: list, 
                            database: str = "databases/trading.sqlite3") -> dict:
         """ """
-        result = await sqlite_management.querying_table (table, 
-                                                         database
-                                                         ) 
+        result = await sqlite_management.querying_table (table,  database) 
         
         return  dict(
             all= [] if result in NONE_DATA \
@@ -107,7 +105,6 @@ class ApplyHedgingSpot:
     async def querying_label_and_size(self) -> dict:
         """ """
         table =  sqlite_management.querying_label_and_size () 
-        log.warning(table)
         result = await sqlite_management.executing_query_with_return (table) 
         
         return  [] if result in NONE_DATA  else (result)
