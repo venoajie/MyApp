@@ -8,7 +8,7 @@ from strategies import hedging_spot
 from db_management import sqlite_management
 from loguru import logger as log
 
-def get_basic_opening_paramaters(proforma_size: int) -> dict:
+def get_basic_opening_paramaters() -> dict:
     """
 
     Args:
@@ -23,10 +23,7 @@ def get_basic_opening_paramaters(proforma_size: int) -> dict:
     
     # default type: limit
     params.update({"type": 'limit'})
-    
-    # size=notional. ordered in several times (default 10x)
-    params.update({"size": abs(proforma_size)})
-        
+            
     return params
 
 async def querying_label_and_size(table) -> dict:
@@ -105,7 +102,7 @@ async def is_send_open_order_allowed (ask_price: float,
     
     if order_allowed:
         
-        params= get_basic_opening_paramaters(proforma)
+        params= get_basic_opening_paramaters()
         
         # get transaction label and update the respective parameters
         label_open = hedging_spot.get_label ('open', 'balancing') 
