@@ -119,6 +119,6 @@ async def is_send_open_order_allowed (ask_price: float,
         if proforma['order_size']<0:
             params.update({"entry_price": bid_price})
             params.update({"side": "buy"})
-    print (params)
+            print (params)
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
