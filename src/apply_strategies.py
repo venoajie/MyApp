@@ -214,7 +214,7 @@ class ApplyHedgingSpot:
         
         return open_label
 
-    async def if_order_is_true(self, order, instrument: str = None) -> float:
+    async def if_order_is_true(self, order, notional, instrument: str = None) -> float:
         """ """
         log.debug (order)
         if order['order_allowed']:
@@ -225,7 +225,16 @@ class ApplyHedgingSpot:
             if instrument != None:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
-                
+                    
+            sum_next_open_order= params['size']
+            open_orders_sqlite: list = await self.querying_all('orders_all_json')
+            sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
+            label_and_size= await self.querying_label_and_size()
+            proforma_size: int = await self.check_proforma_size(label_and_size,
+                                                                notional, 
+                                                                sum_current_open_order,
+                                                                sum_next_open_order)
+            log.error (f'proforma_size {proforma_size}')
             await self.send_limit_order(params)
             
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
@@ -276,12 +285,10 @@ class ApplyHedgingSpot:
     def check_proforma_size(self,
                             label_and_size,
                             notional,
-                            current_size, 
                             sum_current_open_order,
                             sum_next_open_order
                             ) -> int:
         """ """
-        log.debug (current_size)
         
         proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
         relevant_label= ['hedging' , 'basicGrid']
@@ -299,10 +306,7 @@ class ApplyHedgingSpot:
             additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
 
     async def send_limit_order(self, params) -> None:
-        """ """
-
-        sum_next_open_order= params['size']
-        
+        """ """       
         
         reading_from_database: dict = await self.reading_from_database()
         open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
@@ -312,16 +316,6 @@ class ApplyHedgingSpot:
         #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
         open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
         
-        # fetch positions for all instruments
-        positions: list = reading_from_database["positions_from_sub_account"][0]
-        size_from_positions: float = 0 if positions == [] else positions["size"]
-        sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-        label_and_size= await self.querying_label_and_size()
-        proforma_size: int = await self.check_proforma_size(label_and_size,
-                                                            size_from_positions, 
-                                                             sum_current_open_order,
-                                                             sum_next_open_order)
-        log.error (f'proforma_size {proforma_size}')
         if open_order_is_consistent == False:
             await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
             await system_tools.sleep_and_restart (5)
@@ -660,7 +654,7 @@ class ApplyHedgingSpot:
                                                                                   open_trade_strategy_label,
                                                                                   strategy_attr
                                                                                 )                        
-                        await self.if_order_is_true(closed_order)
+                        await self.if_order_is_true(closed_order, notional)
                         
                         pct_threshold= 1/100
                         len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
@@ -687,13 +681,12 @@ class ApplyHedgingSpot:
                         sum_next_open_order= send_additional_order['order_parameters']['size']
                         proforma_size: int = self.check_proforma_size( label_and_size,
                                                                             notional,
-                                                                            size_from_positions, 
-                                                             sum_current_open_order,
-                                                             sum_next_open_order)
+                                                                            sum_current_open_order,
+                                                                            sum_next_open_order)
                         
                         log.error (f'proforma_size {proforma_size}')
                         
-                        await self.if_order_is_true(send_additional_order)
+                        await self.if_order_is_true(send_additional_order, notional)
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
@@ -705,7 +698,7 @@ class ApplyHedgingSpot:
                                                                                 open_trade_strategy_label,
                                                                                 strategy_attr
                                                                                 )                        
-                        await self.if_order_is_true(closed_order)
+                        await self.if_order_is_true(closed_order, notional)
 
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -838,7 +831,7 @@ class ApplyHedgingSpot:
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )                            
-                            await self.if_order_is_true(send_order, instrument)
+                            await self.if_order_is_true(send_order, notional, instrument)
                             
                         if "basicGrid" in strategy_attr["strategy"]:
 
@@ -851,7 +844,7 @@ class ApplyHedgingSpot:
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
                                                                                     )                            
-                            await self.if_order_is_true(send_order, instrument)
+                            await self.if_order_is_true(send_order, notional, instrument)
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
