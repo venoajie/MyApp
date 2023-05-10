@@ -222,19 +222,9 @@ class ApplyHedgingSpot:
             if instrument != None:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
-                    
-            sum_next_open_order= params['size']
-            open_orders_sqlite: list = await self.querying_all('orders_all_json')
-            sum_current_open_order= sum([o['amount_dir'] for o in open_orders_sqlite['all']])
-            open_trade_label_and_size= await self.querying_label_and_size('my_trades_all_json')
-            open_order_label_and_size= await self.querying_label_and_size('orders_all_json')
-
-            label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
-            label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
-            proforma_size: int =  self.check_proforma_size(label_and_size_open_trade,
-                                                                notional, 
-                                                                label_and_size_current_open_order,
-                                                                sum_next_open_order)
+                
+            proforma_size: int =  self.check_proforma_size(notional, 
+                                                           params['size'])
             log.error (f'proforma_size {proforma_size}')
             await self.send_limit_order(params)
             
@@ -283,22 +273,26 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_market_order(params)
 
-    def check_proforma_size(self,
-                            label_and_size_open_trade,
+    async def check_proforma_size(self,
                             notional,
-                            label_and_size_current_open_order,
-                            sum_next_open_order
+                            sum_next_open_order: int= 0
                             ) -> int:
         """ """
-        
+
+        label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
+        label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
         relevant_label= ['hedging' , 'basicGrid']
         relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
-        non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
-        log.error(label_and_size_current_open_order)
-        non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
-        sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
-        sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
+
+        log.error(label_and_size_current_open_order)
+
+        non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
+        sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
+
+        non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
+        sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
+
         current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
 
         proforma_size=   (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
@@ -680,13 +674,9 @@ class ApplyHedgingSpot:
                                                                                                         )
                                       
                         log.error (send_additional_order)
-                        label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
-                        label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
                         sum_next_open_order= send_additional_order['order_parameters']['size']
-                        proforma_size: int = self.check_proforma_size( label_and_size_open_trade,
-                                                                            notional,
-                                                                            label_and_size_current_open_order,
-                                                                            sum_next_open_order)
+                        proforma_size: int = await self.check_proforma_size(notional,
+                                                                      sum_next_open_order)
                         
                         log.error (f'proforma_size {proforma_size}')
                         
