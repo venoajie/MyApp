@@ -289,6 +289,8 @@ class ApplyHedgingSpot:
         
         relevant_label= ['hedging' , 'basicGrid']
         relevant_open_trade= [o for o in label_and_size if ([r for r in relevant_label if r in o['label_main']])]
+        non_hedging_open_trade= [o for o in label_and_size if 'hedging' not in o['label_main']]
+        sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
         current_size= sum([o['amount_dir'] for o in label_and_size])
 
@@ -297,6 +299,7 @@ class ApplyHedgingSpot:
         return dict(
             position=  proforma_size,
             proforma_size=   proforma_size,
+            sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
             additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
 
     async def send_limit_order(self, params) -> None:
