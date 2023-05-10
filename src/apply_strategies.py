@@ -292,11 +292,7 @@ class ApplyHedgingSpot:
         sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
         current_size= sum([o['amount_dir'] for o in label_and_size])
 
-        log.error (current_size)
-        log.warning (sum_relevant_open_trade)
-        #log.error (label_and_size)
-
-        proforma_size=   (current_size + sum_current_open_order + sum_next_open_order)
+        proforma_size=   (sum_relevant_open_trade + sum_current_open_order + sum_next_open_order)
         
         return dict(
             position=  proforma_size,
