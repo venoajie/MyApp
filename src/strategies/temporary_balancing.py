@@ -1,5 +1,11 @@
 # # -*- coding: utf-8 -*-
+
+# built ins
+import asyncio
+
+# user defined formula
 from strategies import hedging_spot
+from db_management import sqlite_management
 
 def get_basic_opening_paramaters(proforma_size: int) -> dict:
     """
@@ -22,94 +28,43 @@ def get_basic_opening_paramaters(proforma_size: int) -> dict:
         
     return params
 
-def is_send_open_order_allowed (proforma_size: float,
-                            ask_price: float,
-                            bid_price: float,
-                            current_outstanding_order_len: int,
-                            ) -> dict:
-    """
-
-    Args:
-
-    Returns:
-        dict
-
-    """
-
-    order_allowed= current_outstanding_order_len== 0
+async def querying_label_and_size(self, table) -> dict:
+    """ """
     
-    if order_allowed:
-        
-        
-        params= get_basic_opening_paramaters(proforma_size)
-        
-        label_open = hedging_spot.get_label ('open', 'temporary') 
-        params.update({"label": label_open})
-        
-        
-        if params['side']=='sell':
-            params.update({"side": })
-            params.update({"entry_price": ask_price})
-        if params['side']=='buy':
-            params.update({"side": })
-            params.update({"entry_price": bid_price})
+    NONE_DATA: None = [0, None, []]
     
-    return dict(order_allowed= order_allowed,
-                order_parameters= [] if order_allowed== False else params)
+    query =  sqlite_management.querying_label_and_size (table) 
+    result = await sqlite_management.executing_query_with_return (query) 
     
-def is_send_exit_order_allowed (ask_price: float,
-                                bid_price: float,
-                                current_outstanding_order_len: int,
-                                selected_transaction: list,
-                                strategy_attributes_for_hedging: list,
-                                ) -> dict:
-    """
+    return  [] if result in NONE_DATA  else (result)
 
-    Args:
+async def check_proforma_size(self,
+                        notional,
+                        sum_next_open_order: int= 0
+                        ) -> int:
+    """ """
 
-    Returns:
-        dict
+    label_and_size_open_trade= await self.querying_label_and_size('my_trades_all_json')
+    label_and_size_current_open_order= await self.querying_label_and_size('orders_all_json')
+    relevant_label= ['hedging' , 'basicGrid']
+    relevant_open_trade= [o for o in label_and_size_open_trade if ([r for r in relevant_label if r in o['label_main']])]
+    sum_relevant_open_trade= sum([o['amount_dir'] for o in relevant_open_trade])
 
-    """
-    # transform to dict
-    transaction= selected_transaction[0]
-    
-    # get price
-    last_transaction_price= transaction['price']
-    
-    transaction_side= transaction['direction']
+    log.error(label_and_size_current_open_order)
 
-    # get take profit pct
-    tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
+    non_hedging_open_trade= [o for o in label_and_size_open_trade if 'hedging' not in o['label_main']]
+    sum_non_hedging_open_trade= sum([o['amount_dir'] for o in non_hedging_open_trade])
 
-    # get transaction parameters
-    params= hedging_spot.get_basic_closing_paramaters(selected_transaction)
-    
-    if transaction_side=='sell':
-        tp_price_reached= hedging_spot.is_transaction_price_minus_below_threshold(last_transaction_price,
-                                                                      bid_price,
-                                                                      tp_pct
-                                                                      )
-        params.update({"entry_price": bid_price})
-        
-    if transaction_side=='buy':
-        tp_price_reached= hedging_spot.is_transaction_price_plus_above_threshold(last_transaction_price,
-                                                                      ask_price,
-                                                                      tp_pct
-                                                                      )
-        params.update({"entry_price": ask_price})
-        params['side']='sell'
-    
-    print(f'tp_price_reached {tp_price_reached}')
-    no_outstanding_order= current_outstanding_order_len < 1
+    non_hedging_open_order= [o for o in label_and_size_current_open_order if 'hedging' not in o['label_main']]
+    sum_non_hedging_open_order= sum([o['amount_dir'] for o in non_hedging_open_order])
 
-    order_allowed= tp_price_reached\
-            and no_outstanding_order 
+    current_size= sum([o['amount_dir'] for o in label_and_size_open_trade])
+
+    proforma_size=   (sum_non_hedging_open_trade + sum_non_hedging_open_order + sum_next_open_order)
     
-    if order_allowed:
-        
-        params.update({"instrument":  transaction['instrument_name']})
-        
-    return dict(order_allowed= order_allowed,
-                order_parameters= [] if order_allowed== False else params)
+    return dict(
+        position=  proforma_size,
+        proforma_size=   proforma_size,
+        sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
+        additional_order= notional + proforma_size if proforma_size < 0 else notional - proforma_size)
     
