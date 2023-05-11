@@ -635,13 +635,9 @@ class ApplyHedgingSpot:
                         log.error (send_additional_order)
                         sum_next_open_order= send_additional_order['order_parameters']['size']
                         
-                        send_open_order_allowed: int = await balancer.is_send_open_order_allowed (best_ask_prc, best_bid_prc, 
+                        send_order_allowed: int = await balancer.send_order  (best_ask_prc, best_bid_prc, 
                                                                       sum_next_open_order)
-                        send_exit_order_allowed: int = await balancer.is_send_exit_order_allowed (best_ask_prc, best_bid_prc)
-                        
-                        
-                        log.error (f'send_open_order_allowed {send_open_order_allowed}')
-                        log.error (f'send_exit_order_allowed {send_exit_order_allowed}')
+                        log.error (f'send_order_allowed {send_order_allowed}')
                         
                         await self.if_order_is_true(send_additional_order)
                                           
