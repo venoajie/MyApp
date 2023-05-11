@@ -214,6 +214,14 @@ class ApplyHedgingSpot:
             if instrument != None:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
+            
+            sum_next_open_order= params['size']
+            send_order_allowed: int = await balancer.send_order  (self.currency, sum_next_open_order)
+            check_exit= send_order_allowed['exit']
+            log.error (check_exit)
+            
+            check_open= send_order_allowed['open']
+            log.warning (check_open)
                 
             await self.send_limit_order(params)
             
@@ -635,10 +643,6 @@ class ApplyHedgingSpot:
                         log.error (send_additional_order)
                         sum_next_open_order= send_additional_order['order_parameters']['size']
                         
-                        send_order_allowed: int = await balancer.send_order  (best_ask_prc, best_bid_prc, 
-                                                                      sum_next_open_order)
-                        log.error (f'send_order_allowed {send_order_allowed}')
-                        
                         await self.if_order_is_true(send_additional_order)
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
@@ -653,6 +657,9 @@ class ApplyHedgingSpot:
                                                                                 )                        
                         await self.if_order_is_true(closed_order)
 
+                    send_order_allowed: int = await balancer.send_order  (self.currency, sum_next_open_order)
+                    log.error (f'send_order_allowed {send_order_allowed}')
+                    
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
