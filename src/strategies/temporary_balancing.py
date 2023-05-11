@@ -36,12 +36,26 @@ async def querying_label_and_size(table) -> dict:
     
     return  [] if result in NONE_DATA  else (result)
 
-def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
-    """ """
+def filtering_transactions(transaction_summary_from_sqlite) -> dict:
+    """ 
+    3 types of transactions:
+    - hedging
+    - trading
+    - balancing
+
+    Args:
+
+    Returns:
+        dict
     
+    
+    """
+    
+    # get trading
     result = [] if transaction_summary_from_sqlite == [] \
         else [o for o in transaction_summary_from_sqlite if 'hedging' not in o['label_main']] 
 
+    # get balancer
     result_balancer_only = [] if result == [] \
         else [o for o in result if 'balancing' in o['label_main']] 
 
@@ -52,7 +66,7 @@ def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
         len_balancing_only = 0 if result_balancer_only ==  [] else len([o  for o in result_balancer_only])
                 )
 
-def filter_non_hedging_transactions(label_and_size_open_trade) -> dict:
+def filter_filtering_transactions(label_and_size_open_trade) -> dict:
     """ """
     
     relevant_label= ['hedging' , 'basicGrid']
@@ -71,12 +85,12 @@ async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
 
     # get current size
     label_and_size_open_trade= await querying_label_and_size('my_trades_all_json')
-    non_hedging_open_trade= non_hedging_transactions(label_and_size_open_trade)
+    non_hedging_open_trade= filtering_transactions(label_and_size_open_trade)
     sum_non_hedging_open_trade= non_hedging_open_trade['sum_non_hedging']
     
     # get open orders
     label_and_size_current_open_order= await querying_label_and_size('orders_all_json')
-    non_hedging_open_orders= non_hedging_transactions(label_and_size_current_open_order) 
+    non_hedging_open_orders= filtering_transactions(label_and_size_current_open_order) 
     
     proforma_size=   get_size (sum_non_hedging_open_trade, non_hedging_open_orders['sum_non_hedging'], sum_next_open_order)
     
@@ -176,4 +190,12 @@ async def is_send_exit_order_allowed (ask_price: float,
     
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
+    
+def send_order (ask_price, bid_price, sum_next_open_order):
+    is_send_exit_order_allowed (ask_price, 
+                                bid_price)
+    
+    is_send_exit_order_allowed (ask_price, 
+                                bid_price, 
+                                sum_next_open_order)
     
