@@ -45,6 +45,7 @@ def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
     result_balancer_only = [] if result == [] \
         else [o for o in result if 'balancing' in o['label_main']] 
 
+    log.warning (result_balancer_only)
     return  dict(
         all= [] if result in [] else (result),
         sum_non_hedging = 0 if result in  [] else sum([o['amount_dir'] for o in result]),
