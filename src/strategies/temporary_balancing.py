@@ -144,7 +144,7 @@ async def is_send_exit_order_allowed (ask_price: float,
     log.debug (proforma)
 
     order_allowed=  proforma['len_balancing_only_open_order']== 0\
-        and proforma['len_balancing_only_open_trade']!= []    
+        and proforma['len_balancing_only_open_trade']!= 0   
         
     # transform to dict
     transaction= proforma['open_trade_attributes']
