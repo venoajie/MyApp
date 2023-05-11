@@ -15,6 +15,15 @@
 - [x] Back up database to cloud and local
 - [x] Send automatic order based on pre-defined manual target
 
+
+## Transaction types:
+- Hedging.
+- Trading, based on:
+    Grid (continously send short and long. Net size expected to be zero)
+    Price action/TA (send order based on market condition and provided with )
+- Balancing
+
+
 ## Transaction flow:
 - Fetch both market and exchange data through websocket and temporary save them either sqlite3 or in pickle format.
 - Modify market data for further analysis
