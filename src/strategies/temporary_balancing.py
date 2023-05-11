@@ -191,11 +191,31 @@ async def is_send_exit_order_allowed (ask_price: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
-def send_order (ask_price, bid_price, sum_next_open_order):
-    is_send_exit_order_allowed (ask_price, 
-                                bid_price)
+def reading_from_db(end_point, instrument: str = None, status: str = None
+) -> float:
+    """ """
+    from utilities import pickling, system_tools
+    return pickling.read_data(
+        system_tools.provide_path_for_file(end_point, instrument, status)
+    )
+        
+async def send_order (currency, sum_next_open_order):
     
-    is_send_exit_order_allowed (ask_price, 
-                                bid_price, 
-                                sum_next_open_order)
-    
+    instrument = [f"{currency.upper()}-PERPETUAL"]
+    ticker: list =  reading_from_db("ticker", instrument)
+
+    if ticker !=[]:
+
+        # get bid and ask price
+        best_bid_prc: float = ticker[0]["best_bid_price"]
+        best_ask_prc: float = ticker[0]["best_ask_price"]
+        
+        exit= await is_send_exit_order_allowed (best_ask_prc, 
+                                    best_bid_prc)
+        
+        open= await is_send_open_order_allowed (best_ask_prc, 
+                                                best_bid_prc, 
+                                                sum_next_open_order)
+        
+    return dict(exit= exit,
+                open= open)
