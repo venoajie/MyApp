@@ -45,7 +45,6 @@ def non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
     result_balancer_only = [] if result == [] \
         else [o for o in result if 'balancing' in o['label_main']] 
 
-    log.warning (result_balancer_only)
     return  dict(
         all= [] if result in [] else (result),
         sum_non_hedging = 0 if result in  [] else sum([o['amount_dir'] for o in result]),
@@ -86,7 +85,7 @@ async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
         len_balancing_only_open_trade=   non_hedging_open_trade['len_balancing_only'],
         len_balancing_only_open_order=   non_hedging_open_orders['len_balancing_only'],
         sum_non_hedging_open_trade=   sum_non_hedging_open_trade,
-        order_size= max(1, int(proforma_size * 50/100))
+        order_size= max(1, int(proforma_size))
     )
     
 async def is_send_open_order_allowed (ask_price: float,
@@ -101,7 +100,6 @@ async def is_send_open_order_allowed (ask_price: float,
         dict
 
     """
-
     
     proforma = await get_proforma_attributes(sum_next_open_order)
 
@@ -124,7 +122,7 @@ async def is_send_open_order_allowed (ask_price: float,
         if proforma['order_size']<0:
             params.update({"entry_price": bid_price})
             params.update({"side": "buy"})
-            print (params)
+        log.warning (params)
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
@@ -142,9 +140,14 @@ async def is_send_exit_order_allowed (ask_price: float,
     
     proforma = await get_proforma_attributes()
     log.debug (proforma)
+    
+    only_one_open_order= proforma['len_balancing_only_open_order']== 0
+    there_was_open_trade_with_balancing_label= proforma['len_balancing_only_open_trade']!= 0
+    the_imbalance_before_has_neutralized= proforma['order_size'] !=0
 
-    order_allowed=  proforma['len_balancing_only_open_order']== 0\
-        and proforma['len_balancing_only_open_trade']!= 0   
+    order_allowed=  only_one_open_order\
+        and there_was_open_trade_with_balancing_label   \
+            and the_imbalance_before_has_neutralized
         
     # transform to dict
     transaction= proforma['open_trade_attributes']
