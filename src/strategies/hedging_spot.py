@@ -226,8 +226,15 @@ def is_send_exit_order_allowed (notional: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
+def get_selected_size(sum_selected_non_hedging_open_trade, 
+             sum_selected_non_hedging_open_order) -> dict:
+    """ """
+    
+    return (sum_selected_non_hedging_open_trade + sum_selected_non_hedging_open_order)
+
 def is_send_additional_order_allowed (notional: float, 
-                                      last_transaction_price: float,
+                                      sum_selected_non_hedging_open_trade: float,
+                                      sum_selected_non_hedging_open_order: float,
                                       ask_price: float,
                                       current_outstanding_order_len: int,
                                       strategy_attributes_for_hedging,
@@ -242,23 +249,8 @@ def is_send_additional_order_allowed (notional: float,
         dict
 
     """
-    
-    ONE_MINUTE= 60000
-    WAITING_MINUTE= 15
-    time_stamp= transaction['timestamp']
-    exit_order_allowed["size"] = int(
-                                        max(notional * 10 / 100, 2)
-                                    )
-    order_allowed= is_last_transaction_price_plus_exceed_current_price (last_transaction_price,
-                                                                        ask_price,
-                                                                        threshold
-                                                                        )
-    
-    time_threshold: float = (strategy_attributes_for_hedging["halt_minute_before_reorder"] * ONE_MINUTE * WAITING_MINUTE)
-
-    delta_time: int = server_time - time_stamp
-    
-    waiting_time_has_passed: int = delta_time > time_threshold
+    #trading strategy rely on neutral direction (sell=buy: grid)
+    selected_trading_size= get_selected_size(sum_selected_non_hedging_open_trade, sum_selected_non_hedging_open_order)
     
     if order_allowed:
         
