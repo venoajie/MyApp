@@ -5,6 +5,11 @@ If market move violently to one side in a short time (say 5% under 5 minutes),
     some strategies, especially those rely on "delta neutral position" (such as grid based trading), 
         could be severely impacted/adverse position for sometimes
 This module is balancing the negative impact of the respective movement above until it corrected itself.
+
+Why not use logic from hedging spot?
+- hedging, although also rely on delta neutral/spot=short position, 
+    but has different objectives: maintain value vs profit
+- both strategies expected to be more complex in the future, an dthus, could be very different at the end
 """
 
 # built ins
@@ -53,62 +58,57 @@ async def querying_label_and_size(table) -> dict:
     
     return  [] if result in NONE_DATA  else (result)
 
-def get_non_hedging_transactions(transaction_summary_from_sqlite) -> dict:
+def get_balancing_transactions(transaction_summary_from_sqlite: list, relevant_label: list= ['basicGrid']) -> dict:
     """
-    Excluding hedging from query result trading (hedging, although also rely on delta neutral/spot=short position, 
-        but has different objectives: maintain value vs profit)
+    Get transactions with label that considered as part of delta neutral strategy
+    - basicGrid
     """
     
-    return  [] if transaction_summary_from_sqlite == [] \
-        else [o for o in transaction_summary_from_sqlite if 'hedging' not in o['label_main']] 
-
-def get_balancing_transactions(transaction_summary_from_sqlite) -> dict:
-    """
-    """
-    non_hedging_transactions= get_non_hedging_transactions(transaction_summary_from_sqlite)
-    balancing_transactions= [] if non_hedging_transactions == [] \
-        else [o for o in non_hedging_transactions if 'balancing' in o['label_main']] 
-
+    balancing_transactions=   [o for o in transaction_summary_from_sqlite if (
+        [r for r in relevant_label if r in o['label_main']]
+        )
+                               ]
+    
     return  dict(
         balancing_all = balancing_transactions,
         balancing_sum = 0 if balancing_transactions in  [] else sum([o['amount_dir'] for o in balancing_transactions]),
         balancing_len = 0 if balancing_transactions ==  [] else len([o  for o in balancing_transactions])
                 )
 
-def filter_filtering_transactions(open_trade_label_and_size) -> dict:
-    """ """
-    
-    relevant_label= ['hedging' , 'basicGrid']
-
-    return  [o for o in open_trade_label_and_size if ([r for r in relevant_label if r in o['label_main']])]
-
-def get_size(sum_open_trade_non_hedging, 
+def get_size(balancing_open_trade_sum, 
              balancing_sum_open_order, 
-             sum_next_open_order) -> dict:
+             sum_next_open_order) -> int:
     """ """
-    
-    return (sum_open_trade_non_hedging + balancing_sum_open_order + sum_next_open_order)
+        
+    return max(1, 
+               int((balancing_open_trade_sum + balancing_sum_open_order + sum_next_open_order))
+               )
 
-async def get_proforma_attributes (sum_next_open_order: int= 0) -> int:
+async def get_proforma_attributes (sum_next_open_order: int= 0, relevant_label: list= ['basicGrid']) -> dict:
     """ """
 
     # get current size
     open_trade_label_and_size= await querying_label_and_size('my_trades_all_json')
-    open_trade_non_hedging= get_balancing_transactions(open_trade_label_and_size)
-    sum_open_trade_non_hedging= open_trade_non_hedging['balancing_sum']
+    open_trade_balancing= get_balancing_transactions(open_trade_label_and_size, 
+                                                     relevant_label
+                                                     )
+    
+    balancing_open_trade_sum= open_trade_balancing['balancing_sum']
     
     # get open orders
     open_orders_label_and_size_current= await querying_label_and_size('orders_all_json')
-    open_orders_non_hedging= get_balancing_transactions(open_orders_label_and_size_current) 
-    
-    proforma_size=   get_size (sum_open_trade_non_hedging, open_orders_non_hedging['balancing_sum'], sum_next_open_order)
-    
+    open_orders_balancing= get_balancing_transactions(open_orders_label_and_size_current, 
+                                                      relevant_label
+                                                      ) 
     return dict(
         open_trade_attributes=  open_trade_label_and_size,
-        balancing_len_open_trade=   open_trade_non_hedging['balancing_len'],
-        balancing_len_open_order=   open_orders_non_hedging['balancing_len'],
-        sum_open_trade_non_hedging=   sum_open_trade_non_hedging,
-        order_size= max(1, int(proforma_size))
+        balancing_open_trade_len=   open_trade_balancing['balancing_len'],
+        balancing_open_trade_sum=   balancing_open_trade_sum,
+        balancing_open_order_len=   open_orders_balancing['balancing_len'],
+        order_size= get_size (balancing_open_trade_sum,
+                              open_orders_balancing['balancing_sum'], 
+                              sum_next_open_order
+                              )
     )
     
 async def is_send_open_order_allowed (ask_price: float,
@@ -124,12 +124,15 @@ async def is_send_open_order_allowed (ask_price: float,
 
     """
     
+    # get proforma attributes (transactions, size, len, etc)
     proforma = await get_proforma_attributes(sum_next_open_order)
 
-    order_allowed=  proforma['balancing_len_open_order']== 0
+    # check conditions for sending order
+    order_allowed=  proforma['balancing_open_order_len']== 0
     
     if order_allowed:
         
+        # get basic order parameters
         params= get_basic_opening_paramaters()
         
         # get transaction label and update the respective parameters
@@ -146,6 +149,7 @@ async def is_send_open_order_allowed (ask_price: float,
             params.update({"entry_price": bid_price})
             params.update({"side": "buy"})
         log.warning (params)
+        
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
@@ -164,8 +168,8 @@ async def is_send_exit_order_allowed (ask_price: float,
     proforma = await get_proforma_attributes()
     log.debug (proforma)
     
-    only_one_open_order= proforma['balancing_len_open_order']== 0
-    there_was_open_trade_with_balancing_label= proforma['balancing_len_open_trade']!= 0
+    only_one_open_order= proforma['balancing_open_order_len']== 0
+    there_was_open_trade_with_balancing_label= proforma['balancing_open_trade_len']!= 0
     the_imbalance_before_has_neutralized= proforma['order_size'] !=0
 
     order_allowed=  only_one_open_order\
