@@ -191,6 +191,13 @@ def is_current_file_running(script: str) -> bool:
 
     return False
 
+def reading_from_db_pickle(end_point, instrument: str = None, status: str = None
+) -> float:
+    """ """
+    from utilities import pickling
+    return pickling.read_data(
+        provide_path_for_file(end_point, instrument, status)
+    )
 
 def sleep_and_restart_program(idle: float = None) -> None:
     """
