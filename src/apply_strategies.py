@@ -129,9 +129,7 @@ class ApplyHedgingSpot:
         self, end_point, instrument: str = None, status: str = None
     ) -> float:
         """ """
-        return pickling.read_data(
-            system_tools.provide_path_for_file(end_point, instrument, status)
-        )
+        return system_tools.reading_from_db_pickle (end_point, instrument, status)
 
     #! ########### will be deleted ##############################################################################
     async def reading_from_database(self, instrument: str = None) -> float:
