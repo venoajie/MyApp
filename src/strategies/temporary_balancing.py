@@ -10,6 +10,9 @@ Why not use logic from hedging spot?
 - hedging, although also rely on delta neutral/spot=short position, 
     but has different objectives: maintain value vs profit
 - both strategies expected to be more complex in the future, an dthus, could be very different at the end
+
+instrument used is perpetual:
+- for liquidity reason. need to enter and exit market immediately after balancing event occured
 """
 
 # built ins
@@ -57,6 +60,19 @@ async def querying_label_and_size(table) -> dict:
     NONE_DATA: None = [0, None, []]
     
     return  [] if result in NONE_DATA  else (result)
+
+def reading_from_db(end_point, instrument: str = None, status: str = None
+) -> float:
+    """ """
+    from utilities import pickling, system_tools
+    return pickling.read_data(
+        system_tools.provide_path_for_file(end_point, instrument, status)
+    )
+        
+async def get_ticker (currency):
+    
+    instrument = [f"{currency.upper()}-PERPETUAL"]
+    return  reading_from_db("ticker", instrument)
 
 def get_balancing_transactions(transaction_summary_from_sqlite: list, relevant_label: list= ['basicGrid']) -> dict:
     """
@@ -128,7 +144,9 @@ async def is_send_open_order_allowed (ask_price: float,
     proforma = await get_proforma_attributes(sum_next_open_order)
 
     # check conditions for sending order
-    order_allowed=  proforma['balancing_open_order_len']== 0
+    no_open_order_with_the_same_label= proforma['balancing_open_order_len']== 0
+    
+    order_allowed=  no_open_order_with_the_same_label
     
     if order_allowed:
         
@@ -204,14 +222,6 @@ async def is_send_exit_order_allowed (ask_price: float,
     return dict(order_allowed= order_allowed,
                 order_parameters= [] if order_allowed== False else params)
     
-def reading_from_db(end_point, instrument: str = None, status: str = None
-) -> float:
-    """ """
-    from utilities import pickling, system_tools
-    return pickling.read_data(
-        system_tools.provide_path_for_file(end_point, instrument, status)
-    )
-        
 async def send_order (currency, sum_next_open_order):
     
     instrument = [f"{currency.upper()}-PERPETUAL"]
