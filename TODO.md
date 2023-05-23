@@ -45,6 +45,9 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
+
+
+Strategy | [strategy](https://medium.com/prooftrading/the-trading-strategy-63183bd231cd) |  | | 
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
 Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
 MM | [mm](https://medium.com/@degensugarboo/avellaneda-and-stoikov-mm-paper-implementation-b7011b5a7532) |  | | 
