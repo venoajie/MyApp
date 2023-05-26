@@ -147,13 +147,21 @@ def compute_position_leverage_and_delta(notional: float, my_trades_open: list) -
     return {'delta': compute_delta(notional, total_long_qty, total_short_qty),
             'leverage': compute_leverage(notional, total_long_qty, total_short_qty)}
     
-def sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction, pct_capital_risk) -> float:
+def daily_turn_over(pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
     """
     """
-    daily_target_in_usd = notional * pct_daily_profit_target
-    capital_risked = max (1, notional * pct_capital_risk)
-    transaction_frequency = daily_target_in_usd/(pct_profit_per_transaction * capital_risked)
-    return transaction_frequency
+    #2= long and short
+    ordered_side= 2
+    return (pct_daily_profit_target/pct_profit_per_transaction)/ordered_side
+
+def hourly_sizing_for_perpetual_grid(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
+    """
+    """
+    daily_target_turn_over= daily_turn_over(pct_daily_profit_target, pct_profit_per_transaction)
+
+    hourly_target_turn_over= daily_target_turn_over/24
+
+    return max (1, int (hourly_target_turn_over * notional))
 
     
 
