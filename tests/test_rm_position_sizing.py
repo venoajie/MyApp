@@ -42,12 +42,13 @@ def test_compute_leverage():
     compute_delta = position_sizing.compute_leverage(notional, long, short)
     assert compute_delta == 1
 
-
 def test_sizing_for_perpetual_grid():
     notional = 100
     pct = 1/100
-    pct_daily_profit_target = 2 * pct
-    pct_profit_per_transaction = pct/2
-    pct_capital_risk = 2 * pct
-    sizing_for_perpetual_grid = position_sizing.sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction, pct_capital_risk)
-    assert sizing_for_perpetual_grid == 200
+    pct_daily_profit_target = 3 * pct
+    pct_profit_per_transaction = pct/4
+    daily_turn_over = position_sizing.daily_turn_over(pct_daily_profit_target, pct_profit_per_transaction)
+    assert daily_turn_over == 6
+    
+    hourly_sizing = position_sizing.hourly_sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction)
+    assert hourly_sizing == 25
