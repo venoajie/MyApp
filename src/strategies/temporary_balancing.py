@@ -82,8 +82,7 @@ def get_balancing_transactions(transaction_summary_from_sqlite: list, relevant_l
     
     balancing_transactions=   [o for o in transaction_summary_from_sqlite if (
         [r for r in relevant_label if r in o['label_main']]
-        )
-                               ]
+        )]
     
     return  dict(
         balancing_all = balancing_transactions,
