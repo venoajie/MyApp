@@ -163,5 +163,34 @@ def hourly_sizing_for_perpetual_grid(notional: float, pct_daily_profit_target: f
 
     return max (1, int (hourly_target_turn_over * notional))
 
+def quantities_per_order(hourly_qty: float, ONE_MINUTE: int) -> float:
+    """
+    """
+    return 1 if hourly_qty < ONE_MINUTE else int(hourly_qty/ONE_MINUTE)
+
+def time_delay_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
+    """
+    """
+    qty_per_order=  hourly_qty/ONE_MINUTE
+    
+    time_delay= qty_per_order
+    #dealing with qty rounding
+    if qty_per_order < 1:
+        time_delay= 1/time_delay
+    return time_delay
+
+def qty_order_and_time_delay(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
+    """
+    """
+    ONE_MINUTE= 60
+
+    hourly_qty= hourly_sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction)
+    
+    minute_delay_before_reorder= time_delay_before_reorder(hourly_qty, ONE_MINUTE)
+
+    return dict(
+            minute_delay= minute_delay_before_reorder,
+            qty_per_order= quantities_per_order (hourly_qty, ONE_MINUTE) )
+
     
 
