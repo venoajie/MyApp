@@ -9,6 +9,7 @@ For strategy with many derivatives name (a/b/c):
 """
 
 equity_risked_pct_default = 1 / 100 / 4 #.25%
+TAKE_PROFIT_PCT_GRID= 1 / 100 / 4
 
 strategies = [
                 {
@@ -37,7 +38,7 @@ strategies = [
                     "entry_price": None,
                     "invalidation_entry_price": None,
                     "take_profit_usd": None,
-                    "take_profit_pct": 1/100/5,
+                    "take_profit_pct": TAKE_PROFIT_PCT_GRID,
                     "quantity_discrete": None,
                     "cut_loss_usd": None,
                     "cut_loss_pct": None,
@@ -54,7 +55,7 @@ strategies = [
                     "entry_price": None,
                     "invalidation_entry_price": None,
                     "take_profit_usd": None,
-                    "take_profit_pct": 1/100/5,
+                    "take_profit_pct": TAKE_PROFIT_PCT_GRID,
                     "quantity_discrete": None,
                     "cut_loss_usd": None,
                     "cut_loss_pct": None,
