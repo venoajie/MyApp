@@ -1,7 +1,12 @@
 # # -*- coding: utf-8 -*-
 from strategies import hedging_spot
+from risk_management import position_sizing
 
-def get_basic_opening_paramaters(notional: float, PCT_SIZE_TO_NOTIONAL: float) -> dict:
+PCT= 1/100
+PCT_DAILY_PROFIT_TARGET= 5*PCT
+PCT_TRANSACTION_PROFIT_TARGET= 1*PCT/4
+
+def get_basic_opening_paramaters(notional: float) -> dict:
     """
 
     Args:
@@ -18,7 +23,11 @@ def get_basic_opening_paramaters(notional: float, PCT_SIZE_TO_NOTIONAL: float) -
     params.update({"type": 'limit'})
     
     # size=notional. ordered in several times (default 10x)
-    params.update({"size": max(1, int(notional * PCT_SIZE_TO_NOTIONAL))})
+    params.update({"size": position_sizing.hourly_sizing_for_perpetual_grid(notional, 
+                                                                            PCT_DAILY_PROFIT_TARGET, 
+                                                                            PCT_TRANSACTION_PROFIT_TARGET)
+                   }
+                  )
         
     return params
 
@@ -56,10 +65,8 @@ def is_send_open_order_allowed (notional: float,
     
     if order_allowed:
         
-        # get transaction parameters
-        PCT_SIZE_TO_NOTIONAL= .5
-        
-        params= get_basic_opening_paramaters(notional, PCT_SIZE_TO_NOTIONAL)
+        # get transaction parameters        
+        params= get_basic_opening_paramaters(notional)
         
         # get transaction label and update the respective parameters
         label_main= strategy_attributes_for_hedging['strategy']
@@ -208,13 +215,13 @@ def is_send_additional_order_allowed (notional: float,
         and selected_transaction !=[] 
         
     if order_allowed:
-        PCT_SIZE_TO_NOTIONAL= .5
+
         MAX_FACTOR= 3
         
         transaction= selected_transaction[0]
         
         # get transaction parameters
-        params= get_basic_opening_paramaters(notional, PCT_SIZE_TO_NOTIONAL)
+        params= get_basic_opening_paramaters(notional)
         
         # get transaction label and update the respective parameters
         label_main= strategy_attributes['strategy']
