@@ -21,13 +21,6 @@ def get_basic_opening_paramaters(notional: float) -> dict:
     
     # default type: limit
     params.update({"type": 'limit'})
-    
-    # size=notional. ordered in several times (default 10x)
-    params.update({"size": position_sizing.hourly_sizing_for_perpetual_grid(notional, 
-                                                                            PCT_DAILY_PROFIT_TARGET, 
-                                                                            PCT_TRANSACTION_PROFIT_TARGET)
-                   }
-                  )
         
     return params
 
@@ -62,6 +55,15 @@ def is_send_open_order_allowed (notional: float,
     """
 
     order_allowed= are_size_and_order_appropriate_for_ordering (current_size, current_outstanding_order_len)
+    qty_and_time_delay= position_sizing.qty_order_and_time_delay(notional, 
+                                                                            PCT_DAILY_PROFIT_TARGET, 
+                                                                            PCT_TRANSACTION_PROFIT_TARGET)
+    
+    # get size
+    params.update({"size": qty_and_time_delay['qty_per_order']
+                   }
+                  )
+    
     
     if order_allowed:
         
