@@ -550,6 +550,7 @@ class ApplyHedgingSpot:
                     # index price
                     index_price: float = ticker[0]["index_price"]
 
+                    log.error (f'ticker {ticker}')
                     # index price
                     tick_size: float = ticker[0]["tick_size"]
                     log.error (f'tick_size {tick_size}')
