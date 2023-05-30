@@ -550,6 +550,16 @@ class ApplyHedgingSpot:
                     # index price
                     index_price: float = ticker[0]["index_price"]
 
+                    # index price
+                    tick_size: float = ticker[0]["tick_size"]
+                    log.error (f'tick_size {tick_size}')
+
+                    taker_commission: float = ticker[0]["taker_commission"]
+                    log.error (f'taker_commission {taker_commission}')
+
+                    tick_size: float = ticker[0]["tick_size"]
+                    log.error (f'tick_size {tick_size}')
+
                     # get bid and ask price
                     best_bid_prc: float = ticker[0]["best_bid_price"]
                     best_ask_prc: float = ticker[0]["best_ask_price"]
