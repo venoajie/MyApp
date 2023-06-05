@@ -626,6 +626,7 @@ async def querying_label_and_size(table) -> dict:
     """
     
     # get query
+    print (f'table {table}')
     query =  querying_label_and_size (table) 
     print (f'query {query}')
     
