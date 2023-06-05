@@ -36,7 +36,7 @@ async def querying_label_and_size(table) -> dict:
     
     
     # execute query
-    result = await sqlite_management.querying_label_and_size (table) 
+    result = await sqlite_management.querying_label_price_size (table) 
     return  result
 
 def are_size_and_order_appropriate_for_ordering (current_size: float,
