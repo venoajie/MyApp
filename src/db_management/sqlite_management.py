@@ -620,7 +620,7 @@ def query_pd (table_name: str, field: str = None):
 
 async def executing_label_and_size_query(table) -> dict:
     """
-    Provide template for querying summary of trading results from sqlite.
+    Provide execution template for querying summary of trading results from sqlite.
     Consist of transaction label, size, and price only.
     """
     
