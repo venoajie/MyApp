@@ -865,7 +865,7 @@ class ApplyHedgingSpot:
             table= 'my_trades_all_json'
             
             #basic hedging                                
-            get_label: dict = MM.querying_label_and_size (table)    
+            get_label: dict = await MM.querying_label_and_size (table)    
             
             log.error (get_label)
 #! HAPUS................................................................................
