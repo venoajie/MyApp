@@ -627,9 +627,11 @@ async def querying_label_and_size(table) -> dict:
     
     # get query
     query =  querying_label_and_size (table) 
+    print (f'query {query}')
     
     # execute query
     result = await executing_query_with_return (query) 
+    print (f'result {result}')
     
     # define none from queries result. If the result=None, return []
     NONE_DATA: None = [0, None, []]
