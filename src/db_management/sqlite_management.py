@@ -618,7 +618,6 @@ def query_pd (table_name: str, field: str = None):
 
     return  result_cleaned
 
-
 async def executing_label_and_size_query(table) -> dict:
     """
     Provide template for querying summary of trading results from sqlite.
@@ -630,7 +629,6 @@ async def executing_label_and_size_query(table) -> dict:
     
     # execute query
     result = await executing_query_with_return (query) 
-    print (f'result {result}')
     
     # define none from queries result. If the result=None, return []
     NONE_DATA: None = [0, None, []]
