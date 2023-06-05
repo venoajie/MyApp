@@ -619,16 +619,14 @@ def query_pd (table_name: str, field: str = None):
     return  result_cleaned
 
 
-async def querying_label_price_size(table) -> dict:
+async def executing_label_and_size_query(table) -> dict:
     """
     Provide template for querying summary of trading results from sqlite.
     Consist of transaction label, size, and price only.
     """
     
     # get query
-    print (f'table {table}')
     query =  querying_label_and_size (table) 
-    print (f'query {query}')
     
     # execute query
     result = await executing_query_with_return (query) 
