@@ -35,6 +35,8 @@ Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-async
 Asyncio | [Asyncio](https://medium.com/@mkaanerkoc/how-to-send-bulk-http-requests-with-aiohttp-asyncio-in-python-62aee008e057) |  | | 
 Asyncio | [Asyncio](https://medium.com/better-programming/a-hands-on-guide-to-concurrency-in-python-with-asyncio-af33a795d808) |  | | 
 database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
+Asyncio | [dispatchers](https://code.likeagirl.io/dispatchers-in-python-with-asyncio-4d62d0a993d0) |  | | 
+Asyncio | [Event loops](https://code.likeagirl.io/event-loops-in-python-with-asyncio-c1ad674c738e) |  | | 
 Orchestration | [Airflow](https://alikhyar.medium.com/apache-airflow-deep-dive-all-you-need-to-know-about-airflow-9a325b2f1b17) |  | | 
 Orchestration | [Airflow](https://medium.com/@andresf.mesad/elt-pipeline-with-airflow-and-gcp-74954dd288fe) |  | | 
 Orchestration | [airflow](https://medium.com/datareply/airflow-lesser-known-tips-tricks-and-best-practises-cf4d4a90f8f) |  | | 
@@ -70,7 +72,9 @@ Strategy | [strategy](https://medium.com/coinmonks/interview-with-a-pro-trader-h
 Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali.medium.com/is-there-seasonal-intraday-or-overnight-anomalies-in-bitcoin-11bc71321b9e) |  | | 
 HFT | [hft](https://medium.com/@FMZQuant/digital-currency-high-frequency-strategy-detailed-introduction-f7be078ef53d) |  | | 
 MP | [market profile](https://medium.com/coinmonks/high-probability-scalping-setups-with-sessions-initial-balance-and-session-volume-profile-83af17f0a5a) |  | | 
-OI | [open interest](https://www.youtube.com/watch?v=-JI6KCK81Nw) |  | | 
+TA | [momentum](https://sedemquame.medium.com/building-a-momentum-trading-algorithm-using-python-1924a5939204) |  | | 
+TA | [liquidity](https://nhristov.io/exploiting-liquidity-traps-with-a-custom-trading-algorithm-b98be5125042) |  | | 
+
 
 
 
