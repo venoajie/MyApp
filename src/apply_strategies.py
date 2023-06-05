@@ -12,10 +12,21 @@ from loguru import logger as log
 # user defined formula
 import deribit_get
 from transaction_management.deribit import open_orders_management, myTrades_management
-from utilities import pickling, system_tools, string_modification as str_mod
+from utilities import (
+    pickling, 
+    system_tools, 
+    string_modification as str_mod
+    )
 from risk_management import  position_sizing
 from configuration import label_numbering, config
-from strategies import entries_exits, grid_perpetual as grid, hedging_spot, basic_grid, temporary_balancing as balancer
+from strategies import (
+    entries_exits, 
+    grid_perpetual as grid, 
+    hedging_spot, 
+    basic_grid, 
+    market_maker as MM,
+    temporary_balancing as balancer
+    )
 from db_management import sqlite_management
 # from market_understanding import futures_analysis
 
@@ -802,7 +813,7 @@ class ApplyHedgingSpot:
                                                                                     )                            
                             await self.if_order_is_true(send_order, instrument)
                             
-                        if "basicGrid" in strategy_attr["strategy"]:
+                        if "basicGrid" in strategy_attr["strategy"] and False:
 
                             current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
                             
@@ -814,6 +825,13 @@ class ApplyHedgingSpot:
                                                                                     strategy_attr
                                                                                     )                            
                             await self.if_order_is_true(send_order, instrument)
+                            
+                        if "marketMaker" in strategy_attr["strategy"]:
+                            table= 'my_trades_all_json'
+                            
+                            #basic hedging                                
+                            get_label: dict = MM.querying_label_and_size (table)    
+                            
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
@@ -842,6 +860,15 @@ class ApplyHedgingSpot:
 
             # get portfolio data
             portfolio: list = reading_from_database["portfolio"]
+            
+#! HAPUS................................................................................
+            table= 'my_trades_all_json'
+            
+            #basic hedging                                
+            get_label: dict = MM.querying_label_and_size (table)    
+            
+            log.error (get_label)
+#! HAPUS................................................................................
 
             # to avoid error if index price/portfolio = []/None
             if portfolio:
