@@ -1,6 +1,12 @@
 # # -*- coding: utf-8 -*-
+
+# built ins
+import asyncio
+
+# user defined formula
 from strategies import hedging_spot
 from risk_management import position_sizing
+from db_management import sqlite_management
 
 PCT= 1/100
 PCT_DAILY_PROFIT_TARGET= 5*PCT
@@ -23,6 +29,15 @@ def get_basic_opening_paramaters(notional: float) -> dict:
     params.update({"type": 'limit'})
         
     return params
+
+async def querying_label_and_size(table) -> dict:
+    """
+    """
+    
+    
+    # execute query
+    result = await sqlite_management.querying_label_and_size (table) 
+    return  result
 
 def are_size_and_order_appropriate_for_ordering (current_size: float,
                                                  current_outstanding_order_len: int
