@@ -864,9 +864,9 @@ class ApplyHedgingSpot:
 #! HAPUS................................................................................
             table= 'my_trades_all_json'
                
-            get_label: dict = await MM.querying_label_and_size (table)    
+            get_lbl: dict = await MM.querying_label_and_size (table)    
             
-            log.error (get_label)
+            log.error (get_lbl)
 #! HAPUS................................................................................
 
             # to avoid error if index price/portfolio = []/None
