@@ -571,10 +571,9 @@ class ApplyHedgingSpot:
                     log.error (f'tick_size A {tick_size}')
 
                     taker_commission: float = instrument_attributes[0]["taker_commission"]
-                    log.error (f'taker_commission {taker_commission}')
-
-                    tick_size: float = ticker[0]["tick_size"]
-                    log.error (f'tick_size {tick_size}')
+                    min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+                    contract_size: float = instrument_attributes[0]["contract_size"]
+                    log.error (f'taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
 
                     # get bid and ask price
                     best_bid_prc: float = ticker[0]["best_bid_price"]
