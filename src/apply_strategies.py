@@ -568,9 +568,9 @@ class ApplyHedgingSpot:
 
                     # index price
                     tick_size: float = instrument_attributes[0]["tick_size"]
-                    log.error (f'tick_size {tick_size}')
+                    log.error (f'tick_size A {tick_size}')
 
-                    taker_commission: float = ticker[0]["taker_commission"]
+                    taker_commission: float = instrument_attributes[0]["taker_commission"]
                     log.error (f'taker_commission {taker_commission}')
 
                     tick_size: float = ticker[0]["tick_size"]
