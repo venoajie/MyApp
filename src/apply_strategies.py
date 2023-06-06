@@ -560,7 +560,7 @@ class ApplyHedgingSpot:
                         
                     # index price
                     index_price: float = ticker[0]["index_price"]
-                    instrument_attributes: list =  self.reading_from_db("instruments", instrument)
+                    instrument_attributes: list =  self.reading_from_db("instruments", self.currency)
                     
 
                     log.error (f'instrument_attributes {instrument} {instrument_attributes}')
