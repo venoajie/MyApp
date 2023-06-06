@@ -563,7 +563,7 @@ class ApplyHedgingSpot:
                     instrument_attributes: list =  self.reading_from_db("instruments", instrument)
                     
 
-                    log.error (f'instrument_attributes {instrument_attributes}')
+                    log.error (f'instrument_attributes {instrument} {instrument_attributes}')
                     # index price
                     tick_size: float = instrument_attributes[0]["tick_size"]
                     log.error (f'tick_size {tick_size}')
