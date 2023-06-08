@@ -827,7 +827,8 @@ class ApplyHedgingSpot:
                         if "marketMaker" in strategy_attr["strategy"]:
                             table= 'my_trades_all_json'
                             
-                            #basic hedging                                
+                            #basic hedging                 
+                            log.critical (f' marketMaker')               
                             get_label: dict = MM.querying_label_and_size (table)    
                             
                                 
