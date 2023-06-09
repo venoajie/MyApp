@@ -826,16 +826,17 @@ class ApplyHedgingSpot:
                             await self.if_order_is_true(send_order, instrument)
                             
                         if "marketMaker" in strategy_attr["strategy"]:
-                            log.critical (f' marketMaker')               
-                            log.critical (basic_strategy)               
-                            table= 'my_trades_all_json'
-                            basic_str= basic_strategy.BasicStrategy('marketMakerShort')
-                            market_maker= MM.MarketMaker(basic_str)
+                            
+                            log.critical (f' marketMaker')      
+                            basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
+                            log.critical (basic_strategy_class)      
+                            
+                            market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            get_label: dict = market_maker.get_basic_opening_paramaters (notional)    
-                            log.critical (f' get_label {get_label}')               
-                            
+                            basic_opening_paramaters: dict = market_maker.get_basic_opening_paramaters (100)    
+                            log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
+                                        
                                 
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
