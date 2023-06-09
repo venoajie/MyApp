@@ -829,7 +829,7 @@ class ApplyHedgingSpot:
                             
                         if "marketMaker" in strategy_attr["strategy"]:
                             table= 'my_trades_all_json'
-                            market_maker= MM.MarketMaker(basic_strategy_class)
+                            market_maker= MM.MarketMaker(basic_strategy)
                             
                             #basic hedging                 
                             log.critical (f' marketMaker')               
