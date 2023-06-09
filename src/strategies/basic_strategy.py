@@ -42,9 +42,9 @@ class BasicStrategy:
         # default type: limit
         params.update({"type": 'limit'})
         
-        strategy_label= self.strategy_label
         strategy_config= self.get_strategy_config()
         strategy_config_label= strategy_config['strategy']
+        
         take_profit_pct_daily= strategy_config['take_profit_pct_daily']
         take_profit_pct_transaction= strategy_config['take_profit_pct']
                                                                         
@@ -85,4 +85,14 @@ class BasicStrategy:
         """ """
 
         # get current orders
-        return await self.querying_label_and_size('orders_all_json')
+        return await self.querying_label_and_size('orders_all_json')    
+    
+    async def transaction_attributes (self, table) -> list:
+        """ """
+
+        result=  await self.querying_label_and_size(table)
+        return dict(
+            transactions= result,
+            transactions_sum= 0 if result in  [] else sum([o['amount_dir'] for o in result]),
+            transactions_len=  0 if result ==  [] else len([o  for o in result]),
+   )  
