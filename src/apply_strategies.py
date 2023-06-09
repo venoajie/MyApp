@@ -19,7 +19,6 @@ from utilities import (
     )
 from risk_management import  position_sizing
 from configuration import label_numbering, config
-from strategies.basic_strategy import BasicStrategy as basic_strategy
 from strategies import (
     entries_exits, 
     grid_perpetual as grid, 
