@@ -829,7 +829,8 @@ class ApplyHedgingSpot:
                             log.critical (f' marketMaker')               
                             log.critical (basic_strategy)               
                             table= 'my_trades_all_json'
-                            market_maker= MM.MarketMaker(basic_strategy)
+                            basic_str= basic_strategy.BasicStrategy('marketMakerShort')
+                            market_maker= MM.MarketMaker(basic_str)
                             
                             #basic hedging                 
                             get_label: dict = market_maker.get_basic_opening_paramaters (notional)    
