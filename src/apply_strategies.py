@@ -24,6 +24,7 @@ from strategies import (
     grid_perpetual as grid, 
     hedging_spot, 
     basic_grid, 
+    basic_strategy,
     market_maker as MM,
     temporary_balancing as balancer
     )
@@ -865,14 +866,7 @@ class ApplyHedgingSpot:
 
             # get portfolio data
             portfolio: list = reading_from_database["portfolio"]
-            
-#! HAPUS................................................................................
-            table= 'my_trades_all_json'
-               
-            get_lbl: dict = await MM.querying_label_and_size (table)    
-            
-            log.error (get_lbl)
-#! HAPUS................................................................................
+   
 
             # to avoid error if index price/portfolio = []/None
             if portfolio:
@@ -898,6 +892,18 @@ class ApplyHedgingSpot:
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
+                            
+    #! HAPUS................................................................................
+
+                log.critical (f' marketMaker')      
+                basic_strategy_class= basic_strategy(strategies['marketMaker'])
+                
+                market_maker= MM.MarketMaker(basic_strategy)
+                
+                #basic hedging                 
+                get_label: dict = market_maker.get_basic_opening_paramaters (100)    
+                log.critical (f' get_label {get_label}')               
+    #! HAPUS................................................................................
                 
                 #log.error (my_trades_open)
                 #log.error ([o["label"] for o in my_trades_open])
