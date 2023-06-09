@@ -23,6 +23,9 @@ class BasicStrategy:
         from strategies import entries_exits
         
         params= entries_exits.strategies
+        print(f'strategy_label {self.strategy_label}')
+        print(f'params {params}')
+        
         return [o for o in params if self.strategy_label in o["strategy"]]  [0]
 
     def get_basic_opening_paramaters(self, notional: float= None) -> dict:
