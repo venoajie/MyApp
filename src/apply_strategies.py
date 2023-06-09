@@ -817,13 +817,13 @@ class ApplyHedgingSpot:
                         if "marketMaker" in strategy_attr["strategy"]:
                             
                             log.critical (f' marketMaker')      
-                            basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
-                            log.critical (basic_strategy_class)      
                             
                             market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            basic_opening_paramaters: dict = market_maker.get_basic_opening_paramaters (100)    
+                            basic_opening_paramaters: dict = market_maker.get_transaction_attributes ('orders_all_json')    
+                            log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')
+                            basic_opening_paramaters: dict = market_maker.get_transaction_attributes ('my_trades_all_json')    
                             log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
                                         
                                 
