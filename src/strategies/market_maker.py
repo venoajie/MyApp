@@ -40,7 +40,7 @@ class MarketMaker(BasicStrategy):
         strategy_config= self.get_basic_params().get_strategy_config()
         orders= await self.get_basic_params().get_orders_attributes()
         len_orders= orders['transactions_len']
-        my_trades= await elf.get_basic_params().get_my_trades_attributes()
+        my_trades= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades= my_trades['transactions_len']
 
         order_allowed= True
