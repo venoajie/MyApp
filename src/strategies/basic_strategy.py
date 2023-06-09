@@ -23,8 +23,6 @@ class BasicStrategy:
         from strategies import entries_exits
         
         params= entries_exits.strategies
-        print(f'strategy_label {self.strategy_label}')
-        print(f'params {params}')
         
         return [o for o in params if self.strategy_label in o["strategy"]]  [0]
 
@@ -50,7 +48,7 @@ class BasicStrategy:
         take_profit_pct_daily= strategy_config['take_profit_pct_daily']
         take_profit_pct_transaction= strategy_config['take_profit_pct']
                                                                         
-        if strategy_label in strategy_config_label:
+        if 'marketMaker' in strategy_config_label:
                 
             hourly_qty= position_sizing.hourly_sizing_for_perpetual_grid(notional, 
                                                                         take_profit_pct_daily, 
