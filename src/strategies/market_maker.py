@@ -8,11 +8,7 @@ from dataclassy import dataclass
 
 # user defined formula
 from strategies import hedging_spot
-from risk_management import position_sizing
-from db_management import sqlite_management
-#from strategies import basic_strategy
 from strategies.basic_strategy import BasicStrategy 
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class MarketMaker(BasicStrategy):
@@ -52,8 +48,7 @@ class MarketMaker(BasicStrategy):
             params= self.get_basic_params().get_basic_opening_paramaters(notional)
             
             # get transaction label and update the respective parameters
-            label_main= strategy_config['strategy']
-            label_open = hedging_spot.get_label ('open', label_main) 
+            label_open = self.get_basic_params().get_label ('open', self.strategy_label) 
             params.update({"label": label_open})
             
             params.update({"side": strategy_config['side']})
