@@ -34,6 +34,8 @@ Asyncio | [Asyncio](https://itnext.io/mastering-asyncio-unleashing-the-power-of-
 Asyncio | [Asyncio](https://mecha-mind.medium.com/think-twice-before-using-asyncio-in-python-7683472cb7a3) |  | | 
 Asyncio | [Asyncio](https://medium.com/@mkaanerkoc/how-to-send-bulk-http-requests-with-aiohttp-asyncio-in-python-62aee008e057) |  | | 
 Asyncio | [Asyncio](https://medium.com/better-programming/a-hands-on-guide-to-concurrency-in-python-with-asyncio-af33a795d808) |  | | 
+Asyncio | [Asyncio](https://towardsdatascience.com/harnessing-multi-core-power-with-asyncio-in-python-1764404ce44f) |  | | 
+Asyncio | [Asyncio](https://towardsdatascience.com/combining-traditional-thread-based-code-and-asyncio-in-python-dc162084756c) |  | | 
 database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
 Asyncio | [dispatchers](https://code.likeagirl.io/dispatchers-in-python-with-asyncio-4d62d0a993d0) |  | | 
 Asyncio | [Event loops](https://code.likeagirl.io/event-loops-in-python-with-asyncio-c1ad674c738e) |  | | 
