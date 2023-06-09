@@ -11,6 +11,7 @@ from strategies import hedging_spot
 from risk_management import position_sizing
 from db_management import sqlite_management
 from strategies import basic_strategy
+from strategies.basic_strategy import BasicStrategy as basic_strategy
 
 
 @dataclass(unsafe_hash=True, slots=True)
@@ -21,7 +22,7 @@ class MarketMaker(basic_strategy):
     def get_basic_params(self) -> dict:
         """
         """
-        return basic_strategy.BasicStrategy(self.label_strategy)
+        return basic_strategy(self.label_strategy)
 
     def get_basic_opening_paramaters(self, notional: float) -> dict:
         """
