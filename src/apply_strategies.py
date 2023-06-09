@@ -224,14 +224,6 @@ class ApplyHedgingSpot:
             if instrument != None:
                 # update param orders with instrument
                 params.update({"instrument": instrument})
-            
-            sum_next_open_order= params['size']
-            send_order_allowed: int = await balancer.send_order  (self.currency, sum_next_open_order)
-            check_exit= send_order_allowed['exit']
-            log.error (check_exit)
-            
-            check_open= send_order_allowed['open']
-            log.warning (check_open)
                 
             await self.send_limit_order(params)
             
