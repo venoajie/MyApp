@@ -675,9 +675,6 @@ class ApplyHedgingSpot:
                                                                                 strategy_attr
                                                                                 )                        
                         await self.if_order_is_true(closed_order)
-
-                    send_order_allowed: int = await balancer.send_order  (self.currency, sum_next_open_order)
-                    log.error (f'send_order_allowed {send_order_allowed}')
                     
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
