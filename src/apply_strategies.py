@@ -24,6 +24,7 @@ from strategies import (
     grid_perpetual as grid, 
     hedging_spot, 
     basic_grid, 
+    basic_strategy,
     market_maker as MM,
     temporary_balancing as balancer
     )
@@ -727,11 +728,13 @@ class ApplyHedgingSpot:
                 equity: float = portfolio[0]["equity"]
         
                 # compute notional value
-                notional: float = await self.compute_notional_value(index_price, equity)
+                notional: float = await self.compute_notional_value(index_price, equity)             
 
                 # execute each strategy
                 for strategy_attr in strategies:
-                    strategy_label = strategy_attr["strategy"]
+                    strategy_label = strategy_attr["strategy"] 
+                    
+                    basic_strategy_class= basic_strategy(strategy_label)
 
                     log.critical (f' {strategy_label}')
                     
@@ -826,10 +829,12 @@ class ApplyHedgingSpot:
                             
                         if "marketMaker" in strategy_attr["strategy"]:
                             table= 'my_trades_all_json'
+                            market_maker= MM.MarketMaker(basic_strategy_class)
                             
                             #basic hedging                 
                             log.critical (f' marketMaker')               
-                            get_label: dict = MM.querying_label_and_size (table)    
+                            get_label: dict = market_maker.get_basic_opening_paramaters (notional)    
+                            log.critical (f' get_label {get_label}')               
                             
                                 
                     else:
