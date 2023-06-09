@@ -24,23 +24,11 @@ class MarketMaker(BasicStrategy):
         """
         return BasicStrategy(self.strategy_label)
 
-    def get_basic_opening_paramaters(self, notional: float) -> dict:
-        """
-        """
-        return self.get_basic_params().get_basic_opening_paramaters(notional)
-
-    def get_transaction_attributes(self, table: str) -> dict:
-        """
-        """
-        return self.get_basic_params().transaction_attributes(table)
-
-    async def is_send_open_order_allowed (notional: float,
-                                ask_price: float,
-                                bid_price: float,
-                                current_size: int, 
-                                current_outstanding_order_len: int,
-                                strategy_attributes_for_hedging
-                                ) -> dict:
+    async def is_send_open_order_allowed (self,
+                                          notional: float,
+                                          ask_price: float,
+                                          bid_price: float
+                                          ) -> dict:
         """
 
         Args:
@@ -49,29 +37,26 @@ class MarketMaker(BasicStrategy):
             dict
 
         """
+        strategy_config= self.get_basic_params().get_strategy_config()
+        orders= self.get_basic_params().get_orders_attributes()
+        len_orders= orders['transactions_len']
+        my_trades= self.get_basic_params().get_my_trades_attributes()
+        len_my_trades= my_trades['transactions_len']
 
-        order_allowed= are_size_and_order_appropriate_for_ordering (current_size, current_outstanding_order_len)
-        qty_and_time_delay= position_sizing.qty_order_and_time_delay(notional, 
-                                                                                PCT_DAILY_PROFIT_TARGET, 
-                                                                                PCT_TRANSACTION_PROFIT_TARGET)
-        
-        # get size
-        params.update({"size": qty_and_time_delay['qty_per_order']
-                    }
-                    )
+        order_allowed= True
         
         
         if order_allowed:
             
             # get transaction parameters        
-            params= get_basic_opening_paramaters(notional)
+            params= self.get_basic_params().get_basic_opening_paramaters(notional)
             
             # get transaction label and update the respective parameters
-            label_main= strategy_attributes_for_hedging['strategy']
+            label_main= strategy_config['strategy']
             label_open = hedging_spot.get_label ('open', label_main) 
             params.update({"label": label_open})
             
-            params.update({"side": strategy_attributes_for_hedging['side']})
+            params.update({"side": strategy_config['side']})
             if params['side']=='sell':
                 params.update({"entry_price": ask_price})
             if params['side']=='buy':
