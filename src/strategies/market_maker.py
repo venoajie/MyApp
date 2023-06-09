@@ -27,10 +27,14 @@ class MarketMaker(BasicStrategy):
     def get_basic_opening_paramaters(self, notional: float) -> dict:
         """
         """
-        
         return self.get_basic_params().get_basic_opening_paramaters(notional)
 
-    def is_send_open_order_allowed (notional: float,
+    def get_transaction_attributes(self, table: str) -> dict:
+        """
+        """
+        return self.get_basic_params().transaction_attributes(table)
+
+    async def is_send_open_order_allowed (notional: float,
                                 ask_price: float,
                                 bid_price: float,
                                 current_size: int, 
