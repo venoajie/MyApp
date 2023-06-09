@@ -77,7 +77,7 @@ class BasicStrategy:
 
         result=  await self.querying_label_and_size(table)
         print(f'result {result}')
-        print(result == [] )
+        print( 0 if result  == [] else ([o['data'] for o in result ]))
         
         return dict(
             transactions= result,
