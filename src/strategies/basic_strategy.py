@@ -60,7 +60,7 @@ class BasicStrategy:
                         )
         return params
 
-    async def querying_label_and_size(table) -> dict:
+    async def querying_label_and_size(self, table) -> dict:
         """
         """
         
@@ -91,6 +91,7 @@ class BasicStrategy:
         """ """
 
         result=  await self.querying_label_and_size(table)
+        
         return dict(
             transactions= result,
             transactions_sum= 0 if result in  [] else sum([o['amount_dir'] for o in result]),
