@@ -163,7 +163,7 @@ def hourly_sizing_for_perpetual_grid(notional: float, pct_daily_profit_target: f
 
     return max (1, int (hourly_target_turn_over * notional))
 
-def quantities_per_order(hourly_qty: float, ONE_MINUTE: int) -> float:
+def quantities_per_order(hourly_qty: float, ONE_MINUTE: int= 60) -> float:
     """
     """
     return 1 if hourly_qty < ONE_MINUTE else int(hourly_qty/ONE_MINUTE)
