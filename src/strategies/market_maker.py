@@ -28,7 +28,7 @@ class MarketMaker(basic_strategy):
         """
         """
         
-        return self.get_basic_params(notional)
+        return self.get_basic_params().get_basic_opening_paramaters(notional)
 
     def is_send_open_order_allowed (notional: float,
                                 ask_price: float,
