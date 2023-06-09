@@ -28,12 +28,6 @@ class BasicStrategy:
 
     def get_basic_opening_paramaters(self, notional: float= None) -> dict:
         """
-
-        Args:
-
-        Returns:
-            dict
-
         """
         
         #provide placeholder for params
@@ -97,3 +91,27 @@ class BasicStrategy:
 
         # get current orders
         return await self.transaction_attributes('orders_all_json')    
+        
+    def get_label (self, status: str, label_main_or_label_transactions: str) -> str:
+        """
+        """
+        
+        from configuration import label_numbering
+        
+        if status=='open':
+            # get open label
+            label = label_numbering.labelling("open", label_main_or_label_transactions)
+        
+        if status=='closed':
+            from utilities import string_modification as str_mod
+            
+            # parsing label id
+            label_id= str_mod.parsing_label(label_main_or_label_transactions)['int']
+
+            # parsing label strategy
+            label_main= str_mod.parsing_label(label_main_or_label_transactions)['main']
+            
+            # combine id + label strategy
+            label = f'''{label_main}-closed-{label_id}'''
+            
+        return label
