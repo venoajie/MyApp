@@ -896,9 +896,9 @@ class ApplyHedgingSpot:
     #! HAPUS................................................................................
 
                 log.critical (f' marketMaker')      
-                basic_strategy_class= basic_strategy('marketMakerShort')
+                basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
                 
-                market_maker= MM.MarketMaker(basic_strategy)
+                market_maker= MM.MarketMaker(basic_strategy_class)
                 
                 #basic hedging                 
                 get_label: dict = market_maker.get_basic_opening_paramaters (100)    
