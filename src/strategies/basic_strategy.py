@@ -76,6 +76,8 @@ class BasicStrategy:
         """ """
 
         result=  await self.querying_label_and_size(table)
+        print(f'result {result}')
+        print(([o['timestamp'] for o in result]))
         
         return dict(
             transactions= result,
