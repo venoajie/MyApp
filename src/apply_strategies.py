@@ -899,8 +899,8 @@ class ApplyHedgingSpot:
                 market_maker= MM.MarketMaker('marketMakerShort')
                 
                 #basic hedging                 
-                get_label: dict = market_maker.get_basic_opening_paramaters (100)    
-                log.critical (f' get_label {get_label}')               
+                basic_opening_paramaters: dict = market_maker.get_basic_opening_paramaters (100)    
+                log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
     #! HAPUS................................................................................
                 
                 #log.error (my_trades_open)
