@@ -736,6 +736,7 @@ class ApplyHedgingSpot:
                     
                     basic_strategy_class= basic_strategy(strategy_label)
 
+                    log.critical (f' {basic_strategy_class}')
                     log.critical (f' {strategy_label}')
                     
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
@@ -828,11 +829,11 @@ class ApplyHedgingSpot:
                             await self.if_order_is_true(send_order, instrument)
                             
                         if "marketMaker" in strategy_attr["strategy"]:
+                            log.critical (f' marketMaker')               
                             table= 'my_trades_all_json'
                             market_maker= MM.MarketMaker(basic_strategy)
                             
                             #basic hedging                 
-                            log.critical (f' marketMaker')               
                             get_label: dict = market_maker.get_basic_opening_paramaters (notional)    
                             log.critical (f' get_label {get_label}')               
                             
