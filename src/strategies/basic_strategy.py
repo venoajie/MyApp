@@ -44,12 +44,15 @@ class BasicStrategy:
                                                                         
         if 'marketMaker' in strategy_config_label:
                 
-            hourly_qty= position_sizing.hourly_sizing_for_perpetual_grid(notional, 
+            qty_order_and_time_delay= position_sizing.qty_order_and_time_delay(notional, 
                                                                         take_profit_pct_daily, 
                                                                         take_profit_pct_transaction
                                                                         )
             
-            params.update({"size": position_sizing.quantities_per_order(hourly_qty)
+            params.update({"size": qty_order_and_time_delay['qty_per_order']
+                        }
+                        )
+            params.update({"minute_delay": qty_order_and_time_delay['minute_delay']
                         }
                         )
         return params
@@ -76,6 +79,7 @@ class BasicStrategy:
         
         return dict(
             transactions= result,
+            max_time_stamp= 0 if result in  [] else max([o['timestamp'] for o in result]),
             transactions_sum= 0 if result in  [] else sum([o['amount_dir'] for o in result]),
             transactions_len=  0 if result ==  [] else len([o  for o in result])
             )  
@@ -92,6 +96,23 @@ class BasicStrategy:
         # get current orders
         return await self.transaction_attributes('orders_all_json')    
         
+        
+    def delta_time (self, server_time, time_stamp)-> int:
+        """
+
+        """
+
+        
+        return server_time - time_stamp
+
+    def is_minimum_waiting_time_has_passed (self, server_time, time_stamp, time_threshold)-> bool:
+        """
+
+
+        """
+        
+        return self.delta_time (server_time, time_stamp) > time_threshold
+
     def get_label (self, status: str, label_main_or_label_transactions: str) -> str:
         """
         """
@@ -115,3 +136,4 @@ class BasicStrategy:
             label = f'''{label_main}-closed-{label_id}'''
             
         return label
+    
