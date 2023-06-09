@@ -896,7 +896,7 @@ class ApplyHedgingSpot:
     #! HAPUS................................................................................
 
                 log.critical (f' marketMaker')      
-                basic_strategy_class= basic_strategy(strategies['marketMaker'])
+                basic_strategy_class= basic_strategy('marketMakerShort')
                 
                 market_maker= MM.MarketMaker(basic_strategy)
                 
