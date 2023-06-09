@@ -22,7 +22,7 @@ class MarketMaker(basic_strategy):
     def get_basic_params(self) -> dict:
         """
         """
-        return basic_strategy(self.label_strategy)
+        return basic_strategy(self.strategy_label)
 
     def get_basic_opening_paramaters(self, notional: float) -> dict:
         """
