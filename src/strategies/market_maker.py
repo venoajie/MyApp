@@ -38,24 +38,26 @@ class MarketMaker(BasicStrategy):
         len_orders= orders['transactions_len']
         my_trades= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades= my_trades['transactions_len']
+        
+        params= self.get_basic_params().get_basic_opening_paramaters(notional)
 
-        order_allowed= True
+        params.update({"side": strategy_config['side']})
         
+        if params['side']=='sell':
+            params.update({"entry_price": ask_price})
+        if params['side']=='buy':
+            params.update({"entry_price": bid_price})
+            
         
-        if order_allowed:
+        # get transaction label and update the respective parameters
+        label_open = self.get_basic_params().get_label ('open', self.strategy_label) 
+        params.update({"label": label_open})
+        
+        order_allowed= False
+        
+        if len_orders== 0 and len_my_trades==0:
+            order_allowed= True
             
-            # get transaction parameters        
-            params= self.get_basic_params().get_basic_opening_paramaters(notional)
-            
-            # get transaction label and update the respective parameters
-            label_open = self.get_basic_params().get_label ('open', self.strategy_label) 
-            params.update({"label": label_open})
-            
-            params.update({"side": strategy_config['side']})
-            if params['side']=='sell':
-                params.update({"entry_price": ask_price})
-            if params['side']=='buy':
-                params.update({"entry_price": bid_price})
         
         return dict(order_allowed= order_allowed,
                     order_parameters= [] if order_allowed== False else params)
