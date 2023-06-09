@@ -899,7 +899,7 @@ class ApplyHedgingSpot:
                 basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
                 log.critical (basic_strategy_class)      
                 
-                market_maker= MM.MarketMaker(basic_strategy_class)
+                market_maker= MM.MarketMaker('marketMakerShort')
                 
                 #basic hedging                 
                 get_label: dict = market_maker.get_basic_opening_paramaters (100)    
