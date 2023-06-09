@@ -39,3 +39,23 @@ def test_get_strategy_config():
                     "type": "limit",
                     "size": 1
                     }
+    
+    
+def test_get_labels():
+
+    from src.utilities import time_modification
+    
+    now_utc = time_modification.convert_time_to_utc()["utc_now"]
+    now_unix = time_modification.convert_time_to_unix(now_utc)
+    
+    label_main_or_label_transactions= 'hedgingSpot'
+        
+    result =  Strategy.get_label('open', label_main_or_label_transactions)[:25]
+    
+    assert result   ==  f"{label_main_or_label_transactions}-open-{now_unix}"[:25]
+
+    label_main_or_label_transactions= 'hedgingSpot-open-1683065013136'
+    
+    result =  Strategy.get_label('closed', label_main_or_label_transactions)
+    
+    assert result   ==  'hedgingSpot-closed-1683065013136'
