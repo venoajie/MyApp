@@ -821,9 +821,9 @@ class ApplyHedgingSpot:
                             market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            basic_opening_paramaters: dict = market_maker.get_transaction_attributes ('orders_all_json')    
+                            basic_opening_paramaters: dict = await market_maker.get_transaction_attributes ('orders_all_json')    
                             log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')
-                            basic_opening_paramaters: dict = market_maker.get_transaction_attributes ('my_trades_all_json')    
+                            basic_opening_paramaters: dict = await market_maker.get_transaction_attributes ('my_trades_all_json')    
                             log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
                                         
                                 
