@@ -11,11 +11,11 @@ from strategies import hedging_spot
 from risk_management import position_sizing
 from db_management import sqlite_management
 #from strategies import basic_strategy
-from strategies.basic_strategy import BasicStrategy as basic_strategy
+from strategies.basic_strategy import BasicStrategy 
 
 
 @dataclass(unsafe_hash=True, slots=True)
-class MarketMaker(basic_strategy):
+class MarketMaker(BasicStrategy):
 
     """ """
 
