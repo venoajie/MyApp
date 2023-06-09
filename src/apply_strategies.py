@@ -821,10 +821,11 @@ class ApplyHedgingSpot:
                             market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            basic_opening_paramaters: dict = await market_maker.get_transaction_attributes ('orders_all_json')    
-                            log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')
-                            basic_opening_paramaters: dict = await market_maker.get_transaction_attributes ('my_trades_all_json')    
-                            log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
+                            basic_opening_paramaters: dict = await market_maker.is_send_open_order_allowed (notional,
+                                                                                                            best_ask_prc,
+                                                                                                            best_bid_prc
+                                                                                                            )    
+                            log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')       
                                         
                                 
                     else:
