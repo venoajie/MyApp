@@ -74,18 +74,6 @@ class BasicStrategy:
         return pickling.read_data(
             system_tools.provide_path_for_file(end_point, instrument, status)
         )
-        
-    async def get_my_trades (self) -> list:
-        """ """
-
-        # get current size
-        return await self.querying_label_and_size('my_trades_all_json')
-    
-    async def get_my_orders (self) -> list:
-        """ """
-
-        # get current orders
-        return await self.querying_label_and_size('orders_all_json')    
     
     async def transaction_attributes (self, table) -> list:
         """ """
@@ -95,5 +83,17 @@ class BasicStrategy:
         return dict(
             transactions= result,
             transactions_sum= 0 if result in  [] else sum([o['amount_dir'] for o in result]),
-            transactions_len=  0 if result ==  [] else len([o  for o in result]),
-   )  
+            transactions_len=  0 if result ==  [] else len([o  for o in result])
+            )  
+        
+    async def get_my_trades_attributes (self) -> list:
+        """ """
+
+        # get current size
+        return await self.transaction_attributes('my_trades_all_json')
+    
+    async def get_orders_attributes (self) -> list:
+        """ """
+
+        # get current orders
+        return await self.transaction_attributes('orders_all_json')    
