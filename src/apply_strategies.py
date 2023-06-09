@@ -19,12 +19,12 @@ from utilities import (
     )
 from risk_management import  position_sizing
 from configuration import label_numbering, config
+from strategies.basic_strategy import BasicStrategy as basic_strategy
 from strategies import (
     entries_exits, 
     grid_perpetual as grid, 
     hedging_spot, 
     basic_grid, 
-    basic_strategy,
     market_maker as MM,
     temporary_balancing as balancer
     )
@@ -830,6 +830,7 @@ class ApplyHedgingSpot:
                             
                         if "marketMaker" in strategy_attr["strategy"]:
                             log.critical (f' marketMaker')               
+                            log.critical (basic_strategy)               
                             table= 'my_trades_all_json'
                             market_maker= MM.MarketMaker(basic_strategy)
                             
