@@ -79,7 +79,7 @@ class BasicStrategy:
         
         return dict(
             transactions= result,
-            max_time_stamp= 0 if result['data'] == [] else max([o['timestamp'] for o in result['data']]),
+            max_time_stamp= 0 if result  == [] else max([o['timestamp'] for o in result['data']]),
             transactions_sum= 0 if result ==  [] else sum([o['amount_dir'] for o in result]),
             transactions_len=  0 if result ==  [] else len([o  for o in result])
             )  
