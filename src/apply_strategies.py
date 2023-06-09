@@ -897,6 +897,7 @@ class ApplyHedgingSpot:
 
                 log.critical (f' marketMaker')      
                 basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
+                log.critical (basic_strategy_class)      
                 
                 market_maker= MM.MarketMaker(basic_strategy_class)
                 
