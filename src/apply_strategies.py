@@ -734,9 +734,6 @@ class ApplyHedgingSpot:
                 for strategy_attr in strategies:
                     strategy_label = strategy_attr["strategy"] 
                     
-                    basic_strategy_class= basic_strategy(strategy_label)
-
-                    log.critical (f' {basic_strategy_class}')
                     log.critical (f' {strategy_label}')
                     
                     check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
