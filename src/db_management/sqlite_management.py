@@ -510,7 +510,7 @@ def querying_arithmetic_operator(item: str,
     return f'SELECT {operator} ({item}) FROM {table}' 
        
 def querying_label_and_size (table)->str:
-    return f'SELECT label_main, amount_dir, price FROM {table}' 
+    return f'SELECT data, label_main, amount_dir, price FROM {table}' 
     
 async def executing_query_with_return (query_table,
                                        filter: str = None, 
