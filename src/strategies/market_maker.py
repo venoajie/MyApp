@@ -35,7 +35,7 @@ class MarketMaker(BasicStrategy):
 
         """
         strategy_config= self.get_basic_params().get_strategy_config()
-        orders= await self.get_basic_params().get_orders_attributes()
+        orders= await self.get_basic_params().get_orders_attributes('open')
         len_orders= orders['transactions_len']
         my_trades= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades= my_trades['transactions_len']
@@ -86,7 +86,7 @@ class MarketMaker(BasicStrategy):
         return dict(order_allowed= order_allowed,
                     order_parameters= [] if order_allowed== False else params,
                     cancel_allowed= cancel_allowed,
-                    cancel_id= cancel_allowed)
+                    cancel_id= orders['order_id_max_time_stamp'])
         
     async def is_send_exit_order_allowed (self,
                                     ask_price: float,
