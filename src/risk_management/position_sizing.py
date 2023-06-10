@@ -190,7 +190,7 @@ def qty_order_and_interval_time(notional: float, pct_daily_profit_target: float,
 
     return dict(
             interval_time_between_order= minute_delay_before_reorder,
-            interval_time_between_order_in_ms= minute_delay_before_reorder * 60000,
+            interval_time_between_order_in_ms= minute_delay_before_reorder * ONE_MINUTE * 1000,
             qty_per_order= quantities_per_order (hourly_qty, ONE_MINUTE) )
 
     
