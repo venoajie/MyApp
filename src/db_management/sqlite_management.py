@@ -312,6 +312,7 @@ async def insert_tables (table_name, params):
             
             # input was in list format. Insert them to db one by one
             log.error (f'isinstance(params, list) {isinstance(params, list)}')
+            log.debug (f'isinstance(params, dict) {isinstance(params, dict)}')
             if isinstance(params, list):
                 for param in params:
                     log.warning (f'param {param}')
@@ -331,6 +332,7 @@ async def insert_tables (table_name, params):
                     
             # input is in dict format. Insert them to db directly
             if isinstance(params, dict):
+                log.warning (f'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
                 log.warning (f'table_name {table_name} param {params} ')
                 log.warning ('json' in table_name)
             
@@ -344,7 +346,7 @@ async def insert_tables (table_name, params):
                     await db.executemany (f'{insert_table}', [params])
             
     except Exception as error:
-        print (f'insert_tables {error}') 
+        print (f'insert_tables {table_name} {error}') 
         
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         #await telegram_bot_sendtext(f"sqlite operation","failed_order")
