@@ -350,7 +350,7 @@ class ApplyHedgingSpot:
         """
                         
         if transactions_all !=[]:
-            trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
+            trades_with_closed_labels = [o for o in transactions_all['data'] if 'closed' in o['label_main'] ]
             
             for transaction in trades_with_closed_labels:      
                 
@@ -889,7 +889,6 @@ class ApplyHedgingSpot:
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-                log.error (f'my_trades_open_all {my_trades_open_all}')
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
