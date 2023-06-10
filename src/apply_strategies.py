@@ -348,9 +348,10 @@ class ApplyHedgingSpot:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
         """
+        transactions_all= transactions_all['data']
                         
         if transactions_all !=[]:
-            trades_with_closed_labels = [o for o in transactions_all['data'] if 'closed' in o['label_main'] ]
+            trades_with_closed_labels = [o for o in transactions_all if 'closed' in o['label_main'] ]
             
             for transaction in trades_with_closed_labels:      
                 
