@@ -496,7 +496,7 @@ class ApplyHedgingSpot:
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
 
         for label in label_transaction_main:
-            #log.debug (f'label {label}')
+            log.debug (f'label {label}')
 
             my_trades_open_strategy =  [o for o in my_trades_open if str_mod.parsing_label(o["label"])['main']  == label]
             #log.debug (my_trades_open_strategy)
@@ -675,7 +675,18 @@ class ApplyHedgingSpot:
                                                                                 strategy_attr
                                                                                 )                        
                         await self.if_order_is_true(closed_order)
-                    
+                
+                    if "marketMaker" in strategy_attr["strategy"]:
+                        
+                        market_maker= MM.MarketMaker(label)
+                        
+                        send_order: dict = await market_maker.is_send_exit_order_allowed (best_ask_prc,
+                                                                                          best_bid_prc,
+                                                                                          open_trade_strategy_label
+                                                                                          )    
+                        log.critical (f' send_order {send_order}')   
+                        await self.if_order_is_true(send_order, instrument)   
+                        
             else:
                 log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
@@ -824,11 +835,8 @@ class ApplyHedgingSpot:
                             
                         if "marketMaker" in strategy_attr["strategy"]:
                             
-                            log.critical (f' marketMaker')      
+                            market_maker= MM.MarketMaker(strategy_label)
                             
-                            market_maker= MM.MarketMaker('marketMakerShort')
-                            
-                            #basic hedging                 
                             send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed (notional,
                                                                                                          best_ask_prc,
                                                                                                          best_bid_prc,
