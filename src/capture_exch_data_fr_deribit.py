@@ -203,8 +203,8 @@ class StreamAccountData:
                                
                                 for order in orders: 
                                     log.warning (f'order {order}')
-                                    log.error ("trade_seq" not in order)
-                                    log.error ("trade_seq" in order)
+                                    #log.error ("trade_seq" not in order)
+                                    #log.error ("trade_seq" in order)
                                         
                                     if "trade_seq" not in order:
                                         # get the order state
