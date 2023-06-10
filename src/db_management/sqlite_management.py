@@ -226,17 +226,39 @@ async def create_tables (type:str = None):
                                                     VIRTUAL;
                                                     
                                                     '''    
+                    create_table_alter_label_strategy_order = f''' 
+                                                    ALTER 
+                                                    TABLE 
+                                                        {table} 
+                                                    ADD COLUMN 
+                                                        timestamp INTEGER  
+                                                    GENERATED ALWAYS AS 
+                                                    (
+                                                    (JSON_EXTRACT (data, '$.last_update_timestamp'))
+                                                    ) 
+                                                    VIRTUAL;
+                                                    
+                                                    '''    
                                                     
                     create_table_alter_order_id = create_virtual_table (table, 'order_id', 'TEXT')
                                                        
                     create_table_alter_trade_seq = create_virtual_table (table, 'trade_seq', 'INTEGER')
+
+                    create_table_alter_timestamp = create_virtual_table (table, 'timestamp', 'INTEGER')
                        
                     create_table_alter_price = create_virtual_table (table, 'price', 'REAL')
                     
+                    if 'orders_all'  in table:
+                            
+                        await cur.execute (f'{create_table_alter_label_strategy_order}')
+                        print (f'create virtual columns {create_table_alter_label_strategy_order}')
+                        
                     if 'myTrades'  in table or 'my_trades' in table:
                             
                         await cur.execute (f'{create_table_alter_trade_seq}')
                         print (f'create virtual columns {create_table_alter_trade_seq}')
+                        await cur.execute (f'{create_table_alter_timestamp}')
+                        print (f'create virtual columns {create_table_alter_timestamp}')
                         
                     print (f'create virtual columns {create_table_alter_order_id}')
                     await cur.execute (f'{create_table_alter_order_id}')
@@ -510,7 +532,7 @@ def querying_arithmetic_operator(item: str,
     return f'SELECT {operator} ({item}) FROM {table}' 
        
 def querying_label_and_size (table)->str:
-    return f'SELECT data, label_main, amount_dir, price FROM {table}' 
+    return f'SELECT label_main, amount_dir, price, timestamp FROM {table}' 
     
 async def executing_query_with_return (query_table,
                                        filter: str = None, 
