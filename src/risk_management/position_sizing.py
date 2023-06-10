@@ -168,28 +168,29 @@ def quantities_per_order(hourly_qty: float, ONE_MINUTE: int= 60) -> float:
     """
     return 1 if hourly_qty < ONE_MINUTE else int(hourly_qty/ONE_MINUTE)
 
-def time_delay_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
+def interval_time_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
     """
     """
     qty_per_order=  hourly_qty/ONE_MINUTE
     
-    time_delay= qty_per_order
+    interval_time= qty_per_order
     #dealing with qty rounding
     if qty_per_order < 1:
-        time_delay= 1/time_delay
-    return time_delay
+        interval_time= 1/interval_time
+    return interval_time
 
-def qty_order_and_time_delay(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
+def qty_order_and_interval_time(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
     """
     """
     ONE_MINUTE= 60
 
     hourly_qty= hourly_sizing_for_perpetual_grid(notional, pct_daily_profit_target, pct_profit_per_transaction)
     
-    minute_delay_before_reorder= time_delay_before_reorder(hourly_qty, ONE_MINUTE)
+    minute_delay_before_reorder= interval_time_before_reorder(hourly_qty, ONE_MINUTE)
 
     return dict(
-            minute_delay= minute_delay_before_reorder,
+            interval_time_between_order= minute_delay_before_reorder,
+            interval_time_between_order_in_ms= minute_delay_before_reorder * 60000,
             qty_per_order= quantities_per_order (hourly_qty, ONE_MINUTE) )
 
     
