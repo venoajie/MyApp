@@ -889,6 +889,7 @@ class ApplyHedgingSpot:
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
+                log.error (f'my_trades_open_all {my_trades_open_all}')
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
