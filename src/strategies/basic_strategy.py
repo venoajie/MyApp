@@ -44,15 +44,15 @@ class BasicStrategy:
                                                                         
         if 'marketMaker' in strategy_config_label:
                 
-            qty_order_and_time_delay= position_sizing.qty_order_and_time_delay(notional, 
-                                                                        take_profit_pct_daily, 
-                                                                        take_profit_pct_transaction
-                                                                        )
+            qty_order_and_interval_time= position_sizing.qty_order_and_interval_time(notional, 
+                                                                               take_profit_pct_daily, 
+                                                                               take_profit_pct_transaction
+                                                                               )
             
-            params.update({"size": qty_order_and_time_delay['qty_per_order']
+            params.update({"size": qty_order_and_interval_time['qty_per_order']
                         }
                         )
-            params.update({"minute_delay": qty_order_and_time_delay['minute_delay']
+            params.update({"interval_time_between_order": qty_order_and_interval_time['interval_time_between_order']
                         }
                         )
         return params
