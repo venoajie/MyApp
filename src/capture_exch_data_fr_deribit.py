@@ -186,6 +186,7 @@ class StreamAccountData:
                                     if isinstance(trade, list):
                                         trade= trade[0]
                                         
+                                    print (f'trade {trade}')
                                     my_trades = myTrades_management.MyTrades(trade)
                                     
                                     await sqlite_management.insert_tables('my_trades_all_json',trade)
