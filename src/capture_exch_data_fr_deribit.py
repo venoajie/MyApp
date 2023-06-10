@@ -182,15 +182,19 @@ class StreamAccountData:
                             #! ###########################################################
 
                             if trades:
-                                my_trades = myTrades_management.MyTrades(trades)
-                                
-                                await sqlite_management.insert_tables('my_trades_all_json',trades)
-                                my_trades.distribute_trade_transactions(currency)
+                                for trade in trades:
+                                    if isinstance(trade, list):
+                                        trade= trade[0]
+                                        
+                                    my_trades = myTrades_management.MyTrades(trade)
+                                    
+                                    await sqlite_management.insert_tables('my_trades_all_json',trade)
+                                    my_trades.distribute_trade_transactions(currency)
 
-                                my_trades_path_all = system_tools.provide_path_for_file(
-                                "my_trades", currency, "all"
-                            )
-                                self. appending_data (trades, my_trades_path_all)
+                                    my_trades_path_all = system_tools.provide_path_for_file(
+                                    "my_trades", currency, "all"
+                                )
+                                    self. appending_data (trade, my_trades_path_all)
 
                             if orders:
                                 my_orders = open_orders_management.MyOrders(orders)
