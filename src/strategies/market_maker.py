@@ -57,10 +57,11 @@ class MarketMaker(BasicStrategy):
                 cancel_allowed= True
         
         print (f'my_trades {my_trades}')
-        print (f'max_tstamp_my_trades {max_tstamp_my_trades}')
+        print (f'len_orders {len_orders}')
+        print (f'len_my_trades {len_my_trades}')
         print (f'max_tstamp_my_trades {max_tstamp_my_trades}')
         if max_tstamp_my_trades == []:
-            if len_orders== [] and len_my_trades==0:
+            if len_orders== [] and len_my_trades== []:
                 order_allowed= True
                     
         else:
