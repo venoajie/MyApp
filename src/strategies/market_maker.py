@@ -74,9 +74,9 @@ class MarketMaker(BasicStrategy):
                 
         if order_allowed== True:
             
-            if params['side']=='sell':
+            if strategy_config['side']=='sell':
                 params.update({"entry_price": ask_price})
-            if params['side']=='buy':
+            if strategy_config['side']=='buy':
                 params.update({"entry_price": bid_price})
 
             params.update({"side": strategy_config['side']})
