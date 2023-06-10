@@ -45,16 +45,27 @@ class MarketMaker(BasicStrategy):
         time_interval= params['interval_time_between_order_in_ms']
         
         order_allowed= False
+        cancel_allowed= False
+        
+        if len_orders > 0:
+            max_tstamp_orders= orders['max_time_stamp']
+            
+            minimum_waiting_time_has_passed=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
+                                                                                                        max_tstamp_orders, 
+                                                                                                        time_interval)
+            if minimum_waiting_time_has_passed:
+                cancel_allowed= True
         
         if max_tstamp_my_trades == []:
             if len_orders== 0 and len_my_trades==0:
                 order_allowed= True
                     
         else:
+            time_interval_qty= time_interval * len_my_trades
             
             minimum_waiting_time_has_passed=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
                                                                                                         max_tstamp_my_trades, 
-                                                                                                        time_interval)
+                                                                                                        time_interval_qty)
 
             if minimum_waiting_time_has_passed:
                 order_allowed= True
@@ -73,13 +84,14 @@ class MarketMaker(BasicStrategy):
             params.update({"label": label_open})
         
         return dict(order_allowed= order_allowed,
-                    order_parameters= [] if order_allowed== False else params)
+                    order_parameters= [] if order_allowed== False else params,
+                    cancel_allowed= cancel_allowed,
+                    cancel_id= cancel_allowed)
         
-    def is_send_exit_order_allowed (ask_price: float,
+    async def is_send_exit_order_allowed (self,
+                                    ask_price: float,
                                     bid_price: float,
-                                    current_outstanding_order_len: int,
                                     selected_transaction: list,
-                                    strategy_attributes_for_hedging: list,
                                     ) -> dict:
         """
 
@@ -96,9 +108,11 @@ class MarketMaker(BasicStrategy):
         last_transaction_price= transaction['price']
         
         transaction_side= transaction['direction']
+        
+        strategy_config= self.get_basic_params().get_strategy_config()
 
         # get take profit pct
-        tp_pct= strategy_attributes_for_hedging["take_profit_pct"]
+        tp_pct= strategy_config["take_profit_pct"]
 
         # get transaction parameters
         params= hedging_spot.get_basic_closing_paramaters(selected_transaction)
@@ -118,8 +132,10 @@ class MarketMaker(BasicStrategy):
             params.update({"entry_price": ask_price})
             params['side']='sell'
         
+        orders= await self.get_basic_params().get_orders_attributes()
+        len_orders= orders['transactions_len']
         print(f'tp_price_reached {tp_price_reached}')
-        no_outstanding_order= current_outstanding_order_len < 1
+        no_outstanding_order= len_orders < 1
 
         order_allowed= tp_price_reached\
                 and no_outstanding_order 
