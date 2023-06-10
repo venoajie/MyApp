@@ -91,63 +91,13 @@ class MarketMaker(BasicStrategy):
                     cancel_id= orders['order_id_max_time_stamp'])
         
     async def is_send_exit_order_allowed (self,
-                                    ask_price: float,
-                                    bid_price: float,
-                                    selected_transaction: list,
-                                    ) -> dict:
+                                          ask_price: float,
+                                          bid_price: float,
+                                          selected_transaction: list
+                                          ) -> dict:
         """
-
-        Args:
-
-        Returns:
-            dict
-
         """
-        # transform to dict
-        transaction= selected_transaction[0]
-        
-        # get price
-        last_transaction_price= transaction['price']
-        
-        transaction_side= transaction['direction']
-        
-        strategy_config= self.get_basic_params().get_strategy_config()
-
-        # get take profit pct
-        tp_pct= strategy_config["take_profit_pct"]
-
-        # get transaction parameters
-        params= hedging_spot.get_basic_closing_paramaters(selected_transaction)
-        
-        if transaction_side=='sell':
-            tp_price_reached= hedging_spot.is_transaction_price_minus_below_threshold(last_transaction_price,
-                                                                        bid_price,
-                                                                        tp_pct
-                                                                        )
-            params.update({"entry_price": bid_price})
-            
-        if transaction_side=='buy':
-            tp_price_reached= hedging_spot.is_transaction_price_plus_above_threshold(last_transaction_price,
-                                                                        ask_price,
-                                                                        tp_pct
-                                                                        )
-            params.update({"entry_price": ask_price})
-            params['side']='sell'
-        
-        orders= await self.get_basic_params().get_orders_attributes()
-        len_orders= orders['transactions_len']
-        print(f'tp_price_reached {tp_price_reached}')
-        no_outstanding_order= len_orders < 1
-
-        order_allowed= tp_price_reached\
-                and no_outstanding_order 
-        
-        if order_allowed:
-            
-            params.update({"instrument":  transaction['instrument_name']})
-            
-        return dict(order_allowed= order_allowed,
-                    order_parameters= [] if order_allowed== False else params)
+        return self.get_basic_params().is_send_exit_order_allowed(ask_price, bid_price, selected_transaction)
         
     def size_adjustment (len_transaction: int, max_factor)-> float:
         """
