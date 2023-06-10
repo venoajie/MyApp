@@ -72,17 +72,21 @@ class BasicStrategy:
             system_tools.provide_path_for_file(end_point, instrument, status)
         )
     
-    async def transaction_attributes (self, table) -> list:
+    async def transaction_attributes (self, table, label_filter: str=None) -> list:
         """ """
 
         result=  await self.querying_label_and_size(table)
         result_strategy_label= [o for o in result if o["label_main"] == self.strategy_label]
-        
+        if label_filter != None:
+            result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
+        max_time_stamp= [] if result_strategy_label  == [] else max(
+            [o['timestamp'] for o in result_strategy_label ]
+                )
+        order_id_max_time_stamp= [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp]
         return dict(
             transactions= result,
-            max_time_stamp= [] if result_strategy_label  == [] else max(
-                [o['timestamp'] for o in result_strategy_label ]
-                ),
+            max_time_stamp= max_time_stamp,
+            order_id_max_time_stamp= order_id_max_time_stamp,
             transactions_sum= [] if result_strategy_label ==  [] else sum(
                 [o['amount_dir'] for o in result_strategy_label]
                 ),
@@ -91,17 +95,17 @@ class BasicStrategy:
                 )
             )  
         
-    async def get_my_trades_attributes (self) -> list:
+    async def get_my_trades_attributes (self, label_filter: str=None) -> list:
         """ """
 
         # get current size
-        return await self.transaction_attributes('my_trades_all_json')
+        return await self.transaction_attributes('my_trades_all_json', label_filter)
     
-    async def get_orders_attributes (self) -> list:
+    async def get_orders_attributes (self, label_filter: str=None) -> list:
         """ """
 
         # get current orders
-        return await self.transaction_attributes('orders_all_json')    
+        return await self.transaction_attributes('orders_all_json', label_filter)    
         
         
     def delta_time (self, server_time, time_stamp)-> int:
