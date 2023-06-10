@@ -52,7 +52,7 @@ class BasicStrategy:
             params.update({"size": qty_order_and_interval_time['qty_per_order']
                         }
                         )
-            params.update({"interval_time_between_order": qty_order_and_interval_time['interval_time_between_order']
+            params.update({"interval_time_between_order_in_ms": qty_order_and_interval_time['interval_time_between_order_in_ms']
                         }
                         )
         return params
