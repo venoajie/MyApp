@@ -20,7 +20,7 @@ class MarketMaker(BasicStrategy):
         """
         return BasicStrategy(self.strategy_label)
 
-    async def is_send_open_order_allowed (self,
+    async def is_send_and_cancel_open_order_allowed (self,
                                           notional: float,
                                           ask_price: float,
                                           bid_price: float,
@@ -46,7 +46,6 @@ class MarketMaker(BasicStrategy):
         
         order_allowed= False
         cancel_allowed= False
-        print(f'orders {orders}')
         
         if len_orders !=[] and len_orders > 0:
             max_tstamp_orders= orders['max_time_stamp']
