@@ -213,7 +213,7 @@ class ApplyHedgingSpot:
         
         return open_label
 
-    async def if_order_is_true(self, order, instrument: str = None) -> float:
+    async def if_order_is_true(self, order, instrument: str = None) -> None:
         """ """
         log.debug (order)
         if order['order_allowed']:
@@ -226,6 +226,14 @@ class ApplyHedgingSpot:
                 params.update({"instrument": instrument})
                 
             await self.send_limit_order(params)
+
+    async def if_cancel_is_true(self, order) -> None:
+        """ """
+        log.debug (order)
+        if order['cancel_allowed']:
+            
+            # get parameter orders
+            await self.cancel_by_order_id(order['cancel_id'])
             
     async def is_size_consistent(self, sum_my_trades_open_sqlite_all_strategy, size_from_positions) -> bool:
         """ """
@@ -821,14 +829,15 @@ class ApplyHedgingSpot:
                             market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            send_order: dict = await market_maker.is_send_open_order_allowed (notional,
-                                                                                                            best_ask_prc,
-                                                                                                            best_bid_prc,
-                                                                                                            server_time
-                                                                                                            )    
-                            log.critical (f' send_order {send_order}')       
+                            send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed (notional,
+                                                                                                         best_ask_prc,
+                                                                                                         best_bid_prc,
+                                                                                                         server_time
+                                                                                                         )    
+                            log.critical (f' send_order {send_order}')   
+                            await self.if_order_is_true(send_order, instrument)   
+                            await self.if_cancel_is_true(send_order)   
                                         
-                                
                     else:
                         log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
@@ -882,19 +891,7 @@ class ApplyHedgingSpot:
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
-                            
-    #! HAPUS................................................................................
-
-                log.critical (f' marketMaker')      
-                basic_strategy_class= basic_strategy.BasicStrategy('marketMakerShort')
-                log.critical (basic_strategy_class)      
-                
-                market_maker= MM.MarketMaker('marketMakerShort')
-                
-                #basic hedging                 
-                basic_opening_paramaters: dict = market_maker.get_basic_opening_paramaters (100)    
-                log.critical (f' basic_opening_paramaters {basic_opening_paramaters}')               
-    #! HAPUS................................................................................
+    
                 
                 #log.error (my_trades_open)
                 #log.error ([o["label"] for o in my_trades_open])
