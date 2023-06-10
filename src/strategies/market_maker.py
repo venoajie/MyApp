@@ -23,7 +23,8 @@ class MarketMaker(BasicStrategy):
     async def is_send_open_order_allowed (self,
                                           notional: float,
                                           ask_price: float,
-                                          bid_price: float
+                                          bid_price: float,
+                                          server_time: int
                                           ) -> dict:
         """
 
@@ -38,26 +39,38 @@ class MarketMaker(BasicStrategy):
         len_orders= orders['transactions_len']
         my_trades= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades= my_trades['transactions_len']
+        max_tstamp_my_trades= my_trades['max_time_stamp']
         
         params= self.get_basic_params().get_basic_opening_paramaters(notional)
-
-        params.update({"side": strategy_config['side']})
-        
-        if params['side']=='sell':
-            params.update({"entry_price": ask_price})
-        if params['side']=='buy':
-            params.update({"entry_price": bid_price})
-            
-        
-        # get transaction label and update the respective parameters
-        label_open = self.get_basic_params().get_label ('open', self.strategy_label) 
-        params.update({"label": label_open})
+        time_interval= params['interval_time_between_order_in_ms']
         
         order_allowed= False
         
-        if len_orders== 0 and len_my_trades==0:
-            order_allowed= True
+        if max_tstamp_my_trades == []:
+            if len_orders== 0 and len_my_trades==0:
+                order_allowed= True
+                    
+        else:
             
+            minimum_waiting_time_has_passed=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
+                                                                                                        max_tstamp_my_trades, 
+                                                                                                        time_interval)
+
+            if minimum_waiting_time_has_passed:
+                order_allowed= True
+                
+        if order_allowed== True:
+            
+            if params['side']=='sell':
+                params.update({"entry_price": ask_price})
+            if params['side']=='buy':
+                params.update({"entry_price": bid_price})
+
+            params.update({"side": strategy_config['side']})
+            
+            # get transaction label and update the respective parameters
+            label_open = self.get_basic_params().get_label ('open', self.strategy_label) 
+            params.update({"label": label_open})
         
         return dict(order_allowed= order_allowed,
                     order_parameters= [] if order_allowed== False else params)
