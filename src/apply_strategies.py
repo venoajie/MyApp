@@ -349,7 +349,7 @@ class ApplyHedgingSpot:
         2. move them to table for closed transactions/my_trades_closed_json
         """
         log.debug (transactions_all)
-        transactions_all= transactions_all[0]
+        transactions_all= [o['data'] for o in transactions_all]
         log.warning (transactions_all)
                         
         if transactions_all !=[]:
