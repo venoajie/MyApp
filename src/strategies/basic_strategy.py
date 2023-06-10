@@ -76,12 +76,19 @@ class BasicStrategy:
         """ """
 
         result=  await self.querying_label_and_size(table)
+        result_strategy_label= [o for o in result if o["label_main"] == self.strategy_label]
         
         return dict(
             transactions= result,
-            max_time_stamp= 0 if result  == [] else max([o['timestamp'] for o in result ]),
-            transactions_sum= 0 if result ==  [] else sum([o['amount_dir'] for o in result]),
-            transactions_len=  0 if result ==  [] else len([o  for o in result])
+            max_time_stamp= [] if result_strategy_label  == [] else max(
+                [o['timestamp'] for o in result_strategy_label ]
+                ),
+            transactions_sum= [] if result_strategy_label ==  [] else sum(
+                [o['amount_dir'] for o in result_strategy_label]
+                ),
+            transactions_len=  [] if result_strategy_label ==  [] else len(
+                [o  for o in result_strategy_label]
+                )
             )  
         
     async def get_my_trades_attributes (self) -> list:
