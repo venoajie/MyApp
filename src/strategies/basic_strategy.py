@@ -149,3 +149,118 @@ class BasicStrategy:
             
         return label
     
+    def get_basic_closing_paramaters(self, 
+                                     selected_transaction: list) -> dict:
+        """
+
+        Args:
+
+        Returns:
+            dict
+
+        """
+        transaction= selected_transaction[0]
+        
+        #provide placeholder for params
+        params= {}
+        
+        # default type: limit
+        params.update({"type": 'limit'})
+        
+        # size=exactly amount of transaction size
+        params.update({"size": transaction['amount']})
+        
+        # determine side
+        transaction_side= transaction['direction']
+        if transaction_side=='sell':
+            params.update({"side": 'buy'})
+        if transaction_side=='buy':
+            params.update({"side": 'sell'})
+            
+        label_closed = self.get_label ('closed', transaction['label']) 
+        params.update({"label": label_closed})
+        
+        return params
+
+    def pct_price_in_usd(self, price: float, pct_threshold: float)-> bool:    
+        return price * pct_threshold
+
+    def price_plus_pct(self, price: float, pct_threshold: float)-> float:    
+        return price + self.pct_price_in_usd (price, pct_threshold)
+
+    def price_minus_pct(self, price: float, pct_threshold: float)-> float:    
+        return price - self.pct_price_in_usd (price, pct_threshold)
+
+    def is_transaction_price_minus_below_threshold(self, 
+                                                   last_transaction_price: float,
+                                                   current_price: float,
+                                                   pct_threshold: float
+                                                   )-> bool:    
+        
+        return self.price_minus_pct (last_transaction_price, pct_threshold) > current_price
+
+    def is_transaction_price_plus_above_threshold(self, 
+                                                  last_transaction_price: float,
+                                                  current_price: float,
+                                                  pct_threshold: float
+                                                )-> bool:  
+        
+        return self.price_plus_pct (last_transaction_price, pct_threshold) < current_price
+
+    async def is_send_exit_order_allowed (self,
+                                    ask_price: float,
+                                    bid_price: float,
+                                    selected_transaction: list,
+                                    ) -> dict:
+        """
+
+        Args:
+
+        Returns:
+            dict
+
+        """
+        # transform to dict
+        transaction= selected_transaction[0]
+        
+        # get price
+        last_transaction_price= transaction['price']
+        
+        transaction_side= transaction['direction']
+        
+        strategy_config= self.get_basic_params().get_strategy_config()
+
+        # get take profit pct
+        tp_pct= strategy_config["take_profit_pct"]
+
+        # get transaction parameters
+        params= self.get_basic_closing_paramaters(selected_transaction)
+        
+        if transaction_side=='sell':
+            tp_price_reached= self.is_transaction_price_minus_below_threshold(last_transaction_price,
+                                                                        bid_price,
+                                                                        tp_pct
+                                                                        )
+            params.update({"entry_price": bid_price})
+            
+        if transaction_side=='buy':
+            tp_price_reached= self.is_transaction_price_plus_above_threshold(last_transaction_price,
+                                                                        ask_price,
+                                                                        tp_pct
+                                                                        )
+            params.update({"entry_price": ask_price})
+        
+        orders= await self.get_basic_params().get_orders_attributes()
+        len_orders= orders['transactions_len']
+        print(f'tp_price_reached {tp_price_reached}')
+        no_outstanding_order= len_orders < 1
+
+        order_allowed= tp_price_reached\
+                and no_outstanding_order 
+        
+        if order_allowed:
+            
+            params.update({"instrument":  transaction['instrument_name']})
+            
+        return dict(order_allowed= order_allowed,
+                    order_parameters= [] if order_allowed== False else params)
