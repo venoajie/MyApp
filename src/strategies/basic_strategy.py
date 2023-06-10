@@ -80,9 +80,10 @@ class BasicStrategy:
         if label_filter != None:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
         max_time_stamp= [] if result_strategy_label  == [] else max(
-            [o['timestamp'] for o in result_strategy_label ]
+            [o['timestamp'] for o in result_strategy_label ][0]
                 )
-        order_id_max_time_stamp= [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp]
+        order_id_max_time_stamp= [] if max_time_stamp  == []  else\
+            [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp][0]
         return dict(
             transactions= result,
             max_time_stamp= max_time_stamp,
