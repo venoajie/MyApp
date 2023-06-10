@@ -48,7 +48,7 @@ class MarketMaker(BasicStrategy):
         cancel_allowed= False
         print(f'orders {orders}')
         
-        if len_orders > 0:
+        if len_orders !=[] and len_orders > 0:
             max_tstamp_orders= orders['max_time_stamp']
             
             minimum_waiting_time_has_passed=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
