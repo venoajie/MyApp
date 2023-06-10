@@ -330,8 +330,9 @@ async def insert_tables (table_name, params):
                         await db.executemany (f'{insert_table}', [param])
                     
             # input is in dict format. Insert them to db directly
-            else:
-                log.warning (f'param {param}')
+            if isinstance(params, dict):
+                log.warning (f'table_name {table_name} param {params} ')
+                log.warning ('json' in table_name)
             
                 if 'json' in table_name:
                     
