@@ -823,7 +823,8 @@ class ApplyHedgingSpot:
                             #basic hedging                 
                             is_send_open_order_allowed: dict = await market_maker.is_send_open_order_allowed (notional,
                                                                                                             best_ask_prc,
-                                                                                                            best_bid_prc
+                                                                                                            best_bid_prc,
+                                                                                                            server_time
                                                                                                             )    
                             log.critical (f' is_send_open_order_allowed {is_send_open_order_allowed}')       
                                         
