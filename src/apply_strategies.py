@@ -348,7 +348,6 @@ class ApplyHedgingSpot:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
         """
-
         log.warning (transactions_all)
                         
         if transactions_all !=[]:
@@ -891,7 +890,7 @@ class ApplyHedgingSpot:
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open)
+                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
                 # ?################################## end of gathering basic data #####################################
