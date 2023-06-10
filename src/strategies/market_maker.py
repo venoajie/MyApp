@@ -46,6 +46,7 @@ class MarketMaker(BasicStrategy):
         
         order_allowed= False
         cancel_allowed= False
+        print(f'orders {orders}')
         
         if len_orders > 0:
             max_tstamp_orders= orders['max_time_stamp']
