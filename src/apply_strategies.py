@@ -821,12 +821,12 @@ class ApplyHedgingSpot:
                             market_maker= MM.MarketMaker('marketMakerShort')
                             
                             #basic hedging                 
-                            is_send_open_order_allowed: dict = await market_maker.is_send_open_order_allowed (notional,
+                            send_order: dict = await market_maker.is_send_open_order_allowed (notional,
                                                                                                             best_ask_prc,
                                                                                                             best_bid_prc,
                                                                                                             server_time
                                                                                                             )    
-                            log.critical (f' is_send_open_order_allowed {is_send_open_order_allowed}')       
+                            log.critical (f' send_order {send_order}')       
                                         
                                 
                     else:
