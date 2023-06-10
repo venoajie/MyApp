@@ -56,10 +56,8 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed= True
         
-        print (f'my_trades {my_trades}')
-        print (f'len_orders {len_orders}')
-        print (f'len_my_trades {len_my_trades}')
-        print (f'max_tstamp_my_trades {max_tstamp_my_trades}')
+        print (f'params {params}')
+        
         if max_tstamp_my_trades == []:
             if len_orders== [] and len_my_trades== []:
                 order_allowed= True
