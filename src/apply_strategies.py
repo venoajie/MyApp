@@ -348,7 +348,6 @@ class ApplyHedgingSpot:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
         """
-        log.debug (transactions_all)
         transactions_all= [o['data'] for o in transactions_all]
         log.warning (transactions_all)
                         
