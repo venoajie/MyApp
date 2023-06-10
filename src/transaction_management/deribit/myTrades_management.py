@@ -320,9 +320,9 @@ class MyTrades:
 
                 my_trades_closed_label = self.extracting_unique_label_id(my_trades_open)
 
-                log.warning(my_trades_closed_label)
+                #log.warning(my_trades_closed_label)
                 for id in my_trades_closed_label:
-                    log.warning(id)
+                    #log.warning(id)
                     self.synchronizing_closed_tradings(
                         id, my_trades_open, my_trades_path_open
                     )
@@ -331,7 +331,7 @@ class MyTrades:
                 data_order = [data_order]
                 #numb = numb + len(data_order)
 
-                log.info(data_order)
+                #log.info(data_order)
 
                 trade_transactions = self.recognize_trade_transactions(data_order)
 
@@ -352,14 +352,14 @@ class MyTrades:
                     pickling.append_data(my_trades_path_open, data_order, True)
 
                 if trade_transactions["opening_position"]:
-                    log.error("LABEL ID OPEN")
+                    #log.error("LABEL ID OPEN")
                     # log.error (data_order)
 
                     # append trade to db.check potential duplicate
                     pickling.append_data(my_trades_path_open, data_order, True)
 
                 if trade_transactions["closing_position"]:
-                    log.debug("LABEL ID CLOSED")
+                    #log.debug("LABEL ID CLOSED")
                     # log.error (data_order)
 
                     # append trade to db.check potential duplicate
