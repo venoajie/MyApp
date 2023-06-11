@@ -311,11 +311,9 @@ async def insert_tables (table_name, params):
                 insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
             
             # input was in list format. Insert them to db one by one
-            #log.error (f'isinstance(params, list) {isinstance(params, list)}')
-            #log.debug (f'isinstance(params, dict) {isinstance(params, dict)}')
             if isinstance(params, list):
                 for param in params:
-                    log.warning (f'param {param}')
+
                     if 'json' in table_name:
 
                         insert_table_json =f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
@@ -332,9 +330,6 @@ async def insert_tables (table_name, params):
                     
             # input is in dict format. Insert them to db directly
             if isinstance(params, dict):
-                #log.warning (f'CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
-                log.warning (f'table_name {table_name} param {params} ')
-                log.warning ('json' in table_name)
             
                 if 'json' in table_name:
                     
