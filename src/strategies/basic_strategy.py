@@ -33,7 +33,7 @@ class BasicStrategy:
             str_config: dict= [o for o in params if str_mod.parsing_label(self.strategy_label )['main']  in o["strategy"]]  [0]
         
         return str_config
-
+    
     def get_basic_opening_paramaters(self, notional: float= None) -> dict:
         """
         """
@@ -256,10 +256,10 @@ class BasicStrategy:
                                                                         )
             params.update({"entry_price": ask_price})
         
-        orders= await self.get_orders_attributes()
+        orders= await self.get_orders_attributes('closed')
         len_orders= orders['transactions_len']
         
-        print(f'tp_price_reached {tp_price_reached}')
+        print(f'orders {len_orders} {orders}')
         
         no_outstanding_order= len_orders==[] 
 
