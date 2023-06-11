@@ -531,6 +531,7 @@ class ApplyHedgingSpot:
 
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
+            log.warning(f" label {label} label_main {label_main}")
 
             open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
 
@@ -591,38 +592,7 @@ class ApplyHedgingSpot:
                     #log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
                     
                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                    my_trades_closed_sqlite: list = await self.querying_all('my_trades_closed_json')
-                    my_trades_closed: list = my_trades_closed_sqlite ['list_data_only']
-                    my_trades_closed_trd_seq: list =  ([o['trade_seq'] for o in my_trades_closed])
-                    my_trades_open_closed_label: list =  ([o['label'] for o in my_trades_open if 'closed' in o['label']])
-                    is_closed = open_trade_strategy_label[0]['trade_seq'] in my_trades_closed_trd_seq
-                    is_labelled = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
                     
-                    if "every" in strategy_attr["strategy"]: 
-            
-                    # avoid reorder closed trades:
-                        # restart after deleting completed trades
-                        # avoid send order for trades with 0 net sum 
-                                                        
-                        if open_trade_strategy_label != []\
-                            and net_sum_strategy != 0\
-                                and is_closed == False\
-                                    and is_labelled == False:                                  
-                                                                            
-                            params = await grids.get_params_orders_closed (open_trade_strategy_label,
-                                                                           net_sum_strategy,
-                                                                           best_bid_prc,
-                                                                           best_ask_prc)
-                            log.debug (f'params {params}')
-
-                            if params["order_buy"] or params["order_sell"]:                                                                                                                        
-                                await self.send_limit_order(params)
-                         
-                    len_open_order_label_short = (
-                        0
-                        if open_order_label_short == []
-                        else len(open_order_label_short)
-                    )
                     len_open_order_label_long = (0 if open_order_label_long == []  
                                                     else len(open_order_label_long))
                     #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
