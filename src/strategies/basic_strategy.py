@@ -34,7 +34,7 @@ class BasicStrategy:
         
         print (f' str_config {str_config}')
         
-        return str_config [0]
+        return str_config
 
     def get_basic_opening_paramaters(self, notional: float= None) -> dict:
         """
