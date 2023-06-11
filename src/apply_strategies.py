@@ -249,8 +249,9 @@ class ApplyHedgingSpot:
         
         len_open_orders_open_from_db = len(open_orders_open_from_db)
         sub_acc= await self.get_account_balances_and_transactions_from_exchanges()
+        sub_acc_orders= sub_acc['open_orders']
         log.warning (f' len_open_orders_from_sub_account_get {len_open_orders_from_sub_account_get} len_open_orders_open_from_db {len_open_orders_open_from_db}')
-        log.error (f' sub_acc {sub_acc}')
+        log.error (f' sub_acc {sub_acc_orders}')
         return len_open_orders_from_sub_account_get == len_open_orders_open_from_db
         
     async def resolving_inconsistent_open_orders(self, open_orders_from_sub_account_get, open_orders_open_from_db) -> None:
