@@ -37,8 +37,6 @@ class MarketMaker(BasicStrategy):
         strategy_config= self.get_basic_params().get_strategy_config()
         
         open_orders_label_strategy= await self.get_basic_params().get_orders_attributes('open')
-            
-        print (f'open_orders_label_strategy {open_orders_label_strategy}')
         
         len_orders= open_orders_label_strategy['transactions_len']
         my_trades= await self.get_basic_params().get_my_trades_attributes()
@@ -59,9 +57,6 @@ class MarketMaker(BasicStrategy):
                                                                                                         time_interval)
             if minimum_waiting_time_has_passed:
                 cancel_allowed= True
-        
-        
-        print (f'my_trades {my_trades}')
         
         if max_tstamp_my_trades == []:
             if len_orders== [] and len_my_trades== []:
