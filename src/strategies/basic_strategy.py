@@ -83,7 +83,7 @@ class BasicStrategy:
         """ """
 
         result: list=  await self.querying_label_and_size(table)
-        print (f'table {table} self.strategy_label {self.strategy_label} result {result}')
+
         result_strategy_label: list= [o for o in result if self.strategy_label in o["label_main"] ]
         print (f'result_strategy_label {result_strategy_label}')
         
@@ -91,7 +91,7 @@ class BasicStrategy:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
             
         max_time_stamp: int= [] if result_strategy_label  == [] else max(
-            [o['timestamp'] for o in result_strategy_label ][0]
+            [o['timestamp'] for o in result_strategy_label ]
                 )
         order_id_max_time_stamp: str= [] if max_time_stamp  == []  else\
             [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp][0]
