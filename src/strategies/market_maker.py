@@ -35,9 +35,12 @@ class MarketMaker(BasicStrategy):
 
         """
         strategy_config= self.get_basic_params().get_strategy_config()
-        orders= await self.get_basic_params().get_orders_attributes('open')
-        len_orders= orders['transactions_len']
-        my_trades= await self.get_basic_params().get_my_trades_attributes()
+        
+        orders_label_strategy= await self.get_basic_params().get_orders_attributes(self.strategy_label)
+        open_orders_label_strategy= [o for o in orders_label_strategy if 'open' in o["label_main"] ]
+        
+        len_orders= open_orders_label_strategy['transactions_len']
+        my_trades= await self.get_basic_params().get_my_trades_attributes(self.strategy_label)
         len_my_trades= my_trades['transactions_len']
         max_tstamp_my_trades= my_trades['max_time_stamp']
         
@@ -48,7 +51,7 @@ class MarketMaker(BasicStrategy):
         cancel_allowed= False
         
         if len_orders !=[] and len_orders > 0:
-            max_tstamp_orders= orders['max_time_stamp']
+            max_tstamp_orders= open_orders_label_strategy['max_time_stamp']
             
             minimum_waiting_time_has_passed=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
                                                                                                         max_tstamp_orders, 
@@ -56,7 +59,7 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed= True
         
-        print (f'orders {orders}')
+        print (f'orders {open_orders_label_strategy}')
         print (f'my_trades {my_trades}')
         
         if max_tstamp_my_trades == []:
@@ -89,7 +92,7 @@ class MarketMaker(BasicStrategy):
         return dict(order_allowed= order_allowed,
                     order_parameters= [] if order_allowed== False else params,
                     cancel_allowed= cancel_allowed,
-                    cancel_id= orders['order_id_max_time_stamp'])
+                    cancel_id= open_orders_label_strategy['order_id_max_time_stamp'])
         
     def is_send_exit_order_allowed (self,
                                           ask_price: float,
