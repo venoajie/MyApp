@@ -24,9 +24,17 @@ class BasicStrategy:
         
         params= entries_exits.strategies
         
-        print (f' self.strategy_label {self.strategy_label}')
+        try:
+            str_config= [o for o in params if self.strategy_label in o["strategy"]]  [0]
         
-        return [o for o in params if self.strategy_label in o["strategy"]]  [0]
+        except:
+            from utilities import string_modification as str_mod
+            
+            str_config= [o for o in params if str_mod.parsing_label(self.strategy_label )['main']  in o["strategy"]]  [0]
+        
+        print (f' str_config {str_config}')
+        
+        return str_config [0]
 
     def get_basic_opening_paramaters(self, notional: float= None) -> dict:
         """
