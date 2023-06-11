@@ -97,5 +97,5 @@ class MarketMaker(BasicStrategy):
                                           ) -> dict:
         """
         """
-        return await self.get_basic_params().is_send_exit_order_allowed(ask_price, bid_price, selected_transaction)
+        return self.get_basic_params().is_send_exit_order_allowed(ask_price, bid_price, selected_transaction)
         
