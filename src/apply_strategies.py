@@ -816,11 +816,13 @@ class ApplyHedgingSpot:
                 strategies = entries_exits.strategies
     
                 
-                #log.error (my_trades_open)
+                log.error (my_trades_open)
                 #log.error ([o["label"] for o in my_trades_open])
                 my_trades_open_remove_closed_labels = [] if my_trades_open == [] \
                     else [o for o in my_trades_open if 'closed' not in o["label"]]
                                         
+                log.debug (my_trades_open_remove_closed_labels)
+                
                 label_transaction_net =  [] if my_trades_open_remove_closed_labels == [] \
                     else str_mod.remove_redundant_elements(
                     [
@@ -829,6 +831,7 @@ class ApplyHedgingSpot:
                     ]
                     )
             
+                log.error (label_transaction_net)
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
      
