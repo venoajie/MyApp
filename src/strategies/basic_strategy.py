@@ -228,7 +228,7 @@ class BasicStrategy:
         
         transaction_side= transaction['direction']
         
-        strategy_config= self.get_basic_params().get_strategy_config()
+        strategy_config= self.get_strategy_config()
 
         # get take profit pct
         tp_pct= strategy_config["take_profit_pct"]
@@ -250,7 +250,7 @@ class BasicStrategy:
                                                                         )
             params.update({"entry_price": ask_price})
         
-        orders= await self.get_basic_params().get_orders_attributes()
+        orders= await self.get_orders_attributes()
         len_orders= orders['transactions_len']
         print(f'tp_price_reached {tp_price_reached}')
         no_outstanding_order= len_orders < 1
