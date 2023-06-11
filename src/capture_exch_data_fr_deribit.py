@@ -182,7 +182,7 @@ class StreamAccountData:
                             
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite} {open_trades_sqlite}')
+                            log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
                             #! ###########################################################
 
                             if trades:
@@ -235,16 +235,18 @@ class StreamAccountData:
                                                 
                                         order_id = order["order_id"] if order_state !='triggered' else ["stop_order_id'"]
 
-                                        open_orders_sqlite =  await syn.querying_all('orders_all_json')
-                                        open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+                                        #open_orders_sqlite =  await syn.querying_all('orders_all_json')
+                                        open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
+                                        #open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
 
-                                        is_order_id_in_active_orders = ([o for o in open_orders_sqlite_list_data if o['order_id']== order_id])
+                                        is_order_id_in_active_orders = ([o for o in open_orders_sqlite if o['order_id']== order_id])
 
                                         where_filter = f"order_id"
                                         if is_order_id_in_active_orders== []:
                                             order_id = order["label"] 
                                             where_filter = f"label_main"
                                         
+                                        log.critical (f' deleting {order_id}')
                                         await sqlite_management.deleting_row('orders_all_json', 
                                                                             "databases/trading.sqlite3",
                                                                             where_filter,
@@ -271,7 +273,7 @@ class StreamAccountData:
                             
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} {open_trades_sqlite}')
+                            log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
                             #! ###########################################################
 
                             if positions:
