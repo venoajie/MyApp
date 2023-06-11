@@ -468,7 +468,6 @@ class ApplyHedgingSpot:
                                    my_trades_open_all, 
                                    my_trades_open,
                                    size_from_positions,
-                                   server_time
                                    ) -> float:
         """ """
                     
@@ -596,44 +595,6 @@ class ApplyHedgingSpot:
                     
                     len_open_order_label_long = (0 if open_order_label_long == []  
                                                     else len(open_order_label_long))
-                    #tp_price = open_trade_strategy_label[0]['label'] in my_trades_open_closed_label
-                    current_outstanding_order_len= (check_orders_with_the_same_labels)['len_result']
-                    
-                    if "basicGrid" in strategy_attr["strategy"]:
-
-                        current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
-                        
-                        #basic hedging                                
-                        closed_order: dict = basic_grid.is_send_exit_order_allowed (best_ask_prc,best_bid_prc,
-                                                                                  current_outstanding_order_len,
-                                                                                  open_trade_strategy_label,
-                                                                                  strategy_attr
-                                                                                )                        
-                        await self.if_order_is_true(closed_order)
-                        
-                        pct_threshold= 1/100
-                        len_my_trades_open_sqlite_main_strategy= len(my_trades_open_strategy)
-                        max_size_my_trades_open_sqlite_main_strategy= max([o['amount'] for o in my_trades_open_strategy])
-                        max_time_stamp_my_trades_open_sqlite_main_strategy= max([o['timestamp'] for o in my_trades_open_strategy])
-                        log.debug(my_trades_open_strategy)
-                        log.debug(f' max_size_my_trades_open_sqlite_main_strategy {max_size_my_trades_open_sqlite_main_strategy} max_time_stamp_my_trades_open_sqlite_main_strategy {max_time_stamp_my_trades_open_sqlite_main_strategy}')
-                        
-                        send_additional_order: dict =    basic_grid.is_send_additional_order_allowed (notional,
-                                                                                                      best_ask_prc,best_bid_prc,
-                                                                                                      current_outstanding_order_len,
-                                                                                                      len_my_trades_open_sqlite_main_strategy,
-                                                                                                      max_size_my_trades_open_sqlite_main_strategy,
-                                                                                                      open_trade_strategy_label,
-                                                                                                      max_time_stamp_my_trades_open_sqlite_main_strategy,
-                                                                                                      strategy_attr,
-                                                                                                      pct_threshold,
-                                                                                                      server_time
-                                                                                                        )
-                                      
-                        log.error (send_additional_order)
-                        sum_next_open_order= send_additional_order['order_parameters']['size']
-                        
-                        await self.if_order_is_true(send_additional_order)
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
@@ -857,8 +818,7 @@ class ApplyHedgingSpot:
                                    my_trades_open_sqlite, 
                                    my_trades_open_all, 
                                    my_trades_open,
-                                   size_from_positions,
-                                   server_time
+                                   size_from_positions
                                    )
                 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
