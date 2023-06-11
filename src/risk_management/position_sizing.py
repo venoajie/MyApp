@@ -179,7 +179,7 @@ def interval_time_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
         interval_time= 1/interval_time
     return interval_time
 
-def qty_order_and_interval_time(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> float:
+def qty_order_and_interval_time(notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float) -> dict:
     """
     """
     ONE_MINUTE= 60
