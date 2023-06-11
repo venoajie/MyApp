@@ -90,7 +90,7 @@ class MarketMaker(BasicStrategy):
                     cancel_allowed= cancel_allowed,
                     cancel_id= orders['order_id_max_time_stamp'])
         
-    async def is_send_exit_order_allowed (self,
+    def is_send_exit_order_allowed (self,
                                           ask_price: float,
                                           bid_price: float,
                                           selected_transaction: list
