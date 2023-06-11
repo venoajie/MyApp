@@ -793,7 +793,7 @@ class ApplyHedgingSpot:
                     ]
                     )
             
-                log.error (label_transaction_net)
+                #log.error (label_transaction_net)
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)           
      
@@ -811,7 +811,7 @@ class ApplyHedgingSpot:
                     
                 # closing transactions
                 if label_transaction_net != []:
-                    await self.closing_transactions( 
+                    send_order: dict = await self.closing_transactions( 
                                    label_transaction_net,
                                    portfolio, 
                                    strategies, 
@@ -820,6 +820,9 @@ class ApplyHedgingSpot:
                                    my_trades_open,
                                    size_from_positions
                                    )
+                    
+                    log.critical (f' send_order {send_order}')   
+                    await self.if_order_is_true(send_order, instrument)   
                 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
                 log.error (f'clean_up_closed_transactions 2 {clean_up_closed_transactions}')
