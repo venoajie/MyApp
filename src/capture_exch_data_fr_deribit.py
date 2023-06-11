@@ -217,7 +217,7 @@ class StreamAccountData:
                                         # get the order state
                                         order_state = order["state"]
 
-                                    log.error (f'order_state {order_state}')
+                                    log.error (f'ORDER STATE {order_state}')
                                     
                                     if order_state == 'cancelled' \
                                         or order_state == 'filled'\
@@ -277,7 +277,7 @@ class StreamAccountData:
                             #! ###########################################################
 
                             if positions:
-                                log.error (f'positions {positions}')
+                                #log.error (f'positions {positions}')
 
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
