@@ -199,7 +199,7 @@ class StreamAccountData:
                                     my_trades.distribute_trade_transactions(currency)
 
                                     #my_trades_path_all = system_tools.provide_path_for_file(
-                                    "my_trades", currency, "all"
+                                    #"my_trades", currency, "all"
                                 #)
                                 #    self. appending_data (trade, my_trades_path_all)
 
