@@ -612,10 +612,10 @@ class ApplyHedgingSpot:
                         
                         market_maker= MM.MarketMaker(label)
                         
-                        send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed (best_ask_prc,
-                                                                                                     best_bid_prc,
-                                                                                                     open_trade_strategy_label
-                                                                                                     )    
+                        send_order: dict = await market_maker.is_send_exit_order_allowed (best_ask_prc,
+                                                                                          best_bid_prc,
+                                                                                          open_trade_strategy_label
+                                                                                          )    
                         log.critical (f' send_order {send_order}')   
                         await self.if_order_is_true(send_order, instrument)   
                         
