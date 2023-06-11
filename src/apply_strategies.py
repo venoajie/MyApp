@@ -842,7 +842,7 @@ class ApplyHedgingSpot:
                                                                                                          best_bid_prc,
                                                                                                          server_time
                                                                                                          )    
-                            log.critical (f' send_order {send_order}')   
+                            #log.critical (f' send_order {send_order}')   
                             await self.if_order_is_true(send_order, instrument)   
                             await self.if_cancel_is_true(send_order)   
                                         
