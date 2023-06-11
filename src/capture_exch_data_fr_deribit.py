@@ -172,33 +172,35 @@ class StreamAccountData:
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
-                            private_data = await self.get_private_data(currency)
-                            result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
-                            log.error (result_open_orders)
+                            #private_data = await self.get_private_data(currency)
+                            #result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
+                            #log.error (result_open_orders)
                             #! ###########################################################
-                            open_orders_sqlite =  await syn.querying_all('orders_all_json')
-                            open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
-                            log.warning (f' order sqlite BEFORE {open_orders_sqlite_list_data}')
+                            open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
+                            len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
+                            log.warning (f' order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
+                            
+                            open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite} {open_trades_sqlite}')
                             #! ###########################################################
 
                             if trades:
                                 for trade in trades:
-                                    if isinstance(trade, list):
-                                        trade= trade[0]
                                         
-                                    print (f'trade {trade}')
+                                    log.info (f'trade {trade}')
                                     my_trades = myTrades_management.MyTrades(trade)
                                     
                                     await sqlite_management.insert_tables('my_trades_all_json',trade)
                                     my_trades.distribute_trade_transactions(currency)
 
-                                    my_trades_path_all = system_tools.provide_path_for_file(
+                                    #my_trades_path_all = system_tools.provide_path_for_file(
                                     "my_trades", currency, "all"
-                                )
-                                    self. appending_data (trade, my_trades_path_all)
+                                #)
+                                #    self. appending_data (trade, my_trades_path_all)
 
                             if orders:
-                                my_orders = open_orders_management.MyOrders(orders)
+                                #my_orders = open_orders_management.MyOrders(orders)
                                 #log.debug (f'my_orders {my_orders}')
                                
                                 for order in orders: 
@@ -255,18 +257,23 @@ class StreamAccountData:
                                         
                                         await sqlite_management.insert_tables('orders_all_json', order)
                         
-                                        orders_path_all = system_tools.provide_path_for_file(
-                                        "orders", currency, "all")
+                                        #orders_path_all = system_tools.provide_path_for_file(
+                                        #orders", currency, "all")
                                         
-                                        self. appending_data (order, orders_path_all)
+                                        #self. appending_data (order, orders_path_all)
                                         
-                                        my_orders.distribute_order_transactions(currency)
+                                        #my_orders.distribute_order_transactions(currency)
+                            
+                            #! ###########################################################
+                            open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
+                            len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
+                            log.critical (f' order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
+                            
+                            open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} {open_trades_sqlite}')
+                            #! ###########################################################
 
-                            #! ###########################################################
-                            open_orders_sqlite =  await syn.querying_all('orders_all_json')
-                            open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
-                            log.debug (f' order sqlite AFTER {open_orders_sqlite_list_data}')
-                            #! ###########################################################
                             if positions:
                                 log.error (f'positions {positions}')
 
