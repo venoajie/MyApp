@@ -36,15 +36,12 @@ class MarketMaker(BasicStrategy):
         """
         strategy_config= self.get_basic_params().get_strategy_config()
         
-        orders_label_strategy= await self.get_basic_params().get_orders_attributes(self.strategy_label)
-        print (f'orders_label_strategy {orders_label_strategy}')
-        open_orders_label_strategy= [] if orders_label_strategy == [] else\
-            [o for o in orders_label_strategy if 'open' in o["label_main"] ]
+        open_orders_label_strategy= await self.get_basic_params().get_orders_attributes('open')
             
         print (f'open_orders_label_strategy {open_orders_label_strategy}')
         
         len_orders= open_orders_label_strategy['transactions_len']
-        my_trades= await self.get_basic_params().get_my_trades_attributes(self.strategy_label)
+        my_trades= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades= my_trades['transactions_len']
         max_tstamp_my_trades= my_trades['max_time_stamp']
         
