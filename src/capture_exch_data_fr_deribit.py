@@ -182,7 +182,7 @@ class StreamAccountData:
                                                 
                             sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
                             sub_acc_orders= sub_acc['open_orders']
-                            log.error (f' sub_acc BEFORE {sub_acc_orders}')
+                            log.error (f' sub_acc BEFORE {sub_acc_orders} {len(sub_acc_orders)}')
                             
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
@@ -277,7 +277,7 @@ class StreamAccountData:
                                     
                             sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
                             sub_acc_orders= sub_acc['open_orders']
-                            log.error (f' sub_acc AFTER {sub_acc_orders}')
+                            log.error (f' sub_acc AFTER {sub_acc_orders} {len(sub_acc_orders)}')
                             
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
