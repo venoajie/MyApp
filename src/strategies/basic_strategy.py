@@ -85,7 +85,6 @@ class BasicStrategy:
         result: list=  await self.querying_label_and_size(table)
 
         result_strategy_label: list= [o for o in result if self.strategy_label in o["label_main"] ]
-        #print (f'result_strategy_label {result_strategy_label}')
         
         if label_filter != None:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
