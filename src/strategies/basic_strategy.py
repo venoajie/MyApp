@@ -83,7 +83,7 @@ class BasicStrategy:
         """ """
 
         result: list=  await self.querying_label_and_size(table)
-        print (f'result {result}')
+        print (f'table {table} result {result}')
         result_strategy_label: list= [o for o in result if o["label_main"] == self.strategy_label]
         print (f'result_strategy_label {result_strategy_label}')
         
