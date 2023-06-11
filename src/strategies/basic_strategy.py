@@ -255,8 +255,9 @@ class BasicStrategy:
         
         orders= await self.get_orders_attributes()
         len_orders= orders['transactions_len']
+        
         print(f'tp_price_reached {tp_price_reached}')
-        print(f'orders {orders}')
+        
         no_outstanding_order= len_orders==[] 
 
         order_allowed= tp_price_reached and no_outstanding_order 
