@@ -425,7 +425,7 @@ class ApplyHedgingSpot:
 
                         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                        log.info(f' res {res} my_trades_open {my_trades_open}')
+                        #log.info(f' res {res} my_trades_open {my_trades_open}')
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
 
                         where_filter = f"trade_seq"
