@@ -303,14 +303,9 @@ async def insert_tables (table_name, params):
         
         async with  aiosqlite.connect("databases/trading.sqlite3", isolation_level=None) as db:
             
-            if 'orders' in table_name:
-                
-                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, trigger_price, stop_price, order_state, order_type, last_update_timestamp,  order_id, is_liquidation, api) VALUES (:instrument_name,  :label, :direction, :amount, :price, :trigger_price, :stop_price,:order_state, :order_type, :last_update_timestamp, :order_id, :is_liquidation, :api);'  
-                
-            if 'myTrades' in table_name or 'my_trades' in table_name:
-                insert_table= f'INSERT INTO {table_name} (instrument_name,  label, direction, amount, price, state, order_type, timestamp, trade_seq, trade_id, tick_direction, order_id, api, fee) VALUES (:instrument_name,  :label, :direction, :amount, :price, :state, :order_type, :timestamp, :trade_seq, :trade_id, :tick_direction, :order_id, :api, :fee);'    
-            
             # input was in list format. Insert them to db one by one
+            log.info (f'list {isinstance(params, list)} dict {isinstance(params, dict)}')
+            log.error (f'params {params}')
             if isinstance(params, list):
                 for param in params:
 
@@ -320,14 +315,6 @@ async def insert_tables (table_name, params):
 
                         await db.execute (insert_table_json)
                             
-                    else:
-                            
-                        if 'trigger_price' not in list(param):
-                            param['trigger_price']=None
-                            param['stop_price']=None
-                            
-                        await db.executemany (f'{insert_table}', [param])
-                    
             # input is in dict format. Insert them to db directly
             if isinstance(params, dict):
             
@@ -337,8 +324,6 @@ async def insert_tables (table_name, params):
 
                     await db.execute (insert_table_json)
                     
-                else:
-                    await db.executemany (f'{insert_table}', [params])
             
     except Exception as error:
         print (f'insert_tables {table_name} {error}') 
