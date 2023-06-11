@@ -153,7 +153,7 @@ class StreamAccountData:
                         log.critical (message_channel)
 
                         data_orders: list = message["params"]["data"]
-                        #log.info (data_orders)
+                        log.info (data_orders)
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
@@ -205,7 +205,7 @@ class StreamAccountData:
 
                             if orders:
                                 #my_orders = open_orders_management.MyOrders(orders)
-                                #log.debug (f'my_orders {my_orders}')
+                                log.debug (f'my_orders {orders}')
                                
                                 for order in orders: 
                                     log.warning (f'order {order}')
