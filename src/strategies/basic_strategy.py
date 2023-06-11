@@ -22,17 +22,15 @@ class BasicStrategy:
         """
         from strategies import entries_exits
         
-        params= entries_exits.strategies
+        params: list= entries_exits.strategies
         
         try:
-            str_config= [o for o in params if self.strategy_label in o["strategy"]]  [0]
+            str_config: dict= [o for o in params if self.strategy_label in o["strategy"]]  [0]
         
         except:
             from utilities import string_modification as str_mod
             
-            str_config= [o for o in params if str_mod.parsing_label(self.strategy_label )['main']  in o["strategy"]]  [0]
-        
-        print (f' str_config {str_config}')
+            str_config: dict= [o for o in params if str_mod.parsing_label(self.strategy_label )['main']  in o["strategy"]]  [0]
         
         return str_config
 
@@ -46,15 +44,15 @@ class BasicStrategy:
         # default type: limit
         params.update({"type": 'limit'})
         
-        strategy_config= self.get_strategy_config()
-        strategy_config_label= strategy_config['strategy']
+        strategy_config: dict= self.get_strategy_config()
+        strategy_config_label: str= strategy_config['strategy']
         
-        take_profit_pct_daily= strategy_config['take_profit_pct_daily']
-        take_profit_pct_transaction= strategy_config['take_profit_pct']
+        take_profit_pct_daily: float= strategy_config['take_profit_pct_daily']
+        take_profit_pct_transaction: float= strategy_config['take_profit_pct']
                                                                         
         if 'marketMaker' in strategy_config_label:
                 
-            qty_order_and_interval_time= position_sizing.qty_order_and_interval_time(notional, 
+            qty_order_and_interval_time: dict= position_sizing.qty_order_and_interval_time(notional, 
                                                                                take_profit_pct_daily, 
                                                                                take_profit_pct_transaction
                                                                                )
@@ -74,25 +72,24 @@ class BasicStrategy:
         # execute query
         return  await sqlite_management.executing_label_and_size_query (table)
 
-    def reading_from_db(self, end_point, instrument: str = None, status: str = None
-    ) -> float:
+    def reading_from_db(self, end_point, instrument: str = None, status: str = None) -> list:
         """ """
         from utilities import pickling, system_tools
         return pickling.read_data(
             system_tools.provide_path_for_file(end_point, instrument, status)
         )
     
-    async def transaction_attributes (self, table, label_filter: str=None) -> list:
+    async def transaction_attributes (self, table, label_filter: str=None) -> dict:
         """ """
 
-        result=  await self.querying_label_and_size(table)
-        result_strategy_label= [o for o in result if o["label_main"] == self.strategy_label]
+        result: list=  await self.querying_label_and_size(table)
+        result_strategy_label: list= [o for o in result if o["label_main"] == self.strategy_label]
         if label_filter != None:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
-        max_time_stamp= [] if result_strategy_label  == [] else max(
+        max_time_stamp: int= [] if result_strategy_label  == [] else max(
             [o['timestamp'] for o in result_strategy_label ][0]
                 )
-        order_id_max_time_stamp= [] if max_time_stamp  == []  else\
+        order_id_max_time_stamp: str= [] if max_time_stamp  == []  else\
             [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp][0]
         return dict(
             transactions= result,
@@ -118,25 +115,21 @@ class BasicStrategy:
         # get current orders
         return await self.transaction_attributes('orders_all_json', label_filter)    
         
-        
     def delta_time (self, server_time, time_stamp)-> int:
         """
-
+        get difference between now and transaction time
         """
-
-        
         return server_time - time_stamp
 
     def is_minimum_waiting_time_has_passed (self, server_time, time_stamp, time_threshold)-> bool:
         """
-
-
+        check whether delta time has exceed time threhold
         """
-        
         return self.delta_time (server_time, time_stamp) > time_threshold
 
     def get_label (self, status: str, label_main_or_label_transactions: str) -> str:
         """
+        provide transaction label
         """
         
         from configuration import label_numbering
@@ -264,10 +257,9 @@ class BasicStrategy:
         len_orders= orders['transactions_len']
         print(f'tp_price_reached {tp_price_reached}')
         print(f'orders {orders}')
-        no_outstanding_order= len_orders < 1
+        no_outstanding_order= len_orders==[] 
 
-        order_allowed= tp_price_reached\
-                and no_outstanding_order 
+        order_allowed= tp_price_reached and no_outstanding_order 
         
         if order_allowed:
             
