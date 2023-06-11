@@ -752,7 +752,6 @@ class ApplyHedgingSpot:
                         for id in cancelled_id:
                             await self.cancel_by_order_id(id)
                     
-                    time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                     net_sum_strategy_main = await self.get_net_sum_strategy_main(my_trades_open_sqlite, strategy_label)
                     log.debug (f'net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}')
@@ -764,48 +763,7 @@ class ApplyHedgingSpot:
                     if open_order_is_consistent == False:
                         await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
                     
-                    if size_is_consistent and open_order_is_consistent:
-                                                    
-                        open_trade_strategy = [o for o in my_trades_open if strategy_label in o["label"]]  
-                                                                        
-                        if "every" in strategy_attr["strategy"]:
-                            
-                            params_order = await grids.get_params_orders_open (strategy_label, notional)
-                            
-                            #adjusting_size_open_order = await grids.adjusting_size_open_order (params_order["side"], 
-                            #                                                        params_order["size"], net_sum_strategy)
-                            
-                           # params_order["size"] = adjusting_size_open_order
-                            
-                            time_threshold: float = (strategy_attr["halt_minute_before_reorder"] * ONE_MINUTE)
-                            
-                            exceed_threshold_time_for_reorder: bool = True if open_trade_strategy ==[] else False
-                            
-                            if open_trade_strategy !=[]:
-                                max_transaction_time = max([o['timestamp'] for o in open_trade_strategy])
-
-                                delta_time: int = server_time - max_transaction_time
-                                exceed_threshold_time_for_reorder: bool = delta_time > time_threshold
-                                
-                            label_open = label_numbering.labelling("open", strategy_label)
-                            params_order.update({"label": label_open})
-                            params_order.update({"instrument": instrument})
-
-                            if params_order["side"] == 'buy'\
-                                and params_order["len_order_limit"] == 0\
-                                    and exceed_threshold_time_for_reorder:
-                                    
-                                params_order["entry_price"] = best_bid_prc - .05
-                                
-                                await self.send_limit_order(params_order)
-
-                            if params_order["side"] == 'sell'\
-                                and params_order["len_order_limit"] == 0 \
-                                    and exceed_threshold_time_for_reorder:
-                                    
-                                params_order["entry_price"] = best_ask_prc +  .05
-                                
-                                await self.send_limit_order(params_order)
+                    if size_is_consistent and open_order_is_consistent:                                                    
                                                                                         
                         if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -814,19 +772,6 @@ class ApplyHedgingSpot:
                             #basic hedging                                
                             send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
                                                                                     best_ask_prc,
-                                                                                    net_sum_strategy_main, 
-                                                                                    current_outstanding_order_len,
-                                                                                    strategy_attr
-                                                                                    )                            
-                            await self.if_order_is_true(send_order, instrument)
-                            
-                        if "basicGrid" in strategy_attr["strategy"] and False:
-
-                            current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
-                            
-                            #basic hedging                                
-                            send_order: dict = basic_grid.is_send_open_order_allowed (notional,
-                                                                                    best_ask_prc,best_bid_prc,
                                                                                     net_sum_strategy_main, 
                                                                                     current_outstanding_order_len,
                                                                                     strategy_attr
