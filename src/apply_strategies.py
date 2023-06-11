@@ -291,11 +291,11 @@ class ApplyHedgingSpot:
         open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
         
         #size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-        open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+        #open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
         
-        if open_order_is_consistent == False:
-            await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
-            await system_tools.sleep_and_restart (5)
+        #if open_order_is_consistent == False:
+        #    await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
+        #    await system_tools.sleep_and_restart (5)
         
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
@@ -555,9 +555,9 @@ class ApplyHedgingSpot:
 
             sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
             size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-            open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+            #: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
             
-            if size_is_consistent and open_order_is_consistent:
+            if size_is_consistent:# and open_order_is_consistent:
                 
                 open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                 open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
@@ -628,7 +628,7 @@ class ApplyHedgingSpot:
                         await self.if_order_is_true(send_order, instrument)   
                         
             else:
-                log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
+                log.critical (f' size_is_consistent {size_is_consistent} ')
                 #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                 await system_tools.sleep_and_restart (5)
             
@@ -698,12 +698,12 @@ class ApplyHedgingSpot:
                     
                     sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, strategy_label)
                     size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-                    open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+                    #open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
                     
-                    if open_order_is_consistent == False:
-                        await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
+                    #if open_order_is_consistent == False:
+                    #    await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
                     
-                    if size_is_consistent and open_order_is_consistent:                                                    
+                    if size_is_consistent:# and open_order_is_consistent:                                                    
                                                                                         
                         if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -732,7 +732,7 @@ class ApplyHedgingSpot:
                             await self.if_cancel_is_true(send_order)   
                                         
                     else:
-                        log.critical (f' size_is_consistent {size_is_consistent}  open_order_is_consistent {open_order_is_consistent}')
+                        log.critical (f' size_is_consistent {size_is_consistent} ')
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                         await system_tools.sleep_and_restart (5)
 
