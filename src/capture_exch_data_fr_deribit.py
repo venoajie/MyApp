@@ -176,13 +176,6 @@ class StreamAccountData:
                             #result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
                             #log.error (result_open_orders)
                             #! ###########################################################
-                            open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
-                            len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
-                            log.warning (f' order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
-                                                
-                            sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
-                            sub_acc_orders= sub_acc['open_orders']
-                            log.error (f' sub_acc BEFORE {sub_acc_orders} {len(sub_acc_orders)}')
                             
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
@@ -208,6 +201,18 @@ class StreamAccountData:
                                 log.debug (f'my_orders {orders}')
                                
                                 for order in orders: 
+                                    
+                                    #! ##############################################################################
+                                    
+                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
+                                    len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
+                                    log.warning (f' order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
+                                                        
+                                    sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
+                                    sub_acc_orders= sub_acc['open_orders']
+                                    log.error (f' sub_acc BEFORE {sub_acc_orders} {len(sub_acc_orders)}')
+                                    #! ##############################################################################
+                            
                                     log.warning (f'order {order}')
                                     #log.error ("trade_seq" not in order)
                                     #log.error ("trade_seq" in order)
@@ -271,14 +276,14 @@ class StreamAccountData:
                                         #my_orders.distribute_order_transactions(currency)
                             
                             #! ###########################################################
-                            open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
-                            len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
-                            log.critical (f' order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
+                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
+                                    len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
+                                    log.critical (f' order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
+                                            
+                                    sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
+                                    sub_acc_orders= sub_acc['open_orders']
+                                    log.error (f' sub_acc AFTER {sub_acc_orders} {len(sub_acc_orders)}')
                                     
-                            sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
-                            sub_acc_orders= sub_acc['open_orders']
-                            log.error (f' sub_acc AFTER {sub_acc_orders} {len(sub_acc_orders)}')
-                            
                             open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                             len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
                             log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
