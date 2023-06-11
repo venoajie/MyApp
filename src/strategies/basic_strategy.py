@@ -85,7 +85,7 @@ class BasicStrategy:
         result: list=  await self.querying_label_and_size(table)
 
         result_strategy_label: list= [o for o in result if self.strategy_label in o["label_main"] ]
-        print (f'result_strategy_label {result_strategy_label}')
+        #print (f'result_strategy_label {result_strategy_label}')
         
         if label_filter != None:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
@@ -96,7 +96,7 @@ class BasicStrategy:
         order_id_max_time_stamp: str= [] if max_time_stamp  == []  else\
             [o["order_id"] for o in result_strategy_label if o["timestamp"] == max_time_stamp][0]
         return dict(
-            transactions= result,
+            transactions_strategy_label= result_strategy_label,
             max_time_stamp= max_time_stamp,
             order_id_max_time_stamp= order_id_max_time_stamp,
             transactions_sum= [] if result_strategy_label ==  [] else sum(
