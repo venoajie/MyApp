@@ -365,6 +365,8 @@ class ApplyHedgingSpot:
                         else ([o for o in transactions_all \
                             if str_mod.parsing_label(o['label_main'])['transaction_net'] == label_net])
                 
+                log.info(f'label_net {label_net}')
+                log.info(transactions_under_label_main)
                 # get net sum of the transactions open and closed
                 net_sum = [] if transactions_under_label_main == []\
                     else sum([o['amount_dir'] for o in transactions_under_label_main ])
@@ -420,12 +422,13 @@ class ApplyHedgingSpot:
                     
                     # get trade seq
                     result = ([o['trade_seq']   for o in transactions_under_label_main ])
+                    log.info(f' result {result}')
                     
                     for res in result:
 
                         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
                         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                        log.info(f' res {res} my_trades_open {my_trades_open}')
+                        log.info(f' res {res} ')
                         log.warning(([o['trade_seq']  for o in my_trades_open ]))
                         log.critical(([o for o in my_trades_open if o['trade_seq'] == res]))
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
