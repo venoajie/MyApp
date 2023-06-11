@@ -18,15 +18,12 @@ from utilities import (
     string_modification as str_mod
     )
 from risk_management import  position_sizing
-from configuration import label_numbering, config
+from configuration import config
 from strategies import (
     entries_exits, 
     grid_perpetual as grid, 
     hedging_spot, 
-    basic_grid, 
-    basic_strategy,
-    market_maker as MM,
-    temporary_balancing as balancer
+    market_maker as MM
     )
 from db_management import sqlite_management
 # from market_understanding import futures_analysis
