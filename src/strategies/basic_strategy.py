@@ -178,12 +178,6 @@ class BasicStrategy:
     def get_basic_closing_paramaters(self, 
                                      selected_transaction: list) -> dict:
         """
-
-        Args:
-
-        Returns:
-            dict
-
         """
         transaction= selected_transaction[0]
         
