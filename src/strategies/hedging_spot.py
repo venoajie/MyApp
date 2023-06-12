@@ -98,7 +98,7 @@ class HedgingSpot(BasicStrategy):
         """
         """        
         my_trades: dict= await self.get_basic_params().get_my_trades_attributes()
-        print(f'my_trades {my_trades}')
+
         sum_my_trades: int= my_trades['transactions_sum']
         
         hedged_value_is_still_safe: bool= self.is_hedged_value_to_notional_exceed_threshold (notional,
@@ -111,6 +111,7 @@ class HedgingSpot(BasicStrategy):
                                                                   selected_transaction
                                                                   )
         
+        print(f'exit_params {exit_params}')
         open_orders_label_strategy: dict= await self.get_basic_params().get_orders_attributes('open')
         
         len_orders: int= open_orders_label_strategy['transactions_len']
