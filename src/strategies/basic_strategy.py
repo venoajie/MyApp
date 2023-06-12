@@ -34,7 +34,11 @@ class BasicStrategy:
         
         return str_config
     
-    def get_basic_opening_paramaters(self, notional: float= None) -> dict:
+    def get_basic_opening_paramaters(self, 
+                                     notional: float= None, 
+                                     ask_price: float=None,
+                                     bid_price:float=None
+                                     ) -> dict:
         """
         """
         
@@ -49,7 +53,19 @@ class BasicStrategy:
         
         take_profit_pct_daily: float= strategy_config['take_profit_pct_daily']
         take_profit_pct_transaction: float= strategy_config['take_profit_pct']
-                                                                        
+        side: str= strategy_config['side']
+                                                            
+        params.update({"side": side})
+
+        # get transaction label and update the respective parameters
+        label_open = self.get_label ('open', self.strategy_label) 
+        params.update({"label": label_open})
+        
+        if side=='sell':
+            params.update({"entry_price": ask_price})
+        if side=='buy':
+            params.update({"entry_price": bid_price})
+
         if 'marketMaker' in strategy_config_label:
                 
             qty_order_and_interval_time: dict= position_sizing.qty_order_and_interval_time(notional, 
@@ -62,7 +78,11 @@ class BasicStrategy:
                         )
             params.update({"interval_time_between_order_in_ms": qty_order_and_interval_time['interval_time_between_order_in_ms']
                         }
-                        )
+                        )                   
+        if 'hedgingSpot' in strategy_config_label:
+            
+            params.update({"size": max(1, int(notional/10))})
+            
         return params
 
     async def querying_label_and_size(self, table) -> dict:
