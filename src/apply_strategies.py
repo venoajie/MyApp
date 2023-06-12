@@ -223,6 +223,8 @@ class ApplyHedgingSpot:
                 params.update({"instrument": instrument})
                 
             await self.send_limit_order(params)
+            await asyncio.sleep(10)
+            
 
     async def if_cancel_is_true(self, order) -> None:
         """ """
