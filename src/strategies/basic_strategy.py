@@ -104,11 +104,8 @@ class BasicStrategy:
 
         result: list=  await self.querying_label_and_size(table)
         
-        print(f'self.strategy_label {self.strategy_label} result {result}')
-
         result_strategy_label: list= [o for o in result if self.strategy_label in o["label_main"] ]
         
-        print(f'result_strategy_label {result_strategy_label}')
         if label_filter != None:
             result_strategy_label= [o for o in result_strategy_label if label_filter in o["label_main"] ]
             
@@ -242,12 +239,6 @@ class BasicStrategy:
                                     selected_transaction: list,
                                     ) -> dict:
         """
-
-        Args:
-
-        Returns:
-            dict
-
         """
         # transform to dict
         transaction= selected_transaction[0]
@@ -267,9 +258,9 @@ class BasicStrategy:
         
         if transaction_side=='sell':
             tp_price_reached= self.is_transaction_price_minus_below_threshold(last_transaction_price,
-                                                                        bid_price,
-                                                                        tp_pct
-                                                                        )
+                                                                              bid_price,
+                                                                              tp_pct
+                                                                              )
             params.update({"entry_price": bid_price})
             
         if transaction_side=='buy':
@@ -281,8 +272,6 @@ class BasicStrategy:
         
         orders= await self.get_orders_attributes('closed')
         len_orders= orders['transactions_len']
-        
-        print(f'orders {len_orders} {orders}')
         
         no_outstanding_order= len_orders==[] 
 
