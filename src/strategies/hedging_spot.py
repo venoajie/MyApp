@@ -76,7 +76,6 @@ class HedgingSpot(BasicStrategy):
                                   ) -> float:
         """ 
         """        
-        print(f'notional {notional}')
         print(f'hedged_value {hedged_value}')
         return abs(hedged_value/notional)
 
@@ -99,11 +98,14 @@ class HedgingSpot(BasicStrategy):
         """
         """        
         my_trades: dict= await self.get_basic_params().get_my_trades_attributes()
+        print(f'my_trades {my_trades}')
         sum_my_trades: int= my_trades['transactions_sum']
         
         hedged_value_is_still_safe: bool= self.is_hedged_value_to_notional_exceed_threshold (notional,
-                                                                                  sum_my_trades,
-                                                                                  MIN_HEDGING_RATIO)
+                                                                                             sum_my_trades,
+                                                                                             MIN_HEDGING_RATIO
+                                                                                             )
+        
         exit_params: dict= self.get_basic_params().is_send_exit_order_allowed(ask_price, 
                                                                   bid_price, 
                                                                   selected_transaction
