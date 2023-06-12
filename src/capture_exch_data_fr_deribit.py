@@ -177,9 +177,9 @@ class StreamAccountData:
                             #log.error (result_open_orders)
                             #! ###########################################################
                             
-                            open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-                            len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
+                            #open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            #len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            #log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
                             #! ###########################################################
 
                             if trades:
@@ -284,9 +284,9 @@ class StreamAccountData:
                                     sub_acc_orders= sub_acc['open_orders']
                                     log.error (f' sub_acc AFTER {len(sub_acc_orders)} {sub_acc_orders} ')
                                     
-                            open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-                            len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
+                            #open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            #len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            #log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
                             #! ###########################################################
 
                             if positions:
@@ -427,7 +427,7 @@ class StreamAccountData:
 
         msg: dict = {
             "jsonrpc": "2.0",
-            "method": f"public/{operation}",
+            "method": f"private/{operation}",
             "id": id,
             "params": {"channels": [ws_channel]},
         }
