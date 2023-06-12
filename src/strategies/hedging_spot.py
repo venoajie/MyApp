@@ -115,7 +115,7 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int= open_orders_label_strategy['transactions_len']
         
-        no_outstanding_order: bool= len_orders < 1
+        no_outstanding_order: bool= len_orders ==[]
         
         exit_allowed: bool=   exit_params['order_allowed']  \
             and hedged_value_is_still_safe \
