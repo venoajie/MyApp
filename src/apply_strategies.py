@@ -226,7 +226,7 @@ class ApplyHedgingSpot:
 
     async def if_cancel_is_true(self, order) -> None:
         """ """
-        log.debug (order)
+        #log.debug (order)
         if order['cancel_allowed']:
             
             # get parameter orders
@@ -510,11 +510,9 @@ class ApplyHedgingSpot:
                         for o in transaction
                     ][0]
 
-            log.critical(f" {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}")
-
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
-            log.warning(f" label {label} label_main {label_main}")
+            log.critical(f" {label_main} {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}")
             
             # get startegy details
             strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]                        
@@ -545,7 +543,7 @@ class ApplyHedgingSpot:
                     taker_commission: float = instrument_attributes[0]["taker_commission"]
                     min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
                     contract_size: float = instrument_attributes[0]["contract_size"]
-                    log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
+                    #log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
 
                     # get bid and ask price
                     best_bid_prc: float = ticker[0]["best_bid_price"]
@@ -561,7 +559,7 @@ class ApplyHedgingSpot:
                                                 
                     log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
-                    log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+                    #log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
@@ -575,7 +573,7 @@ class ApplyHedgingSpot:
                                                                                              open_trade_strategy_label,
                                                                                              MIN_HEDGING_RATIO
                                                                                              )    
-                        log.critical (f' send_closing_order {send_closing_order}')   
+                        #log.critical (f' send_closing_order {send_closing_order}')   
                         await self.if_order_is_true(send_closing_order, instrument)   
                 
                     if "marketMaker" in strategy_attr["strategy"]:
@@ -586,7 +584,7 @@ class ApplyHedgingSpot:
                                                                                                   best_bid_prc,
                                                                                                   open_trade_strategy_label
                                                                                                   )    
-                        log.critical (f' send_closing_order {send_closing_order}')   
+                        #log.critical (f' send_closing_order {send_closing_order}')   
                         await self.if_order_is_true(send_closing_order, instrument)   
                         
             else:
