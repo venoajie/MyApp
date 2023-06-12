@@ -51,7 +51,6 @@ class BasicStrategy:
         strategy_config: dict= self.get_strategy_config()
         strategy_config_label: str= strategy_config['strategy']
         
-        take_profit_pct_daily: float= strategy_config['take_profit_pct_daily']
         take_profit_pct_transaction: float= strategy_config['take_profit_pct']
         side: str= strategy_config['side']
                                                             
@@ -67,10 +66,12 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
 
         if 'marketMaker' in strategy_config_label:
+            
+            take_profit_pct_daily: float= strategy_config['take_profit_pct_daily']
                 
             qty_order_and_interval_time: dict= position_sizing.qty_order_and_interval_time(notional, 
-                                                                               take_profit_pct_daily, 
-                                                                               take_profit_pct_transaction
+                                                                                           take_profit_pct_daily, 
+                                                                                           take_profit_pct_transaction
                                                                                )
             
             params.update({"size": qty_order_and_interval_time['qty_per_order']
