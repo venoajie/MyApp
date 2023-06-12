@@ -428,8 +428,8 @@ class ApplyHedgingSpot:
                     for res in result:
 
                         my_trades_open_sqlite: list = await self.querying_all('my_trades_all_json')
-                        my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                        #log.info(f' res {res} ')
+                        my_trades_open: list = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                        log.info(f' my_trades_open {my_trades_open} ')
                         #log.warning(([o['trade_seq']  for o in my_trades_open ]))
                         #log.critical(([o for o in my_trades_open if o['trade_seq'] == res]))
                         result_to_dict =  ([o for o in my_trades_open if o['trade_seq'] == res])[0]
