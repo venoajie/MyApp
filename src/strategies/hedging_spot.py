@@ -106,7 +106,7 @@ class HedgingSpot(BasicStrategy):
                                                                                              MIN_HEDGING_RATIO
                                                                                              )
         
-        exit_params: dict= self.get_basic_params().is_send_exit_order_allowed(ask_price, 
+        exit_params: dict= await self.get_basic_params().is_send_exit_order_allowed(ask_price, 
                                                                   bid_price, 
                                                                   selected_transaction
                                                                   )
