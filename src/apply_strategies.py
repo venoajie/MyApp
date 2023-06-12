@@ -567,7 +567,7 @@ class ApplyHedgingSpot:
                         
                         MIN_HEDGING_RATIO=.8                        
                         
-                        hedging= hedging_spot.HedgingSpot(label)
+                        hedging= hedging_spot.HedgingSpot(label_main)
                         
                         send_closing_order: dict = await hedging.is_send_exit_order_allowed (notional,
                                                                                              best_ask_prc,
@@ -580,7 +580,7 @@ class ApplyHedgingSpot:
                 
                     if "marketMaker" in strategy_attr["strategy"]:
                         
-                        market_maker= MM.MarketMaker(label)
+                        market_maker= MM.MarketMaker(label_main)
                         
                         send_closing_order: dict = await market_maker.is_send_exit_order_allowed (best_ask_prc,
                                                                                                   best_bid_prc,
