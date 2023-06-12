@@ -518,7 +518,10 @@ def querying_arithmetic_operator(item: str,
     return f'SELECT {operator} ({item}) FROM {table}' 
        
 def querying_label_and_size (table)->str:
-    return f'SELECT label_main, amount_dir, price, timestamp, order_id FROM {table}' 
+    tab= f'SELECT label_main, amount_dir, price, timestamp, order_id FROM {table}' 
+    if 'trade' in table:
+        tab= f'SELECT label_main, amount_dir, price, timestamp, order_id, trade_seq FROM {table}' 
+    return tab 
     
 async def executing_query_with_return (query_table,
                                        filter: str = None, 
