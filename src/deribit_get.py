@@ -444,7 +444,7 @@ class GetPrivateData:
                 side, instrument, size, label_numbered, limit_prc, type,
             )
 
-        log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
+        #log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
         log.info(order_result)
 
         if order_result != None and "error" in order_result:
