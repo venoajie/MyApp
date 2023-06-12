@@ -76,6 +76,8 @@ class HedgingSpot(BasicStrategy):
                                   ) -> float:
         """ 
         """        
+        print(f'notional {notional}')
+        print(f'hedged_value {hedged_value}')
         return abs(hedged_value/notional)
 
     def is_hedged_value_to_notional_exceed_threshold (self,
