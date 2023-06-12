@@ -732,9 +732,9 @@ class ApplyHedgingSpot:
                 size_from_positions: float = 0 if positions == [] else positions["size"]
                 
                 my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
-                my_trades_open_all: list = my_trades_open_sqlite['all']
+                my_trades_open_all: list = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                 my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-                
+                my_trades_open_all: list = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
