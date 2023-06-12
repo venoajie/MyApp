@@ -477,7 +477,6 @@ class ApplyHedgingSpot:
         """ """
                     
         log.critical (f'CLOSING TRANSACTIONS')
-        reading_from_database: dict = await self.reading_from_database()
         clean_up_closed_transactions: list = await self.clean_up_closed_transactions(my_trades_open_all)
 
         my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
@@ -485,16 +484,8 @@ class ApplyHedgingSpot:
         my_trades_open_all: list = my_trades_open_sqlite['all']
         
         my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-        
-        open_orders_sqlite: list = await self.querying_all('orders_all_json')
-
-        # open orders data
-        open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
-
-        open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
 
         # Creating an instance of the open order  class
-        open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)        
         log.error (f'clean_up_closed_transactions {clean_up_closed_transactions}')
 
         label_transaction_main = str_mod.remove_redundant_elements ([(str_mod.parsing_label(o))['main'] for o in label_transaction_net])
@@ -521,34 +512,14 @@ class ApplyHedgingSpot:
 
             log.critical(f" {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}")
 
-            grids=   grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
-            
-            check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
-            
-            if check_orders_with_the_same_labels ['len_result'] > 1:
-                log.critical(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
-                cancelled_id= [o for o in open_orders_open_from_db if o['label'] == label ]
-                log.warning(f" cancelled_id {cancelled_id}")
-
-                for id in cancelled_id:
-                    log.warning(f" id {id}")
-                    await self.cancel_by_order_id(id)
-
             # result example: 'hedgingSpot'/'supplyDemandShort60'
             label_main = str_mod.parsing_label(label)['main']
             log.warning(f" label {label} label_main {label_main}")
-
-            open_order_label = open_order_mgt.open_orders_api_basedOn_label(label)
-
-            open_order_label_short = [o for o in open_order_label if o["direction"] == "sell"]
-            
-            open_order_label_long = [o for o in open_order_label if o["direction"] == "buy"]
             
             # get startegy details
             strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]                        
             
             my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'individual')
-            my_trades_open_sqlite_main_strategy: list = await self.my_trades_open_sqlite_detailing(my_trades_open_all, label, 'main')
 
             sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(my_trades_open_all, label)
             size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
@@ -556,7 +527,6 @@ class ApplyHedgingSpot:
             
             if size_is_consistent:# and open_order_is_consistent:
                 
-                open_trade_strategy = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_main_strategy])
                 open_trade_strategy_label = str_mod.parsing_sqlite_json_output([o['data'] for o in my_trades_open_sqlite_individual_strategy])
 
                 instrument: list= [o["instrument_name"] for o in open_trade_strategy_label][0]
@@ -591,38 +561,33 @@ class ApplyHedgingSpot:
                                                 
                     log.error (f'sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}')      
             
-                    my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
-                            
-                    check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(label)
-                    #log.warning(f" check_orders_with_the_same_labels {check_orders_with_the_same_labels}")
-                    
                     log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-                    
-                    len_open_order_label_long = (0 if open_order_label_long == []  
-                                                    else len(open_order_label_long))
                                           
                     if "hedgingSpot" in strategy_attr["strategy"] :
                         
-                        # closing order
-                        closed_order= hedging_spot.is_send_exit_order_allowed (notional,
-                                                                                best_bid_prc,
-                                                                                size_from_positions, 
-                                                                                len_open_order_label_long,
-                                                                                open_trade_strategy_label,
-                                                                                strategy_attr
-                                                                                )                        
-                        await self.if_order_is_true(closed_order)
+                        MIN_HEDGING_RATIO=.8                        
+                        
+                        hedging= hedging_spot.HedgingSpot(label)
+                        
+                        send_closing_order: dict = await hedging.is_send_exit_order_allowed (notional,
+                                                                                             best_ask_prc,
+                                                                                             best_bid_prc,
+                                                                                             open_trade_strategy_label,
+                                                                                             MIN_HEDGING_RATIO
+                                                                                             )    
+                        log.critical (f' send_closing_order {send_closing_order}')   
+                        await self.if_order_is_true(send_closing_order, instrument)   
                 
                     if "marketMaker" in strategy_attr["strategy"]:
                         
                         market_maker= MM.MarketMaker(label)
                         
-                        send_order: dict = await market_maker.is_send_exit_order_allowed (best_ask_prc,
-                                                                                          best_bid_prc,
-                                                                                          open_trade_strategy_label
-                                                                                          )    
-                        log.critical (f' send_order {send_order}')   
-                        await self.if_order_is_true(send_order, instrument)   
+                        send_closing_order: dict = await market_maker.is_send_exit_order_allowed (best_ask_prc,
+                                                                                                  best_bid_prc,
+                                                                                                  open_trade_strategy_label
+                                                                                                  )    
+                        log.critical (f' send_closing_order {send_closing_order}')   
+                        await self.if_order_is_true(send_closing_order, instrument)   
                         
             else:
                 log.critical (f' size_is_consistent {size_is_consistent} ')
@@ -703,18 +668,20 @@ class ApplyHedgingSpot:
                     if size_is_consistent:# and open_order_is_consistent:                                                    
                                                                                         
                         if "hedgingSpot" in strategy_attr["strategy"]:
+                            
+                            THRESHOLD_TIME= 30
 
-                            current_outstanding_order_len= (check_orders_with_the_same_labels) ['len_result']
+                            hedging= hedging_spot.HedgingSpot(strategy_label)
                             
-                            #basic hedging                                
-                            send_order: dict = hedging_spot.is_send_open_order_allowed (notional,
-                                                                                    best_ask_prc,
-                                                                                    net_sum_strategy_main, 
-                                                                                    current_outstanding_order_len,
-                                                                                    strategy_attr
-                                                                                    )                            
-                            await self.if_order_is_true(send_order, instrument)
-                            
+                            send_order: dict = await hedging.is_send_and_cancel_open_order_allowed (notional,
+                                                                                                    best_ask_prc,
+                                                                                                    server_time,
+                                                                                                    THRESHOLD_TIME
+                                                                                                    )    
+                            #log.critical (f' send_order {send_order}')   
+                            await self.if_order_is_true(send_order, instrument)   
+                            await self.if_cancel_is_true(send_order)   
+                                        
                         if "marketMaker" in strategy_attr["strategy"]:
                             
                             market_maker= MM.MarketMaker(strategy_label)
