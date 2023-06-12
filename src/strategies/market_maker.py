@@ -74,14 +74,14 @@ class MarketMaker(BasicStrategy):
                     cancel_allowed= cancel_allowed,
                     cancel_id= open_orders_label_strategy['order_id_max_time_stamp'])
         
-    def is_send_exit_order_allowed (self,
+    async def is_send_exit_order_allowed (self,
                                     ask_price: float,
                                     bid_price: float,
                                     selected_transaction: list
                                     ) -> dict:
         """
         """
-        return self.get_basic_params(
+        return await self.get_basic_params(
             ).is_send_exit_order_allowed(ask_price, 
                                          bid_price, 
                                          selected_transaction
