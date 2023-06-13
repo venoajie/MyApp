@@ -204,7 +204,7 @@ class BasicStrategy:
             
         return params
         
-    async def transactionp_er_label (self, table, label_filter: str=None) -> dict:
+    async def transactionp_per_label (self, table, label_filter: str=None) -> dict:
         """ """
 
         result: list=  await querying_label_and_size(table)
