@@ -215,10 +215,11 @@ class BasicStrategy:
             result_strategy_label: list= [o for o in result_strategy_label if label_filter in o["label_main"] ]
              
         if label_filter == 'super_main':
-            result_strategy_label: list= [o for o in result_strategy_label \
+            result_strategy_label: list= [o for o in result \
                 if str_mod.parsing_label(self.strategy_label)['super_main'] == str_mod.parsing_label(o['label_main'])['super_main'] ]
+            print(f'result_strategy_label AAAAAAAAA {result_strategy_label}')
             print (str_mod.parsing_label(self.strategy_label)['super_main'])
-            print ([str_mod.parsing_label(o['label_main'])['super_main'] ] for o in result_strategy_label )
+            print ([str_mod.parsing_label(o['label_main'])['super_main'] ] for o in result )
              
         return result_strategy_label
             
