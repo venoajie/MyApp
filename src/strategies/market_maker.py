@@ -35,7 +35,7 @@ class MarketMaker(BasicStrategy):
         my_trades: dict= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades: int= my_trades['transactions_len']
         max_tstamp_my_trades: int= my_trades['max_time_stamp']
-        ratio= await self.get_basic_params().get_side_ratio()
+        ratio= await self.get_basic_params().get_side_ratio('main')
         
         print (f' ratio {ratio}')
         
