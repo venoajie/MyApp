@@ -7,7 +7,10 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from strategies.basic_strategy import BasicStrategy 
+from strategies.basic_strategy import (BasicStrategy,
+                                       is_minimum_waiting_time_has_passed,
+                                       transactions_ratio
+                                       )
 
 @dataclass(unsafe_hash=True, slots=True)
 class MarketMaker(BasicStrategy):
@@ -33,6 +36,9 @@ class MarketMaker(BasicStrategy):
         my_trades: dict= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades: int= my_trades['transactions_len']
         max_tstamp_my_trades: int= my_trades['max_time_stamp']
+        ratio= transactions_ratio(my_trades)
+        
+        print (f' ratio {ratio}')
         
         params: dict= self.get_basic_params().get_basic_opening_paramaters(notional,
                                                                            ask_price,
@@ -47,9 +53,10 @@ class MarketMaker(BasicStrategy):
         if len_orders !=[] and len_orders > 0:
             max_tstamp_orders: int= open_orders_label_strategy['max_time_stamp']
             
-            minimum_waiting_time_has_passed: bool=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
-                                                                                                        max_tstamp_orders, 
-                                                                                                        time_interval)
+            minimum_waiting_time_has_passed: bool=  is_minimum_waiting_time_has_passed (server_time,
+                                                                                        max_tstamp_orders, 
+                                                                                        time_interval
+                                                                                        )
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool= True
         
@@ -60,11 +67,10 @@ class MarketMaker(BasicStrategy):
         else:
             time_interval_qty: float= time_interval * len_my_trades
             
-            minimum_waiting_time_has_passed: bool=  self.get_basic_params(
-                ).is_minimum_waiting_time_has_passed (server_time, 
-                                                      max_tstamp_my_trades, 
-                                                      time_interval_qty
-                                                      )
+            minimum_waiting_time_has_passed: bool=  is_minimum_waiting_time_has_passed (server_time, 
+                                                                                        max_tstamp_my_trades, 
+                                                                                        time_interval_qty
+                                                                                        )
 
             if minimum_waiting_time_has_passed and len_orders== [] :
                 order_allowed: bool= True
