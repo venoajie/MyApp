@@ -219,7 +219,8 @@ class BasicStrategy:
                 if str_mod.parsing_label(self.strategy_label)['super_main'] == str_mod.parsing_label(o['label_main'])['super_main'] ]
             print(f'result_strategy_label AAAAAAAAA {result_strategy_label}')
             print (str_mod.parsing_label(self.strategy_label)['super_main'])
-            print ([str_mod.parsing_label(o['label_main'])['super_main'] ] for o in result )
+            res= ([str_mod.parsing_label(o['label_main'])['super_main'] for o in result ] )
+            print (res)
              
         return result_strategy_label
             
