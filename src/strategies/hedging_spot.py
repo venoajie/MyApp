@@ -7,7 +7,9 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from strategies.basic_strategy import BasicStrategy 
+from strategies.basic_strategy import (BasicStrategy,
+                                       is_minimum_waiting_time_has_passed 
+                                       )
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -59,9 +61,9 @@ class HedgingSpot(BasicStrategy):
             time_interval= ONE_MINUTE* threshold
             max_tstamp_orders: int= open_orders_label_strategy['max_time_stamp']
             
-            minimum_waiting_time_has_passed: bool=  self.get_basic_params().is_minimum_waiting_time_has_passed (server_time, 
-                                                                                                                max_tstamp_orders, 
-                                                                                                                time_interval)
+            minimum_waiting_time_has_passed: bool=  is_minimum_waiting_time_has_passed (server_time, 
+                                                                                        max_tstamp_orders, 
+                                                                                        time_interval)
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool= True
                 
@@ -76,7 +78,6 @@ class HedgingSpot(BasicStrategy):
                                   ) -> float:
         """ 
         """        
-        print(f'hedged_value {hedged_value}')
         return abs(hedged_value/notional)
 
     def is_hedged_value_to_notional_exceed_threshold (self,
