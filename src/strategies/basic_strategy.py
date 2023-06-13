@@ -204,7 +204,7 @@ class BasicStrategy:
             
         return params
         
-    async def transaction_per_label (self, table, label_filter: str=None) -> dict:
+    async def transactionp_er_label (self, table, label_filter: str=None) -> dict:
         """ """
 
         result: list=  await querying_label_and_size(table)
@@ -247,14 +247,14 @@ class BasicStrategy:
                 long_short: float= sum_long_transactions/sum_short_transactions
             
         return dict(
-            long_short_ratio= 0 if result_strategy_label==[] else long_short,
-            short_long_ratio= 0 if result_strategy_label==[] else  short_long
+            long_short_ratio= 0 if result_strategy_label==[] else abs(long_short),
+            short_long_ratio= 0 if result_strategy_label==[] else  abs(short_long)
             )  
             
     async def transaction_attributes (self, table, label_filter: str=None) -> dict:
         """ """
         
-        result_strategy_label: list= await self.transaction_per_label(table)
+        result_strategy_label: list= await self.transaction_per_label(table, label_filter)
              
         return dict(
             transactions_strategy_label= result_strategy_label,
