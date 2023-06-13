@@ -108,6 +108,7 @@ def transactions_ratio(result_strategy_label: list) -> float:
     if result_strategy_label !=[]:
         long_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Long' in o["label_main"] ])
         short_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Short' in o["label_main"] ])
+        print(f'long_transactions {long_transactions} short_transactions {short_transactions}')
     
         sum_long_transactions: float= 0 if long_transactions==[] else sum(long_transactions)
         sum_short_transactions: float= 0 if short_transactions==[] else sum(short_transactions)
