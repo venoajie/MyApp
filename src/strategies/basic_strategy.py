@@ -269,6 +269,7 @@ class BasicStrategy:
         """
         # transform to dict
         transaction: dict= selected_transaction[0]
+        print (f'transaction {transaction}')
         
         # get price
         last_transaction_price: float= transaction['price']
