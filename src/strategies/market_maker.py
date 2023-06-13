@@ -8,8 +8,7 @@ from dataclassy import dataclass
 
 # user defined formula
 from strategies.basic_strategy import (BasicStrategy,
-                                       is_minimum_waiting_time_has_passed,
-                                       get_side_ratio
+                                       is_minimum_waiting_time_has_passed
                                        )
 
 @dataclass(unsafe_hash=True, slots=True)
@@ -36,7 +35,7 @@ class MarketMaker(BasicStrategy):
         my_trades: dict= await self.get_basic_params().get_my_trades_attributes()
         len_my_trades: int= my_trades['transactions_len']
         max_tstamp_my_trades: int= my_trades['max_time_stamp']
-        ratio= get_side_ratio(my_trades)
+        ratio= await self.get_basic_params().get_side_ratio(my_tades)
         
         print (f' ratio {ratio}')
         
