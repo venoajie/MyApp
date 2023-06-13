@@ -221,6 +221,8 @@ class BasicStrategy:
             print (str_mod.parsing_label(self.strategy_label)['super_main'])
             res= ([str_mod.parsing_label(o['label_main'])['super_main'] for o in result ] )
             print (res)
+            res= ([str_mod.parsing_label(o['label_main']) for o in result ] )
+            print (res)
              
         return result_strategy_label
             
