@@ -64,7 +64,12 @@ class MarketMaker(BasicStrategy):
                 order_allowed: bool= True
                     
         else:
-            time_interval_qty: float= time_interval * len_my_trades
+            if params['side'] =='buy':
+                time_balancer= ratio['long_short_ratio']
+            if params['side'] =='sell':
+                time_balancer= ratio['short_long_ratio']
+            
+            time_interval_qty: float= time_interval * len_my_trades * time_balancer
             
             minimum_waiting_time_has_passed: bool=  is_minimum_waiting_time_has_passed (server_time, 
                                                                                         max_tstamp_my_trades, 
