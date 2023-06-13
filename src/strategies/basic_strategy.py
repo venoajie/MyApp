@@ -104,12 +104,12 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
 
 def transactions_ratio(result_strategy_label: list) -> float:
     """ """
-    transactions_strategy_label= result_strategy_label[0]['result_strategy_label']
-    print (f'transactions_strategy_label AAAAAAAAAAAAAAA {transactions_strategy_label}')
+    transactions = result_strategy_label[0]['result_strategy_label']
+    print (f'transactions AAAAAAAAAAAAAAA {transactions}')
     
-    if result_strategy_label !=[]:
-        long_transactions: list= ([o['amount_dir'] for o in transactions_strategy_label if 'Long' in o["label_main"] ])
-        short_transactions: list= ([o['amount_dir'] for o in transactions_strategy_label if 'Short' in o["label_main"] ])
+    if transactions !=[]:
+        long_transactions: list= ([o['amount_dir'] for o in transactions if 'Long' in o["label_main"] ])
+        short_transactions: list= ([o['amount_dir'] for o in transactions if 'Short' in o["label_main"] ])
     
         sum_long_transactions: float= 0 if long_transactions==[] else sum(long_transactions)
         sum_short_transactions: float= 0 if short_transactions==[] else sum(short_transactions)
@@ -125,8 +125,8 @@ def transactions_ratio(result_strategy_label: list) -> float:
             long_short: float= sum_long_transactions/sum_short_transactions
         
     return dict(
-        long_short_ratio= 0 if transactions_strategy_label==[] else long_short,
-        short_long_ratio= 0 if transactions_strategy_label==[] else  short_long
+        long_short_ratio= 0 if transactions==[] else long_short,
+        short_long_ratio= 0 if transactions==[] else  short_long
         )  
         
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
