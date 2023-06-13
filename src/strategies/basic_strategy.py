@@ -217,6 +217,8 @@ class BasicStrategy:
         if label_filter == 'super_main':
             result_strategy_label: list= [o for o in result_strategy_label \
                 if str_mod.parsing_label(self.strategy_label)['super_main'] == str_mod.parsing_label(o['label_main'])['super_main'] ]
+            print (str_mod.parsing_label(self.strategy_label)['super_main'])
+            print ([str_mod.parsing_label(o['label_main'])['super_main'] ] for o in result_strategy_label )
              
         return result_strategy_label
             
