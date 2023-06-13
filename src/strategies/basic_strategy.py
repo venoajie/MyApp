@@ -8,6 +8,7 @@ from dataclassy import dataclass
 
 # user defined formula
 from db_management import sqlite_management
+from utilities import string_modification as str_mod
 
 async def querying_label_and_size(table) -> list:
     """
@@ -27,7 +28,6 @@ def get_label (status: str, label_main_or_label_transactions: str) -> str:
         label = label_numbering.labelling("open", label_main_or_label_transactions)
     
     if status=='closed':
-        from utilities import string_modification as str_mod
         
         # parsing label id
         label_id: int= str_mod.parsing_label(label_main_or_label_transactions)['int']
@@ -146,7 +146,6 @@ class BasicStrategy:
             str_config: dict= [o for o in params if self.strategy_label in o["strategy"]]  [0]
         
         else:
-            from utilities import string_modification as str_mod
             
             str_config: dict= [o for o in params if str_mod.parsing_label(self.strategy_label )['main']  in o["strategy"]]  [0]
         
@@ -215,11 +214,15 @@ class BasicStrategy:
         if label_filter != None:
             result_strategy_label: list= [o for o in result_strategy_label if label_filter in o["label_main"] ]
              
+        if label_filter == 'label_main':
+            result_strategy_label: list= [o for o in result_strategy_label \
+                if str_mod.parsing_label(self.strategy_label)['main'] == str_mod.parsing_label(o['label_main'])['main'] ]
+             
         return result_strategy_label
             
-    async def get_side_ratio(self) -> dict:
+    async def get_side_ratio(self, label_filter: str) -> dict:
         """ """
-        my_trades_attributes= await self. get_my_trades_attributes()
+        my_trades_attributes= await self. get_my_trades_attributes('label_main')
         
         result_strategy_label= my_trades_attributes['transactions_strategy_label']
         
