@@ -112,7 +112,6 @@ class HedgingSpot(BasicStrategy):
                                                                   selected_transaction
                                                                   )
         
-        print(f'exit_params {exit_params}')
         open_orders_label_strategy: dict= await self.get_basic_params().get_orders_attributes('open')
         
         len_orders: int= open_orders_label_strategy['transactions_len']
