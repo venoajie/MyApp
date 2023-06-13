@@ -222,7 +222,7 @@ class BasicStrategy:
             
     async def get_side_ratio(self) -> dict:
         """ """
-        my_trades_attributes= await self. get_my_trades_attributes('main')
+        my_trades_attributes= await self. get_my_trades_attributes('super_main')
         
         result_strategy_label= my_trades_attributes['transactions_strategy_label']
         
