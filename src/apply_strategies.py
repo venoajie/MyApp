@@ -621,7 +621,6 @@ class ApplyHedgingSpot:
             open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
             
             ticker: list =  self.reading_from_db("ticker", instrument)
-            grids=  grid.GridPerpetual(my_trades_open, open_orders_sqlite) 
             
             open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
             
@@ -647,14 +646,6 @@ class ApplyHedgingSpot:
                     strategy_label = strategy_attr["strategy"] 
                     
                     log.critical (f' {strategy_label}')
-                    
-                    check_orders_with_the_same_labels= await grids.open_orders_as_per_main_label(strategy_label)
-                    
-                    if check_orders_with_the_same_labels ['len_result'] > 1:
-                        
-                        cancelled_id= [o['order_id'] for o in open_orders_open_from_db if strategy_label in o['label']]
-                        for id in cancelled_id:
-                            await self.cancel_by_order_id(id)
                     
                     net_sum_strategy = await self.get_net_sum_strategy_super_main(my_trades_open_sqlite, strategy_label)
                     net_sum_strategy_main = await self.get_net_sum_strategy_main(my_trades_open_sqlite, strategy_label)
