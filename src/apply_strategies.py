@@ -11,7 +11,10 @@ from loguru import logger as log
 
 # user defined formula
 import deribit_get
-from transaction_management.deribit import open_orders_management, myTrades_management
+from transaction_management.deribit import (
+    open_orders_management,
+    myTrades_management
+    )
 from utilities import (
     pickling, 
     system_tools, 
@@ -21,7 +24,6 @@ from risk_management import  position_sizing
 from configuration import config
 from strategies import (
     entries_exits, 
-    grid_perpetual as grid, 
     hedging_spot, 
     market_maker as MM
     )
