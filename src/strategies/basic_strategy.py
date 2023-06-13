@@ -104,7 +104,8 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
 
 def transactions_ratio(result_strategy_label: list) -> float:
     """ """
-    print (f'result_strategy_label {result_strategy_label}')
+    print (f'result_strategy_label AAAAAAAAAAAAAAA {result_strategy_label}')
+    
     if result_strategy_label !=[]:
         long_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Long' in o["label_main"] ])
         short_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Short' in o["label_main"] ])
