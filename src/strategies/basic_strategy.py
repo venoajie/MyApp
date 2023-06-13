@@ -214,13 +214,13 @@ class BasicStrategy:
         if label_filter != None:
             result_strategy_label: list= [o for o in result_strategy_label if label_filter in o["label_main"] ]
              
-        if label_filter == 'main':
+        if label_filter == 'super_main':
             result_strategy_label: list= [o for o in result_strategy_label \
-                if str_mod.parsing_label(self.strategy_label)['main'] == str_mod.parsing_label(o['label_main'])['main'] ]
+                if str_mod.parsing_label(self.strategy_label)['super_main'] == str_mod.parsing_label(o['label_main'])['super_main'] ]
              
         return result_strategy_label
             
-    async def get_side_ratio(self, label_filter: str) -> dict:
+    async def get_side_ratio(self) -> dict:
         """ """
         my_trades_attributes= await self. get_my_trades_attributes('main')
         
