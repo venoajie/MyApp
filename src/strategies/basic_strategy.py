@@ -102,32 +102,6 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
     from utilities import pickling, system_tools
     return pickling.read_data(system_tools.provide_path_for_file(end_point, instrument, status))
 
-def get_side_ratio(result_strategy_label: list) -> float:
-    """ """
-    
-    if result_strategy_label !=[]:
-        long_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Long' in o["label_main"] ])
-        short_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Short' in o["label_main"] ])
-        print(f'long_transactions {long_transactions} short_transactions {short_transactions}')
-    
-        sum_long_transactions: float= 0 if long_transactions==[] else sum(long_transactions)
-        sum_short_transactions: float= 0 if short_transactions==[] else sum(short_transactions)
-        
-        if sum_long_transactions==0:
-            short_long: float= sum_short_transactions
-        else:
-            short_long: float= sum_short_transactions/sum_long_transactions
-            
-        if sum_short_transactions==0:
-            long_short: float=sum_long_transactions
-        else:
-            long_short: float= sum_long_transactions/sum_short_transactions
-        
-    return dict(
-        long_short_ratio= 0 if result_strategy_label==[] else long_short,
-        short_long_ratio= 0 if result_strategy_label==[] else  short_long
-        )  
-        
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """
     """
@@ -242,7 +216,36 @@ class BasicStrategy:
             result_strategy_label: list= [o for o in result_strategy_label if label_filter in o["label_main"] ]
              
         return result_strategy_label
+            
+    async def get_side_ratio(self) -> dict:
+        """ """
+        my_trades_attributes= await self. get_my_trades_attributes()
         
+        result_strategy_label= my_trades_attributes['transactions_strategy_label']
+        
+        if result_strategy_label !=[]:
+            long_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Long' in o["label_main"] ])
+            short_transactions: list= ([o['amount_dir'] for o in result_strategy_label if 'Short' in o["label_main"] ])
+            print(f'long_transactions {long_transactions} short_transactions {short_transactions}')
+        
+            sum_long_transactions: float= 0 if long_transactions==[] else sum(long_transactions)
+            sum_short_transactions: float= 0 if short_transactions==[] else sum(short_transactions)
+            
+            if sum_long_transactions==0:
+                short_long: float= sum_short_transactions
+            else:
+                short_long: float= sum_short_transactions/sum_long_transactions
+                
+            if sum_short_transactions==0:
+                long_short: float=sum_long_transactions
+            else:
+                long_short: float= sum_long_transactions/sum_short_transactions
+            
+        return dict(
+            long_short_ratio= 0 if result_strategy_label==[] else long_short,
+            short_long_ratio= 0 if result_strategy_label==[] else  short_long
+            )  
+            
     async def transaction_attributes (self, table, label_filter: str=None) -> dict:
         """ """
         
