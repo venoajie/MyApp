@@ -102,7 +102,7 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
     from utilities import pickling, system_tools
     return pickling.read_data(system_tools.provide_path_for_file(end_point, instrument, status))
 
-def transactions_ratio(result_strategy_label: list) -> float:
+def get_side_ratio(result_strategy_label: list) -> float:
     """ """
     
     if result_strategy_label !=[]:
@@ -231,7 +231,7 @@ class BasicStrategy:
             
         return params
         
-    async def transaction_attributes (self, table, label_filter: str=None) -> dict:
+    async def transaction_per_label (self, table, label_filter: str=None) -> dict:
         """ """
 
         result: list=  await querying_label_and_size(table)
@@ -241,10 +241,16 @@ class BasicStrategy:
         if label_filter != None:
             result_strategy_label: list= [o for o in result_strategy_label if label_filter in o["label_main"] ]
              
+        return result_strategy_label
+        
+    async def transaction_attributes (self, table, label_filter: str=None) -> dict:
+        """ """
+        
+        result_strategy_label: list= await self.transaction_per_label(table)
+             
         return dict(
             transactions_strategy_label= result_strategy_label,
             max_time_stamp= get_max_time_stamp(result_strategy_label),
-            side_ratio= transactions_ratio(result_strategy_label),
             order_id_max_time_stamp= get_order_id_max_time_stamp (result_strategy_label),
             transactions_sum= get_transactions_sum(result_strategy_label),
             transactions_len=  get_transactions_len(result_strategy_label)
