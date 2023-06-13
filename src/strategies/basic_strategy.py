@@ -269,14 +269,13 @@ class BasicStrategy:
         """
         # transform to dict
         transaction: dict= selected_transaction[0]
-        print (f'transaction {transaction}')
         
         # get price
         last_transaction_price: float= transaction['price']
         
         transaction_side: str= transaction['direction']
         
-        strategy_config: list= self.get_strategy_config(transaction['label_main'])
+        strategy_config: list= self.get_strategy_config(transaction['label'])
 
         # get take profit pct
         tp_pct: float= strategy_config["take_profit_pct"]
