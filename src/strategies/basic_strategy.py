@@ -274,6 +274,15 @@ class BasicStrategy:
         # get current orders
         return await self.transaction_attributes('orders_all_json', label_filter)    
 
+    async def is_order_has_sent_before(self, trade_seq) -> dict:
+        """ """
+        my_trades_attributes_closed= await self. get_my_trades_attributes('closed')
+        print (f'my_trades_attributes_closed {my_trades_attributes_closed}')
+        print ([o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"] ] )
+        trade_seq_is_exist: list= [o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"] ] !=[]
+        print (f'trade_seq_is_exist {trade_seq_is_exist}')
+        return trade_seq_is_exist
+        
     async def is_send_exit_order_allowed (self,
                                           ask_price: float,
                                           bid_price: float,
@@ -321,6 +330,13 @@ class BasicStrategy:
         if order_allowed:
             
             params.update({"instrument":  transaction['instrument_name']})
+            trade_seq= params['label']
+            
+            print (f'trade_seq {trade_seq}')
+            
+            order_has_sent_before= await self.is_order_has_sent_before(trade_seq)
+            if order_has_sent_before:
+                order_allowed==False
             
         return dict(order_allowed= order_allowed,
                     order_parameters= [] if order_allowed== False else params)
