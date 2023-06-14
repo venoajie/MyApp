@@ -70,12 +70,13 @@ class MarketMaker(BasicStrategy):
                 time_balancer= ratio['short_long_ratio']
             
             time_interval_qty: float= time_interval * len_my_trades * time_balancer
-            
+            print(f'time_interval_qty {time_interval_qty} time_interval {time_interval} time_balancer {time_balancer}')
             minimum_waiting_time_has_passed: bool=  is_minimum_waiting_time_has_passed (server_time, 
                                                                                         max_tstamp_my_trades, 
                                                                                         time_interval_qty
                                                                                         )
 
+            print(f'minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders}')
             if minimum_waiting_time_has_passed and len_orders== [] :
                 order_allowed: bool= True
                         
