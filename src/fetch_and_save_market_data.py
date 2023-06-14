@@ -34,6 +34,13 @@ async def get_currencies(connection_url) -> float:
     
     return  result
 
+async def run_every_15_seconds() -> None:
+    """ """
+
+    import apply_strategies
+    
+    apply_strategies
+
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
     
@@ -45,6 +52,7 @@ async def check_and_save_every_60_minutes():
         for currency in currencies:
             
             instruments = await get_instruments(connection_url, currency)
+            print (f'instruments {instruments}')
             
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency)
@@ -78,8 +86,10 @@ if __name__ == "__main__":
     
     #connection_url: str = "https://www.deribit.com/api/v2/"
     try:
-        asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
+        #asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
+        schedule.every(15).seconds.do(run_every_15_seconds)
+        schedule.every(30).seconds.do(check_and_save_every_60_minutes)
         
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
