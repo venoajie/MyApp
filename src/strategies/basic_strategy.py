@@ -276,10 +276,12 @@ class BasicStrategy:
 
     async def is_order_has_sent_before(self, trade_seq) -> dict:
         """ """
-        my_trades_attributes_closed= await self. get_my_trades_attributes('closed')
+        get_my_trades_attributes_closed= await self. get_my_trades_attributes('closed')
+        my_trades_attributes_closed= get_my_trades_attributes_closed['transactions_strategy_label']
         print (f'my_trades_attributes_closed {my_trades_attributes_closed}')
         print ([o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"] ] )
-        trade_seq_is_exist: list= [o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"] ] !=[]
+        trade_seq_is_exist: list= False if  my_trades_attributes_closed ==[] \
+            else[o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"] ] !=[]
         print (f'trade_seq_is_exist {trade_seq_is_exist}')
         return trade_seq_is_exist
         
