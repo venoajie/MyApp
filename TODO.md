@@ -65,6 +65,7 @@ ML | [machine-learning](https://medium.com/@FMZQuant/application-of-machine-lear
 ML | [machine-learning](https://trading-data-analysis.pro/volume-by-price-as-a-dynamic-feature-for-training-ai-algorithms-for-trading-ef015b3d1adf) |  | | 
 ML | [machine-learning](https://medium.com/@trademaster.ntu/introduction-to-trademaster-a-new-standard-of-reinforcement-learning-framework-for-quantitative-67f7133485e2) |  | | 
 ML | [machine-learning](https://medium.datadriveninvestor.com/unleashing-the-power-of-tensorflow-for-quantitative-investing-a8476705ba0d) |  | | 
+ML | [machine-learning](https://trading-data-analysis.pro/a-decision-tree-machine-learning-based-trading-strategy-returning-280-93-75509a2f6d96) |  | | 
 ML | [machine-learning](https://medium.com/@mrconnor/algorithmic-trading-with-keras-1d55c8fb81ab) |  | | 
 RL | [reinforcement-learning](http://onepagecode.s3-website-us-east-1.amazonaws.com/) |  | | 
 etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
