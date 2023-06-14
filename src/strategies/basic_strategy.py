@@ -335,6 +335,7 @@ class BasicStrategy:
             print (f'trade_seq {trade_seq}')
             
             order_has_sent_before= await self.is_order_has_sent_before(trade_seq)
+            print (f'order_has_sent_before {order_has_sent_before}')
             if order_has_sent_before:
                 order_allowed==False
             
