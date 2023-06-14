@@ -233,6 +233,7 @@ class BasicStrategy:
         
             sum_long_transactions: float= 0 if long_transactions==[] else sum(long_transactions)
             sum_short_transactions: float= 0 if short_transactions==[] else sum(short_transactions)
+            print(f'sum_long_transactions {sum_long_transactions} sum_short_transactions {sum_short_transactions}')
             
             if sum_long_transactions==0:
                 short_long: float= sum_short_transactions
