@@ -53,7 +53,7 @@ async def check_and_save_every_60_minutes():
         for currency in currencies:
             
             instruments = await get_instruments(connection_url, currency)
-            print (f'instruments {instruments}')
+            #print (f'instruments {instruments}')
             
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency)
