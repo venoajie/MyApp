@@ -45,7 +45,6 @@ async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
 
     try:
-        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         
         get_currencies_all = await get_currencies(connection_url)
         currencies=  ([o['currency'] for o in get_currencies_all ['result']])
@@ -90,7 +89,6 @@ if __name__ == "__main__":
         #asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
         schedule.every(15).seconds.do(run_every_15_seconds)
-        schedule.every(30).seconds.do(check_and_save_every_60_minutes)
         
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
