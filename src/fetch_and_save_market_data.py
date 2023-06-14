@@ -40,7 +40,7 @@ async def run_every_15_seconds() -> None:
     import apply_strategies
     print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     
-    apply_strategies.main()
+    await apply_strategies.main()
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
