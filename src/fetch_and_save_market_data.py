@@ -38,14 +38,14 @@ async def run_every_15_seconds() -> None:
     """ """
 
     import apply_strategies
-    print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
     
     await apply_strategies.main()
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
-    
+
     try:
+        print ('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA')
         
         get_currencies_all = await get_currencies(connection_url)
         currencies=  ([o['currency'] for o in get_currencies_all ['result']])
