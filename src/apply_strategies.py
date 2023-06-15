@@ -863,11 +863,7 @@ class ApplyHedgingSpot:
                     size_is_consistent: bool = await self.is_size_consistent(
                         sum_my_trades_open_sqlite_all_strategy, size_from_positions
                     )
-                    # open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
-
-                    # if open_order_is_consistent == False:
-                    #    await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
-
+                    
                     if size_is_consistent:  # and open_order_is_consistent:
 
                         if "hedgingSpot" in strategy_attr["strategy"]:
@@ -879,7 +875,7 @@ class ApplyHedgingSpot:
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, server_time, THRESHOLD_TIME
                             )
-                            # log.critical (f' send_order {send_order}')
+
                             await self.if_order_is_true(send_order, instrument)
                             await self.if_cancel_is_true(send_order)
 
@@ -890,7 +886,7 @@ class ApplyHedgingSpot:
                             send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, best_bid_prc, server_time
                             )
-                            # log.critical (f' send_order {send_order}')
+
                             await self.if_order_is_true(send_order, instrument)
                             await self.if_cancel_is_true(send_order)
 
@@ -907,8 +903,6 @@ class ApplyHedgingSpot:
 
         try:
             # gathering basic data
-            # ?############################# gathering basic data ######################################
-
             reading_from_database: dict = await self.reading_from_database()
 
             # get portfolio data
@@ -924,9 +918,6 @@ class ApplyHedgingSpot:
                 my_trades_open_sqlite: dict = await self.querying_all(
                     "my_trades_all_json"
                 )
-                my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
-                    "my_trades_all_json"
-                )
                 my_trades_open: list = my_trades_open_sqlite["list_data_only"]
                 my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
                     "my_trades_all_json"
@@ -934,7 +925,7 @@ class ApplyHedgingSpot:
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(
+                clean_up_closed_transactions: None = await self.clean_up_closed_transactions(
                     my_trades_open_all
                 )
                 log.error(
@@ -942,11 +933,6 @@ class ApplyHedgingSpot:
                 )
 
                 # ?################################## end of gathering basic data #####################################
-
-                # Creating an instance of the my-Trade class
-                my_trades_open_mgt: object = myTrades_management.MyTrades(
-                    my_trades_open
-                )
 
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
@@ -1010,7 +996,6 @@ class ApplyHedgingSpot:
         except Exception as error:
             await raise_error(error, 30)
 
-
 async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
 
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
@@ -1038,7 +1023,6 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
             await sqlite_management.deleting_row(
                 table, database, where_filter, "=", first_tick
             )
-
 
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
