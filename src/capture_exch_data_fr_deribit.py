@@ -18,6 +18,7 @@ from transaction_management.deribit import open_orders_management, myTrades_mana
 import apply_strategies
 from db_management import sqlite_management
 
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -114,11 +115,11 @@ class StreamAccountData:
                             self.connection_url,
                             self.client_id,
                             self.client_secret,
-                            currency
-                            )
+                            currency,
+                        )
 
                         if self.refresh_token is None:
-                            #await syn.get_sub_accounts()
+                            # await syn.get_sub_accounts()
                             log.debug("Successfully authenticated WebSocket Connection")
 
                         else:
@@ -150,10 +151,10 @@ class StreamAccountData:
                 if "params" in list(message):
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
-                        log.critical (message_channel)
+                        log.critical(message_channel)
 
                         data_orders: list = message["params"]["data"]
-                        log.info (data_orders)
+                        log.info(data_orders)
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
@@ -163,60 +164,72 @@ class StreamAccountData:
                                 "portfolio", currency
                             )
                             pickling.replace_data(my_path_portfolio, data_orders)
-                            
+
                         if (
                             message_channel
                             == f"user.changes.any.{currency.upper()}.raw"
                         ):
-                            #log.info(data_orders)
+                            # log.info(data_orders)
                             positions = data_orders["positions"]
                             trades = data_orders["trades"]
                             orders = data_orders["orders"]
-                            #private_data = await self.get_private_data(currency)
-                            #result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
-                            #log.error (result_open_orders)
+                            # private_data = await self.get_private_data(currency)
+                            # result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
+                            # log.error (result_open_orders)
                             #! ###########################################################
-                            
-                            #open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-                            #len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            #log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
+
+                            # open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            # len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            # log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
                             #! ###########################################################
 
                             if trades:
                                 for trade in trades:
-                                        
-                                    log.info (f'trade {trade}')
+
+                                    log.info(f"trade {trade}")
                                     my_trades = myTrades_management.MyTrades(trade)
-                                    
-                                    await sqlite_management.insert_tables('my_trades_all_json',trade)
+
+                                    await sqlite_management.insert_tables(
+                                        "my_trades_all_json", trade
+                                    )
                                     my_trades.distribute_trade_transactions(currency)
 
-                                    #my_trades_path_all = system_tools.provide_path_for_file(
-                                    #"my_trades", currency, "all"
-                                #)
+                                    # my_trades_path_all = system_tools.provide_path_for_file(
+                                    # "my_trades", currency, "all"
+                                # )
                                 #    self. appending_data (trade, my_trades_path_all)
 
                             if orders:
-                                #my_orders = open_orders_management.MyOrders(orders)
-                                log.debug (f'my_orders {orders}')
-                               
-                                for order in orders: 
-                                    
+                                # my_orders = open_orders_management.MyOrders(orders)
+                                log.debug(f"my_orders {orders}")
+
+                                for order in orders:
+
                                     #! ##############################################################################
-                                    
-                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
-                                    len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
-                                    log.warning (f' order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
-                                                        
-                                    sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
-                                    sub_acc_orders= sub_acc['open_orders']
-                                    log.error (f' sub_acc BEFORE {len(sub_acc_orders)} {sub_acc_orders} ')
+
+                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+                                        "orders_all_json"
+                                    )
+                                    len_open_orders_sqlite_list_data = len(
+                                        [o for o in open_orders_sqlite]
+                                    )
+                                    log.warning(
+                                        f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
+                                    )
+
+                                    sub_acc = (
+                                        await syn.get_account_balances_and_transactions_from_exchanges()
+                                    )
+                                    sub_acc_orders = sub_acc["open_orders"]
+                                    log.error(
+                                        f" sub_acc BEFORE {len(sub_acc_orders)} {sub_acc_orders} "
+                                    )
                                     #! ##############################################################################
-                            
-                                    log.warning (f'order {order}')
-                                    #log.error ("trade_seq" not in order)
-                                    #log.error ("trade_seq" in order)
-                                        
+
+                                    log.warning(f"order {order}")
+                                    # log.error ("trade_seq" not in order)
+                                    # log.error ("trade_seq" in order)
+
                                     if "trade_seq" not in order:
                                         # get the order state
                                         order_state = order["order_state"]
@@ -226,77 +239,105 @@ class StreamAccountData:
                                         # get the order state
                                         order_state = order["state"]
 
-                                    log.error (f'ORDER STATE {order_state}')
-                                    
-                                    if order_state == 'cancelled' \
-                                        or order_state == 'filled'\
-                                            or order_state == 'triggered':
-                                                
+                                    log.error(f"ORDER STATE {order_state}")
+
+                                    if (
+                                        order_state == "cancelled"
+                                        or order_state == "filled"
+                                        or order_state == "triggered"
+                                    ):
+
                                         #! EXAMPLES of order id state
                                         # untriggered: insert
-                                        # {'web': False, 'triggered': False, 'trigger_price': 1874.0, 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}   
-                                           
+                                        # {'web': False, 'triggered': False, 'trigger_price': 1874.0, 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}
+
                                         # triggered: cancel untrigger, insert trigger
-                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'triggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}    
-                                         
+                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'triggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}
+
                                         # open: cancel trigger insert open
-                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32754477205', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768064536, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768064536, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}       
-                                                
-                                        order_id = order["order_id"] if order_state !='triggered' else ["stop_order_id'"]
+                                        # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32754477205', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768064536, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768064536, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}
 
-                                        #open_orders_sqlite =  await syn.querying_all('orders_all_json')
-                                        open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
-                                        #open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+                                        order_id = (
+                                            order["order_id"]
+                                            if order_state != "triggered"
+                                            else ["stop_order_id'"]
+                                        )
 
-                                        is_order_id_in_active_orders = ([o for o in open_orders_sqlite if o['order_id']== order_id])
+                                        # open_orders_sqlite =  await syn.querying_all('orders_all_json')
+                                        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+                                            "orders_all_json"
+                                        )
+                                        # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+
+                                        is_order_id_in_active_orders = [
+                                            o
+                                            for o in open_orders_sqlite
+                                            if o["order_id"] == order_id
+                                        ]
 
                                         where_filter = f"order_id"
-                                        if is_order_id_in_active_orders== []:
-                                            order_id = order["label"] 
+                                        if is_order_id_in_active_orders == []:
+                                            order_id = order["label"]
                                             where_filter = f"label_main"
-                                        
-                                        log.critical (f' deleting {order_id}')
-                                        await sqlite_management.deleting_row('orders_all_json', 
-                                                                            "databases/trading.sqlite3",
-                                                                            where_filter,
-                                                                            "=",
-                                                                            order_id)
-                                        
-                                    if order_state == 'open' \
-                                        or order_state == 'untriggered'\
-                                            or order_state == 'triggered':
-                                        
-                                        await sqlite_management.insert_tables('orders_all_json', order)
-                        
-                                        #orders_path_all = system_tools.provide_path_for_file(
-                                        #orders", currency, "all")
-                                        
-                                        #self. appending_data (order, orders_path_all)
-                                        
-                                        #my_orders.distribute_order_transactions(currency)
-                            
-                            #! ###########################################################
-                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query ('orders_all_json')
-                                    len_open_orders_sqlite_list_data = len([o  for o in open_orders_sqlite])
-                                    log.critical (f' order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}')
-                                            
-                                    sub_acc= await syn.get_account_balances_and_transactions_from_exchanges()
-                                    sub_acc_orders= sub_acc['open_orders']
-                                    log.error (f' sub_acc AFTER {len(sub_acc_orders)} {sub_acc_orders} ')
-                                    
-                            #open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-                            #len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-                            #log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
+
+                                        log.critical(f" deleting {order_id}")
+                                        await sqlite_management.deleting_row(
+                                            "orders_all_json",
+                                            "databases/trading.sqlite3",
+                                            where_filter,
+                                            "=",
+                                            order_id,
+                                        )
+
+                                    if (
+                                        order_state == "open"
+                                        or order_state == "untriggered"
+                                        or order_state == "triggered"
+                                    ):
+
+                                        await sqlite_management.insert_tables(
+                                            "orders_all_json", order
+                                        )
+
+                                        # orders_path_all = system_tools.provide_path_for_file(
+                                        # orders", currency, "all")
+
+                                        # self. appending_data (order, orders_path_all)
+
+                                        # my_orders.distribute_order_transactions(currency)
+
+                                    #! ###########################################################
+                                    open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+                                        "orders_all_json"
+                                    )
+                                    len_open_orders_sqlite_list_data = len(
+                                        [o for o in open_orders_sqlite]
+                                    )
+                                    log.critical(
+                                        f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
+                                    )
+
+                                    sub_acc = (
+                                        await syn.get_account_balances_and_transactions_from_exchanges()
+                                    )
+                                    sub_acc_orders = sub_acc["open_orders"]
+                                    log.error(
+                                        f" sub_acc AFTER {len(sub_acc_orders)} {sub_acc_orders} "
+                                    )
+
+                            # open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
+                            # len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
+                            # log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
                             #! ###########################################################
 
                             if positions:
-                                #log.error (f'positions {positions}')
+                                # log.error (f'positions {positions}')
 
                                 my_path_position = system_tools.provide_path_for_file(
                                     "positions", currency
                                 )
                                 pickling.replace_data(my_path_position, positions)
-                                
+
             else:
                 log.info("WebSocket connection has broken.")
                 await system_tools.raise_error_message(
@@ -304,35 +345,30 @@ class StreamAccountData:
                     0.1,
                     "WebSocket connection EXCHANGE has broken",
                 )
-                
+
     async def get_private_data(self, currency) -> list:
         """
         Provide class object to access private get API
         """
         import deribit_get
-        
-        return deribit_get.GetPrivateData(
-                self.connection_url, self.client_id, self.client_secret, currency
-            )
 
-    async def deleting_cancel_order(self, table: list, 
-                           database: str ,
-                           data,
-                           cancelled_order
-                           ) -> list:
+        return deribit_get.GetPrivateData(
+            self.connection_url, self.client_id, self.client_secret, currency
+        )
+
+    async def deleting_cancel_order(
+        self, table: list, database: str, data, cancelled_order
+    ) -> list:
         """ """
-        result = await sqlite_management.deleting_row (table, 
-                                                         database,
-                                                         data,
-                                                         '=',
-                                                         cancelled_order
-                                                         ) 
-        return  (result)   
-    
+        result = await sqlite_management.deleting_row(
+            table, database, data, "=", cancelled_order
+        )
+        return result
+
     def appending_data(self, data: dict, my_path_all: str) -> None:
         """
         """
-        
+
         if isinstance(data, list):
             for dt in data:
                 pickling.append_data(my_path_all, dt, True)
@@ -435,6 +471,7 @@ class StreamAccountData:
         log.warning(msg)
         await self.websocket_client.send(json.dumps(msg))
 
+
 def main():
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
@@ -447,6 +484,7 @@ def main():
         system_tools.catch_error_message(
             error, 10, "fetch and save EXCHANGE data from deribit"
         )
+
 
 if __name__ == "__main__":
     try:

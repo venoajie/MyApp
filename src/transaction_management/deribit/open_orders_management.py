@@ -9,7 +9,7 @@ from utilities import (
     pickling,
     system_tools,
     number_modification,
-    string_modification as str_mod
+    string_modification as str_mod,
 )
 
 
@@ -17,10 +17,12 @@ def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
+
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class MyOrders:
@@ -219,7 +221,7 @@ class MyOrders:
         """
 
         try:
-            #log.info(order)  # log the order to the log file
+            # log.info(order)  # log the order to the log file
 
             if "trade_seq" not in order:
                 # get the order id
@@ -268,12 +270,12 @@ class MyOrders:
             )
             # log.critical (f'both_sources_are_equivalent {both_sources_are_equivalent} open_order_from_get {open_orders_from_sub_account_get} open_order_from_db {self. open_orders_from_db}')
 
-            #if both_sources_are_equivalent == False:
+            # if both_sources_are_equivalent == False:
             #    info = f"OPEN ORDER DIFFERENT open_order_from_get \
             #            {open_orders_from_sub_account_get}  \
             #                open_order_from_db \
             #                    {self. open_orders_from_db} \n "
-                #telegram_bot_sendtext(info)
+            # telegram_bot_sendtext(info)
             # log.warning (f'difference {difference}')
 
             return both_sources_are_equivalent
@@ -321,15 +323,15 @@ class MyOrders:
         )
         try:
             if self.open_orders_from_db:
-                #log.debug(self.open_orders_from_db)
+                # log.debug(self.open_orders_from_db)
 
                 for order in self.open_orders_from_db:
                     order_state = self.recognizing_order(order)
-                    #log.critical(order_state)
+                    # log.critical(order_state)
 
                     if order_state["order_state_open"]:
-                        #log.error("ORDER_STATE OPEN")
-                        #log.info(f"{order=}")
+                        # log.error("ORDER_STATE OPEN")
+                        # log.info(f"{order=}")
 
                         pickling.append_and_replace_items_based_on_qty(
                             my_path_orders_open, order, 1000, True
@@ -339,10 +341,10 @@ class MyOrders:
                         my_path_orders_else = system_tools.provide_path_for_file(
                             "orders", currency, "else"
                         )
-                        #log.critical("ORDER_STATE ELSE")
-                        #log.info(f"{order=}")
-                        #log.critical(f"{order_state=}")
-                        #log.critical(f"{my_path_orders_else=}")
+                        # log.critical("ORDER_STATE ELSE")
+                        # log.info(f"{order=}")
+                        # log.critical(f"{order_state=}")
+                        # log.critical(f"{my_path_orders_else=}")
 
                         order_id = order_state["order_id"]
 
@@ -351,8 +353,8 @@ class MyOrders:
                         item_in_open_orders_open = self.combine_open_orders_based_on_id(
                             open_orders_open, order_id
                         )
-                        #log.info(f"{open_orders_open=}")
-                        #log.debug(f"{item_in_open_orders_open=}")
+                        # log.info(f"{open_orders_open=}")
+                        # log.debug(f"{item_in_open_orders_open=}")
 
                         item_with_same_id = item_in_open_orders_open[
                             "item_with_same_id"
@@ -405,7 +407,7 @@ class MyOrders:
         transactions = self.transactions_strategy_label(
             open_transactions_label, strategy_label
         )
-        
+
         return {
             "net_sum_order_size": []
             if transactions == []
@@ -419,14 +421,15 @@ class MyOrders:
             else [o["instrument_name"] for o in transactions][0],
         }
 
-    def calculate_order_size_and_side_for_outstanding_transactions(self,
-                                                                   label,
-                                                                   main_side: str, 
-                                                                   net_sum_current_position: float,
-                                                                   net_sum_open_orders_strategy_limit: int, 
-                                                                   net_sum_open_orders_strategy_market: int, 
-                                                                   max_size: float
-                                                                   ):
+    def calculate_order_size_and_side_for_outstanding_transactions(
+        self,
+        label,
+        main_side: str,
+        net_sum_current_position: float,
+        net_sum_open_orders_strategy_limit: int,
+        net_sum_open_orders_strategy_market: int,
+        max_size: float,
+    ):
 
         """
         Compute order size attributes based on its position, order, and strategy setting
@@ -445,169 +448,184 @@ class MyOrders:
             dict
 
         """
-        
+
         # most strategies have TP (limit) & SL (market) orders
-        
+
         strategy_label = str_mod.get_strings_before_character(label, "-", 0)
 
         main_orders_qty = 0
-        main_orders_side =  None
-        main_orders_type =  None
+        main_orders_side = None
+        main_orders_type = None
 
         exit_orders_limit_qty = 0
         exit_orders_limit_side = None
-        exit_orders_limit_type= None
+        exit_orders_limit_type = None
 
         exit_orders_market_qty = 0
         exit_orders_market_side = None
         exit_orders_market_type = None
-        
-        #log.info(f'main_side {main_side}')
-        #log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position< 0} ')
-        #log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
-        #log.info(f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}')
-        
+
+        # log.info(f'main_side {main_side}')
+        # log.info(f'net_sum_current_position {net_sum_current_position} {net_sum_current_position< 0} ')
+        # log.info(f'net_sum_open_orders_strategy_market {net_sum_open_orders_strategy_market}')
+        # log.info(f'net_sum_open_orders_strategy_limit {net_sum_open_orders_strategy_limit}')
+
         if main_side == "sell":
-            
+
             # ensure sell side always negative
             max_size = max_size * -1 if max_size > 0 else max_size
-            
 
             # initial_position
-            if net_sum_current_position == 0\
-                and  net_sum_open_orders_strategy_limit==0\
-                    and net_sum_open_orders_strategy_market==0:
+            if (
+                net_sum_current_position == 0
+                and net_sum_open_orders_strategy_limit == 0
+                and net_sum_open_orders_strategy_market == 0
+            ):
                 main_orders_qty = abs(max_size)
-                main_orders_side =  'sell'
-                main_orders_type = 'limit'
+                main_orders_side = "sell"
+                main_orders_type = "limit"
                 exit_orders_limit_qty = main_orders_qty
                 exit_orders_limit_side = "buy"
-                exit_orders_limit_type = "limit"                
+                exit_orders_limit_type = "limit"
                 exit_orders_market_qty = main_orders_qty
-                
+
                 exit_orders_market_side = "buy"
                 exit_orders_market_type = "stop_market"
 
             # main has executed
             if net_sum_current_position < 0:
-            
+
                 main_orders_qty = 0
-                main_orders_side =  None
-                if 'hedgingSpot' in strategy_label:
-                    if  net_sum_open_orders_strategy_limit==0:
+                main_orders_side = None
+                if "hedgingSpot" in strategy_label:
+                    if net_sum_open_orders_strategy_limit == 0:
                         if net_sum_current_position > max_size:
-                            main_orders_qty = abs(int(max_size - net_sum_current_position))
-                            main_orders_side =  'sell'
-                            main_orders_type = 'limit'
-                            
+                            main_orders_qty = abs(
+                                int(max_size - net_sum_current_position)
+                            )
+                            main_orders_side = "sell"
+                            main_orders_type = "limit"
+
                         exit_orders_limit_qty = abs(net_sum_current_position)
                         exit_orders_limit_side = "buy"
-                        exit_orders_limit_type = "limit"                
+                        exit_orders_limit_type = "limit"
 
                         exit_orders_market_qty = 0
                         exit_orders_market_side = None
                         exit_orders_market_type = None
-                        
-                else:    
-                    if  net_sum_open_orders_strategy_limit==0\
-                            and net_sum_open_orders_strategy_market !=0:
+
+                else:
+                    if (
+                        net_sum_open_orders_strategy_limit == 0
+                        and net_sum_open_orders_strategy_market != 0
+                    ):
                         exit_orders_limit_qty = abs(net_sum_current_position)
                         exit_orders_limit_side = "buy"
-                        exit_orders_limit_type = "limit"                
+                        exit_orders_limit_type = "limit"
 
                         exit_orders_market_qty = 0
                         exit_orders_market_side = None
                         exit_orders_market_type = "stop_market"
-                        
-                    if  net_sum_open_orders_strategy_limit!=0\
-                            and net_sum_open_orders_strategy_market ==0:
+
+                    if (
+                        net_sum_open_orders_strategy_limit != 0
+                        and net_sum_open_orders_strategy_market == 0
+                    ):
                         exit_orders_limit_qty = 0
                         exit_orders_limit_side = None
-                        exit_orders_limit_type = "limit"                
+                        exit_orders_limit_type = "limit"
 
-                        exit_orders_market_qty = abs(net_sum_current_position) 
+                        exit_orders_market_qty = abs(net_sum_current_position)
                         exit_orders_market_side = "buy"
                         exit_orders_market_type = "stop_market"
 
-                    if  net_sum_open_orders_strategy_limit ==0\
-                            and net_sum_open_orders_strategy_market ==0:
-                        exit_orders_limit_qty = abs(net_sum_current_position) 
+                    if (
+                        net_sum_open_orders_strategy_limit == 0
+                        and net_sum_open_orders_strategy_market == 0
+                    ):
+                        exit_orders_limit_qty = abs(net_sum_current_position)
                         exit_orders_limit_side = "buy"
-                        exit_orders_limit_type = "limit"                
+                        exit_orders_limit_type = "limit"
 
-                        exit_orders_market_qty = abs(net_sum_current_position) 
+                        exit_orders_market_qty = abs(net_sum_current_position)
                         exit_orders_market_side = "buy"
                         exit_orders_market_type = "stop_market"
 
         if main_side == "buy":
 
             # initial_position
-            if net_sum_current_position == 0\
-                and  net_sum_open_orders_strategy_limit==0\
-                    and net_sum_open_orders_strategy_market==0:
-                main_orders_qty =abs(max_size)
-                main_orders_side =  'buy'
-                main_orders_type = 'limit'
+            if (
+                net_sum_current_position == 0
+                and net_sum_open_orders_strategy_limit == 0
+                and net_sum_open_orders_strategy_market == 0
+            ):
+                main_orders_qty = abs(max_size)
+                main_orders_side = "buy"
+                main_orders_type = "limit"
                 exit_orders_limit_qty = main_orders_qty
                 exit_orders_limit_side = "sell"
-                exit_orders_limit_type = "limit"                
+                exit_orders_limit_type = "limit"
                 exit_orders_market_qty = main_orders_qty
                 exit_orders_market_side = "sell"
-                exit_orders_market_type = 'stop_market'
-                
+                exit_orders_market_type = "stop_market"
+
             # main has execute
             if net_sum_current_position > 0:
                 main_orders_qty = 0
-                main_orders_side =  None
+                main_orders_side = None
                 order_type_market = "sell"
-                
-                if net_sum_open_orders_strategy_limit==0\
-                        and net_sum_open_orders_strategy_market!= 0:
+
+                if (
+                    net_sum_open_orders_strategy_limit == 0
+                    and net_sum_open_orders_strategy_market != 0
+                ):
                     exit_orders_limit_qty = abs(net_sum_current_position)
                     exit_orders_limit_side = "sell"
-                    exit_orders_limit_type = "limit"                
+                    exit_orders_limit_type = "limit"
                     exit_orders_market_qty = 0
                     exit_orders_market_side = None
                     exit_orders_market_type = None
-                
-                if net_sum_open_orders_strategy_limit!=0\
-                        and net_sum_open_orders_strategy_market== 0:
+
+                if (
+                    net_sum_open_orders_strategy_limit != 0
+                    and net_sum_open_orders_strategy_market == 0
+                ):
                     exit_orders_limit_qty = 0
                     exit_orders_limit_side = None
-                    exit_orders_limit_type = None                
+                    exit_orders_limit_type = None
                     exit_orders_market_qty = abs(net_sum_current_position)
                     exit_orders_market_side = "sell"
                     exit_orders_market_type = "stop_market"
-                    
-                if net_sum_open_orders_strategy_limit ==0\
-                        and net_sum_open_orders_strategy_market== 0:
+
+                if (
+                    net_sum_open_orders_strategy_limit == 0
+                    and net_sum_open_orders_strategy_market == 0
+                ):
                     exit_orders_limit_qty = abs(net_sum_current_position)
-                    exit_orders_limit_side = 'sell'
-                    exit_orders_limit_type = "limit"                
+                    exit_orders_limit_side = "sell"
+                    exit_orders_limit_type = "limit"
                     exit_orders_market_qty = abs(net_sum_current_position)
                     exit_orders_market_side = "sell"
                     exit_orders_market_type = "stop_market"
-                
+
         return {
             "main_orders_qty": main_orders_qty,
             "main_orders_side": main_orders_side,
-            'main_orders_type':  main_orders_type,
+            "main_orders_type": main_orders_type,
             "exit_orders_limit_qty": exit_orders_limit_qty,
             "exit_orders_limit_side": exit_orders_limit_side,
             "exit_orders_limit_type": exit_orders_limit_type,
             "exit_orders_market_qty": exit_orders_market_qty,
             "exit_orders_market_side": exit_orders_market_side,
-            "exit_orders_market_type": exit_orders_market_type
-            
+            "exit_orders_market_type": exit_orders_market_type,
         }
-            
 
     def cancel_orders_based_on_time_threshold(
-        self, server_time: int, label: str, time_threshold: int= None
+        self, server_time: int, label: str, time_threshold: int = None
     ) -> float:
         """ """
         one_minute = 60000
-        if time_threshold !=None:
+        if time_threshold != None:
             time_threshold = one_minute * 3
 
         try:
@@ -617,8 +635,8 @@ class MyOrders:
         except:
             open_orders_lastUpdateTStamps: list = []
 
-        #log.warning(label)
-        #log.error(open_orders_lastUpdateTStamps)
+        # log.warning(label)
+        # log.error(open_orders_lastUpdateTStamps)
         if open_orders_lastUpdateTStamps != []:
             open_orders_lastUpdateTStamps: list = (
                 self.open_orders_api_last_update_timestamps()
@@ -631,5 +649,8 @@ class MyOrders:
                 label
             )
 
-            return {'open_orders_deltaTime-exceed_threshold': open_orders_deltaTime > time_threshold,
-                    'open_order_id': open_order_id}
+            return {
+                "open_orders_deltaTime-exceed_threshold": open_orders_deltaTime
+                > time_threshold,
+                "open_order_id": open_order_id,
+            }

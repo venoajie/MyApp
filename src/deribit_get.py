@@ -9,6 +9,7 @@ from dataclassy import dataclass  # import websockets
 import aiohttp
 from aiohttp.helpers import BasicAuth
 from loguru import logger as log
+
 # user defined formula
 from configuration import id_numbering, config
 
@@ -16,6 +17,7 @@ headers = {
     "accept": "application/json",
     "coinglassSecret": "877ad9af931048aab7e468bda134942e",
 }
+
 
 async def telegram_bot_sendtext(
     bot_message: str, purpose: str = "general_error"
@@ -35,8 +37,8 @@ async def telegram_bot_sendtext(
         try:
             try:
                 bot_chatID = config.main_dotenv("telegram-failed_order")[
-                "BOT_CHATID_FAILED_ORDER"
-            ]
+                    "BOT_CHATID_FAILED_ORDER"
+                ]
             except:
                 bot_chatID = config.main_dotenv("telegram-failed_order")["bot_chatID"]
         except:
@@ -51,10 +53,10 @@ async def telegram_bot_sendtext(
         except:
             bot_chatID = config.main_dotenv("telegram-general_error")[
                 "BOT_CHATID_GENERAL_ERROR"
-                ]
-            
+            ]
+
     connection_url = "https://api.telegram.org/bot"
-    
+
     endpoint = (
         bot_token
         + ("/sendMessage?chat_id=")
@@ -71,23 +73,22 @@ async def telegram_bot_sendtext(
             endpoint=endpoint, params=params_coinGlass, connection_url=connection_url
         )
 
+
 async def main_coinGlass() -> None:
-        
+
     session = aiohttp.ClientSession()
-        
-    symbol = 'BTC'
-    currency = 'USD'
+
+    symbol = "BTC"
+    currency = "USD"
     headers = {
-"accept": "application/json",
-"coinglassSecret": "877ad9af931048aab7e468bda134942e",
-}
+        "accept": "application/json",
+        "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+    }
     url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
-                    
-    print (url)
-    print (headers)
-    async with session.get(
-        url,headers=headers 
-    ) as response:
+
+    print(url)
+    print(headers)
+    async with session.get(url, headers=headers) as response:
         print(await response.text())
         # RESToverHTTP Status Code
         status_code: int = response.status
@@ -97,7 +98,7 @@ async def main_coinGlass() -> None:
 
     return response
 
-        
+
 async def main(
     endpoint: str,
     params: str,
@@ -105,7 +106,7 @@ async def main(
     client_id: str = None,
     client_secret: str = None,
 ) -> None:
-    
+
     id = id_numbering.id(endpoint, endpoint)
 
     payload: Dict = {
@@ -114,23 +115,21 @@ async def main(
         "method": f"{endpoint}",
         "params": params,
     }
-    
-    if 'open_interest_history' in endpoint :
-        
+
+    if "open_interest_history" in endpoint:
+
         async with aiohttp.ClientSession() as session:
-            
-            symbol = 'BTC'
-            currency = 'USD'
+
+            symbol = "BTC"
+            currency = "USD"
             url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
             headers = {
-    "accept": "application/json",
-    "coinglassSecret": "877ad9af931048aab7e468bda134942e",
-}
-                            
-            print (connection_url + endpoint)
-            async with session.get(
-                url,headers=headers 
-            ) as response:
+                "accept": "application/json",
+                "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+            }
+
+            print(connection_url + endpoint)
+            async with session.get(url, headers=headers) as response:
                 # RESToverHTTP Status Code
                 status_code: int = response.status
 
@@ -138,7 +137,7 @@ async def main(
                 response: Dict = await response.json()
 
             return response
-        
+
     if client_id == None:
         async with aiohttp.ClientSession() as session:
             async with session.get(connection_url + endpoint) as response:
@@ -192,13 +191,13 @@ class GetPrivateData:
         endpoint: str = "private/get_subaccounts_details"
 
         params = {"currency": self.currency, "with_open_orders": True}
-        log.error ('get_subaccounts')
+        log.error("get_subaccounts")
 
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_account_summary(self):
         params = {"currency": self.currency, "extended": True}
-        log.error ('get_account_summary')
+        log.error("get_account_summary")
 
         # Set endpoint
         endpoint: str = "private/get_account_summary"
@@ -206,10 +205,10 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_positions(self):
-        
+
         # Set endpoint
         endpoint: str = "private/get_positions"
-        log.error ('get_positions')
+        log.error("get_positions")
 
         params = {"currency": self.currency}
 
@@ -230,7 +229,7 @@ class GetPrivateData:
         count: int = 1000,
         include_old: bool = True,
     ) -> list:
-        
+
         # Set endpoint
         endpoint: str = f"private/get_user_trades_by_currency_and_time"
 
@@ -246,7 +245,7 @@ class GetPrivateData:
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_user_trades_by_currency(self, count: int = 1000) -> list:
-        
+
         # Set endpoint
         endpoint: str = f"private/get_user_trades_by_currency"
 
@@ -444,7 +443,7 @@ class GetPrivateData:
                 side, instrument, size, label_numbered, limit_prc, type,
             )
 
-        #log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
+        # log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
         log.info(order_result)
 
         if order_result != None and "error" in order_result:
@@ -540,6 +539,7 @@ class GetPrivateData:
         result = await self.parse_main(endpoint=endpoint, params=params)
         return result
 
+
 async def send_order_market(
     connection_url: str,
     client_id,
@@ -611,6 +611,7 @@ async def send_order_market(
 
     return result
 
+
 async def get_server_time(connection_url: str) -> int:
     """
     Returning server time
@@ -626,6 +627,7 @@ async def get_server_time(connection_url: str) -> int:
 
     return result
 
+
 async def get_instruments(connection_url: str, currency):
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
@@ -633,12 +635,14 @@ async def get_instruments(connection_url: str, currency):
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
+
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
     params = {}
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
 
 async def get_ohlc(
     connection_url: str, instrument_name, resolution, qty_candles,
@@ -656,6 +660,7 @@ async def get_ohlc(
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
+
 async def get_open_interest_aggregated_ohlc(
     connection_url: str, currency, resolution
 ) -> list:
@@ -666,9 +671,8 @@ async def get_open_interest_aggregated_ohlc(
     # Set endpoint
     endpoint: str = f"indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}"
 
-    return await main(
-            endpoint=endpoint, params=headers, connection_url=connection_url
-        )
+    return await main(endpoint=endpoint, params=headers, connection_url=connection_url)
+
 
 async def get_open_interest_historical() -> list:
     """
@@ -676,18 +680,17 @@ async def get_open_interest_historical() -> list:
     currency = USD or symbol
 
     """
-    
-    symbol = 'BTC'
-    currency = 'USD'
-    resolution ='all'
+
+    symbol = "BTC"
+    currency = "USD"
+    resolution = "all"
     # Set endpoint
     url: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
 
     return await main_coinGlass()
 
+
 async def get_open_interest_symbol(connection_url: str, currency) -> list:
     # Set endpoint
     endpoint: str = f"open_interest?symbol={currency}"
-    return await main(
-            endpoint=endpoint, params=headers, connection_url=connection_url
-        )
+    return await main(endpoint=endpoint, params=headers, connection_url=connection_url)

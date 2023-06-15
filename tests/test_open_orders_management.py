@@ -507,10 +507,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "buy"
@@ -524,10 +522,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "sell"
@@ -542,10 +538,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == None
@@ -559,10 +553,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "sell"
@@ -576,10 +568,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             net_sum_current_position = trade_based_on_strategy_label[
                 "net_sum_order_size"
             ]
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "buy"
@@ -682,10 +672,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == None
@@ -696,10 +684,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "buy"
@@ -710,10 +696,8 @@ def tst_determine_order_size_and_side_for_outstanding_transactions():
             trade_based_on_strategy_label = open_orders.trade_based_on_strategy_label(
                 open_trade, strategy
             )
-            determine_order_size = (
-                open_orders.determine_order_size_and_side_for_outstanding_transactions(
-                    max_size, strategy, net_sum_current_position
-                )
+            determine_order_size = open_orders.determine_order_size_and_side_for_outstanding_transactions(
+                max_size, strategy, net_sum_current_position
             )
 
             assert determine_order_size["side"] == "sell"
@@ -1516,113 +1500,311 @@ def tst_is_open_trade_has_exit_order():
                 == "supplyDemandShort60A-closed-1678158310813"
             )
 
+
 def test_determine_order_size_and_side_for_outstanding_transactions():
-    
-    strategies=['hedgingSpot','supplyDemandShort60A']
-    main_side=['sell','buy']
-    
+
+    strategies = ["hedgingSpot", "supplyDemandShort60A"]
+    main_side = ["sell", "buy"]
+
     for strategy in strategies:
 
-        
         for side in main_side:
-            max_size= [-10,0,10]
-            
+            max_size = [-10, 0, 10]
+
             for size in max_size:
-                
-                net_sum_current_position=  [-10,0,10]
-                
+
+                net_sum_current_position = [-10, 0, 10]
+
                 for net_current_position in net_sum_current_position:
-                        
-                    net_sum_open_orders_strategy_limit= [-10,0,10] 
+
+                    net_sum_open_orders_strategy_limit = [-10, 0, 10]
                     for net_open_orders_limit in net_sum_open_orders_strategy_limit:
-                        
-                        net_sum_open_orders_strategy_market=  [-10,0,10] 
-                        
-                        for net_open_orders_market in net_sum_open_orders_strategy_market:
-                        
-                            calculation_result = open_orders.calculate_order_size_and_side_for_outstanding_transactions(strategy,
-                                                                                                                        side, 
-                                                                                                                        net_current_position,
-                                                                                                                        net_open_orders_limit, 
-                                                                                                                        net_open_orders_market,
-                                                                                                                        size
-                                                                                                                        )
-                            
-                            if strategy =='supplyDemandShort60A':
-                                if side =='sell':
+
+                        net_sum_open_orders_strategy_market = [-10, 0, 10]
+
+                        for (
+                            net_open_orders_market
+                        ) in net_sum_open_orders_strategy_market:
+
+                            calculation_result = open_orders.calculate_order_size_and_side_for_outstanding_transactions(
+                                strategy,
+                                side,
+                                net_current_position,
+                                net_open_orders_limit,
+                                net_open_orders_market,
+                                size,
+                            )
+
+                            if strategy == "supplyDemandShort60A":
+                                if side == "sell":
                                     if size == -10:
-                                        if net_current_position== 0:
-                                            if net_open_orders_limit== 0:
-                                                if net_open_orders_market== 0:
-                                                    assert calculation_result['main_orders_qty'] == abs(size)
-                                                    assert calculation_result['main_orders_side'] == 'sell'
-                                                    assert calculation_result['main_orders_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_limit_qty'] == abs(size)
-                                                    assert calculation_result['exit_orders_limit_side'] == 'buy'
-                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_market_qty'] == abs(size)
-                                                    assert calculation_result['exit_orders_market_side'] == 'buy'
-                                                    assert calculation_result['exit_orders_market_type'] == 'stop_market'                                            
-                    
-                                        if net_current_position== -10:
-                                    
-                                            assert calculation_result['main_orders_qty'] == 0
-                                            assert calculation_result['main_orders_side'] == None
-                                            
-                                            if net_open_orders_limit== 10:
-                                                if net_open_orders_market== 0:
-                                                    assert calculation_result['exit_orders_limit_qty'] == 0
-                                                    assert calculation_result['exit_orders_limit_side'] == None
-                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_market_qty'] == abs(net_current_position)
-                                                    assert calculation_result['exit_orders_market_side'] == 'buy'
-                                                    assert calculation_result['exit_orders_market_side'] == 'buy'
+                                        if net_current_position == 0:
+                                            if net_open_orders_limit == 0:
+                                                if net_open_orders_market == 0:
+                                                    assert calculation_result[
+                                                        "main_orders_qty"
+                                                    ] == abs(size)
+                                                    assert (
+                                                        calculation_result[
+                                                            "main_orders_side"
+                                                        ]
+                                                        == "sell"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "main_orders_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert calculation_result[
+                                                        "exit_orders_limit_qty"
+                                                    ] == abs(size)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert calculation_result[
+                                                        "exit_orders_market_qty"
+                                                    ] == abs(size)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_type"
+                                                        ]
+                                                        == "stop_market"
+                                                    )
 
-                                            if net_open_orders_limit== 0:
-                                                if net_open_orders_market== 10:
-                                                    assert calculation_result['exit_orders_limit_qty'] == abs(net_current_position)
-                                                    assert calculation_result['exit_orders_limit_side'] == 'buy'
-                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_market_qty'] == 0
-                                                    assert calculation_result['exit_orders_market_side'] == None
-                                                    assert calculation_result['exit_orders_market_type'] == 'stop_market'
+                                        if net_current_position == -10:
 
-                            if strategy =='supplyDemandShort60A':
-                                if side =='buy':
-                                    
+                                            assert (
+                                                calculation_result["main_orders_qty"]
+                                                == 0
+                                            )
+                                            assert (
+                                                calculation_result["main_orders_side"]
+                                                == None
+                                            )
+
+                                            if net_open_orders_limit == 10:
+                                                if net_open_orders_market == 0:
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_qty"
+                                                        ]
+                                                        == 0
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == None
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert calculation_result[
+                                                        "exit_orders_market_qty"
+                                                    ] == abs(net_current_position)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+
+                                            if net_open_orders_limit == 0:
+                                                if net_open_orders_market == 10:
+                                                    assert calculation_result[
+                                                        "exit_orders_limit_qty"
+                                                    ] == abs(net_current_position)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_qty"
+                                                        ]
+                                                        == 0
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == None
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_type"
+                                                        ]
+                                                        == "stop_market"
+                                                    )
+
+                            if strategy == "supplyDemandShort60A":
+                                if side == "buy":
+
                                     if size == 10:
-                                        if net_current_position== 0:
-                                            if net_open_orders_limit== 0:
-                                                if net_open_orders_market== 0:
-                                                    assert calculation_result['main_orders_qty'] == size
-                                                    assert calculation_result['main_orders_side'] == 'buy'
-                                                    assert calculation_result['exit_orders_limit_qty'] == size
-                                                    assert calculation_result['exit_orders_limit_side'] == 'sell'
-                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_market_qty'] == size
-                                                    assert calculation_result['exit_orders_market_side'] == 'sell'
-                                                    assert calculation_result['exit_orders_market_type'] == 'stop_market'
+                                        if net_current_position == 0:
+                                            if net_open_orders_limit == 0:
+                                                if net_open_orders_market == 0:
+                                                    assert (
+                                                        calculation_result[
+                                                            "main_orders_qty"
+                                                        ]
+                                                        == size
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "main_orders_side"
+                                                        ]
+                                                        == "buy"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_qty"
+                                                        ]
+                                                        == size
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == "sell"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_qty"
+                                                        ]
+                                                        == size
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == "sell"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_type"
+                                                        ]
+                                                        == "stop_market"
+                                                    )
 
-                                        if net_current_position== 10:
-                                    
-                                            assert calculation_result['main_orders_qty'] == 0
-                                            assert calculation_result['main_orders_side'] == None
-                                            
-                                            if net_open_orders_limit== 10:
-                                                if net_open_orders_market== 0:
-                                                    assert calculation_result['exit_orders_limit_qty'] == 0
-                                                    assert calculation_result['exit_orders_limit_side'] == None
-                                                    assert calculation_result['exit_orders_limit_type'] == 'limit'
-                                                    assert calculation_result['exit_orders_market_qty'] == abs(net_current_position)
-                                                    assert calculation_result['exit_orders_market_side'] == 'sell'
-                                                    assert calculation_result['exit_orders_market_type'] == 'stop_market'
+                                        if net_current_position == 10:
 
-                                            if net_open_orders_limit== 0:
-                                                if net_open_orders_market== 10:
-                                                    assert calculation_result['exit_orders_limit_qty'] == abs(net_current_position)
-                                                    assert calculation_result['exit_orders_limit_side'] == 'sell'
-                                                    assert calculation_result['exit_orders_limit_type'] == None
-                                                    assert calculation_result['exit_orders_market_qty'] == 0
-                                                    assert calculation_result['exit_orders_market_side'] == None
-                                                    assert calculation_result['exit_orders_market_type'] == None
+                                            assert (
+                                                calculation_result["main_orders_qty"]
+                                                == 0
+                                            )
+                                            assert (
+                                                calculation_result["main_orders_side"]
+                                                == None
+                                            )
 
+                                            if net_open_orders_limit == 10:
+                                                if net_open_orders_market == 0:
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_qty"
+                                                        ]
+                                                        == 0
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == None
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == "limit"
+                                                    )
+                                                    assert calculation_result[
+                                                        "exit_orders_market_qty"
+                                                    ] == abs(net_current_position)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == "sell"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_type"
+                                                        ]
+                                                        == "stop_market"
+                                                    )
+
+                                            if net_open_orders_limit == 0:
+                                                if net_open_orders_market == 10:
+                                                    assert calculation_result[
+                                                        "exit_orders_limit_qty"
+                                                    ] == abs(net_current_position)
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_side"
+                                                        ]
+                                                        == "sell"
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_limit_type"
+                                                        ]
+                                                        == None
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_qty"
+                                                        ]
+                                                        == 0
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_side"
+                                                        ]
+                                                        == None
+                                                    )
+                                                    assert (
+                                                        calculation_result[
+                                                            "exit_orders_market_type"
+                                                        ]
+                                                        == None
+                                                    )

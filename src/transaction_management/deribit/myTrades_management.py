@@ -125,29 +125,37 @@ class MyTrades:
             ),
         }
 
-    def transactions_same_side_and_label(self, side: str, label_strategy: str, my_trades_open: list = None) -> dict:
+    def transactions_same_side_and_label(
+        self, side: str, label_strategy: str, my_trades_open: list = None
+    ) -> dict:
         """ 
         
         """
         if my_trades_open == None:
             my_trades_open = self.my_trades
-            
-        if my_trades_open !=[]     :
-            my_trade_side = [
-                    o for o in my_trades_open if o["direction"] == side
-                ]
-            #log.critical (my_trades_open)
-            my_trade_side_strategy_label = [] if my_trade_side == [] else [
-                    o for o in my_trade_side if label_strategy in o["label"]
-                    ]
-            net_sum_my_trade_side_strategy_label = 0 if my_trade_side_strategy_label== []  else self.net_sum_trade_size(my_trade_side_strategy_label)
-        
+
+        if my_trades_open != []:
+            my_trade_side = [o for o in my_trades_open if o["direction"] == side]
+            # log.critical (my_trades_open)
+            my_trade_side_strategy_label = (
+                []
+                if my_trade_side == []
+                else [o for o in my_trade_side if label_strategy in o["label"]]
+            )
+            net_sum_my_trade_side_strategy_label = (
+                0
+                if my_trade_side_strategy_label == []
+                else self.net_sum_trade_size(my_trade_side_strategy_label)
+            )
+
         return {
             "my_trade_side": [] if my_trades_open == [] else my_trade_side,
-            "my_trade_side_strategy_label": [] if my_trades_open == [] else my_trade_side_strategy_label,
+            "my_trade_side_strategy_label": []
+            if my_trades_open == []
+            else my_trade_side_strategy_label,
             "net_sum_my_trade_side_strategy_label": net_sum_my_trade_side_strategy_label,
         }
-        
+
     def transactions_same_id(self, label: str, my_trades_open: list) -> None:
         """ """
         transactions_under_same_id = [
@@ -188,9 +196,7 @@ class MyTrades:
         ]
 
     def closed_open_order_label_in_my_trades_open(
-        self,
-        label: str,
-        my_trades_open: list = None,
+        self, label: str, my_trades_open: list = None,
     ) -> None:
         """
         If label 'closed' from open order exist, then it is not orphan order. It is ok.
@@ -215,10 +221,8 @@ class MyTrades:
     ) -> None:
         """ """
 
-        gather_transactions_under_the_same_id_int = (
-            self.gather_transactions_under_the_same_id_int(
-                closed_label_id_int, my_trades_open
-            )
+        gather_transactions_under_the_same_id_int = self.gather_transactions_under_the_same_id_int(
+            closed_label_id_int, my_trades_open
         )
 
         # filter open trades which have the same label id with trade transaction
@@ -229,9 +233,9 @@ class MyTrades:
         log.debug(f"{closed_label_id_int} \n ")
 
         # sum transaction with the same label id
-        sum_closed_trades_in_my_trades_open_net = (
-            gather_transactions_under_the_same_id_int["transactions_same_id_net_qty"]
-        )
+        sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int[
+            "transactions_same_id_net_qty"
+        ]
 
         log.critical(
             f"sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}"
@@ -320,18 +324,18 @@ class MyTrades:
 
                 my_trades_closed_label = self.extracting_unique_label_id(my_trades_open)
 
-                #log.warning(my_trades_closed_label)
+                # log.warning(my_trades_closed_label)
                 for id in my_trades_closed_label:
-                    #log.warning(id)
+                    # log.warning(id)
                     self.synchronizing_closed_tradings(
                         id, my_trades_open, my_trades_path_open
                     )
 
             for data_order in my_trades:
                 data_order = [data_order]
-                #numb = numb + len(data_order)
+                # numb = numb + len(data_order)
 
-                #log.info(data_order)
+                # log.info(data_order)
 
                 trade_transactions = self.recognize_trade_transactions(data_order)
 
@@ -352,14 +356,14 @@ class MyTrades:
                     pickling.append_data(my_trades_path_open, data_order, True)
 
                 if trade_transactions["opening_position"]:
-                    #log.error("LABEL ID OPEN")
+                    # log.error("LABEL ID OPEN")
                     # log.error (data_order)
 
                     # append trade to db.check potential duplicate
                     pickling.append_data(my_trades_path_open, data_order, True)
 
                 if trade_transactions["closing_position"]:
-                    #log.debug("LABEL ID CLOSED")
+                    # log.debug("LABEL ID CLOSED")
                     # log.error (data_order)
 
                     # append trade to db.check potential duplicate

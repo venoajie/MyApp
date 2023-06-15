@@ -16,89 +16,96 @@ import deribit_get as get_dbt
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
+
 def catch_error(error, idle: int = None) -> list:
     """ """
     system_tools.catch_error_message(error, idle)
 
+
 async def get_instruments(connection_url, currency) -> float:
     """ """
 
-    result= await get_dbt.get_instruments (connection_url, currency)
-    
+    result = await get_dbt.get_instruments(connection_url, currency)
+
     return result
+
 
 async def get_currencies(connection_url) -> float:
     """ """
 
-    result= await get_dbt.get_currencies (connection_url)
-    
-    return  result
+    result = await get_dbt.get_currencies(connection_url)
+
+    return result
+
 
 async def run_every_15_seconds() -> None:
     """ """
 
     import apply_strategies
-    
+
     await apply_strategies.main()
+
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
 
     try:
-        
+
         get_currencies_all = await get_currencies(connection_url)
-        currencies=  ([o['currency'] for o in get_currencies_all ['result']])
-        
+        currencies = [o["currency"] for o in get_currencies_all["result"]]
+
         for currency in currencies:
-            
+
             instruments = await get_instruments(connection_url, currency)
-            #print (f'instruments {instruments}')
-            
+            # print (f'instruments {instruments}')
+
             my_path_instruments = system_tools.provide_path_for_file(
-                "instruments", currency)
-            
+                "instruments", currency
+            )
+
             pickling.replace_data(my_path_instruments, instruments)
 
         my_path_cur = system_tools.provide_path_for_file("currencies")
-        
+
         pickling.replace_data(my_path_cur, currencies)
-        #catch_error('update currencies and instruments')
+        # catch_error('update currencies and instruments')
 
     except Exception as error:
         catch_error(error)
-        
+
+
 async def get_open_interest_history() -> None:
     headers = {
-    "accept": "application/json",
-    "coinglassSecret": "877ad9af931048aab7e468bda134942e",
-}
+        "accept": "application/json",
+        "coinglassSecret": "877ad9af931048aab7e468bda134942e",
+    }
     session = aiohttp.ClientSession()
-    time_frame = 'm5'
-    symbol = 'BTC'
-    currency = 'USD'
+    time_frame = "m5"
+    symbol = "BTC"
+    currency = "USD"
     url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
 
     async with session.get(url, headers=headers) as resp:
         print(await resp.text())
-        
+
+
 if __name__ == "__main__":
-    #asyncio.run(get_open_interest_history())
-    
-    #connection_url: str = "https://www.deribit.com/api/v2/"
+    # asyncio.run(get_open_interest_history())
+
+    # connection_url: str = "https://www.deribit.com/api/v2/"
     try:
-        #asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
+        # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
         schedule.every(15).seconds.do(run_every_15_seconds)
-        
+
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
 
         loop = asyncio.get_event_loop()
-        
+
         while True:
             loop.run_until_complete(schedule.run_pending())
-            time.sleep(.91)
-            
+            time.sleep(0.91)
+
     except Exception as error:
         catch_error(error, 30)
-        

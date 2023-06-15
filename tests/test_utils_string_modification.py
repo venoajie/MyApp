@@ -370,59 +370,62 @@ def test_extract_integers_from_text():
 def test_get_strings_before_character_and_parsing_label():
     label = "hedgingSpot-open-1671189554374"
     result = "hedgingSpot"
-    assert (string_modification.get_strings_before_character(label, "-", 0) == result)
-    assert (string_modification.parsing_label(label) ['int'] == '1671189554374')
-    assert (string_modification.parsing_label(label) ['main'] == result)
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.get_strings_before_character(label, "-", 0) == result
+    assert string_modification.parsing_label(label)["int"] == "1671189554374"
+    assert string_modification.parsing_label(label)["main"] == result
+    assert string_modification.parsing_label(label)["super_main"] == result
     label = "hedgingSpot-1671189554374"
     result = "1671189554374"
-    assert (string_modification.parsing_label(label) ['int'] == result)
+    assert string_modification.parsing_label(label)["int"] == result
     label = "hedgingSpot-1681899738961"
     result = "1681899738961"
-    assert (string_modification.parsing_label(label) ['int'] == result)
-        
+    assert string_modification.parsing_label(label)["int"] == result
+
     label = "supplyDemandLong60B-1677903684425"
     result = "supplyDemandLong60B"
-    assert (string_modification.parsing_label(label) ['main'] == result)
-    
+    assert string_modification.parsing_label(label)["main"] == result
+
     label = "hedgingSpot-1671189554374"
     result = "hedgingSpot"
-    assert (string_modification.parsing_label(label) ['main'] == result)
-    
+    assert string_modification.parsing_label(label)["main"] == result
+
     label = "supplyDemandLong60B-closed-1677903684425"
     result = "supplyDemandLong60B"
-    assert (string_modification.get_strings_before_character(label, "-", 0) == result)
-    assert (string_modification.parsing_label(label) ['main'] == result)
+    assert string_modification.get_strings_before_character(label, "-", 0) == result
+    assert string_modification.parsing_label(label)["main"] == result
     result = "supplyDemand60B"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.parsing_label(label)["super_main"] == result
     label = "every5mtestLong-open-1681617021717"
     result = "every5mtest"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.parsing_label(label)["super_main"] == result
     label = "every5mtestShort-closed-1681617021717"
     result = "every5mtest"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
-    
+    assert string_modification.parsing_label(label)["super_main"] == result
+
     result = "every5mtestShort-open-1681617021717"
-    assert (string_modification.parsing_label(label) ['closed_to_open'] == result)
-    
+    assert string_modification.parsing_label(label)["closed_to_open"] == result
+
     result = "1681617021717"
-    assert (string_modification.parsing_label(label) ['int'] == result)
+    assert string_modification.parsing_label(label)["int"] == result
     result = "every5mtestLong-open-1677473096"
-    assert (string_modification.parsing_label(label, 1677473096) ['flipping_closed'] == result)
+    assert (
+        string_modification.parsing_label(label, 1677473096)["flipping_closed"]
+        == result
+    )
     label = "every5mtestShort"
     result = "every5mtest"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.parsing_label(label)["super_main"] == result
     label = "every5mtestLong"
     result = "every5mtest"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.parsing_label(label)["super_main"] == result
     label = "hedgingSpot"
     result = "hedgingSpot"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
-    
+    assert string_modification.parsing_label(label)["super_main"] == result
+
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60"
-    assert (string_modification.get_strings_before_character(label, "-", 0)== result)
-    assert (string_modification.parsing_label(label) ['main'] == result)
+    assert string_modification.get_strings_before_character(label, "-", 0) == result
+    assert string_modification.parsing_label(label)["main"] == result
 
     assert (
         string_modification.get_strings_before_character(
@@ -433,50 +436,127 @@ def test_get_strings_before_character_and_parsing_label():
 
     label = "supplyDemandShort60-closed-1677473096"
     result = "1677473096"
-    assert (string_modification.get_strings_before_character(label, "-", 2)== result)
-    assert (string_modification.parsing_label(label) ['int'] == result)
+    assert string_modification.get_strings_before_character(label, "-", 2) == result
+    assert string_modification.parsing_label(label)["int"] == result
 
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60-closed"
-    assert (string_modification.get_strings_before_character(label, "-", [0, 1]) == result)
-    assert (string_modification.parsing_label(label) ['transaction_status'] == result)
-
+    assert (
+        string_modification.get_strings_before_character(label, "-", [0, 1]) == result
+    )
+    assert string_modification.parsing_label(label)["transaction_status"] == result
 
     result = "supplyDemandShort60-open-1677473096"
-    assert (string_modification.parsing_label(label) ['closed_to_open'] == result)
-    
+    assert string_modification.parsing_label(label)["closed_to_open"] == result
+
     label = "supplyDemandShort60-closed-1677473096"
     result = "supplyDemandShort60-1677473096"
-    assert (
-        string_modification.get_strings_before_character(label)
-        == result)
-    assert (string_modification.parsing_label(label) ['transaction_net'] == result)
+    assert string_modification.get_strings_before_character(label) == result
+    assert string_modification.parsing_label(label)["transaction_net"] == result
     result = "supplyDemand60"
-    assert (string_modification.parsing_label(label) ['super_main'] == result)
+    assert string_modification.parsing_label(label)["super_main"] == result
+
 
 def test_parsing_sqlite_json_output():
     element_null = []
 
     data = [
-        '{"trade_seq":119459281,"trade_id":"ETH-162634254","timestamp":1678610180143,"tick_direction":0,"state":"filled","self_trade":False,"risk_reducing":False,"reduce_only":False,"profit_loss":0.0,"price":1473.05,"post_only":True,"order_type":"limit","order_id":"ETH-32205761779","mmp":False,"matching_id":None,"mark_price":1472.79,"liquidity":"M","label":"hedgingSpot-open-1678610144572","instrument_name":"ETH-PERPETUAL","index_price":1474.68,"fee_currency":"ETH","fee":0.0,"direction":"sell","api":True,"amount":78.0}', '{"trade_seq":119653801,"trade_id":"ETH-162909430","timestamp":1678706775993,"tick_direction":1,"state":"filled","self_trade":False,"risk_reducing":False,"reduce_only":False,"profit_loss":0.0,"price":1583.75,"post_only":True,"order_type":"limit","order_id":"ETH-32231983208","mmp":False,"matching_id":None,"mark_price":1583.81,"liquidity":"M","label":"hedgingSpot-open-1678706775367","instrument_name":"ETH-PERPETUAL","index_price":1583.99,"fee_currency":"ETH","fee":0.0,"direction":"sell","api":True,"amount":5.0}'
-        ]
-    
+        '{"trade_seq":119459281,"trade_id":"ETH-162634254","timestamp":1678610180143,"tick_direction":0,"state":"filled","self_trade":False,"risk_reducing":False,"reduce_only":False,"profit_loss":0.0,"price":1473.05,"post_only":True,"order_type":"limit","order_id":"ETH-32205761779","mmp":False,"matching_id":None,"mark_price":1472.79,"liquidity":"M","label":"hedgingSpot-open-1678610144572","instrument_name":"ETH-PERPETUAL","index_price":1474.68,"fee_currency":"ETH","fee":0.0,"direction":"sell","api":True,"amount":78.0}',
+        '{"trade_seq":119653801,"trade_id":"ETH-162909430","timestamp":1678706775993,"tick_direction":1,"state":"filled","self_trade":False,"risk_reducing":False,"reduce_only":False,"profit_loss":0.0,"price":1583.75,"post_only":True,"order_type":"limit","order_id":"ETH-32231983208","mmp":False,"matching_id":None,"mark_price":1583.81,"liquidity":"M","label":"hedgingSpot-open-1678706775367","instrument_name":"ETH-PERPETUAL","index_price":1583.99,"fee_currency":"ETH","fee":0.0,"direction":"sell","api":True,"amount":5.0}',
+    ]
+
     expected = [
         {
-            'trade_seq': 119459281, 'trade_id': 'ETH-162634254', 'timestamp': 1678610180143, 'tick_direction': 0, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1473.05, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32205761779', 'mmp': False, 'matching_id': None, 'mark_price': 1472.79, 'liquidity': 'M', 'label': 'hedgingSpot-open-1678610144572', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1474.68, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 78.0
-            },
+            "trade_seq": 119459281,
+            "trade_id": "ETH-162634254",
+            "timestamp": 1678610180143,
+            "tick_direction": 0,
+            "state": "filled",
+            "self_trade": False,
+            "risk_reducing": False,
+            "reduce_only": False,
+            "profit_loss": 0.0,
+            "price": 1473.05,
+            "post_only": True,
+            "order_type": "limit",
+            "order_id": "ETH-32205761779",
+            "mmp": False,
+            "matching_id": None,
+            "mark_price": 1472.79,
+            "liquidity": "M",
+            "label": "hedgingSpot-open-1678610144572",
+            "instrument_name": "ETH-PERPETUAL",
+            "index_price": 1474.68,
+            "fee_currency": "ETH",
+            "fee": 0.0,
+            "direction": "sell",
+            "api": True,
+            "amount": 78.0,
+        },
         {
-            'trade_seq': 119653801, 'trade_id': 'ETH-162909430', 'timestamp': 1678706775993, 'tick_direction': 1, 'state': 'filled', 'self_trade': False, 'risk_reducing': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1583.75, 'post_only': True, 'order_type': 'limit', 'order_id': 'ETH-32231983208', 'mmp': False, 'matching_id': None, 'mark_price': 1583.81, 'liquidity': 'M', 'label': 'hedgingSpot-open-1678706775367', 'instrument_name': 'ETH-PERPETUAL', 'index_price': 1583.99, 'fee_currency': 'ETH', 'fee': 0.0, 'direction': 'sell', 'api': True, 'amount': 5.0
-         }
-        ]
+            "trade_seq": 119653801,
+            "trade_id": "ETH-162909430",
+            "timestamp": 1678706775993,
+            "tick_direction": 1,
+            "state": "filled",
+            "self_trade": False,
+            "risk_reducing": False,
+            "reduce_only": False,
+            "profit_loss": 0.0,
+            "price": 1583.75,
+            "post_only": True,
+            "order_type": "limit",
+            "order_id": "ETH-32231983208",
+            "mmp": False,
+            "matching_id": None,
+            "mark_price": 1583.81,
+            "liquidity": "M",
+            "label": "hedgingSpot-open-1678706775367",
+            "instrument_name": "ETH-PERPETUAL",
+            "index_price": 1583.99,
+            "fee_currency": "ETH",
+            "fee": 0.0,
+            "direction": "sell",
+            "api": True,
+            "amount": 5.0,
+        },
+    ]
 
     assert string_modification.parsing_sqlite_json_output(data) == expected
     assert string_modification.parsing_sqlite_json_output(element_null) == []
-     
+
+
 def test_transform_nested_dict_to_list():
-    data= {'volume': [29.217675, 51.877503], 'tick': [1682338500000, 1682338560000], 'status': 'ok', 'open': [1852.05, 1850.8], 'low': [1850.8, 1850.75], 'high': [1852.05, 1851.05], 'cost': [54090.0, 96016.0], 'close': [1850.85, 1850.9]}
-    
-    expected= [{'volume': 29.217675, 'tick': 1682338500000, 'open': 1852.05, 'low': 1850.8, 'high': 1852.05, 'cost': 54090.0, 'close': 1850.85},
-    {'volume': 51.877503, 'tick': 1682338560000, 'open': 1850.8, 'low': 1850.75, 'high': 1851.05, 'cost': 96016.0, 'close': 1850.9}]
-    
+    data = {
+        "volume": [29.217675, 51.877503],
+        "tick": [1682338500000, 1682338560000],
+        "status": "ok",
+        "open": [1852.05, 1850.8],
+        "low": [1850.8, 1850.75],
+        "high": [1852.05, 1851.05],
+        "cost": [54090.0, 96016.0],
+        "close": [1850.85, 1850.9],
+    }
+
+    expected = [
+        {
+            "volume": 29.217675,
+            "tick": 1682338500000,
+            "open": 1852.05,
+            "low": 1850.8,
+            "high": 1852.05,
+            "cost": 54090.0,
+            "close": 1850.85,
+        },
+        {
+            "volume": 51.877503,
+            "tick": 1682338560000,
+            "open": 1850.8,
+            "low": 1850.75,
+            "high": 1851.05,
+            "cost": 96016.0,
+            "close": 1850.9,
+        },
+    ]
+
     assert string_modification.transform_nested_dict_to_list(data) == expected

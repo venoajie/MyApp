@@ -25,6 +25,7 @@ async def get_private_data() -> list:
 
     return get_dbt.GetPrivateData(connection_url, client_id, client_secret, currency)
 
+
 @pytest.mark.asyncio
 async def test_get_open_orders_byCurrency():
     private_data = await get_private_data()
@@ -133,6 +134,7 @@ async def test_get_currencies():
         "testnet",
     ]
 
+
 @pytest.mark.asyncio
 async def test_get_get_instruments():
     get_instruments = await get_dbt.get_instruments(connection_url, "eth")
@@ -169,6 +171,7 @@ async def test_get_open_interest_aggregated_ohlc():
 
     assert list(ohlc) == ["code", "msg", "success"]
 
+
 @pytest.mark.asyncio
 async def test_get_open_interest_symbol():
     connection_url: str = "https://open-api.coinglass.com/public/v2/"
@@ -176,6 +179,7 @@ async def test_get_open_interest_symbol():
     open_interest = await get_dbt.get_open_interest_symbol(connection_url, "eth")
 
     assert list(open_interest) == ["code", "msg", "success"]
+
 
 @pytest.mark.asyncio
 async def test_telegram_bot_sendtext():

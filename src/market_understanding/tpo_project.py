@@ -17,14 +17,22 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from market_understanding.tpo_helper import get_ticksize, abc, get_mean, get_rf, get_context, get_contextnow
+from market_understanding.tpo_helper import (
+    get_ticksize,
+    abc,
+    get_mean,
+    get_rf,
+    get_context,
+    get_contextnow,
+)
 import numpy as np
 from datetime import timedelta
 from loguru import logger as log
 from db_management import sqlite_management
+
 # from transform import transform_live, transform_hist
 # from alpha_dataframe import get_data
-pd.set_option('display.max_rows', None)
+pd.set_option("display.max_rows", None)
 
 app = dash.Dash(__name__)
 
@@ -35,64 +43,85 @@ refresh_int = 1  # refresh interval in seconds for live updates
 freq = 30
 avglen = 10  # num days mean to get values
 days_to_display = 10  # Number of last n days you want on the screen to display
-mode = 'tpo'  # for volume --> 'vol'
+mode = "tpo"  # for volume --> 'vol'
 
-async def querying_all(table: list, 
-                        database: str = "databases/trading.sqlite3") -> dict:
+
+async def querying_all(
+    table: list, database: str = "databases/trading.sqlite3"
+) -> dict:
     """ """
     from utilities import string_modification as str_mod
-    result =  await sqlite_management.querying_table (table,  database ) 
-    return   str_mod.parsing_sqlite_json_output([o['data'] for o in result])  
-                
-def transform_result_to_data_frame (data: object):
-    
-    #log.debug (data)
+
+    result = await sqlite_management.querying_table(table, database)
+    return str_mod.parsing_sqlite_json_output([o["data"] for o in result])
+
+
+def transform_result_to_data_frame(data: object):
+
+    # log.debug (data)
     df = pd.DataFrame(data)
 
     # Column name standardization
-    df	= 	df.rename(columns={'tick':'datetime','open': 'Open','high': 'High', 'low': 'Low',
-                            'close': 'Close','volume': 'VolumeCur','cost': 'Volume' })
+    df = df.rename(
+        columns={
+            "tick": "datetime",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "volume": "VolumeCur",
+            "cost": "Volume",
+        }
+    )
 
     # transform unix date to utc
-    df['datetime'] = pd.to_datetime(df['datetime'],unit='ms')
-    df['datetime'] = df['datetime'].dt.strftime('%Y%m%d %I:%M:%S')
+    df["datetime"] = pd.to_datetime(df["datetime"], unit="ms")
+    df["datetime"] = df["datetime"].dt.strftime("%Y%m%d %I:%M:%S")
 
     # Filter relevant data
-    df['symbol']='_NF1'
+    df["symbol"] = "_NF1"
 
-    for col in ('Open', 'High', 'Low', 'Close',  'Volume'):
+    for col in ("Open", "High", "Low", "Close", "Volume"):
         df[col] = df[col].astype(np.float32)
-        
-    df = df.loc[:,['symbol', 'datetime', 'Open', 'High', 'Low', 'Close',  'Volume']]
 
-    return df   
+    df = df.loc[:, ["symbol", "datetime", "Open", "High", "Low", "Close", "Volume"]]
 
-dfhist = pd.read_csv('market_understanding/history.txt')  # 1 min historical data in symbol,datetime,open,high,low,close,volume
+    return df
+
+
+dfhist = pd.read_csv(
+    "market_understanding/history.txt"
+)  # 1 min historical data in symbol,datetime,open,high,low,close,volume
 loop = asyncio.get_event_loop()
-ohlc30= loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
-#log.warning (ohlc30)
-dfohlc30= transform_result_to_data_frame (ohlc30)
-#log.warning (dfohlc30)
+ohlc30 = loop.run_until_complete(querying_all("ohlc1_eth_perp_json"))
+# log.warning (ohlc30)
+dfohlc30 = transform_result_to_data_frame(ohlc30)
+# log.warning (dfohlc30)
 # Check the sample file. Match the format exactly else code will not run.
 
 dfhist.iloc[:, 2:] = dfhist.iloc[:, 2:].apply(pd.to_numeric)
 
-#log.warning (dfohlc30)
+# log.warning (dfohlc30)
 dfohlc30.iloc[:, 2:] = dfohlc30.iloc[:, 2:].apply(pd.to_numeric)
-log.warning (dfhist)
+log.warning(dfhist)
 
-#log.debug (dfohlc30)
+# log.debug (dfohlc30)
 
-ticksz = get_ticksize(dfhist, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
+ticksz = get_ticksize(
+    dfhist, freq=freq
+)  # # It calculates tick size for TPO based on mean and standard deviation.
 symbol = dfhist.symbol[0]
-print ("CCCCCCCCCCCCCCCCCCCC")
-log.warning (ticksz)
-log.warning (symbol)
+print("CCCCCCCCCCCCCCCCCCCC")
+log.warning(ticksz)
+log.warning(symbol)
 
-ticksz = get_ticksize(dfohlc30, freq=freq)  # # It calculates tick size for TPO based on mean and standard deviation.
-log.debug (ticksz)
+ticksz = get_ticksize(
+    dfohlc30, freq=freq
+)  # # It calculates tick size for TPO based on mean and standard deviation.
+log.debug(ticksz)
 symbol = dfohlc30.symbol[0]
-log.debug (symbol)
+log.debug(symbol)
+
 
 def datetime(dfhist):
     """
@@ -100,39 +129,53 @@ def datetime(dfhist):
     Convert date time to pandas date time
     Returns dataframe with datetime index
     """
-    dfhist['datetime2'] = pd.to_datetime(dfhist['datetime'], format='%Y%m%d %H:%M:%S')
-    dfhist = dfhist.set_index(dfhist['datetime2'], drop=True, inplace=False)
-    return(dfhist)
+    dfhist["datetime2"] = pd.to_datetime(dfhist["datetime"], format="%Y%m%d %H:%M:%S")
+    dfhist = dfhist.set_index(dfhist["datetime2"], drop=True, inplace=False)
+    return dfhist
 
 
 dfhist = datetime(dfhist)
 
-print ("AAAAAAAAAAAAAAAAAAAAAAAAA")
-#print (dfhist)
+print("AAAAAAAAAAAAAAAAAAAAAAAAA")
+# print (dfhist)
 
 dfohlc30 = datetime(dfohlc30)
-print ("BBBBBBBBBBB")
-#print (dfohlc30)
+print("BBBBBBBBBBB")
+# print (dfohlc30)
 
-mean_val = get_mean(dfohlc30, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
-trading_hr = mean_val['session_hr']
+mean_val = get_mean(
+    dfohlc30, avglen=avglen, freq=freq
+)  # Get mean values for context and also get daily trading hours
+trading_hr = mean_val["session_hr"]
 
-log.error (f' mean_val {mean_val}')
-log.error (f' trading_hr {trading_hr}')
+log.error(f" mean_val {mean_val}")
+log.error(f" trading_hr {trading_hr}")
 
-mean_val = get_mean(dfhist, avglen=avglen, freq=freq)  # Get mean values for context and also get daily trading hours
-trading_hr = mean_val['session_hr']
+mean_val = get_mean(
+    dfhist, avglen=avglen, freq=freq
+)  # Get mean values for context and also get daily trading hours
+trading_hr = mean_val["session_hr"]
 
-log.warning (f' mean_val {mean_val}')
-log.warning (f' trading_hr {trading_hr}')
+log.warning(f" mean_val {mean_val}")
+log.warning(f" trading_hr {trading_hr}")
 
 # !!! get rotational factor
 dfhist = get_rf(dfhist.copy())
 # !!! resample to desire time frequency. For TPO charts 30 min is optimal
-dfhist = dfhist.resample(str(freq)+'min').agg({'symbol': 'last', 'datetime': 'first', 'Open': 'first', 'High': 'max',
-                                               'Low': 'min', 'Close': 'last', 'Volume': 'sum', 'rf': 'sum'})
+dfhist = dfhist.resample(str(freq) + "min").agg(
+    {
+        "symbol": "last",
+        "datetime": "first",
+        "Open": "first",
+        "High": "max",
+        "Low": "min",
+        "Close": "last",
+        "Volume": "sum",
+        "rf": "sum",
+    }
+)
 dfhist = dfhist.dropna()
-#log.error (dfhist)
+# log.error (dfhist)
 # slice df based on days_to_display parameter
 dt1 = dfhist.index[-1]
 sday1 = dt1 - timedelta(days_to_display)
@@ -152,17 +195,29 @@ def live_merge(dfli):
     dflive = datetime(dfli)
 
     dflive = get_rf(dflive.copy())
-    dflive = dflive.resample(str(freq)+'min').agg({'symbol': 'last', 'datetime': 'first', 'Open': 'first', 'High': 'max',
-                                                   'Low': 'min', 'Close': 'last', 'Volume': 'sum', 'rf': 'sum'})
+    dflive = dflive.resample(str(freq) + "min").agg(
+        {
+            "symbol": "last",
+            "datetime": "first",
+            "Open": "first",
+            "High": "max",
+            "Low": "min",
+            "Close": "last",
+            "Volume": "sum",
+            "rf": "sum",
+        }
+    )
 
     df_final = pd.concat([dfhist, dflive])
     df_final = df_final.drop_duplicates()
 
-    return (df_final)
+    return df_final
 
 
 # get live data from external source, it is not inside loop so it gets called 1 time only to make sure historical data is in sync
-dfli = pd.read_csv('market_understanding/live.txt')  # provided the sample file. To check live updates are working, add data in live.txt
+dfli = pd.read_csv(
+    "market_understanding/live.txt"
+)  # provided the sample file. To check live updates are working, add data in live.txt
 df_final = live_merge(dfli)
 df_final.iloc[:, 2:] = df_final.iloc[:, 2:].apply(pd.to_numeric)
 
@@ -170,39 +225,54 @@ df_final.iloc[:, 2:] = df_final.iloc[:, 2:].apply(pd.to_numeric)
 # ------------------------------------------------------------------------------
 # App layout
 app.layout = html.Div(
-    html.Div([
-        dcc.Location(id='url', refresh=False),
-        dcc.Link('For questions, ping me on Twitter', href='https://twitter.com/beinghorizontal'),
-        html.Br(),
-        dcc.Link('FAQ and python source code', href='http://www.github.com/beinghorizontal/tpo_project'),
-        html.H4('@beinghorizontal'),
-        dcc.Graph(id='beinghorizontal'),
-        dcc.Interval(
-            id='interval-component',
-            interval=refresh_int*1000,  # in milliseconds
-            n_intervals=0
-        )
-    ])
+    html.Div(
+        [
+            dcc.Location(id="url", refresh=False),
+            dcc.Link(
+                "For questions, ping me on Twitter",
+                href="https://twitter.com/beinghorizontal",
+            ),
+            html.Br(),
+            dcc.Link(
+                "FAQ and python source code",
+                href="http://www.github.com/beinghorizontal/tpo_project",
+            ),
+            html.H4("@beinghorizontal"),
+            dcc.Graph(id="beinghorizontal"),
+            dcc.Interval(
+                id="interval-component",
+                interval=refresh_int * 1000,  # in milliseconds
+                n_intervals=0,
+            ),
+        ]
+    )
 )
 
 # ------------------------------------------------------------------------------
 # Connect the Plotly graphs with Dash Components
 
-@app.callback(Output(component_id='beinghorizontal', component_property='figure'),
-              [Input('interval-component', 'n_intervals')])
+
+@app.callback(
+    Output(component_id="beinghorizontal", component_property="figure"),
+    [Input("interval-component", "n_intervals")],
+)
 def update_graph(n):
     """
     main loop for resfreshing the data and to display the chart. It gets triggered every n second as per our
     settings.
     """
-    dfli = pd.read_csv('live.txt')  # This is live file in loop to check updates every n seconds
+    dfli = pd.read_csv(
+        "live.txt"
+    )  # This is live file in loop to check updates every n seconds
     df = live_merge(dfli)
     df.iloc[:, 2:] = df.iloc[:, 2:].apply(pd.to_numeric)
 
     # !!! split the dataframe with new date
     DFList = [group[1] for group in df.groupby(df.index.date)]
     # !!! for context based bubbles at the top with text hovers
-    dfcontext = get_context(df, freq=freq, ticksize=ticksz, style=mode, session_hr=trading_hr)
+    dfcontext = get_context(
+        df, freq=freq, ticksize=ticksz, style=mode, session_hr=trading_hr
+    )
     #  get market profile DataFrame and ranking as a series for each day.
     # @todo: IN next version, display the ranking DataFrame with drop-down menu
     dfmp_list = dfcontext[0]
@@ -211,16 +281,25 @@ def update_graph(n):
     # IB is 1st 1 hour of the session. Not useful for scrips with global 24 x 7 session
     context_ibdf = get_contextnow(mean_val, ranking)
     ibpower = context_ibdf.power  # Non-normalised IB strength
-    ibpower1 = context_ibdf.power1  # Normalised IB strength for dynamic shape size for markers at bottom
+    ibpower1 = (
+        context_ibdf.power1
+    )  # Normalised IB strength for dynamic shape size for markers at bottom
 
     fig = go.Figure()
-    fig = go.Figure(data=[go.Candlestick(x=df['datetime'],
-                                         open=df['Open'],
-                                         high=df['High'],
-                                         low=df['Low'],
-                                         close=df['Close'],
-                                         showlegend=True,
-                                         name=symbol, opacity=0.3)])  # To make candlesticks more prominent increase the opacity
+    fig = go.Figure(
+        data=[
+            go.Candlestick(
+                x=df["datetime"],
+                open=df["Open"],
+                high=df["High"],
+                low=df["Low"],
+                close=df["Close"],
+                showlegend=True,
+                name=symbol,
+                opacity=0.3,
+            )
+        ]
+    )  # To make candlesticks more prominent increase the opacity
 
     # !!! get TPO for each day
     for i in range(len(dfmp_list)):  # test the loop with i=1
@@ -230,51 +309,93 @@ def update_graph(n):
         df_mp = dfmp_list[i]
         irank = ranking.iloc[i]
         # df_mp['i_date'] = df1['datetime'][0]
-        df_mp['i_date'] = irank.date
+        df_mp["i_date"] = irank.date
         # # @todo: background color for text
-        df_mp['color'] = np.where(np.logical_and(
-            df_mp['close'] > irank.vallist, df_mp['close'] < irank.vahlist), 'green', 'white')
+        df_mp["color"] = np.where(
+            np.logical_and(
+                df_mp["close"] > irank.vallist, df_mp["close"] < irank.vahlist
+            ),
+            "green",
+            "white",
+        )
 
-        df_mp = df_mp.set_index('i_date', inplace=False)
+        df_mp = df_mp.set_index("i_date", inplace=False)
 
-        fig.add_trace(go.Scatter(x=df_mp.index, y=df_mp.close, mode="text", name=str(df_mp.index[0]), text=df_mp.alphabets,
-                                 showlegend=False, textposition="top right", textfont=dict(family="verdana", size=6, color=df_mp.color)))
-        power = int(irank['power1'])
+        fig.add_trace(
+            go.Scatter(
+                x=df_mp.index,
+                y=df_mp.close,
+                mode="text",
+                name=str(df_mp.index[0]),
+                text=df_mp.alphabets,
+                showlegend=False,
+                textposition="top right",
+                textfont=dict(family="verdana", size=6, color=df_mp.color),
+            )
+        )
+        power = int(irank["power1"])
         if power < 0:
-            my_rgb = 'rgba({power}, 3, 252, 0.5)'.format(power=abs(165))
+            my_rgb = "rgba({power}, 3, 252, 0.5)".format(power=abs(165))
         else:
-            my_rgb = 'rgba(23, {power}, 3, 0.5)'.format(power=abs(252))
+            my_rgb = "rgba(23, {power}, 3, 0.5)".format(power=abs(252))
 
-        fig.add_trace(go.Scatter(
-            # x=[df1.iloc[4]['datetime']],
-            x=[irank.date],
-            y=[df['High'].max()],
-            mode="markers",
-            marker=dict(color=my_rgb, size=0.40*abs(power),
-                        line=dict(color='rgb(17, 17, 17)', width=2)),
-            # marker_symbol='square',
-            hovertext=['VAH:{}, POC:{}, VAL:{}, Balance Target:{}, Day Type:{}'.format(irank.vahlist, irank.poclist, irank.vallist,
-                                                                                       irank.btlist, irank.daytype)], showlegend=False
-        ))
+        fig.add_trace(
+            go.Scatter(
+                # x=[df1.iloc[4]['datetime']],
+                x=[irank.date],
+                y=[df["High"].max()],
+                mode="markers",
+                marker=dict(
+                    color=my_rgb,
+                    size=0.40 * abs(power),
+                    line=dict(color="rgb(17, 17, 17)", width=2),
+                ),
+                # marker_symbol='square',
+                hovertext=[
+                    "VAH:{}, POC:{}, VAL:{}, Balance Target:{}, Day Type:{}".format(
+                        irank.vahlist,
+                        irank.poclist,
+                        irank.vallist,
+                        irank.btlist,
+                        irank.daytype,
+                    )
+                ],
+                showlegend=False,
+            )
+        )
         # !!! we will use this for hover text at bottom for developing day
         if ibpower1[i] < 0:
-            ib_rgb = 'rgba(165, 3, 252, 0.5)'
+            ib_rgb = "rgba(165, 3, 252, 0.5)"
         else:
-            ib_rgb = 'rgba(23, 252, 3, 0.5)'
+            ib_rgb = "rgba(23, 252, 3, 0.5)"
 
-        fig.add_trace(go.Scatter(
-            # x=[df1.iloc[4]['datetime']],
-            x=[irank.date],
-            y=[df['Low'].min()],
-            mode="markers",
-            marker=dict(color=ib_rgb, size=0.40 * \
-                        abs(ibpower[i]), line=dict(color='rgb(17, 17, 17)', width=2)),
-            marker_symbol='square',
-            hovertext=['Vol_mean:{}, Vol_Daily:{}, RF_mean:{}, RF_daily:{}, IBvol_mean:{}, IBvol_day:{}, IB_RFmean:{}, IB_RFday:{}'.format(round(mean_val['volume_mean'], 2),
-                                                                                                                                           round(irank.volumed, 2), round(mean_val['rf_mean'], 2), round(
-                                                                                                                                               irank.rfd, 2), round(mean_val['volib_mean'], 2),
-                                                                                                                                           round(irank.ibvol, 2), round(mean_val['ibrf_mean'], 2), round(irank.ibrf, 2))], showlegend=False
-        ))
+        fig.add_trace(
+            go.Scatter(
+                # x=[df1.iloc[4]['datetime']],
+                x=[irank.date],
+                y=[df["Low"].min()],
+                mode="markers",
+                marker=dict(
+                    color=ib_rgb,
+                    size=0.40 * abs(ibpower[i]),
+                    line=dict(color="rgb(17, 17, 17)", width=2),
+                ),
+                marker_symbol="square",
+                hovertext=[
+                    "Vol_mean:{}, Vol_Daily:{}, RF_mean:{}, RF_daily:{}, IBvol_mean:{}, IBvol_day:{}, IB_RFmean:{}, IB_RFday:{}".format(
+                        round(mean_val["volume_mean"], 2),
+                        round(irank.volumed, 2),
+                        round(mean_val["rf_mean"], 2),
+                        round(irank.rfd, 2),
+                        round(mean_val["volib_mean"], 2),
+                        round(irank.ibvol, 2),
+                        round(mean_val["ibrf_mean"], 2),
+                        round(irank.ibrf, 2),
+                    )
+                ],
+                showlegend=False,
+            )
+        )
 
         lvns = irank.lvnlist
 
@@ -282,60 +403,73 @@ def update_graph(n):
             fig.add_shape(
                 # Line Horizontal
                 type="line",
-                x0=df1.iloc[0]['datetime'],
+                x0=df1.iloc[0]["datetime"],
                 y0=lvn,
-                x1=df1.iloc[5]['datetime'],
+                x1=df1.iloc[5]["datetime"],
                 y1=lvn,
-                line=dict(
-                    color="darksalmon",
-                    width=2,
-                    dash="dashdot",),)
+                line=dict(color="darksalmon", width=2, dash="dashdot",),
+            )
 
         excess = irank.excesslist
         if excess > 0:
             fig.add_shape(
                 # Line Horizontal
                 type="line",
-                x0=df1.iloc[0]['datetime'],
+                x0=df1.iloc[0]["datetime"],
                 y0=excess,
-                x1=df1.iloc[5]['datetime'],
+                x1=df1.iloc[5]["datetime"],
                 y1=excess,
-                line=dict(
-                    color="cyan",
-                    width=2,
-                    dash="dashdot",),)
+                line=dict(color="cyan", width=2, dash="dashdot",),
+            )
 
     # @todo: last price marker. Color code as per close above poc or below
-    ltp = df1.iloc[-1]['Close']
+    ltp = df1.iloc[-1]["Close"]
     if ltp >= irank.poclist:
-        ltp_color = 'green'
+        ltp_color = "green"
     else:
-        ltp_color = 'red'
+        ltp_color = "red"
 
-    fig.add_trace(go.Scatter(
-        x=[df1.iloc[-1]['datetime']],
-        y=[df1.iloc[-1]['Close']],
-        mode="text",
-        name="last traded price",
-        text=['last '+str(df1.iloc[-1]['Close'])],
-        textposition="bottom right",
-        textfont=dict(size=12, color=ltp_color),
-        showlegend=False
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=[df1.iloc[-1]["datetime"]],
+            y=[df1.iloc[-1]["Close"]],
+            mode="text",
+            name="last traded price",
+            text=["last " + str(df1.iloc[-1]["Close"])],
+            textposition="bottom right",
+            textfont=dict(size=12, color=ltp_color),
+            showlegend=False,
+        )
+    )
 
-    fig.layout.xaxis.color = 'white'
-    fig.layout.yaxis.color = 'white'
+    fig.layout.xaxis.color = "white"
+    fig.layout.yaxis.color = "white"
     fig.layout.autosize = True
     fig["layout"]["height"] = 800
     # fig.layout.hovermode = 'x'
 
-    fig.update_xaxes(title_text='Time', title_font=dict(size=18, color='white'),
-                     tickangle=45, tickfont=dict(size=8, color='white'), showgrid=False, dtick=len(dfmp_list))
+    fig.update_xaxes(
+        title_text="Time",
+        title_font=dict(size=18, color="white"),
+        tickangle=45,
+        tickfont=dict(size=8, color="white"),
+        showgrid=False,
+        dtick=len(dfmp_list),
+    )
 
-    fig.update_yaxes(title_text=symbol, title_font=dict(size=18, color='white'),
-                     tickfont=dict(size=12, color='white'), showgrid=False)
-    fig.layout.update(template="plotly_dark", title="@"+abc()[1], autosize=True,
-                      xaxis=dict(showline=True, color='white'), yaxis=dict(showline=True, color='white'))
+    fig.update_yaxes(
+        title_text=symbol,
+        title_font=dict(size=18, color="white"),
+        tickfont=dict(size=12, color="white"),
+        showgrid=False,
+    )
+    fig.layout.update(
+        template="plotly_dark",
+        title="@" + abc()[1],
+        autosize=True,
+        xaxis=dict(showline=True, color="white"),
+        yaxis=dict(showline=True, color="white"),
+    )
 
     fig["layout"]["xaxis"]["rangeslider"]["visible"] = False
     fig["layout"]["xaxis"]["tickformat"] = "%H:%M:%S"
@@ -344,5 +478,5 @@ def update_graph(n):
 
 
 # ------------------------------------------------------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=False)

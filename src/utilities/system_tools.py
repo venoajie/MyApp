@@ -4,6 +4,7 @@ import os, sys
 from time import sleep
 import asyncio
 
+
 def get_platform() -> str:
     """
     Check current platform/operating system where app is running
@@ -58,24 +59,12 @@ def provide_path_for_file(
     exchange = None
 
     if bool(
-        [o for o in ["portfolio", 
-                     "positions", 
-                     "sub_accounts"
-                     ] if (o in end_point)]
+        [o for o in ["portfolio", "positions", "sub_accounts"] if (o in end_point)]
     ):
         exchange: str = "deribit"
         sub_folder: str = f"databases/exchanges/{exchange}/portfolio"
 
-    if bool(
-        [
-            o
-            for o in [
-                "orders",
-                "myTrades",'my_trades'
-            ]
-            if (o in end_point)
-        ]
-    ):
+    if bool([o for o in ["orders", "myTrades", "my_trades"] if (o in end_point)]):
         exchange: str = "deribit"
         sub_folder: str = f"databases/exchanges/{exchange}/transactions"
 
@@ -191,13 +180,15 @@ def is_current_file_running(script: str) -> bool:
 
     return False
 
-def reading_from_db_pickle(end_point, instrument: str = None, status: str = None
+
+def reading_from_db_pickle(
+    end_point, instrument: str = None, status: str = None
 ) -> float:
     """ """
     from utilities import pickling
-    return pickling.read_data(
-        provide_path_for_file(end_point, instrument, status)
-    )
+
+    return pickling.read_data(provide_path_for_file(end_point, instrument, status))
+
 
 def sleep_and_restart_program(idle: float = None) -> None:
     """
@@ -221,6 +212,7 @@ def sleep_and_restart_program(idle: float = None) -> None:
     python = sys.executable
     os.execl(python, python, *sys.argv)
 
+
 async def sleep_and_restart(idle: float = None) -> None:
     """
 
@@ -242,6 +234,7 @@ async def sleep_and_restart(idle: float = None) -> None:
     print(f"restart")
     python = sys.executable
     os.execl(python, python, *sys.argv)
+
 
 def catch_error_message(error: str, idle: float = None, message: str = None) -> None:
     """
@@ -296,7 +289,9 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
         sys.exit()
 
 
-async def raise_error_message(error: str, idle: float = None, message: str = None) -> None:
+async def raise_error_message(
+    error: str, idle: float = None, message: str = None
+) -> None:
     """
 
     Capture & emit error message
@@ -343,11 +338,12 @@ async def raise_error_message(error: str, idle: float = None, message: str = Non
 
     if idle != None:
         log.info(f"restart {idle} seconds after error")
-        await sleep_and_restart (idle)
+        await sleep_and_restart(idle)
 
     else:
         sys.exit()
-        
+
+
 def check_file_attributes(filepath: str) -> None:
     """
 
