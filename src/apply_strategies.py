@@ -212,17 +212,6 @@ class ApplyHedgingSpot:
         result = await private_data.get_cancel_order_byOrderId(open_order_id)
         log.info(f"CANCEL_by_order_id {result}")
 
-        reading_from_database: dict = await self.reading_from_database()
-        open_orders_from_sub_account_get = reading_from_database[
-            "open_orders_from_sub_account"
-        ]
-        open_orders_sqlite: list = await self.querying_all("orders_all_json")
-        open_orders_open_from_db: list = open_orders_sqlite["list_data_only"]
-
-        await self.resolving_inconsistent_open_orders(
-            open_orders_from_sub_account_get, open_orders_open_from_db
-        )
-
         return result
 
     async def current_server_time(self) -> float:
@@ -271,48 +260,6 @@ class ApplyHedgingSpot:
 
         return sum_my_trades_open_sqlite_all_strategy == size_from_positions
 
-    async def is_open_orders_consistent(
-        self, open_orders_from_sub_account_get, open_orders_open_from_db
-    ) -> bool:
-        """ """
-
-        len_open_orders_from_sub_account_get = len(open_orders_from_sub_account_get)
-
-        len_open_orders_open_from_db = len(open_orders_open_from_db)
-        sub_acc = await self.get_account_balances_and_transactions_from_exchanges()
-        sub_acc_orders = sub_acc["open_orders"]
-        log.warning(
-            f" len_open_orders_from_sub_account_get {len_open_orders_from_sub_account_get} len_open_orders_open_from_db {len_open_orders_open_from_db}"
-        )
-        log.error(f" sub_acc {sub_acc_orders}")
-        return len_open_orders_from_sub_account_get == len_open_orders_open_from_db
-
-    async def resolving_inconsistent_open_orders(
-        self, open_orders_from_sub_account_get, open_orders_open_from_db
-    ) -> None:
-        """ """
-
-        if open_orders_open_from_db == []:
-            for order in open_orders_from_sub_account_get:
-                await sqlite_management.insert_tables("orders_all_json", order)
-
-        else:
-            if open_orders_open_from_db != []:
-                for order in open_orders_open_from_db:
-                    # log.error (order)
-                    where_filter = f"order_id"
-                    order_id = order["order_id"]
-                    await sqlite_management.deleting_row(
-                        "orders_all_json",
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        order_id,
-                    )
-
-            for order in open_orders_from_sub_account_get:
-                await sqlite_management.insert_tables("orders_all_json", order)
-
     async def send_market_order(self, params) -> None:
         """ """
 
@@ -321,33 +268,8 @@ class ApplyHedgingSpot:
 
     async def send_limit_order(self, params) -> None:
         """ """
-
-        reading_from_database: dict = await self.reading_from_database()
-        open_orders_from_sub_account_get = reading_from_database[
-            "open_orders_from_sub_account"
-        ]
-        open_orders_sqlite: list = await self.querying_all("orders_all_json")
-        open_orders_open_from_db: list = open_orders_sqlite["list_data_only"]
-
-        # size_is_consistent: bool = await self.is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions)
-        # open_order_is_consistent: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
-
-        # if open_order_is_consistent == False:
-        #    await self.resolving_inconsistent_open_orders(open_orders_from_sub_account_get, open_orders_open_from_db)
-        #    await system_tools.sleep_and_restart (5)
-
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
-
-        reading_from_database: dict = await self.reading_from_database()
-        open_orders_from_sub_account_get = reading_from_database[
-            "open_orders_from_sub_account"
-        ]
-        open_orders_sqlite: list = await self.querying_all("orders_all_json")
-        open_orders_open_from_db: list = open_orders_sqlite["list_data_only"]
-        await self.resolving_inconsistent_open_orders(
-            open_orders_from_sub_account_get, open_orders_open_from_db
-        )
 
     async def my_trades_open_sqlite_detailing(
         self, transactions, label, detail_level: str = None
