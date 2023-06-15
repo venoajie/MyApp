@@ -812,7 +812,6 @@ class ApplyHedgingSpot:
         strategies,
         my_trades_open_sqlite,
         my_trades_open_all,
-        my_trades_open,
         size_from_positions,
         server_time,
     ) -> None:
@@ -997,7 +996,6 @@ class ApplyHedgingSpot:
                         strategies,
                         my_trades_open_sqlite,
                         my_trades_open_all,
-                        my_trades_open,
                         size_from_positions,
                         server_time,
                     )
