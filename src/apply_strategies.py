@@ -609,23 +609,13 @@ class ApplyHedgingSpot:
 
         try:
             log.critical (f'OPENING TRANSACTIONS')
-            reading_from_database: dict = await self.reading_from_database()
-        
+            
             my_trades_open_sqlite: dict = await self.querying_all('my_trades_all_json')
             my_trades_open_all: list = my_trades_open_sqlite['all']
             #log.error (my_trades_open_all)
             
-            my_trades_open: list = my_trades_open_sqlite ['list_data_only']
-            
-            open_orders_sqlite: list = await self.querying_all('orders_all_json')
-            open_orders_open_from_db: list= open_orders_sqlite ['list_data_only']
-            
             ticker: list =  self.reading_from_db("ticker", instrument)
             
-            open_order_mgt = open_orders_management.MyOrders(open_orders_open_from_db)
-            
-            open_orders_from_sub_account_get = reading_from_database["open_orders_from_sub_account"]
-        
             if ticker !=[]:
 
                 # get bid and ask price
@@ -693,14 +683,6 @@ class ApplyHedgingSpot:
                         #await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                         await system_tools.sleep_and_restart (5)
 
-                    #placed at the end of opening code to ensure db consistency
-                    check_cancellation = open_order_mgt.cancel_orders_based_on_time_threshold(server_time, strategy_label, ONE_MINUTE* 30)
-
-                    if check_cancellation !=None:
-                        if check_cancellation['open_orders_deltaTime-exceed_threshold'] \
-                            and check_cancellation['open_order_id'] !=[]:
-                                await self.cancel_by_order_id(check_cancellation['open_order_id'])
-                                                
         except Exception as error:
             await raise_error(error)
 
@@ -716,7 +698,6 @@ class ApplyHedgingSpot:
             # get portfolio data
             portfolio: list = reading_from_database["portfolio"]
    
-
             # to avoid error if index price/portfolio = []/None
             if portfolio:
 
