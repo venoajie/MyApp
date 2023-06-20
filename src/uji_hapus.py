@@ -3,7 +3,7 @@ import asyncio
 
 async def result():
     from market_understanding.price_action import get_candles_size
-    candles= await get_candles_size.get_dataframe_from_ohlc_tables('ohlc60_eth_perp_json')
+    candles= await get_candles_size.get_dataframe_from_ohlc_tables('ohlc1D_eth_perp_json')
     print (candles)
     return candles
 
