@@ -19,7 +19,7 @@ https://www.tradingview.com/script/uuinZwsR-Big-Bar-Strategy/
     res= await sql_executing_queries.querying_tables_item_data(tables)
     df= pd.DataFrame(res)
     df['candle_size']=df['high']-df['low']
-    df['body_size']=df['open']-df['close']
+    df['body_size']=abs(df['open']-df['close'])
     df['candle_size_avg']= df['candle_size'].rolling(period).mean()
     df['bigbar']=(df['candle_size'] >= df['candle_size_avg']*mult) & (df['body_size']>df['candle_size']*barsizeThreshold)
 
