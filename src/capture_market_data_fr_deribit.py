@@ -185,7 +185,7 @@ class StreamMarketData:
                             DATABASE: str = "databases/trading.sqlite3"
                             TABLE_OHLC1: str = "ohlc1_eth_perp_json"
                             TABLE_OHLC30: str = "ohlc30_eth_perp_json"
-                            TABLE_OHLC60: str = "ohlc1H_eth_perp_json"
+                            TABLE_OHLC60: str = "ohlc60_eth_perp_json"
                             TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
 
