@@ -2,7 +2,7 @@ from db_management import sql_executing_queries
 import asyncio
 
 async def result():
-    res= await sql_executing_queries.query_data_pd('ohlc60_eth_perp_json')
+    res= await sql_executing_queries.querying_tables_item_data('ohlc60_eth_perp_json')
     print (res)
     return res
 
