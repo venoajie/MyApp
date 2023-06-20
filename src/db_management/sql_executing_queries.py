@@ -254,33 +254,16 @@ async def executing_query_with_return(
 
 
 
-async def query_data_pd(table_name: str):
+async def querying_tables_item_data(table_name: str):
     """
-    # fetch tickers from sqlite3 by pandas and transform them to dict
-    # https://medium.com/@sayahfares19/making-pandas-fly-6-pandas-best-practices-to-save-memory-energy-8d09e9d52488
-    # https://pythonspeed.com/articles/pandas-sql-chunking/
     """
-    import pandas as pd
     import ast
-    from utilities import string_modification as str_mod
-
+    
     # Read sqlite query results into a pandas DataFrame
-    con = sqlite3.connect("databases/trading.sqlite3")
+    
     query_table = f"SELECT data  FROM {table_name}"
 
     # fetch all
-    result = pd.read_sql_query(query_table, con)
-    log.error(result)
     result = await executing_query_with_return(query_table)
-    log.debug(result)
-    result = [] if result ==[] else [ast.literal_eval(str(i['data'])) for i in result]
-
-    log.warning(result)
-
-    # transform dataframe to dict
-    result = result.to_dict("records")
     
-    # close connection sqlite
-    con.close()
-
-    return result
+    return [] if result ==[] else [ast.literal_eval(str(i['data'])) for i in result]
