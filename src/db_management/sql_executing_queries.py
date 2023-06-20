@@ -209,6 +209,50 @@ async def create_tables_json_sqlite(table, type: str = None):
             )
 
 
+async def executing_query_with_return(
+    query_table,
+    filter: str = None,
+    filter_value=None,
+    database: str = "databases/trading.sqlite3",
+) -> list:
+
+    """
+            Reference
+            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+                        
+            Return type: 'list'/'dataframe'
+            
+    """
+
+    filter_val = (f"{filter_value}",)
+
+    combine_result = []
+
+    try:
+        async with aiosqlite.connect(database, isolation_level=None) as db:
+            db = (
+                db.execute(query_table)
+                if filter == None
+                else db.execute(query_table, filter_val)
+            )
+
+            async with db as cur:
+                fetchall = await cur.fetchall()
+
+                head = map(lambda attr: attr[0], cur.description)
+                headers = list(head)
+
+        for i in fetchall:
+            combine_result.append(dict(zip(headers, i)))
+
+    except Exception as error:
+        print(f"querying_table {error}")
+        await telegram_bot_sendtext("sqlite operation", "failed_order")
+        await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
+
+    return 0 if (combine_result == [] or combine_result == None) else (combine_result)
+
+
 
 def query_data_pd(table_name: str):
     """
@@ -227,6 +271,8 @@ def query_data_pd(table_name: str):
     # fetch all
     result = pd.read_sql_query(query_table, con)
     log.error(result)
+    result = executing_query_with_return(query_table)
+    log.debug(result)
     result = [] if result ==[] else [ast.literal_eval(str(i)) for i in result]
 
     log.warning(result)
