@@ -26,13 +26,12 @@ async def insert_ohlc(
 
     from utilities import time_modification
     import requests
-    
 
     now_utc = datetime.now()
     now_unix = time_modification.convert_time_to_unix(now_utc)
-    
-    if resolution== '1D':
-        resolution2= 60 * 24
+
+    if resolution == "1D":
+        resolution2 = 60 * 24
         start_timestamp = now_unix - (60000 * resolution2) * qty_candles
         ohlc_endPoint = f" https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name}&resolution={resolution}&start_timestamp={start_timestamp}"
 
