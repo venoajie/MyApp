@@ -54,8 +54,8 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 Strategy | [strategy](https://medium.com/prooftrading/the-trading-strategy-63183bd231cd) |  | | 
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
 Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
-MM | [mm](https://medium.com/@degensugarboo/avellaneda-and-stoikov-mm-paper-implementation-b7011b5a7532) |  | | 
-TA | [statistic](https://towardsdatascience.com/programmatic-identification-of-support-resistance-trend-lines-with-python-d797a4a90530) |  | | 
+Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
+MM | [statistical-arbitrage](https://thisgoke.medium.com/statistical-arbitrage-in-the-cryptocurrency-market-strategies-best-practices-and-key-statistical-42e7c719ad8f) |  | | 
 TA | [statistic](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
 TA | [liquidation](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
 TA | [Moving Average](https://algo-trading.medium.com/moving-average-exotic-use-30c15562ceed) |  | | 
@@ -71,6 +71,7 @@ RL | [reinforcement-learning](http://onepagecode.s3-website-us-east-1.amazonaws.
 etc | [Others](https://medium.com/@FMZQuant/many-years-later-you-will-find-this-article-is-the-most-valuable-one-in-your-investment-career-6df01777aa7d) |  | | 
 Market structure | [market](https://medium.com/coinmonks/market-structure-most-important-thing-in-technical-analysis-5275b362e5c3) |  | | 
 Statistic | [statistic](https://medium.com/@yuhui_w/applying-extreme-value-theory-and-survival-analysis-to-trading-hedging-e878f73751f0) |  | | 
+Statistic | [hedge](https://blog.perp.fi/how-to-hedge-against-il-with-volatility-futures-62bbb9892c0a) |  | | 
 Market psychology | [psychology](https://medium.com/@matthewjinfong/trading-101-second-level-thinking-94bc40cb8074) |  | | 
 Strategy | [strategy](https://medium.com/coinmonks/interview-with-a-pro-trader-how-to-profitably-scalp-bitcoin-1b3e2e7749a0) |  | | 
 Liquidity | [seasonal-intraday-or-overnight-anomalies-in-bitcoin](https://venali.medium.com/is-there-seasonal-intraday-or-overnight-anomalies-in-bitcoin-11bc71321b9e) |  | | 
