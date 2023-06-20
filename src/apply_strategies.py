@@ -1,4 +1,11 @@
 #!/usr/bin/python3
+# https://www.tradingview.com/script/uuinZwsR-Big-Bar-Strategy/
+# https://www.tradingview.com/script/ItsORxlP-Failed-Auction/
+# https://www.tradingview.com/script/oSfnywuz-Big-Moves-Indicator/
+# https://www.tradingview.com/script/6qmzhNzi-V-Bottom-V-Top-Pattern-Misu/
+# https://www.tradingview.com/script/JESRR4kO-Body-Range/
+# https://www.tradingview.com/script/pmS4dcxW-Height-of-Candle-Body/
+# https://medium.com/@slug/slugs-declassified-spot-swinging-survival-guide-for-struggling-traders-bdafc1d0e99e
 
 # built ins
 import asyncio
@@ -785,7 +792,7 @@ class ApplyHedgingSpot:
                     size_is_consistent: bool = await self.is_size_consistent(
                         sum_my_trades_open_sqlite_all_strategy, size_from_positions
                     )
-                    
+
                     if size_is_consistent:  # and open_order_is_consistent:
 
                         if "hedgingSpot" in strategy_attr["strategy"]:
@@ -918,6 +925,7 @@ class ApplyHedgingSpot:
         except Exception as error:
             await raise_error(error, 30)
 
+
 async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
 
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
@@ -945,6 +953,7 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
             await sqlite_management.deleting_row(
                 table, database, where_filter, "=", first_tick
             )
+
 
 async def main():
     connection_url: str = "https://test.deribit.com/api/v2/"
