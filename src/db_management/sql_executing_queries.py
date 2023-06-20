@@ -273,7 +273,7 @@ async def query_data_pd(table_name: str):
     log.error(result)
     result = await executing_query_with_return(query_table)
     log.debug(result)
-    result = [] if result ==[] else [ast.literal_eval(str(i)) for i in result]
+    result = [] if result ==[] else [ast.literal_eval(str(i['data'])) for i in result]
 
     log.warning(result)
 
