@@ -5,7 +5,7 @@ async def result():
     import pandas as pd
     res= await sql_executing_queries.querying_tables_item_data('ohlc60_eth_perp_json')
     df=pd.DataFrame(res)
-    print (res)
+    print (df)
     return res
 
 if __name__ == "__main__":
