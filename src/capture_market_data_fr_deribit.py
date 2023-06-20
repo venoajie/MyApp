@@ -219,7 +219,7 @@ class StreamMarketData:
                                     or TABLE_OHLC1 != None
                                 ):
 
-                                    log.warning(f"message_channel {message_channel}")
+                                    #log.warning(f"message_channel {message_channel}")
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1"
