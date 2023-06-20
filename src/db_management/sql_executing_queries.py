@@ -254,7 +254,7 @@ async def executing_query_with_return(
 
 
 
-def query_data_pd(table_name: str):
+async def query_data_pd(table_name: str):
     """
     # fetch tickers from sqlite3 by pandas and transform them to dict
     # https://medium.com/@sayahfares19/making-pandas-fly-6-pandas-best-practices-to-save-memory-energy-8d09e9d52488
@@ -271,7 +271,7 @@ def query_data_pd(table_name: str):
     # fetch all
     result = pd.read_sql_query(query_table, con)
     log.error(result)
-    result = executing_query_with_return(query_table)
+    result = await executing_query_with_return(query_table)
     log.debug(result)
     result = [] if result ==[] else [ast.literal_eval(str(i)) for i in result]
 
