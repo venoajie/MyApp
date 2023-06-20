@@ -173,15 +173,25 @@ class StreamMarketData:
                             DATABASE: str = "databases/trading.sqlite3"
                             TABLE_OHLC1: str = "ohlc1_eth_perp_json"
                             TABLE_OHLC30: str = "ohlc30_eth_perp_json"
+                            TABLE_OHLC60: str = "ohlc1H_eth_perp_json"
+                            TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
 
                             last_tick_query_ohlc1: str = sqlite_management.querying_arithmetic_operator(
                                 "tick", "MAX", TABLE_OHLC1
                             )
-
+                            
                             last_tick_query_ohlc30: str = sqlite_management.querying_arithmetic_operator(
                                 "tick", "MAX", TABLE_OHLC30
                             )
+                            last_tick_query_ohlc60: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC60
+                            )
+
+                            last_tick_query_ohlc1D: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC1D
+                            )
+                            
 
                             last_tick1_fr_sqlite: int = await self.last_tick_fr_sqlite(
                                 last_tick_query_ohlc1
@@ -191,8 +201,12 @@ class StreamMarketData:
 
                                 last_tick_fr_data_orders: int = data_orders["tick"]
 
-                                if TABLE_OHLC30 != None or TABLE_OHLC1 != None:
-
+                                if TABLE_OHLC30 != None \
+                                    or TABLE_OHLC1 != None \
+                                    or TABLE_OHLC60 != None \
+                                    or TABLE_OHLC1 != None:
+                                        
+                                    log.warning (f'message_channel {message_channel}')
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1"
@@ -276,6 +290,74 @@ class StreamMarketData:
                                         else:
                                             await sqlite_management.insert_tables(
                                                 TABLE_OHLC30, data_orders
+                                            )
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                    if (
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.60"
+                                    ):
+
+                                        last_tick60_fr_sqlite = await self.last_tick_fr_sqlite(
+                                            last_tick_query_ohlc60
+                                        )
+
+                                        if (
+                                            last_tick60_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
+
+                                            await sqlite_management.deleting_row(
+                                                TABLE_OHLC60,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "=",
+                                                last_tick60_fr_sqlite,
+                                            )
+
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC60, data_orders
+                                            )
+
+                                        else:
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC60, data_orders
+                                            )
+                                            
+                                            
+                                    if (
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.1D"
+                                    ):
+
+                                        last_tick1D_fr_sqlite = await self.last_tick_fr_sqlite(
+                                            last_tick_query_ohlc1D
+                                        )
+
+                                        if (
+                                            last_tick1D_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
+
+                                            await sqlite_management.deleting_row(
+                                                TABLE_OHLC1D,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "=",
+                                                last_tick1D_fr_sqlite,
+                                            )
+
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC1D, data_orders
+                                            )
+
+                                        else:
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC1D, data_orders
                                             )
 
                             instrument_ticker = (message_channel)[19:]
