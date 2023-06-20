@@ -180,7 +180,7 @@ class StreamMarketData:
                             last_tick_query_ohlc1: str = sqlite_management.querying_arithmetic_operator(
                                 "tick", "MAX", TABLE_OHLC1
                             )
-                            
+
                             last_tick_query_ohlc30: str = sqlite_management.querying_arithmetic_operator(
                                 "tick", "MAX", TABLE_OHLC30
                             )
@@ -191,7 +191,6 @@ class StreamMarketData:
                             last_tick_query_ohlc1D: str = sqlite_management.querying_arithmetic_operator(
                                 "tick", "MAX", TABLE_OHLC1D
                             )
-                            
 
                             last_tick1_fr_sqlite: int = await self.last_tick_fr_sqlite(
                                 last_tick_query_ohlc1
@@ -201,12 +200,14 @@ class StreamMarketData:
 
                                 last_tick_fr_data_orders: int = data_orders["tick"]
 
-                                if TABLE_OHLC30 != None \
-                                    or TABLE_OHLC1 != None \
-                                    or TABLE_OHLC60 != None \
-                                    or TABLE_OHLC1 != None:
-                                        
-                                    log.warning (f'message_channel {message_channel}')
+                                if (
+                                    TABLE_OHLC30 != None
+                                    or TABLE_OHLC1 != None
+                                    or TABLE_OHLC60 != None
+                                    or TABLE_OHLC1 != None
+                                ):
+
+                                    log.warning(f"message_channel {message_channel}")
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1"
@@ -291,12 +292,7 @@ class StreamMarketData:
                                             await sqlite_management.insert_tables(
                                                 TABLE_OHLC30, data_orders
                                             )
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
+
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.60"
@@ -327,8 +323,7 @@ class StreamMarketData:
                                             await sqlite_management.insert_tables(
                                                 TABLE_OHLC60, data_orders
                                             )
-                                            
-                                            
+
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1D"

@@ -66,7 +66,7 @@ def texting_virtual_table(table: str, item: str, item_data_type: str) -> str:
 
     """
     """
-    item2= 'last_update_timestamp' if item== 'timestamp' else item
+    item2 = "last_update_timestamp" if item == "timestamp" else item
     query = f""" 
             ALTER 
             TABLE 
@@ -134,10 +134,14 @@ async def create_tables_json_sqlite(table, type: str = None):
                                                 VIRTUAL;
                                                 
                                                 """
-                create_table_alter_label_strategy = texting_virtual_table (table, 'label_main', 'TEXT')
-                
-                create_table_alter_label_strategy_order = texting_virtual_table (table, 'timestamp', 'INTEGER')
-                
+                create_table_alter_label_strategy = texting_virtual_table(
+                    table, "label_main", "TEXT"
+                )
+
+                create_table_alter_label_strategy_order = texting_virtual_table(
+                    table, "timestamp", "INTEGER"
+                )
+
                 create_table_alter_order_id = texting_virtual_table(
                     table, "order_id", "TEXT"
                 )
@@ -150,9 +154,7 @@ async def create_tables_json_sqlite(table, type: str = None):
                     table, "timestamp", "INTEGER"
                 )
 
-                create_table_alter_price = texting_virtual_table(
-                    table, "price", "REAL"
-                )
+                create_table_alter_price = texting_virtual_table(table, "price", "REAL")
 
                 if "orders_all" in table:
 
@@ -205,4 +207,3 @@ async def create_tables_json_sqlite(table, type: str = None):
             await telegram_bot_sendtext(
                 f"sqlite operation-create_table", "failed_order"
             )
-

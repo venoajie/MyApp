@@ -51,7 +51,7 @@ async def insert_ohlc(
             if resolution == 60:
                 await sqlite_management.insert_tables("ohlc1H_eth_perp_json", data)
 
-            if resolution == '1D':
+            if resolution == "1D":
                 await sqlite_management.insert_tables("ohlc1D_eth_perp_json", data)
 
     except Exception as error:
