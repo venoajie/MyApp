@@ -1,7 +1,7 @@
 start: create-db fetch-data exe-app
 
 create-db: 
-	python3 sqlite_exe.py
+	python3 screate_db_and_tables_sqlite.py
 	python3 insert_initial_ohlc.py
 
 test: 
