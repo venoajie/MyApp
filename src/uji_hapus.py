@@ -1,11 +1,13 @@
 from db_management import sql_executing_queries
+import asyncio
 
-res= sql_executing_queries.query_data_pd('ohlc60_eth_perp_json')
+async def result():
+    return await sql_executing_queries.query_data_pd('ohlc60_eth_perp_json')
 
 if __name__ == "__main__":
 
     try:
-        print (res)
+        print (result)
 
     except Exception as error:
         print(error)
