@@ -45,6 +45,7 @@ async def insert_ohlc(
         log.warning(ohlc_endPoint)
         # log.warning (requests.get(ohlc_endPoint).json())
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
+        log.warning(ohlc_request)
         result = string_modification.transform_nested_dict_to_list(ohlc_request)
         # log.warning (result)
 
