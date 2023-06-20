@@ -224,7 +224,8 @@ def query_data_pd(table_name: str):
     query_table = f"SELECT data  FROM {table_name}"
 
     # fetch all
-    result =  [] if result == [] else str_mod.parsing_sqlite_json_output([o["data"] for o in result])
+    result = pd.read_sql_query(query_table, con)
+    result = [] if result ==[] else str_mod.parsing_sqlite_json_output([o["data"] for o in result])
     log.error(result)
 
     # transform dataframe to dict
