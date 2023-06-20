@@ -224,10 +224,10 @@ def query_data_pd(table_name: str):
 
     # fetch all
     result = pd.read_sql_query(query_table, con)
-    log.warning(result)
 
     # transform dataframe to dict
     result = result.to_dict("records")
+    log.warning(result)
     
     # close connection sqlite
     con.close()
