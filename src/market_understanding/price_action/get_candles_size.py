@@ -2,13 +2,27 @@ from db_management import sql_executing_queries
 import asyncio
 
 async def get_dataframe_from_ohlc_tables(tables: str ='ohlc60_eth_perp_json'):
-    import pandas as pd
+    """_summary_
+https://www.tradingview.com/script/uuinZwsR-Big-Bar-Strategy/
+    Args:
+        tables (str, optional): _description_. Defaults to 'ohlc60_eth_perp_json'.
+
+    Returns:
+        _type_: _description_
+    """
+    import pandas as pd  
+    
+    barsizeThreshold=(.5)
+    period=(10)
+    mult=input(2)
+    
     res= await sql_executing_queries.querying_tables_item_data(tables)
     df= pd.DataFrame(res)
     df['candle_size']=df['high']-df['low']
     df['body_size']=df['open']-df['close']
-    df['avg']= df['candle_size'].rolling(10).mean()
-    print(f'df {df}')
+    df['candle_size_avg']= df['candle_size'].rolling(10).mean()
+    df['bigbar']=df['candle_size'] >= df['candle_size_avg']*mult and df['body_size']>df['candle_size']*barsizeThreshold
+
     return df
 
 if __name__ == "__main__":
