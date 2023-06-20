@@ -207,3 +207,29 @@ async def create_tables_json_sqlite(table, type: str = None):
             await telegram_bot_sendtext(
                 f"sqlite operation-create_table", "failed_order"
             )
+
+
+
+def query_data_pd(table_name: str):
+    """
+    # fetch tickers from sqlite3 by pandas and transform them to dict
+    # https://medium.com/@sayahfares19/making-pandas-fly-6-pandas-best-practices-to-save-memory-energy-8d09e9d52488
+    # https://pythonspeed.com/articles/pandas-sql-chunking/
+    """
+    import pandas as pd
+
+    # Read sqlite query results into a pandas DataFrame
+    con = sqlite3.connect("databases/trading.sqlite3")
+    query_table = f"SELECT data  FROM {table_name}"
+
+    # fetch all
+    result = pd.read_sql_query(query_table, con)
+    log.warning(result)
+
+    # transform dataframe to dict
+    result = result.to_dict("records")
+    
+    # close connection sqlite
+    con.close()
+
+    return result
