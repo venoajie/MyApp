@@ -7,7 +7,8 @@ async def get_dataframe_from_ohlc_tables(tables: str ='ohlc60_eth_perp_json'):
     df= pd.DataFrame(res)
     df['candle_size']=df['high']-df['low']
     df['body_size']=df['open']-df['close']
-    df.rolling(10).mean()
+    tes= df.rolling(10).mean()
+    print(tes)
     return df
 
 if __name__ == "__main__":
