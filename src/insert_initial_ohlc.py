@@ -26,6 +26,9 @@ async def insert_ohlc(
 
     from utilities import time_modification
     import requests
+    
+    if resolution== '1D':
+        resolution= 60 * 24
 
     now_utc = datetime.now()
     now_unix = time_modification.convert_time_to_unix(now_utc)
@@ -49,7 +52,7 @@ async def insert_ohlc(
                 await sqlite_management.insert_tables("ohlc30_eth_perp_json", data)
 
             if resolution == 60:
-                await sqlite_management.insert_tables("ohlc1H_eth_perp_json", data)
+                await sqlite_management.insert_tables("ohlc60_eth_perp_json", data)
 
             if resolution == "1D":
                 await sqlite_management.insert_tables("ohlc1D_eth_perp_json", data)
