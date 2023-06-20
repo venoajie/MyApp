@@ -1,7 +1,7 @@
 start: create-db fetch-data exe-app
 
 create-db: 
-	python3 screate_db_and_tables_sqlite.py
+	python3 create_db_and_tables_sqlite.py
 	python3 insert_initial_ohlc.py
 
 test: 
@@ -17,6 +17,7 @@ fetch-data:
 	sleep 3
 	nohup python3 capture_exch_data_fr_deribit.py  >/dev/null 2>&1 &
 	sleep 1
+
 
 exe-app: 
 	nohup sh checkEvents.sh >/dev/null 2>&1 &
