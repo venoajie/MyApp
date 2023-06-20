@@ -217,13 +217,15 @@ def query_data_pd(table_name: str):
     # https://pythonspeed.com/articles/pandas-sql-chunking/
     """
     import pandas as pd
+    from utilities import string_modification as str_mod
 
     # Read sqlite query results into a pandas DataFrame
     con = sqlite3.connect("databases/trading.sqlite3")
     query_table = f"SELECT data  FROM {table_name}"
 
     # fetch all
-    result = pd.read_sql_query(query_table, con)
+    result =  [] if result == [] else str_mod.parsing_sqlite_json_output([o["data"] for o in result])
+    log.error(result)
 
     # transform dataframe to dict
     result = result.to_dict("records")
