@@ -117,6 +117,18 @@ class StreamMarketData:
                                 ws_channel=f"chart.trades.{instrument}.30",
                             )
                         )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.60",
+                            )
+                        )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.1D",
+                            )
+                        )
 
                 while self.websocket_client.open:
                     # Receive WebSocket messages
