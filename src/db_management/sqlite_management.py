@@ -670,6 +670,24 @@ async def executing_general_query(
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
 
 
+async def executing_label_and_size_query(table) -> dict:
+    """
+    Provide execution template for querying summary of trading results from sqlite.
+    Consist of transaction label, size, and price only.
+    """
+
+    # get query
+    query = querying_label_and_size(table)
+
+    # execute query
+    result = await executing_query_with_return(query)
+
+    # define none from queries result. If the result=None, return []
+    NONE_DATA: None = [0, None, []]
+
+    return [] if result in NONE_DATA else (result)
+
+
 def query_pd(table_name: str, field: str = None):
     """
     # fetch tickers from sqlite3 by pandas and transform them to dict
@@ -697,21 +715,3 @@ def query_pd(table_name: str, field: str = None):
     con.close()
 
     return result_cleaned
-
-
-async def executing_label_and_size_query(table) -> dict:
-    """
-    Provide execution template for querying summary of trading results from sqlite.
-    Consist of transaction label, size, and price only.
-    """
-
-    # get query
-    query = querying_label_and_size(table)
-
-    # execute query
-    result = await executing_query_with_return(query)
-
-    # define none from queries result. If the result=None, return []
-    NONE_DATA: None = [0, None, []]
-
-    return [] if result in NONE_DATA else (result)
