@@ -462,6 +462,8 @@ class ApplyHedgingSpot:
                     result_transactions_excess = [
                         o for o in transactions_closed if o["trade_seq"] != min_closed
                     ]
+                    log.debug (transactions_closed)
+                    log.error (result_transactions_excess)
                     transactions_excess = str_mod.parsing_sqlite_json_output(
                         [o["data"] for o in result_transactions_excess]
                     )
