@@ -361,7 +361,7 @@ class ApplyHedgingSpot:
                         )
             log.info ((
                     [
-                        o["data"]["amount_dir"]
+                        o["data"]
                         for o in detailing
                     ]
                 )
