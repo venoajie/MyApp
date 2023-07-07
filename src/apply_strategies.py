@@ -459,18 +459,18 @@ class ApplyHedgingSpot:
                     # log.critical(transactions_under_label_main)
 
                     # excluded trades closed labels from above trade seq
-                    result_transactions_excess = [
+                    transactions_excess = [
                         o for o in transactions_closed if o["trade_seq"] != min_closed
                     ]
                     log.debug (transactions_closed)
-                    log.error (result_transactions_excess)
-                    transactions_excess = str_mod.parsing_sqlite_json_output(
-                        [o["data"] for o in result_transactions_excess]
-                    )
+                    log.error (transactions_excess)
+                    #transactions_excess = str_mod.parsing_sqlite_json_output(
+                    #    [o["data"] for o in result_transactions_excess]
+                    #)
 
                     for transaction in transactions_excess:
                         trade_seq = transaction["trade_seq"]
-                        label = transaction["label"]
+                        label = transaction["label_main"]
                         tstamp = transaction["timestamp"]
                         new_label = str_mod.parsing_label(label, tstamp)[
                             "flipping_closed"
