@@ -360,12 +360,7 @@ class ApplyHedgingSpot:
             detailing= await self.my_trades_open_sqlite_detailing(
                             transactions, label
                         )
-            [ast.literal_eval(str(i)) for i in (
-                    [
-                        o["data"]
-                        for o in detailing
-                    ]
-                )]
+            
             log.info ([ast.literal_eval(str(i)) for i in (
                     [
                         o["data"]
