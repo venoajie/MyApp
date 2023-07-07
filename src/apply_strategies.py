@@ -365,7 +365,7 @@ class ApplyHedgingSpot:
                         o["data"]
                         for o in detailing
                     ]
-            log.warning (json.loads(detailing_data))
+            log.warning ((detailing_data))
             
             cleaned_detailing_data= str_mod.remove_apostrophes_from_json(detailing_data)
             log.error (cleaned_detailing_data)
