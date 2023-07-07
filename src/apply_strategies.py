@@ -352,16 +352,21 @@ class ApplyHedgingSpot:
                 )
             )
 
+        log.error (f'detail_level {detail_level}')
+        log.error (f'transactions {transactions}')
+        log.error (f'transactions {transactions}')
         if detail_level == None:
+            detailing= await self.my_trades_open_sqlite_detailing(
+                            transactions, label
+                        )
+            log.info (f'detailing {detailing}')
             result = (
                 0
                 if transactions == []
                 else sum(
                     [
                         o["amount_dir"]
-                        for o in await self.my_trades_open_sqlite_detailing(
-                            transactions, label
-                        )
+                        for o in detailing
                     ]
                 )
             )
