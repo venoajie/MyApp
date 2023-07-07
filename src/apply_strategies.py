@@ -365,7 +365,7 @@ class ApplyHedgingSpot:
                         for o in detailing
                     ]
             
-            cleaned_detailing_data= [ast.literal_eval(str(i)) for i in detailing]
+            cleaned_detailing_data= str_mod.remove_apostrophes_from_json(detailing_data)
             log.error (cleaned_detailing_data)
             result = (
                 0
