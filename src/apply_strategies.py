@@ -363,10 +363,10 @@ class ApplyHedgingSpot:
             
             log.info ([ast.literal_eval(str(i)) for i in (
                     [
-                        o
+                        o["data"]
                         for o in detailing
                     ]
-                )][0]
+                )]
             )
             result = (
                 0
