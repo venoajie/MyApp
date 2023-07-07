@@ -360,6 +360,7 @@ class ApplyHedgingSpot:
             detailing= await self.my_trades_open_sqlite_detailing(
                             transactions, label
                         )
+            log.debug (detailing)
             detailing_data= [
                         o["data"]
                         for o in detailing
