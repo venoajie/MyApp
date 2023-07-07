@@ -506,7 +506,7 @@ class ApplyHedgingSpot:
                         my_trades_open: list = await sqlite_management.executing_label_and_size_query(
                             "my_trades_all_json"
                         )
-                        log.info(f" my_trades_open {my_trades_open} ")
+                        #log.info(f" my_trades_open {my_trades_open} ")
                         # log.warning(([o['trade_seq']  for o in my_trades_open ]))
                         # log.critical(([o for o in my_trades_open if o['trade_seq'] == res]))
                         result_to_dict = (
