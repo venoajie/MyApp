@@ -360,21 +360,13 @@ class ApplyHedgingSpot:
             detailing= await self.my_trades_open_sqlite_detailing(
                             transactions, label
                         )
-            log.debug (detailing)
-            detailing_data= [
-                        o["amount_dir"]
-                        for o in detailing
-                    ]
-            log.warning ((detailing_data))
             
-            cleaned_detailing_data= str_mod.remove_apostrophes_from_json(detailing_data)
-            log.error (cleaned_detailing_data)
             result = (
                 0
                 if transactions == []
                 else sum(
                     [
-                        o["data"]["amount_dir"]
+                        o["amount_dir"]
                         for o in detailing
                     ]
                 )
