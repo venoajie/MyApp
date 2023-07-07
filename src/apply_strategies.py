@@ -364,15 +364,15 @@ class ApplyHedgingSpot:
                         o["data"]
                         for o in detailing
                     ]
-            log.error (detailing_data)
             
-            log.info ([ast.literal_eval(str(i)) for i in (
+            cleaned_detailing_data= ([ast.literal_eval(str(i)) for i in (
                     [
                         o 
                         for o in detailing_data
                     ]
                 )]
             )
+            log.error (cleaned_detailing_data)
             result = (
                 0
                 if transactions == []
