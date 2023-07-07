@@ -362,7 +362,7 @@ class ApplyHedgingSpot:
                         )
             log.debug (detailing)
             detailing_data= [
-                        o["data"]
+                        o["amount_dir'"]
                         for o in detailing
                     ]
             log.warning ((detailing_data))
