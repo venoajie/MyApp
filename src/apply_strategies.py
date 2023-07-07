@@ -324,6 +324,7 @@ class ApplyHedgingSpot:
         detail_level: main/individual
         """
         # log.error (transactions)
+        import ast
 
         if detail_level == "main":
             result = (
@@ -359,12 +360,18 @@ class ApplyHedgingSpot:
             detailing= await self.my_trades_open_sqlite_detailing(
                             transactions, label
                         )
-            log.info ((
+            [ast.literal_eval(str(i)) for i in (
                     [
                         o["data"]
                         for o in detailing
                     ]
-                )
+                )]
+            log.info ([ast.literal_eval(str(i)) for i in (
+                    [
+                        o["data"]
+                        for o in detailing
+                    ]
+                )]
             )
             result = (
                 0
