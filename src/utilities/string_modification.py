@@ -100,6 +100,7 @@ def parsing_sqlite_json_output(json_load: list) -> int:
             .replace(":null", ":None")
             for i in json_load
         ]
+        print (f'result_json {result_json}')
         return [ast.literal_eval(str(i)) for i in result_json]
 
     except:
