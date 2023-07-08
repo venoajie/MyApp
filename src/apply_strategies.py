@@ -331,13 +331,11 @@ class ApplyHedgingSpot:
             )
         )
         detailing_parsed = str_mod.parsing_sqlite_json_output([o['data']for o in detailing])
-        log.debug([o["amount_dir"] for o in detailing_parsed if 'label_main' in o])
+        detailing_parsed_amt_for_closed_trans= ([o["amount_dir"] for o in detailing_parsed if 'label_main' in o])
         
-        log.info(0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else [
-                o['amount_dir'] for o in detailing_parsed if o['amount_dir'] == None] )for o in detailing ]))
+        log.info(0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else detailing_parsed_amt_for_closed_trans )for o in detailing ]))
 
-        return  0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else [
-                o['data']['amount_dir'] for o in detailing] )for o in detailing ])
+        return  0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else detailing_parsed_amt_for_closed_trans )for o in detailing ])
 
     async def clean_up_closed_transactions(self, transactions_all) -> None:
         """ 
