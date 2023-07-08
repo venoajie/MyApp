@@ -330,9 +330,9 @@ class ApplyHedgingSpot:
                 transactions, label, detail_level
             )
         )
-        log.info(0 if transactions == [] else ([o  for o in detailing if 'open' in o['label_main']]))
+        log.info(0 if transactions == [] else ([o  for o in detailing if  o['amount_dir'] != None]))
 
-        return  0 if transactions == [] else sum([o["amount_dir"] for o in detailing if 'open' in o['label_main']])
+        return  0 if transactions == [] else sum([o["amount_dir"] for o in detailing if o['amount_dir'] != None])
 
     async def clean_up_closed_transactions(self, transactions_all) -> None:
         """ 
