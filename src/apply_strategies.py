@@ -323,32 +323,15 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-
-        if detail_level == "main":
-
-            detailing = await self.my_trades_open_sqlite_detailing(
+        detailing = (
+            await self.my_trades_open_sqlite_detailing(transactions, label)
+            if detail_level == None
+            else await self.my_trades_open_sqlite_detailing(
                 transactions, label, detail_level
             )
-            result = (
-                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
-            )
-        if detail_level == "individual":
+        )
 
-            detailing = self.my_trades_open_sqlite_detailing(
-                transactions, label, detail_level
-            )
-            result = (
-                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
-            )
-
-        if detail_level == None:
-            detailing = await self.my_trades_open_sqlite_detailing(transactions, label)
-
-            result = (
-                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
-            )
-
-        return result
+        return  0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
 
     async def clean_up_closed_transactions(self, transactions_all) -> None:
         """ 
