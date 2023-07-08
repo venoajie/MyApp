@@ -330,8 +330,8 @@ class ApplyHedgingSpot:
                 transactions, label, detail_level
             )
         )
-        
-        log.debug([o['data']for o in detailing])
+        det = [o['data']for o in detailing]
+        log.debug(str_mod.remove_apostrophes_from_json(det))
         
         log.info(0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else [
                 o['data']['amount_dir'] for o in detailing] )for o in detailing ]))
