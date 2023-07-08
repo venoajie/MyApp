@@ -82,7 +82,7 @@ def extract_integers_from_text(words: list) -> int:
         return []
 
 
-def remove_apostrophes_from_json(json_load: list)-> int:
+def remove_apostrophes_from_json(json_load: list) -> int:
     """
     """
     import ast
@@ -98,7 +98,6 @@ def parsing_sqlite_json_output(json_load: list) -> int:
         https://stackoverflow.com/questions/46991650/remove-quotes-from-list-of-dictionaries-in-python
         https://stackoverflow.com/questions/14611352/malformed-string-valueerror-ast-literal-eval-with-string-representation-of-tup
     """
-    
 
     try:
 
@@ -108,8 +107,8 @@ def parsing_sqlite_json_output(json_load: list) -> int:
             .replace(":null", ":None")
             for i in json_load
         ]
-        #print (f'result_json {[ast.literal_eval(str(i)) for i in result_json]}')
-        return remove_apostrophes_from_json (result_json)
+        # print (f'result_json {[ast.literal_eval(str(i)) for i in result_json]}')
+        return remove_apostrophes_from_json(result_json)
 
     except:
         return []
