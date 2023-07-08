@@ -330,26 +330,20 @@ class ApplyHedgingSpot:
                 transactions, label, detail_level
             )
         )
-        detailing_parsed = str_mod.parsing_sqlite_json_output(
-            [o["data"] for o in detailing]
-        )
-        detailing_parsed_amt_for_closed_trans = [
-            o["amount_dir"] for o in detailing_parsed if "label_main" in o
-        ]
-        log.info(detailing_parsed_amt_for_closed_trans)
-        log.info(0 if transactions == [] else ([(o["amount_dir"]) for o in detailing]))
-
-        log.info(
-            0
-            if transactions == []
-            else sum([(o["amount_dir"]) for o in detailing if o["amount_dir"] != None])
-            + sum(detailing_parsed_amt_for_closed_trans)
-        )
+        if detailing !=[]:
+            detailing_parsed = str_mod.parsing_sqlite_json_output(
+                [o["data"] for o in detailing]
+            )
+            detailing_parsed_amt_for_closed_trans = 0 if detailing_parsed==[] else [
+                o["amount_dir"] for o in detailing_parsed if "label_main" in o
+            ]
+            detailing_parsed_amt_for_opened_trans =([(o["amount_dir"]) for o in detailing if o["amount_dir"] != None])
+            detailing_parsed_amt_for_opened_trans = 0 if detailing_parsed_amt_for_opened_trans==[] else detailing_parsed_amt_for_opened_trans
 
         return (
             0
             if transactions == []
-            else sum([(o["amount_dir"]) for o in detailing if o["amount_dir"] != None])
+            else sum(detailing_parsed_amt_for_opened_trans)
             + sum(detailing_parsed_amt_for_closed_trans)
         )
 
