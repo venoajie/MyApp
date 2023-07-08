@@ -336,7 +336,7 @@ class ApplyHedgingSpot:
         log.info(0 if transactions == [] else ([(o["amount_dir"]  )for o in detailing ]))
         
         
-        log.info(0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else detailing_parsed_amt_for_closed_trans )for o in detailing ]))
+        log.info(0 if transactions == [] else sum([(o["amount_dir"])for o in detailing if o['amount_dir'] != None  ]) + sum(detailing_parsed_amt_for_closed_trans))
 
         return  0 if transactions == [] else sum([(o["amount_dir"] if o['amount_dir'] != None else detailing_parsed_amt_for_closed_trans )for o in detailing ])
 
