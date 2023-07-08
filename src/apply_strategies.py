@@ -639,6 +639,7 @@ class ApplyHedgingSpot:
                 open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                     [o["data"] for o in my_trades_open_sqlite_individual_strategy]
                 )
+                log.debug (open_trade_strategy_label)
 
                 instrument: list = [
                     o["instrument_name"] for o in open_trade_strategy_label
