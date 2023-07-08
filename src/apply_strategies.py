@@ -716,7 +716,7 @@ class ApplyHedgingSpot:
                         send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
                             best_ask_prc, best_bid_prc, open_trade_strategy_label
                         )
-                        # log.critical (f' send_closing_order {send_closing_order}')
+                        log.critical (f' send_closing_order {send_closing_order}')
                         await self.if_order_is_true(send_closing_order, instrument)
 
             else:
