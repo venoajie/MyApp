@@ -330,6 +330,7 @@ class ApplyHedgingSpot:
                 transactions, label, detail_level
             )
         )
+        log.info(detailing)
 
         return  0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
 
