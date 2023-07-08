@@ -330,15 +330,23 @@ class ApplyHedgingSpot:
                 transactions, label, detail_level
             )
         )
-        if detailing !=[]:
+        if detailing != []:
             detailing_parsed = str_mod.parsing_sqlite_json_output(
                 [o["data"] for o in detailing]
             )
-            detailing_parsed_amt_for_closed_trans = 0 if detailing_parsed==[] else [
-                o["amount_dir"] for o in detailing_parsed if "label_main" in o
+            detailing_parsed_amt_for_closed_trans = (
+                0
+                if detailing_parsed == []
+                else [o["amount_dir"] for o in detailing_parsed if "label_main" in o]
+            )
+            detailing_parsed_amt_for_opened_trans = [
+                (o["amount_dir"]) for o in detailing if o["amount_dir"] != None
             ]
-            detailing_parsed_amt_for_opened_trans =([(o["amount_dir"]) for o in detailing if o["amount_dir"] != None])
-            detailing_parsed_amt_for_opened_trans = 0 if detailing_parsed_amt_for_opened_trans==[] else detailing_parsed_amt_for_opened_trans
+            detailing_parsed_amt_for_opened_trans = (
+                0
+                if detailing_parsed_amt_for_opened_trans == []
+                else detailing_parsed_amt_for_opened_trans
+            )
 
         return (
             0
