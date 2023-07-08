@@ -323,53 +323,29 @@ class ApplyHedgingSpot:
         """ 
         detail_level: main/individual
         """
-        # log.error (transactions)
-        import json
 
         if detail_level == "main":
+
+            detailing = await self.my_trades_open_sqlite_detailing(
+                transactions, label, detail_level
+            )
             result = (
-                0
-                if transactions == []
-                else sum(
-                    [
-                        o["amount_dir"]
-                        for o in await self.my_trades_open_sqlite_detailing(
-                            transactions, label, detail_level
-                        )
-                    ]
-                )
+                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
             )
         if detail_level == "individual":
+
+            detailing = self.my_trades_open_sqlite_detailing(
+                transactions, label, detail_level
+            )
             result = (
-                0
-                if transactions == []
-                else sum(
-                    [
-                        o["amount_dir"]
-                        for o in await self.my_trades_open_sqlite_detailing(
-                            transactions, label, detail_level
-                        )
-                    ]
-                )
+                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
             )
 
-        #log.error (f'detail_level {detail_level}')
-        #log.error (f'transactions {transactions}')
-        #log.error (f'transactions {transactions}')
         if detail_level == None:
-            detailing= await self.my_trades_open_sqlite_detailing(
-                            transactions, label
-                        )
-            
+            detailing = await self.my_trades_open_sqlite_detailing(transactions, label)
+
             result = (
-                0
-                if transactions == []
-                else sum(
-                    [
-                        o["amount_dir"]
-                        for o in detailing
-                    ]
-                )
+                0 if transactions == [] else sum([o["amount_dir"] for o in detailing])
             )
 
         return result
@@ -468,11 +444,11 @@ class ApplyHedgingSpot:
                     transactions_excess = [
                         o for o in transactions_closed if o["trade_seq"] != min_closed
                     ]
-                    log.debug (transactions_closed)
-                    log.error (transactions_excess)
-                    #transactions_excess = str_mod.parsing_sqlite_json_output(
+                    log.debug(transactions_closed)
+                    log.error(transactions_excess)
+                    # transactions_excess = str_mod.parsing_sqlite_json_output(
                     #    [o["data"] for o in result_transactions_excess]
-                    #)
+                    # )
 
                     for transaction in transactions_excess:
                         trade_seq = transaction["trade_seq"]
@@ -512,7 +488,7 @@ class ApplyHedgingSpot:
                         my_trades_open: list = await sqlite_management.executing_label_and_size_query(
                             "my_trades_all_json"
                         )
-                        #log.info(f" my_trades_open {my_trades_open} ")
+                        # log.info(f" my_trades_open {my_trades_open} ")
                         # log.warning(([o['trade_seq']  for o in my_trades_open ]))
                         # log.critical(([o for o in my_trades_open if o['trade_seq'] == res]))
                         result_to_dict = (
