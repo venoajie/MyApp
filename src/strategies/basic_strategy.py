@@ -119,11 +119,28 @@ def get_transactions_len(result_strategy_label) -> int:
 
 def get_transactions_sum(result_strategy_label) -> float:
     """
+    summing transaction under SAME strategy label
     """
     return (
         []
         if result_strategy_label == []
         else sum([o["amount_dir"] for o in result_strategy_label])
+    )
+
+
+def get_transactions_sum_super_main(my_trades_open_sqlite: list, label: str) -> float:
+    """ """
+    return (
+        0
+        if my_trades_open_sqlite == []
+        else sum(
+            [
+                o["amount_dir"]
+                for o in my_trades_open_sqlite["all"]
+                if str_mod.parsing_label(o["label_main"])["super_main"]
+                == str_mod.parsing_label(label)["super_main"]
+            ]
+        )
     )
 
 
@@ -398,6 +415,7 @@ class BasicStrategy:
         len_orders: int = orders["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
+        print (f'tp_price_reached {tp_price_reached} no_outstanding_order {no_outstanding_order}')
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
 
