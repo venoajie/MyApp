@@ -253,17 +253,16 @@ async def executing_query_with_return(
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
 
 
-
 async def querying_tables_item_data(table_name: str):
     """
     """
     import ast
-    
+
     # Read sqlite query results into a pandas DataFrame
-    
+
     query_table = f"SELECT data  FROM {table_name}"
 
     # fetch all
     result = await executing_query_with_return(query_table)
-    
-    return [] if result ==[] else [ast.literal_eval(str(i['data'])) for i in result]
+
+    return [] if result == [] else [ast.literal_eval(str(i["data"])) for i in result]
