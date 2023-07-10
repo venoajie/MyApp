@@ -4,6 +4,7 @@ import os, sys
 from time import sleep
 import asyncio
 
+#https://python.plainenglish.io/five-python-wrappers-that-can-reduce-your-code-by-half-af775feb1d5
 
 def get_platform() -> str:
     """
@@ -235,6 +236,17 @@ async def sleep_and_restart(idle: float = None) -> None:
     python = sys.executable
     os.execl(python, python, *sys.argv)
 
+def exception_handler(func):
+    #https://python.plainenglish.io/five-python-wrappers-that-can-reduce-your-code-by-half-af775feb1d5
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            # Handle the exception
+            print(f"An exception occurred: {str(e)}")
+            # Optionally, perform additional error handling or logging
+            # Reraise the exception if needed
+    return wrapper
 
 def catch_error_message(error: str, idle: float = None, message: str = None) -> None:
     """
