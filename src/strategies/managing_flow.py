@@ -27,9 +27,7 @@ async def raise_error(error, idle: int = None) -> None:
     await system_tools.raise_error_message(error, idle)
 
 
-async def opening_transactions(
-    instrument, portfolio, strategies, server_time,
-) -> None:
+async def opening_transactions(instrument, portfolio, strategies, server_time,) -> None:
     """ """
 
     try:
