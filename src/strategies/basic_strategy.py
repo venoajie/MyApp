@@ -309,7 +309,7 @@ class BasicStrategy:
                 ]
             )
             print(
-                f"long_transactions {long_transactions} short_transactions {short_transactions}"
+                f"basic str-long_transactions {long_transactions} short_transactions {short_transactions}"
             )
 
             sum_long_transactions: float = 0 if long_transactions == [] else sum(
@@ -415,7 +415,6 @@ class BasicStrategy:
         len_orders: int = orders["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
-        print (f'tp_price_reached {tp_price_reached} no_outstanding_order {no_outstanding_order}')
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
 
