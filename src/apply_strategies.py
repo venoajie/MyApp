@@ -639,7 +639,7 @@ class ApplyHedgingSpot:
                 open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                     [o["data"] for o in my_trades_open_sqlite_individual_strategy]
                 )
-                log.debug (open_trade_strategy_label)
+                log.debug(open_trade_strategy_label)
 
                 instrument: list = [
                     o["instrument_name"] for o in open_trade_strategy_label
@@ -716,7 +716,7 @@ class ApplyHedgingSpot:
                         send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
                             best_ask_prc, best_bid_prc, open_trade_strategy_label
                         )
-                        log.critical (f' send_closing_order {send_closing_order}')
+                        log.critical(f" send_closing_order {send_closing_order}")
                         await self.if_order_is_true(send_closing_order, instrument)
 
             else:
