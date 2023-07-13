@@ -916,7 +916,7 @@ class ApplyHedgingSpot:
             await raise_error(error, 30)
 
 
-async def count_and_delete_ohlc_rows(rows_threshold: int = 100000):
+async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
     database: str = "databases/trading.sqlite3"
