@@ -381,6 +381,7 @@ class StreamMarketData:
                                 )
 
                                 try:
+                                    log.info (data_orders)
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
 
