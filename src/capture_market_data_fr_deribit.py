@@ -381,9 +381,10 @@ class StreamMarketData:
                                 )
 
                                 try:
-                                    log.info (data_orders)
+                                    
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
+                                        log.info (data_orders)
 
                                         if "open_interest" in data_orders:
 
