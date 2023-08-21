@@ -32,9 +32,9 @@ class HedgingSpot(BasicStrategy):
         limit: int = 100
         ratio: float= 0.9
         get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
-        print (f' get_ohlc {get_ohlc_query}')
+
         ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-        print (f' ohlc_all {ohlc_all}')
+
         ohlc = [o['close'] for o in ohlc_all]
         ohlc.reverse()
         print (f' ohlc {ohlc}')
