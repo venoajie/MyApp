@@ -249,6 +249,25 @@ def get_net_sum_strategy_super_main(
         )
     )
     
+
+def get_net_sum_strategy_main(
+    my_trades_open_sqlite: list, label: str
+) -> float:
+    """ """
+    return (
+        0
+        if my_trades_open_sqlite == []
+        else sum(
+            [
+                o["amount_dir"]
+                for o in my_trades_open_sqlite["all"]
+                if parsing_label(o["label_main"])["main"]
+                == parsing_label(label)["main"]
+            ]
+        )
+    )
+
+    
 def transform_nested_dict_to_list(list_example) -> dict:
 
     """
