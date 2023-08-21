@@ -14,7 +14,7 @@ from loguru import logger as log
 # user defined formula
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
-from transaction_management.deribit import open_orders_management, myTrades_management
+from transaction_management.deribit import myTrades_management
 import apply_strategies
 from db_management import sqlite_management
 
