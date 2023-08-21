@@ -7,7 +7,7 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has_passed
+from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has_passed,get_ema
 
 
 @dataclass(unsafe_hash=True, slots=True)
@@ -23,7 +23,7 @@ class HedgingSpot(BasicStrategy):
     async def get_ema(self) -> dict:
         """
         """
-        return await self.get_basic_params().get_ema()
+        return await get_ema()
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
