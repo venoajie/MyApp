@@ -572,7 +572,7 @@ def querying_ohlc_closed(
     all_data= f"""SELECT  JSON_EXTRACT (data, '$.{price}')  AS close FROM {table} ORDER BY tick"""
 
     return all_data  if limit== None else \
-        f"""{all_data} DESC limit {limit}"""
+        f"""{all_data} limit {limit}"""
 
 
 def querying_arithmetic_operator(
