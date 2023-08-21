@@ -118,13 +118,7 @@ class ApplyHedgingSpot:
             if result in NONE_DATA
             else str_mod.parsing_sqlite_json_output([o["data"] for o in result]),
         )
-
-    def get_net_sum_strategy_super_main(
-        self, my_trades_open_sqlite: list, label: str
-    ) -> float:
-        """ """
-        return str_mod.get_net_sum_strategy_super_main(my_trades_open_sqlite, label)
-
+        
     async def get_net_sum_strategy_main(
         self, my_trades_open_sqlite: list, label: str
     ) -> float:
@@ -672,7 +666,7 @@ class ApplyHedgingSpot:
                         index_price, equity
                     )
 
-                    net_sum_strategy = self.get_net_sum_strategy_super_main(
+                    net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
                         my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
                     )
 
@@ -755,7 +749,7 @@ class ApplyHedgingSpot:
 
                     log.critical(f" {strategy_label}")
 
-                    net_sum_strategy = self.get_net_sum_strategy_super_main(
+                    net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
                         my_trades_open_sqlite, strategy_label
                     )
                     net_sum_strategy_main = await self.get_net_sum_strategy_main(
