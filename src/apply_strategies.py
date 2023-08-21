@@ -244,44 +244,6 @@ class ApplyHedgingSpot:
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
 
-    async def my_trades_open_sqlite_detailing(
-        self, transactions, label, detail_level: str = None
-    ) -> list:
-        """ 
-        detail_level: main/individual
-        """
-        if detail_level == "main":
-
-            result = (
-                []
-                if transactions == []
-                else (
-                    [
-                        o
-                        for o in transactions
-                        if str_mod.parsing_label(o["label_main"])["main"]
-                        == str_mod.parsing_label(label)["main"]
-                    ]
-                )
-            )
-            # log.warning(f'my_trades_open_sqlite_detailing {result}')
-        if detail_level == "individual":
-            result = (
-                []
-                if transactions == []
-                else (
-                    [
-                        o
-                        for o in transactions
-                        if str_mod.parsing_label(o["label_main"])["transaction_net"]
-                        == label
-                    ]
-                )
-            )
-        if detail_level == None:
-            result = [] if transactions == [] else transactions
-
-        return result
 
     async def sum_my_trades_open_sqlite(
         self, transactions, label, detail_level: str = None
@@ -290,9 +252,9 @@ class ApplyHedgingSpot:
         detail_level: main/individual
         """
         detailing = (
-            await self.my_trades_open_sqlite_detailing(transactions, label)
+            str_mod.my_trades_open_sqlite_detailing(transactions, label)
             if detail_level == None
-            else await self.my_trades_open_sqlite_detailing(
+            else str_mod.my_trades_open_sqlite_detailing(
                 transactions, label, detail_level
             )
         )
@@ -588,7 +550,7 @@ class ApplyHedgingSpot:
             # get startegy details
             strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-            my_trades_open_sqlite_individual_strategy: list = await self.my_trades_open_sqlite_detailing(
+            my_trades_open_sqlite_individual_strategy: list = str_mod.my_trades_open_sqlite_detailing(
                 my_trades_open_all, label, "individual"
             )
 
