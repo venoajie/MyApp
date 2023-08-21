@@ -10,9 +10,9 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    get_ema,
+    get_ema
 )
-
+from utilities.string_modification import get_net_sum_strategy_super_main
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -35,6 +35,9 @@ class HedgingSpot(BasicStrategy):
         """
 
         """
+        net_sum_strategy = get_net_sum_strategy_super_main(
+                        my_trades_open_sqlite, self.strategy_label
+                    )
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
