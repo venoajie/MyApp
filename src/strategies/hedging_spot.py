@@ -35,9 +35,7 @@ class HedgingSpot(BasicStrategy):
         """
 
         """
-        net_sum_strategy = get_net_sum_strategy_super_main(
-                        my_trades_open_sqlite, self.strategy_label
-                    )
+        
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
@@ -46,7 +44,15 @@ class HedgingSpot(BasicStrategy):
         """
 
         """
+        from db_management import sqlite_management
 
+        my_trades_open_sqlite: list = await sqlite_management.querying_table(
+                            "my_trades_all_json"
+                        )
+        net_sum_strategy = get_net_sum_strategy_super_main(
+                        my_trades_open_sqlite, self.strategy_label
+                    )
+        print (f'net_sum_strategy {net_sum_strategy}')
         open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
             "open"
         )
