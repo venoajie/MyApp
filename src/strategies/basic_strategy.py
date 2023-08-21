@@ -148,22 +148,6 @@ def get_transactions_sum(result_strategy_label) -> float:
     )
 
 
-def get_transactions_sum_super_main(my_trades_open_sqlite: list, label: str) -> float:
-    """ """
-    return (
-        0
-        if my_trades_open_sqlite == []
-        else sum(
-            [
-                o["amount_dir"]
-                for o in my_trades_open_sqlite["all"]
-                if str_mod.parsing_label(o["label_main"])["super_main"]
-                == str_mod.parsing_label(label)["super_main"]
-            ]
-        )
-    )
-
-
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """
     from utilities import pickling, system_tools
