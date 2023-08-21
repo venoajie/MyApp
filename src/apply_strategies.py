@@ -119,23 +119,6 @@ class ApplyHedgingSpot:
             else str_mod.parsing_sqlite_json_output([o["data"] for o in result]),
         )
         
-    async def get_net_sum_strategy_main(
-        self, my_trades_open_sqlite: list, label: str
-    ) -> float:
-        """ """
-        return (
-            0
-            if my_trades_open_sqlite == []
-            else sum(
-                [
-                    o["amount_dir"]
-                    for o in my_trades_open_sqlite["all"]
-                    if str_mod.parsing_label(o["label_main"])["main"]
-                    == str_mod.parsing_label(label)["main"]
-                ]
-            )
-        )
-
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: dict
     ) -> float:
@@ -752,7 +735,7 @@ class ApplyHedgingSpot:
                     net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
                         my_trades_open_sqlite, strategy_label
                     )
-                    net_sum_strategy_main = await self.get_net_sum_strategy_main(
+                    net_sum_strategy_main = str_mod.get_net_sum_strategy_main(
                         my_trades_open_sqlite, strategy_label
                     )
                     log.debug(
