@@ -245,44 +245,6 @@ class ApplyHedgingSpot:
         await private_data.send_limit_order(params)
 
 
-    async def sum_my_trades_open_sqlite(
-        self, transactions, label, detail_level: str = None
-    ) -> None:
-        """ 
-        detail_level: main/individual
-        """
-        detailing = (
-            str_mod.my_trades_open_sqlite_detailing(transactions, label)
-            if detail_level == None
-            else str_mod.my_trades_open_sqlite_detailing(
-                transactions, label, detail_level
-            )
-        )
-        if detailing != []:
-            detailing_parsed = str_mod.parsing_sqlite_json_output(
-                [o["data"] for o in detailing]
-            )
-            detailing_parsed_amt_for_closed_trans = (
-                0
-                if detailing_parsed == []
-                else [o["amount_dir"] for o in detailing_parsed if "label_main" in o]
-            )
-            detailing_parsed_amt_for_opened_trans = [
-                (o["amount_dir"]) for o in detailing if o["amount_dir"] != None
-            ]
-            detailing_parsed_amt_for_opened_trans = (
-                0
-                if detailing_parsed_amt_for_opened_trans == []
-                else detailing_parsed_amt_for_opened_trans
-            )
-
-        return (
-            0
-            if transactions == []
-            else sum(detailing_parsed_amt_for_opened_trans)
-            + sum(detailing_parsed_amt_for_closed_trans)
-        )
-
     async def clean_up_closed_transactions(self, transactions_all) -> None:
         """ 
         closed transactions: buy and sell in the same label id = 0. When flagged:
@@ -554,7 +516,7 @@ class ApplyHedgingSpot:
                 my_trades_open_all, label, "individual"
             )
 
-            sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(
+            sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
                 my_trades_open_all, label
             )
             size_is_consistent: bool = await self.is_size_consistent(
@@ -704,7 +666,7 @@ class ApplyHedgingSpot:
                         f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
                     )
 
-                    sum_my_trades_open_sqlite_all_strategy: list = await self.sum_my_trades_open_sqlite(
+                    sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
                         my_trades_open_all, strategy_label
                     )
                     size_is_consistent: bool = await self.is_size_consistent(
