@@ -19,6 +19,24 @@ class HedgingSpot(BasicStrategy):
         """
         """
         return BasicStrategy(self.strategy_label)
+    
+    async def get_ema(self) -> dict:
+        """
+        https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
+        https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
+        """
+            
+        from db_management import sqlite_management
+            
+        table: str = "ohlc1_eth_perp_json"
+        limit: int = 100
+        ratio: float= 0.9
+        get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
+        print (f' get_ohlc {get_ohlc_query}')
+        ohlc = await sqlite_management.executing_query_with_return(get_ohlc_query)
+        print (f' ohlc {ohlc}')
+        
+        return sum([ratio*ohlc[-x-1]*((1-ratio)**x) for x in range(len(ohlc))])
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
