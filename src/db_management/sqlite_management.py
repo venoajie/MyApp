@@ -374,6 +374,10 @@ async def querying_table(
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     """
 
+    from utilities import  string_modification  as str_mod
+    
+    NONE_DATA: None = [0, None, []]
+    
     query_table = f"SELECT  * FROM {table} WHERE  {filter} {operator}?"
 
     filter_val = (f"{filter_value}",)
@@ -405,7 +409,12 @@ async def querying_table(
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
-    return 0 if (combine_result == [] or combine_result == None) else (combine_result)
+    return dict(
+        all=[] if combine_result in NONE_DATA else (combine_result),
+        list_data_only=[]
+        if combine_result in NONE_DATA
+        else str_mod.parsing_sqlite_json_output([o["data"] for o in combine_result]),
+    )
 
 
 async def deleting_row(
