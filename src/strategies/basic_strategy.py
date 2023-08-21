@@ -198,23 +198,6 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     return params
 
 
-async def get_net_sum_strategy_super_main(
-     my_trades_open_sqlite: list, label: str
-) -> float:
-    """ """
-    return (
-        0
-        if my_trades_open_sqlite == []
-        else sum(
-            [
-                o["amount_dir"]
-                for o in my_trades_open_sqlite["all"]
-                if str_mod.parsing_label(o["label_main"])["super_main"]
-                == str_mod.parsing_label(label)["super_main"]
-            ]
-        )
-    )
-
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
 
