@@ -306,6 +306,45 @@ def my_trades_open_sqlite_detailing(transactions, label, detail_level: str = Non
 
     return result
     
+
+def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None
+) -> None:
+    """ 
+    detail_level: main/individual
+    """
+    detailing = (
+        my_trades_open_sqlite_detailing(transactions, label)
+        if detail_level == None
+        else my_trades_open_sqlite_detailing(
+            transactions, label, detail_level
+        )
+    )
+    if detailing != []:
+        detailing_parsed = parsing_sqlite_json_output(
+            [o["data"] for o in detailing]
+        )
+        detailing_parsed_amt_for_closed_trans = (
+            0
+            if detailing_parsed == []
+            else [o["amount_dir"] for o in detailing_parsed if "label_main" in o]
+        )
+        detailing_parsed_amt_for_opened_trans = [
+            (o["amount_dir"]) for o in detailing if o["amount_dir"] != None
+        ]
+        detailing_parsed_amt_for_opened_trans = (
+            0
+            if detailing_parsed_amt_for_opened_trans == []
+            else detailing_parsed_amt_for_opened_trans
+        )
+
+    return (
+        0
+        if transactions == []
+        else sum(detailing_parsed_amt_for_opened_trans)
+        + sum(detailing_parsed_amt_for_closed_trans)
+    )
+
+
 def transform_nested_dict_to_list(list_example) -> dict:
 
     """
