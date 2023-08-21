@@ -267,6 +267,44 @@ def get_net_sum_strategy_main(
         )
     )
 
+
+def my_trades_open_sqlite_detailing(transactions, label, detail_level: str = None
+) -> list:
+    """ 
+    detail_level: main/individual
+    """
+    if detail_level == "main":
+
+        result = (
+            []
+            if transactions == []
+            else (
+                [
+                    o
+                    for o in transactions
+                    if parsing_label(o["label_main"])["main"]
+                    == parsing_label(label)["main"]
+                ]
+            )
+        )
+        # log.warning(f'my_trades_open_sqlite_detailing {result}')
+    if detail_level == "individual":
+        result = (
+            []
+            if transactions == []
+            else (
+                [
+                    o
+                    for o in transactions
+                    if parsing_label(o["label_main"])["transaction_net"]
+                    == label
+                ]
+            )
+        )
+    if detail_level == None:
+        result = [] if transactions == [] else transactions
+
+    return result
     
 def transform_nested_dict_to_list(list_example) -> dict:
 
