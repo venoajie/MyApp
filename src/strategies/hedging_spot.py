@@ -33,7 +33,8 @@ class HedgingSpot(BasicStrategy):
         ratio: float= 0.9
         get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
         print (f' get_ohlc {get_ohlc_query}')
-        ohlc = await sqlite_management.executing_query_with_return(get_ohlc_query)
+        ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+        ohlc = [o['close'] for o in ohlc_all]
         print (f' ohlc {ohlc}')
         
         return sum([ratio*ohlc[-x-1]*((1-ratio)**x) for x in range(len(ohlc))])
