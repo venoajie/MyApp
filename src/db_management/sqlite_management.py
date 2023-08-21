@@ -569,7 +569,7 @@ def querying_ohlc_closed(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int=None
 ) -> str:
     
-    all_data= f"""SELECT  JSON_EXTRACT (data, '$.{price}')  AS close FROM {table} ORDER BY tick DESC"""
+    all_data= f"""SELECT  JSON_EXTRACT (data, '$.{price}')  AS close FROM {table}"""
 
     return all_data  if limit== None else \
         f"""{all_data} limit {limit}"""
