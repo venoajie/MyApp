@@ -18,7 +18,7 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-async def get_ema() -> dict:
+async def get_ema() -> list:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
@@ -33,7 +33,7 @@ async def get_ema() -> dict:
 
     ohlc = [o['close'] for o in ohlc_all]
     ohlc.reverse()
-    print (f' ohlc {ohlc}')
+    print (f' get_ema ohlc {ohlc}')
     
     return sum([ratio*ohlc[-x-1]*((1-ratio)**x) for x in range(len(ohlc))])
     
@@ -197,6 +197,23 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
 
     return params
 
+
+async def get_net_sum_strategy_super_main(
+     my_trades_open_sqlite: list, label: str
+) -> float:
+    """ """
+    return (
+        0
+        if my_trades_open_sqlite == []
+        else sum(
+            [
+                o["amount_dir"]
+                for o in my_trades_open_sqlite["all"]
+                if str_mod.parsing_label(o["label_main"])["super_main"]
+                == str_mod.parsing_label(label)["super_main"]
+            ]
+        )
+    )
 
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
