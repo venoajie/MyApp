@@ -106,19 +106,6 @@ class ApplyHedgingSpot:
         """ """
         return index_price * equity
 
-    async def querying_all(
-        self, table: list, database: str = "databases/trading.sqlite3"
-    ) -> dict:
-        """ """
-        result = await sqlite_management.querying_table(table, database)
-
-        return dict(
-            all=[] if result in NONE_DATA else (result),
-            list_data_only=[]
-            if result in NONE_DATA
-            else str_mod.parsing_sqlite_json_output([o["data"] for o in result]),
-        )
-
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: dict
     ) -> float:
@@ -376,7 +363,7 @@ class ApplyHedgingSpot:
 
                     for res in result:
 
-                        my_trades_open_sqlite: list = await self.querying_all(
+                        my_trades_open_sqlite: list = await sqlite_management.querying_table(
                             "my_trades_all_json"
                         )
                         my_trades_open: list = await sqlite_management.executing_label_and_size_query(
@@ -408,7 +395,7 @@ class ApplyHedgingSpot:
 
                     for res in result:
 
-                        my_trades_open_sqlite: list = await self.querying_all(
+                        my_trades_open_sqlite: list = await sqlite_management.querying_table(
                             "my_trades_all_json"
                         )
                         my_trades_open: list = my_trades_open_sqlite["list_data_only"]
@@ -451,7 +438,7 @@ class ApplyHedgingSpot:
             my_trades_open_all
         )
 
-        my_trades_open_sqlite: dict = await self.querying_all("my_trades_all_json")
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table ("my_trades_all_json")
 
         my_trades_open_all: list = my_trades_open_sqlite["all"]
 
@@ -628,7 +615,7 @@ class ApplyHedgingSpot:
         try:
             log.critical(f"OPENING TRANSACTIONS")
 
-            my_trades_open_sqlite: dict = await self.querying_all("my_trades_all_json")
+            my_trades_open_sqlite: dict = await sqlite_management.querying_table ("my_trades_all_json")
             my_trades_open_all: list = my_trades_open_sqlite["all"]
             # log.error (my_trades_open_all)
 
@@ -726,7 +713,7 @@ class ApplyHedgingSpot:
                 positions: list = reading_from_database["positions_from_sub_account"][0]
                 size_from_positions: float = 0 if positions == [] else positions["size"]
 
-                my_trades_open_sqlite: dict = await self.querying_all(
+                my_trades_open_sqlite: dict = await sqlite_management.querying_table(
                     "my_trades_all_json"
                 )
                 my_trades_open: list = my_trades_open_sqlite["list_data_only"]
