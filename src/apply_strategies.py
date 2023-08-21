@@ -118,7 +118,7 @@ class ApplyHedgingSpot:
             if result in NONE_DATA
             else str_mod.parsing_sqlite_json_output([o["data"] for o in result]),
         )
-        
+
     def compute_position_leverage_and_delta(
         self, notional: float, my_trades_open: dict
     ) -> float:
@@ -243,7 +243,6 @@ class ApplyHedgingSpot:
         """ """
         private_data = await self.get_private_data()
         await private_data.send_limit_order(params)
-
 
     async def clean_up_closed_transactions(self, transactions_all) -> None:
         """ 
@@ -680,9 +679,9 @@ class ApplyHedgingSpot:
                             THRESHOLD_TIME = 30
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
-       
+
                             get_ema: dict = await hedging.get_ema()
-                            log.error (get_ema)
+                            log.error(get_ema)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, server_time, THRESHOLD_TIME

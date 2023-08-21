@@ -231,10 +231,7 @@ def parsing_label(label: str, integer: int = None) -> dict:
     }
 
 
-
-def get_net_sum_strategy_super_main(
-     my_trades_open_sqlite: list, label: str
-) -> float:
+def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
     return (
         0
@@ -248,11 +245,9 @@ def get_net_sum_strategy_super_main(
             ]
         )
     )
-    
 
-def get_net_sum_strategy_main(
-    my_trades_open_sqlite: list, label: str
-) -> float:
+
+def get_net_sum_strategy_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
     return (
         0
@@ -268,7 +263,8 @@ def get_net_sum_strategy_main(
     )
 
 
-def my_trades_open_sqlite_detailing(transactions, label, detail_level: str = None
+def my_trades_open_sqlite_detailing(
+    transactions, label, detail_level: str = None
 ) -> list:
     """ 
     detail_level: main/individual
@@ -296,8 +292,7 @@ def my_trades_open_sqlite_detailing(transactions, label, detail_level: str = Non
                 [
                     o
                     for o in transactions
-                    if parsing_label(o["label_main"])["transaction_net"]
-                    == label
+                    if parsing_label(o["label_main"])["transaction_net"] == label
                 ]
             )
         )
@@ -305,24 +300,19 @@ def my_trades_open_sqlite_detailing(transactions, label, detail_level: str = Non
         result = [] if transactions == [] else transactions
 
     return result
-    
 
-def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None
-) -> None:
+
+def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None) -> None:
     """ 
     detail_level: main/individual
     """
     detailing = (
         my_trades_open_sqlite_detailing(transactions, label)
         if detail_level == None
-        else my_trades_open_sqlite_detailing(
-            transactions, label, detail_level
-        )
+        else my_trades_open_sqlite_detailing(transactions, label, detail_level)
     )
     if detailing != []:
-        detailing_parsed = parsing_sqlite_json_output(
-            [o["data"] for o in detailing]
-        )
+        detailing_parsed = parsing_sqlite_json_output([o["data"] for o in detailing])
         detailing_parsed_amt_for_closed_trans = (
             0
             if detailing_parsed == []

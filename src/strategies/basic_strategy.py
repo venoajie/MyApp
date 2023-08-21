@@ -18,25 +18,27 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
+
 async def get_ema() -> list:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
     """
-        
+
     table: str = "ohlc1_eth_perp_json"
     limit: int = 100
-    ratio: float= 0.9
+    ratio: float = 0.9
     get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
 
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
 
-    ohlc = [o['close'] for o in ohlc_all]
+    ohlc = [o["close"] for o in ohlc_all]
     ohlc.reverse()
-    print (f' get_ema ohlc {ohlc}')
-    
-    return sum([ratio*ohlc[-x-1]*((1-ratio)**x) for x in range(len(ohlc))])
-    
+    print(f" get_ema ohlc {ohlc}")
+
+    return sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))])
+
+
 def get_label(status: str, label_main_or_label_transactions: str) -> str:
     """
     provide transaction label
