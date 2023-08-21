@@ -790,6 +790,9 @@ class ApplyHedgingSpot:
                             THRESHOLD_TIME = 30
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
+       
+                            get_ema: dict = await hedging.get_ema()
+                            log.error (get_ema)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, server_time, THRESHOLD_TIME
