@@ -18,6 +18,7 @@ strategies = [
         "strategy": "hedgingSpot",
         "status": "active",
         "instrument": ["PERPETUAL"],
+        "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "sell",
         "entry_price": 1000,
@@ -34,7 +35,8 @@ strategies = [
     },
     {
         "strategy": "basicGridShort",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -52,7 +54,8 @@ strategies = [
     },
     {
         "strategy": "basicGridLong",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -71,6 +74,7 @@ strategies = [
     {
         "strategy": "marketMakerShort",
         "status": "active",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -90,6 +94,7 @@ strategies = [
     {
         "strategy": "marketMakerLong",
         "status": "active",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -112,7 +117,8 @@ strategies = [
 test = [
     {
         "strategy": "every5mLong",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -130,7 +136,8 @@ test = [
     },
     {
         "strategy": "every5mShort",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -148,7 +155,8 @@ test = [
     },
     {
         "strategy": "every1hoursLong",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -166,7 +174,8 @@ test = [
     },
     {
         "strategy": "every1hoursShort",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -184,7 +193,8 @@ test = [
     },
     {
         "strategy": "every4hoursLong",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -202,7 +212,8 @@ test = [
     },
     {
         "strategy": "every4hoursShort",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -220,7 +231,8 @@ test = [
     },
     {
         "strategy": "supplyDemandShort60A",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
@@ -238,7 +250,8 @@ test = [
     },
     {
         "strategy": "supplyDemandLongB",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
@@ -256,7 +269,8 @@ test = [
     },
     {
         "strategy": "supplyDemandLongD",
-        "status": "active",
+        "status": "inactive",
+        "contribute_to_hedging": True,
         "instrument": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
