@@ -715,6 +715,7 @@ class ApplyHedgingSpot:
 
                 # fetch positions for all instruments
                 positions: list = reading_from_database["positions_from_sub_account"][0]
+                log.warning (positions)
                 size_from_positions: float = 0 if positions == [] else positions["size"]
 
                 my_trades_open_sqlite: dict = await sqlite_management.querying_table(
