@@ -381,3 +381,15 @@ def transform_nested_dict_to_list(list_example) -> dict:
         my_list.append(dict_result)
 
     return my_list
+
+
+
+def filtering_list_with_missing_key(list_examples: list, missing_key: str = 'label') -> dict:
+
+    """
+    https://stackoverflow.com/questions/34710571/can-i-use-a-list-comprehension-on-a-list-of-dictionaries-if-a-key-is-missing
+
+    """
+    return [
+                        o for o in list_examples if  missing_key in o
+                    ]
