@@ -281,7 +281,10 @@ class BasicStrategy:
         print (f'result {result}')
         
         #clean up result with no label main
-        result_cleaned= str_mod.filtering_list_with_missing_key(result, "label_main")
+        result_cleaned=  [
+            o for o in result if o["label_main"] !=None
+        ]
+        
         print (f'result_cleaned {result_cleaned}')
 
         result_strategy_label: list = [
