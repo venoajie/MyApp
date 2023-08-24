@@ -184,6 +184,13 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     return params
 
 
+def get_strategy_config_all() -> list:
+    """
+    """
+    from strategies import entries_exits
+
+    return entries_exits.strategies
+    
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
 
@@ -191,12 +198,12 @@ class BasicStrategy:
 
     strategy_label: str
 
+
     def get_strategy_config(self, strategy_label: str = None) -> dict:
         """
         """
-        from strategies import entries_exits
 
-        params: list = entries_exits.strategies
+        params: list = get_strategy_config_all()
 
         if strategy_label != None:
             str_config: dict = [
@@ -289,8 +296,11 @@ class BasicStrategy:
                 == str_mod.parsing_label(o["label_main"])["super_main"]
             ]
 
-        return result_strategy_label
-
+        return dict(
+            result_strategy_label = result_strategy_label,
+            result_all = result,
+        )
+        
     async def get_side_ratio(self) -> dict:
         """ """
         my_trades_attributes = await self.get_my_trades_attributes("super_main")
@@ -344,11 +354,14 @@ class BasicStrategy:
     async def transaction_attributes(self, table, label_filter: str = None) -> dict:
         """ """
 
-        result_strategy_label: list = await self.transaction_per_label(
+        result: list = await self.transaction_per_label(
             table, label_filter
         )
 
+        result_strategy_label: list = result ['result_strategy_label']
+
         return dict(
+            result_all=result['result_all'],
             transactions_strategy_label=result_strategy_label,
             max_time_stamp=get_max_time_stamp(result_strategy_label),
             order_id_max_time_stamp=get_order_id_max_time_stamp(result_strategy_label),
