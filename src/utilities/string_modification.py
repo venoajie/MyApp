@@ -246,6 +246,28 @@ def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> 
         )
     )
 
+def get_net_sum_strategy_hedged(my_trades_open_sqlite: list) -> float:
+    """ 
+    strategy need to be hedged
+    """
+    from strategies import entries_exits
+    
+    strategies = entries_exits.strategies
+    
+    strategies_contribute_to_hedging=  [o['strategy'] for o in strategies if o["contribute_to_hedging"] == True]
+    
+    return (
+        0
+        if my_trades_open_sqlite == []
+        else sum(
+            [
+                o["amount_dir"]
+                for o in my_trades_open_sqlite["all"]
+                if o in strategies_contribute_to_hedging
+            ]
+        )
+    )
+
 
 def get_net_sum_strategy_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
