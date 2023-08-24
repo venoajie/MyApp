@@ -391,5 +391,5 @@ def filtering_list_with_missing_key(list_examples: list, missing_key: str = 'lab
 
     """
     return [
-                        o for o in list_examples if  missing_key in o
+                        o for o in list_examples if  missing_key not in o
                     ]
