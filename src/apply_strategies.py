@@ -237,6 +237,7 @@ class ApplyHedgingSpot:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
         """
+        log.error (transactions_all)
 
         if transactions_all != []:
             trades_with_closed_labels = [
