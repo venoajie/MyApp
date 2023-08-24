@@ -35,6 +35,7 @@ class HedgingSpot(BasicStrategy):
         """
 
         """
+        print (f'current_size {current_size} notional {notional} current_outstanding_order_len {current_outstanding_order_len}')
         
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
