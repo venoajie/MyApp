@@ -24,19 +24,17 @@ class HedgingSpot(BasicStrategy):
         """
         return BasicStrategy(self.strategy_label)
 
-    async def get_ema(self) -> dict:
+    async def get_ema(self, limit: int = 100) -> dict:
         """
         """
-        return await get_ema()
+        return await get_ema(limit)
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
     ) -> bool:
         """
 
-        """
-        print (f'current_size {current_size} notional {notional} current_outstanding_order_len {current_outstanding_order_len}')
-        
+        """        
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
