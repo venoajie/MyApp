@@ -36,7 +36,7 @@ async def get_ema(limit: int = 100) -> list:
     ohlc.reverse()
     print(f" get_ema ohlc {ohlc}")
 
-    return sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))])
+    return round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
 
 
 def get_label(status: str, label_main_or_label_transactions: str) -> str:
