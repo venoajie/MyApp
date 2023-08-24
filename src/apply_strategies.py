@@ -739,8 +739,15 @@ class ApplyHedgingSpot:
                 # fetch strategies attributes
                 strategies = entries_exits.strategies
 
-                # log.error (my_trades_open)
+                log.error (my_trades_open)
                 # log.error ([o["label"] for o in my_trades_open])
+                        
+                        
+                # clean up transactions all
+                my_trades_open= [
+                        o for o in my_trades_open if o["label"] != None
+                    ]
+        
                 my_trades_open_remove_closed_labels = (
                     []
                     if my_trades_open == []
