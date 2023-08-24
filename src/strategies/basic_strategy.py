@@ -278,20 +278,16 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
-        print (f'result {result}')
         
         #clean up result with no label main
         result_cleaned=  [
             o for o in result if o["label_main"] !=None
         ]
         
-        print (f'result_cleaned {result_cleaned}')
-
         result_strategy_label: list = [
             o for o in result_cleaned if self.strategy_label in o["label_main"]
         ]
         
-        print (f'result_strategy_label {result_strategy_label}')
         if result != []:
 
             if label_filter != None:
@@ -309,7 +305,7 @@ class BasicStrategy:
 
         return dict(
             result_strategy_label = result_strategy_label,
-            result_all = result,
+            result_all = result_cleaned,
         )
         
     async def get_side_ratio(self) -> dict:
@@ -368,7 +364,7 @@ class BasicStrategy:
         result: list = await self.transaction_per_label(
             table, label_filter
         )
-
+        
         result_strategy_label: list = result ['result_strategy_label']
 
         return dict(
