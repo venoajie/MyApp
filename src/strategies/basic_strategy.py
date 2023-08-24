@@ -279,23 +279,30 @@ class BasicStrategy:
 
         result: list = await querying_label_and_size(table)
         print (f'result {result}')
+        
+        #clean up result with no label main
+        result_cleaned= str_mod.filtering_list_with_missing_key(result, "label_main")
+        print (f'result_cleaned {result_cleaned}')
 
         result_strategy_label: list = [
-            o for o in result if self.strategy_label in o["label_main"]
+            o for o in result_cleaned if self.strategy_label in o["label_main"]
         ]
+        
+        print (f'result_strategy_label {result_strategy_label}')
+        if result != []:
 
-        if label_filter != None:
-            result_strategy_label: list = [
-                o for o in result_strategy_label if label_filter in o["label_main"]
-            ]
+            if label_filter != None:
+                result_strategy_label: list = [
+                    o for o in result_strategy_label if label_filter in o["label_main"]
+                ]
 
-        if label_filter == "super_main":
-            result_strategy_label: list = [
-                o
-                for o in result
-                if str_mod.parsing_label(self.strategy_label)["super_main"]
-                == str_mod.parsing_label(o["label_main"])["super_main"]
-            ]
+            if label_filter == "super_main":
+                result_strategy_label: list = [
+                    o
+                    for o in result
+                    if str_mod.parsing_label(self.strategy_label)["super_main"]
+                    == str_mod.parsing_label(o["label_main"])["super_main"]
+                ]
 
         return dict(
             result_strategy_label = result_strategy_label,
