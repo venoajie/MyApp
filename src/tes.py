@@ -26,3 +26,6 @@ strategies = entries_exits.strategies
 strategy_attr = [o['strategy'] for o in strategies if o["contribute_to_hedging"] == True]
 
 print(strategy_attr)
+
+get_ema= [1668.25, 1669.0, 1668.95, 1667.95, 1666.9, 1666.85, 1667.55, 1667.45, 1667.25]
+print (get_ema[:5])
