@@ -24,10 +24,10 @@ class HedgingSpot(BasicStrategy):
         """
         return BasicStrategy(self.strategy_label)
 
-    async def get_ema(self, limit: int = 100) -> dict:
+    async def get_ema(self, limit: int = 100, ratio: float = 0.9) -> dict:
         """
         """
-        return await get_ema(limit)
+        return await get_ema(limit, ratio)
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
