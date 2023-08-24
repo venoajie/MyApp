@@ -34,7 +34,9 @@ async def get_ema(limit: int = 100, ratio: float = 0.9) -> list:
 
     ohlc = [o["close"] for o in ohlc_all]
     ohlc.reverse()
-    print(f" get_ema ohlc {ohlc}")
+    print(f" get_ema ohlc 1 {ohlc}")
+    ohlc= ohlc[:limit-1]
+    print(f" get_ema ohlc 2 {ohlc}")
 
     return round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
 
