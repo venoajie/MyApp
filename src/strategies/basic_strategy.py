@@ -278,6 +278,7 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
+        print (f'result {result}')
 
         result_strategy_label: list = [
             o for o in result if self.strategy_label in o["label_main"]
