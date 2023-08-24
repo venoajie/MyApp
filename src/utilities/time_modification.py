@@ -251,3 +251,38 @@ def check_alarm_clock(
         return True
 
     return False
+
+
+
+def resampling_time_frame(ohlc_data: list,
+    time_frame: str= "5min"
+):
+    """
+
+
+    Args:
+        triggerHour (int)
+        triggerMinute (int)
+
+    Returns:
+        str
+
+    Example:
+        data_original = 'hedgingSpot-open-1671189554374' become 'hedgingSpot'
+
+    Reference:
+        https://stackoverflow.com/questions/69350436/how-do-i-resample-to-5-min-correctly
+        https://neel-81024.medium.com/resampling-and-ohlc-in-d967cfafc657
+        https://stackoverflow.com/questions/70143660/pandas-ohlc-aggregation-resample-with-time-of-ohlc
+        https://stackoverflow.com/questions/36681945/group-dataframe-in-5-minute-intervals
+        https://stackoverflow.com/questions/36222928/pandas-ohlc-aggregation-on-ohlc-data
+        """
+    import pandas as pd
+    
+    df = pd.DataFrame(ohlc_data)
+    df.set_index(df['Datetime'],inplace=True)
+    d = {'open':'first','high':'max',
+            'low':'min','close':'last','volume':'sum'}
+    df.resample(time_frame, closed='right', label='right').agg(d)
+
+    return False
