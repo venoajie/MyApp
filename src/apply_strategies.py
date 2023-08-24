@@ -671,7 +671,7 @@ class ApplyHedgingSpot:
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                            get_ema: dict = await hedging.get_ema(10)
+                            get_ema: dict = await hedging.get_ema()
                             get_ema_10: dict = await hedging.get_ema(10)
                             log.error(get_ema)
                             log.error(get_ema_10)
