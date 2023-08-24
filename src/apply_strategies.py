@@ -717,7 +717,6 @@ class ApplyHedgingSpot:
                 positions_all: list = reading_from_database["positions_from_sub_account"]
                 size_from_positions: float = 0 if positions_all == [] else sum([
                         o['size'] for o in positions_all])
-                log.warning (size_from_positions)
 
                 my_trades_open_sqlite: dict = await sqlite_management.querying_table(
                     "my_trades_all_json"
