@@ -19,7 +19,7 @@ from loguru import logger as log
 
 # user defined formula
 import deribit_get
-from transaction_management.deribit import open_orders_management, myTrades_management
+from transaction_management.deribit import open_orders_management
 from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import position_sizing
 from configuration import config
