@@ -566,6 +566,10 @@ def querying_last_open_interest(
 
     return f"SELECT open_interest FROM {table} WHERE tick is {last_tick}"
 
+def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
+
+    return f"SELECT * from {table} where not (label_main LIKE '%value1%' or label_main LIKE '%value2%' or label_main LIKE'%value3%');"
+
 
 def querying_open_interest(
     price: float = "close", table: str = "ohlc1_eth_perp_json"
