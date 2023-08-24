@@ -119,7 +119,7 @@ def get_order_id_max_time_stamp(result_strategy_label) -> int:
     """
     """
     return (
-        []
+        0
         if get_max_time_stamp(result_strategy_label) == []
         else [
             o["order_id"]
@@ -133,7 +133,7 @@ def get_transactions_len(result_strategy_label) -> int:
     """
     """
     return (
-        [] if result_strategy_label == [] else len([o for o in result_strategy_label])
+        0 if result_strategy_label == [] else len([o for o in result_strategy_label])
     )
 
 
@@ -142,7 +142,7 @@ def get_transactions_sum(result_strategy_label) -> float:
     summing transaction under SAME strategy label
     """
     return (
-        []
+        0.0
         if result_strategy_label == []
         else sum([o["amount_dir"] for o in result_strategy_label])
     )
