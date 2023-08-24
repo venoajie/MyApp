@@ -671,15 +671,17 @@ class ApplyHedgingSpot:
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                            get_ema: dict = await hedging.get_ema()
+                            get_ema: dict = await hedging.get_ema(10)
+                            get_ema_10: dict = await hedging.get_ema(10)
                             log.error(get_ema)
+                            log.error(get_ema_10)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, server_time, THRESHOLD_TIME
                             )
 
-                            await self.if_order_is_true(send_order, instrument)
-                            await self.if_cancel_is_true(send_order)
+                            #await self.if_order_is_true(send_order, instrument)
+                            #await self.if_cancel_is_true(send_order)
 
                         if "marketMaker" in strategy_attr["strategy"]:
 
