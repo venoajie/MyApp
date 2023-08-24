@@ -673,8 +673,8 @@ class ApplyHedgingSpot:
 
                             get_ema: dict = await hedging.get_ema()
                             get_ema_10: dict = await hedging.get_ema(10)
-                            log.error(get_ema)
-                            log.error(get_ema_10)
+                            log.error(get_ema, .9)
+                            log.error(get_ema_10,.5)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
                                 notional, best_ask_prc, server_time, THRESHOLD_TIME
