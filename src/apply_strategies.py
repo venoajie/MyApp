@@ -140,7 +140,7 @@ class ApplyHedgingSpot:
         )
         positions = pickling.read_data(path_positions)
         sub_account = pickling.read_data(path_sub_accounts)
-        log.critical(f' SUB ACCOUNT {sub_account}')
+        # log.critical(f' SUB ACCOUNT {sub_account}')
         positions_from_sub_account = sub_account[0]["positions"]
         open_orders_from_sub_account = sub_account[0]["open_orders"]
         portfolio = pickling.read_data(path_portfolio)
@@ -714,9 +714,10 @@ class ApplyHedgingSpot:
             if portfolio:
 
                 # fetch positions for all instruments
-                positions: list = reading_from_database["positions_from_sub_account"][0]
-
-                size_from_positions: float = 0 if positions == [] else positions["size"]
+                positions_all: list = reading_from_database["positions_from_sub_account"]
+                size_from_positions: float = 0 if positions_all == [] else [
+                        o['size'] for o in positions_all]
+                log.warning (size_from_positions)
 
                 my_trades_open_sqlite: dict = await sqlite_management.querying_table(
                     "my_trades_all_json"
