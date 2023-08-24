@@ -19,14 +19,14 @@ async def querying_label_and_size(table) -> list:
     return await sqlite_management.executing_label_and_size_query(table)
 
 
-async def get_ema() -> list:
+async def get_ema(limit: int = 100) -> list:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
     """
 
     table: str = "ohlc1_eth_perp_json"
-    limit: int = 100
+    
     ratio: float = 0.9
     get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
 
