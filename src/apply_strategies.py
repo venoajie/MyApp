@@ -744,7 +744,7 @@ class ApplyHedgingSpot:
                         
                 # clean up transactions all
                 my_trades_open= [
-                        o for o in my_trades_open if  'label' in ro
+                        o for o in my_trades_open if  'label' in o
                     ]
         
                 log.error (my_trades_open)
