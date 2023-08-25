@@ -141,7 +141,7 @@ def is_transaction_price_minus_below_threshold(
     last_transaction_price: float, current_price: float, pct_threshold: float
 ) -> bool:
 
-    return price_minus_pct(last_transaction_price, pct_threshold) > current_price
+    return price_minus_pct(last_transaction_price, pct_threshold) >= current_price
 
 
 def is_transaction_price_plus_above_threshold(
@@ -356,7 +356,7 @@ class BasicStrategy:
         
     async def get_side_ratio(self) -> dict:
         """ """
-        my_trades_attributes = await self.get_my_trades_attributes("super_main")
+        my_trades_attributes = await self.transaction_attributes("my_trades_all_json", "super_main")
 
         result_strategy_label = my_trades_attributes["transactions_strategy_label"]
 
@@ -422,21 +422,9 @@ class BasicStrategy:
             transactions_len=get_transactions_len(result_strategy_label),
         )
 
-    async def get_my_trades_attributes(self, label_filter: str = None) -> list:
+    async def is_order_has_sent_before(self, trade_seq) -> bool:
         """ """
-
-        # get current trades
-        return await self.transaction_attributes("my_trades_all_json", label_filter)
-
-    async def get_orders_attributes(self, label_filter: str = None) -> list:
-        """ """
-
-        # get current orders
-        return await self.transaction_attributes("orders_all_json", label_filter)
-
-    async def is_order_has_sent_before(self, trade_seq) -> dict:
-        """ """
-        get_my_trades_attributes_closed = await self.get_my_trades_attributes("closed")
+        get_my_trades_attributes_closed = await self.transaction_attributes("my_trades_all_json","closed")
         my_trades_attributes_closed = get_my_trades_attributes_closed[
             "transactions_strategy_label"
         ]
@@ -481,7 +469,7 @@ class BasicStrategy:
             )
             params.update({"entry_price": ask_price})
 
-        orders = await self.get_orders_attributes("closed")
+        orders = await self. self.transaction_attributes("orders_all_json", "closed")
         len_orders: int = orders["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
@@ -492,8 +480,6 @@ class BasicStrategy:
 
             params.update({"instrument": transaction["instrument_name"]})
             trade_seq = params["label"]
-
-            print(f"trade_seq {trade_seq}")
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
             print(f"order_has_sent_before {order_has_sent_before}")
