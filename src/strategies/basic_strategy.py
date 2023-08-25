@@ -19,7 +19,7 @@ async def querying_label_and_size(table) -> list:
     return await sqlite_management.executing_label_and_size_query(table)
 
 
-async def get_ema(limit: int = 100, ratio: float = 0.9) -> list:
+async def get_ema(limit: int = 100, ratio: float = 0.9) -> dict:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
@@ -34,12 +34,32 @@ async def get_ema(limit: int = 100, ratio: float = 0.9) -> list:
 
     ohlc = [o["close"] for o in ohlc_all]
     ohlc.reverse()
-    print(f" get_ema ohlc 1 {ohlc}")
-    ohlc= ohlc[:limit-1]
-    print(f" get_ema ohlc 2 {ohlc}")
 
-    return round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
+    # to minimize impact of current price to EMA calc
+    ohlc_reversed= ohlc[:limit-1]
 
+    return  dict(
+            ema = round(sum([ratio * ohlc_reversed[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc_reversed))]), 2),
+            last_price = ohlc_reversed[-1:]
+            )
+
+async def market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
+    """
+    """
+    get_ema= await get_ema (limit, ratio)
+    ema= get_ema['ema']
+    last_price= get_ema['last_price']
+    print(f" get_ema ohlc 2 {get_ema}  ema {ema}  last_price {last_price}")
+    
+    rising_price= False
+    falling_price= False
+    neutral_price= False
+
+    return  dict(
+            rising_price = rising_price,
+            neutral_price = neutral_price,
+            falling_price = falling_price,
+        )
 
 def get_label(status: str, label_main_or_label_transactions: str) -> str:
     """
