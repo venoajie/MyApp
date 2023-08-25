@@ -30,7 +30,7 @@ class MarketMaker(BasicStrategy):
         )
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-        my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
+        my_trades: dict = await self.get_basic_params().transaction_attributes("my_trades_all_json")
         len_my_trades: int = my_trades["transactions_len"]
         max_tstamp_my_trades: int = my_trades["max_time_stamp"]
         ratio = await self.get_basic_params().get_side_ratio()
