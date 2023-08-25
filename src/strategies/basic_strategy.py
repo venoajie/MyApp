@@ -39,14 +39,11 @@ async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -
             )
 
 
-async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json") -> dict:
+async def get_ema (ohlc, ratio: float = 0.9) -> dict:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
     """
-    
-    ohlc_cleaned= await cleaned_up_ohlc(limit, table)
-    ohlc= ohlc_cleaned['ohlc_reversed']
 
     return  round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
             
@@ -54,10 +51,11 @@ async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9, table: st
 async def market_condition(threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json") -> dict:
     """
     """
+    ohlc= await cleaned_up_ohlc (limit, table)
     
-    ema= await get_ema_and_last_price (limit, ratio, table)
+    ema= await get_ema  (ohlc['ohlc_reversed'], ratio)
 
-    last_price= await cleaned_up_ohlc (limit, table) ['last_price']
+    last_price= ohlc ['last_price']
 
     print(f" get_ema ohlc 2 {ema}  ema {ema}  last_price {last_price}")
 
