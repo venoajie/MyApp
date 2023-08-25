@@ -45,8 +45,11 @@ class HedgingSpot(BasicStrategy):
             "orders_all_json", "open"
         )
 
-        is_bullish = market_condition["rising_price"]
-        is_bearish = market_condition["falling_price"]
+        rising_price = market_condition["rising_price"]
+        falling_price = market_condition["falling_price"]
+
+        bullish = rising_price
+        bearish = falling_price
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().transaction_attributes(
@@ -54,7 +57,7 @@ class HedgingSpot(BasicStrategy):
         )
 
         my_trades_all = my_trades["result_all"]
-        print(f"is_bearish {is_bearish} is_bullish {is_bullish}")
+        print(f"is_bearish {bearish} is_bullish {bullish}")
         print(f"my_trades_all {my_trades_all}")
         net_sum_strategy = get_net_sum_strategy_super_main(
             my_trades_all, self.strategy_label
@@ -66,9 +69,12 @@ class HedgingSpot(BasicStrategy):
         )
 
         print(f"sum_my_trades {sum_my_trades}")
-        order_allowed: bool = self.are_size_and_order_appropriate_for_ordering(
-            notional, sum_my_trades, len_orders and is_bearish
-        )
+        size_and_order_appropriate_for_ordering: bool = self.are_size_and_order_appropriate_for_ordering(
+            notional, sum_my_trades, len_orders )
+        
+        order_allowed: bool = size_and_order_appropriate_for_ordering\
+                                and bearish
+        
         cancel_allowed: bool = False
 
         if len_orders != [] and len_orders > 0:
