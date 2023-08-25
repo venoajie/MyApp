@@ -29,13 +29,12 @@ async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -
     ohlc = [o["close"] for o in ohlc_all]
     ohlc.reverse()
 
-    # to minimize impact of current price to EMA calc
     ohlc_reversed= ohlc[:limit-1]
     
     # execute query
     return dict(
             ohlc_reversed = ohlc_reversed,
-            last_price = ohlc_reversed[-1:][0]
+            last_price = ohlc[-1:][0]
             )
 
 
