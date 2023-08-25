@@ -33,9 +33,11 @@ async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -
     
     # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
+    print (f'ohlc {ohlc}')
 
     # exclude last price to minimize its impact to TA calc
     ohlc_reversed= ohlc[:limit-1]
+    print (f'ohlc-1 {ohlc_reversed}')
     
     return dict(
             ohlc_reversed = ohlc_reversed,
