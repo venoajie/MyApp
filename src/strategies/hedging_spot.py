@@ -44,7 +44,8 @@ class HedgingSpot(BasicStrategy):
         )
         limit= 100
         ratio = 0.9
-        get_market_condition= await market_condition(limit, ratio)
+        threshold= .01/100
+        get_market_condition= await market_condition(threshold,limit, ratio)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
