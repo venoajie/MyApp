@@ -448,7 +448,7 @@ class StreamAccountData:
 
                     await self.websocket_client.send(json.dumps(msg))
 
-            await asyncio.sleep(150)
+            await asyncio.sleep(15)
 
     async def ws_operation(
         self, operation: str, ws_channel: str, id: int = 100
