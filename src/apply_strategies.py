@@ -672,7 +672,7 @@ class ApplyHedgingSpot:
 
                         if "hedgingSpot" in strategy_attr["strategy"]:
 
-                            THRESHOLD_TIME = 30
+                            THRESHOLD_TIME_TO_CANCEL = 30
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -681,7 +681,7 @@ class ApplyHedgingSpot:
                                 best_ask_prc,
                                 server_time,
                                 market_condition,
-                                THRESHOLD_TIME,
+                                THRESHOLD_TIME_TO_CANCEL,
                             )
 
                             # await self.if_order_is_true(send_order, instrument)
