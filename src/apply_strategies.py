@@ -434,6 +434,7 @@ class ApplyHedgingSpot:
         my_trades_open_all,
         my_trades_open,
         size_from_positions,
+        market_condition
     ) -> float:
         """ """
 
@@ -613,6 +614,7 @@ class ApplyHedgingSpot:
         my_trades_open_all,
         size_from_positions,
         server_time,
+        market_condition
     ) -> None:
         """ """
 
@@ -672,7 +674,7 @@ class ApplyHedgingSpot:
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
-                                notional, best_ask_prc, server_time, THRESHOLD_TIME
+                                notional, best_ask_prc, server_time, market_condition, THRESHOLD_TIME
                             )
 
                             #await self.if_order_is_true(send_order, instrument)
@@ -769,6 +771,11 @@ class ApplyHedgingSpot:
                 # log.error (label_transaction_net)
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)
+                limit= 100
+                ratio = 0.9
+                threshold= .01/100
+                market_condition= await basic_strategy.get_market_condition(threshold,limit, ratio)
+                log.error(f'market_condition {market_condition}')
 
                 # closing transactions
                 if label_transaction_net != []:
@@ -780,6 +787,7 @@ class ApplyHedgingSpot:
                         my_trades_open_all,
                         my_trades_open,
                         size_from_positions,
+                        market_condition
                     )
 
                 # opening transaction
@@ -792,6 +800,7 @@ class ApplyHedgingSpot:
                         my_trades_open_all,
                         size_from_positions,
                         server_time,
+                        market_condition
                     )
 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(
