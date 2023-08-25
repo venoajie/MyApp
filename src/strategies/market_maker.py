@@ -25,7 +25,7 @@ class MarketMaker(BasicStrategy):
     ) -> dict:
         """
         """
-        open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes("orders_all_json",
             "open"
         )
 
