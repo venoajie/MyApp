@@ -18,18 +18,12 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-
-async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9) -> dict:
+async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
-    https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
-    https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
     """
-
-    table: str = "ohlc1_eth_perp_json"
-    
     
     get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
-
+    
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
 
     ohlc = [o["close"] for o in ohlc_all]
@@ -37,19 +31,37 @@ async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9) -> dict:
 
     # to minimize impact of current price to EMA calc
     ohlc_reversed= ohlc[:limit-1]
-
-    return  dict(
-            ema = round(sum([ratio * ohlc_reversed[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc_reversed))]), 2),
+    
+    # execute query
+    return dict(
+            ohlc_reversed = ohlc_reversed,
             last_price = ohlc_reversed[-1:][0]
             )
 
-async def market_condition(threshold, limit: int = 100, ratio: float = 0.9) -> dict:
+
+async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json") -> dict:
+    """
+    https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
+    https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
+    """
+    
+    ohlc_cleaned= await cleaned_up_ohlc(limit, table)
+    ohlc= ohlc_cleaned['ohlc_reversed']
+
+    return  round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
+            
+
+async def market_condition(threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json") -> dict:
     """
     """
-    get_ema= await get_ema_and_last_price (limit, ratio)
+    
+    get_ema= await get_ema_and_last_price (limit, ratio, table)
     ema= get_ema['ema']
-    last_price= get_ema['last_price']
+
+    last_price= await cleaned_up_ohlc (limit, table) ['last_price']
+
     print(f" get_ema ohlc 2 {get_ema}  ema {ema}  last_price {last_price}")
+
     delta_price= (last_price-ema)
     delta_price_pct= abs(delta_price/ema)
     
