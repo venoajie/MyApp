@@ -43,17 +43,28 @@ async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9) -> dict:
             last_price = ohlc_reversed[-1:]
             )
 
-async def market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
+async def market_condition(threshold, limit: int = 100, ratio: float = 0.9) -> dict:
     """
     """
     get_ema= await get_ema_and_last_price (limit, ratio)
     ema= get_ema['ema']
     last_price= get_ema['last_price']
     print(f" get_ema ohlc 2 {get_ema}  ema {ema}  last_price {last_price}")
+    delta_price= (last_price-ema)
+    delta_price_pct= abs(delta_price/ema)
     
     rising_price= False
     falling_price= False
     neutral_price= False
+    
+    if delta_price_pct > threshold:
+        if delta_price <0:
+            falling_price= True
+        if delta_price >=0:
+            rising_price= True
+
+    if delta_price_pct < threshold:
+        neutral_price= True
 
     return  dict(
             rising_price = rising_price,
