@@ -22,16 +22,21 @@ async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -
     """
     """
     
+    # get query for close price
     get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
     
+    # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
 
+    # pick value only
     ohlc = [o["close"] for o in ohlc_all]
+    
+    # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
 
+    # exclude last price to minimize its impact to TA calc
     ohlc_reversed= ohlc[:limit-1]
     
-    # execute query
     return dict(
             ohlc_reversed = ohlc_reversed,
             last_price = ohlc[-1:][0]
