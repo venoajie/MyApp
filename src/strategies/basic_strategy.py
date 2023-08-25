@@ -40,7 +40,7 @@ async def get_ema_and_last_price(limit: int = 100, ratio: float = 0.9) -> dict:
 
     return  dict(
             ema = round(sum([ratio * ohlc_reversed[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc_reversed))]), 2),
-            last_price = ohlc_reversed[-1:]
+            last_price = ohlc_reversed[-1:][0]
             )
 
 async def market_condition(threshold, limit: int = 100, ratio: float = 0.9) -> dict:
