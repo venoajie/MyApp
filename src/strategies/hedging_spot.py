@@ -33,7 +33,7 @@ class HedgingSpot(BasicStrategy):
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
-        self, notional: float, ask_price: float, server_time: int, threshold: float = 30
+        self, notional: float, ask_price: float, server_time: int, market_condition:dict, threshold: float = 30
     ) -> dict:
         """
 
@@ -42,16 +42,15 @@ class HedgingSpot(BasicStrategy):
         open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
             "open"
         )
-        limit= 100
-        ratio = 0.9
-        threshold= .01/100
-        get_market_condition= await market_condition(threshold,limit, ratio)
+        
+        is_bullish= market_condition['rising_price']
+        is_bearish= market_condition['falling_price']
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
         
         my_trades_all= my_trades['result_all']
-        print (f'get_market_condition {get_market_condition}')
+        print (f'is_bearish {is_bearish} is_bullish {is_bullish}')
         print (f'my_trades_all {my_trades_all}')
         net_sum_strategy = get_net_sum_strategy_super_main(
                         my_trades_all, self.strategy_label
