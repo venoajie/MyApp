@@ -238,9 +238,7 @@ class ApplyHedgingSpot:
         2. move them to table for closed transactions/my_trades_closed_json
         """
         # clean up transactions all
-        transactions_all= [
-                o for o in transactions_all if o["label_main"] != None
-            ]
+        transactions_all = [o for o in transactions_all if o["label_main"] != None]
 
         if transactions_all != []:
             trades_with_closed_labels = [
@@ -434,7 +432,7 @@ class ApplyHedgingSpot:
         my_trades_open_all,
         my_trades_open,
         size_from_positions,
-        market_condition
+        market_condition,
     ) -> float:
         """ """
 
@@ -443,7 +441,9 @@ class ApplyHedgingSpot:
             my_trades_open_all
         )
 
-        my_trades_open_sqlite: dict = await sqlite_management.querying_table ("my_trades_all_json")
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+            "my_trades_all_json"
+        )
 
         my_trades_open_all: list = my_trades_open_sqlite["all"]
 
@@ -615,14 +615,16 @@ class ApplyHedgingSpot:
         my_trades_open_all,
         size_from_positions,
         server_time,
-        market_condition
+        market_condition,
     ) -> None:
         """ """
 
         try:
             log.critical(f"OPENING TRANSACTIONS")
 
-            my_trades_open_sqlite: dict = await sqlite_management.querying_table ("my_trades_all_json")
+            my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+                "my_trades_all_json"
+            )
             my_trades_open_all: list = my_trades_open_sqlite["all"]
             # log.error (my_trades_open_all)
 
@@ -675,11 +677,15 @@ class ApplyHedgingSpot:
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
                             send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
-                                notional, best_ask_prc, server_time, market_condition, THRESHOLD_TIME
+                                notional,
+                                best_ask_prc,
+                                server_time,
+                                market_condition,
+                                THRESHOLD_TIME,
                             )
 
-                            #await self.if_order_is_true(send_order, instrument)
-                            #await self.if_cancel_is_true(send_order)
+                            # await self.if_order_is_true(send_order, instrument)
+                            # await self.if_cancel_is_true(send_order)
 
                         if "marketMaker" in strategy_attr["strategy"]:
 
@@ -714,9 +720,12 @@ class ApplyHedgingSpot:
             if portfolio:
 
                 # fetch positions for all instruments
-                positions_all: list = reading_from_database["positions_from_sub_account"]
-                size_from_positions: float = 0 if positions_all == [] else sum([
-                        o['size'] for o in positions_all])
+                positions_all: list = reading_from_database[
+                    "positions_from_sub_account"
+                ]
+                size_from_positions: float = 0 if positions_all == [] else sum(
+                    [o["size"] for o in positions_all]
+                )
 
                 my_trades_open_sqlite: dict = await sqlite_management.querying_table(
                     "my_trades_all_json"
@@ -741,14 +750,11 @@ class ApplyHedgingSpot:
                 strategies = entries_exits.strategies
 
                 # log.error ([o["label"] for o in my_trades_open])
-                        
-                        
+
                 # clean up transactions all
-                my_trades_open= [
-                        o for o in my_trades_open if  'label' in o
-                    ]
-        
-                log.error (my_trades_open)
+                my_trades_open = [o for o in my_trades_open if "label" in o]
+
+                log.error(my_trades_open)
 
                 my_trades_open_remove_closed_labels = (
                     []
@@ -772,11 +778,13 @@ class ApplyHedgingSpot:
                 # log.error (label_transaction_net)
                 # leverage_and_delta = self.compute_position_leverage_and_delta (notional, my_trades_open)
                 # log.warning (leverage_and_delta)
-                limit= 100
+                limit = 100
                 ratio = 0.9
-                threshold= .01/100
-                market_condition= await basic_strategy.get_market_condition(threshold,limit, ratio)
-                log.error(f'market_condition {market_condition}')
+                threshold = 0.01 / 100
+                market_condition = await basic_strategy.get_market_condition(
+                    threshold, limit, ratio
+                )
+                log.error(f"market_condition {market_condition}")
 
                 # closing transactions
                 if label_transaction_net != []:
@@ -788,7 +796,7 @@ class ApplyHedgingSpot:
                         my_trades_open_all,
                         my_trades_open,
                         size_from_positions,
-                        market_condition
+                        market_condition,
                     )
 
                 # opening transaction
@@ -801,7 +809,7 @@ class ApplyHedgingSpot:
                         my_trades_open_all,
                         size_from_positions,
                         server_time,
-                        market_condition
+                        market_condition,
                     )
 
                 clean_up_closed_transactions: list = await self.clean_up_closed_transactions(

@@ -374,10 +374,10 @@ async def querying_table(
             # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     """
 
-    from utilities import  string_modification  as str_mod
-    
+    from utilities import string_modification as str_mod
+
     NONE_DATA: None = [0, None, []]
-    
+
     query_table = f"SELECT  * FROM {table} WHERE  {filter} {operator}?"
 
     filter_val = (f"{filter_value}",)
@@ -565,6 +565,7 @@ def querying_last_open_interest(
 ) -> str:
 
     return f"SELECT open_interest FROM {table} WHERE tick is {last_tick}"
+
 
 def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
 

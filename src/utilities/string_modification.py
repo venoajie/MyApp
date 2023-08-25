@@ -246,16 +246,19 @@ def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> 
         )
     )
 
+
 def get_net_sum_strategy_hedged(my_trades_open_sqlite: list) -> float:
     """ 
     strategy need to be hedged
     """
     from strategies import entries_exits
-    
+
     strategies = entries_exits.strategies
-    
-    strategies_contribute_to_hedging=  [o['strategy'] for o in strategies if o["contribute_to_hedging"] == True]
-    
+
+    strategies_contribute_to_hedging = [
+        o["strategy"] for o in strategies if o["contribute_to_hedging"] == True
+    ]
+
     return (
         0
         if my_trades_open_sqlite == []
@@ -383,13 +386,12 @@ def transform_nested_dict_to_list(list_example) -> dict:
     return my_list
 
 
-
-def filtering_list_with_missing_key(list_examples: list, missing_key: str = 'label') -> dict:
+def filtering_list_with_missing_key(
+    list_examples: list, missing_key: str = "label"
+) -> dict:
 
     """
     https://stackoverflow.com/questions/34710571/can-i-use-a-list-comprehension-on-a-list-of-dictionaries-if-a-key-is-missing
 
     """
-    return [
-                        o for o in list_examples if  missing_key not in o
-                    ]
+    return [o for o in list_examples if missing_key not in o]

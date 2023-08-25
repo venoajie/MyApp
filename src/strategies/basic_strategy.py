@@ -18,72 +18,75 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-async def cleaned_up_ohlc(limit: int= 100, table: str = "ohlc1_eth_perp_json") -> list:
+
+async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
-    
+
     # get query for close price
     get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
-    
+
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
 
     # pick value only
     ohlc = [o["close"] for o in ohlc_all]
-    
+
     # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
 
     # exclude last price to minimize its impact to TA calc
-    ohlc_reversed= ohlc[:limit-1]
-    
-    return dict(
-            ohlc_reversed = ohlc_reversed,
-            last_price = ohlc[-1:][0]
-            )
+    ohlc_reversed = ohlc[: limit - 1]
+
+    return dict(ohlc_reversed=ohlc_reversed, last_price=ohlc[-1:][0])
 
 
-async def get_ema (ohlc, ratio: float = 0.9) -> dict:
+async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
     https://stackoverflow.com/questions/59294024/in-python-what-is-the-faster-way-to-calculate-an-ema-by-reusing-the-previous-ca
     """
 
-    return  round(sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2)
-            
+    return round(
+        sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2
+    )
 
-async def get_market_condition(threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json") -> dict:
+
+async def get_market_condition(
+    threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
+) -> dict:
     """
     """
-    ohlc= await cleaned_up_ohlc (limit, table)
-    
-    ema= await get_ema  (ohlc['ohlc_reversed'], ratio)
+    ohlc = await cleaned_up_ohlc(limit, table)
 
-    last_price= ohlc ['last_price']
+    ema = await get_ema(ohlc["ohlc_reversed"], ratio)
+
+    last_price = ohlc["last_price"]
 
     print(f" get_ema ohlc 2 {ema}  ema {ema}  last_price {last_price}")
 
-    delta_price= (last_price-ema)
-    delta_price_pct= abs(delta_price/ema)
-    
-    rising_price= False
-    falling_price= False
-    neutral_price= False
-    
+    delta_price = last_price - ema
+    delta_price_pct = abs(delta_price / ema)
+
+    rising_price = False
+    falling_price = False
+    neutral_price = False
+
     if delta_price_pct > threshold:
-        if delta_price <0:
-            falling_price= True
-        if delta_price >=0:
-            rising_price= True
+        if delta_price < 0:
+            falling_price = True
+        if delta_price >= 0:
+            rising_price = True
 
     if delta_price_pct < threshold:
-        neutral_price= True
+        neutral_price = True
 
-    return  dict(
-            rising_price = rising_price,
-            neutral_price = neutral_price,
-            falling_price = falling_price,
-        )
+    return dict(
+        rising_price=rising_price,
+        neutral_price=neutral_price,
+        falling_price=falling_price,
+    )
+
 
 def get_label(status: str, label_main_or_label_transactions: str) -> str:
     """
@@ -178,9 +181,7 @@ def get_order_id_max_time_stamp(result_strategy_label) -> int:
 def get_transactions_len(result_strategy_label) -> int:
     """
     """
-    return (
-        0 if result_strategy_label == [] else len([o for o in result_strategy_label])
-    )
+    return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
 
 
 def get_transactions_sum(result_strategy_label) -> float:
@@ -236,14 +237,14 @@ def get_strategy_config_all() -> list:
     from strategies import entries_exits
 
     return entries_exits.strategies
-    
+
+
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
 
     """ """
 
     strategy_label: str
-
 
     def get_strategy_config(self, strategy_label: str = None) -> dict:
         """
@@ -324,16 +325,14 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
-        
-        #clean up result with no label main
-        result_cleaned=  [
-            o for o in result if o["label_main"] !=None
-        ]
-        
+
+        # clean up result with no label main
+        result_cleaned = [o for o in result if o["label_main"] != None]
+
         result_strategy_label: list = [
             o for o in result_cleaned if self.strategy_label in o["label_main"]
         ]
-        
+
         if result != []:
 
             if label_filter != None:
@@ -350,13 +349,14 @@ class BasicStrategy:
                 ]
 
         return dict(
-            result_strategy_label = result_strategy_label,
-            result_all = result_cleaned,
+            result_strategy_label=result_strategy_label, result_all=result_cleaned,
         )
-        
+
     async def get_side_ratio(self) -> dict:
         """ """
-        my_trades_attributes = await self.transaction_attributes("my_trades_all_json", "super_main")
+        my_trades_attributes = await self.transaction_attributes(
+            "my_trades_all_json", "super_main"
+        )
 
         result_strategy_label = my_trades_attributes["transactions_strategy_label"]
 
@@ -407,14 +407,12 @@ class BasicStrategy:
     async def transaction_attributes(self, table, label_filter: str = None) -> dict:
         """ """
 
-        result: list = await self.transaction_per_label(
-            table, label_filter
-        )
-        
-        result_strategy_label: list = result ['result_strategy_label']
+        result: list = await self.transaction_per_label(table, label_filter)
+
+        result_strategy_label: list = result["result_strategy_label"]
 
         return dict(
-            result_all=result['result_all'],
+            result_all=result["result_all"],
             transactions_strategy_label=result_strategy_label,
             max_time_stamp=get_max_time_stamp(result_strategy_label),
             order_id_max_time_stamp=get_order_id_max_time_stamp(result_strategy_label),
@@ -424,7 +422,9 @@ class BasicStrategy:
 
     async def is_order_has_sent_before(self, trade_seq) -> bool:
         """ """
-        get_my_trades_attributes_closed = await self.transaction_attributes("my_trades_all_json","closed")
+        get_my_trades_attributes_closed = await self.transaction_attributes(
+            "my_trades_all_json", "closed"
+        )
         my_trades_attributes_closed = get_my_trades_attributes_closed[
             "transactions_strategy_label"
         ]
@@ -469,7 +469,7 @@ class BasicStrategy:
             )
             params.update({"entry_price": ask_price})
 
-        orders = await self. self.transaction_attributes("orders_all_json", "closed")
+        orders = await self.self.transaction_attributes("orders_all_json", "closed")
         len_orders: int = orders["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []

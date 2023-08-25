@@ -253,10 +253,7 @@ def check_alarm_clock(
     return False
 
 
-
-def resampling_time_frame(ohlc_data: list,
-    time_frame: str= "5min"
-):
+def resampling_time_frame(ohlc_data: list, time_frame: str = "5min"):
     """
 
 
@@ -278,11 +275,10 @@ def resampling_time_frame(ohlc_data: list,
         https://stackoverflow.com/questions/36222928/pandas-ohlc-aggregation-on-ohlc-data
         """
     import pandas as pd
-    
+
     df = pd.DataFrame(ohlc_data)
-    df.set_index(df['Datetime'],inplace=True)
-    d = {'open':'first','high':'max',
-            'low':'min','close':'last','volume':'sum'}
-    df.resample(time_frame, closed='right', label='right').agg(d)
+    df.set_index(df["Datetime"], inplace=True)
+    d = {"open": "first", "high": "max", "low": "min", "close": "last", "volume": "sum"}
+    df.resample(time_frame, closed="right", label="right").agg(d)
 
     return False

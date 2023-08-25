@@ -7,11 +7,9 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from strategies.basic_strategy import (
-    BasicStrategy,
-    is_minimum_waiting_time_has_passed
-)
+from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has_passed
 from utilities.string_modification import get_net_sum_strategy_super_main
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -28,39 +26,46 @@ class HedgingSpot(BasicStrategy):
     ) -> bool:
         """
 
-        """        
+        """
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
-        self, notional: float, ask_price: float, server_time: int, market_condition:dict, threshold: float = 30
+        self,
+        notional: float,
+        ask_price: float,
+        server_time: int,
+        market_condition: dict,
+        threshold: float = 30,
     ) -> dict:
         """
 
         """
-        
-        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes("orders_all_json",
-            "open"
+
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
+            "orders_all_json", "open"
         )
-        
-        is_bullish= market_condition['rising_price']
-        is_bearish= market_condition['falling_price']
+
+        is_bullish = market_condition["rising_price"]
+        is_bearish = market_condition["falling_price"]
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-        my_trades: dict = await self.get_basic_params().transaction_attributes("my_trades_all_json")
-        
-        my_trades_all= my_trades['result_all']
-        print (f'is_bearish {is_bearish} is_bullish {is_bullish}')
-        print (f'my_trades_all {my_trades_all}')
+        my_trades: dict = await self.get_basic_params().transaction_attributes(
+            "my_trades_all_json"
+        )
+
+        my_trades_all = my_trades["result_all"]
+        print(f"is_bearish {is_bearish} is_bullish {is_bullish}")
+        print(f"my_trades_all {my_trades_all}")
         net_sum_strategy = get_net_sum_strategy_super_main(
-                        my_trades_all, self.strategy_label
-                    )
-        print (f'net_sum_strategy {net_sum_strategy}')
+            my_trades_all, self.strategy_label
+        )
+        print(f"net_sum_strategy {net_sum_strategy}")
         sum_my_trades: int = my_trades["transactions_sum"]
         params: dict = self.get_basic_params().get_basic_opening_paramaters(
             notional, ask_price, None
         )
 
-        print (f'sum_my_trades {sum_my_trades}')
+        print(f"sum_my_trades {sum_my_trades}")
         order_allowed: bool = self.are_size_and_order_appropriate_for_ordering(
             notional, sum_my_trades, len_orders and is_bearish
         )
@@ -107,11 +112,13 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """
         """
-        
-        is_bullish= market_condition['rising_price']
-        is_bearish= market_condition['falling_price']
 
-        my_trades: dict = await self.get_basic_params().transaction_attributes("my_trades_all_json")
+        is_bullish = market_condition["rising_price"]
+        is_bearish = market_condition["falling_price"]
+
+        my_trades: dict = await self.get_basic_params().transaction_attributes(
+            "my_trades_all_json"
+        )
 
         sum_my_trades: int = my_trades["transactions_sum"]
 
@@ -123,8 +130,8 @@ class HedgingSpot(BasicStrategy):
             ask_price, bid_price, selected_transaction
         )
 
-        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes("orders_all_json",
-            "open"
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
+            "orders_all_json", "open"
         )
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
