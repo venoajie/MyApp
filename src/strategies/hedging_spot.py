@@ -99,6 +99,7 @@ class HedgingSpot(BasicStrategy):
     async def is_send_exit_order_allowed(
         self,
         notional: float,
+        market_condition,
         ask_price: float,
         bid_price: float,
         selected_transaction: list,
@@ -106,6 +107,10 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """
         """
+        
+        is_bullish= market_condition['rising_price']
+        is_bearish= market_condition['falling_price']
+
         my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
 
         sum_my_trades: int = my_trades["transactions_sum"]
@@ -128,7 +133,7 @@ class HedgingSpot(BasicStrategy):
 
         exit_allowed: bool = exit_params[
             "order_allowed"
-        ] and hedged_value_is_still_safe and no_outstanding_order
+        ] and is_bullish and no_outstanding_order
 
         return dict(
             order_allowed=exit_allowed,
