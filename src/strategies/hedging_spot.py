@@ -38,7 +38,7 @@ class HedgingSpot(BasicStrategy):
 
         """
         
-        open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes("orders_all_json",
             "open"
         )
         
@@ -46,7 +46,7 @@ class HedgingSpot(BasicStrategy):
         is_bearish= market_condition['falling_price']
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-        my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
+        my_trades: dict = await self.get_basic_params().transaction_attributes("my_trades_all_json")
         
         my_trades_all= my_trades['result_all']
         print (f'is_bearish {is_bearish} is_bullish {is_bullish}')
@@ -111,7 +111,7 @@ class HedgingSpot(BasicStrategy):
         is_bullish= market_condition['rising_price']
         is_bearish= market_condition['falling_price']
 
-        my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
+        my_trades: dict = await self.get_basic_params().transaction_attributes("my_trades_all_json")
 
         sum_my_trades: int = my_trades["transactions_sum"]
 
@@ -123,7 +123,7 @@ class HedgingSpot(BasicStrategy):
             ask_price, bid_price, selected_transaction
         )
 
-        open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes("orders_all_json",
             "open"
         )
 
