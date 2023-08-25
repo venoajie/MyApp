@@ -10,7 +10,7 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    get_ema
+    market_condition
 )
 from utilities.string_modification import get_net_sum_strategy_super_main
 
@@ -23,11 +23,6 @@ class HedgingSpot(BasicStrategy):
         """
         """
         return BasicStrategy(self.strategy_label)
-
-    async def get_ema(self, limit: int = 100, ratio: float = 0.9) -> dict:
-        """
-        """
-        return await get_ema(limit, ratio)
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
@@ -49,7 +44,7 @@ class HedgingSpot(BasicStrategy):
         )
         limit= 100
         ratio = 0.9
-        get_market_condition= await self.get_basic_params().market_condition(limit, ratio)
+        get_market_condition= await market_condition(limit, ratio)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
