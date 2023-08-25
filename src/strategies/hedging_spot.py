@@ -62,7 +62,7 @@ class HedgingSpot(BasicStrategy):
 
         print (f'sum_my_trades {sum_my_trades}')
         order_allowed: bool = self.are_size_and_order_appropriate_for_ordering(
-            notional, sum_my_trades, len_orders
+            notional, sum_my_trades, len_orders and is_bearish
         )
         cancel_allowed: bool = False
 
