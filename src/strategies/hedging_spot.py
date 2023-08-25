@@ -43,16 +43,19 @@ class HedgingSpot(BasicStrategy):
         """
 
         """
-
         
         open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
             "open"
         )
+        limit= 100
+        ratio = 0.9
+        get_market_condition= await self.get_basic_params().market_condition(limit, ratio)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().get_my_trades_attributes()
         
         my_trades_all= my_trades['result_all']
+        print (f'get_market_condition {get_market_condition}')
         print (f'my_trades_all {my_trades_all}')
         net_sum_strategy = get_net_sum_strategy_super_main(
                         my_trades_all, self.strategy_label
