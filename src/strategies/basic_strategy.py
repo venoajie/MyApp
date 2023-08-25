@@ -55,12 +55,11 @@ async def market_condition(threshold, limit: int = 100, ratio: float = 0.9, tabl
     """
     """
     
-    get_ema= await get_ema_and_last_price (limit, ratio, table)
-    ema= get_ema['ema']
+    ema= await get_ema_and_last_price (limit, ratio, table)
 
     last_price= await cleaned_up_ohlc (limit, table) ['last_price']
 
-    print(f" get_ema ohlc 2 {get_ema}  ema {ema}  last_price {last_price}")
+    print(f" get_ema ohlc 2 {ema}  ema {ema}  last_price {last_price}")
 
     delta_price= (last_price-ema)
     delta_price_pct= abs(delta_price/ema)
