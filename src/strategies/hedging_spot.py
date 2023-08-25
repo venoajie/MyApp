@@ -9,8 +9,7 @@ from dataclassy import dataclass
 # user defined formula
 from strategies.basic_strategy import (
     BasicStrategy,
-    is_minimum_waiting_time_has_passed,
-    market_condition
+    is_minimum_waiting_time_has_passed
 )
 from utilities.string_modification import get_net_sum_strategy_super_main
 
