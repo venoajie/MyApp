@@ -13,6 +13,7 @@ import aiohttp
 from utilities import pickling, system_tools
 import deribit_get as get_dbt
 
+
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
