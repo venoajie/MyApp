@@ -244,13 +244,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
     # fetch strategies attributes
     strategies = entries_exits.strategies
-    
-    
-    # gathering basic data
-    reading_from_database: dict = await reading_from_database()
-
-    # get portfolio data
-    portfolio: list = reading_from_database["portfolio"]
 
     # to avoid error if index price/portfolio = []/None
     if portfolio:
