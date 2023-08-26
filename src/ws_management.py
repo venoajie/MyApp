@@ -666,7 +666,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             threshold = 0.01 / 100
 
             sub_acc = (
-                await get_account_balances_and_transactions_from_exchanges(private_data)
+                await get_account_balances_and_transactions_from_exchanges(private_data, currency)
             )
             log.error (sub_acc)
 
