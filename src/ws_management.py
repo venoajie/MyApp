@@ -231,49 +231,31 @@ async def current_server_time() -> float:
     current_time = await deribit_get.get_server_time()
     return current_time["result"]
     
+
+async def get_account_balances_and_transactions_from_exchanges(private_data) -> list:
+    """ """
+
+    try:
+
+        result_sub_account: dict = await private_data.get_subaccounts()
+        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
+        result_account_summary: dict = await private_data.get_account_summary()
+        result_get_positions: dict = await private_data.get_positions()
+
+    except Exception as error:
+        await raise_error(error)
+
+    return dict(
+        sub_account=result_sub_account["result"],
+        open_orders=result_open_orders["result"],
+        account_summary=result_account_summary["result"],
+        get_positions=result_get_positions["result"]
+    )
+
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
     
     from transaction_management.deribit import myTrades_management
 
-
-    # gathering basic data
-    reading_from_database: dict = await reading_from_pkl_database(currency)
-
-    # get portfolio data
-    portfolio: list = reading_from_database["portfolio"]
-
-    # fetch strategies attributes
-    strategies = entries_exits.strategies
-
-    # to avoid error if index price/portfolio = []/None
-    if portfolio:
-
-        # fetch positions for all instruments
-        positions_all: list = reading_from_database[
-            "positions_from_sub_account"
-        ]
-        size_from_positions: float = 0 if positions_all == [] else sum(
-            [o["size"] for o in positions_all]
-        )
-
-        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-            "my_trades_all_json"
-        )
-        my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-        my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
-            "my_trades_all_json"
-        )
-        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-        server_time= current_server_time()
-
-        limit = 100
-        ratio = 0.9
-        threshold = 0.01 / 100
-        market_condition = await basic_strategy.get_market_condition(
-            threshold, limit, ratio
-        )
-        log.error(f"market_condition {market_condition}")
-        
         
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file(
@@ -454,19 +436,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             )
             pickling.replace_data(my_path_position, positions)
 
-
-        for instrument in instrument_transactions:
-            await opening_transactions(
-        instrument,
-        portfolio,
-        strategies,
-        my_trades_open_sqlite,
-        my_trades_open_all,
-        size_from_positions,
-        server_time,
-        market_condition,
-    )
-async def ws_manager_market(message_channel, data_orders, instruments_kind, currency) -> None:
+async def ws_manager_market(message_channel, data_orders, instruments_kind, currency, private_data) -> None:
 
     DATABASE: str = "databases/trading.sqlite3"
     TABLE_OHLC1: str = "ohlc1_eth_perp_json"
@@ -559,7 +529,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                         "is",
                         last_tick1_fr_sqlite,
                     )
-
+                
             if (
                 message_channel
                 == "chart.trades.ETH-PERPETUAL.30"
@@ -652,6 +622,65 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                     await sqlite_management.insert_tables(
                         TABLE_OHLC1D, data_orders
                     )
+
+
+        # gathering basic data
+        reading_from_database: dict = await reading_from_pkl_database(currency)
+
+        # get portfolio data
+        portfolio: list = reading_from_database["portfolio"]
+
+        # fetch strategies attributes
+        strategies = entries_exits.strategies
+
+        # to avoid error if index price/portfolio = []/None
+        if portfolio:
+
+            # fetch positions for all instruments
+            positions_all: list = reading_from_database[
+                "positions_from_sub_account"
+            ]
+            size_from_positions: float = 0 if positions_all == [] else sum(
+                [o["size"] for o in positions_all]
+            )
+
+            my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+                "my_trades_all_json"
+            )
+            my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+            my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
+                "my_trades_all_json"
+            )
+            instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+            server_time= current_server_time()
+
+            limit = 100
+            ratio = 0.9
+            threshold = 0.01 / 100
+
+            sub_acc = (
+                await get_account_balances_and_transactions_from_exchanges(private_data)
+            )
+            log.error (sub_acc)
+
+
+            market_condition = await basic_strategy.get_market_condition(
+                threshold, limit, ratio
+            )
+            log.error(f"market_condition {market_condition}")
+
+            for instrument in instrument_transactions:
+                await opening_transactions(
+            instrument,
+            portfolio,
+            strategies,
+            my_trades_open_sqlite,
+            my_trades_open_all,
+            size_from_positions,
+            server_time,
+            market_condition,
+        )    
+
 
     instrument_ticker = (message_channel)[19:]
     if (
