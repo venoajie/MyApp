@@ -237,7 +237,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
 
     # gathering basic data
-    reading_from_database: dict = await reading_from_pkl_database()
+    reading_from_database: dict = await reading_from_pkl_database(currency)
 
     # get portfolio data
     portfolio: list = reading_from_database["portfolio"]
