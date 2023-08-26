@@ -234,18 +234,21 @@ async def current_server_time() -> float:
     
 
 def get_subaccounts(currency):
-    # Set endpoint
-    endpoint: str = "private/get_subaccounts_details"
 
-    params = {"endpoint": "private/get_subaccounts_details","currency": currency, "with_open_orders": True}
-    log.error("get_subaccounts")
+    msg: dict = {
+        "jsonrpc": "2.0",
+        "method": f"private/get_subaccounts_details",
+        "id": id,
+        "params": {"currency": currency, "with_open_orders": True},
+    }
 
-    return params
+    return msg
     
 async def get_account_balances_and_transactions_from_exchanges(private_data, currency) -> list:
     """ """
 
     try:
+        log.error (private_data)
 
         result_sub_account: dict = await private_data.send(json.dumps(get_subaccounts(currency)))
 
