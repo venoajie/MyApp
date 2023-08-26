@@ -14,7 +14,7 @@ from db_management import sqlite_management
 
 async def ws_manager_market(message_channel, data_orders, instruments_kind, currency) -> None:
 
-    log.warning (message_channel)
+    #log.warning (message_channel)
     DATABASE: str = "databases/trading.sqlite3"
     TABLE_OHLC1: str = "ohlc1_eth_perp_json"
     TABLE_OHLC30: str = "ohlc30_eth_perp_json"
