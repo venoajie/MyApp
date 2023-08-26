@@ -7,15 +7,283 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import pickling, system_tools
+from utilities import pickling, system_tools, string_modification as str_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
+from strategies import entries_exits, hedging_spot, basic_strategy, market_maker as MM
+import deribit_get
+
+ONE_MINUTE: int = 60000
+ONE_PCT: float = 1 / 100
+NONE_DATA: None = [0, None, []]
 
 
+async def raise_error(error, idle: int = None) -> None:
+    """ """
+    await system_tools.raise_error_message(error, idle)
+    
+async def get_account_summary() -> list:
+    """ """
+
+    private_data = await get_private_data()
+
+    account_summary: dict = await private_data.get_account_summary()
+
+    return account_summary["result"]
+
+
+async def reading_from_database(currency) -> float:
+    """ """
+
+    path_sub_accounts: str = system_tools.provide_path_for_file(
+        "sub_accounts", currency
+    )
+
+    path_portfolio: str = system_tools.provide_path_for_file(
+        "portfolio", currency
+    )
+    path_positions: str = system_tools.provide_path_for_file(
+        "positions", currency
+    )
+    positions = pickling.read_data(path_positions)
+    sub_account = pickling.read_data(path_sub_accounts)
+    # log.critical(f' SUB ACCOUNT {sub_account}')
+    positions_from_sub_account = sub_account[0]["positions"]
+    open_orders_from_sub_account = sub_account[0]["open_orders"]
+    portfolio = pickling.read_data(path_portfolio)
+    # log.error (open_order)
+
+    # at start, usually position == None
+    if positions in NONE_DATA:
+        positions = positions_from_sub_account  # await self.get_positions ()
+        pickling.replace_data(path_positions, positions)
+
+    # log.debug (my_trades_open)
+    if portfolio in NONE_DATA:
+        portfolio = await get_account_summary()
+        pickling.replace_data(path_portfolio, portfolio)
+        portfolio = pickling.read_data(path_portfolio)
+
+    return {
+        "positions": positions,
+        "positions_from_sub_account": positions_from_sub_account,
+        "open_orders_from_sub_account": open_orders_from_sub_account,
+        "portfolio": portfolio,
+    }
+
+
+def compute_notional_value(index_price: float, equity: float) -> float:
+    """ """
+    return index_price * equity
+
+async def is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positions
+) -> bool:
+    """ """
+
+    log.warning(
+        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_positions}"
+    )
+
+    return sum_my_trades_open_sqlite_all_strategy == size_from_positions
+
+
+def reading_from_db(end_point, instrument: str = None, status: str = None
+) -> float:
+    """ """
+    return system_tools.reading_from_db_pickle(end_point, instrument, status)
+
+async def send_limit_order(params) -> None:
+    """ """
+    private_data = await get_private_data()
+    await private_data.send_limit_order(params)
+        
+async def if_order_is_true(order, instrument: str = None) -> None:
+    """ """
+    # log.debug (order)
+    if order["order_allowed"]:
+
+        # get parameter orders
+        params = order["order_parameters"]
+
+        if instrument != None:
+            # update param orders with instrument
+            params.update({"instrument": instrument})
+
+        await send_limit_order(params)
+        await asyncio.sleep(10)
+
+async def cancel_by_order_id(open_order_id) -> None:
+    private_data = await get_private_data()
+
+    result = await private_data.get_cancel_order_byOrderId(open_order_id)
+    log.info(f"CANCEL_by_order_id {result}")
+
+    return result
+
+async def if_cancel_is_true(order) -> None:
+    """ """
+    # log.debug (order)
+    if order["cancel_allowed"]:
+
+        # get parameter orders
+        await cancel_by_order_id(order["cancel_id"])
+        
+async def opening_transactions(
+    instrument,
+    portfolio,
+    strategies,
+    my_trades_open_sqlite,
+    my_trades_open_all,
+    size_from_positions,
+    server_time,
+    market_condition,
+) -> None:
+    """ """
+
+    try:
+        log.critical(f"OPENING TRANSACTIONS")
+
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+            "my_trades_all_json"
+        )
+        my_trades_open_all: list = my_trades_open_sqlite["all"]
+        # log.error (my_trades_open_all)
+
+        ticker: list = reading_from_db("ticker", instrument)
+
+        if ticker != []:
+
+            # get bid and ask price
+            best_bid_prc: float = ticker[0]["best_bid_price"]
+            best_ask_prc: float = ticker[0]["best_ask_price"]
+
+            # index price
+            index_price: float = ticker[0]["index_price"]
+
+            # obtain spot equity
+            equity: float = portfolio[0]["equity"]
+
+            # compute notional value
+            notional: float = compute_notional_value(index_price, equity)
+
+            # execute each strategy
+            for strategy_attr in strategies:
+                strategy_label = strategy_attr["strategy"]
+
+                log.critical(f" {strategy_label}")
+
+                net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+                    my_trades_open_sqlite, strategy_label
+                )
+                net_sum_strategy_main = str_mod.get_net_sum_strategy_main(
+                    my_trades_open_sqlite, strategy_label
+                )
+                log.debug(
+                    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
+                )
+
+                sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
+                    my_trades_open_all, strategy_label
+                )
+                size_is_consistent: bool = await is_size_consistent(
+                    sum_my_trades_open_sqlite_all_strategy, size_from_positions
+                )
+
+                if size_is_consistent:  # and open_order_is_consistent:
+
+                    if "hedgingSpot" in strategy_attr["strategy"]:
+
+                        THRESHOLD_TIME_TO_CANCEL = 30
+
+                        hedging = hedging_spot.HedgingSpot(strategy_label)
+
+                        send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
+                            notional,
+                            best_ask_prc,
+                            server_time,
+                            market_condition,
+                            THRESHOLD_TIME_TO_CANCEL,
+                        )
+
+                        # await self.if_order_is_true(send_order, instrument)
+                        # await self.if_cancel_is_true(send_order)
+
+                    if "marketMaker" in strategy_attr["strategy"]:
+
+                        market_maker = MM.MarketMaker(strategy_label)
+
+                        send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
+                            notional, best_ask_prc, best_bid_prc, server_time
+                        )
+
+                        await if_order_is_true(send_order, instrument)
+                        await if_cancel_is_true(send_order)
+
+                else:
+                    log.critical(f" size_is_consistent {size_is_consistent} ")
+                    # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                    await system_tools.sleep_and_restart(5)
+
+    except Exception as error:
+        await raise_error(error)
+    
+async def current_server_time(self) -> float:
+    """ """
+    current_time = await deribit_get.get_server_time(self.connection_url)
+    return current_time["result"]
+    
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
     
     from transaction_management.deribit import myTrades_management
 
+
+    # gathering basic data
+    reading_from_database: dict = await reading_from_database()
+
+    # get portfolio data
+    portfolio: list = reading_from_database["portfolio"]
+
+    # fetch strategies attributes
+    strategies = entries_exits.strategies
+    
+    
+    # gathering basic data
+    reading_from_database: dict = await reading_from_database()
+
+    # get portfolio data
+    portfolio: list = reading_from_database["portfolio"]
+
+    # to avoid error if index price/portfolio = []/None
+    if portfolio:
+
+        # fetch positions for all instruments
+        positions_all: list = reading_from_database[
+            "positions_from_sub_account"
+        ]
+        size_from_positions: float = 0 if positions_all == [] else sum(
+            [o["size"] for o in positions_all]
+        )
+
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+            "my_trades_all_json"
+        )
+        my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+        my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
+            "my_trades_all_json"
+        )
+        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+        
+    for instrument in instrument_transactions:
+        await opening_transactions(
+    instrument,
+    portfolio,
+    strategies,
+    my_trades_open_sqlite,
+    my_trades_open_all,
+    size_from_positions,
+    server_time,
+    market_condition,
+)
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file(
             "portfolio", currency
