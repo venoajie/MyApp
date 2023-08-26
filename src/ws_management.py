@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # built ins
@@ -14,7 +13,6 @@ from db_management import sqlite_management
 
 async def ws_manager_market(message_channel, data_orders, instruments_kind, currency) -> None:
 
-    #log.warning (message_channel)
     DATABASE: str = "databases/trading.sqlite3"
     TABLE_OHLC1: str = "ohlc1_eth_perp_json"
     TABLE_OHLC30: str = "ohlc30_eth_perp_json"
@@ -52,7 +50,6 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             or TABLE_OHLC1 != None
         ):
 
-            # log.warning(f"message_channel {message_channel}")
             if (
                 message_channel
                 == "chart.trades.ETH-PERPETUAL.1"
