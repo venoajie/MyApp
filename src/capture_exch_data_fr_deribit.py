@@ -97,8 +97,46 @@ class StreamAccountData:
                 o for o in instruments if o["kind"] == "future"
             ]
 
+            instruments_name: list = [
+                o["instrument_name"] for o in instruments_kind
+            ]
             # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
 
+            for instrument in instruments_name:
+
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation="subscribe",
+                        ws_channel=f"incremental_ticker.{instrument}",
+                    )
+                )
+
+                if "PERPETUAL" in instrument:
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"chart.trades.{instrument}.1",
+                        )
+                    )
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"chart.trades.{instrument}.30",
+                        )
+                    )
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"chart.trades.{instrument}.60",
+                        )
+                    )
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"chart.trades.{instrument}.1D",
+                        )
+                    )
+                    
             self.loop.create_task(
                 self.ws_operation(
                     operation="subscribe", ws_channel=f"user.portfolio.{currency}"
