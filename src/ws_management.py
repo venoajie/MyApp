@@ -233,14 +233,14 @@ async def current_server_time() -> float:
     return current_time["result"]
     
 
-async def get_subaccounts(currency):
+def get_subaccounts(currency):
     # Set endpoint
     endpoint: str = "private/get_subaccounts_details"
 
     params = {"endpoint": "private/get_subaccounts_details","currency": currency, "with_open_orders": True}
     log.error("get_subaccounts")
 
-    return await params
+    return params
     
 async def get_account_balances_and_transactions_from_exchanges(private_data, currency) -> list:
     """ """
@@ -253,10 +253,7 @@ async def get_account_balances_and_transactions_from_exchanges(private_data, cur
         await raise_error(error)
 
     return dict(
-        sub_account=result_sub_account["result"],
-        open_orders=result_open_orders["result"],
-        account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"]
+        sub_account=result_sub_account["result"]
     )
 
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
