@@ -273,18 +273,8 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             threshold, limit, ratio
         )
         log.error(f"market_condition {market_condition}")
-            
-        for instrument in instrument_transactions:
-            await opening_transactions(
-        instrument,
-        portfolio,
-        strategies,
-        my_trades_open_sqlite,
-        my_trades_open_all,
-        size_from_positions,
-        server_time,
-        market_condition,
-    )
+        
+        
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file(
             "portfolio", currency
@@ -465,6 +455,17 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             pickling.replace_data(my_path_position, positions)
 
 
+        for instrument in instrument_transactions:
+            await opening_transactions(
+        instrument,
+        portfolio,
+        strategies,
+        my_trades_open_sqlite,
+        my_trades_open_all,
+        size_from_positions,
+        server_time,
+        market_condition,
+    )
 async def ws_manager_market(message_channel, data_orders, instruments_kind, currency) -> None:
 
     DATABASE: str = "databases/trading.sqlite3"
