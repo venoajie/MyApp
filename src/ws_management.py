@@ -31,7 +31,6 @@ async def get_account_summary() -> list:
 
     return account_summary["result"]
 
-
 async def reading_from_database(currency) -> float:
     """ """
 
