@@ -238,7 +238,7 @@ def get_subaccounts(currency):
     msg: dict = {
         "jsonrpc": "2.0",
         "method": f"private/get_subaccounts_details",
-        "id": id,
+        "id": 1,
         "params": {"currency": currency, "with_open_orders": True},
     }
 
@@ -249,6 +249,7 @@ async def get_account_balances_and_transactions_from_exchanges(private_data, cur
 
     try:
         log.error (private_data)
+        log.error (get_subaccounts(currency))
 
         result_sub_account: dict = await private_data.send(json.dumps(get_subaccounts(currency)))
 
