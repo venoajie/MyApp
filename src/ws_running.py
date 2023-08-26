@@ -205,7 +205,7 @@ class StreamAccountData:
                             message_channel
                         )
                         #! ########################################################################################################################
-                        await ws_management.ws_manager_market (message_channel, data_orders, instruments_kind, currency)
+                        await ws_management.ws_manager_market (message_channel, data_orders, instruments_kind, currency, self.websocket_client)
                         await ws_management.ws_manager_exchange (message_channel, data_orders, currency)
 
             else:
