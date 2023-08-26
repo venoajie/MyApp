@@ -226,9 +226,9 @@ async def opening_transactions(
     except Exception as error:
         await raise_error(error)
     
-async def current_server_time(self) -> float:
+async def current_server_time() -> float:
     """ """
-    current_time = await deribit_get.get_server_time(self.connection_url)
+    current_time = await deribit_get.get_server_time()
     return current_time["result"]
     
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
