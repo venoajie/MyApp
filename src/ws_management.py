@@ -31,7 +31,7 @@ async def get_account_summary() -> list:
 
     return account_summary["result"]
 
-async def reading_from_database(currency) -> float:
+async def reading_from_pkl_database(currency) -> float:
     """ """
 
     path_sub_accounts: str = system_tools.provide_path_for_file(
@@ -237,7 +237,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
 
     # gathering basic data
-    reading_from_database: dict = await reading_from_database()
+    reading_from_database: dict = await reading_from_pkl_database()
 
     # get portfolio data
     portfolio: list = reading_from_database["portfolio"]
