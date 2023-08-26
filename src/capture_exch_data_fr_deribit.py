@@ -17,6 +17,7 @@ from configuration import id_numbering, config
 from transaction_management.deribit import myTrades_management
 import apply_strategies
 from db_management import sqlite_management
+import ws_management   
 
 
 def parse_dotenv(sub_account) -> dict:
@@ -88,7 +89,14 @@ class StreamAccountData:
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency
             )
-            instruments = pickling.read_data(my_path_instruments)
+        
+            instruments_raw = pickling.read_data(my_path_instruments)
+            instruments = instruments_raw[0]["result"]
+
+            instruments_kind: list = [
+                o for o in instruments if o["kind"] == "future"
+            ]
+
             # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
 
             self.loop.create_task(
@@ -158,6 +166,8 @@ class StreamAccountData:
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
+                        #! ########################################################################################################################
+                        await ws_management.ws_manager_market (message_channel, data_orders, instruments_kind, currency)
 
                         if message_channel == f"user.portfolio.{currency.lower()}":
                             my_path_portfolio = system_tools.provide_path_for_file(
