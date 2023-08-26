@@ -252,6 +252,9 @@ async def get_account_balances_and_transactions_from_exchanges(private_data, cur
         log.error (get_subaccounts(currency))
 
         result_sub_account: dict = await private_data.send(json.dumps(get_subaccounts(currency)))
+        log.error (result_sub_account)
+        response = await result_sub_account.json()
+        log.error (response)
 
     except Exception as error:
         await raise_error(error)
