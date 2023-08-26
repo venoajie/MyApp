@@ -2,6 +2,7 @@
 
 # built ins
 import asyncio
+import json
 
 # installed
 from loguru import logger as log
@@ -232,15 +233,21 @@ async def current_server_time() -> float:
     return current_time["result"]
     
 
-async def get_account_balances_and_transactions_from_exchanges(private_data) -> list:
+async def get_subaccounts(currency):
+    # Set endpoint
+    endpoint: str = "private/get_subaccounts_details"
+
+    params = {"endpoint": "private/get_subaccounts_details","currency": currency, "with_open_orders": True}
+    log.error("get_subaccounts")
+
+    return await params
+    
+async def get_account_balances_and_transactions_from_exchanges(private_data, currency) -> list:
     """ """
 
     try:
 
-        result_sub_account: dict = await private_data.get_subaccounts()
-        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
-        result_account_summary: dict = await private_data.get_account_summary()
-        result_get_positions: dict = await private_data.get_positions()
+        result_sub_account: dict = await private_data.send(json.dumps(get_subaccounts(currency)))
 
     except Exception as error:
         await raise_error(error)
