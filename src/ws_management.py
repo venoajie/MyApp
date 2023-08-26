@@ -264,18 +264,27 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             "my_trades_all_json"
         )
         instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-        
-    for instrument in instrument_transactions:
-        await opening_transactions(
-    instrument,
-    portfolio,
-    strategies,
-    my_trades_open_sqlite,
-    my_trades_open_all,
-    size_from_positions,
-    server_time,
-    market_condition,
-)
+        server_time= current_server_time()
+
+        limit = 100
+        ratio = 0.9
+        threshold = 0.01 / 100
+        market_condition = await basic_strategy.get_market_condition(
+            threshold, limit, ratio
+        )
+        log.error(f"market_condition {market_condition}")
+            
+        for instrument in instrument_transactions:
+            await opening_transactions(
+        instrument,
+        portfolio,
+        strategies,
+        my_trades_open_sqlite,
+        my_trades_open_all,
+        size_from_positions,
+        server_time,
+        market_condition,
+    )
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file(
             "portfolio", currency
