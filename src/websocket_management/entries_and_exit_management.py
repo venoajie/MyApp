@@ -418,6 +418,7 @@ async def opening_transactions(
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
+                        log.info (send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
