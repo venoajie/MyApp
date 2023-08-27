@@ -15,7 +15,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
 
-=from db_management import sqlite_management
+from db_management import sqlite_management
 import ws_management
 
 
