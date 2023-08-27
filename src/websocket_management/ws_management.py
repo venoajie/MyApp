@@ -29,11 +29,11 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
     from transaction_management.deribit import myTrades_management
     
-    log.info(data_orders)
-
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
         pickling.replace_data(my_path_portfolio, data_orders)
+        
+        await resupply_sub_accountdb(currency) 
 
     if message_channel == f"user.changes.any.{currency.upper()}.raw":
         
@@ -159,12 +159,17 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
             log.error(f"clean_up_closed_transactions {clean_up_transactions}")
             
+            await resupply_sub_accountdb(currency)
+            
         if positions:
             # log.error (f'positions {positions}')
 
             my_path_position = system_tools.provide_path_for_file("positions", currency)
             pickling.replace_data(my_path_position, positions)
+            
+            await resupply_sub_accountdb(currency)
 
+async def resupply_sub_accountdb(currency) -> None:
         
     # resupply sub account db
     log.info (f'resupply sub account db-START')
