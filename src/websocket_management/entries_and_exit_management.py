@@ -22,6 +22,7 @@ NONE_DATA: None = [0, None, []]
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
+
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
@@ -31,7 +32,7 @@ async def get_private_data(currency: str = None) -> list:
     """
     Provide class object to access private get API
     """
-        
+
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
@@ -69,7 +70,7 @@ async def get_account_balances_and_transactions_from_exchanges(currency) -> dict
         sub_account=result_sub_account["result"],
         open_orders=result_open_orders["result"],
         account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"]
+        get_positions=result_get_positions["result"],
     )
 
 
@@ -407,7 +408,6 @@ async def opening_transactions(
                 size_is_consistent: bool = await is_size_consistent(
                     sum_my_trades_open_sqlite_all_strategy, size_from_positions
                 )
-                
 
                 if size_is_consistent:  # and open_order_is_consistent:
 
@@ -438,13 +438,12 @@ async def opening_transactions(
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
-                        log.info (send_order)
+                        log.info(send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
                     # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
-            
     except Exception as error:
         await raise_error(error)
 
@@ -583,9 +582,7 @@ async def closing_transactions(
                     my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
                 )
 
-                log.error(
-                    f"open_trade_strategy_label {open_trade_strategy_label}"
-                )
+                log.error(f"open_trade_strategy_label {open_trade_strategy_label}")
 
                 log.error(
                     f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} open_trade_strategy_label {open_trade_strategy_label}"
@@ -617,21 +614,19 @@ async def closing_transactions(
                     )
                     log.critical(f" send_closing_order {send_closing_order}")
                     await if_order_is_true(send_closing_order, instrument)
-            
+
         else:
             log.critical(f" size_is_consistent {size_is_consistent} ")
 
-
     # resupply sub account db
-    account_balances_and_transactions_from_exchanges = (
-        await get_account_balances_and_transactions_from_exchanges(currency)
+    account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
+        currency
     )
     sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
-    my_path_sub_account = system_tools.provide_path_for_file(
-        "sub_accounts", currency
-    )
+    my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
     pickling.replace_data(my_path_sub_account, sub_accounts)
+
 
 async def current_server_time() -> float:
     """ """
