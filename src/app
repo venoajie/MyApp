@@ -73,9 +73,12 @@ class StreamAccountData:
         ) as self.websocket_client:
             # Authenticate WebSocket Connection
             await self.ws_auth()
-
+            
             # Establish Heartbeat
             await self.establish_heartbeat()
+
+            # Establish restart procedure
+            await self.on_restart(currency)
 
             # Start Authentication Refresh Task
             self.loop.create_task(self.ws_refresh_auth())
@@ -144,7 +147,7 @@ class StreamAccountData:
                 )
             )
             
-            await self.on_restart(currency)
+            
 
             while self.websocket_client.open:
                 # Receive WebSocket messages
