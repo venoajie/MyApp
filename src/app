@@ -152,9 +152,6 @@ class StreamAccountData:
                 # log.warning (message)
                 if "id" in list(message):
                     if message["id"] == 9929:
-                        
-                        log.debug("Cancelling all orders")
-                        await self.on_restart(currency)
 
                         if self.refresh_token is None:
                             # await syn.get_sub_accounts()
@@ -187,6 +184,9 @@ class StreamAccountData:
                         await self.heartbeat_response()
 
                 if "params" in list(message):
+                
+                    await self.on_restart(currency)
+                    
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
                         log.critical(message_channel)
@@ -212,7 +212,6 @@ class StreamAccountData:
 
             else:
                 
-                cancel= await deribit_get.get_cancel_order_all ()
                 log.info("WebSocket connection has broken.")
                 
                 await system_tools.raise_error_message(
@@ -226,6 +225,7 @@ class StreamAccountData:
         """
         import deribit_get
 
+        log.debug("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all(currency)
         await self.websocket_client.send(json.dumps(msg))
 
