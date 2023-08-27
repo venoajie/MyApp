@@ -13,16 +13,31 @@ from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import entries_exits, hedging_spot, basic_strategy, market_maker as MM
 import deribit_get
+from configuration import  config
 
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
 NONE_DATA: None = [0, None, []]
+
+def parse_dotenv(sub_account) -> dict:
+    return config.main_dotenv(sub_account)
+
+sub_account = "deribit-147691"
+client_id: str = parse_dotenv(sub_account)["client_id"]
+client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
     
+async def get_private_data(connection_url, client_id, client_secret, currency) -> list:
+    """
+    Provide class object to access private get API
+    """
+    return deribit_get.GetPrivateData(
+        connection_url, client_id, client_secret, currency
+    )
 async def get_account_summary() -> list:
     """ """
 
