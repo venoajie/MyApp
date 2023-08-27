@@ -937,6 +937,35 @@ async def ws_manager_market(
 
                 # capping sqlite rows
                 await count_and_delete_ohlc_rows()
+                        
+                # to avoid error if index price/portfolio = []/None
+                if portfolio:
+
+                    # fetch positions for all instruments
+                    positions_all: list = reading_from_database["positions_from_sub_account"]
+                    size_from_positions: float = 0 if positions_all == [] else sum(
+                        [o["size"] for o in positions_all]
+                    )
+
+                    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+                        "my_trades_all_json"
+                    )
+                    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+                    
+                    instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+                    server_time = current_server_time()
+
+                    for instrument in instrument_transactions:
+                        await opening_transactions(
+                            instrument,
+                            portfolio,
+                            strategies,
+                            my_trades_open_sqlite,
+                            size_from_positions,
+                            server_time,
+                            market_condition,
+                        )
+
 
             if message_channel == "chart.trades.ETH-PERPETUAL.30":
 
@@ -1000,34 +1029,6 @@ async def ws_manager_market(
 
                 else:
                     await sqlite_management.insert_tables(TABLE_OHLC1D, data_orders)
-
-        # to avoid error if index price/portfolio = []/None
-        if portfolio:
-
-            # fetch positions for all instruments
-            positions_all: list = reading_from_database["positions_from_sub_account"]
-            size_from_positions: float = 0 if positions_all == [] else sum(
-                [o["size"] for o in positions_all]
-            )
-
-            my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-                "my_trades_all_json"
-            )
-            my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-            
-            instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-            server_time = current_server_time()
-
-            for instrument in instrument_transactions:
-                await opening_transactions(
-                    instrument,
-                    portfolio,
-                    strategies,
-                    my_trades_open_sqlite,
-                    size_from_positions,
-                    server_time,
-                    market_condition,
-                )
 
     instrument_ticker = (message_channel)[19:]
     if message_channel == f"incremental_ticker.{instrument_ticker}":
