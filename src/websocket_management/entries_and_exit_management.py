@@ -407,6 +407,7 @@ async def opening_transactions(
                 size_is_consistent: bool = await is_size_consistent(
                     sum_my_trades_open_sqlite_all_strategy, size_from_positions
                 )
+                
 
                 if size_is_consistent:  # and open_order_is_consistent:
 
