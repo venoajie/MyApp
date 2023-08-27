@@ -649,6 +649,15 @@ async def ws_manager_market(
 
     last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
+    # gathering basic data
+    reading_from_database: dict = await reading_from_pkl_database(currency)
+
+    # get portfolio data
+    portfolio: list = reading_from_database["portfolio"]
+
+    # fetch strategies attributes
+    strategies = entries_exits.strategies
+
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
         last_tick_fr_data_orders: int = data_orders["tick"]
@@ -769,15 +778,6 @@ async def ws_manager_market(
 
                 else:
                     await sqlite_management.insert_tables(TABLE_OHLC1D, data_orders)
-
-        # gathering basic data
-        reading_from_database: dict = await reading_from_pkl_database(currency)
-
-        # get portfolio data
-        portfolio: list = reading_from_database["portfolio"]
-
-        # fetch strategies attributes
-        strategies = entries_exits.strategies
 
         # to avoid error if index price/portfolio = []/None
         if portfolio:
