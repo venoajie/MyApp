@@ -540,7 +540,7 @@ async def closing_transactions(
             open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                 [o["data"] for o in my_trades_open_sqlite_individual_strategy]
             )
-            log.debug(open_trade_strategy_label)
+            #log.debug(open_trade_strategy_label)
 
             instrument: list = [
                 o["instrument_name"] for o in open_trade_strategy_label
@@ -582,10 +582,8 @@ async def closing_transactions(
                     my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
                 )
 
-                log.error(f"open_trade_strategy_label {open_trade_strategy_label}")
-
                 log.error(
-                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} open_trade_strategy_label {open_trade_strategy_label}"
+                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} "
                 )
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
