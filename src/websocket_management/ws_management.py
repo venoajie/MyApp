@@ -28,13 +28,15 @@ async def raise_error(error, idle: int = None) -> None:
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
     from transaction_management.deribit import myTrades_management
+    
+    log.info(data_orders)
 
     if message_channel == f"user.portfolio.{currency.lower()}":
         my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
         pickling.replace_data(my_path_portfolio, data_orders)
 
     if message_channel == f"user.changes.any.{currency.upper()}.raw":
-        log.info(data_orders)
+        
         positions = data_orders["positions"]
         trades = data_orders["trades"]
         orders = data_orders["orders"]
