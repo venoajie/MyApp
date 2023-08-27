@@ -25,7 +25,7 @@ def parse_dotenv(sub_account) -> dict:
 sub_account = "deribit-147691"
 client_id: str = parse_dotenv(sub_account)["client_id"]
 client_secret: str = parse_dotenv(sub_account)["client_secret"]
-
+connection_url: str="https://www.deribit.com/api/v2/"
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
@@ -248,11 +248,11 @@ async def current_server_time() -> float:
     return current_time["result"]
     
     
-async def get_account_balances_and_transactions_from_exchanges() -> list:
+async def get_account_balances_and_transactions_from_exchanges(currency) -> list:
     """ """
 
     try:
-        private_data = await get_private_data()
+        private_data = await get_private_data(connection_url, client_id, client_secret, currency)
         result_sub_account: dict = await private_data.get_subaccounts()
         result_open_orders: dict = await private_data.get_open_orders_byCurrency()
         result_account_summary: dict = await private_data.get_account_summary()
@@ -674,7 +674,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             threshold = 0.01 / 100
 
             sub_acc = (
-                await get_account_balances_and_transactions_from_exchanges()
+                await get_account_balances_and_transactions_from_exchanges(currency)
             )
             log.error (sub_acc)
 
