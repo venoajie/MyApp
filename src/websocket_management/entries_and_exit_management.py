@@ -189,9 +189,6 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                 )
             )
 
-            # log.info(f'label_net {label_net}')
-            # log.info(transactions_under_label_main)
-            # get net sum of the transactions open and closed
             net_sum = (
                 []
                 if transactions_under_label_main == []
@@ -238,7 +235,6 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     if transactions_under_label_main == []
                     else sum([o["amount_dir"] for o in transactions_under_label_main])
                 )
-                # log.critical(transactions_under_label_main)
 
                 # excluded trades closed labels from above trade seq
                 transactions_excess = [
@@ -410,8 +406,8 @@ async def opening_transactions(
                             THRESHOLD_TIME_TO_CANCEL,
                         )
 
-                        # await self.if_order_is_true(send_order, instrument)
-                        # await self.if_cancel_is_true(send_order)
+                        await if_order_is_true(send_order, instrument)
+                        await if_cancel_is_true(send_order)
 
                     if "marketMaker" in strategy_attr["strategy"]:
 
