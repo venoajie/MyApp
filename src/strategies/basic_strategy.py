@@ -34,11 +34,9 @@ async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
-    print (f'ohlc_reversed {ohlc}')
 
     # exclude last price to minimize its impact to TA calc
     ohlc_reversed = ohlc[: limit - 1]
-    print (f'ohlc_reversed - 1 {ohlc}')
 
     return dict(ohlc_reversed=ohlc_reversed, last_price=ohlc[-1:][0])
 
@@ -65,7 +63,7 @@ async def get_market_condition(
 
     last_price = ohlc["last_price"]
 
-    print(f" get_ema ohlc 2 {ema}  ema {ema}  last_price {last_price}")
+    print(f" ema {ema}  last_price {last_price}")
 
     delta_price = last_price - ema
     delta_price_pct = abs(delta_price / ema)
