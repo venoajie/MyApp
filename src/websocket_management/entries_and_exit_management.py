@@ -2,7 +2,6 @@
 
 # built ins
 import asyncio
-import json
 
 # installed
 from loguru import logger as log
@@ -11,7 +10,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import entries_exits, hedging_spot, basic_strategy, market_maker as MM
+from strategies import hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
@@ -291,9 +290,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     my_trades_open: list = await sqlite_management.executing_label_and_size_query(
                         "my_trades_all_json"
                     )
-                    # log.info(f" my_trades_open {my_trades_open} ")
-                    # log.warning(([o['trade_seq']  for o in my_trades_open ]))
-                    # log.critical(([o for o in my_trades_open if o['trade_seq'] == res]))
+                    
                     result_to_dict = (
                         [o for o in my_trades_open if o["trade_seq"] == res]
                     )[0]
@@ -480,7 +477,7 @@ async def closing_transactions(
             for o in my_trades_open
             if str_mod.parsing_label(o["label"])["main"] == label
         ]
-        # log.debug (my_trades_open_strategy)
+
         get_prices_in_label_transaction_main = [
             o["price"] for o in my_trades_open_strategy
         ]
@@ -580,8 +577,6 @@ async def closing_transactions(
                     f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}"
                 )
 
-                # log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
-
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
                     MIN_HEDGING_RATIO = 0.8
@@ -596,7 +591,8 @@ async def closing_transactions(
                         open_trade_strategy_label,
                         MIN_HEDGING_RATIO,
                     )
-                    # log.critical (f' send_closing_order {send_closing_order}')
+
+
                     await if_order_is_true(send_closing_order, instrument)
 
                 if "marketMaker" in strategy_attr["strategy"]:
@@ -611,7 +607,6 @@ async def closing_transactions(
 
         else:
             log.critical(f" size_is_consistent {size_is_consistent} ")
-            # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
 async def current_server_time() -> float:
     """ """
@@ -645,25 +640,3 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
             await sqlite_management.deleting_row(
                 table, database, where_filter, "=", first_tick
             )
-
-async def get_account_balances_and_transactions_from_exchanges(currency) -> list:
-    """ """
-
-    try:
-        private_data = await get_private_data(
-            connection_url, client_id, client_secret, currency
-        )
-        result_sub_account: dict = await private_data.get_subaccounts()
-        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
-        result_account_summary: dict = await private_data.get_account_summary()
-        result_get_positions: dict = await private_data.get_positions()
-
-    except Exception as error:
-        await raise_error(error)
-
-    return dict(
-        sub_account=result_sub_account["result"],
-        open_orders=result_open_orders["result"],
-        account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"],
-    )
