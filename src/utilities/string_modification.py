@@ -233,6 +233,7 @@ def parsing_label(label: str, integer: int = None) -> dict:
 
 def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
+    print (f' get_net_sum_strategy_super_main my_trades_open_sqlite {my_trades_open_sqlite}')
     return (
         0
         if my_trades_open_sqlite == []
