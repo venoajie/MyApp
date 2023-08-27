@@ -78,7 +78,7 @@ class StreamAccountData:
             await self.establish_heartbeat()
 
             # Establish restart procedure
-            await self.on_restart(currency)
+            await self.on_restart()
 
             # Start Authentication Refresh Task
             self.loop.create_task(self.ws_refresh_auth())
@@ -224,13 +224,13 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-    async def on_restart(self, currency) -> None:
+    async def on_restart(self) -> None:
         """
         """
         import deribit_get
 
         log.warning("Cancelling all orders")
-        msg= deribit_get.get_cancel_order_all(currency)
+        msg= deribit_get.get_cancel_order_all()
         await self.websocket_client.send(json.dumps(msg))
 
     async def deleting_cancel_order(
