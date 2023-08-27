@@ -170,7 +170,7 @@ async def get_subaccounts():
 
     return await params
 
-async def get_cancel_order_all():
+def get_cancel_order_all():
     # Set endpoint
     endpoint: str = "private/cancel_all"
 
