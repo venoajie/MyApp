@@ -155,7 +155,7 @@ class StreamAccountData:
 
                         if self.refresh_token is None:
                             # await syn.get_sub_accounts()
-                            log.debug("Successfully authenticated WebSocket Connection")
+                            log.info("Successfully authenticated WebSocket Connection")
 
                         else:
                             log.info(
@@ -225,7 +225,7 @@ class StreamAccountData:
         """
         import deribit_get
 
-        log.debug("Cancelling all orders")
+        log.warning("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all(currency)
         await self.websocket_client.send(json.dumps(msg))
 
@@ -341,7 +341,7 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
-        log.warning(msg)
+        log.debug(msg)
         await self.websocket_client.send(json.dumps(msg))
 
 
