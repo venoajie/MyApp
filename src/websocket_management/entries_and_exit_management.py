@@ -52,6 +52,27 @@ async def get_account_summary() -> list:
     return account_summary["result"]
 
 
+async def get_account_balances_and_transactions_from_exchanges() -> list:
+    """ """
+
+    try:
+        private_data = await get_private_data()
+        result_sub_account: dict = await private_data.get_subaccounts()
+        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
+        result_account_summary: dict = await private_data.get_account_summary()
+        result_get_positions: dict = await private_data.get_positions()
+
+    except Exception as error:
+        await raise_error(error)
+
+    return dict(
+        sub_account=result_sub_account["result"],
+        open_orders=result_open_orders["result"],
+        account_summary=result_account_summary["result"],
+        get_positions=result_get_positions["result"]
+    )
+
+
 async def reading_from_pkl_database(currency) -> float:
     """ """
 
@@ -428,6 +449,7 @@ async def opening_transactions(
                     # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
                     await system_tools.sleep_and_restart(5)
 
+            
     except Exception as error:
         await raise_error(error)
 
@@ -597,6 +619,18 @@ async def closing_transactions(
                     log.critical(f" send_closing_order {send_closing_order}")
                     await if_order_is_true(send_closing_order, instrument)
 
+
+            # resupply sub account db
+            account_balances_and_transactions_from_exchanges = (
+                await get_account_balances_and_transactions_from_exchanges()
+            )
+            sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
+
+            my_path_sub_account = system_tools.provide_path_for_file(
+                "sub_accounts", currency
+            )
+            pickling.replace_data(my_path_sub_account, sub_accounts)
+            
         else:
             log.critical(f" size_is_consistent {size_is_consistent} ")
 
