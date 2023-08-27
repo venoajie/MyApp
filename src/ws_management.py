@@ -247,42 +247,26 @@ async def current_server_time() -> float:
     current_time = await deribit_get.get_server_time()
     return current_time["result"]
     
-
-def get_subaccounts(currency):
-
-    msg: dict = {
-        "jsonrpc": "2.0",
-        "method": f"private/get_subaccounts_details",
-        "id": 1,
-        "params": {"currency": currency, "with_open_orders": True},
-    }
-
-    return msg
     
-async def get_account_balances_and_transactions_from_exchanges(private_data, currency) -> list:
+async def get_account_balances_and_transactions_from_exchanges() -> list:
     """ """
 
     try:
-        log.error (private_data)
-        message= (get_subaccounts(currency))
-        log.error (json.dumps(get_subaccounts(currency)))
-
-        result_sub_account: dict = await private_data.send(json.dumps(message))
-
-        message: bytes = await private_data.recv()
-        message: dict = json.loads(message)
-        log.error (message)
-        log.error (result_sub_account)
-        response = await result_sub_account.json()
-        log.error (response)
+        private_data = await get_private_data()
+        result_sub_account: dict = await private_data.get_subaccounts()
+        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
+        result_account_summary: dict = await private_data.get_account_summary()
+        result_get_positions: dict = await private_data.get_positions()
 
     except Exception as error:
         await raise_error(error)
 
     return dict(
-        sub_account=result_sub_account["result"]
+        sub_account=result_sub_account["result"],
+        open_orders=result_open_orders["result"],
+        account_summary=result_account_summary["result"],
+        get_positions=result_get_positions["result"]
     )
-
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
     
     from transaction_management.deribit import myTrades_management
