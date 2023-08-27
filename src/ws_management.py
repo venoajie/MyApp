@@ -891,6 +891,15 @@ async def ws_manager_market(
                     pickling.append_and_replace_items_based_on_qty(
                         my_path_futures_analysis, tickers, 100
                     )
+                    
+                
+                my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+                    "my_trades_all_json"
+                )
+                my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+                    
+                # clean up transactions all
+                my_trades_open = [o for o in my_trades_open if "label" in o]
 
                 my_trades_open_remove_closed_labels = (
                     []
