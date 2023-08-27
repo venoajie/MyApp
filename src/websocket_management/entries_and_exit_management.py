@@ -623,16 +623,16 @@ async def closing_transactions(
             log.critical(f" size_is_consistent {size_is_consistent} ")
 
 
-        # resupply sub account db
-        account_balances_and_transactions_from_exchanges = (
-            await get_account_balances_and_transactions_from_exchanges()
-        )
-        sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
+    # resupply sub account db
+    account_balances_and_transactions_from_exchanges = (
+        await get_account_balances_and_transactions_from_exchanges()
+    )
+    sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
-        my_path_sub_account = system_tools.provide_path_for_file(
-            "sub_accounts", currency
-        )
-        pickling.replace_data(my_path_sub_account, sub_accounts)
+    my_path_sub_account = system_tools.provide_path_for_file(
+        "sub_accounts", currency
+    )
+    pickling.replace_data(my_path_sub_account, sub_accounts)
 
 async def current_server_time() -> float:
     """ """
