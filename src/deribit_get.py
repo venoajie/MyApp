@@ -170,14 +170,12 @@ def get_subaccounts():
 
     return  params
 
-def get_cancel_order_all():
+def get_cancel_order_all(currency):
     # Set endpoint
-    endpoint: str = "private/cancel_all"
 
-    params = {"detailed": False}
+    cur: str = f"{currency}"
 
-    params = {"jsonrpc": "2.0","method": "private/cancel_all","currency": "eth", "detailed": False}
-    return {"jsonrpc": "2.0","method": "private/cancel_all",'params': {"currency": "eth", "detailed": False}}
+    return {"jsonrpc": "2.0","method": "private/cancel_all",'params': {"currency": cur, "detailed": False}}
     
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
