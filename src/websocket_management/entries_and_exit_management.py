@@ -576,7 +576,7 @@ async def closing_transactions(
                 equity: float = portfolio[0]["equity"]
 
                 # compute notional value
-                notional: float = await compute_notional_value(index_price, equity)
+                notional: float = compute_notional_value(index_price, equity)
 
                 net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
                     my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
