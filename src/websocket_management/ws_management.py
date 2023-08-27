@@ -11,24 +11,10 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import entries_exits, hedging_spot, basic_strategy, market_maker as MM
+from strategies import entries_exits,  basic_strategy
 import deribit_get
 from configuration import config
-from websocket_management.entries_and_exit_management import opening_transactions, closing_transactions, reading_from_pkl_database, count_and_delete_ohlc_rows
-
-ONE_MINUTE: int = 60000
-ONE_PCT: float = 1 / 100
-NONE_DATA: None = [0, None, []]
-
-
-def parse_dotenv(sub_account) -> dict:
-    return config.main_dotenv(sub_account)
-
-
-sub_account = "deribit-147691"
-client_id: str = parse_dotenv(sub_account)["client_id"]
-client_secret: str = parse_dotenv(sub_account)["client_secret"]
-connection_url: str = "https://www.deribit.com/api/v2/"
+from websocket_management.entries_and_exit_management import opening_transactions, closing_transactions, reading_from_pkl_database, count_and_delete_ohlc_rows,current_server_time, get_account_balances_and_transactions_from_exchanges
 
 
 async def raise_error(error, idle: int = None) -> None:
@@ -43,45 +29,6 @@ async def get_private_data(connection_url, client_id, client_secret, currency) -
     return deribit_get.GetPrivateData(
         connection_url, client_id, client_secret, currency
     )
-
-
-async def get_account_summary() -> list:
-    """ """
-
-    private_data = await get_private_data()
-
-    account_summary: dict = await private_data.get_account_summary()
-
-    return account_summary["result"]
-
-async def current_server_time() -> float:
-    """ """
-    current_time = await deribit_get.get_server_time()
-    return current_time["result"]
-
-
-async def get_account_balances_and_transactions_from_exchanges(currency) -> list:
-    """ """
-
-    try:
-        private_data = await get_private_data(
-            connection_url, client_id, client_secret, currency
-        )
-        result_sub_account: dict = await private_data.get_subaccounts()
-        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
-        result_account_summary: dict = await private_data.get_account_summary()
-        result_get_positions: dict = await private_data.get_positions()
-
-    except Exception as error:
-        await raise_error(error)
-
-    return dict(
-        sub_account=result_sub_account["result"],
-        open_orders=result_open_orders["result"],
-        account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"],
-    )
-
 
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
