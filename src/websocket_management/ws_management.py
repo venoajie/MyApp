@@ -180,6 +180,7 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
     pickling.replace_data(my_path_sub_account, sub_accounts)
+    log.info (f'{sub_accounts}')
     log.info (f'resupply sub account db-DONE')
             
 async def ws_manager_market(
