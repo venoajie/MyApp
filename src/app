@@ -197,7 +197,7 @@ class StreamAccountData:
                         
                         msg_priv=deribit_get.get_subaccounts()
                         log.info (f' msg_priv {msg_priv}')
-                        priv_data2= await self.websocket_client.get_cancel_order_all()
+                        priv_data2= await self.websocket_client.send(json.dumps((deribit_get.get_cancel_order_all())))
                         log.info (f' priv_data2 {priv_data2}')
                         #! ########################################################################################################################
                         await ws_management.ws_manager_market(
