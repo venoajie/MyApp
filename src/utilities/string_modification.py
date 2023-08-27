@@ -234,21 +234,21 @@ def parsing_label(label: str, integer: int = None) -> dict:
 def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
     print (f' get_net_sum_strategy_super_main my_trades_open_sqlite {my_trades_open_sqlite}')
-    print ({sum(
+    print ((
             [
                 o["amount_dir"]
-                for o in my_trades_open_sqlite
+                for o in my_trades_open_sqlite["all"]
                 if parsing_label(o["label_main"])["super_main"]
                 == parsing_label(label)["super_main"]
             ]
-        )})
+        ))
     return (
         0
         if my_trades_open_sqlite == []
         else sum(
             [
                 o["amount_dir"]
-                for o in my_trades_open_sqlite
+                for o in my_trades_open_sqlite["all"]
                 if parsing_label(o["label_main"])["super_main"]
                 == parsing_label(label)["super_main"]
             ]
