@@ -10,9 +10,15 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import entries_exits,  basic_strategy
+from strategies import entries_exits, basic_strategy
 import deribit_get
-from websocket_management.entries_and_exit_management import opening_transactions, closing_transactions, reading_from_pkl_database, count_and_delete_ohlc_rows,current_server_time, get_account_balances_and_transactions_from_exchanges
+from websocket_management.entries_and_exit_management import (
+    opening_transactions,
+    closing_transactions,
+    reading_from_pkl_database,
+    count_and_delete_ohlc_rows,
+    current_server_time,
+)
 
 
 async def raise_error(error, idle: int = None) -> None:
@@ -28,6 +34,7 @@ async def get_private_data(connection_url, client_id, client_secret, currency) -
         connection_url, client_id, client_secret, currency
     )
 
+
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
     from transaction_management.deribit import myTrades_management
@@ -41,7 +48,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         positions = data_orders["positions"]
         trades = data_orders["trades"]
         orders = data_orders["orders"]
-        
 
         if trades:
             for trade in trades:
@@ -51,7 +57,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
                 await sqlite_management.insert_tables("my_trades_all_json", trade)
                 my_trades.distribute_trade_transactions(currency)
-
 
         if orders:
             # my_orders = open_orders_management.MyOrders(orders)
@@ -140,7 +145,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
                     await sqlite_management.insert_tables("orders_all_json", order)
 
-
                 #! ###########################################################
                 open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
                     "orders_all_json"
@@ -204,7 +208,7 @@ async def ws_manager_market(
         threshold, limit, ratio
     )
     log.error(f"market_condition {market_condition}")
-    
+
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
         last_tick_fr_data_orders: int = data_orders["tick"]
@@ -218,7 +222,7 @@ async def ws_manager_market(
 
             if message_channel == "chart.trades.ETH-PERPETUAL.1":
                 log.error(message_channel)
-                
+
                 # refilling current ohlc table with updated data
                 if last_tick1_fr_sqlite == last_tick_fr_data_orders:
 
@@ -265,12 +269,14 @@ async def ws_manager_market(
 
                 # capping sqlite rows
                 await count_and_delete_ohlc_rows()
-                        
+
                 # to avoid error if index price/portfolio = []/None
                 if portfolio:
 
                     # fetch positions for all instruments
-                    positions_all: list = reading_from_database["positions_from_sub_account"]
+                    positions_all: list = reading_from_database[
+                        "positions_from_sub_account"
+                    ]
                     size_from_positions: float = 0 if positions_all == [] else sum(
                         [o["size"] for o in positions_all]
                     )
@@ -279,7 +285,7 @@ async def ws_manager_market(
                         "my_trades_all_json"
                     )
                     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-                    
+
                     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
                     server_time = await current_server_time()
 
@@ -293,7 +299,6 @@ async def ws_manager_market(
                             server_time,
                             market_condition,
                         )
-
 
             if message_channel == "chart.trades.ETH-PERPETUAL.30":
 
@@ -426,12 +431,13 @@ async def ws_manager_market(
                     pickling.append_and_replace_items_based_on_qty(
                         my_path_futures_analysis, tickers, 100
                     )
-                    
-                        
+
                 if portfolio:
 
                     # fetch positions for all instruments
-                    positions_all: list = reading_from_database["positions_from_sub_account"]
+                    positions_all: list = reading_from_database[
+                        "positions_from_sub_account"
+                    ]
                     size_from_positions: float = 0 if positions_all == [] else sum(
                         [o["size"] for o in positions_all]
                     )
@@ -440,7 +446,7 @@ async def ws_manager_market(
                         "my_trades_all_json"
                     )
                     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-                        
+
                     # clean up transactions all
                     my_trades_open = [o for o in my_trades_open if "label" in o]
 

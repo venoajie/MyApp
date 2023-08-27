@@ -150,6 +150,7 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
+
 async def clean_up_closed_transactions(transactions_all) -> None:
     """ 
     closed transactions: buy and sell in the same label id = 0. When flagged:
@@ -228,17 +229,14 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     transactions_under_label_main = [
                         o
                         for o in transactions_under_label_main
-                        if o["trade_seq"] == min_closed
-                        or o["trade_seq"] == min_open
+                        if o["trade_seq"] == min_closed or o["trade_seq"] == min_open
                     ]
 
                 # get net sum of the transactions open and closed
                 net_sum = (
                     []
                     if transactions_under_label_main == []
-                    else sum(
-                        [o["amount_dir"] for o in transactions_under_label_main]
-                    )
+                    else sum([o["amount_dir"] for o in transactions_under_label_main])
                 )
                 # log.critical(transactions_under_label_main)
 
@@ -256,9 +254,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     trade_seq = transaction["trade_seq"]
                     label = transaction["label_main"]
                     tstamp = transaction["timestamp"]
-                    new_label = str_mod.parsing_label(label, tstamp)[
-                        "flipping_closed"
-                    ]
+                    new_label = str_mod.parsing_label(label, tstamp)["flipping_closed"]
                     transaction["label"] = new_label
 
                     where_filter = f"trade_seq"
@@ -290,7 +286,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     my_trades_open: list = await sqlite_management.executing_label_and_size_query(
                         "my_trades_all_json"
                     )
-                    
+
                     result_to_dict = (
                         [o for o in my_trades_open if o["trade_seq"] == res]
                     )[0]
@@ -336,6 +332,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     await sqlite_management.insert_tables(
                         "my_trades_all_json", result_to_dict
                     )
+
 
 async def opening_transactions(
     instrument,
@@ -413,7 +410,6 @@ async def opening_transactions(
                             THRESHOLD_TIME_TO_CANCEL,
                         )
 
-
                         # await self.if_order_is_true(send_order, instrument)
                         # await self.if_cancel_is_true(send_order)
 
@@ -455,9 +451,7 @@ async def closing_transactions(
         "my_trades_all_json"
     )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
-    clean_up_transactions: list = await clean_up_closed_transactions(
-        my_trades_open_all
-    )
+    clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
@@ -592,7 +586,6 @@ async def closing_transactions(
                         MIN_HEDGING_RATIO,
                     )
 
-
                     await if_order_is_true(send_closing_order, instrument)
 
                 if "marketMaker" in strategy_attr["strategy"]:
@@ -608,10 +601,12 @@ async def closing_transactions(
         else:
             log.critical(f" size_is_consistent {size_is_consistent} ")
 
+
 async def current_server_time() -> float:
     """ """
     current_time = await deribit_get.get_server_time()
     return current_time["result"]
+
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 

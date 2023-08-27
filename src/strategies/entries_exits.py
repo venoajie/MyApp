@@ -77,7 +77,6 @@ strategies = [
 
 
 test = [
-    
     {
         "strategy": "basicGridShort",
         "status": "inactive",
