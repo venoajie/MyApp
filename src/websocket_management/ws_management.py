@@ -11,7 +11,6 @@ from utilities import pickling, system_tools, string_modification as str_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import entries_exits, basic_strategy
-import deribit_get
 from websocket_management.entries_and_exit_management import (
     opening_transactions,
     closing_transactions,
@@ -24,15 +23,6 @@ from websocket_management.entries_and_exit_management import (
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
-
-
-async def get_private_data(connection_url, client_id, client_secret, currency) -> list:
-    """
-    Provide class object to access private get API
-    """
-    return deribit_get.GetPrivateData(
-        connection_url, client_id, client_secret, currency
-    )
 
 
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
