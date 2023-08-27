@@ -16,7 +16,7 @@ from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
 
 from db_management import sqlite_management
-import ws_management
+import websocket_management.ws_management as ws_management
 
 
 def parse_dotenv(sub_account) -> dict:
