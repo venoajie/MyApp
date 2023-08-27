@@ -164,20 +164,20 @@ async def main(
 
             return response
 
-async def get_subaccounts():
+def get_subaccounts():
     # Set endpoint
     params = {"endpoint": "private/get_subaccounts_details","currency": "eth", "with_open_orders": True}
 
-    return await params
+    return  params
 
-def get_cancel_order_all():
+async def get_cancel_order_all():
     # Set endpoint
     endpoint: str = "private/cancel_all"
 
     params = {"detailed": False}
 
-    params = {"endpoint": "private/cancel_all","detailed": False}
-    return params
+    params = {"endpoint": "private/cancel_all","currency": "eth", "detailed": False}
+    return result
     
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
