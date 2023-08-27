@@ -165,17 +165,17 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             my_path_position = system_tools.provide_path_for_file("positions", currency)
             pickling.replace_data(my_path_position, positions)
 
-            
-        # resupply sub account db
-        log.info (f'resupply sub account db-START')
-        account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
-            currency
-        )
-        sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
+        
+    # resupply sub account db
+    log.info (f'resupply sub account db-START')
+    account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
+        currency
+    )
+    sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
-        my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
-        pickling.replace_data(my_path_sub_account, sub_accounts)
-        log.info (f'resupply sub account db-DONE')
+    my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
+    pickling.replace_data(my_path_sub_account, sub_accounts)
+    log.info (f'resupply sub account db-DONE')
             
 async def ws_manager_market(
     message_channel, data_orders, instruments_kind, currency, private_data
