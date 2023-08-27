@@ -17,6 +17,7 @@ from configuration import id_numbering, config
 
 from db_management import sqlite_management
 import websocket_management.ws_management as ws_management
+import deribit_get
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -212,7 +213,9 @@ class StreamAccountData:
 
             else:
                 
-                log.info("WebSocket connection has broken.")
+                log.info("WebSocket connection has broken")
+                
+                await self.on_restart(currency)
                 
                 await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
@@ -220,10 +223,10 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-    async def on_restart(self, currency) -> list:
+    async def on_restart(self, currency) -> None:
         """
         """
-        import deribit_get
+        
 
         log.warning("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all(currency)
