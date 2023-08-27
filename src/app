@@ -217,7 +217,7 @@ class StreamAccountData:
                 
                 log.info("WebSocket connection has broken")
                 
-                await self.on_restart(currency)
+                await self.on_restart()
                 
                 await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
