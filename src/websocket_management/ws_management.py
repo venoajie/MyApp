@@ -596,7 +596,7 @@ async def closing_transactions(
                         MIN_HEDGING_RATIO,
                     )
                     # log.critical (f' send_closing_order {send_closing_order}')
-                    await self.if_order_is_true(send_closing_order, instrument)
+                    await if_order_is_true(send_closing_order, instrument)
 
                 if "marketMaker" in strategy_attr["strategy"]:
 
