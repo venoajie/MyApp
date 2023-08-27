@@ -676,8 +676,6 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             sub_acc = (
                 await get_account_balances_and_transactions_from_exchanges(currency)
             )
-            log.error (sub_acc)
-
 
             market_condition = await basic_strategy.get_market_condition(
                 threshold, limit, ratio
