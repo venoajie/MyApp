@@ -52,11 +52,11 @@ async def get_account_summary() -> list:
     return account_summary["result"]
 
 
-async def get_account_balances_and_transactions_from_exchanges() -> dict:
+async def get_account_balances_and_transactions_from_exchanges(currency) -> dict:
     """ """
 
     try:
-        private_data = await get_private_data()
+        private_data = await get_private_data(currency)
         result_sub_account: dict = await private_data.get_subaccounts()
         result_open_orders: dict = await private_data.get_open_orders_byCurrency()
         result_account_summary: dict = await private_data.get_account_summary()
@@ -625,7 +625,7 @@ async def closing_transactions(
 
     # resupply sub account db
     account_balances_and_transactions_from_exchanges = (
-        await get_account_balances_and_transactions_from_exchanges()
+        await get_account_balances_and_transactions_from_exchanges(currency)
     )
     sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
