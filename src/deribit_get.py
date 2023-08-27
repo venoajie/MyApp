@@ -166,7 +166,7 @@ async def main(
 
 def get_subaccounts():
     # Set endpoint
-    params = {"jsonrpc": "2.0","method": "private/get_subaccounts_details","id": 9322, "currency": "eth", "with_open_orders": True}
+    params = {"jsonrpc": "2.0","method": "private/get_subaccounts_details","id": 9322,  'params': {"currency": "eth", "with_open_orders": True}}
 
     return  params
 
