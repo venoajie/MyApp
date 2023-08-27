@@ -61,7 +61,6 @@ async def get_account_balances_and_transactions_from_exchanges(currency) -> dict
         result_sub_account: dict = await private_data.get_subaccounts()
         result_account_summary: dict = await private_data.get_account_summary()
         result_get_positions: dict = await private_data.get_positions()
-        log.info (result_sub_account)
 
     except Exception as error:
         await raise_error(error)
