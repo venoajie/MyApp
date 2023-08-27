@@ -196,7 +196,7 @@ class StreamAccountData:
                         )
                         
                         
-                        msg= deribit_get.get_subaccounts()
+                        msg= deribit_get.get_cancel_order_all()
                         log.info (f' msg {msg}')
                         priv_data2= await self.websocket_client.send(json.dumps(msg))
                         log.info (f' priv_data2 {priv_data2}')
