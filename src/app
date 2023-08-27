@@ -17,7 +17,6 @@ from configuration import id_numbering, config
 
 from db_management import sqlite_management
 import websocket_management.ws_management as ws_management
-import deribit_get
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -153,6 +152,9 @@ class StreamAccountData:
                 # log.warning (message)
                 if "id" in list(message):
                     if message["id"] == 9929:
+                        
+                        log.debug("Cancelling all orders")
+                        await self.on_restart(currency)
 
                         if self.refresh_token is None:
                             # await syn.get_sub_accounts()
@@ -196,11 +198,6 @@ class StreamAccountData:
                         )
                         
                         
-                        msg= deribit_get.get_cancel_order_all()
-                        log.info (f' msg {msg}')
-                        priv_data2= await self.websocket_client.send(json.dumps(msg))
-                        log.info (f' priv_data2 {priv_data2}')
-                        
                         #! ########################################################################################################################
                         await ws_management.ws_manager_market(
                             message_channel,
@@ -224,15 +221,13 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-    async def get_private_data(self, currency) -> list:
+    async def on_restart(self, currency) -> list:
         """
-        Provide class object to access private get API
         """
         import deribit_get
 
-        return deribit_get.GetPrivateData(
-            self.connection_url, self.client_id, self.client_secret, currency
-        )
+        msg= deribit_get.get_cancel_order_all(currency)
+        await self.websocket_client.send(json.dumps(msg))
 
     async def deleting_cancel_order(
         self, table: list, database: str, data, cancelled_order
