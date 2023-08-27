@@ -157,7 +157,6 @@ async def opening_transactions(
     portfolio,
     strategies,
     my_trades_open_sqlite,
-    my_trades_open_all,
     size_from_positions,
     server_time,
     market_condition,
@@ -257,7 +256,6 @@ async def closing_transactions(
     portfolio,
     strategies,
     my_trades_open_sqlite,
-    my_trades_open_all,
     my_trades_open,
     size_from_positions,
     market_condition,
@@ -266,15 +264,14 @@ async def closing_transactions(
     """ """
 
     log.critical(f"CLOSING TRANSACTIONS")
-    clean_up_closed_transactions: list = await clean_up_closed_transactions(
-        my_trades_open_all
-    )
 
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
-
     my_trades_open_all: list = my_trades_open_sqlite["all"]
+    clean_up_closed_transactions: list = await clean_up_closed_transactions(
+        my_trades_open_all
+    )
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
@@ -817,7 +814,6 @@ async def ws_manager_market(
                     portfolio,
                     strategies,
                     my_trades_open_sqlite,
-                    my_trades_open_all,
                     size_from_positions,
                     server_time,
                     market_condition,
@@ -922,7 +918,6 @@ async def ws_manager_market(
                     portfolio,
                     strategies,
                     my_trades_open_sqlite,
-                    my_trades_open_all,
                     my_trades_open,
                     size_from_positions,
                     market_condition,
