@@ -617,6 +617,33 @@ async def current_server_time() -> float:
     current_time = await deribit_get.get_server_time()
     return current_time["result"]
 
+async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
+
+    tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
+    database: str = "databases/trading.sqlite3"
+
+    for table in tables:
+
+        count_rows_query = sqlite_management.querying_arithmetic_operator(
+            "tick", "COUNT", table
+        )
+        rows = await sqlite_management.executing_query_with_return(count_rows_query)
+        rows = rows[0]["COUNT (tick)"]
+
+        if rows > rows_threshold:
+
+            where_filter = f"tick"
+            first_tick_query = sqlite_management.querying_arithmetic_operator(
+                "tick", "MIN", table
+            )
+            first_tick_fr_sqlite = await sqlite_management.executing_query_with_return(
+                first_tick_query
+            )
+            first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
+
+            await sqlite_management.deleting_row(
+                table, database, where_filter, "=", first_tick
+            )
 
 async def get_account_balances_and_transactions_from_exchanges(currency) -> list:
     """ """
@@ -863,7 +890,7 @@ async def ws_manager_market(
 
             if message_channel == "chart.trades.ETH-PERPETUAL.1":
                 log.error(message_channel)
-
+                
                 # refilling current ohlc table with updated data
                 if last_tick1_fr_sqlite == last_tick_fr_data_orders:
 
@@ -907,6 +934,9 @@ async def ws_manager_market(
                         "is",
                         last_tick1_fr_sqlite,
                     )
+
+                # capping sqlite rows
+                await count_and_delete_ohlc_rows()
 
             if message_channel == "chart.trades.ETH-PERPETUAL.30":
 
