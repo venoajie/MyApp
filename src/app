@@ -17,7 +17,6 @@ from configuration import id_numbering, config
 
 from db_management import sqlite_management
 import websocket_management.ws_management as ws_management
-import deribit_get
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -226,7 +225,7 @@ class StreamAccountData:
     async def on_restart(self, currency) -> None:
         """
         """
-        
+        import deribit_get
 
         log.warning("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all(currency)
