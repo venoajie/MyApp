@@ -464,12 +464,11 @@ async def closing_transactions(
         "my_trades_all_json"
     )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
-    clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
     # Creating an instance of the open order  class
-    log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+    
 
     label_transaction_main = str_mod.remove_redundant_elements(
         [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
