@@ -200,14 +200,7 @@ class StreamAccountData:
                         log.info (f' msg {msg}')
                         priv_data2= await self.websocket_client.send(json.dumps(msg))
                         log.info (f' priv_data2 {priv_data2}')
-                                
-                        message: bytes = await self.websocket_client.recv()
-                        message: dict = orjson.loads(message)
-                        log.info (f' message {message}')
-                        priv_data2= await self.websocket_client.deribit_get.get_cancel_order_all()
-                        priv_data2= await self.websocket_client(((deribit_get.get_cancel_order_all())))
-                        priv_data2= await self.websocket_client.send(json.dumps((deribit_get.get_cancel_order_all())))
-                        log.info (f' priv_data2 {priv_data2}')
+                        
                         #! ########################################################################################################################
                         await ws_management.ws_manager_market(
                             message_channel,
