@@ -953,7 +953,7 @@ async def ws_manager_market(
                     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
                     
                     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-                    server_time = current_server_time()
+                    server_time = await current_server_time()
 
                     for instrument in instrument_transactions:
                         await opening_transactions(
