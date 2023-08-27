@@ -52,7 +52,7 @@ async def get_account_summary() -> list:
     return account_summary["result"]
 
 
-async def get_account_balances_and_transactions_from_exchanges() -> list:
+async def get_account_balances_and_transactions_from_exchanges() -> dict:
     """ """
 
     try:
@@ -61,6 +61,7 @@ async def get_account_balances_and_transactions_from_exchanges() -> list:
         result_open_orders: dict = await private_data.get_open_orders_byCurrency()
         result_account_summary: dict = await private_data.get_account_summary()
         result_get_positions: dict = await private_data.get_positions()
+        log.critical(result_account_summary)
 
     except Exception as error:
         await raise_error(error)
@@ -447,7 +448,6 @@ async def opening_transactions(
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
                     # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-                    await system_tools.sleep_and_restart(5)
 
             
     except Exception as error:
