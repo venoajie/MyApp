@@ -72,11 +72,11 @@ class StreamAccountData:
             close_timeout=60,
         ) as self.websocket_client:
 
-            # Establish restart procedure
-            await self.on_restart()
-
             # Authenticate WebSocket Connection
             await self.ws_auth()
+
+            # Establish restart procedure
+            await self.on_restart()
             
             # Establish Heartbeat
             await self.establish_heartbeat()
