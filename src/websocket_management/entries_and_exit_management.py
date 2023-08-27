@@ -22,22 +22,21 @@ NONE_DATA: None = [0, None, []]
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
-
-sub_account = "deribit-147691"
-client_id: str = parse_dotenv(sub_account)["client_id"]
-client_secret: str = parse_dotenv(sub_account)["client_secret"]
-connection_url: str = "https://www.deribit.com/api/v2/"
-
-
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
 
 
-async def get_private_data(connection_url, client_id, client_secret, currency) -> list:
+async def get_private_data(currency: str = None) -> list:
     """
     Provide class object to access private get API
     """
+        
+    sub_account = "deribit-147691"
+    client_id: str = parse_dotenv(sub_account)["client_id"]
+    client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    connection_url: str = "https://www.deribit.com/api/v2/"
+
     return deribit_get.GetPrivateData(
         connection_url, client_id, client_secret, currency
     )
