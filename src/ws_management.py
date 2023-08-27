@@ -700,7 +700,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
         message_channel
         == f"incremental_ticker.{instrument_ticker}"
     ):
-        log.warning (message_channel)
+        #log.warning (message_channel)
         my_path_futures_analysis = system_tools.provide_path_for_file(
             "futures_analysis", currency
         )
@@ -712,7 +712,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
         try:
 
             if "PERPETUAL" in data_orders["instrument_name"]:
-                log.info(data_orders)
+                #log.info(data_orders)
 
                 if "open_interest" in data_orders:
 
