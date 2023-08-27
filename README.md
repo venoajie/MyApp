@@ -76,9 +76,7 @@ make start # for first time running
     │   ├── strategies
     │   ├── transaction_management
     │   ├── utilities
-    │   ├── capture_exch_data_fr_deribit.py
-    │   ├── capture_market_data_fr_deribit.py
-    │   ├── checkEvents.sh
+    │   ├── app.py
     │   ├── deribit_get.py
     │   ├── fetch_and_save_market_data.py
     │   ├── Makefile
