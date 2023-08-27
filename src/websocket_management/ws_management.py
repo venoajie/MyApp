@@ -16,7 +16,7 @@ from websocket_management.entries_and_exit_management import (
     closing_transactions,
     reading_from_pkl_database,
     count_and_delete_ohlc_rows,
-    current_server_time,
+    current_server_time,clean_up_closed_transactions
 )
 
 
@@ -39,6 +39,10 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         trades = data_orders["trades"]
         orders = data_orders["orders"]
 
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+            "my_trades_all_json"
+        )
+        my_trades_open_all: list = my_trades_open_sqlite["all"]
         if trades:
             for trade in trades:
 
@@ -48,6 +52,9 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
                 await sqlite_management.insert_tables("my_trades_all_json", trade)
                 my_trades.distribute_trade_transactions(currency)
 
+            clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
+            log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+                                                                            
         if orders:
             # my_orders = open_orders_management.MyOrders(orders)
             log.debug(f"my_orders {orders}")
@@ -146,6 +153,9 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
         #! ###########################################################
 
+            clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
+            log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+            
         if positions:
             # log.error (f'positions {positions}')
 
