@@ -66,6 +66,7 @@ make start # for first time running
     │   ├── databases
     │       ├── trading.sqlite3
     │       ├── exchanges
+    │           ├── deribit
     │       ├── market
     │   ├── market_data
     │       ├── get_market_data.py
@@ -74,9 +75,14 @@ make start # for first time running
     │   ├── risk_management
     │       ├── position_sizing.py
     │   ├── strategies
+    │       ├── basic_strategy.py
+    │       ├── hedging_spot.py
+    │       ├── market_maker.py
     │   ├── transaction_management
+    │   ├── websocket_management
+    │       ├── ws_management.py
     │   ├── utilities
-    │   ├── app.py
+    │   ├── app
     │   ├── deribit_get.py
     │   ├── fetch_and_save_market_data.py
     │   ├── Makefile
