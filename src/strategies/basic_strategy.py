@@ -469,7 +469,7 @@ class BasicStrategy:
             )
             params.update({"entry_price": ask_price})
 
-        orders = await self.self.transaction_attributes("orders_all_json", "closed")
+        orders = await self.transaction_attributes("orders_all_json", "closed")
         len_orders: int = orders["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
