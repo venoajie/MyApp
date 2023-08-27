@@ -17,7 +17,7 @@ from configuration import id_numbering, config
 
 from db_management import sqlite_management
 import websocket_management.ws_management as ws_management
-
+import deribit_get
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -194,6 +194,12 @@ class StreamAccountData:
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
+                        priv_data=await self.get_private_data(currency).get_subaccounts()
+                        log.info (f' priv_data {priv_data}')
+                        msg_priv=deribit_get.get_subaccounts()
+                        log.info (f' msg_priv {msg_priv}')
+                        priv_data2= await self.websocket_client.send(json.dumps(msg_priv))
+                        log.info (f' priv_data2 {priv_data2}')
                         #! ########################################################################################################################
                         await ws_management.ws_manager_market(
                             message_channel,
@@ -207,7 +213,10 @@ class StreamAccountData:
                         )
 
             else:
+                
+                cancel= await deribit_get.get_cancel_order_all ()
                 log.info("WebSocket connection has broken.")
+                
                 await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
                     0.1,
