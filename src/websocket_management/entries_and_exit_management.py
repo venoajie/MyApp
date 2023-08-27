@@ -14,7 +14,6 @@ from db_management import sqlite_management
 from strategies import entries_exits, hedging_spot, basic_strategy, market_maker as MM
 import deribit_get
 from configuration import config
-from websocket_management.entries_and_exit_management import opening_transactions, closing_transactions
 
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
@@ -340,6 +339,279 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     await sqlite_management.insert_tables(
                         "my_trades_all_json", result_to_dict
                     )
+
+async def opening_transactions(
+    instrument,
+    portfolio,
+    strategies,
+    my_trades_open_sqlite,
+    size_from_positions,
+    server_time,
+    market_condition,
+) -> None:
+    """ """
+
+    try:
+        log.critical(f"OPENING TRANSACTIONS")
+
+        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+            "my_trades_all_json"
+        )
+        my_trades_open_all: list = my_trades_open_sqlite["all"]
+        # log.error (my_trades_open_all)
+
+        ticker: list = reading_from_db("ticker", instrument)
+
+        if ticker != []:
+
+            # get bid and ask price
+            best_bid_prc: float = ticker[0]["best_bid_price"]
+            best_ask_prc: float = ticker[0]["best_ask_price"]
+
+            # index price
+            index_price: float = ticker[0]["index_price"]
+
+            # obtain spot equity
+            equity: float = portfolio[0]["equity"]
+
+            # compute notional value
+            notional: float = compute_notional_value(index_price, equity)
+
+            # execute each strategy
+            for strategy_attr in strategies:
+                strategy_label = strategy_attr["strategy"]
+
+                log.critical(f" {strategy_label}")
+
+                net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+                    my_trades_open_sqlite, strategy_label
+                )
+                net_sum_strategy_main = str_mod.get_net_sum_strategy_main(
+                    my_trades_open_sqlite, strategy_label
+                )
+                log.debug(
+                    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
+                )
+
+                sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
+                    my_trades_open_all, strategy_label
+                )
+                size_is_consistent: bool = await is_size_consistent(
+                    sum_my_trades_open_sqlite_all_strategy, size_from_positions
+                )
+
+                if size_is_consistent:  # and open_order_is_consistent:
+
+                    if "hedgingSpot" in strategy_attr["strategy"]:
+
+                        THRESHOLD_TIME_TO_CANCEL = 30
+
+                        hedging = hedging_spot.HedgingSpot(strategy_label)
+
+                        send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
+                            notional,
+                            best_ask_prc,
+                            server_time,
+                            market_condition,
+                            THRESHOLD_TIME_TO_CANCEL,
+                        )
+
+
+                        # await self.if_order_is_true(send_order, instrument)
+                        # await self.if_cancel_is_true(send_order)
+
+                    if "marketMaker" in strategy_attr["strategy"]:
+
+                        market_maker = MM.MarketMaker(strategy_label)
+
+                        send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
+                            notional, best_ask_prc, best_bid_prc, server_time
+                        )
+
+                        await if_order_is_true(send_order, instrument)
+                        await if_cancel_is_true(send_order)
+
+                else:
+                    log.critical(f" size_is_consistent {size_is_consistent} ")
+                    # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                    await system_tools.sleep_and_restart(5)
+
+    except Exception as error:
+        await raise_error(error)
+
+
+async def closing_transactions(
+    label_transaction_net,
+    portfolio,
+    strategies,
+    my_trades_open_sqlite,
+    my_trades_open,
+    size_from_positions,
+    market_condition,
+    currency,
+) -> float:
+    """ """
+
+    log.critical(f"CLOSING TRANSACTIONS")
+
+    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+        "my_trades_all_json"
+    )
+    my_trades_open_all: list = my_trades_open_sqlite["all"]
+    clean_up_transactions: list = await clean_up_closed_transactions(
+        my_trades_open_all
+    )
+
+    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+
+    # Creating an instance of the open order  class
+    log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+
+    label_transaction_main = str_mod.remove_redundant_elements(
+        [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
+    )
+    log.warning(f"label_transaction_main {label_transaction_main}")
+
+    for label in label_transaction_main:
+        log.debug(f"label {label}")
+
+        my_trades_open_strategy = [
+            o
+            for o in my_trades_open
+            if str_mod.parsing_label(o["label"])["main"] == label
+        ]
+        # log.debug (my_trades_open_strategy)
+        get_prices_in_label_transaction_main = [
+            o["price"] for o in my_trades_open_strategy
+        ]
+        max_price = (
+            0
+            if get_prices_in_label_transaction_main == []
+            else max(get_prices_in_label_transaction_main)
+        )
+        min_price = (
+            0
+            if get_prices_in_label_transaction_main == []
+            else min(get_prices_in_label_transaction_main)
+        )
+
+        if "Short" in label or "hedging" in label:
+            transaction = [
+                o for o in my_trades_open_strategy if o["price"] == max_price
+            ]
+        if "Long" in label:
+            transaction = [
+                o for o in my_trades_open_strategy if o["price"] == min_price
+            ]
+
+        label = [
+            str_mod.parsing_label(o["label"])["transaction_net"] for o in transaction
+        ][0]
+
+        # result example: 'hedgingSpot'/'supplyDemandShort60'
+        label_main = str_mod.parsing_label(label)["main"]
+        log.critical(
+            f" {label_main} {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}"
+        )
+
+        # get startegy details
+        strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
+
+        my_trades_open_sqlite_individual_strategy: list = str_mod.my_trades_open_sqlite_detailing(
+            my_trades_open_all, label, "individual"
+        )
+
+        sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
+            my_trades_open_all, label
+        )
+        size_is_consistent: bool = await is_size_consistent(
+            sum_my_trades_open_sqlite_all_strategy, size_from_positions
+        )
+        #: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
+
+        if size_is_consistent:  # and open_order_is_consistent:
+
+            open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
+                [o["data"] for o in my_trades_open_sqlite_individual_strategy]
+            )
+            log.debug(open_trade_strategy_label)
+
+            instrument: list = [
+                o["instrument_name"] for o in open_trade_strategy_label
+            ][0]
+
+            ticker: list = reading_from_db("ticker", instrument)
+
+            if ticker != []:
+
+                # index price
+                index_price: float = ticker[0]["index_price"]
+
+                # get instrument_attributes
+                instrument_attributes_all: list = reading_from_db(
+                    "instruments", currency
+                )[0]["result"]
+                instrument_attributes: list = [
+                    o
+                    for o in instrument_attributes_all
+                    if o["instrument_name"] == instrument
+                ]
+                tick_size: float = instrument_attributes[0]["tick_size"]
+                taker_commission: float = instrument_attributes[0]["taker_commission"]
+                min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+                contract_size: float = instrument_attributes[0]["contract_size"]
+                # log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
+
+                # get bid and ask price
+                best_bid_prc: float = ticker[0]["best_bid_price"]
+                best_ask_prc: float = ticker[0]["best_ask_price"]
+
+                # obtain spot equity
+                equity: float = portfolio[0]["equity"]
+
+                # compute notional value
+                notional: float = await compute_notional_value(index_price, equity)
+
+                net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+                    my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
+                )
+
+                log.error(
+                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}"
+                )
+
+                # log.debug (f'open_trade_strategy_label   {open_trade_strategy_label}')
+
+                if "hedgingSpot" in strategy_attr["strategy"]:
+
+                    MIN_HEDGING_RATIO = 0.8
+
+                    hedging = hedging_spot.HedgingSpot(label_main)
+
+                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                        notional,
+                        market_condition,
+                        best_ask_prc,
+                        best_bid_prc,
+                        open_trade_strategy_label,
+                        MIN_HEDGING_RATIO,
+                    )
+                    # log.critical (f' send_closing_order {send_closing_order}')
+                    await if_order_is_true(send_closing_order, instrument)
+
+                if "marketMaker" in strategy_attr["strategy"]:
+
+                    market_maker = MM.MarketMaker(label_main)
+
+                    send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
+                        best_ask_prc, best_bid_prc, open_trade_strategy_label
+                    )
+                    log.critical(f" send_closing_order {send_closing_order}")
+                    await if_order_is_true(send_closing_order, instrument)
+
+        else:
+            log.critical(f" size_is_consistent {size_is_consistent} ")
+            # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
 async def current_server_time() -> float:
     """ """
