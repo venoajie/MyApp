@@ -197,6 +197,10 @@ class StreamAccountData:
                         
                         msg_priv=deribit_get.get_subaccounts()
                         log.info (f' msg_priv {msg_priv}')
+                        self.loop.create_task(
+                self.ws_operation(
+                    deribit_get.get_cancel_order_all()
+                ))
                         priv_data2= await self.websocket_client.deribit_get.get_cancel_order_all()
                         priv_data2= await self.websocket_client(((deribit_get.get_cancel_order_all())))
                         priv_data2= await self.websocket_client.send(json.dumps((deribit_get.get_cancel_order_all())))
