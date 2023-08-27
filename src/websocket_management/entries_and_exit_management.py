@@ -583,7 +583,7 @@ async def closing_transactions(
                 )
 
                 log.error(
-                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy}"
+                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} open_trade_strategy_label {open_trade_strategy_label}"
                 )
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
