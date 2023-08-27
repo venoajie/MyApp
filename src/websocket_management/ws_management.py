@@ -2,7 +2,6 @@
 
 # built ins
 import asyncio
-import json
 
 # installed
 from loguru import logger as log
@@ -13,7 +12,6 @@ from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import entries_exits,  basic_strategy
 import deribit_get
-from configuration import config
 from websocket_management.entries_and_exit_management import opening_transactions, closing_transactions, reading_from_pkl_database, count_and_delete_ohlc_rows,current_server_time, get_account_balances_and_transactions_from_exchanges
 
 
@@ -43,15 +41,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         positions = data_orders["positions"]
         trades = data_orders["trades"]
         orders = data_orders["orders"]
-        # private_data = await self.get_private_data(currency)
-        # result_open_orders: dict =  await private_data.get_open_orders_byCurrency()
-        # log.error (result_open_orders)
-        #! ###########################################################
-
-        # open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-        # len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-        # log.debug (f' trade sqlite BEFORE {len_open_trades_sqlite}')
-        #! ###########################################################
+        
 
         if trades:
             for trade in trades:
@@ -62,10 +52,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
                 await sqlite_management.insert_tables("my_trades_all_json", trade)
                 my_trades.distribute_trade_transactions(currency)
 
-                # my_trades_path_all = system_tools.provide_path_for_file(
-                # "my_trades", currency, "all"
-            # )
-            #    self. appending_data (trade, my_trades_path_all)
 
         if orders:
             # my_orders = open_orders_management.MyOrders(orders)
@@ -83,11 +69,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
                     f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
                 )
 
-                sub_acc = (
-                    await syn.get_account_balances_and_transactions_from_exchanges()
-                )
-                sub_acc_orders = sub_acc["open_orders"]
-                log.error(f" sub_acc BEFORE {len(sub_acc_orders)} {sub_acc_orders} ")
                 #! ##############################################################################
 
                 log.warning(f"order {order}")
@@ -159,12 +140,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
                     await sqlite_management.insert_tables("orders_all_json", order)
 
-                    # orders_path_all = system_tools.provide_path_for_file(
-                    # orders", currency, "all")
-
-                    # self. appending_data (order, orders_path_all)
-
-                    # my_orders.distribute_order_transactions(currency)
 
                 #! ###########################################################
                 open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
@@ -175,15 +150,6 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
                     f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
                 )
 
-                sub_acc = (
-                    await syn.get_account_balances_and_transactions_from_exchanges()
-                )
-                sub_acc_orders = sub_acc["open_orders"]
-                log.error(f" sub_acc AFTER {len(sub_acc_orders)} {sub_acc_orders} ")
-
-        # open_trades_sqlite = await sqlite_management.executing_label_and_size_query ('my_trades_all_json')
-        # len_open_trades_sqlite = len([o  for o in open_trades_sqlite])
-        # log.debug (f' trade sqlite AFTER {len_open_trades_sqlite} ')
         #! ###########################################################
 
         if positions:
