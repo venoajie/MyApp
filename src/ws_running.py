@@ -15,8 +15,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification
 from configuration import id_numbering, config
 
-import apply_strategies
-from db_management import sqlite_management
+=from db_management import sqlite_management
 import ws_management
 
 
@@ -154,12 +153,6 @@ class StreamAccountData:
                 # log.warning (message)
                 if "id" in list(message):
                     if message["id"] == 9929:
-                        syn = apply_strategies.ApplyHedgingSpot(
-                            self.connection_url,
-                            self.client_id,
-                            self.client_secret,
-                            currency,
-                        )
 
                         if self.refresh_token is None:
                             # await syn.get_sub_accounts()
