@@ -164,6 +164,11 @@ async def main(
 
             return response
 
+async def get_subaccounts():
+    # Set endpoint
+    params = {"endpoint": "private/get_subaccounts_details","currency": "eth", "with_open_orders": True}
+
+    return await params
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
@@ -535,6 +540,16 @@ class GetPrivateData:
         endpoint: str = "private/cancel"
 
         params = {"order_id": order_id}
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        return result
+
+
+    async def get_cancel_order_all(self):
+        # Set endpoint
+        endpoint: str = "private/cancel_all"
+
+        params = {"detailed": False}
 
         result = await self.parse_main(endpoint=endpoint, params=params)
         return result
