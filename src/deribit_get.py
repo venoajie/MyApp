@@ -176,8 +176,8 @@ async def get_cancel_order_all():
 
     params = {"detailed": False}
 
-    params = {"endpoint": "private/cancel_all","currency": "eth", "detailed": False}
-    return result
+    params = {"jsonrpc": "2.0","method": "private/cancel_all","currency": "eth", "detailed": False}
+    return {"jsonrpc": "2.0","method": "private/cancel_all",'params': {"currency": "eth", "detailed": False}}
     
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
