@@ -59,7 +59,6 @@ async def get_account_balances_and_transactions_from_exchanges(currency) -> dict
     try:
         private_data = await get_private_data(currency)
         result_sub_account: dict = await private_data.get_subaccounts()
-        result_open_orders: dict = await private_data.get_open_orders_byCurrency()
         result_account_summary: dict = await private_data.get_account_summary()
         result_get_positions: dict = await private_data.get_positions()
 
@@ -68,7 +67,6 @@ async def get_account_balances_and_transactions_from_exchanges(currency) -> dict
 
     return dict(
         sub_account=result_sub_account["result"],
-        open_orders=result_open_orders["result"],
         account_summary=result_account_summary["result"],
         get_positions=result_get_positions["result"],
     )
