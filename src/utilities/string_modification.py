@@ -233,7 +233,9 @@ def parsing_label(label: str, integer: int = None) -> dict:
 
 def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
+    print (f' label  {label}')
     print (f' get_net_sum_strategy_super_main my_trades_open_sqlite {my_trades_open_sqlite}')
+    print (my_trades_open_sqlite["all"])
     print ((
             [
                 o["amount_dir"]
