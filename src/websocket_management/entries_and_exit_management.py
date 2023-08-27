@@ -61,7 +61,6 @@ async def get_account_balances_and_transactions_from_exchanges(currency) -> dict
         result_open_orders: dict = await private_data.get_open_orders_byCurrency()
         result_account_summary: dict = await private_data.get_account_summary()
         result_get_positions: dict = await private_data.get_positions()
-        log.critical(result_account_summary)
 
     except Exception as error:
         await raise_error(error)
@@ -85,11 +84,9 @@ async def reading_from_pkl_database(currency) -> float:
     path_positions: str = system_tools.provide_path_for_file("positions", currency)
     positions = pickling.read_data(path_positions)
     sub_account = pickling.read_data(path_sub_accounts)
-    # log.critical(f' SUB ACCOUNT {sub_account}')
     positions_from_sub_account = sub_account[0]["positions"]
     open_orders_from_sub_account = sub_account[0]["open_orders"]
     portfolio = pickling.read_data(path_portfolio)
-    # log.error (open_order)
 
     # at start, usually position == None
     if positions in NONE_DATA:
@@ -101,9 +98,6 @@ async def reading_from_pkl_database(currency) -> float:
         portfolio = await get_account_summary()
         pickling.replace_data(path_portfolio, portfolio)
         portfolio = pickling.read_data(path_portfolio)
-
-    log.info (sub_account)
-    log.info (positions_from_sub_account)
 
     return {
         "positions": positions,
