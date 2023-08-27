@@ -170,6 +170,15 @@ async def get_subaccounts():
 
     return await params
 
+async def get_cancel_order_all():
+    # Set endpoint
+    endpoint: str = "private/cancel_all"
+
+    params = {"detailed": False}
+
+    params = {"endpoint": "private/cancel_all","detailed": False}
+    return params
+    
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
 
