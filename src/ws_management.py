@@ -655,6 +655,15 @@ async def ws_manager_market(
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
+    limit = 100
+    ratio = 0.9
+    threshold = 0.01 / 100
+
+    market_condition = await basic_strategy.get_market_condition(
+        threshold, limit, ratio
+    )
+    log.error(f"market_condition {market_condition}")
+    
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
         last_tick_fr_data_orders: int = data_orders["tick"]
@@ -789,24 +798,9 @@ async def ws_manager_market(
                 "my_trades_all_json"
             )
             my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-            my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
-                "my_trades_all_json"
-            )
+            
             instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
             server_time = current_server_time()
-
-            limit = 100
-            ratio = 0.9
-            threshold = 0.01 / 100
-
-            sub_acc = await get_account_balances_and_transactions_from_exchanges(
-                currency
-            )
-
-            market_condition = await basic_strategy.get_market_condition(
-                threshold, limit, ratio
-            )
-            log.error(f"market_condition {market_condition}")
 
             for instrument in instrument_transactions:
                 await opening_transactions(
