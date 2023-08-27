@@ -58,7 +58,6 @@ async def reading_from_pkl_database(currency) -> float:
     path_sub_accounts: str = system_tools.provide_path_for_file(
         "sub_accounts", currency
     )
-    log.info (path_sub_accounts)
 
     path_portfolio: str = system_tools.provide_path_for_file("portfolio", currency)
     path_positions: str = system_tools.provide_path_for_file("positions", currency)
@@ -80,6 +79,9 @@ async def reading_from_pkl_database(currency) -> float:
         portfolio = await get_account_summary()
         pickling.replace_data(path_portfolio, portfolio)
         portfolio = pickling.read_data(path_portfolio)
+
+    log.info (sub_account)
+    log.info (positions_from_sub_account)
 
     return {
         "positions": positions,
