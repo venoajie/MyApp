@@ -58,6 +58,7 @@ async def reading_from_pkl_database(currency) -> float:
     path_sub_accounts: str = system_tools.provide_path_for_file(
         "sub_accounts", currency
     )
+    log.info (path_sub_accounts)
 
     path_portfolio: str = system_tools.provide_path_for_file("portfolio", currency)
     path_positions: str = system_tools.provide_path_for_file("positions", currency)
