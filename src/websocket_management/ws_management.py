@@ -16,7 +16,7 @@ from websocket_management.entries_and_exit_management import (
     closing_transactions,
     reading_from_pkl_database,
     count_and_delete_ohlc_rows,
-    current_server_time,clean_up_closed_transactions
+    current_server_time,clean_up_closed_transactions,get_account_balances_and_transactions_from_exchanges
 )
 
 
@@ -54,7 +54,8 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
             clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
             log.error(f"clean_up_closed_transactions {clean_up_transactions}")
-                                                                            
+                                
+                                        
         if orders:
             # my_orders = open_orders_management.MyOrders(orders)
             log.debug(f"my_orders {orders}")
@@ -162,7 +163,18 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
             my_path_position = system_tools.provide_path_for_file("positions", currency)
             pickling.replace_data(my_path_position, positions)
 
+            
+        # resupply sub account db
+        log.info (f'resupply sub account db-START')
+        account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
+            currency
+        )
+        sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
+        my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
+        pickling.replace_data(my_path_sub_account, sub_accounts)
+        log.info (f'resupply sub account db-DONE')
+            
 async def ws_manager_market(
     message_channel, data_orders, instruments_kind, currency, private_data
 ) -> None:
