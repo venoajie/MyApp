@@ -34,7 +34,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         pickling.replace_data(my_path_portfolio, data_orders)
 
     if message_channel == f"user.changes.any.{currency.upper()}.raw":
-        # log.info(data_orders)
+        log.info(data_orders)
         positions = data_orders["positions"]
         trades = data_orders["trades"]
         orders = data_orders["orders"]
