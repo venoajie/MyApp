@@ -17,7 +17,7 @@ from configuration import id_numbering, config
 
 import apply_strategies
 from db_management import sqlite_management
-import ws_management   
+import ws_management
 
 
 def parse_dotenv(sub_account) -> dict:
@@ -89,17 +89,13 @@ class StreamAccountData:
             my_path_instruments = system_tools.provide_path_for_file(
                 "instruments", currency
             )
-        
+
             instruments_raw = pickling.read_data(my_path_instruments)
             instruments = instruments_raw[0]["result"]
 
-            instruments_kind: list = [
-                o for o in instruments if o["kind"] == "future"
-            ]
+            instruments_kind: list = [o for o in instruments if o["kind"] == "future"]
 
-            instruments_name: list = [
-                o["instrument_name"] for o in instruments_kind
-            ]
+            instruments_name: list = [o["instrument_name"] for o in instruments_kind]
             # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
 
             for instrument in instruments_name:
@@ -136,7 +132,7 @@ class StreamAccountData:
                             ws_channel=f"chart.trades.{instrument}.1D",
                         )
                     )
-                    
+
             self.loop.create_task(
                 self.ws_operation(
                     operation="subscribe", ws_channel=f"user.portfolio.{currency}"
@@ -201,13 +197,21 @@ class StreamAccountData:
                         log.critical(message_channel)
 
                         data_orders: list = message["params"]["data"]
-                        #log.info(data_orders)
+                        # log.info(data_orders)
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
                         #! ########################################################################################################################
-                        await ws_management.ws_manager_market (message_channel, data_orders, instruments_kind, currency, websockets.WebSocketClientProtocol)
-                        await ws_management.ws_manager_exchange (message_channel, data_orders, currency)
+                        await ws_management.ws_manager_market(
+                            message_channel,
+                            data_orders,
+                            instruments_kind,
+                            currency,
+                            websockets.WebSocketClientProtocol,
+                        )
+                        await ws_management.ws_manager_exchange(
+                            message_channel, data_orders, currency
+                        )
 
             else:
                 log.info("WebSocket connection has broken.")
@@ -217,7 +221,6 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-        
     async def get_private_data(self, currency) -> list:
         """
         Provide class object to access private get API

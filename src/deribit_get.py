@@ -612,7 +612,9 @@ async def send_order_market(
     return result
 
 
-async def get_server_time(connection_url: str="https://www.deribit.com/api/v2/") -> int:
+async def get_server_time(
+    connection_url: str = "https://www.deribit.com/api/v2/",
+) -> int:
     """
     Returning server time
     """
