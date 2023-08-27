@@ -221,7 +221,7 @@ class StreamAccountData:
                 
                 await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
-                    0.1,
+                    0.01,
                     "WebSocket connection EXCHANGE has broken",
                 )
 
