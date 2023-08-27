@@ -194,8 +194,7 @@ class StreamAccountData:
                         currency: str = string_modification.extract_currency_from_text(
                             message_channel
                         )
-                        priv_data=await self.get_private_data(currency).get_subaccounts()
-                        log.info (f' priv_data {priv_data}')
+                        
                         msg_priv=deribit_get.get_subaccounts()
                         log.info (f' msg_priv {msg_priv}')
                         priv_data2= await self.websocket_client.send(json.dumps(msg_priv))
