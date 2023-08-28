@@ -218,7 +218,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         await resupply_sub_accountdb(currency)
 
 
-@async_lru_cache(ttl=100)
+@async_lru_cache(maxsize=128)
 async def market_condition(threshold,limit, ratio) -> None:
     await basic_strategy.get_market_condition(
         threshold, limit, ratio
