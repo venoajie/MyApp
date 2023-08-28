@@ -239,7 +239,7 @@ async def opening_transactions(
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
-                        THRESHOLD_TIME_TO_CANCEL = 1/15
+                        THRESHOLD_TIME_TO_CANCEL = 3
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -324,7 +324,7 @@ async def closing_transactions(
             else min(get_prices_in_label_transaction_main)
         )
 
-        if "Short" in label or "hedging" in label:
+        if "Short" in label or "hedging" in label :
             transaction = [
                 o for o in my_trades_open_strategy if o["price"] == max_price
             ]
