@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
 # built ins
 from datetime import datetime, timedelta
 import asyncio
@@ -12,12 +11,12 @@ import orjson
 from loguru import logger as log
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification
+from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
-from transaction_management.deribit import myTrades_management
-import apply_strategies
+
 from db_management import sqlite_management
-import ws_management   
+from strategies import entries_exits, basic_strategy
+from websocket_management.ws_management import futures_analysis,closing_transactions,reading_from_pkl_database, count_and_delete_ohlc_rows,update_portfolio,distribute_ticker_result_as_per_data_type, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions
 
 
 def parse_dotenv(sub_account) -> dict:
