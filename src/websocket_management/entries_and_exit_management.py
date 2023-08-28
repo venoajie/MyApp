@@ -418,7 +418,7 @@ async def opening_transactions(
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
-                        THRESHOLD_TIME_TO_CANCEL = 30
+                        THRESHOLD_TIME_TO_CANCEL = 5
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -601,17 +601,13 @@ async def closing_transactions(
                         f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
                     )
 
-                    MIN_HEDGING_RATIO = 0.8
-
                     hedging = hedging_spot.HedgingSpot(label_main)
 
                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                        notional,
                         market_condition,
                         best_ask_prc,
                         best_bid_prc,
                         nearest_transaction_to_index,
-                        MIN_HEDGING_RATIO,
                     )
 
                     await if_order_is_true(send_closing_order, instrument)
