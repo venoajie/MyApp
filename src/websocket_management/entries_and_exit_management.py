@@ -523,8 +523,8 @@ async def closing_transactions(
         # get startegy details
         strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-        my_trades_open_sqlite_individual_strategy: list = str_mod.my_trades_open_sqlite_detailing(
-            my_trades_open_all, label, "individual"
+        my_trades_open_sqlite_transaction_net_strategy: list = str_mod.my_trades_open_sqlite_detailing(
+            my_trades_open_all, label, "transaction_net"
         )
 
         sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
@@ -538,10 +538,10 @@ async def closing_transactions(
         if size_is_consistent:  # and open_order_is_consistent:
 
             open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
-                [o["data"] for o in my_trades_open_sqlite_individual_strategy]
+                [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
             )
             log.debug(my_trades_open_all)
-            log.debug(my_trades_open_sqlite_individual_strategy)
+            log.debug(my_trades_open_sqlite_transaction_net_strategy)
             log.debug(open_trade_strategy_label)
 
             instrument: list = [
