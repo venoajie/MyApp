@@ -184,12 +184,12 @@ def get_transactions_len(result_strategy_label) -> int:
     return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
 
 
-def get_transactions_sum(result_strategy_label) -> float:
+def get_transactions_sum(result_strategy_label) -> int:
     """
     summing transaction under SAME strategy label
     """
     return (
-        0.0
+        0
         if result_strategy_label == []
         else sum([o["amount_dir"] for o in result_strategy_label])
     )
@@ -473,7 +473,7 @@ class BasicStrategy:
         len_orders: int = orders["transactions_len"]
         print (f'orders {orders}')
 
-        no_outstanding_order: bool = len_orders == []
+        no_outstanding_order: bool = len_orders == 0
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
         print (f'last_transaction_price {last_transaction_price} tp_price_reached {tp_price_reached} no_outstanding_order {no_outstanding_order} order_allowed {order_allowed}')
