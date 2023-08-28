@@ -503,7 +503,7 @@ async def closing_transactions(
             else min(get_prices_in_label_transaction_main)
         )
 
-        if "Short" in label :
+        if "Short" in label or "hedging" in label :
             transaction = [
                 o for o in my_trades_open_strategy if o["price"] == max_price
             ]
