@@ -587,7 +587,7 @@ async def closing_transactions(
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
                     
-                    closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, index_price)
+                    closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, best_bid_prc)
                     
                             
                     if "hedging" in label:
@@ -596,7 +596,7 @@ async def closing_transactions(
                         ]
                     
                     log.critical(
-            f" {label_main} closest_price {closest_price} index_price {index_price} pct diff {abs(closest_price-index_price)/closest_price}"
+            f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
         )
                 
 
