@@ -19,6 +19,7 @@ from strategies import hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
+
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
 NONE_DATA: None = [0, None, []]
