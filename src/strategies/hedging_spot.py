@@ -130,13 +130,9 @@ class HedgingSpot(BasicStrategy):
         )
         
 
-        print(f"selected_transaction {selected_transaction}")
-        print(f"exit_params {exit_params}")
-        print(f"is_bullish {is_bullish}")
-
         exit_allowed: bool = exit_params[
             "order_allowed"
-        ]  #and is_bullish 
+        ]  and is_bullish 
 
         return dict(
             order_allowed=exit_allowed,
