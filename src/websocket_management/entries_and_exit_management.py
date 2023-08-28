@@ -364,7 +364,7 @@ async def opening_transactions(
 ) -> None:
     """ """
 
-    log.critical(f"OPENING TRANSACTIONS-START")
+    log.warning(f"OPENING TRANSACTIONS-START")
 
     try:
 
@@ -452,7 +452,7 @@ async def opening_transactions(
     except Exception as error:
         await raise_error(error)
 
-    log.critical(f"OPENING TRANSACTIONS-DONE")
+    log.warning(f"OPENING TRANSACTIONS-DONE")
 
 
 async def closing_transactions(
