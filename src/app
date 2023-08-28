@@ -195,6 +195,7 @@ class StreamAccountData:
                     if message["method"] != "heartbeat":
                         message_channel = message["params"]["channel"]
                         log.critical(message_channel)
+                        log.info(data_orders)
 
                         data_orders: list = message["params"]["data"]
                         # log.info(data_orders)
