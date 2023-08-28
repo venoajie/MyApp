@@ -242,7 +242,7 @@ class StreamAccountData:
                             "tick", "MAX", TABLE_OHLC1D
                         )
 
-                        last_tick1_fr_sqlite: int = await self.last_tick_fr_sqlite(
+                        last_tick1_fr_sqlite: int = last_tick_fr_sqlite(
                             last_tick_query_ohlc1
                         )
 
@@ -288,7 +288,7 @@ class StreamAccountData:
                                         )
 
                                         # get current oi
-                                        open_interest_last_value = await self.last_open_interest_fr_sqlite(
+                                        open_interest_last_value =  last_open_interest_fr_sqlite(
                                             open_interest_last_value_query
                                         )
 
@@ -298,7 +298,7 @@ class StreamAccountData:
                                         )
 
                                         # update last tick
-                                        last_tick1_fr_sqlite = await self.last_tick_fr_sqlite(
+                                        last_tick1_fr_sqlite =  last_tick_fr_sqlite(
                                             last_tick_query_ohlc1
                                         )
 
@@ -318,7 +318,7 @@ class StreamAccountData:
                                     == "chart.trades.ETH-PERPETUAL.30"
                                 ):
 
-                                    last_tick30_fr_sqlite = await self.last_tick_fr_sqlite(
+                                    last_tick30_fr_sqlite =  last_tick_fr_sqlite(
                                         last_tick_query_ohlc30
                                     )
 
@@ -349,7 +349,7 @@ class StreamAccountData:
                                     == "chart.trades.ETH-PERPETUAL.60"
                                 ):
 
-                                    last_tick60_fr_sqlite = await self.last_tick_fr_sqlite(
+                                    last_tick60_fr_sqlite =  last_tick_fr_sqlite(
                                         last_tick_query_ohlc60
                                     )
 
@@ -380,7 +380,7 @@ class StreamAccountData:
                                     == "chart.trades.ETH-PERPETUAL.1D"
                                 ):
 
-                                    last_tick1D_fr_sqlite = await self.last_tick_fr_sqlite(
+                                    last_tick1D_fr_sqlite = last_tick_fr_sqlite(
                                         last_tick_query_ohlc1D
                                     )
 
@@ -439,7 +439,7 @@ class StreamAccountData:
                                             last_tick1_fr_sqlite,
                                         )
 
-                                await self.distribute_ticker_result_as_per_data_type(
+                                await distribute_ticker_result_as_per_data_type(
                                     my_path_ticker, data_orders, instrument_ticker
                                 )
 
