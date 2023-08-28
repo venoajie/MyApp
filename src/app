@@ -361,7 +361,7 @@ def main():
 
     except Exception as error:
         system_tools.catch_error_message(
-            error, 10, "fetch and save EXCHANGE data from deribit"
+            error, 10, "app"
         )
 
 
