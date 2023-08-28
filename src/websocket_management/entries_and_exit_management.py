@@ -501,8 +501,7 @@ async def closing_transactions(
             else min(get_prices_in_label_transaction_main)
         )
 
-        closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, index_price)
-
+        
         if "Short" in label or "hedging" in label:
             transaction = [
                 o for o in my_trades_open_strategy if o["price"] == max_price
@@ -518,9 +517,6 @@ async def closing_transactions(
 
         # result example: 'hedgingSpot'/'supplyDemandShort60'
         label_main = str_mod.parsing_label(label)["main"]
-        log.critical(
-            f" {label_main} {label} closest_price {closest_price} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}"
-        )
 
         # get startegy details
         strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
@@ -555,7 +551,11 @@ async def closing_transactions(
             if ticker != []:
 
                 # index price
-                index_price: float = ticker[0]["index_price"]
+                index_price: float = ticker[0]["index_price"]        
+                
+                log.critical(
+            f" {label_main} {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}"
+        )
 
                 # get instrument_attributes
                 instrument_attributes_all: list = reading_from_db(
@@ -591,6 +591,17 @@ async def closing_transactions(
                 )
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
+                    
+                    closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, index_price)
+                    
+                            
+                    if "hedging" in label:
+                        transaction = [
+                            o for o in my_trades_open_strategy if o["price"] == closest_price
+                        ]
+                    
+                    log.critical (f"closest_price {closest_price}")
+                
 
                     MIN_HEDGING_RATIO = 0.8
 
