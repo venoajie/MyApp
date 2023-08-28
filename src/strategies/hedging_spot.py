@@ -113,17 +113,17 @@ class HedgingSpot(BasicStrategy):
         """
 
         is_bullish = market_condition["rising_price"]
-        #is_bearish = market_condition["falling_price"]
+        # is_bearish = market_condition["falling_price"]
 
-        #my_trades: dict = await self.get_basic_params().transaction_attributes(
+        # my_trades: dict = await self.get_basic_params().transaction_attributes(
         #    "my_trades_all_json"
-        #)
+        # )
 
-        #sum_my_trades: int = my_trades["transactions_sum"]
+        # sum_my_trades: int = my_trades["transactions_sum"]
 
-        #hedged_value_is_still_safe: bool = self.is_hedged_value_to_notional_exceed_threshold(
+        # hedged_value_is_still_safe: bool = self.is_hedged_value_to_notional_exceed_threshold(
         #    notional, sum_my_trades, MIN_HEDGING_RATIO
-        #)
+        # )
 
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
             ask_price, bid_price, selected_transaction
@@ -136,9 +136,9 @@ class HedgingSpot(BasicStrategy):
         len_orders: int = open_orders_label_strategy["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
-        print (f'exit_params {exit_params}')
-        print (f'is_bullish {is_bullish}')
-        print (f'no_outstanding_order {no_outstanding_order}')
+        print(f"exit_params {exit_params}")
+        print(f"is_bullish {is_bullish}")
+        print(f"no_outstanding_order {no_outstanding_order}")
 
         exit_allowed: bool = exit_params[
             "order_allowed"

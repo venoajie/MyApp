@@ -15,38 +15,46 @@ from strategies import entries_exits, basic_strategy
 from websocket_management.entries_and_exit_management import (
     opening_transactions,
     closing_transactions,
-    reading_from_pkl_database,    
+    reading_from_pkl_database,
     current_server_time,
-    clean_up_closed_transactions,
     get_account_balances_and_transactions_from_exchanges,
 )
-from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
+from websocket_management.cleaning_up_transactions import (
+    count_and_delete_ohlc_rows,
+    clean_up_closed_transactions,
+)
 
 #  parameterless decorator
-def  async_lru_cache_decorator(async_function):
+def async_lru_cache_decorator(async_function):
     # https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live
     # https://www.anycodings.com/questions/how-to-cache-asyncio-coroutines
-     @functools.lru_cache
-     def  cached_async_function(ttl_hash=None, *args, **kwargs):
-         coroutine = async_function(*args,  **kwargs)
-         return  asyncio.ensure_future(coroutine)
-     return cached_async_function
+    @functools.lru_cache
+    def cached_async_function(ttl_hash=None, *args, **kwargs):
+        coroutine = async_function(*args, **kwargs)
+        return asyncio.ensure_future(coroutine)
+
+    return cached_async_function
 
 
 def get_ttl_hash(seconds=3600):
     """Return the same value withing `seconds` time period"""
     import time
+
     return round(time.time() / seconds)
 
+
 #  decorator with options
-def  async_lru_cache(*lru_cache_args,  **lru_cache_kwargs):
-    def  async_lru_cache_decorator(async_function):
-        @functools.lru_cache(*lru_cache_args,  **lru_cache_kwargs)
-        def  cached_async_function(*args, **kwargs):
-            coroutine =  async_function(*args, **kwargs)
-            return  asyncio.ensure_future(coroutine)
+def async_lru_cache(*lru_cache_args, **lru_cache_kwargs):
+    def async_lru_cache_decorator(async_function):
+        @functools.lru_cache(*lru_cache_args, **lru_cache_kwargs)
+        def cached_async_function(*args, **kwargs):
+            coroutine = async_function(*args, **kwargs)
+            return asyncio.ensure_future(coroutine)
+
         return cached_async_function
-    return  async_lru_cache_decorator
+
+    return async_lru_cache_decorator
+
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
@@ -226,10 +234,10 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
 
 @async_lru_cache(maxsize=128)
-async def market_condition_cache(threshold,limit, ratio,ttl_hash=get_ttl_hash()) -> None:
-    market= await basic_strategy.get_market_condition(
-        threshold, limit, ratio
-    )
+async def market_condition_cache(
+    threshold, limit, ratio, ttl_hash=get_ttl_hash()
+) -> None:
+    market = await basic_strategy.get_market_condition(threshold, limit, ratio)
     return market
 
 
@@ -277,8 +285,8 @@ async def ws_manager_market(
     market_condition = await basic_strategy.get_market_condition(
         threshold, limit, ratio
     )
-    
-    market_condition_lru= await market_condition_cache(threshold, limit, ratio)
+
+    market_condition_lru = await market_condition_cache(threshold, limit, ratio)
     log.error(f"market_condition {market_condition}")
     log.error(f"market_condition_lru {market_condition_lru}")
 
@@ -341,7 +349,7 @@ async def ws_manager_market(
                     )
 
                 # capping sqlite rows
-                max_rows_allowed= 1000000
+                max_rows_allowed = 1000000
                 await count_and_delete_ohlc_rows(max_rows_allowed)
 
                 # to avoid error if index price/portfolio = []/None

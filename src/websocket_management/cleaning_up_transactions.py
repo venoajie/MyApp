@@ -7,21 +7,11 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import (
-    pickling,
-    system_tools,
-    string_modification as str_mod,
-    number_modification as num_mod,
-)
-from market_understanding import futures_analysis
+from utilities import pickling, system_tools, string_modification as str_mod
 from db_management import sqlite_management
-from strategies import hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
-
-ONE_MINUTE: int = 60000
-ONE_PCT: float = 1 / 100
 NONE_DATA: None = [0, None, []]
 
 
@@ -111,10 +101,10 @@ async def reading_from_pkl_database(currency) -> float:
         "portfolio": portfolio,
     }
 
+
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
     """ """
     return system_tools.reading_from_db_pickle(end_point, instrument, status)
-
 
 
 async def clean_up_closed_transactions(transactions_all) -> None:
@@ -295,6 +285,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                         "my_trades_all_json", result_to_dict
                     )
 
+
 async def current_server_time() -> float:
     """ """
     current_time = await deribit_get.get_server_time()
@@ -305,8 +296,8 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
     database: str = "databases/trading.sqlite3"
-    
-    log.error (tables)
+
+    log.error(tables)
 
     for table in tables:
 
