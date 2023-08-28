@@ -550,9 +550,7 @@ async def closing_transactions(
                 # index price
                 index_price: float = ticker[0]["index_price"]        
                 
-                log.critical(
-            f" {label_main} {label} max_price {max_price} min_price {min_price} pct diff {abs(min_price-max_price)/min_price}"
-        )
+                
 
                 # get instrument_attributes
                 instrument_attributes_all: list = reading_from_db(
@@ -598,6 +596,9 @@ async def closing_transactions(
                         ]
                     
                     log.critical (f"closest_price {closest_price} {nearest_transaction_to_index}")
+                    log.critical(
+            f" {label_main} pct diff {abs(closest_price-index_price)/closest_price}"
+        )
                 
 
                     MIN_HEDGING_RATIO = 0.8
