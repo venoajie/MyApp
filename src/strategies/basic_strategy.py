@@ -63,8 +63,6 @@ async def get_market_condition(
 
     last_price = ohlc["last_price"]
 
-    print(f" ema {ema}  last_price {last_price}")
-
     delta_price = last_price - ema
     delta_price_pct = abs(delta_price / ema)
 
