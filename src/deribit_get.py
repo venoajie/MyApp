@@ -165,6 +165,29 @@ async def main(
             return response
 
 
+def get_subaccounts():
+    # Set endpoint
+    params = {
+        "jsonrpc": "2.0",
+        "method": "private/get_subaccounts_details",
+        "id": 9322,
+        "params": {"currency": "eth", "with_open_orders": True},
+    }
+
+    return params
+
+
+def get_cancel_order_all():
+    # Set endpoint
+
+    return {
+        "jsonrpc": "2.0",
+        "method": "private/cancel_all",
+        "id": 7,
+        "params": {"detailed": False},
+    }
+
+
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
 
@@ -191,13 +214,11 @@ class GetPrivateData:
         endpoint: str = "private/get_subaccounts_details"
 
         params = {"currency": self.currency, "with_open_orders": True}
-        log.error("get_subaccounts")
 
         return await self.parse_main(endpoint=endpoint, params=params)
 
     async def get_account_summary(self):
         params = {"currency": self.currency, "extended": True}
-        log.error("get_account_summary")
 
         # Set endpoint
         endpoint: str = "private/get_account_summary"
@@ -539,6 +560,15 @@ class GetPrivateData:
         result = await self.parse_main(endpoint=endpoint, params=params)
         return result
 
+    async def get_cancel_order_all(self):
+        # Set endpoint
+        endpoint: str = "private/cancel_all"
+
+        params = {"detailed": False}
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        return result
+
 
 async def send_order_market(
     connection_url: str,
@@ -612,7 +642,9 @@ async def send_order_market(
     return result
 
 
-async def get_server_time(connection_url: str) -> int:
+async def get_server_time(
+    connection_url: str = "https://www.deribit.com/api/v2/",
+) -> int:
     """
     Returning server time
     """
