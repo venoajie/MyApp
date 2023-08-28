@@ -7,7 +7,7 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification as str_mod
+from utilities import pickling, system_tools, string_modification as str_mod, number_modification as num_mod
 from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
@@ -501,7 +501,7 @@ async def closing_transactions(
             else min(get_prices_in_label_transaction_main)
         )
 
-        closest_price = str_mod.get_closest_value (get_prices_in_label_transaction_main, index_price)
+        closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, index_price)
 
         if "Short" in label or "hedging" in label:
             transaction = [
