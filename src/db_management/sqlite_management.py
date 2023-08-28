@@ -557,7 +557,7 @@ async def replace_row(
     # CREATE INDEX tick_index ON  ohlc1_eth_perp_json (tick);
     except Exception as error:
         print(f"replace_row {error}")
-        await telegram_bot_sendtext("failed_order", "failed replace_row")
+        await telegram_bot_sendtext("sqlite failed replace_row", "failed_order")
 
 
 def querying_last_open_interest(
