@@ -522,7 +522,7 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
-        log.info(msg)['params']
+        log.info(msg)
         await self.websocket_client.send(json.dumps(msg))
 
 
