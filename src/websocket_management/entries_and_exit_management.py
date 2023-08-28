@@ -538,9 +538,6 @@ async def closing_transactions(
             open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                 [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
             )
-            log.debug(my_trades_open_all)
-            log.debug(my_trades_open_sqlite_transaction_net_strategy)
-            log.debug(open_trade_strategy_label)
 
             instrument: list = [
                 o["instrument_name"] for o in open_trade_strategy_label
@@ -596,11 +593,11 @@ async def closing_transactions(
                     
                             
                     if "hedging" in label:
-                        transaction = [
+                        nearest_transaction_to_index = [
                             o for o in my_trades_open_strategy if o["price"] == closest_price
                         ]
                     
-                    log.critical (f"closest_price {closest_price} {transaction}")
+                    log.critical (f"closest_price {closest_price} {nearest_transaction_to_index}")
                 
 
                     MIN_HEDGING_RATIO = 0.8
@@ -612,7 +609,7 @@ async def closing_transactions(
                         market_condition,
                         best_ask_prc,
                         best_bid_prc,
-                        open_trade_strategy_label,
+                        nearest_transaction_to_index,
                         MIN_HEDGING_RATIO,
                     )
 
