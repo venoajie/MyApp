@@ -85,6 +85,8 @@ async def get_market_condition(
         rising_price=rising_price,
         neutral_price=neutral_price,
         falling_price=falling_price,
+        last_price=last_price,
+        ema=ema,
     )
 
 
