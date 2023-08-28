@@ -595,9 +595,8 @@ async def closing_transactions(
                             o for o in my_trades_open_strategy if o["price"] == closest_price
                         ]
                     
-                    log.critical (f"closest_price {closest_price} {nearest_transaction_to_index}")
                     log.critical(
-            f" {label_main} pct diff {abs(closest_price-index_price)/closest_price}"
+            f" {label_main} closest_price {closest_price} index_price {index_price} pct diff {abs(closest_price-index_price)/closest_price}"
         )
                 
 
