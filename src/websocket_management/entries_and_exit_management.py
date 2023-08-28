@@ -239,7 +239,7 @@ async def opening_transactions(
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
-                        THRESHOLD_TIME_TO_CANCEL = 5
+                        THRESHOLD_TIME_TO_CANCEL = 1/15
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
