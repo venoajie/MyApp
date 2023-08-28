@@ -136,6 +136,9 @@ class HedgingSpot(BasicStrategy):
         len_orders: int = open_orders_label_strategy["transactions_len"]
 
         no_outstanding_order: bool = len_orders == []
+        print (f'exit_params {exit_params}')
+        print (f'is_bullish {is_bullish}')
+        print (f'no_outstanding_order {no_outstanding_order}')
 
         exit_allowed: bool = exit_params[
             "order_allowed"
