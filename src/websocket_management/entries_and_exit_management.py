@@ -600,7 +600,7 @@ async def closing_transactions(
                             o for o in my_trades_open_strategy if o["price"] == closest_price
                         ]
                     
-                    log.critical (f"closest_price {closest_price}")
+                    log.critical (f"closest_price {closest_price} {transaction}")
                 
 
                     MIN_HEDGING_RATIO = 0.8
