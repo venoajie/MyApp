@@ -471,6 +471,7 @@ class BasicStrategy:
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
         len_orders: int = orders["transactions_len"]
+        print (f'orders {orders}')
 
         no_outstanding_order: bool = len_orders == []
 
