@@ -469,6 +469,7 @@ class BasicStrategy:
             )
             params.update({"entry_price": ask_price})
 
+        print (f'last_transaction_price {last_transaction_price} tp_price_reached {tp_price_reached}')
         orders = await self.transaction_attributes("orders_all_json", "closed")
         len_orders: int = orders["transactions_len"]
 
