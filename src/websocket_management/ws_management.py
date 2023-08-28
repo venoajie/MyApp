@@ -271,9 +271,9 @@ async def ws_manager_market(
         threshold, limit, ratio
     )
     
-    market_condition_lru= await market_condition_cache(threshold, limit, ratio)
+    #market_condition_lru= await market_condition_cache(threshold, limit, ratio)
     log.error(f"market_condition {market_condition}")
-    log.error(f"market_condition_lru {market_condition_lru}")
+    #log.error(f"market_condition_lru {market_condition_lru}")
 
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
