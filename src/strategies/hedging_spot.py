@@ -128,21 +128,15 @@ class HedgingSpot(BasicStrategy):
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
             ask_price, bid_price, selected_transaction
         )
+        
 
-        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
-            "orders_all_json", "open"
-        )
-
-        len_orders: int = open_orders_label_strategy["transactions_len"]
-
-        no_outstanding_order: bool = len_orders == []
+        print(f"selected_transaction {selected_transaction}")
         print(f"exit_params {exit_params}")
         print(f"is_bullish {is_bullish}")
-        print(f"no_outstanding_order {no_outstanding_order}")
 
         exit_allowed: bool = exit_params[
             "order_allowed"
-        ] and  no_outstanding_order #and is_bullish 
+        ]  #and is_bullish 
 
         return dict(
             order_allowed=exit_allowed,
