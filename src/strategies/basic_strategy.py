@@ -470,13 +470,12 @@ class BasicStrategy:
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
+        
         len_orders: int = orders["transactions_len"]
-        print (f'orders {orders}')
 
         no_outstanding_order: bool = len_orders == 0
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
-        print (f'last_transaction_price {last_transaction_price} tp_price_reached {tp_price_reached} no_outstanding_order {no_outstanding_order} order_allowed {order_allowed}')
 
         if order_allowed:
 
