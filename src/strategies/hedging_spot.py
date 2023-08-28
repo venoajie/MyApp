@@ -68,7 +68,7 @@ class HedgingSpot(BasicStrategy):
             notional, sum_my_trades, len_orders
         )
 
-        order_allowed: bool = size_and_order_appropriate_for_ordering #and bearish
+        order_allowed: bool = size_and_order_appropriate_for_ordering and bearish
 
         cancel_allowed: bool = False
 
@@ -142,7 +142,7 @@ class HedgingSpot(BasicStrategy):
 
         exit_allowed: bool = exit_params[
             "order_allowed"
-        ] and  no_outstanding_order and is_bullish 
+        ] and  no_outstanding_order #and is_bullish 
 
         return dict(
             order_allowed=exit_allowed,
