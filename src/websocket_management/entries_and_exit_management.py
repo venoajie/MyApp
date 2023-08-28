@@ -357,9 +357,11 @@ async def opening_transactions(
     market_condition,
 ) -> None:
     """ """
+    
+    log.critical(f"OPENING TRANSACTIONS-START")
 
     try:
-        log.critical(f"OPENING TRANSACTIONS")
+        
 
         my_trades_open_sqlite: dict = await sqlite_management.querying_table(
             "my_trades_all_json"
@@ -445,6 +447,7 @@ async def opening_transactions(
     except Exception as error:
         await raise_error(error)
 
+    log.critical(f"OPENING TRANSACTIONS-DONE")
 
 async def closing_transactions(
     label_transaction_net,
@@ -458,7 +461,7 @@ async def closing_transactions(
 ) -> float:
     """ """
 
-    log.critical(f"CLOSING TRANSACTIONS")
+    log.critical(f"CLOSING TRANSACTIONS-START")
 
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
@@ -537,7 +540,7 @@ async def closing_transactions(
             open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                 [o["data"] for o in my_trades_open_sqlite_individual_strategy]
             )
-            #log.debug(open_trade_strategy_label)
+            log.debug(open_trade_strategy_label)
 
             instrument: list = [
                 o["instrument_name"] for o in open_trade_strategy_label
@@ -612,6 +615,8 @@ async def closing_transactions(
 
         else:
             log.critical(f" size_is_consistent {size_is_consistent} ")
+
+    log.critical(f"CLOSING TRANSACTIONS-DONE")
 
 
 async def current_server_time() -> float:
