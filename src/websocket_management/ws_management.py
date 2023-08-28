@@ -2,6 +2,7 @@
 
 # built ins
 import asyncio
+import functools
 
 # installed
 from loguru import logger as log
@@ -21,6 +22,24 @@ from websocket_management.entries_and_exit_management import (
     get_account_balances_and_transactions_from_exchanges,
 )
 
+
+#  parameterless decorator
+def  async_lru_cache_decorator(async_function):
+     @functools.lru_cache
+     def  cached_async_function(*args, **kwargs):
+         coroutine = async_function(*args,  **kwargs)
+         return  asyncio.ensure_future(coroutine)
+     return cached_async_function
+
+#  decorator with options
+def  async_lru_cache(*lru_cache_args,  **lru_cache_kwargs):
+    def  async_lru_cache_decorator(async_function):
+        @functools.lru_cache(*lru_cache_args,  **lru_cache_kwargs)
+        def  cached_async_function(*args, **kwargs):
+            coroutine =  async_function(*args, **kwargs)
+            return  asyncio.ensure_future(coroutine)
+        return cached_async_function
+    return  async_lru_cache_decorator
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
@@ -199,6 +218,13 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         await resupply_sub_accountdb(currency)
 
 
+@async_lru_cache(ttl=100)
+async def market_condition(threshold,limit, ratio) -> None:
+    await basic_strategy.get_market_condition(
+        threshold, limit, ratio
+    )
+
+
 async def ws_manager_market(
     message_channel, data_orders, instruments_kind, currency, private_data
 ) -> None:
@@ -243,7 +269,9 @@ async def ws_manager_market(
     market_condition = await basic_strategy.get_market_condition(
         threshold, limit, ratio
     )
-    log.error(f"market_condition {market_condition}")
+    
+    market_condition_lru= market_condition(threshold, limit, ratio)
+    log.error(f"market_condition {market_condition} {market_condition_lru}")
 
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
