@@ -76,6 +76,9 @@ class StreamAccountData:
             # Authenticate WebSocket Connection
             await self.ws_auth()
 
+            # Establish restart procedure
+            await self.on_restart()
+            
             # Establish Heartbeat
             await self.establish_heartbeat()
 
@@ -387,6 +390,10 @@ class StreamAccountData:
                                 pickling.replace_data(my_path_position, positions)
 
             else:
+                    
+                # Establish restart procedure
+                await self.on_restart()
+            
                 log.info("WebSocket connection has broken.")
                 await system_tools.raise_error_message(
                     "error-WebSocket connection EXCHANGE has broken",
@@ -394,15 +401,14 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
-    async def get_private_data(self, currency) -> list:
+    async def on_restart(self) -> None:
         """
-        Provide class object to access private get API
         """
         import deribit_get
 
-        return deribit_get.GetPrivateData(
-            self.connection_url, self.client_id, self.client_secret, currency
-        )
+        log.warning("Cancelling all orders")
+        msg= deribit_get.get_cancel_order_all()
+        await self.websocket_client.send(json.dumps(msg))
 
     async def deleting_cancel_order(
         self, table: list, database: str, data, cancelled_order
@@ -530,7 +536,7 @@ def main():
 
     except Exception as error:
         system_tools.catch_error_message(
-            error, 10, "fetch and save EXCHANGE data from deribit"
+            error, 10, "app"
         )
 
 
@@ -543,5 +549,5 @@ if __name__ == "__main__":
 
     except Exception as error:
         system_tools.catch_error_message(
-            error, 10, "fetch and save EXCHANGE data from deribit"
+            error, 10, "app"
         )

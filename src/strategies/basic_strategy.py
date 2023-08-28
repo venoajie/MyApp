@@ -63,8 +63,6 @@ async def get_market_condition(
 
     last_price = ohlc["last_price"]
 
-    print(f" get_ema ohlc 2 {ema}  ema {ema}  last_price {last_price}")
-
     delta_price = last_price - ema
     delta_price_pct = abs(delta_price / ema)
 
@@ -85,6 +83,8 @@ async def get_market_condition(
         rising_price=rising_price,
         neutral_price=neutral_price,
         falling_price=falling_price,
+        last_price=last_price,
+        ema=ema,
     )
 
 
@@ -184,12 +184,12 @@ def get_transactions_len(result_strategy_label) -> int:
     return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
 
 
-def get_transactions_sum(result_strategy_label) -> float:
+def get_transactions_sum(result_strategy_label) -> int:
     """
     summing transaction under SAME strategy label
     """
     return (
-        0.0
+        0
         if result_strategy_label == []
         else sum([o["amount_dir"] for o in result_strategy_label])
     )
@@ -469,10 +469,11 @@ class BasicStrategy:
             )
             params.update({"entry_price": ask_price})
 
-        orders = await self.self.transaction_attributes("orders_all_json", "closed")
+        orders = await self.transaction_attributes("orders_all_json", "closed")
+
         len_orders: int = orders["transactions_len"]
 
-        no_outstanding_order: bool = len_orders == []
+        no_outstanding_order: bool = len_orders == 0
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
 

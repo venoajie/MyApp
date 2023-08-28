@@ -94,7 +94,7 @@ def presisi_pembulatan(angka):
         Return and rtype:
             berapa angka di belakang koma --> int
 
-        Referensi:
+        References:
             https://stackoverflow.com/questions/38847690/convert-float-to-string-in-positional-format-without-scientific-notation-and-fa
             https://stackoverflow.com/questions/3886402/how-to-get-numbers-after-decimal-point
             https://stackoverflow.com/questions/26231755/count-decimal-places-in-a-float
@@ -157,3 +157,30 @@ def get_nearest_tick(price: float, tick: float) -> float:
     len_tick = len(str(tick)) - 2
 
     return round((int(price / tick)) * tick, len_tick)
+
+
+def get_closest_value(lst, k) -> float:
+    """ 
+    
+        References:
+            https://www.geeksforgeeks.org/python-find-closest-number-to-k-in-given-list/
+    """
+
+    import bisect
+
+    # lst = [3.64, 5.2, 9.42, 9.35, 8.5, 8]
+    # k = 9.1
+
+    lst.sort()
+    index = bisect.bisect_left(lst, k)
+    if index == 0:
+        closest = lst[0]
+    elif index == len(lst):
+        closest = lst[-1]
+    else:
+        before = lst[index - 1]
+        after = lst[index]
+        closest = before if after - k > k - before else after
+    # print(closest)
+
+    return closest

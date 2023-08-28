@@ -231,8 +231,28 @@ def parsing_label(label: str, integer: int = None) -> dict:
     }
 
 
+def get_transactions_as_per_strategy(
+    my_trades_open_sqlite: list, label: str, detail
+) -> float:
+    """ """
+
+    return (
+        0
+        if my_trades_open_sqlite == []
+        else (
+            [
+                o
+                for o in my_trades_open_sqlite["all"]
+                if parsing_label(o["label_main"])[f"{detail}"]
+                == parsing_label(label)[f"{detail}"]
+            ]
+        )
+    )
+
+
 def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> float:
     """ """
+
     return (
         0
         if my_trades_open_sqlite == []
@@ -309,7 +329,7 @@ def my_trades_open_sqlite_detailing(
             )
         )
         # log.warning(f'my_trades_open_sqlite_detailing {result}')
-    if detail_level == "individual":
+    if detail_level == "transaction_net":
         result = (
             []
             if transactions == []

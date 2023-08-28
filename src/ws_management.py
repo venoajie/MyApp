@@ -12,9 +12,12 @@ from utilities import pickling, system_tools
 from market_understanding import futures_analysis
 from db_management import sqlite_management
 
-async def ws_manager_market(message_channel, data_orders, instruments_kind, currency) -> None:
 
-    log.warning (message_channel)
+async def ws_manager_market(
+    message_channel, data_orders, instruments_kind, currency
+) -> None:
+
+    log.warning(message_channel)
     DATABASE: str = "databases/trading.sqlite3"
     TABLE_OHLC1: str = "ohlc1_eth_perp_json"
     TABLE_OHLC30: str = "ohlc30_eth_perp_json"
@@ -37,9 +40,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
         "tick", "MAX", TABLE_OHLC1D
     )
 
-    last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
-        last_tick_query_ohlc1
-    )
+    last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
@@ -53,17 +54,11 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
         ):
 
             # log.warning(f"message_channel {message_channel}")
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.1"
-            ):
-                log.error (message_channel)
+            if message_channel == "chart.trades.ETH-PERPETUAL.1":
+                log.error(message_channel)
 
                 # refilling current ohlc table with updated data
-                if (
-                    last_tick1_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
+                if last_tick1_fr_sqlite == last_tick_fr_data_orders:
 
                     await sqlite_management.replace_row(
                         data_orders,
@@ -88,9 +83,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                     )
 
                     # insert new ohlc data
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC1, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC1, data_orders)
 
                     # update last tick
                     last_tick1_fr_sqlite = await last_tick_fr_sqlite(
@@ -108,19 +101,13 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                         last_tick1_fr_sqlite,
                     )
 
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.30"
-            ):
+            if message_channel == "chart.trades.ETH-PERPETUAL.30":
 
                 last_tick30_fr_sqlite = await last_tick_fr_sqlite(
                     last_tick_query_ohlc30
                 )
 
-                if (
-                    last_tick30_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
+                if last_tick30_fr_sqlite == last_tick_fr_data_orders:
 
                     await sqlite_management.deleting_row(
                         TABLE_OHLC30,
@@ -130,28 +117,18 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                         last_tick30_fr_sqlite,
                     )
 
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC30, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC30, data_orders)
 
                 else:
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC30, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC30, data_orders)
 
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.60"
-            ):
+            if message_channel == "chart.trades.ETH-PERPETUAL.60":
 
                 last_tick60_fr_sqlite = await last_tick_fr_sqlite(
                     last_tick_query_ohlc60
                 )
 
-                if (
-                    last_tick60_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
+                if last_tick60_fr_sqlite == last_tick_fr_data_orders:
 
                     await sqlite_management.deleting_row(
                         TABLE_OHLC60,
@@ -161,28 +138,18 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                         last_tick60_fr_sqlite,
                     )
 
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC60, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC60, data_orders)
 
                 else:
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC60, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC60, data_orders)
 
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.1D"
-            ):
+            if message_channel == "chart.trades.ETH-PERPETUAL.1D":
 
                 last_tick1D_fr_sqlite = await last_tick_fr_sqlite(
                     last_tick_query_ohlc1D
                 )
 
-                if (
-                    last_tick1D_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
+                if last_tick1D_fr_sqlite == last_tick_fr_data_orders:
 
                     await sqlite_management.deleting_row(
                         TABLE_OHLC1D,
@@ -192,28 +159,19 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
                         last_tick1D_fr_sqlite,
                     )
 
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC1D, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC1D, data_orders)
 
                 else:
-                    await sqlite_management.insert_tables(
-                        TABLE_OHLC1D, data_orders
-                    )
+                    await sqlite_management.insert_tables(TABLE_OHLC1D, data_orders)
 
     instrument_ticker = (message_channel)[19:]
-    if (
-        message_channel
-        == f"incremental_ticker.{instrument_ticker}"
-    ):
-        log.warning (message_channel)
+    if message_channel == f"incremental_ticker.{instrument_ticker}":
+        log.warning(message_channel)
         my_path_futures_analysis = system_tools.provide_path_for_file(
             "futures_analysis", currency
         )
 
-        my_path_ticker = system_tools.provide_path_for_file(
-            "ticker", instrument_ticker
-        )
+        my_path_ticker = system_tools.provide_path_for_file("ticker", instrument_ticker)
 
         try:
 
@@ -242,17 +200,11 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             my_path_index: str = system_tools.provide_path_for_file(
                 "index", symbol_index
             )
-            index_price: list = pickling.read_data(
-                my_path_index
-            )
-            ticker_instrument: list = pickling.read_data(
-                my_path_ticker
-            )
+            index_price: list = pickling.read_data(my_path_index)
+            ticker_instrument: list = pickling.read_data(my_path_ticker)
             if ticker_instrument != []:
                 # log.error(ticker_instrument)
-                instrument_name = ticker_instrument[0][
-                    "instrument_name"
-                ]
+                instrument_name = ticker_instrument[0]["instrument_name"]
                 instrument: list = [
                     o
                     for o in instruments_kind
@@ -261,30 +213,21 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
 
                 # combine analysis of each instrument futures result
                 tickers = futures_analysis.combining_individual_futures_analysis(
-                    index_price[0]["price"],
-                    instrument,
-                    ticker_instrument[0],
+                    index_price[0]["price"], instrument, ticker_instrument[0],
                 )
-                ticker_all: list = pickling.read_data(
-                    my_path_futures_analysis
-                )
+                ticker_all: list = pickling.read_data(my_path_futures_analysis)
 
                 if ticker_all == None:
-                    pickling.replace_data(
-                        my_path_futures_analysis, ticker_all
-                    )
+                    pickling.replace_data(my_path_futures_analysis, ticker_all)
                 else:
                     ticker_all: list = [
                         o
                         for o in ticker_all
-                        if o["instrument_name"]
-                        != instrument_ticker
+                        if o["instrument_name"] != instrument_ticker
                     ]
 
                     #! double file operation. could be further improved
-                    pickling.replace_data(
-                        my_path_futures_analysis, ticker_all
-                    )
+                    pickling.replace_data(my_path_futures_analysis, ticker_all)
 
                     pickling.append_and_replace_items_based_on_qty(
                         my_path_futures_analysis, tickers, 100
@@ -295,6 +238,7 @@ async def ws_manager_market(message_channel, data_orders, instruments_kind, curr
             await system_tools.raise_error_message(
                 "WebSocket management - failed to process data"
             )
+
 
 async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
     """ """
@@ -309,6 +253,7 @@ async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
         )
     return last_open_interest[0]["open_interest"]
 
+
 async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
     """ """
     try:
@@ -321,6 +266,7 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
             error, "Capture market data - failed to fetch last_tick_fr_sqlite",
         )
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
+
 
 async def distribute_ticker_result_as_per_data_type(
     my_path_ticker, data_orders, instrument

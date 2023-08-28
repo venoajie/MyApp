@@ -224,7 +224,7 @@ class StreamMarketData:
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1"
                                     ):
-                                        log.error (message_channel)
+                                        log.error(message_channel)
 
                                         # refilling current ohlc table with updated data
                                         if (
@@ -373,7 +373,7 @@ class StreamMarketData:
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
                             ):
-                                log.warning (message_channel)
+                                log.warning(message_channel)
                                 my_path_futures_analysis = system_tools.provide_path_for_file(
                                     "futures_analysis", currency
                                 )
