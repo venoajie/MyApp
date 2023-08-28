@@ -231,7 +231,7 @@ def parsing_label(label: str, integer: int = None) -> dict:
     }
 
 
-def get_transactions_as_per_strategy(my_trades_open_sqlite: list, label: str, detail: str) -> float:
+def get_transactions_as_per_strategy(my_trades_open_sqlite: list, label: str, detail) -> float:
     """ """
 
     return (
@@ -256,7 +256,9 @@ def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> 
         else sum(
             [
                 o["amount_dir"]
-                for o in get_transactions_as_per_strategy(my_trades_open_sqlite, label, "super_main")
+                for o in my_trades_open_sqlite["all"]
+                if parsing_label(o["label_main"])["super_main"]
+                == parsing_label(label)["super_main"]
             ]
         )
     )
@@ -295,7 +297,9 @@ def get_net_sum_strategy_main(my_trades_open_sqlite: list, label: str) -> float:
         else sum(
             [
                 o["amount_dir"]
-                for o in get_transactions_as_per_strategy(my_trades_open_sqlite, label, "main")
+                for o in my_trades_open_sqlite["all"]
+                if parsing_label(o["label_main"])["main"]
+                == parsing_label(label)["main"]
             ]
         )
     )
@@ -309,11 +313,31 @@ def my_trades_open_sqlite_detailing(
     """
     if detail_level == "main":
 
-        result = get_transactions_as_per_strategy(transactions, label, "main")
-        
+        result = (
+            []
+            if transactions == []
+            else (
+                [
+                    o
+                    for o in transactions
+                    if parsing_label(o["label_main"])["main"]
+                    == parsing_label(label)["main"]
+                ]
+            )
+        )
         # log.warning(f'my_trades_open_sqlite_detailing {result}')
     if detail_level == "transaction_net":
-        result = get_transactions_as_per_strategy(transactions, label, "transaction_net")
+        result = (
+            []
+            if transactions == []
+            else (
+                [
+                    o
+                    for o in transactions
+                    if parsing_label(o["label_main"])["transaction_net"] == label
+                ]
+            )
+        )
     if detail_level == None:
         result = [] if transactions == [] else transactions
 
