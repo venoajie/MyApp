@@ -164,17 +164,30 @@ async def main(
 
             return response
 
+
 def get_subaccounts():
     # Set endpoint
-    params = {"jsonrpc": "2.0","method": "private/get_subaccounts_details","id": 9322,  'params': {"currency": "eth", "with_open_orders": True}}
+    params = {
+        "jsonrpc": "2.0",
+        "method": "private/get_subaccounts_details",
+        "id": 9322,
+        "params": {"currency": "eth", "with_open_orders": True},
+    }
 
-    return  params
+    return params
+
 
 def get_cancel_order_all():
     # Set endpoint
 
-    return {"jsonrpc": "2.0","method": "private/cancel_all","id": 7, 'params': {"detailed": False}}
-    
+    return {
+        "jsonrpc": "2.0",
+        "method": "private/cancel_all",
+        "id": 7,
+        "params": {"detailed": False},
+    }
+
+
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
 
@@ -546,7 +559,6 @@ class GetPrivateData:
 
         result = await self.parse_main(endpoint=endpoint, params=params)
         return result
-
 
     async def get_cancel_order_all(self):
         # Set endpoint

@@ -16,22 +16,27 @@ from websocket_management.entries_and_exit_management import (
     closing_transactions,
     reading_from_pkl_database,
     count_and_delete_ohlc_rows,
-    current_server_time,clean_up_closed_transactions,get_account_balances_and_transactions_from_exchanges
+    current_server_time,
+    clean_up_closed_transactions,
+    get_account_balances_and_transactions_from_exchanges,
 )
+
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await system_tools.raise_error_message(error, idle)
 
+
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
     pickling.replace_data(my_path_portfolio, data_orders)
-    
+
+
 async def resupply_sub_accountdb(currency) -> None:
-        
+
     # resupply sub account db
-    log.info (f'resupply sub account db-START')
+    log.info(f"resupply sub account db-START")
     account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
         currency
     )
@@ -39,11 +44,12 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
     pickling.replace_data(my_path_sub_account, sub_accounts)
-    log.info (f'{sub_accounts}')
-    log.info (f'resupply sub account db-DONE')
-    
+    log.info(f"{sub_accounts}")
+    log.info(f"resupply sub account db-DONE")
+
+
 async def update_user_changes(data_orders, currency) -> None:
-    
+
     from transaction_management.deribit import myTrades_management
 
     positions = data_orders["positions"]
@@ -63,10 +69,11 @@ async def update_user_changes(data_orders, currency) -> None:
             await sqlite_management.insert_tables("my_trades_all_json", trade)
             my_trades.distribute_trade_transactions(currency)
 
-        clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
+        clean_up_transactions: list = await clean_up_closed_transactions(
+            my_trades_open_all
+        )
         log.error(f"clean_up_closed_transactions {clean_up_transactions}")
-                            
-                                    
+
     if orders:
         # my_orders = open_orders_management.MyOrders(orders)
         log.debug(f"my_orders {orders}")
@@ -163,33 +170,35 @@ async def update_user_changes(data_orders, currency) -> None:
                 f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
             )
 
-    #! ###########################################################
+        #! ###########################################################
 
-        clean_up_transactions: list = await clean_up_closed_transactions(my_trades_open_all)
+        clean_up_transactions: list = await clean_up_closed_transactions(
+            my_trades_open_all
+        )
         log.error(f"clean_up_closed_transactions {clean_up_transactions}")
-                
+
     if positions:
         # log.error (f'positions {positions}')
 
         my_path_position = system_tools.provide_path_for_file("positions", currency)
         pickling.replace_data(my_path_position, positions)
-        
+
 
 async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
     if message_channel == f"user.portfolio.{currency.lower()}":
-        
-        await update_portfolio(data_orders, currency)      
+
+        await update_portfolio(data_orders, currency)
 
         await resupply_sub_accountdb(currency)
 
     if message_channel == f"user.changes.any.{currency.upper()}.raw":
-        
-        await update_user_changes(data_orders, currency) 
-        
+
+        await update_user_changes(data_orders, currency)
+
         await resupply_sub_accountdb(currency)
 
-            
+
 async def ws_manager_market(
     message_channel, data_orders, instruments_kind, currency, private_data
 ) -> None:

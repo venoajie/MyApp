@@ -7,7 +7,12 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification as str_mod, number_modification as num_mod
+from utilities import (
+    pickling,
+    system_tools,
+    string_modification as str_mod,
+    number_modification as num_mod,
+)
 from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
@@ -357,11 +362,10 @@ async def opening_transactions(
     market_condition,
 ) -> None:
     """ """
-    
+
     log.critical(f"OPENING TRANSACTIONS-START")
 
     try:
-        
 
         my_trades_open_sqlite: dict = await sqlite_management.querying_table(
             "my_trades_all_json"
@@ -449,6 +453,7 @@ async def opening_transactions(
 
     log.critical(f"OPENING TRANSACTIONS-DONE")
 
+
 async def closing_transactions(
     label_transaction_net,
     portfolio,
@@ -471,12 +476,11 @@ async def closing_transactions(
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
     # Creating an instance of the open order  class
-    
 
     label_transaction_main = str_mod.remove_redundant_elements(
         [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
     )
-    #log.warning(f"label_transaction_main {label_transaction_main}")
+    # log.warning(f"label_transaction_main {label_transaction_main}")
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
@@ -501,7 +505,6 @@ async def closing_transactions(
             else min(get_prices_in_label_transaction_main)
         )
 
-        
         if "Short" in label or "hedging" in label:
             transaction = [
                 o for o in my_trades_open_strategy if o["price"] == max_price
@@ -548,9 +551,7 @@ async def closing_transactions(
             if ticker != []:
 
                 # index price
-                index_price: float = ticker[0]["index_price"]        
-                
-                
+                index_price: float = ticker[0]["index_price"]
 
                 # get instrument_attributes
                 instrument_attributes_all: list = reading_from_db(
@@ -586,19 +587,21 @@ async def closing_transactions(
                 )
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
-                    
-                    closest_price = num_mod.get_closest_value (get_prices_in_label_transaction_main, best_bid_prc)
-                    
-                            
+
+                    closest_price = num_mod.get_closest_value(
+                        get_prices_in_label_transaction_main, best_bid_prc
+                    )
+
                     if "hedging" in label:
                         nearest_transaction_to_index = [
-                            o for o in my_trades_open_strategy if o["price"] == closest_price
+                            o
+                            for o in my_trades_open_strategy
+                            if o["price"] == closest_price
                         ]
-                    
+
                     log.critical(
-            f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
-        )
-                
+                        f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
+                    )
 
                     MIN_HEDGING_RATIO = 0.8
 

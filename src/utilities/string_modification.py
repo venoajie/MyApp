@@ -231,7 +231,9 @@ def parsing_label(label: str, integer: int = None) -> dict:
     }
 
 
-def get_transactions_as_per_strategy(my_trades_open_sqlite: list, label: str, detail) -> float:
+def get_transactions_as_per_strategy(
+    my_trades_open_sqlite: list, label: str, detail
+) -> float:
     """ """
 
     return (
@@ -239,7 +241,8 @@ def get_transactions_as_per_strategy(my_trades_open_sqlite: list, label: str, de
         if my_trades_open_sqlite == []
         else (
             [
-                o for o in my_trades_open_sqlite["all"]
+                o
+                for o in my_trades_open_sqlite["all"]
                 if parsing_label(o["label_main"])[f"{detail}"]
                 == parsing_label(label)[f"{detail}"]
             ]

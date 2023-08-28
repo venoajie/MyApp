@@ -158,6 +158,7 @@ def get_nearest_tick(price: float, tick: float) -> float:
 
     return round((int(price / tick)) * tick, len_tick)
 
+
 def get_closest_value(lst, k) -> float:
     """ 
     
@@ -166,10 +167,10 @@ def get_closest_value(lst, k) -> float:
     """
 
     import bisect
-    
-    #lst = [3.64, 5.2, 9.42, 9.35, 8.5, 8]
-    #k = 9.1
-    
+
+    # lst = [3.64, 5.2, 9.42, 9.35, 8.5, 8]
+    # k = 9.1
+
     lst.sort()
     index = bisect.bisect_left(lst, k)
     if index == 0:
@@ -177,9 +178,9 @@ def get_closest_value(lst, k) -> float:
     elif index == len(lst):
         closest = lst[-1]
     else:
-        before = lst[index-1]
+        before = lst[index - 1]
         after = lst[index]
-        closest = before if after-k > k-before else after
-    #print(closest)
+        closest = before if after - k > k - before else after
+    # print(closest)
 
     return closest
