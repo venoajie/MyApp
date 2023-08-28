@@ -181,11 +181,13 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
         
         await update_portfolio(data_orders, currency)      
 
+        await resupply_sub_accountdb(currency)
+
     if message_channel == f"user.changes.any.{currency.upper()}.raw":
         
         await update_user_changes(data_orders, currency) 
         
-    await resupply_sub_accountdb(currency)
+        await resupply_sub_accountdb(currency)
 
             
 async def ws_manager_market(
