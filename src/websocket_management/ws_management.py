@@ -25,6 +25,8 @@ from websocket_management.entries_and_exit_management import (
 
 #  parameterless decorator
 def  async_lru_cache_decorator(async_function):
+    # https://stackoverflow.com/questions/31771286/python-in-memory-cache-with-time-to-live
+    # https://www.anycodings.com/questions/how-to-cache-asyncio-coroutines
      @functools.lru_cache
      def  cached_async_function(ttl_hash=None, *args, **kwargs):
          coroutine = async_function(*args,  **kwargs)
