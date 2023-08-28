@@ -26,10 +26,16 @@ from websocket_management.entries_and_exit_management import (
 #  parameterless decorator
 def  async_lru_cache_decorator(async_function):
      @functools.lru_cache
-     def  cached_async_function(*args, **kwargs):
+     def  cached_async_function(ttl_hash=None, *args, **kwargs):
          coroutine = async_function(*args,  **kwargs)
          return  asyncio.ensure_future(coroutine)
      return cached_async_function
+
+
+def get_ttl_hash(seconds=3600):
+    """Return the same value withing `seconds` time period"""
+    import time
+    return round(time.time() / seconds)
 
 #  decorator with options
 def  async_lru_cache(*lru_cache_args,  **lru_cache_kwargs):
@@ -219,7 +225,7 @@ async def ws_manager_exchange(message_channel, data_orders, currency) -> None:
 
 
 @async_lru_cache(maxsize=128)
-async def market_condition_cache(threshold,limit, ratio) -> None:
+async def market_condition_cache(threshold,limit, ratio,ttl_hash=get_ttl_hash()) -> None:
     market= await basic_strategy.get_market_condition(
         threshold, limit, ratio
     )
@@ -271,9 +277,9 @@ async def ws_manager_market(
         threshold, limit, ratio
     )
     
-    #market_condition_lru= await market_condition_cache(threshold, limit, ratio)
+    market_condition_lru= await market_condition_cache(threshold, limit, ratio)
     log.error(f"market_condition {market_condition}")
-    #log.error(f"market_condition_lru {market_condition_lru}")
+    log.error(f"market_condition_lru {market_condition_lru}")
 
     if "chart.trades.ETH-PERPETUAL." in message_channel:
 
