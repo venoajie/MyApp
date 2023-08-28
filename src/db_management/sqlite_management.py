@@ -334,8 +334,8 @@ async def insert_tables(table_name, params):
         ) as db:
 
             # input was in list format. Insert them to db one by one
-            #log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
-            #log.error(f"params {params}")
+            log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
+            log.error(f"params {params}")
             if isinstance(params, list):
                 for param in params:
 
@@ -557,7 +557,7 @@ async def replace_row(
     # CREATE INDEX tick_index ON  ohlc1_eth_perp_json (tick);
     except Exception as error:
         print(f"replace_row {error}")
-        await telegram_bot_sendtext("sqlite operation", "failed replace_row")
+        await telegram_bot_sendtext("failed_order", "failed replace_row")
 
 
 def querying_last_open_interest(
