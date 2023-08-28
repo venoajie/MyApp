@@ -201,7 +201,6 @@ class StreamAccountData:
                             message_channel
                         )
                         #! ########################################################################################################################
-                        await ws_management.ws_manager_market (message_channel, data_orders, instruments_kind, currency)
 
                         if message_channel == f"user.portfolio.{currency.lower()}":
                             log.info(data_orders)
