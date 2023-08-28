@@ -15,13 +15,12 @@ from strategies import entries_exits, basic_strategy
 from websocket_management.entries_and_exit_management import (
     opening_transactions,
     closing_transactions,
-    reading_from_pkl_database,
-    count_and_delete_ohlc_rows,
+    reading_from_pkl_database,    
     current_server_time,
     clean_up_closed_transactions,
     get_account_balances_and_transactions_from_exchanges,
 )
-
+from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
 
 #  parameterless decorator
 def  async_lru_cache_decorator(async_function):
@@ -342,7 +341,8 @@ async def ws_manager_market(
                     )
 
                 # capping sqlite rows
-                await count_and_delete_ohlc_rows()
+                max_rows_allowed= 1000000
+                await count_and_delete_ohlc_rows(max_rows_allowed)
 
                 # to avoid error if index price/portfolio = []/None
                 if portfolio:
