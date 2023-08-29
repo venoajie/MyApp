@@ -59,6 +59,7 @@ async def get_account_summary() -> list:
 
     return account_summary["result"]
 
+
 async def get_sub_account(currency) -> list:
     """ """
 
@@ -124,6 +125,7 @@ async def distribute_ticker_result_as_per_data_type(
             error,
             "WebSocket management - failed to distribute_incremental_ticker_result_as_per_data_type",
         )
+
 
 async def reading_from_pkl_database(currency) -> float:
     """ """
@@ -220,23 +222,24 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
+
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
     pickling.replace_data(my_path_portfolio, data_orders)
 
+
 async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     log.info(f"resupply sub account db-START")
-    sub_accounts = await get_sub_account(currency
-        
-    )
+    sub_accounts = await get_sub_account(currency)
 
     my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
     pickling.replace_data(my_path_sub_account, sub_accounts)
     log.info(f"{sub_accounts}")
     log.info(f"resupply sub account db-DONE")
+
 
 async def update_user_changes(data_orders, currency) -> None:
 
@@ -372,6 +375,7 @@ async def update_user_changes(data_orders, currency) -> None:
 
         my_path_position = system_tools.provide_path_for_file("positions", currency)
         pickling.replace_data(my_path_position, positions)
+
 
 async def opening_transactions(
     instrument,

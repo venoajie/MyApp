@@ -425,7 +425,7 @@ class BasicStrategy:
         get_my_trades_attributes_closed = await self.transaction_attributes(
             "my_trades_all_json", "closed"
         )
-        
+
         my_trades_attributes_closed = get_my_trades_attributes_closed[
             "transactions_strategy_label"
         ]
@@ -476,7 +476,7 @@ class BasicStrategy:
         no_outstanding_order: bool = len_orders == 0
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
-        
+
         if order_allowed:
 
             params.update({"instrument": transaction["instrument_name"]})

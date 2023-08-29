@@ -189,6 +189,7 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                         "my_trades_all_json", result_to_dict
                     )
 
+
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
