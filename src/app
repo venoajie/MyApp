@@ -499,6 +499,10 @@ class StreamAccountData:
                                         )
                                         
                                             
+                                        await self.distribute_ticker_result_as_per_data_type(
+                                            my_path_ticker, data_orders, instrument_ticker
+                                        )
+                                            
                                         if portfolio:
 
                                             # fetch positions for all instruments
@@ -556,7 +560,7 @@ class StreamAccountData:
                                 ticker_instrument: list = pickling.read_data(
                                     my_path_ticker
                                 )
-                                log.error(ticker_instrument)
+                                #log.error(ticker_instrument)
                                 if ticker_instrument != []:
                                     
                                     instrument_name = ticker_instrument[0][
