@@ -114,7 +114,6 @@ def append_and_replace_items(
     """
 
     append_data(file_name_pkl, data)
-    print(f"{file_name_pkl} {data}")
 
     data_from_db: list = read_data(file_name_pkl)
     # print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
@@ -143,7 +142,7 @@ def append_and_replace_items_based_on_qty(
 
     append_data(file_name_pkl, data)
     data_from_db: list = read_data(file_name_pkl)
-    print(f"BBBBBBBBBBBBBBB {file_name_pkl} {data} isinstance(data_from_db, dict) {isinstance(data_from_db, dict)} isinstance(data_from_db, list) {isinstance(data_from_db, list)}")
+
     # print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
 
     if isinstance(data_from_db, dict):
