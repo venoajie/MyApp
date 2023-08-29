@@ -286,7 +286,7 @@ class StreamAccountData:
                                     message_channel
                                     == "chart.trades.ETH-PERPETUAL.1"
                                 ):
-                                    #log.error(message_channel)
+                                    log.error(message_channel)
 
                                     # refilling current ohlc table with updated data
                                     if (
@@ -337,10 +337,6 @@ class StreamAccountData:
                                             last_tick1_fr_sqlite,
                                         )
                                         
-                                    # capping sqlite rows
-                                    max_rows_allowed = 1000000
-                                    await count_and_delete_ohlc_rows(max_rows_allowed)
-                                    
                                     # to avoid error if index price/portfolio = []/None
                                     if portfolio:
 
