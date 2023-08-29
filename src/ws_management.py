@@ -17,7 +17,7 @@ async def ws_manager_market(
     message_channel, data_orders, instruments_kind, currency
 ) -> None:
 
-    #log.warning(message_channel)
+    # log.warning(message_channel)
     DATABASE: str = "databases/trading.sqlite3"
     TABLE_OHLC1: str = "ohlc1_eth_perp_json"
     TABLE_OHLC30: str = "ohlc30_eth_perp_json"
@@ -55,7 +55,7 @@ async def ws_manager_market(
 
             # log.warning(f"message_channel {message_channel}")
             if message_channel == "chart.trades.ETH-PERPETUAL.1":
-                #log.error(message_channel)
+                # log.error(message_channel)
 
                 # refilling current ohlc table with updated data
                 if last_tick1_fr_sqlite == last_tick_fr_data_orders:
@@ -166,7 +166,7 @@ async def ws_manager_market(
 
     instrument_ticker = (message_channel)[19:]
     if message_channel == f"incremental_ticker.{instrument_ticker}":
-        #log.warning(message_channel)
+        # log.warning(message_channel)
         my_path_futures_analysis = system_tools.provide_path_for_file(
             "futures_analysis", currency
         )
@@ -176,7 +176,7 @@ async def ws_manager_market(
         try:
 
             if "PERPETUAL" in data_orders["instrument_name"]:
-                #log.info(data_orders)
+                # log.info(data_orders)
 
                 if "open_interest" in data_orders:
 

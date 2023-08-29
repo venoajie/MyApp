@@ -267,6 +267,7 @@ class StreamAccountData:
                         
                         
                         if "chart.trades.ETH-PERPETUAL." in message_channel:
+                            
 
                             last_tick_fr_data_orders: int = data_orders["tick"]
 
@@ -355,6 +356,8 @@ class StreamAccountData:
 
                                         instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
                                         server_time = await current_server_time()
+                                        
+                                        log.error(f"market_condition {market_condition}")
 
                                         for instrument in instrument_transactions:
                                             await opening_transactions(
