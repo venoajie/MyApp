@@ -114,6 +114,7 @@ def append_and_replace_items(
     """
 
     append_data(file_name_pkl, data)
+    print(f"{file_name_pkl} {data}")
 
     data_from_db: list = read_data(file_name_pkl)
     # print (f"pickle isinstance(data_from_db, dict) { isinstance(data_from_db, dict)}")
