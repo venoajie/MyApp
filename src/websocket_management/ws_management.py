@@ -59,24 +59,14 @@ async def get_account_summary() -> list:
 
     return account_summary["result"]
 
-
-async def get_account_balances_and_transactions_from_exchanges(currency) -> dict:
+async def get_sub_account(currency) -> list:
     """ """
 
-    try:
-        private_data = await get_private_data(currency)
-        result_sub_account: dict = await private_data.get_subaccounts()
-        result_account_summary: dict = await private_data.get_account_summary()
-        result_get_positions: dict = await private_data.get_positions()
+    private_data = await get_private_data(currency)
 
-    except Exception as error:
-        await raise_error(error)
+    result_sub_account: dict = await private_data.get_subaccounts()
 
-    return dict(
-        sub_account=result_sub_account["result"],
-        account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"],
-    )
+    return result_sub_account["result"]
 
 
 async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
@@ -239,10 +229,9 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     log.info(f"resupply sub account db-START")
-    account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
-        currency
+    sub_accounts = await get_sub_account(
+        
     )
-    sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
 
     my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
     pickling.replace_data(my_path_sub_account, sub_accounts)
