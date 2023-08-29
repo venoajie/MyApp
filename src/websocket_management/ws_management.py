@@ -173,6 +173,11 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
+async def update_portfolio(data_orders, currency) -> None:
+
+    my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
+    pickling.replace_data(my_path_portfolio, data_orders)
+
 
 async def opening_transactions(
     instrument,
