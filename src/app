@@ -535,6 +535,16 @@ class StreamAccountData:
                                             
                                             log.error(f"market_condition {market_condition}")
 
+                                            await closing_transactions(
+                                                label_transaction_net,
+                                                portfolio,
+                                                strategies,
+                                                my_trades_open_sqlite,
+                                                my_trades_open,
+                                                size_from_positions,
+                                                market_condition,
+                                                currency,
+                                            )
 
                                 symbol_index: str = f"{currency}_usd"
                                 my_path_index: str = system_tools.provide_path_for_file(
@@ -546,8 +556,9 @@ class StreamAccountData:
                                 ticker_instrument: list = pickling.read_data(
                                     my_path_ticker
                                 )
+                                log.error(ticker_instrument)
                                 if ticker_instrument != []:
-                                    log.error(ticker_instrument)
+                                    
                                     instrument_name = ticker_instrument[0][
                                         "instrument_name"
                                     ]
