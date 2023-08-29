@@ -482,7 +482,7 @@ class StreamAccountData:
                             try:
 
                                 if "PERPETUAL" in data_orders["instrument_name"]:
-                                    log.info(data_orders)
+                                    #log.info(data_orders)
 
                                     if "open_interest" in data_orders:
 
@@ -535,16 +535,6 @@ class StreamAccountData:
                                             
                                             log.error(f"market_condition {market_condition}")
 
-                                            await closing_transactions(
-                                                label_transaction_net,
-                                                portfolio,
-                                                strategies,
-                                                my_trades_open_sqlite,
-                                                my_trades_open,
-                                                size_from_positions,
-                                                market_condition,
-                                                currency,
-                                            )
 
                                 symbol_index: str = f"{currency}_usd"
                                 my_path_index: str = system_tools.provide_path_for_file(
