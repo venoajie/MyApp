@@ -476,14 +476,7 @@ class BasicStrategy:
         no_outstanding_order: bool = len_orders == 0
 
         order_allowed: bool = tp_price_reached and no_outstanding_order
-    #!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC    
-    
-        trade_seq = params["label"]
-        print(f"trade_seq {trade_seq}")
-
-        order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
-    #!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC    
-
+        
         if order_allowed:
 
             params.update({"instrument": transaction["instrument_name"]})
