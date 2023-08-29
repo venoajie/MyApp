@@ -7,104 +7,8 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification as str_mod
+from utilities import system_tools, string_modification as str_mod
 from db_management import sqlite_management
-import deribit_get
-from configuration import config
-
-NONE_DATA: None = [0, None, []]
-
-
-def parse_dotenv(sub_account) -> dict:
-    return config.main_dotenv(sub_account)
-
-
-async def raise_error(error, idle: int = None) -> None:
-    """ """
-    await system_tools.raise_error_message(error, idle)
-
-
-async def get_private_data(currency: str = None) -> list:
-    """
-    Provide class object to access private get API
-    """
-
-    sub_account = "deribit-147691"
-    client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    connection_url: str = "https://www.deribit.com/api/v2/"
-
-    return deribit_get.GetPrivateData(
-        connection_url, client_id, client_secret, currency
-    )
-
-
-async def get_account_summary() -> list:
-    """ """
-
-    private_data = await get_private_data()
-
-    account_summary: dict = await private_data.get_account_summary()
-
-    return account_summary["result"]
-
-
-async def get_account_balances_and_transactions_from_exchanges(currency) -> dict:
-    """ """
-
-    try:
-        private_data = await get_private_data(currency)
-        result_sub_account: dict = await private_data.get_subaccounts()
-        result_account_summary: dict = await private_data.get_account_summary()
-        result_get_positions: dict = await private_data.get_positions()
-
-    except Exception as error:
-        await raise_error(error)
-
-    return dict(
-        sub_account=result_sub_account["result"],
-        account_summary=result_account_summary["result"],
-        get_positions=result_get_positions["result"],
-    )
-
-
-async def reading_from_pkl_database(currency) -> float:
-    """ """
-
-    path_sub_accounts: str = system_tools.provide_path_for_file(
-        "sub_accounts", currency
-    )
-
-    path_portfolio: str = system_tools.provide_path_for_file("portfolio", currency)
-    path_positions: str = system_tools.provide_path_for_file("positions", currency)
-    positions = pickling.read_data(path_positions)
-    sub_account = pickling.read_data(path_sub_accounts)
-    positions_from_sub_account = sub_account[0]["positions"]
-    open_orders_from_sub_account = sub_account[0]["open_orders"]
-    portfolio = pickling.read_data(path_portfolio)
-
-    # at start, usually position == None
-    if positions in NONE_DATA:
-        positions = positions_from_sub_account  # await self.get_positions ()
-        pickling.replace_data(path_positions, positions)
-
-    # log.debug (my_trades_open)
-    if portfolio in NONE_DATA:
-        portfolio = await get_account_summary()
-        pickling.replace_data(path_portfolio, portfolio)
-        portfolio = pickling.read_data(path_portfolio)
-
-    return {
-        "positions": positions,
-        "positions_from_sub_account": positions_from_sub_account,
-        "open_orders_from_sub_account": open_orders_from_sub_account,
-        "portfolio": portfolio,
-    }
-
-
-def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
-    """ """
-    return system_tools.reading_from_db_pickle(end_point, instrument, status)
 
 
 async def clean_up_closed_transactions(transactions_all) -> None:
@@ -284,13 +188,6 @@ async def clean_up_closed_transactions(transactions_all) -> None:
                     await sqlite_management.insert_tables(
                         "my_trades_all_json", result_to_dict
                     )
-
-
-async def current_server_time() -> float:
-    """ """
-    current_time = await deribit_get.get_server_time()
-    return current_time["result"]
-
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
