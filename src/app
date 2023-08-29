@@ -557,7 +557,7 @@ class StreamAccountData:
                                     my_path_ticker
                                 )
                                 if ticker_instrument != []:
-                                    # log.error(ticker_instrument)
+                                    log.error(ticker_instrument)
                                     instrument_name = ticker_instrument[0][
                                         "instrument_name"
                                     ]
