@@ -623,6 +623,35 @@ class StreamAccountData:
                     "WebSocket connection EXCHANGE has broken",
                 )
 
+
+    async def distribute_ticker_result_as_per_data_type(
+        self, my_path_ticker, data_orders, instrument
+    ) -> None:
+        """ """
+
+        try:
+            # ticker: list = pickling.read_data(my_path_ticker)
+
+            if data_orders["type"] == "snapshot":
+                pickling.replace_data(my_path_ticker, data_orders)
+
+                # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+
+            else:
+                ticker_change: list = pickling.read_data(my_path_ticker)
+                if ticker_change != []:
+                    # log.debug (ticker_change)
+
+                    for item in data_orders:
+                        ticker_change[0][item] = data_orders[item]
+                        pickling.replace_data(my_path_ticker, ticker_change)
+
+        except Exception as error:
+            await system_tools.raise_error_message(
+                error,
+                "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
+            )
+
     async def on_restart(self) -> None:
         """
         """
