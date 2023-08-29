@@ -16,8 +16,10 @@ from configuration import id_numbering, config
 
 from db_management import sqlite_management
 from strategies import entries_exits, basic_strategy
-from websocket_management.ws_management import futures_analysis,closing_transactions,reading_from_pkl_database, count_and_delete_ohlc_rows,update_portfolio,distribute_ticker_result_as_per_data_type, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions
+from websocket_management.ws_management import (futures_analysis,closing_transactions,
+reading_from_pkl_database, update_portfolio,distribute_ticker_result_as_per_data_type, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions)
 
+from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
