@@ -287,6 +287,7 @@ class StreamAccountData:
                                     == "chart.trades.ETH-PERPETUAL.1"
                                 ):
                                     log.error(message_channel)
+                                    log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
 
                                     # refilling current ohlc table with updated data
                                     if (
