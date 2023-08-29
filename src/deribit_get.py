@@ -229,7 +229,6 @@ class GetPrivateData:
 
         # Set endpoint
         endpoint: str = "private/get_positions"
-        log.error("get_positions")
 
         params = {"currency": self.currency}
 
