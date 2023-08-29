@@ -480,6 +480,7 @@ class BasicStrategy:
     #!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC    
     
         trade_seq = params["label"]
+        print(f"trade_seq {trade_seq}")
 
         order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
     #!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC    
