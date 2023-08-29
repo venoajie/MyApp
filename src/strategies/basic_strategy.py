@@ -429,11 +429,9 @@ class BasicStrategy:
         my_trades_attributes_closed = get_my_trades_attributes_closed[
             "transactions_strategy_label"
         ]
-        trade_seqs= [o["trade_seq"] for o in my_trades_attributes_closed]
-        print(f"my_trades_attributes_closed {my_trades_attributes_closed} trade_seq {trade_seq} trade_seqs {trade_seqs}")
-        print([o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"]])
+        # assuming only 1
         trade_seq_is_exist: list = False if my_trades_attributes_closed == [] else [
-            o for o in my_trades_attributes_closed if trade_seq in o["trade_seq"]
+            o for o in my_trades_attributes_closed if trade_seq == o["trade_seq"]
         ] != []
         print(f"trade_seq_is_exist {trade_seq_is_exist}")
         return trade_seq_is_exist
