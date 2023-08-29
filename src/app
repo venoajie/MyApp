@@ -17,7 +17,7 @@ from configuration import id_numbering, config
 from db_management import sqlite_management
 from strategies import entries_exits, basic_strategy
 from websocket_management.ws_management import (futures_analysis,closing_transactions,
-reading_from_pkl_database, update_portfolio,distribute_ticker_result_as_per_data_type, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions)
+reading_from_pkl_database, update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions)
 
 from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
 
@@ -546,10 +546,6 @@ class StreamAccountData:
                                                 market_condition,
                                                 currency,
                                             )
-
-                                await distribute_ticker_result_as_per_data_type(
-                                    my_path_ticker, data_orders, instrument_ticker
-                                )
 
                                 symbol_index: str = f"{currency}_usd"
                                 my_path_index: str = system_tools.provide_path_for_file(
