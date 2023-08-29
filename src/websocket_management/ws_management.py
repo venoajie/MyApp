@@ -178,6 +178,20 @@ async def update_portfolio(data_orders, currency) -> None:
     my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
     pickling.replace_data(my_path_portfolio, data_orders)
 
+async def resupply_sub_accountdb(currency) -> None:
+
+    # resupply sub account db
+    log.info(f"resupply sub account db-START")
+    account_balances_and_transactions_from_exchanges = await get_account_balances_and_transactions_from_exchanges(
+        currency
+    )
+    sub_accounts = account_balances_and_transactions_from_exchanges["sub_account"]
+
+    my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
+    pickling.replace_data(my_path_sub_account, sub_accounts)
+    log.info(f"{sub_accounts}")
+    log.info(f"resupply sub account db-DONE")
+
 
 async def opening_transactions(
     instrument,
