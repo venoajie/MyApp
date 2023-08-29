@@ -287,7 +287,7 @@ class StreamAccountData:
                                     == "chart.trades.ETH-PERPETUAL.1"
                                 ):
                                     log.error(message_channel)
-                                    log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}')
+                                    log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}')
 
                                     # refilling current ohlc table with updated data
                                     if (
@@ -307,6 +307,7 @@ class StreamAccountData:
 
                                     # new tick ohlc
                                     else:
+                                        log.error(data_orders)
                                         # prepare query
                                         open_interest_last_value_query = sqlite_management.querying_last_open_interest(
                                             last_tick1_fr_sqlite, TABLE_OHLC1
