@@ -49,12 +49,6 @@ async def get_private_data(currency: str = None) -> list:
     )
 
 
-async def update_portfolio(data_orders, currency) -> None:
-
-    my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
-    pickling.replace_data(my_path_portfolio, data_orders)
-
-
 async def get_account_summary() -> list:
     """ """
 
