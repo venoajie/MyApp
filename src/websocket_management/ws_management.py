@@ -229,7 +229,7 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     log.info(f"resupply sub account db-START")
-    sub_accounts = await get_sub_account(
+    sub_accounts = await get_sub_account(currency
         
     )
 
