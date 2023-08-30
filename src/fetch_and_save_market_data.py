@@ -12,7 +12,7 @@ import aiohttp
 # user defined formula
 from utilities import pickling, system_tools
 import deribit_get as get_dbt
-
+from db_management import sqlite_management
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
@@ -38,13 +38,27 @@ async def get_currencies(connection_url) -> float:
 
     return result
 
-
-async def run_every_15_seconds() -> None:
+async def run_every_5_seconds() -> None:
     """ """
 
-    import apply_strategies
+    from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
+    
+    
+    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+        "my_trades_all_json"
+    )
+    my_trades_open_all: list = my_trades_open_sqlite["all"]
 
-    await apply_strategies.main()
+    await clean_up_closed_transactions(my_trades_open_all)
+
+async def run_every_60_seconds() -> None:
+    """ """
+
+    from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
+    
+    rows_threshold= 1000000
+
+    await count_and_delete_ohlc_rows(rows_threshold)
 
 
 async def check_and_save_every_60_minutes():
@@ -97,7 +111,7 @@ if __name__ == "__main__":
     try:
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
-        schedule.every(15).seconds.do(run_every_15_seconds)
+        schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
