@@ -24,3 +24,5 @@ Alert-system: Real-time alert system. Do we want to know when an operation is co
 Event-driven: Event-driven architecture, it is similar to a video game in which the character moves and triggers events that cause reactions from other characters or the appearance of new scenarios; in this case, we model and generate buy and sell signals based on the events that come to us from various data sources. To make them a reality, we must orchestrate a number of necessary components.
 Statistical-edge: Most importantly, there is little we can do without a mathematical edge of the model we want to implement.
 
+-
+
