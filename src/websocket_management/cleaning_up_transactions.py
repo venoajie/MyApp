@@ -18,7 +18,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     2. move them to table for closed transactions/my_trades_closed_json
     """
 
-    log.info ('clean_up_closed_transactions-START')
+    log.info("clean_up_closed_transactions-START")
 
     # clean up transactions all
     transactions_all = [o for o in transactions_all if o["label_main"] != None]
@@ -192,11 +192,12 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                         "my_trades_all_json", result_to_dict
                     )
 
-    log.info ('clean_up_closed_transactions-FINISH')
+    log.info("clean_up_closed_transactions-FINISH")
+
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
-    log.info ('count_and_delete_ohlc_rows-START')
+    log.info("count_and_delete_ohlc_rows-START")
     tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
     database: str = "databases/trading.sqlite3"
 
@@ -224,4 +225,4 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
             await sqlite_management.deleting_row(
                 table, database, where_filter, "=", first_tick
             )
-    log.info ('count_and_delete_ohlc_rows-DONE')
+    log.info("count_and_delete_ohlc_rows-DONE")

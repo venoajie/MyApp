@@ -39,7 +39,12 @@ async def get_currencies(connection_url) -> float:
     return result
 
 async def run_every_5_seconds() -> None:
-    """ """
+    
+    """ 
+    reconsider:
+    - execution pretty fast
+    - db may not update on time
+    """
 
     from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
     
@@ -105,9 +110,7 @@ async def get_open_interest_history() -> None:
 
 
 if __name__ == "__main__":
-    # asyncio.run(get_open_interest_history())
-
-    # connection_url: str = "https://www.deribit.com/api/v2/"
+    
     try:
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)

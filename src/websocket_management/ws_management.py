@@ -18,7 +18,6 @@ from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
-from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
 
 
 ONE_MINUTE: int = 60000
@@ -244,6 +243,11 @@ async def resupply_sub_accountdb(currency) -> None:
 async def update_user_changes(data_orders, currency) -> None:
 
     from transaction_management.deribit import myTrades_management
+    from websocket_management.cleaning_up_transactions import (
+        clean_up_closed_transactions,
+    )
+
+    log.info(f"update_user_changes-START")
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -257,15 +261,10 @@ async def update_user_changes(data_orders, currency) -> None:
         for trade in trades:
 
             log.info(f"trade {trade}")
-            my_trades = myTrades_management.MyTrades(trade)
 
             await sqlite_management.insert_tables("my_trades_all_json", trade)
-            my_trades.distribute_trade_transactions(currency)
 
-        clean_up_transactions: list = await clean_up_closed_transactions(
-            my_trades_open_all
-        )
-        log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+        await clean_up_closed_transactions(my_trades_open_all)
 
     if orders:
         # my_orders = open_orders_management.MyOrders(orders)
@@ -365,16 +364,15 @@ async def update_user_changes(data_orders, currency) -> None:
 
         #! ###########################################################
 
-        clean_up_transactions: list = await clean_up_closed_transactions(
-            my_trades_open_all
-        )
-        log.error(f"clean_up_closed_transactions {clean_up_transactions}")
+        await clean_up_closed_transactions(my_trades_open_all)
 
     if positions:
         # log.error (f'positions {positions}')
 
         my_path_position = system_tools.provide_path_for_file("positions", currency)
         pickling.replace_data(my_path_position, positions)
+
+    log.info(f"update_user_changes-END")
 
 
 async def opening_transactions(
@@ -621,7 +619,7 @@ async def closing_transactions(
                             if o["price"] == closest_price
                         ]
 
-                    log.critical(
+                    log.debug(
                         f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
                     )
 
