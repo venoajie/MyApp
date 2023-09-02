@@ -14,6 +14,8 @@ fetch-data:
 	nohup python3 recurring_transactions.py >/dev/null 2>&1 &
 	sleep 3
 	nohup python3 app >/dev/null 2>&1 &
+	ps -ef
+	
 
 exe-app: 
 	nohup sh checkEvents.sh >/dev/null 2>&1 &
