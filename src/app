@@ -72,436 +72,275 @@ class StreamAccountData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-            # Authenticate WebSocket Connection
-            await self.ws_auth()
-
-            # Establish restart procedure
-            await self.on_restart()
             
-            # Establish Heartbeat
-            await self.establish_heartbeat()
+            while True:
+                # Authenticate WebSocket Connection
+                await self.ws_auth()
 
-            # Start Authentication Refresh Task
-            self.loop.create_task(self.ws_refresh_auth())
+                # Establish restart procedure
+                await self.on_restart()
+                
+                # Establish Heartbeat
+                await self.establish_heartbeat()
 
-            currencies = ["ETH", "BTC"]
-            # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
-            currency = "ETH"
+                # Start Authentication Refresh Task
+                self.loop.create_task(self.ws_refresh_auth())
 
-            my_path_instruments = system_tools.provide_path_for_file(
-                "instruments", currency
-            )
-        
-            instruments_raw = pickling.read_data(my_path_instruments)
-            instruments = instruments_raw[0]["result"]
+                currencies = ["ETH", "BTC"]
+                # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
+                currency = "ETH"
 
-            instruments_kind: list = [
-                o for o in instruments if o["kind"] == "future"
-            ]
+                my_path_instruments = system_tools.provide_path_for_file(
+                    "instruments", currency
+                )
+            
+                instruments_raw = pickling.read_data(my_path_instruments)
+                instruments = instruments_raw[0]["result"]
 
-            instruments_name: list = [
-                o["instrument_name"] for o in instruments_kind
-            ]
-            # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
+                instruments_kind: list = [
+                    o for o in instruments if o["kind"] == "future"
+                ]
 
-            for instrument in instruments_name:
+                instruments_name: list = [
+                    o["instrument_name"] for o in instruments_kind
+                ]
+                # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
+
+                for instrument in instruments_name:
+
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"incremental_ticker.{instrument}",
+                        )
+                    )
+
+                    if "PERPETUAL" in instrument:
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.1",
+                            )
+                        )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.30",
+                            )
+                        )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.60",
+                            )
+                        )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"chart.trades.{instrument}.1D",
+                            )
+                        )
+                        
+                self.loop.create_task(
+                    self.ws_operation(
+                        operation="subscribe", ws_channel=f"user.portfolio.{currency}"
+                    )
+                )
 
                 self.loop.create_task(
                     self.ws_operation(
                         operation="subscribe",
-                        ws_channel=f"incremental_ticker.{instrument}",
+                        ws_channel=f"user.changes.any.{currency.upper()}.raw",
                     )
                 )
+                while self.websocket_client.open:
+                    # Receive WebSocket messages
+                    message: bytes = await self.websocket_client.recv()
+                    message: dict = orjson.loads(message)
+                    message_channel: str = None
+                    # log.warning (message)
+                    if "id" in list(message):
+                        if message["id"] == 9929:
+                            
+                            if self.refresh_token is None:
+                                # await syn.get_sub_accounts()
+                                log.info("Successfully authenticated WebSocket Connection")
 
-                if "PERPETUAL" in instrument:
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation="subscribe",
-                            ws_channel=f"chart.trades.{instrument}.1",
-                        )
-                    )
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation="subscribe",
-                            ws_channel=f"chart.trades.{instrument}.30",
-                        )
-                    )
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation="subscribe",
-                            ws_channel=f"chart.trades.{instrument}.60",
-                        )
-                    )
-                    self.loop.create_task(
-                        self.ws_operation(
-                            operation="subscribe",
-                            ws_channel=f"chart.trades.{instrument}.1D",
-                        )
-                    )
-                    
-            self.loop.create_task(
-                self.ws_operation(
-                    operation="subscribe", ws_channel=f"user.portfolio.{currency}"
-                )
-            )
+                            else:
+                                log.info(
+                                    "Successfully refreshed the authentication of the WebSocket Connection"
+                                )
 
-            self.loop.create_task(
-                self.ws_operation(
-                    operation="subscribe",
-                    ws_channel=f"user.changes.any.{currency.upper()}.raw",
-                )
-            )
-            while self.websocket_client.open:
-                # Receive WebSocket messages
-                message: bytes = await self.websocket_client.recv()
-                message: dict = orjson.loads(message)
-                message_channel: str = None
-                # log.warning (message)
-                if "id" in list(message):
-                    if message["id"] == 9929:
-                        
-                        if self.refresh_token is None:
-                            # await syn.get_sub_accounts()
-                            log.info("Successfully authenticated WebSocket Connection")
+                            self.refresh_token = message["result"]["refresh_token"]
 
-                        else:
-                            log.info(
-                                "Successfully refreshed the authentication of the WebSocket Connection"
+                            # Refresh Authentication well before the required datetime
+                            if message["testnet"]:
+                                expires_in: int = 300
+                            else:
+                                expires_in: int = message["result"]["expires_in"] - 240
+
+                            self.refresh_token_expiry_time = datetime.utcnow() + timedelta(
+                                seconds=expires_in
                             )
 
-                        self.refresh_token = message["result"]["refresh_token"]
+                        elif message["id"] == 8212:
+                            # Avoid logging Heartbeat messages
+                            continue
 
-                        # Refresh Authentication well before the required datetime
-                        if message["testnet"]:
-                            expires_in: int = 300
-                        else:
-                            expires_in: int = message["result"]["expires_in"] - 240
+                    elif "method" in list(message):
+                        # Respond to Heartbeat Message
+                        if message["method"] == "heartbeat":
+                            await self.heartbeat_response()
 
-                        self.refresh_token_expiry_time = datetime.utcnow() + timedelta(
-                            seconds=expires_in
-                        )
+                    if "params" in list(message):
+                        if message["method"] != "heartbeat":
+                            message_channel = message["params"]["channel"]
+                            if "PERPETUAL." in message_channel:
+                                log.critical(message_channel)
 
-                    elif message["id"] == 8212:
-                        # Avoid logging Heartbeat messages
-                        continue
+                            data_orders: list = message["params"]["data"]
+                            #log.info(data_orders)
+                            currency: str = str_mod.extract_currency_from_text(
+                                message_channel
+                            )
+                            #! ########################################################################################################################
 
-                elif "method" in list(message):
-                    # Respond to Heartbeat Message
-                    if message["method"] == "heartbeat":
-                        await self.heartbeat_response()
+                            if message_channel == f"user.portfolio.{currency.lower()}":
+                                log.info(data_orders)
 
-                if "params" in list(message):
-                    if message["method"] != "heartbeat":
-                        message_channel = message["params"]["channel"]
-                        if "PERPETUAL." in message_channel:
-                            log.critical(message_channel)
+                                await update_portfolio(data_orders, currency)
 
-                        data_orders: list = message["params"]["data"]
-                        #log.info(data_orders)
-                        currency: str = str_mod.extract_currency_from_text(
-                            message_channel
-                        )
-                        #! ########################################################################################################################
-
-                        if message_channel == f"user.portfolio.{currency.lower()}":
-                            log.info(data_orders)
-
-                            await update_portfolio(data_orders, currency)
-
-                            await resupply_sub_accountdb(currency)
-                            
-
-                        if (
-                            message_channel
-                            == f"user.changes.any.{currency.upper()}.raw"
-                        ):
-                            log.info(data_orders)
-
-                            await update_user_changes(data_orders, currency)
-
-                            await resupply_sub_accountdb(currency)
-                        
-                        
-                        DATABASE: str = "databases/trading.sqlite3"
-                        TABLE_OHLC1: str = "ohlc1_eth_perp_json"
-                        TABLE_OHLC30: str = "ohlc30_eth_perp_json"
-                        TABLE_OHLC60: str = "ohlc60_eth_perp_json"
-                        TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
-                        WHERE_FILTER_TICK: str = "tick"
-
-                        last_tick_query_ohlc1: str = sqlite_management.querying_arithmetic_operator(
-                            "tick", "MAX", TABLE_OHLC1
-                        )
-
-                        last_tick_query_ohlc30: str = sqlite_management.querying_arithmetic_operator(
-                            "tick", "MAX", TABLE_OHLC30
-                        )
-                        last_tick_query_ohlc60: str = sqlite_management.querying_arithmetic_operator(
-                            "tick", "MAX", TABLE_OHLC60
-                        )
-
-                        last_tick_query_ohlc1D: str = sqlite_management.querying_arithmetic_operator(
-                            "tick", "MAX", TABLE_OHLC1D
-                        )
-
-                        last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
-                            last_tick_query_ohlc1
-                        )
-
-
-                        # gathering basic data
-                        reading_from_database: dict = await reading_from_pkl_database(currency)
-
-                        # get portfolio data
-                        portfolio: list = reading_from_database["portfolio"]
-
-                        # fetch strategies attributes
-                        strategies = entries_exits.strategies
-
-                        limit = 100
-                        ratio = 0.9
-                        threshold = 0.01 / 100
-
-                        market_condition = await basic_strategy.get_market_condition(
-                            threshold, limit, ratio
-                        )
-
-                        
-                        
-                        if "chart.trades.ETH-PERPETUAL." in message_channel:
-                            
-
-                            last_tick_fr_data_orders: int = data_orders["tick"]
+                                await resupply_sub_accountdb(currency)
+                                
 
                             if (
-                                TABLE_OHLC30 != None
-                                or TABLE_OHLC1 != None
-                                or TABLE_OHLC60 != None
-                                or TABLE_OHLC1 != None
+                                message_channel
+                                == f"user.changes.any.{currency.upper()}.raw"
                             ):
+                                log.info(data_orders)
 
-                                # log.warning(f"message_channel {message_channel}")
+                                await update_user_changes(data_orders, currency)
+
+                                await resupply_sub_accountdb(currency)
+                            
+                            
+                            DATABASE: str = "databases/trading.sqlite3"
+                            TABLE_OHLC1: str = "ohlc1_eth_perp_json"
+                            TABLE_OHLC30: str = "ohlc30_eth_perp_json"
+                            TABLE_OHLC60: str = "ohlc60_eth_perp_json"
+                            TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
+                            WHERE_FILTER_TICK: str = "tick"
+
+                            last_tick_query_ohlc1: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC1
+                            )
+
+                            last_tick_query_ohlc30: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC30
+                            )
+                            last_tick_query_ohlc60: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC60
+                            )
+
+                            last_tick_query_ohlc1D: str = sqlite_management.querying_arithmetic_operator(
+                                "tick", "MAX", TABLE_OHLC1D
+                            )
+
+                            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
+                                last_tick_query_ohlc1
+                            )
+
+
+                            # gathering basic data
+                            reading_from_database: dict = await reading_from_pkl_database(currency)
+
+                            # get portfolio data
+                            portfolio: list = reading_from_database["portfolio"]
+
+                            # fetch strategies attributes
+                            strategies = entries_exits.strategies
+
+                            limit = 100
+                            ratio = 0.9
+                            threshold = 0.01 / 100
+
+                            market_condition = await basic_strategy.get_market_condition(
+                                threshold, limit, ratio
+                            )
+
+                            
+                            
+                            if "chart.trades.ETH-PERPETUAL." in message_channel:
+                                
+
+                                last_tick_fr_data_orders: int = data_orders["tick"]
+
                                 if (
-                                    message_channel
-                                    == "chart.trades.ETH-PERPETUAL.1"
+                                    TABLE_OHLC30 != None
+                                    or TABLE_OHLC1 != None
+                                    or TABLE_OHLC60 != None
+                                    or TABLE_OHLC1 != None
                                 ):
-                                    #log.error(message_channel)
-                                    #log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}')
 
-                                    # refilling current ohlc table with updated data
+                                    # log.warning(f"message_channel {message_channel}")
                                     if (
-                                        last_tick1_fr_sqlite
-                                        == last_tick_fr_data_orders
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.1"
                                     ):
+                                        #log.error(message_channel)
+                                        #log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}')
 
-                                        await sqlite_management.replace_row(
-                                            data_orders,
-                                            "data",
-                                            TABLE_OHLC1,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "is",
-                                            last_tick1_fr_sqlite,
-                                        )
+                                        # refilling current ohlc table with updated data
+                                        if (
+                                            last_tick1_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
 
-                                    # new tick ohlc
-                                    else:
-                                        #log.error(data_orders)
-                                        # prepare query
-                                        open_interest_last_value_query = sqlite_management.querying_last_open_interest(
-                                            last_tick1_fr_sqlite, TABLE_OHLC1
-                                        )
-
-                                        # get current oi
-                                        open_interest_last_value =  await last_open_interest_fr_sqlite(
-                                            open_interest_last_value_query
-                                        )
-
-                                        # insert new ohlc data
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC1, data_orders
-                                        )
-
-                                        # update last tick
-                                        last_tick1_fr_sqlite =  await last_tick_fr_sqlite(
-                                            last_tick_query_ohlc1
-                                        )
-
-                                        # insert open interest in previous tick to the new tick
-                                        await sqlite_management.replace_row(
-                                            open_interest_last_value,
-                                            "open_interest",
-                                            TABLE_OHLC1,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "is",
-                                            last_tick1_fr_sqlite,
-                                        )
-                                        
-                                    # to avoid error if index price/portfolio = []/None
-                                    if portfolio:
-
-                                        # fetch positions for all instruments
-                                        positions_all: list = reading_from_database[
-                                            "positions_from_sub_account"
-                                        ]
-                                        size_from_positions: float = 0 if positions_all == [] else sum(
-                                            [o["size"] for o in positions_all]
-                                        )
-
-                                        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-                                            "my_trades_all_json"
-                                        )
-                                        my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-
-                                        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-                                        server_time = await current_server_time()
-                                        
-                                        log.error(f"market_condition {market_condition}")
-
-                                        for instrument in instrument_transactions:
-                                            await opening_transactions(
-                                                instrument,
-                                                portfolio,
-                                                strategies,
-                                                my_trades_open_sqlite,
-                                                size_from_positions,
-                                                server_time,
-                                                market_condition,
+                                            await sqlite_management.replace_row(
+                                                data_orders,
+                                                "data",
+                                                TABLE_OHLC1,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "is",
+                                                last_tick1_fr_sqlite,
                                             )
-                                    
 
-                                if (
-                                    message_channel
-                                    == "chart.trades.ETH-PERPETUAL.30"
-                                ):
+                                        # new tick ohlc
+                                        else:
+                                            #log.error(data_orders)
+                                            # prepare query
+                                            open_interest_last_value_query = sqlite_management.querying_last_open_interest(
+                                                last_tick1_fr_sqlite, TABLE_OHLC1
+                                            )
 
-                                    last_tick30_fr_sqlite =  await last_tick_fr_sqlite(
-                                        last_tick_query_ohlc30
-                                    )
+                                            # get current oi
+                                            open_interest_last_value =  await last_open_interest_fr_sqlite(
+                                                open_interest_last_value_query
+                                            )
 
-                                    if (
-                                        last_tick30_fr_sqlite
-                                        == last_tick_fr_data_orders
-                                    ):
+                                            # insert new ohlc data
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC1, data_orders
+                                            )
 
-                                        await sqlite_management.deleting_row(
-                                            TABLE_OHLC30,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "=",
-                                            last_tick30_fr_sqlite,
-                                        )
+                                            # update last tick
+                                            last_tick1_fr_sqlite =  await last_tick_fr_sqlite(
+                                                last_tick_query_ohlc1
+                                            )
 
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC30, data_orders
-                                        )
-
-                                    else:
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC30, data_orders
-                                        )
-
-                                if (
-                                    message_channel
-                                    == "chart.trades.ETH-PERPETUAL.60"
-                                ):
-
-                                    last_tick60_fr_sqlite = await last_tick_fr_sqlite(
-                                        last_tick_query_ohlc60
-                                    )
-
-                                    if (
-                                        last_tick60_fr_sqlite
-                                        == last_tick_fr_data_orders
-                                    ):
-
-                                        await sqlite_management.deleting_row(
-                                            TABLE_OHLC60,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "=",
-                                            last_tick60_fr_sqlite,
-                                        )
-
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC60, data_orders
-                                        )
-
-                                    else:
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC60, data_orders
-                                        )
-
-                                if (
-                                    message_channel
-                                    == "chart.trades.ETH-PERPETUAL.1D"
-                                ):
-
-                                    last_tick1D_fr_sqlite = await last_tick_fr_sqlite(
-                                        last_tick_query_ohlc1D
-                                    )
-
-                                    if (
-                                        last_tick1D_fr_sqlite
-                                        == last_tick_fr_data_orders
-                                    ):
-
-                                        await sqlite_management.deleting_row(
-                                            TABLE_OHLC1D,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "=",
-                                            last_tick1D_fr_sqlite,
-                                        )
-
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC1D, data_orders
-                                        )
-
-                                    else:
-                                        await sqlite_management.insert_tables(
-                                            TABLE_OHLC1D, data_orders
-                                        )
-
-                        instrument_ticker = (message_channel)[19:]
-                        if (
-                            message_channel
-                            == f"incremental_ticker.{instrument_ticker}"
-                        ):
-                            #log.warning(message_channel)
-                            my_path_futures_analysis = system_tools.provide_path_for_file(
-                                "futures_analysis", currency
-                            )
-
-                            my_path_ticker = system_tools.provide_path_for_file(
-                                "ticker", instrument_ticker
-                            )
-
-                            try:
-
-                                if "PERPETUAL" in data_orders["instrument_name"]:
-                                    #log.info(data_orders)
-
-                                    if "open_interest" in data_orders:
-
-                                        open_interest = data_orders["open_interest"]
-
-                                        await sqlite_management.replace_row(
-                                            open_interest,
-                                            "open_interest",
-                                            TABLE_OHLC1,
-                                            DATABASE,
-                                            WHERE_FILTER_TICK,
-                                            "is",
-                                            last_tick1_fr_sqlite,
-                                        )
-                                        
+                                            # insert open interest in previous tick to the new tick
+                                            await sqlite_management.replace_row(
+                                                open_interest_last_value,
+                                                "open_interest",
+                                                TABLE_OHLC1,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "is",
+                                                last_tick1_fr_sqlite,
+                                            )
                                             
-                                        await self.distribute_ticker_result_as_per_data_type(
-                                            my_path_ticker, data_orders, instrument_ticker
-                                        )
-                                            
+                                        # to avoid error if index price/portfolio = []/None
                                         if portfolio:
 
                                             # fetch positions for all instruments
@@ -517,58 +356,221 @@ class StreamAccountData:
                                             )
                                             my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
-                                            # clean up transactions all
-                                            my_trades_open = [o for o in my_trades_open if "label" in o]
-
-                                            my_trades_open_remove_closed_labels = (
-                                                []
-                                                if my_trades_open == []
-                                                else [o for o in my_trades_open if "closed" not in o["label"]]
-                                            )
-                                            label_transaction_net = (
-                                                []
-                                                if my_trades_open_remove_closed_labels == []
-                                                else str_mod.remove_redundant_elements(
-                                                    [
-                                                        str_mod.parsing_label(o["label"])["transaction_net"]
-                                                        for o in my_trades_open_remove_closed_labels
-                                                    ]
-                                                )
-                                            )
+                                            instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+                                            server_time = await current_server_time()
                                             
                                             log.error(f"market_condition {market_condition}")
 
-                                            await closing_transactions(
-                                                label_transaction_net,
-                                                portfolio,
-                                                strategies,
-                                                my_trades_open_sqlite,
-                                                my_trades_open,
-                                                size_from_positions,
-                                                market_condition,
-                                                currency,
+                                            for instrument in instrument_transactions:
+                                                await opening_transactions(
+                                                    instrument,
+                                                    portfolio,
+                                                    strategies,
+                                                    my_trades_open_sqlite,
+                                                    size_from_positions,
+                                                    server_time,
+                                                    market_condition,
+                                                )
+                                        
+
+                                    if (
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.30"
+                                    ):
+
+                                        last_tick30_fr_sqlite =  await last_tick_fr_sqlite(
+                                            last_tick_query_ohlc30
+                                        )
+
+                                        if (
+                                            last_tick30_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
+
+                                            await sqlite_management.deleting_row(
+                                                TABLE_OHLC30,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "=",
+                                                last_tick30_fr_sqlite,
                                             )
-                                            my_trades_open_all: list = my_trades_open_sqlite["all"]
-                                            
-                            except Exception as error:
-                                log.error(error)
-                                await system_tools.raise_error_message(
-                                    "WebSocket connection - failed to process data"
+
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC30, data_orders
+                                            )
+
+                                        else:
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC30, data_orders
+                                            )
+
+                                    if (
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.60"
+                                    ):
+
+                                        last_tick60_fr_sqlite = await last_tick_fr_sqlite(
+                                            last_tick_query_ohlc60
+                                        )
+
+                                        if (
+                                            last_tick60_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
+
+                                            await sqlite_management.deleting_row(
+                                                TABLE_OHLC60,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "=",
+                                                last_tick60_fr_sqlite,
+                                            )
+
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC60, data_orders
+                                            )
+
+                                        else:
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC60, data_orders
+                                            )
+
+                                    if (
+                                        message_channel
+                                        == "chart.trades.ETH-PERPETUAL.1D"
+                                    ):
+
+                                        last_tick1D_fr_sqlite = await last_tick_fr_sqlite(
+                                            last_tick_query_ohlc1D
+                                        )
+
+                                        if (
+                                            last_tick1D_fr_sqlite
+                                            == last_tick_fr_data_orders
+                                        ):
+
+                                            await sqlite_management.deleting_row(
+                                                TABLE_OHLC1D,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "=",
+                                                last_tick1D_fr_sqlite,
+                                            )
+
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC1D, data_orders
+                                            )
+
+                                        else:
+                                            await sqlite_management.insert_tables(
+                                                TABLE_OHLC1D, data_orders
+                                            )
+
+                            instrument_ticker = (message_channel)[19:]
+                            if (
+                                message_channel
+                                == f"incremental_ticker.{instrument_ticker}"
+                            ):
+                                #log.warning(message_channel)
+                                my_path_futures_analysis = system_tools.provide_path_for_file(
+                                    "futures_analysis", currency
                                 )
 
-                                continue
+                                my_path_ticker = system_tools.provide_path_for_file(
+                                    "ticker", instrument_ticker
+                                )
 
-            else:
-                    
-                # Establish restart procedure
-                await self.on_restart()
-            
-                log.info("WebSocket connection has broken.")
-                await system_tools.raise_error_message(
-                    "error-WebSocket connection EXCHANGE has broken",
-                    0.1,
-                    "WebSocket connection EXCHANGE has broken",
-                )
+                                try:
+
+                                    if "PERPETUAL" in data_orders["instrument_name"]:
+                                        #log.info(data_orders)
+
+                                        if "open_interest" in data_orders:
+
+                                            open_interest = data_orders["open_interest"]
+
+                                            await sqlite_management.replace_row(
+                                                open_interest,
+                                                "open_interest",
+                                                TABLE_OHLC1,
+                                                DATABASE,
+                                                WHERE_FILTER_TICK,
+                                                "is",
+                                                last_tick1_fr_sqlite,
+                                            )
+                                            
+                                                
+                                            await self.distribute_ticker_result_as_per_data_type(
+                                                my_path_ticker, data_orders, instrument_ticker
+                                            )
+                                                
+                                            if portfolio:
+
+                                                # fetch positions for all instruments
+                                                positions_all: list = reading_from_database[
+                                                    "positions_from_sub_account"
+                                                ]
+                                                size_from_positions: float = 0 if positions_all == [] else sum(
+                                                    [o["size"] for o in positions_all]
+                                                )
+
+                                                my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+                                                    "my_trades_all_json"
+                                                )
+                                                my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+
+                                                # clean up transactions all
+                                                my_trades_open = [o for o in my_trades_open if "label" in o]
+
+                                                my_trades_open_remove_closed_labels = (
+                                                    []
+                                                    if my_trades_open == []
+                                                    else [o for o in my_trades_open if "closed" not in o["label"]]
+                                                )
+                                                label_transaction_net = (
+                                                    []
+                                                    if my_trades_open_remove_closed_labels == []
+                                                    else str_mod.remove_redundant_elements(
+                                                        [
+                                                            str_mod.parsing_label(o["label"])["transaction_net"]
+                                                            for o in my_trades_open_remove_closed_labels
+                                                        ]
+                                                    )
+                                                )
+                                                
+                                                log.error(f"market_condition {market_condition}")
+
+                                                await closing_transactions(
+                                                    label_transaction_net,
+                                                    portfolio,
+                                                    strategies,
+                                                    my_trades_open_sqlite,
+                                                    my_trades_open,
+                                                    size_from_positions,
+                                                    market_condition,
+                                                    currency,
+                                                )
+                                                my_trades_open_all: list = my_trades_open_sqlite["all"]
+                                                
+                                except Exception as error:
+                                    log.error(error)
+                                    await system_tools.raise_error_message(
+                                        "WebSocket connection - failed to process data"
+                                    )
+
+                                    continue
+
+                else:
+                        
+                    # Establish restart procedure
+                    await self.on_restart()
+                
+                    log.info("WebSocket connection has broken.")
+                    await system_tools.raise_error_message(
+                        "error-WebSocket connection EXCHANGE has broken",
+                        0.1,
+                        "WebSocket connection EXCHANGE has broken",
+                    )
 
 
     async def distribute_ticker_result_as_per_data_type(
@@ -725,6 +727,7 @@ class StreamAccountData:
 
 
 def main():
+    # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
