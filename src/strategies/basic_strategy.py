@@ -9,6 +9,7 @@ from dataclassy import dataclass
 # user defined formula
 from db_management import sqlite_management
 from utilities import string_modification as str_mod
+from loguru import logger as log
 
 
 async def querying_label_and_size(table) -> list:
@@ -69,6 +70,9 @@ async def get_market_condition(
     rising_price = False
     falling_price = False
     neutral_price = False
+    
+    log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
+    log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
 
     if delta_price_pct > threshold:
         if delta_price < 0:
