@@ -16,10 +16,10 @@ endif
 all: lint trading_app
 
 $(VENV): requirements.txt setup.py
-    $(PY) -m venv $(VENV)
-    $(BIN)/pip3 install --upgrade -r requirements.txt
-    $(BIN)/pip3 install -e .
-    touch $(VENV)
+	$(PY) -m venv $(VENV)
+	$(BIN)/pip3 install --upgrade -r requirements.txt
+	$(BIN)/pip3 install -e .
+	touch $(VENV)
 
 .PHONY: trading_app
 trading_app: $(VENV)
