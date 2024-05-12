@@ -23,15 +23,15 @@ $(VENV): requirements.txt setup.py
 
 .PHONY: trading_app
 trading_app: $(VENV)
-    $(BIN)/pytest
+	$(BIN)/pytest
 
 .PHONY: lint
 lint: $(VENV)
-    $(BIN)/flake8
+	$(BIN)/flake8
 
 .PHONY: release
 release: $(VENV)
-    $(BIN)/python setup.py sdist bdist_wheel upload
+	$(BIN)/python setup.py sdist bdist_wheel upload
 
 
 .PHONY: virtual install build-requirements black isort flake8 clean-pyc clean-build docs clean
