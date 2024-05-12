@@ -3,7 +3,7 @@
 # https://github.com/sio/Makefile.venv
 # system python interpreter. used only to create virtual environment
 PY = python3
-VENV = venv
+VENV = my_venv
 BIN=$(VENV)/bin
 
 # make it work on windows too
