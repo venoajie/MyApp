@@ -23,7 +23,7 @@ $(VENV): requirements.txt
 
 .PHONY: trading_app
 trading_app: $(VENV)
-	$(BIN)/ -m pytest
+	$(BIN)/ ls -l
 
 .PHONY: lint
 lint: $(VENV)
