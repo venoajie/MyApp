@@ -54,7 +54,7 @@ async def run_every_5_seconds() -> None:
         "my_trades_all_json"
     )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
-    print(my_trades_open_all)
+#    print(my_trades_open_all)
 
     await clean_up_closed_transactions(my_trades_open_all)
 
@@ -75,6 +75,7 @@ async def check_and_save_every_60_minutes():
 
         get_currencies_all = await get_currencies(connection_url)
         currencies = [o["currency"] for o in get_currencies_all["result"]]
+#        print(currencies)
 
         for currency in currencies:
 
@@ -128,4 +129,5 @@ if __name__ == "__main__":
             time.sleep(0.91)
 
     except Exception as error:
+        print(error)
         catch_error(error, 30)
