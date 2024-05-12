@@ -15,7 +15,7 @@ endif
 
 all: lint trading_app
 
-$(VENV): requirements.txt setup.py
+$(VENV): requirements.txt 
 	$(PY) -m venv $(VENV)
 	$(BIN)/pip3 install --upgrade -r requirements.txt
 	$(BIN)/pip3 install -e .
