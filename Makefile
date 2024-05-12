@@ -18,7 +18,6 @@ all: lint trading_app
 $(VENV): requirements.txt setup.py
     $(PY) -m venv $(VENV)
     $(BIN)/pip install --upgrade -r requirements.txt
-    $(BIN)/pip install --upgrade -r requirements-dev.txt
     $(BIN)/pip install -e .
     touch $(VENV)
 
