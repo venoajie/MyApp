@@ -27,7 +27,7 @@ async def get_instruments(connection_url, currency) -> float:
     """ """
 
     result = await get_dbt.get_instruments(connection_url, currency)
-    print(result)
+    
 
     return result
 
@@ -54,6 +54,7 @@ async def run_every_5_seconds() -> None:
         "my_trades_all_json"
     )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
+    print(my_trades_open_all)
 
     await clean_up_closed_transactions(my_trades_open_all)
 
