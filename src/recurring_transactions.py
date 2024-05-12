@@ -27,6 +27,7 @@ async def get_instruments(connection_url, currency) -> float:
     """ """
 
     result = await get_dbt.get_instruments(connection_url, currency)
+    print(result)
 
     return result
 
