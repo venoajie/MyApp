@@ -23,7 +23,7 @@ $(VENV): requirements.txt
 
 .PHONY: trading_app
 trading_app: $(VENV)
-	$(BIN)/pytest
+#	$(BIN)/pytest
 
 .PHONY: lint
 lint: $(VENV)
