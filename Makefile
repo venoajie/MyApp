@@ -17,13 +17,14 @@ all: lint trading_app
 
 $(VENV): requirements.txt 
 	$(PY) -m venv $(VENV)
-	virtualenv --version
+	
 	$(BIN)/pip3 install --upgrade -r requirements.txt
 	$(BIN)/pip3 install -e .
 	touch $(VENV)
 
 .PHONY: trading_app
 trading_app: $(VENV)
+	virtualenv --version
 	$(BIN)/pytest
 
 .PHONY: lint
