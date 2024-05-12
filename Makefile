@@ -13,7 +13,7 @@ ifeq ($(OS), Windows_NT)
 endif
 
 
-all: lint trading_app
+all: lint test
 
 $(VENV): requirements.txt 
 	$(PY) -m venv $(VENV)
@@ -22,8 +22,8 @@ $(VENV): requirements.txt
 	$(BIN)/pip3 install -e .
 	touch $(VENV)
 
-.PHONY: trading_app
-trading_app: $(VENV)
+.PHONY: test
+test: $(VENV)
 	virtualenv --version
 	$(BIN)/pytest
 
