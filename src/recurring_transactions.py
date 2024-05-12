@@ -64,7 +64,7 @@ async def run_every_60_seconds() -> None:
     rows_threshold= 1000000
 
     await count_and_delete_ohlc_rows(rows_threshold)
-
+#
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"

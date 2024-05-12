@@ -45,11 +45,8 @@ class HedgingSpot(BasicStrategy):
             "orders_all_json", "open"
         )
 
-        rising_price = market_condition["rising_price"]
-        falling_price = market_condition["falling_price"]
-
-        bullish = rising_price
-        bearish = falling_price
+        bullish = market_condition["rising_price"]
+        bearish = market_condition["falling_price"]
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().transaction_attributes(
