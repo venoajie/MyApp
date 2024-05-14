@@ -588,7 +588,7 @@ class ApplyHedgingSpot:
                             open_trade_strategy_label,
                             MIN_HEDGING_RATIO,
                         )
-                        # log.critical (f' send_closing_order {send_closing_order}')
+                        log.critical (f' send_closing_order {send_closing_order}')
                         await self.if_order_is_true(send_closing_order, instrument)
 
                     if "marketMaker" in strategy_attr["strategy"]:
