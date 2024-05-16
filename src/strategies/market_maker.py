@@ -21,7 +21,7 @@ class MarketMaker(BasicStrategy):
         return BasicStrategy(self.strategy_label)
 
     async def is_send_and_cancel_open_order_allowed(
-        self, notional: float, ask_price: float, bid_price: float, server_time: int
+        self, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
     ) -> dict:
         """
         """
@@ -36,6 +36,9 @@ class MarketMaker(BasicStrategy):
         len_my_trades: int = my_trades["transactions_len"]
         max_tstamp_my_trades: int = my_trades["max_time_stamp"]
         ratio = await self.get_basic_params().get_side_ratio()
+        
+        bullish = market_condition["rising_price"]
+        bearish = market_condition["falling_price"]
 
         print(f" ratio {ratio}")
 
