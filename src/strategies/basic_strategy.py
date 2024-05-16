@@ -131,6 +131,7 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
     """
     check whether delta time has exceed time threhold
     """
+    log.debug (f'  server_time {server_time} time_stamp {time_stamp} time_threshold {time_threshold}')
     return delta_time(server_time, time_stamp) > time_threshold
 
 
