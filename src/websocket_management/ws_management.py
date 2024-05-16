@@ -463,8 +463,8 @@ async def opening_transactions(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
 
-                        #await if_order_is_true(send_order, instrument)
-                        #await if_cancel_is_true(send_order)
+                        await if_order_is_true(send_order, instrument)
+                        await if_cancel_is_true(send_order)
                         log.info(send_order)
 
                 else:
