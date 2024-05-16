@@ -77,6 +77,8 @@ class MarketMaker(BasicStrategy):
             )
 
             print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} ")
+            print(f"bullish {bullish} ")
+            print(f"bearish {bearish} ")
             if minimum_waiting_time_has_passed and len_orders == []:
                     
                 if params["side"] == "buy" and bullish:
