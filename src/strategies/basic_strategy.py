@@ -132,7 +132,7 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
     check whether delta time has exceed time threhold
     """
     log.debug (f'  server_time {server_time} time_stamp {time_stamp} time_threshold {time_threshold}')
-    return delta_time(server_time, time_stamp) > time_threshold
+    return True if time_stamp==[] else delta_time(server_time, time_stamp) > time_threshold
 
 
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
