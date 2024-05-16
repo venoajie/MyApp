@@ -60,10 +60,6 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
 
-        if max_tstamp_my_trades == []:
-            if len_orders == [] and len_my_trades == []:
-                order_allowed: bool = True
-
         else:
             if params["side"] == "buy":
                 time_balancer = ratio["long_short_ratio"]
