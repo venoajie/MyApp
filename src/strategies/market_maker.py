@@ -68,10 +68,6 @@ class MarketMaker(BasicStrategy):
 
             len_my_trades = 1 if time_balancer == 1 else len_my_trades
 
-            print(f"bullish {bullish} ")
-            print(f"bearish {bearish} ")
-            print(f"market_condition {market_condition} ")
-
             time_interval_qty: float = time_interval * len_my_trades * time_balancer
             print(
                 f"time_interval_qty {time_interval_qty} len_orders {len_orders} time_balancer {time_balancer}"
