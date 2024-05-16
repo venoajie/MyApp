@@ -455,7 +455,7 @@ async def opening_transactions(
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
 
-                    if False and "marketMaker" in strategy_attr["strategy"]:
+                    if  "marketMaker" in strategy_attr["strategy"]:
 
                         market_maker = MM.MarketMaker(strategy_label)
 
@@ -463,8 +463,8 @@ async def opening_transactions(
                             notional, best_ask_prc, best_bid_prc, server_time
                         )
 
-                        await if_order_is_true(send_order, instrument)
-                        await if_cancel_is_true(send_order)
+                        #await if_order_is_true(send_order, instrument)
+                        #await if_cancel_is_true(send_order)
                         log.info(send_order)
 
                 else:
