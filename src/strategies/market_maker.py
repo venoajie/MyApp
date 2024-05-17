@@ -60,30 +60,15 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
 
-        else:
-            if params["side"] == "buy":
-                time_balancer = ratio["long_short_ratio"]
-            if params["side"] == "sell":
-                time_balancer = ratio["short_long_ratio"]
-
-            len_my_trades = 1 if time_balancer == 1 else len_my_trades
-
-            time_interval_qty: float = time_interval * len_my_trades * time_balancer
-            print(
-                f"time_interval_qty {time_interval_qty} len_orders {len_orders} time_balancer {time_balancer}"
-            )
-            minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
-                server_time, max_tstamp_my_trades, time_interval_qty
-            )
-
             print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders} ")
-            if minimum_waiting_time_has_passed and (len_orders == [] or len_orders == 0):
-                print(f"params {params} {bullish} {bearish} ")
-                    
-                if params["side"] == "buy" and bullish:
-                    order_allowed: bool = True
-                if params["side"] == "sell" and bearish:
-                    order_allowed: bool = True
+            
+        if (len_orders == [] or len_orders == 0):
+            print(f"params {params} {bullish} {bearish} ")
+                
+            if params["side"] == "buy" and bullish:
+                order_allowed: bool = True
+            if params["side"] == "sell" and bearish:
+                order_allowed: bool = True
 
         return dict(
             order_allowed=order_allowed,
