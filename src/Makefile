@@ -10,16 +10,12 @@ test:
 	python3 uji_hapus.py
 	sh checkEvents.sh
 
-fetch-data: 
+
+exe-app: 
 	nohup python3 recurring_transactions.py >/dev/null 2>&1 &
 	sleep 3
 	nohup python3 app >/dev/null 2>&1 &
-	ps -ef
-	
-
-exe-app: 
-	nohup sh checkEvents.sh >/dev/null 2>&1 &
-	sleep 5m
+	ps -ef	sleep 5m
 	nohup sh sync_with_remote.sh >/dev/null 2>&1 &
 
 replace-db: 
@@ -29,3 +25,7 @@ create-db:
 	python3 sqlite_exe.py
 
 
+	nohup python3 recurring_transactions.py >/dev/null 2>&1 &
+	nohup python3 app >/dev/null 2>&1 &
+	nohup sh sync_with_remote.sh >/dev/null 2>&1 &
+	ps -ef
