@@ -74,7 +74,7 @@ async def get_market_condition(
     log.debug (f'  last_price {last_price} ema {ema}')
     log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
-    log.debug (f'  ohlc {ohlc}')
+    #log.debug (f'  ohlc {ohlc}')
 
     if delta_price_pct > threshold:
         if delta_price < 0:
@@ -131,7 +131,8 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
     """
     check whether delta time has exceed time threhold
     """
-    return delta_time(server_time, time_stamp) > time_threshold
+    log.debug (f'  server_time {server_time} time_stamp {time_stamp} time_threshold {time_threshold}')
+    return True if time_stamp==[] else delta_time(server_time, time_stamp) > time_threshold
 
 
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:

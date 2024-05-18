@@ -21,7 +21,7 @@ class MarketMaker(BasicStrategy):
         return BasicStrategy(self.strategy_label)
 
     async def is_send_and_cancel_open_order_allowed(
-        self, notional: float, ask_price: float, bid_price: float, server_time: int
+        self, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
     ) -> dict:
         """
         """
@@ -30,14 +30,9 @@ class MarketMaker(BasicStrategy):
         )
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-        my_trades: dict = await self.get_basic_params().transaction_attributes(
-            "my_trades_all_json"
-        )
-        len_my_trades: int = my_trades["transactions_len"]
-        max_tstamp_my_trades: int = my_trades["max_time_stamp"]
-        ratio = await self.get_basic_params().get_side_ratio()
-
-        print(f" ratio {ratio}")
+        
+        bullish = market_condition["rising_price"]
+        bearish = market_condition["falling_price"]
 
         params: dict = self.get_basic_params().get_basic_opening_paramaters(
             notional, ask_price, bid_price
@@ -57,28 +52,14 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
 
-        if max_tstamp_my_trades == []:
-            if len_orders == [] and len_my_trades == []:
+            print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders} ")
+            
+        if (len_orders == [] or len_orders == 0):
+            print(f"params {params} {bullish} {bearish} ")
+                
+            if params["side"] == "buy" and bullish:
                 order_allowed: bool = True
-
-        else:
-            if params["side"] == "buy":
-                time_balancer = ratio["long_short_ratio"]
-            if params["side"] == "sell":
-                time_balancer = ratio["short_long_ratio"]
-
-            len_my_trades = 1 if time_balancer == 1 else len_my_trades
-
-            time_interval_qty: float = time_interval * len_my_trades * time_balancer
-            print(
-                f"time_interval_qty {time_interval_qty} len_orders {len_orders} time_balancer {time_balancer}"
-            )
-            minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
-                server_time, max_tstamp_my_trades, time_interval_qty
-            )
-
-            print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} ")
-            if minimum_waiting_time_has_passed and len_orders == []:
+            if params["side"] == "sell" and bearish:
                 order_allowed: bool = True
 
         return dict(

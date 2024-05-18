@@ -27,6 +27,7 @@ async def get_instruments(connection_url, currency) -> float:
     """ """
 
     result = await get_dbt.get_instruments(connection_url, currency)
+    
 
     return result
 
@@ -53,6 +54,7 @@ async def run_every_5_seconds() -> None:
         "my_trades_all_json"
     )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
+#    print(my_trades_open_all)
 
     await clean_up_closed_transactions(my_trades_open_all)
 
@@ -64,7 +66,7 @@ async def run_every_60_seconds() -> None:
     rows_threshold= 1000000
 
     await count_and_delete_ohlc_rows(rows_threshold)
-
+#
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
@@ -73,6 +75,7 @@ async def check_and_save_every_60_minutes():
 
         get_currencies_all = await get_currencies(connection_url)
         currencies = [o["currency"] for o in get_currencies_all["result"]]
+#        print(currencies)
 
         for currency in currencies:
 
@@ -126,4 +129,5 @@ if __name__ == "__main__":
             time.sleep(0.91)
 
     except Exception as error:
+        print(error)
         catch_error(error, 30)

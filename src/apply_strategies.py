@@ -588,7 +588,7 @@ class ApplyHedgingSpot:
                             open_trade_strategy_label,
                             MIN_HEDGING_RATIO,
                         )
-                        # log.critical (f' send_closing_order {send_closing_order}')
+                        log.critical (f' send_closing_order {send_closing_order}')
                         await self.if_order_is_true(send_closing_order, instrument)
 
                     if "marketMaker" in strategy_attr["strategy"]:
@@ -692,7 +692,7 @@ class ApplyHedgingSpot:
                             market_maker = MM.MarketMaker(strategy_label)
 
                             send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
-                                notional, best_ask_prc, best_bid_prc, server_time
+                                notional, best_ask_prc, best_bid_prc, server_time, market_condition
                             )
 
                             await self.if_order_is_true(send_order, instrument)
@@ -780,7 +780,7 @@ class ApplyHedgingSpot:
                 # log.warning (leverage_and_delta)
                 limit = 100
                 ratio = 0.9
-                threshold = 0.01 / 100
+                threshold = 0.001 / 100
                 market_condition = await basic_strategy.get_market_condition(
                     threshold, limit, ratio
                 )
