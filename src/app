@@ -607,6 +607,8 @@ class StreamAccountData:
         import deribit_get
 
         log.warning("Cancelling all orders")
+        await sqlite_management.deleting_row(
+            "order_all_json")
         msg= deribit_get.get_cancel_order_all()
         await self.websocket_client.send(json.dumps(msg))
 
