@@ -487,7 +487,7 @@ async def deleting_row(
     """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
-    query_table_filter_none = f"DELETE * FROM {table} ?"
+    query_table_filter_none = f"DELETE FROM {table}?"
 
     filter_val = (f"{filter_value}",)
 
