@@ -365,7 +365,7 @@ class StreamAccountData:
                                             server_time = await current_server_time()
                                             
                                             log.error(f"market_condition {market_condition}")
-        
+                                        
 
                                     if (
                                         message_channel
