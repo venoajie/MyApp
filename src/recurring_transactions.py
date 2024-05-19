@@ -14,6 +14,12 @@ from utilities import pickling, system_tools
 import deribit_get as get_dbt
 from db_management import sqlite_management
 
+from strategies import entries_exits, basic_strategy
+
+from websocket_management.ws_management import (current_server_time,opening_transactions, reading_from_pkl_database)
+
+
+
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
@@ -39,7 +45,7 @@ async def get_currencies(connection_url) -> float:
 
     return result
 
-async def run_every_5_seconds() -> None:
+async def run_every_5_seconds__() -> None:
     
     """ 
     reconsider:
@@ -58,6 +64,55 @@ async def run_every_5_seconds() -> None:
 
     await clean_up_closed_transactions(my_trades_open_all)
 
+async def run_every_5_seconds() -> None:
+    """ """
+
+    # gathering basic data
+    reading_from_database: dict = await reading_from_pkl_database(currency)
+
+    # fetch positions for all instruments
+    positions_all: list = reading_from_database[
+        "positions_from_sub_account"
+    ]
+    size_from_positions: float = 0 if positions_all == [] else sum(
+        [o["size"] for o in positions_all]
+    )
+
+    # fetch strategies attributes
+    strategies = entries_exits.strategies
+
+    limit = 100
+    ratio = 0.9
+    threshold = 0.01 / 100
+
+    market_condition = await basic_strategy.get_market_condition(
+        threshold, limit, ratio
+    )
+    
+    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+        "my_trades_all_json"
+    )
+    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+
+    instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+    server_time = await current_server_time()
+    instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+    server_time = await current_server_time()
+
+    # get portfolio data
+    portfolio: list = reading_from_database["portfolio"]
+
+                                            
+    for instrument in instrument_transactions:
+        await opening_transactions(
+            instrument,
+            portfolio,
+            strategies,
+            my_trades_open_sqlite,
+            size_from_positions,
+            server_time,
+            market_condition,
+        )    
 async def run_every_60_seconds() -> None:
     """ """
 
@@ -117,6 +172,8 @@ if __name__ == "__main__":
     try:
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
+        
+        schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
