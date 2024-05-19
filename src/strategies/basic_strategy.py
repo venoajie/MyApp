@@ -71,9 +71,9 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
     
-    log.debug (f'  last_price {last_price} ema {ema}')
-    log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
-    log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
+    #log.debug (f'  last_price {last_price} ema {ema}')
+    #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
+    #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
 
     if delta_price_pct > threshold:
