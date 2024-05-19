@@ -429,6 +429,7 @@ async def deleting_row(
     """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
+    print(f"deleting_row {query_table}")
 
     filter_val = (f"{filter_value}",)
 
