@@ -201,7 +201,7 @@ class StreamAccountData:
                     if "params" in list(message):
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
-                            log.debug(message_channel)
+                            #log.debug(message_channel)
                             if "PERPETUAL." in message_channel:
                                 log.critical(message_channel)
 
@@ -535,8 +535,8 @@ class StreamAccountData:
         log.warning("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all()
         await self.websocket_client.send(json.dumps(msg))
-        await sqlite_management.deleting_row(
-            "orders_all_json")
+        #await sqlite_management.deleting_row(
+        #    "orders_all_json")
         
     async def deleting_cancel_order(
         self, table: list, database: str, data, cancelled_order

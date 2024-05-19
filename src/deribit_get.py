@@ -560,12 +560,16 @@ class GetPrivateData:
         return result
 
     async def get_cancel_order_all(self):
+        from db_management import sqlite_management
         # Set endpoint
         endpoint: str = "private/cancel_all"
 
         params = {"detailed": False}
 
         result = await self.parse_main(endpoint=endpoint, params=params)
+        await sqlite_management.deleting_row(
+            "orders_all_json")
+        
         return result
 
 

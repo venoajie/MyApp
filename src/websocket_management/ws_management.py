@@ -185,6 +185,7 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
 async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
+    await private_data.get_cancel_order_all()
     await private_data.send_limit_order(params)
 
 
