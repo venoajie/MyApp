@@ -487,6 +487,7 @@ async def deleting_row(
     """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
+    query_table_filter_none = f"DELETE * FROM {table} ?"
 
     filter_val = (f"{filter_value}",)
 
@@ -494,7 +495,10 @@ async def deleting_row(
         print(f"deleting_row {query_table}")
         print(f"filter_val {filter_val}")
         async with aiosqlite.connect(database, isolation_level=None) as db:
-            await db.execute(query_table, filter_val)
+            if filter == None:
+                await db.execute(query_table_filter_none, filter_val)
+            else:
+                await db.execute(query_table, filter_val)
 
     except Exception as error:
         print(f"deleting_row {error}")
