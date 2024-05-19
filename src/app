@@ -4,6 +4,7 @@
 from datetime import datetime, timedelta
 import asyncio
 import json
+from concurrent.futures import TimeoutError as ConnectionTimeoutError
 
 # installed
 import websockets
@@ -74,6 +75,9 @@ class StreamAccountData:
         ) as self.websocket_client:
             
             while True:
+                
+                live = True
+                
                 # Authenticate WebSocket Connection
                 await self.ws_auth()
 
@@ -561,9 +565,6 @@ class StreamAccountData:
                                     continue
 
                 else:
-                        
-                    # Establish restart procedure
-                    await self.on_restart()
                 
                     log.info("WebSocket connection has broken.")
                     await system_tools.raise_error_message(
@@ -571,8 +572,10 @@ class StreamAccountData:
                         0.1,
                         "WebSocket connection EXCHANGE has broken",
                     )
-
-
+        
+                    # Establish restart procedure
+                    await self.on_restart()
+                
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
     ) -> None:
