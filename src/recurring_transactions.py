@@ -10,13 +10,13 @@ import time
 import aiohttp
 
 # user defined formula
-from utilities import pickling, system_tools
+from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get as get_dbt
 from db_management import sqlite_management
 
 from strategies import entries_exits, basic_strategy
 
-from websocket_management.ws_management import (current_server_time,opening_transactions, reading_from_pkl_database)
+from websocket_management.ws_management import (current_server_time,opening_transactions, reading_from_pkl_database, closing_transactions)
 
 
 
@@ -101,6 +101,48 @@ async def run_every_5_seconds() -> None:
 
     # get portfolio data
     portfolio: list = reading_from_database["portfolio"]
+        # fetch positions for all instruments
+    positions_all: list = reading_from_database[
+        "positions_from_sub_account"
+    ]
+    size_from_positions: float = 0 if positions_all == [] else sum(
+        [o["size"] for o in positions_all]
+    )
+
+    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+        "my_trades_all_json"
+    )
+    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+
+    # clean up transactions all
+    my_trades_open = [o for o in my_trades_open if "label" in o]
+
+    my_trades_open_remove_closed_labels = (
+        []
+        if my_trades_open == []
+        else [o for o in my_trades_open if "closed" not in o["label"]]
+    )
+    label_transaction_net = (
+        []
+        if my_trades_open_remove_closed_labels == []
+        else str_mod.remove_redundant_elements(
+            [
+                str_mod.parsing_label(o["label"])["transaction_net"]
+                for o in my_trades_open_remove_closed_labels
+            ]
+        )
+    )
+
+    await closing_transactions(
+        label_transaction_net,
+        portfolio,
+        strategies,
+        my_trades_open_sqlite,
+        my_trades_open,
+        size_from_positions,
+        market_condition,
+        currency,
+    )
 
                                             
     for instrument in instrument_transactions:
