@@ -780,7 +780,7 @@ class ApplyHedgingSpot:
                 # log.warning (leverage_and_delta)
                 limit = 100
                 ratio = 0.9
-                threshold = 0.001 / 100
+                threshold = (1 / 100)/2
                 market_condition = await basic_strategy.get_market_condition(
                     threshold, limit, ratio
                 )
