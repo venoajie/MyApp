@@ -10,7 +10,7 @@ For strategy with many derivatives name (a/b/c):
 
 equity_risked_pct_default = 1 / 100 / 4  # .25%
 TAKE_PROFIT_PCT_GRID = 1 / 100 / 4
-TAKE_PROFIT_PCT_MM = 1 / 100 / 10
+TAKE_PROFIT_PCT_MM = (1 / 100) / 2
 TAKE_PROFIT_PCT_DAILY = 0.03
 
 strategies = [
