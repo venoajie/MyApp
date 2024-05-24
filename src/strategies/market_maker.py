@@ -20,6 +20,49 @@ class MarketMaker(BasicStrategy):
         """
         return BasicStrategy(self.strategy_label)
 
+    async def is_cancel_order_allowed(self, len_orders: int, 
+                                server_time: int, 
+                                max_tstamp_orders: int, 
+                                time_interval: float 
+                                ) -> bool:
+        """
+        """
+        
+        cancel_allowed: bool = False
+
+        if len_orders != [] and len_orders > 0:
+            minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
+                server_time, max_tstamp_orders, time_interval
+            )
+            if minimum_waiting_time_has_passed:
+                cancel_allowed: bool = True
+
+        print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders} ")
+            
+        return cancel_allowed
+
+
+    async def is_send_order_allowed(self, len_orders: int, side: str,
+                                market_condition: dict 
+                                ) -> bool:
+        """
+        """
+
+        order_allowed: bool = False
+        
+        bullish = market_condition["rising_price"]
+        bearish = market_condition["falling_price"]
+        
+        if (len_orders == [] or len_orders == 0):
+            print(f"side {side} {bullish} {bearish} ")
+                
+            if side == "buy" and bullish:
+                order_allowed: bool = True
+            if side == "sell" and bearish:
+                order_allowed: bool = True
+
+        return order_allowed
+
     async def is_send_and_cancel_open_order_allowed(
         self, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
     ) -> dict:
@@ -31,37 +74,26 @@ class MarketMaker(BasicStrategy):
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         
-        bullish = market_condition["rising_price"]
-        bearish = market_condition["falling_price"]
-
         params: dict = self.get_basic_params().get_basic_opening_paramaters(
             notional, ask_price, bid_price
         )
 
         time_interval: float = params["interval_time_between_order_in_ms"]
+        max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
 
-        order_allowed: bool = False
-        cancel_allowed: bool = False
+        #is cancel order allowed?
+        cancel_allowed: bool = await self.is_cancel_order_allowed(len_orders, 
+                                server_time, 
+                                max_tstamp_orders, 
+                                time_interval 
+                                )
+        side= params["side"]
 
-        if len_orders != [] and len_orders > 0:
-            max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
-
-            minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
-                server_time, max_tstamp_orders, time_interval
-            )
-            if minimum_waiting_time_has_passed:
-                cancel_allowed: bool = True
-
-            print(f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders} ")
-            
-        if (len_orders == [] or len_orders == 0):
-            print(f"params {params} {bullish} {bearish} ")
-                
-            if params["side"] == "buy" and bullish:
-                order_allowed: bool = True
-            if params["side"] == "sell" and bearish:
-                order_allowed: bool = True
-
+        #is open order allowed?
+        order_allowed: bool= await self.is_send_order_allowed(len_orders, side,
+                                market_condition 
+                                )
+        
         return dict(
             order_allowed=order_allowed,
             order_parameters=[] if order_allowed == False else params,
