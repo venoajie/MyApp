@@ -504,9 +504,6 @@ async def opening_transactions(
                         )
                         log.debug(
                     f"send_order   {send_order}"
-                    
-                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
-
                 )
                         if send_order["order_allowed"]:
                             side = send_order["order_parameters"]["side"]
