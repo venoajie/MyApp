@@ -519,7 +519,7 @@ async def opening_transactions(
                                 delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
 
                             log.debug(
-                        f"constraint   {constraint}"
+                        f"constraint   {constraint} last_price   {last_price} side   {side}" 
                     )                 
                             if constraint:
                                 
