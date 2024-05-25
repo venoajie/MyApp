@@ -53,12 +53,12 @@ class MarketMaker(BasicStrategy):
         bearish = market_condition["falling_price"]
         
         if (len_orders == [] or len_orders == 0):
-            print(f"side {side} {bullish} {bearish} ")
                 
             if side == "buy" and bullish:
                 order_allowed: bool = True
             if side == "sell" and bearish:
                 order_allowed: bool = True
+        print(f"side {side} {bullish} {bearish} {order_allowed} ")
 
         return order_allowed
     
@@ -87,6 +87,7 @@ class MarketMaker(BasicStrategy):
                                 time_interval 
                                 )
         side= params["side"]
+        print(f"params {params} ")
 
         #is open order allowed?
         order_allowed: bool= await self.is_send_order_allowed(len_orders, side,
