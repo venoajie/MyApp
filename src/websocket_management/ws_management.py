@@ -376,14 +376,27 @@ async def update_user_changes(data_orders, currency) -> None:
     log.info(f"update_user_changes-END")
 
 
+def get_last_price(my_trades_open_strategy: list) -> float:
+    """
+    """
+    max_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] > 0] 
+    min_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    
+    return  {
+            "max_traded_price": max_traded_price,
+            "min_traded_price": min_traded_price
+        }
+
+
+
 def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float) -> bool:
     """
     """
+    
     delta_price= abs(abs(last_traded_price)-market_price)
     delta_price_pct= delta_price/last_traded_price
 
     return delta_price_pct > threshold
-
 
 async def opening_transactions(
     instrument,
@@ -448,9 +461,12 @@ async def opening_transactions(
                     f"my_trades_open_all   {my_trades_open_all}"
                 )
                     THRESHOLD_BEFORE_REORDER = ONE_PCT/2
+                    
+                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
+
                     my_trades_open_strategy = [
                 o
-                for o in my_trades_open_all
+                for o in my_trades_open
                 if strategy_label in (o["label_main"])
             ]
            
@@ -458,7 +474,12 @@ async def opening_transactions(
                     log.debug(
                     f"my_trades_open_strategy   {my_trades_open_strategy}"
                 )
-                    constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, my_trades_open_all, index_price)
+                    last_price= get_last_price(my_trades_open_strategy)
+                 
+                    log.debug(
+                    f"last_price   {last_price}"
+                )
+                    constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
                     log.debug(
                     f"constraint   {constraint}"
                 )
