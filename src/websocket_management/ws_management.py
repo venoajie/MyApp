@@ -502,9 +502,6 @@ async def opening_transactions(
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
-                        log.debug(
-                    f"send_order   {send_order}"
-                )
                         if send_order["order_allowed"]:
                             side = send_order["order_parameters"]["side"]
                             if "sell"in side:
@@ -514,8 +511,10 @@ async def opening_transactions(
                                 
                         constraint= True if last_price==0 else \
                             delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
-                        f"constraint   {constraint}"
-                 
+
+                        log.debug(
+                    f"constraint   {constraint}"
+                )                 
                         if constraint:
                             
                             await if_order_is_true(send_order, instrument)
