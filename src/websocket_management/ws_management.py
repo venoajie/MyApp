@@ -387,14 +387,20 @@ def get_last_price(my_trades_open_strategy: list) -> float:
             "min_traded_price": 0 if min_traded_price ==[] else min(min_traded_price)
         }
 
-def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float) -> bool:
+def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
     """
     """
     
     delta_price= abs(abs(last_traded_price)-market_price)
     delta_price_pct= delta_price/last_traded_price
+    is_reorder_ok = True if last_traded_price == 0 else False
+    if side=="buy":
+        is_reorder_ok= delta_price_pct > threshold and market_price < last_traded_price
 
-    return delta_price_pct > threshold
+    if side=="sell":
+        is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
+
+    return is_reorder_ok
 
 async def opening_transactions(
     instrument,
@@ -505,21 +511,21 @@ async def opening_transactions(
                         if send_order["order_allowed"]:
                             side = send_order["order_parameters"]["side"]
                             if "sell"in side:
-                                last_price= last_price_all["min_traded_price"]
-                            if "buy"in side:
                                 last_price= last_price_all["max_traded_price"]
-                                
-                        constraint= True if last_price==0 else \
-                            delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
+                            if "buy"in side:
+                                last_price= last_price_all["min_traded_price"]
+                                    
+                            constraint= True if last_price==0 else \
+                                delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
 
-                        log.debug(
-                    f"constraint   {constraint}"
-                )                 
-                        if constraint:
-                            
-                            await if_order_is_true(send_order, instrument)
-                            await if_cancel_is_true(send_order)
-                            log.info(send_order)
+                            log.debug(
+                        f"constraint   {constraint}"
+                    )                 
+                            if constraint:
+                                
+                                await if_order_is_true(send_order, instrument)
+                                await if_cancel_is_true(send_order)
+                                log.info(send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
