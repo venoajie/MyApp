@@ -472,10 +472,10 @@ async def opening_transactions(
                     log.debug(
                     f"my_trades_open_strategy   {my_trades_open_strategy}"
                 )
-                    last_price= get_last_price(my_trades_open_strategy)
+                    last_price_all= get_last_price(my_trades_open_strategy)
                  
                     log.debug(
-                    f"last_price   {last_price}"
+                    f"last_price   {last_price_all}"
                 )
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
@@ -504,12 +504,26 @@ async def opening_transactions(
                         )
                         log.debug(
                     f"send_order   {send_order}"
+                    
+                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
+
                 )
-                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
-                        
-                        await if_order_is_true(send_order, instrument)
-                        await if_cancel_is_true(send_order)
-                        log.info(send_order)
+                        if send_order["order_allowed"]:
+                            side = send_order["order_parameters"]["side"]
+                            if "sell"in side:
+                                last_price= last_price_all["min_traded_price"]
+                            if "buy"in side:
+                                last_price= last_price_all["max_traded_price"]
+                                
+                        constraint= True if last_price==0 else \
+                            delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
+                        f"constraint   {constraint}"
+                 
+                        if constraint:
+                            
+                            await if_order_is_true(send_order, instrument)
+                            await if_cancel_is_true(send_order)
+                            log.info(send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
