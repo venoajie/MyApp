@@ -379,8 +379,22 @@ async def update_user_changes(data_orders, currency) -> None:
 def get_last_price(my_trades_open_strategy: list) -> float:
     """
     """
-    buy_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] > 0] 
-    sell_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    my_trades_open_strategy_buy= [o for o in my_trades_open_strategy if o["amount_dir"] > 0] 
+    my_trades_open_strategy_sell= [o for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    buy_traded_price= [o["price"] for o in my_trades_open_strategy_buy] 
+    sell_traded_price= [o["price"] for o in my_trades_open_strategy_sell] 
+
+    log.debug (
+                    f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
+                )
+
+    log.debug (
+                    f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
+                )
+
+    log.debug (
+                    f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
+                )
     
     return  {
             "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
