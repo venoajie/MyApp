@@ -451,7 +451,7 @@ async def opening_transactions(
                     my_trades_open_strategy = [
                 o
                 for o in my_trades_open_all
-                if strategy_label in (o["label"])
+                if strategy_label in (o["label_main"])
             ]
            
                  
