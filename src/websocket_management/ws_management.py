@@ -376,6 +376,15 @@ async def update_user_changes(data_orders, currency) -> None:
     log.info(f"update_user_changes-END")
 
 
+def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float) -> bool:
+    """
+    """
+    delta_price= abs(abs(last_traded_price)-market_price)
+    delta_price_pct= delta_price/last_traded_price
+
+    return delta_price_pct > threshold
+
+
 async def opening_transactions(
     instrument,
     portfolio,
@@ -390,10 +399,6 @@ async def opening_transactions(
     log.warning(f"OPENING TRANSACTIONS-START")
 
     try:
-
-        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-            "my_trades_all_json"
-        )
         my_trades_open_all: list = my_trades_open_sqlite["all"]
         # log.error (my_trades_open_all)
 
@@ -439,6 +444,13 @@ async def opening_transactions(
 
                 if size_is_consistent:  # and open_order_is_consistent:
 
+                    THRESHOLD_BEFORE_REORDER = ONE_PCT/2
+                    constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, my_trades_open_all, index_price)
+                    log.debug(
+                    f"constraint   {constraint}"
+                )
+
+
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
                         THRESHOLD_TIME_TO_CANCEL = 3
@@ -456,7 +468,7 @@ async def opening_transactions(
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
 
-                    if  "marketMaker" in strategy_attr["strategy"]:
+                    if  "marketMaker" in strategy_attr["strategy"] and constraint:
 
                         market_maker = MM.MarketMaker(strategy_label)
 

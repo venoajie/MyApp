@@ -41,14 +41,6 @@ class MarketMaker(BasicStrategy):
             
         return cancel_allowed
 
-    def delta_price_constraint(self, threshold: float, last_traded_price: float, market_price: float) -> bool:
-        """
-        """
-        delta_price= abs(abs(last_traded_price)-market_price)
-        delta_price_pct= delta_price/last_traded_price
-
-        return delta_price_pct > threshold
-
     async def is_send_order_allowed(self, len_orders: int, side: str,
                                 market_condition: dict 
                                 ) -> bool:

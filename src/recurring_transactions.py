@@ -16,7 +16,11 @@ from db_management import sqlite_management
 
 from strategies import entries_exits, basic_strategy
 
-from websocket_management.ws_management import (current_server_time,opening_transactions, reading_from_pkl_database, closing_transactions)
+from websocket_management.ws_management import (current_server_time,
+                                                opening_transactions, 
+                                                reading_from_pkl_database, 
+                                                closing_transactions
+                                                )
 
 
 
@@ -95,15 +99,19 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
-    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
 
-    # clean up transactions all
-    my_trades_open = [o for o in my_trades_open if "label" in o]
+    # remove transactions without label
+    my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
+    print(
+                    f"my_trades_open recurring transactions   {my_trades_open}"
+                )
+
 
     my_trades_open_remove_closed_labels = (
         []
@@ -142,7 +150,7 @@ async def run_every_5_seconds() -> None:
             server_time,
             market_condition,
         )    
-        
+
 async def run_every_60_seconds() -> None:
     """ """
 
