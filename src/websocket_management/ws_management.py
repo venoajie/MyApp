@@ -445,6 +445,10 @@ async def opening_transactions(
                 if size_is_consistent:  # and open_order_is_consistent:
 
                     THRESHOLD_BEFORE_REORDER = ONE_PCT/2
+                    
+                    log.debug(
+                    f"my_trades_open_all   {my_trades_open_all}"
+                )
                     constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, my_trades_open_all, index_price)
                     log.debug(
                     f"constraint   {constraint}"
