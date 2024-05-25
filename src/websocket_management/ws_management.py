@@ -379,12 +379,12 @@ async def update_user_changes(data_orders, currency) -> None:
 def get_last_price(my_trades_open_strategy: list) -> float:
     """
     """
-    max_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] > 0] 
-    min_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    buy_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] > 0] 
+    sell_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] < 0] 
     
     return  {
-            "max_traded_price": 0 if max_traded_price ==[] else max(max_traded_price),
-            "min_traded_price": 0 if min_traded_price ==[] else min(min_traded_price)
+            "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
+            "max_sell_traded_price": 0 if sell_traded_price ==[] else max(sell_traded_price)
         }
 
 def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
@@ -511,9 +511,9 @@ async def opening_transactions(
                         if send_order["order_allowed"]:
                             side = send_order["order_parameters"]["side"]
                             if "sell"in side:
-                                last_price= last_price_all["max_traded_price"]
+                                last_price= last_price_all["max_sell_traded_price"]
                             if "buy"in side:
-                                last_price= last_price_all["min_traded_price"]
+                                last_price= last_price_all["min_buy_traded_price"]
                                     
                             constraint= True if last_price==0 else \
                                 delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
