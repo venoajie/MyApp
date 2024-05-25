@@ -81,6 +81,7 @@ async def run_every_5_seconds() -> None:
     positions_all: list = reading_from_database[
         "positions_from_sub_account"
     ]
+    print(f"positions_all-recurring {positions_all} ")
     size_from_positions: float = 0 if positions_all == [] else sum(
         [o["size"] for o in positions_all]
     )
