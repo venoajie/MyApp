@@ -108,10 +108,6 @@ async def run_every_5_seconds() -> None:
 
     # remove transactions without label
     my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
-    print(
-                    f"my_trades_open recurring transactions   {my_trades_open}"
-                )
-
 
     my_trades_open_remove_closed_labels = (
         []
