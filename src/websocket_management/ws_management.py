@@ -387,8 +387,6 @@ def get_last_price(my_trades_open_strategy: list) -> float:
             "min_traded_price": 0 if min_traded_price ==[] else min(min_traded_price)
         }
 
-
-
 def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float) -> bool:
     """
     """
@@ -479,11 +477,6 @@ async def opening_transactions(
                     log.debug(
                     f"last_price   {last_price}"
                 )
-                    constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
-                    log.debug(
-                    f"constraint   {constraint}"
-                )
-
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -502,14 +495,18 @@ async def opening_transactions(
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
 
-                    if  "marketMaker" in strategy_attr["strategy"] and constraint:
+                    if  "marketMaker" in strategy_attr["strategy"]:
+                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
+                        
 
                         market_maker = MM.MarketMaker(strategy_label)
 
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
-
+                        log.debug(
+                    f"send_order   {send_order}"
+                )
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
                         log.info(send_order)
