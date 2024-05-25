@@ -461,9 +461,6 @@ async def opening_transactions(
 
                 if size_is_consistent:  # and open_order_is_consistent:
    
-                    log.debug(
-                    f"my_trades_open_all   {my_trades_open_all}"
-                )
                     THRESHOLD_BEFORE_REORDER = ONE_PCT/2
                     
                     my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
@@ -473,11 +470,7 @@ async def opening_transactions(
                 for o in my_trades_open
                 if strategy_label in (o["label_main"])
             ]
-           
-                 
-                    log.debug(
-                    f"my_trades_open_strategy   {my_trades_open_strategy}"
-                )
+   
                     last_price_all= get_last_price(my_trades_open_strategy)
                  
                     log.debug(
