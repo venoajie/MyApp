@@ -383,8 +383,8 @@ def get_last_price(my_trades_open_strategy: list) -> float:
     min_traded_price= [o["price"] for o in my_trades_open_strategy if o["amount_dir"] < 0] 
     
     return  {
-            "max_traded_price": max_traded_price,
-            "min_traded_price": min_traded_price
+            "max_traded_price": 0 if max_traded_price ==[] else max(max_traded_price),
+            "min_traded_price": 0 if min_traded_price ==[] else min(min_traded_price)
         }
 
 
