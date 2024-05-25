@@ -496,8 +496,6 @@ async def opening_transactions(
                         await if_cancel_is_true(send_order)
 
                     if  "marketMaker" in strategy_attr["strategy"]:
-                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
-                        
 
                         market_maker = MM.MarketMaker(strategy_label)
 
@@ -507,6 +505,8 @@ async def opening_transactions(
                         log.debug(
                     f"send_order   {send_order}"
                 )
+                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price)
+                        
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
                         log.info(send_order)
