@@ -404,17 +404,17 @@ def get_last_price(my_trades_open_strategy: list) -> float:
 def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
     """
     """
-    
-    delta_price= abs(abs(last_traded_price)-market_price)
-    delta_price_pct= delta_price/last_traded_price
-    is_reorder_ok = True if last_traded_price == 0 else False
-    if side=="buy":
-        is_reorder_ok= delta_price_pct > threshold and market_price < last_traded_price
+    if last_traded_price != []:
+        delta_price= abs(abs(last_traded_price)-market_price)
+        delta_price_pct= delta_price/last_traded_price
+        is_reorder_ok = True if last_traded_price == 0 else False
+        if side=="buy":
+            is_reorder_ok= delta_price_pct > threshold and market_price < last_traded_price
 
-    if side=="sell":
-        is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
+        if side=="sell":
+            is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
 
-    return is_reorder_ok
+    return True if last_traded_price==[] else is_reorder_ok
 
 async def opening_transactions(
     instrument,
