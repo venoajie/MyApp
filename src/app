@@ -4,7 +4,6 @@
 from datetime import datetime, timedelta
 import asyncio
 import json
-from concurrent.futures import TimeoutError as ConnectionTimeoutError
 
 # installed
 import websockets
@@ -18,9 +17,7 @@ from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
 
 from db_management import sqlite_management
-from strategies import entries_exits, basic_strategy
-from websocket_management.ws_management import (futures_analysis,closing_transactions,
-reading_from_pkl_database, update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,current_server_time,opening_transactions)
+from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite)
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -256,30 +253,10 @@ class StreamAccountData:
                             last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
                                 last_tick_query_ohlc1
                             )
-
-
-                            # gathering basic data
-                            reading_from_database: dict = await reading_from_pkl_database(currency)
-
-                            # get portfolio data
-                            portfolio: list = reading_from_database["portfolio"]
-
-                            # fetch strategies attributes
-                            strategies = entries_exits.strategies
-
-                            limit = 100
-                            ratio = 0.9
-                            threshold = 0.01 / 100
-
-                            market_condition = await basic_strategy.get_market_condition(
-                                threshold, limit, ratio
-                            )
-
-                            
+                          
                             
                             if "chart.trades.ETH-PERPETUAL." in message_channel:
-                                
-
+                             
                                 last_tick_fr_data_orders: int = data_orders["tick"]
 
                                 if (
