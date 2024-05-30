@@ -16,7 +16,11 @@ from db_management import sqlite_management
 
 from strategies import entries_exits, basic_strategy
 
-from websocket_management.ws_management import (current_server_time,opening_transactions, reading_from_pkl_database, closing_transactions)
+from websocket_management.ws_management import (current_server_time,
+                                                opening_transactions, 
+                                                reading_from_pkl_database, 
+                                                closing_transactions
+                                                )
 
 
 
@@ -70,10 +74,14 @@ async def run_every_5_seconds() -> None:
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
 
+    # get portfolio data
+    portfolio: list = reading_from_database["portfolio"]
+
     # fetch positions for all instruments
     positions_all: list = reading_from_database[
         "positions_from_sub_account"
     ]
+    print(f"positions_all-recurring {positions_all} ")
     size_from_positions: float = 0 if positions_all == [] else sum(
         [o["size"] for o in positions_all]
     )
@@ -92,30 +100,15 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
-    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
 
-    # get portfolio data
-    portfolio: list = reading_from_database["portfolio"]
-        # fetch positions for all instruments
-    positions_all: list = reading_from_database[
-        "positions_from_sub_account"
-    ]
-    size_from_positions: float = 0 if positions_all == [] else sum(
-        [o["size"] for o in positions_all]
-    )
-
-    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-        "my_trades_all_json"
-    )
-    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-
-    # clean up transactions all
-    my_trades_open = [o for o in my_trades_open if "label" in o]
+    # remove transactions without label
+    my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
 
     my_trades_open_remove_closed_labels = (
         []
@@ -143,7 +136,6 @@ async def run_every_5_seconds() -> None:
         market_condition,
         currency,
     )
-
                                             
     for instrument in instrument_transactions:
         await opening_transactions(
@@ -155,6 +147,7 @@ async def run_every_5_seconds() -> None:
             server_time,
             market_condition,
         )    
+
 async def run_every_60_seconds() -> None:
     """ """
 

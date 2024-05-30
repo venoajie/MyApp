@@ -376,6 +376,46 @@ async def update_user_changes(data_orders, currency) -> None:
     log.info(f"update_user_changes-END")
 
 
+def get_last_price(my_trades_open_strategy: list) -> float:
+    """
+    """
+    my_trades_open_strategy_buy= [o for o in my_trades_open_strategy if o["amount_dir"] > 0] 
+    my_trades_open_strategy_sell= [o for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    buy_traded_price= [o["price"] for o in my_trades_open_strategy_buy] 
+    sell_traded_price= [o["price"] for o in my_trades_open_strategy_sell] 
+
+    log.debug (
+                    f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
+                )
+
+    log.debug (
+                    f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
+                )
+
+    log.debug (
+                    f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
+                )
+    
+    return  {
+            "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
+            "max_sell_traded_price": 0 if sell_traded_price ==[] else max(sell_traded_price)
+        }
+
+def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
+    """
+    """
+    if last_traded_price != []:
+        delta_price= abs(abs(last_traded_price)-market_price)
+        delta_price_pct= delta_price/last_traded_price
+        is_reorder_ok = True if last_traded_price == 0 else False
+        if side=="buy":
+            is_reorder_ok= delta_price_pct > threshold and market_price < last_traded_price
+
+        if side=="sell":
+            is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
+
+    return True if last_traded_price==[] else is_reorder_ok
+
 async def opening_transactions(
     instrument,
     portfolio,
@@ -390,10 +430,6 @@ async def opening_transactions(
     log.warning(f"OPENING TRANSACTIONS-START")
 
     try:
-
-        my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-            "my_trades_all_json"
-        )
         my_trades_open_all: list = my_trades_open_sqlite["all"]
         # log.error (my_trades_open_all)
 
@@ -438,6 +474,22 @@ async def opening_transactions(
                 )
 
                 if size_is_consistent:  # and open_order_is_consistent:
+   
+                    THRESHOLD_BEFORE_REORDER = ONE_PCT/2
+                    
+                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
+
+                    my_trades_open_strategy = [
+                o
+                for o in my_trades_open
+                if strategy_label in (o["label_main"])
+            ]
+   
+                    last_price_all= get_last_price(my_trades_open_strategy)
+                 
+                    log.debug(
+                    f"last_price   {last_price_all}"
+                )
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -463,10 +515,24 @@ async def opening_transactions(
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
+                        if send_order["order_allowed"]:
+                            side = send_order["order_parameters"]["side"]
+                            if "sell"in side:
+                                last_price= last_price_all["max_sell_traded_price"]
+                            if "buy"in side:
+                                last_price= last_price_all["min_buy_traded_price"]
+                                    
+                            constraint= True if last_price==0 else \
+                                delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
 
-                        await if_order_is_true(send_order, instrument)
-                        await if_cancel_is_true(send_order)
-                        log.info(send_order)
+                            log.debug(
+                        f"constraint   {constraint} last_price   {last_price} side   {side}" 
+                    )                 
+                            if constraint:
+                                
+                                await if_order_is_true(send_order, instrument)
+                                await if_cancel_is_true(send_order)
+                                log.info(send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")

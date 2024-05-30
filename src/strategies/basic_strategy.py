@@ -53,6 +53,13 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     )
 
 
+
+def delta (last_price, prev_price) -> float:
+    """
+    """
+    return last_price - prev_price
+
+
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
@@ -64,25 +71,25 @@ async def get_market_condition(
 
     last_price = ohlc["last_price"]
 
-    delta_price = last_price - ema
+    delta_price = delta(last_price, ema)
     delta_price_pct = abs(delta_price / ema)
 
     rising_price = False
     falling_price = False
     neutral_price = False
     
-    #log.debug (f'  last_price {last_price} ema {ema}')
+    log.debug (f'  last_price {last_price} ema {ema} delta_price_pct {delta_price_pct}')
     #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
 
-    if delta_price_pct > threshold:
-        if delta_price < 0:
-            falling_price = True
-        if delta_price >= 0:
-            rising_price = True
+    if last_price > ema:
+        rising_price = True
+        
+    if last_price < ema:
+        falling_price = True
 
-    if delta_price_pct < threshold:
+    if rising_price== False and falling_price== False:
         neutral_price = True
 
     return dict(
@@ -90,6 +97,7 @@ async def get_market_condition(
         neutral_price=neutral_price,
         falling_price=falling_price,
         last_price=last_price,
+        delta_price_pct=delta_price_pct,
         ema=ema,
     )
 
