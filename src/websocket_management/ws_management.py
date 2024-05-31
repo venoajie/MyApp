@@ -392,7 +392,7 @@ def get_last_price(my_trades_open_strategy: list) -> float:
                     f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
                 )
 
-    log.debug (
+    log.error (
                     f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
                 )
     
@@ -404,7 +404,7 @@ def get_last_price(my_trades_open_strategy: list) -> float:
 def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
     """
     """
-    if last_traded_price != []:
+    if last_traded_price != 0:
         delta_price= abs(abs(last_traded_price)-market_price)
         delta_price_pct= delta_price/last_traded_price
         is_reorder_ok = True if last_traded_price == 0 else False
@@ -414,7 +414,7 @@ def delta_price_constraint(threshold: float, last_traded_price: float, market_pr
         if side=="sell":
             is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
 
-    return True if last_traded_price==[] else is_reorder_ok
+    return True if last_traded_price==0 else is_reorder_ok
 
 async def opening_transactions(
     instrument,
@@ -522,8 +522,7 @@ async def opening_transactions(
                             if "buy"in side:
                                 last_price= last_price_all["min_buy_traded_price"]
                                     
-                            constraint= True if last_price==0 else \
-                                delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
+                            constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
 
                             log.debug(
                         f"constraint   {constraint} last_price   {last_price} side   {side}" 
