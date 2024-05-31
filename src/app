@@ -199,8 +199,8 @@ class StreamAccountData:
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
                             #log.debug(message_channel)
-                            if "PERPETUAL." in message_channel:
-                                log.critical(message_channel)
+#                            if "PERPETUAL." in message_channel:
+#                                log.critical(message_channel)
 
                             data_orders: list = message["params"]["data"]
                             #log.info(data_orders)
@@ -214,8 +214,7 @@ class StreamAccountData:
 
                                 await update_portfolio(data_orders, currency)
 
-                                await resupply_sub_accountdb(currency)
-                                
+                                await resupply_sub_accountdb(currency)                               
 
                             if (
                                 message_channel
@@ -226,7 +225,6 @@ class StreamAccountData:
                                 await update_user_changes(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)
-                            
                             
                             DATABASE: str = "databases/trading.sqlite3"
                             TABLE_OHLC1: str = "ohlc1_eth_perp_json"
