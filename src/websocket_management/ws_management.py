@@ -392,7 +392,7 @@ def get_last_price(my_trades_open_strategy: list) -> float:
                     f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
                 )
 
-    log.debug (
+    log.error (
                     f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
                 )
     
@@ -401,20 +401,34 @@ def get_last_price(my_trades_open_strategy: list) -> float:
             "max_sell_traded_price": 0 if sell_traded_price ==[] else max(sell_traded_price)
         }
 
-def delta_price_constraint(threshold: float, last_traded_price: float, market_price: float, side: str) -> bool:
+def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
     """
     """
-    if last_traded_price != []:
-        delta_price= abs(abs(last_traded_price)-market_price)
-        delta_price_pct= delta_price/last_traded_price
-        is_reorder_ok = True if last_traded_price == 0 else False
-        if side=="buy":
-            is_reorder_ok= delta_price_pct > threshold and market_price < last_traded_price
+    delta_price= abs(abs(last_traded_price)-market_price)
+    return 0 if  (last_traded_price == [] or last_traded_price == 0) \
+        else delta_price/last_traded_price
 
-        if side=="sell":
-            is_reorder_ok= delta_price_pct > threshold and market_price > last_traded_price
+def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, side: str) -> bool:
+    """
+    """
+    is_reorder_ok= False
+    last_traded_price=None
 
-    return True if last_traded_price==[] else is_reorder_ok
+    if side=="buy":
+        last_traded_price= last_price_all["min_buy_traded_price"]
+        is_reorder_ok= False if last_traded_price==None \
+            else delta_price_pct(last_traded_price,market_price) > threshold \
+            and market_price < last_traded_price
+
+    if side=="sell":
+        last_traded_price= last_price_all["max_sell_traded_price"]
+        is_reorder_ok= False if last_traded_price==None \
+            else delta_price_pct(last_traded_price,market_price) > threshold \
+            and market_price > last_traded_price
+    log.debug(
+                    f"constraint   {is_reorder_ok} last_price   {last_traded_price} side   {side}" 
+                )       
+    return True if last_traded_price==0 else is_reorder_ok
 
 async def opening_transactions(
     instrument,
@@ -515,24 +529,14 @@ async def opening_transactions(
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
-                        if send_order["order_allowed"]:
-                            side = send_order["order_parameters"]["side"]
-                            if "sell"in side:
-                                last_price= last_price_all["max_sell_traded_price"]
-                            if "buy"in side:
-                                last_price= last_price_all["min_buy_traded_price"]
-                                    
-                            constraint= True if last_price==0 else \
-                                delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price, index_price, side)
-
-                            log.debug(
-                        f"constraint   {constraint} last_price   {last_price} side   {side}" 
-                    )                 
-                            if constraint:
-                                
-                                await if_order_is_true(send_order, instrument)
-                                await if_cancel_is_true(send_order)
-                                log.info(send_order)
+                        side = send_order["order_parameters"]["side"]
+                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, side)
+            
+                        if constraint:
+                            
+                            await if_order_is_true(send_order, instrument)
+                            await if_cancel_is_true(send_order)
+                            log.info(send_order)
 
                 else:
                     log.critical(f" size_is_consistent {size_is_consistent} ")
