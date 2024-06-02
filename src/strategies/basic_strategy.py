@@ -85,7 +85,7 @@ async def get_market_condition(
 
     df  = pd.DataFrame(ohlc, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
     vwap_period = 20
-    vwap = get_vwap(df, vwap_period)
+    vwap = await get_vwap(df, vwap_period)
     log.error(f'vwap {vwap}')
         
 
