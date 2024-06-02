@@ -578,11 +578,13 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
 
 
 def querying_open_interest(
-    price: float = "close", table: str = "ohlc1_eth_perp_json"
+    price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
 ) -> str:
 
-    return f"""SELECT tick, JSON_EXTRACT (data, '$.volume') AS volume, JSON_EXTRACT (data, '$.{price}')  AS close, open_interest, \
+    all_data = f"""SELECT tick, JSON_EXTRACT (data, '$.volume') AS volume, JSON_EXTRACT (data, '$.{price}')  AS close, open_interest, \
         (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}"""
+
+    return all_data if limit == None else f"""{all_data} limit {limit}"""
 
 def querying_ohlc_closed_vol(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
