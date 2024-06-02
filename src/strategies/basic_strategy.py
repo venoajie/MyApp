@@ -28,7 +28,7 @@ async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    log.info(ohlc_all)
+    #log.info(ohlc_all)
 
     return (ohlc_all)
 
@@ -42,17 +42,17 @@ async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    log.debug(ohlc_all)
+    #log.debug(ohlc_all)
 
     # pick value only
     ohlc = [o["close"] for o in ohlc_all]
 
-    log.warning(ohlc)
+    #log.warning(ohlc)
 
     # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
 
-    log.error(ohlc)
+    #log.error(ohlc)
 
     # exclude last price to minimize its impact to TA calc
     ohlc_reversed = ohlc[: limit - 1]
@@ -107,14 +107,12 @@ async def get_market_condition(
     #log.error(f'ohlc_all {ohlc_all}')
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
-    log.error(f'df {df}')
-    vwap = await get_vwap(df, vwap_period)
-    log.error(vwap)
-        
+    #log.error(f'df {df}')
+    vwap = await get_vwap(df, vwap_period)     
 
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
 
-    log.error(ema)
+    #log.error(ema)
     ema_short = await get_ema(ohlc_short["ohlc_reversed"], ratio)
 
     ema_long = await get_ema(ohlc_long["ohlc_reversed"], ratio)
@@ -128,15 +126,15 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
     
-    log.debug (f'  last_market_price {last_price} ema {ema} ema_short {ema_short} ema_long {ema_long} delta_price_pct {delta_price_pct}')
+    log.debug (f'  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long} delta_price_pct {delta_price_pct}')
     #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
 
-    if last_price > ema and ema_short > ema_long:
+    if last_price > ema_short and ema_short > ema_long:
         rising_price = True
         
-    if last_price < ema and ema_short < ema_long:
+    if last_price < ema_short and ema_short < ema_long:
         falling_price = True
 
     if rising_price== False and falling_price== False:
