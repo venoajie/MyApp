@@ -65,9 +65,17 @@ async def get_market_condition(
 ) -> dict:
     """
     """
+    ohlc_short = await cleaned_up_ohlc(9, table)
+
+    ohlc_long = await cleaned_up_ohlc(20, table)
+
     ohlc = await cleaned_up_ohlc(limit, table)
 
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
+
+    ema_short = await get_ema(ohlc_short["ohlc_reversed"], ratio)
+
+    ema_long = await get_ema(ohlc_long["ohlc_reversed"], ratio)
 
     last_price = ohlc["last_price"]
 
@@ -78,15 +86,15 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
     
-    log.debug (f'  last_price {last_price} ema {ema} delta_price_pct {delta_price_pct}')
+    log.debug (f'  last_market_price {last_price} ema {ema} ema_short {ema_short} ema_long {ema_long} delta_price_pct {delta_price_pct}')
     #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
 
-    if last_price > ema:
+    if last_price > ema and ema_short > ema_long:
         rising_price = True
         
-    if last_price < ema:
+    if last_price < ema and ema_short < ema_long:
         falling_price = True
 
     if rising_price== False and falling_price== False:
