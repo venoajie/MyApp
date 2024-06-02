@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+
 # built ins
 from datetime import datetime, timedelta
 import asyncio
@@ -12,22 +13,17 @@ from loguru import logger as log
 
 # user defined formula
 from utilities import pickling, system_tools, string_modification as str_mod
-
-
 from configuration import id_numbering, config
-
 from db_management import sqlite_management
 from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite)
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
-
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
-
 
 class StreamAccountData:
 
@@ -74,8 +70,6 @@ class StreamAccountData:
         ) as self.websocket_client:
             
             while True:
-                
-                live = True
                 
                 # Authenticate WebSocket Connection
                 await self.ws_auth()
@@ -251,8 +245,7 @@ class StreamAccountData:
                             last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
                                 last_tick_query_ohlc1
                             )
-                          
-                            
+                                                      
                             if "chart.trades.ETH-PERPETUAL." in message_channel:
                              
                                 last_tick_fr_data_orders: int = data_orders["tick"]
@@ -264,14 +257,11 @@ class StreamAccountData:
                                     or TABLE_OHLC1 != None
                                 ):
 
-                                    # log.warning(f"message_channel {message_channel}")
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.1"
                                     ):
-                                        #log.error(message_channel)
-                                        #log.error(f'last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}')
-
+                                        
                                         # refilling current ohlc table with updated data
                                         if (
                                             last_tick1_fr_sqlite
@@ -290,7 +280,7 @@ class StreamAccountData:
 
                                         # new tick ohlc
                                         else:
-                                            #log.error(data_orders)
+
                                             # prepare query
                                             open_interest_last_value_query = sqlite_management.querying_last_open_interest(
                                                 last_tick1_fr_sqlite, TABLE_OHLC1
@@ -322,7 +312,6 @@ class StreamAccountData:
                                                 last_tick1_fr_sqlite,
                                             )
                                         
-
                                     if (
                                         message_channel
                                         == "chart.trades.ETH-PERPETUAL.30"
@@ -448,8 +437,7 @@ class StreamAccountData:
                                                 "is",
                                                 last_tick1_fr_sqlite,
                                             )
-                                            
-                                                
+                                                                                            
                                             await self.distribute_ticker_result_as_per_data_type(
                                                 my_path_ticker, data_orders, instrument_ticker
                                             )
@@ -510,8 +498,6 @@ class StreamAccountData:
         log.warning("Cancelling all orders")
         msg= deribit_get.get_cancel_order_all()
         await self.websocket_client.send(json.dumps(msg))
-        #await sqlite_management.deleting_row(
-        #    "orders_all_json")
         
     async def deleting_cancel_order(
         self, table: list, database: str, data, cancelled_order
@@ -628,7 +614,6 @@ class StreamAccountData:
         log.info(ws_channel)
         await self.websocket_client.send(json.dumps(msg))
 
-
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
@@ -642,7 +627,6 @@ def main():
         system_tools.catch_error_message(
             error, 10, "app"
         )
-
 
 if __name__ == "__main__":
     try:
