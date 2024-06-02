@@ -406,7 +406,7 @@ def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
     return 0 if  (last_traded_price == [] or last_traded_price == 0) \
         else delta_price/last_traded_price
 
-def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, side: str) -> bool:
+def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, net_sum_strategy: int, side: str) -> bool:
     """
     """
     is_reorder_ok= False
@@ -414,15 +414,17 @@ def delta_price_constraint(threshold: float, last_price_all: dict, market_price:
 
     if side=="buy":
         last_traded_price= last_price_all["min_buy_traded_price"]
-        is_reorder_ok= False if last_traded_price==None \
-            else delta_price_pct(last_traded_price,market_price) > threshold \
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price < last_traded_price
+
+        is_reorder_ok=  delta_price_exceed_threhold or net_sum_strategy < 0
 
     if side=="sell":
         last_traded_price= last_price_all["max_sell_traded_price"]
-        is_reorder_ok= False if last_traded_price==None \
-            else delta_price_pct(last_traded_price,market_price) > threshold \
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price > last_traded_price
+        is_reorder_ok= delta_price_exceed_threhold or net_sum_strategy > 0
+
     log.debug(
                     f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}" 
                 )       
@@ -529,7 +531,7 @@ async def opening_transactions(
                         )
                         
                         constraint= False if send_order["order_allowed"]==False\
-                            else delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, send_order["order_parameters"]["side"])
+                            else delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, net_sum_strategy, send_order["order_parameters"]["side"])
             
                         if constraint:
                             
