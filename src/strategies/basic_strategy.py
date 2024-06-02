@@ -304,18 +304,22 @@ class BasicStrategy:
 
         # get transaction label and update the respective parameters
         label_open: str = get_label("open", self.strategy_label)
-        everything_is_consistent: bool = False
         params.update({"label": label_open})
-        params.update({"everything_is_consistent": everything_is_consistent})
-        
+        print ("Short" in label_open)
+        print ("hedging" in label_open)
+        print ("Short" in label_open or "hedging" in label_open)
+        print ("Long" in label_open)
 
         if side == "sell":
             params.update({"entry_price": ask_price})
             everything_is_consistent= True if ("Short" in label_open or "hedging" in label_open)\
-                else everything_is_consistent
+                else False
+                
         if side == "buy":
             params.update({"entry_price": bid_price})
-            everything_is_consistent= True if "Long" in label_open else everything_is_consistent
+            everything_is_consistent= True if "Long" in label_open else False
+
+        params.update({"everything_is_consistent": everything_is_consistent})
 
         if "marketMaker" in strategy_config_label:
             from risk_management.position_sizing import (
