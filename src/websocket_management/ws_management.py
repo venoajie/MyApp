@@ -390,19 +390,12 @@ def get_last_price(my_trades_open_strategy: list) -> float:
     buy_traded_price= [o["price"] for o in my_trades_open_strategy_buy] 
     sell_traded_price= [o["price"] for o in my_trades_open_strategy_sell] 
 
-    log.debug (
+    log.info (
                     f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
                 )
-    log.warning ([o["amount_dir"] for o in my_trades_open_strategy_buy] )
+    log.debug ([o["amount_dir"] for o in my_trades_open_strategy_buy] )
 
-    log.debug (
-                    f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
-                )
-
-    log.warning ([o["amount_dir"] for o in my_trades_open_strategy_sell] )
-    log.error (
-                    f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
-                )
+    log.error ([o["amount_dir"] for o in my_trades_open_strategy_sell] )
     
     return  {
             "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
