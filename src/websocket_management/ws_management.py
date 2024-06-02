@@ -204,9 +204,12 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        await send_limit_order(params)
-        await asyncio.sleep(10)
-
+        is_app_running=system_tools.is_current_file_running("app")
+        log.error (f'is_app_running {is_app_running}')
+        
+        if is_app_running:
+            await send_limit_order(params)
+            await asyncio.sleep(10)
 
 async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
