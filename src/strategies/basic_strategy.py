@@ -53,6 +53,16 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     )
 
 
+async def get_vwap(df, vwap_period) -> dict:
+    """
+    https://github.com/vishnugovind10/emacrossover/blob/main/emavwap1.0.py
+    https://stackoverflow.com/questions/44854512/how-to-calculate-vwap-volume-weighted-average-price-using-groupby-and-apply
+
+    """
+    import numpy as np
+    
+    return df['volume'].rolling(window=vwap_period).apply(lambda x: np.dot(x, df['close']) / x.sum(), raw=False)
+    
 
 def delta (last_price, prev_price) -> float:
     """
@@ -65,11 +75,19 @@ async def get_market_condition(
 ) -> dict:
     """
     """
+    import pandas as pd
+    
     ohlc_short = await cleaned_up_ohlc(9, table)
 
     ohlc_long = await cleaned_up_ohlc(20, table)
 
     ohlc = await cleaned_up_ohlc(limit, table)
+
+    df  = pd.DataFrame(ohlc, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    vwap_period = 20
+    vwap = get_vwap(df, vwap_period)
+    log.error(f'vwap {vwap}')
+        
 
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
 
