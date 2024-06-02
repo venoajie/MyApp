@@ -81,7 +81,7 @@ async def run_every_5_seconds() -> None:
     positions_all: list = reading_from_database[
         "positions_from_sub_account"
     ]
-    print(f"positions_all-recurring {positions_all} ")
+    #print(f"positions_all-recurring {positions_all} ")
     size_from_positions: float = 0 if positions_all == [] else sum(
         [o["size"] for o in positions_all]
     )
@@ -125,6 +125,9 @@ async def run_every_5_seconds() -> None:
             ]
         )
     )
+    
+    is_app_running=system_tools.is_current_file_running("app")
+    print(f'is_app_running {is_app_running}')
 
     await closing_transactions(
         label_transaction_net,
