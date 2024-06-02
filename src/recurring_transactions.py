@@ -100,6 +100,7 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
+    
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
@@ -115,6 +116,7 @@ async def run_every_5_seconds() -> None:
         if my_trades_open == []
         else [o for o in my_trades_open if "closed" not in o["label"]]
     )
+    
     label_transaction_net = (
         []
         if my_trades_open_remove_closed_labels == []
@@ -125,9 +127,6 @@ async def run_every_5_seconds() -> None:
             ]
         )
     )
-    
-    is_app_running=system_tools.is_current_file_running("app")
-    print(f'is_app_running {is_app_running}')
 
     await closing_transactions(
         label_transaction_net,
