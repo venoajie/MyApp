@@ -93,7 +93,7 @@ async def get_market_condition(
     ohlc_long = await cleaned_up_ohlc(20, table)
 
     ohlc = await cleaned_up_ohlc(limit, table)
-    ohlc_all= await get_closed_ohlc(limit)
+    ohlc_all= await get_closed_ohlc(101)
     log.error(f'ohlc_all {ohlc_all}')
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
