@@ -58,7 +58,7 @@ class MarketMaker(BasicStrategy):
                 order_allowed: bool = True
             if side == "sell" and bearish:
                 order_allowed: bool = True
-        print(f"side {side} {bullish} {bearish} {order_allowed} ")
+        print(f"side {side} bullish {bullish} bearish {bearish} order_allowed {order_allowed} ")
 
         return order_allowed
     
@@ -85,15 +85,12 @@ class MarketMaker(BasicStrategy):
                                 server_time, 
                                 max_tstamp_orders, 
                                 time_interval) 
-
-        everything_is_consistent=  params["everything_is_consistent"]
-                                
-        side= params["side"]
+        
         print(f"params {params} ")
 
         #is open order allowed?
-        order_allowed: bool=False if everything_is_consistent== False else\
-            await self.is_send_order_allowed(len_orders, side,
+        if params["everything_is_consistent"]:
+            order_allowed: bool=await self.is_send_order_allowed(len_orders, params["side"],
                                 market_condition 
                                 )
         
