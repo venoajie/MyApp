@@ -19,6 +19,17 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
+async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+    """
+    """
+
+    # get query for close price
+    get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
+
+    # executing query above
+    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    return ohlc_all
+
 
 async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
@@ -82,11 +93,12 @@ async def get_market_condition(
     ohlc_long = await cleaned_up_ohlc(20, table)
 
     ohlc = await cleaned_up_ohlc(limit, table)
+    ohlc_all= get_closed_ohlc(limit)
+    log.error(f'ohlc_all {ohlc_all}')
 
-    df  = pd.DataFrame(ohlc, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+    df  = pd.DataFrame(ohlc_all, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
     vwap_period = 20
     vwap = await get_vwap(df, vwap_period)
-    log.error(f'ohlc {ohlc}')
     log.error(f'df {df}')
     log.error(f'vwap {vwap}')
         
