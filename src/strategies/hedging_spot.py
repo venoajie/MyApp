@@ -78,10 +78,8 @@ class HedgingSpot(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
 
-        everything_is_consistent=  params["everything_is_consistent"]
-
-        order_allowed: bool = False if everything_is_consistent== False else\
-            size_and_order_appropriate_for_ordering and bearish
+        if params["everything_is_consistent"]:
+            order_allowed: bool = size_and_order_appropriate_for_ordering and bearish
 
         return dict(
             order_allowed=order_allowed,
