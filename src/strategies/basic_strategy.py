@@ -24,7 +24,7 @@ async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
     """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_open_interest("close", table, limit)
+    get_ohlc_query = sqlite_management.querying_ohlc_closed_vol("close", table, limit)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
