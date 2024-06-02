@@ -305,10 +305,6 @@ class BasicStrategy:
         # get transaction label and update the respective parameters
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
-        print ("Short" in label_open)
-        print ("hedging" in label_open)
-        print ("Short" in label_open or "hedging" in label_open)
-        print ("Long" in label_open)
 
         if side == "sell":
             params.update({"entry_price": ask_price})
