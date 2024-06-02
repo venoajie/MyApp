@@ -32,7 +32,7 @@ async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
     # reversing result as price will be processed from the latest to current one
     ohlc_all.reverse()
 
-    return dict(ohlc_all)
+    return (ohlc_all)
 
 
 async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
