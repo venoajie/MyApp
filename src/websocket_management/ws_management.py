@@ -416,14 +416,13 @@ def delta_price_constraint(threshold: float, last_price_all: dict, market_price:
         last_traded_price= last_price_all["min_buy_traded_price"]
         delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price < last_traded_price
-
-        is_reorder_ok=  delta_price_exceed_threhold or net_sum_strategy < 0
+        is_reorder_ok=  delta_price_exceed_threhold or net_sum_strategy <= 0
 
     if side=="sell":
         last_traded_price= last_price_all["max_sell_traded_price"]
         delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price > last_traded_price
-        is_reorder_ok= delta_price_exceed_threhold or net_sum_strategy > 0
+        is_reorder_ok= delta_price_exceed_threhold or net_sum_strategy >= 0
 
     log.debug(
                     f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}" 
