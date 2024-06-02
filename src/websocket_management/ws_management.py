@@ -137,9 +137,6 @@ async def reading_from_pkl_database(currency) -> float:
     path_positions: str = system_tools.provide_path_for_file("positions", currency)
     positions = pickling.read_data(path_positions)
     sub_account = pickling.read_data(path_sub_accounts)
-    log.error (f'sub_account{sub_account}')
-    log.error (f'sub_account{sub_account[0]}')
-    log.error (sub_account[0]["positions"])
     positions_from_sub_account = sub_account[0]["positions"]
     open_orders_from_sub_account = sub_account[0]["open_orders"]
     portfolio = pickling.read_data(path_portfolio)
