@@ -28,6 +28,7 @@ async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    print (ohlc_all)
 
     # reversing result as price will be processed from the latest to current one
     ohlc_all.reverse()
