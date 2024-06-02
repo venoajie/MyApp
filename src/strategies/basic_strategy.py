@@ -108,7 +108,8 @@ async def get_market_condition(
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
     #log.error(f'df {df}')
-    vwap = await get_vwap(df, vwap_period)     
+    df_vwap = await get_vwap(df, vwap_period)     
+    vwap=df_vwap.iloc[-1]
 
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
 
