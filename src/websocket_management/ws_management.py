@@ -393,11 +393,13 @@ def get_last_price(my_trades_open_strategy: list) -> float:
     log.debug (
                     f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
                 )
+    log.warning ([o["amount_dir"] for o in my_trades_open_strategy_buy] )
 
     log.debug (
                     f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
                 )
 
+    log.warning ([o["amount_dir"] for o in my_trades_open_strategy_sell] )
     log.error (
                     f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
                 )
