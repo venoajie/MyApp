@@ -111,6 +111,7 @@ async def get_market_condition(
 
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
 
+    log.error(ema)
     ema_short = await get_ema(ohlc_short["ohlc_reversed"], ratio)
 
     ema_long = await get_ema(ohlc_long["ohlc_reversed"], ratio)
