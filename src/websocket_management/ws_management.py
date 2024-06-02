@@ -432,7 +432,7 @@ def delta_price_constraint(threshold: float, last_price_all: dict, market_price:
             else delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price > last_traded_price
     log.debug(
-                    f"constraint   {is_reorder_ok} last_price   {last_traded_price} side   {side}" 
+                    f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}" 
                 )       
     return True if last_traded_price==0 else is_reorder_ok
 
