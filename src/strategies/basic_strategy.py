@@ -437,7 +437,7 @@ class BasicStrategy:
         return trade_seq_is_exist
 
     async def is_send_exit_order_allowed(
-        self, ask_price: float, bid_price: float, selected_transaction: list
+        self, market_condition: dict, ask_price: float, bid_price: float, selected_transaction: list
     ) -> dict:
         """
         """
