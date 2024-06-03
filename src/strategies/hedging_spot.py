@@ -124,7 +124,7 @@ class HedgingSpot(BasicStrategy):
         # )
 
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
-            ask_price, bid_price, selected_transaction
+            market_condition, ask_price, bid_price, selected_transaction
         )
 
         exit_allowed: bool = exit_params["order_allowed"] and is_bullish
