@@ -537,6 +537,7 @@ class BasicStrategy:
             
             supported_by_market: bool= market_condition["falling_price"]\
             and bid_price<last_transaction_price
+            print(f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}")
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
@@ -545,6 +546,7 @@ class BasicStrategy:
             )
             supported_by_market: bool= market_condition["rising_price"]\
             and ask_price > last_transaction_price
+            print(f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}")
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
