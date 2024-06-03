@@ -58,7 +58,7 @@ class MarketMaker(BasicStrategy):
                 order_allowed: bool = True
             if side == "sell" and bearish:
                 order_allowed: bool = True
-        print(f"side {side} {bullish} {bearish} {order_allowed} ")
+        print(f"side {side} bullish {bullish} bearish {bearish} order_allowed {order_allowed} ")
 
         return order_allowed
     
