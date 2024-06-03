@@ -638,7 +638,7 @@ async def closing_transactions(
 
                     market_maker = MM.MarketMaker(label_main)
 
-                    send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
+                    send_closing_order: dict = await market_maker.is_send_exit_order_allowed(market_condition,
                         best_ask_prc, best_bid_prc, open_trade_strategy_label
                     )
                     log.critical(f" send_closing_order {send_closing_order}")
