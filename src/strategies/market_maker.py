@@ -41,7 +41,7 @@ class MarketMaker(BasicStrategy):
             
         return cancel_allowed
 
-    async def is_send_order_allowed(self, len_orders: int, side: str,
+    async def is_send_order_allowed(self, size_from_positions: int, len_orders: int, side: str,
                                 market_condition: dict 
                                 ) -> bool:
         """
@@ -63,7 +63,7 @@ class MarketMaker(BasicStrategy):
         return order_allowed
     
     async def is_send_and_cancel_open_order_allowed(
-        self, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
+        self, size_from_positions: int, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
     ) -> dict:
         """
         """
@@ -90,7 +90,7 @@ class MarketMaker(BasicStrategy):
 
         #is open order allowed?
         if params["everything_is_consistent"]:
-            order_allowed: bool=await self.is_send_order_allowed(len_orders, params["side"],
+            order_allowed: bool=await self.is_send_order_allowed(size_from_positions, len_orders, params["side"],
                                 market_condition 
                                 )
         
