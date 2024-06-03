@@ -84,13 +84,13 @@ class MarketMaker(BasicStrategy):
         cancel_allowed: bool = await self.is_cancel_order_allowed(len_orders, 
                                 server_time, 
                                 max_tstamp_orders, 
-                                time_interval 
-                                )
-        side= params["side"]
+                                time_interval) 
+        
         print(f"params {params} ")
 
         #is open order allowed?
-        order_allowed: bool= await self.is_send_order_allowed(len_orders, side,
+        if params["everything_is_consistent"]:
+            order_allowed: bool=await self.is_send_order_allowed(len_orders, params["side"],
                                 market_condition 
                                 )
         

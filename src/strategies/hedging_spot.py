@@ -65,8 +65,6 @@ class HedgingSpot(BasicStrategy):
             notional, sum_my_trades, len_orders
         )
 
-        order_allowed: bool = size_and_order_appropriate_for_ordering and bearish
-
         cancel_allowed: bool = False
 
         if len_orders != [] and len_orders > 0:
@@ -79,6 +77,9 @@ class HedgingSpot(BasicStrategy):
             )
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
+
+        if params["everything_is_consistent"]:
+            order_allowed: bool = size_and_order_appropriate_for_ordering and bearish
 
         return dict(
             order_allowed=order_allowed,

@@ -19,6 +19,19 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
+async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+    """
+    """
+
+    # get query for close price
+    get_ohlc_query = sqlite_management.querying_ohlc_closed_vol("close", table, limit)
+
+    # executing query above
+    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    #log.info(ohlc_all)
+
+    return (ohlc_all)
+
 
 async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
@@ -29,12 +42,17 @@ async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    #log.debug(ohlc_all)
 
     # pick value only
     ohlc = [o["close"] for o in ohlc_all]
 
+    #log.warning(ohlc)
+
     # reversing result as price will be processed from the latest to current one
     ohlc.reverse()
+
+    #log.error(ohlc)
 
     # exclude last price to minimize its impact to TA calc
     ohlc_reversed = ohlc[: limit - 1]
@@ -53,6 +71,16 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     )
 
 
+async def get_vwap(df, vwap_period) -> dict:
+    """
+    https://github.com/vishnugovind10/emacrossover/blob/main/emavwap1.0.py
+    https://stackoverflow.com/questions/44854512/how-to-calculate-vwap-volume-weighted-average-price-using-groupby-and-apply
+
+    """
+    import numpy as np
+    
+    return df['volume'].rolling(window=vwap_period).apply(lambda x: np.dot(x, df['close']) / x.sum(), raw=False)
+    
 
 def delta (last_price, prev_price) -> float:
     """
@@ -65,9 +93,30 @@ async def get_market_condition(
 ) -> dict:
     """
     """
+    import pandas as pd
+    
+    ohlc_short = await cleaned_up_ohlc(9, table)
+
+    ohlc_long = await cleaned_up_ohlc(20, table)
+
     ohlc = await cleaned_up_ohlc(limit, table)
 
+    vwap_period = 100
+    
+    ohlc_all= await get_closed_ohlc(vwap_period)
+    #log.error(f'ohlc_all {ohlc_all}')
+
+    df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
+    #log.error(f'df {df}')
+    df_vwap = await get_vwap(df, vwap_period)     
+    vwap=df_vwap.iloc[-1]
+
     ema = await get_ema(ohlc["ohlc_reversed"], ratio)
+
+    #log.error(ema)
+    ema_short = await get_ema(ohlc_short["ohlc_reversed"], ratio)
+
+    ema_long = await get_ema(ohlc_long["ohlc_reversed"], ratio)
 
     last_price = ohlc["last_price"]
 
@@ -78,15 +127,15 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
     
-    log.debug (f'  last_price {last_price} ema {ema} delta_price_pct {delta_price_pct}')
+    log.debug (f'  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long} delta_price_pct {delta_price_pct}')
     #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
 
-    if last_price > ema:
+    if last_price > ema_short and ema_short > ema_long:
         rising_price = True
         
-    if last_price < ema:
+    if last_price < ema_short and ema_short < ema_long:
         falling_price = True
 
     if rising_price== False and falling_price== False:
@@ -308,8 +357,14 @@ class BasicStrategy:
 
         if side == "sell":
             params.update({"entry_price": ask_price})
+            everything_is_consistent= True if ("Short" in label_open or "hedging" in label_open)\
+                else False
+                
         if side == "buy":
             params.update({"entry_price": bid_price})
+            everything_is_consistent= True if "Long" in label_open else False
+
+        params.update({"everything_is_consistent": everything_is_consistent})
 
         if "marketMaker" in strategy_config_label:
             from risk_management.position_sizing import (

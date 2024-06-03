@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env/python
 # -*- coding: utf-8 -*-
 
 # built ins
@@ -81,7 +81,7 @@ async def run_every_5_seconds() -> None:
     positions_all: list = reading_from_database[
         "positions_from_sub_account"
     ]
-    print(f"positions_all-recurring {positions_all} ")
+    #print(f"positions_all-recurring {positions_all} ")
     size_from_positions: float = 0 if positions_all == [] else sum(
         [o["size"] for o in positions_all]
     )
@@ -100,6 +100,7 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
+    
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
@@ -115,6 +116,7 @@ async def run_every_5_seconds() -> None:
         if my_trades_open == []
         else [o for o in my_trades_open if "closed" not in o["label"]]
     )
+    
     label_transaction_net = (
         []
         if my_trades_open_remove_closed_labels == []

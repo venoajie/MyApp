@@ -201,8 +201,12 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        await send_limit_order(params)
-        await asyncio.sleep(10)
+        is_app_running=system_tools.is_current_file_running("app")
+        log.error (f'is_app_running {is_app_running}')
+        
+        if is_app_running:
+            await send_limit_order(params)
+            await asyncio.sleep(10)
 
 async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
@@ -383,17 +387,12 @@ def get_last_price(my_trades_open_strategy: list) -> float:
     buy_traded_price= [o["price"] for o in my_trades_open_strategy_buy] 
     sell_traded_price= [o["price"] for o in my_trades_open_strategy_sell] 
 
-    log.debug (
+    log.info (
                     f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
                 )
+    log.debug ([o["amount_dir"] for o in my_trades_open_strategy_buy] )
 
-    log.debug (
-                    f"my_trades_open_strategy_buy   {my_trades_open_strategy_buy}"
-                )
-
-    log.error (
-                    f"my_trades_open_strategy_sell   {my_trades_open_strategy_sell}"
-                )
+    log.error ([o["amount_dir"] for o in my_trades_open_strategy_sell] )
     
     return  {
             "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
@@ -407,7 +406,7 @@ def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
     return 0 if  (last_traded_price == [] or last_traded_price == 0) \
         else delta_price/last_traded_price
 
-def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, side: str) -> bool:
+def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, net_sum_strategy: int, side: str) -> bool:
     """
     """
     is_reorder_ok= False
@@ -415,17 +414,18 @@ def delta_price_constraint(threshold: float, last_price_all: dict, market_price:
 
     if side=="buy":
         last_traded_price= last_price_all["min_buy_traded_price"]
-        is_reorder_ok= False if last_traded_price==None \
-            else delta_price_pct(last_traded_price,market_price) > threshold \
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price < last_traded_price
+        is_reorder_ok=  delta_price_exceed_threhold or net_sum_strategy <= 0
 
     if side=="sell":
         last_traded_price= last_price_all["max_sell_traded_price"]
-        is_reorder_ok= False if last_traded_price==None \
-            else delta_price_pct(last_traded_price,market_price) > threshold \
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price > last_traded_price
+        is_reorder_ok= delta_price_exceed_threhold or net_sum_strategy >= 0
+
     log.debug(
-                    f"constraint   {is_reorder_ok} last_price   {last_traded_price} side   {side}" 
+                    f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}" 
                 )       
     return True if last_traded_price==0 else is_reorder_ok
 
@@ -528,8 +528,9 @@ async def opening_transactions(
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             notional, best_ask_prc, best_bid_prc, server_time, market_condition
                         )
-                        side = send_order["order_parameters"]["side"]
-                        constraint= delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, side)
+                        
+                        constraint= False if send_order["order_allowed"]==False\
+                            else delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, net_sum_strategy, send_order["order_parameters"]["side"])
             
                         if constraint:
                             
