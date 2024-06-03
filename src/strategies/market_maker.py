@@ -102,10 +102,10 @@ class MarketMaker(BasicStrategy):
         )
 
     async def is_send_exit_order_allowed(
-        self, ask_price: float, bid_price: float, selected_transaction: list
+        self, market_condition: dict, ask_price: float, bid_price: float, selected_transaction: list
     ) -> dict:
         """
         """
         return await self.get_basic_params().is_send_exit_order_allowed(
-            ask_price, bid_price, selected_transaction
+            market_condition,ask_price, bid_price, selected_transaction
         )
