@@ -147,6 +147,7 @@ async def get_market_condition(
         falling_price=falling_price,
         last_price=last_price,
         delta_price_pct=delta_price_pct,
+        vwap=vwap,
         ema=ema,
     )
 
@@ -527,16 +528,23 @@ class BasicStrategy:
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
+        supported_by_market: bool= False
+
         if transaction_side == "sell":
             tp_price_reached: bool = is_transaction_price_minus_below_threshold(
                 last_transaction_price, bid_price, tp_pct
             )
+            
+            supported_by_market: bool= market_condition["falling_price"]\
+            and bid_price<last_transaction_price
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
             tp_price_reached: bool = is_transaction_price_plus_above_threshold(
                 last_transaction_price, ask_price, tp_pct
             )
+            supported_by_market: bool= market_condition["rising_price"]\
+            and ask_price > last_transaction_price
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
@@ -545,7 +553,7 @@ class BasicStrategy:
 
         no_outstanding_order: bool = len_orders == 0
 
-        order_allowed: bool = tp_price_reached and no_outstanding_order
+        order_allowed: bool = (tp_price_reached or supported_by_market) and no_outstanding_order
 
         if order_allowed:
 
