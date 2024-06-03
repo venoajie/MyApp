@@ -204,7 +204,6 @@ async def if_order_is_true(order, instrument: str = None) -> None:
         await send_limit_order(params)
         await asyncio.sleep(10)
 
-
 async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
 
