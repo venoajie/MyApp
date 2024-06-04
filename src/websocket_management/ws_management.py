@@ -15,7 +15,7 @@ from utilities import (
 )
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import hedging_spot, market_maker as MM
+from strategies import basic_strategy,hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
@@ -202,9 +202,10 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             params.update({"instrument": instrument})
 
         is_app_running=system_tools.is_current_file_running("app")
-        log.error (f'is_app_running {is_app_running}')
+        everything_consistent= basic_strategy.is_everything_consistent(params)
+        log.error (f'is_app_running {is_app_running} everything_consistent {everything_consistent}')
         
-        if is_app_running:
+        if is_app_running and everything_consistent:
             await send_limit_order(params)
             await asyncio.sleep(10)
 

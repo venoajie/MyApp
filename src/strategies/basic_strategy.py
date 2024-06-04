@@ -177,13 +177,11 @@ def get_label(status: str, label_main_or_label_transactions: str) -> str:
 
     return label
 
-
 def delta_time(server_time, time_stamp) -> int:
     """
     get difference between now and transaction time
     """
     return server_time - time_stamp
-
 
 def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) -> bool:
     """
@@ -192,25 +190,20 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
     log.debug (f'  server_time {server_time} time_stamp {time_stamp} time_threshold {time_threshold}')
     return True if time_stamp==[] else delta_time(server_time, time_stamp) > time_threshold
 
-
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
     return price * pct_threshold
-
 
 def price_plus_pct(price: float, pct_threshold: float) -> float:
     return price + pct_price_in_usd(price, pct_threshold)
 
-
 def price_minus_pct(price: float, pct_threshold: float) -> float:
     return price - pct_price_in_usd(price, pct_threshold)
-
 
 def is_transaction_price_minus_below_threshold(
     last_transaction_price: float, current_price: float, pct_threshold: float
 ) -> bool:
 
     return price_minus_pct(last_transaction_price, pct_threshold) >= current_price
-
 
 def is_transaction_price_plus_above_threshold(
     last_transaction_price: float, current_price: float, pct_threshold: float
@@ -242,12 +235,10 @@ def get_order_id_max_time_stamp(result_strategy_label) -> int:
         ][0]
     )
 
-
 def get_transactions_len(result_strategy_label) -> int:
     """
     """
     return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
-
 
 def get_transactions_sum(result_strategy_label) -> int:
     """
@@ -259,7 +250,6 @@ def get_transactions_sum(result_strategy_label) -> int:
         else sum([o["amount_dir"] for o in result_strategy_label])
     )
 
-
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """
     from utilities import pickling, system_tools
@@ -267,7 +257,6 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
     return pickling.read_data(
         system_tools.provide_path_for_file(end_point, instrument, status)
     )
-
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """
@@ -295,7 +284,6 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
 
     return params
 
-
 def get_strategy_config_all() -> list:
     """
     """
@@ -303,6 +291,26 @@ def get_strategy_config_all() -> list:
 
     return entries_exits.strategies
 
+def is_everything_consistent(params) -> dict:
+    """
+    """
+
+    is_consistent=False
+    side= params["side"]
+    label= params["label"]
+    log.error (f"params {params}")
+    log.error ("open" in label)
+    
+    if "open" in label:
+        
+        if side == "sell":
+            is_consistent= True if ("Short" in label or "hedging" in label)\
+                else False
+                
+        if side == "buy":
+            is_consistent= True if "Long" in label else False
+
+    return is_consistent
 
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
@@ -331,8 +339,8 @@ class BasicStrategy:
             ][0]
 
         return str_config
-
-    def get_basic_opening_paramaters(
+    
+    def get_basic_opening_parameters(
         self, notional: float = None, ask_price: float = None, bid_price: float = None
     ) -> dict:
         """
@@ -355,17 +363,15 @@ class BasicStrategy:
         # get transaction label and update the respective parameters
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
-
+        
         if side == "sell":
             params.update({"entry_price": ask_price})
-            everything_is_consistent= True if ("Short" in label_open or "hedging" in label_open)\
-                else False
                 
         if side == "buy":
             params.update({"entry_price": bid_price})
-            everything_is_consistent= True if "Long" in label_open else False
 
-        params.update({"everything_is_consistent": everything_is_consistent})
+        params.update({"everything_is_consistent": is_everything_consistent(params
+                                 )})
 
         if "marketMaker" in strategy_config_label:
             from risk_management.position_sizing import (

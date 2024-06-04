@@ -56,7 +56,7 @@ class HedgingSpot(BasicStrategy):
         print(f"is_bearish {bearish} is_bullish {bullish}")
 
         sum_my_trades: int = my_trades["transactions_sum"]
-        params: dict = self.get_basic_params().get_basic_opening_paramaters(
+        params: dict = self.get_basic_params().get_basic_opening_parameters(
             notional, ask_price, None
         )
 

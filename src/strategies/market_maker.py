@@ -73,7 +73,7 @@ class MarketMaker(BasicStrategy):
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         
-        params: dict = self.get_basic_params().get_basic_opening_paramaters(
+        params: dict = self.get_basic_params().get_basic_opening_parameters(
             notional, ask_price, bid_price
         )
 
