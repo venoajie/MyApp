@@ -300,6 +300,8 @@ def is_everything_consistent(params) -> dict:
     label= params["label"]
     log.error (f"params {params}")
     log.error ("open" in label)
+    log.error ("Short" in label or "hedging" in label)
+    log.error ("Long" in label)
     
     if "open" in label:
         
