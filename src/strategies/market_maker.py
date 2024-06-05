@@ -84,8 +84,16 @@ class MarketMaker(BasicStrategy):
         cancel_allowed: bool = await self.is_cancel_order_allowed(len_orders, 
                                 server_time, 
                                 max_tstamp_orders, 
-                                time_interval) 
-        
+                                time_interval)         
+
+        #resizing qty
+        side= params["side"]
+
+        if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]\
+            or size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
+
+            params.update({"side": abs(size_from_positions)})
+                        
         print(f"params {params} ")
 
         #is open order allowed?

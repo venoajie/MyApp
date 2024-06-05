@@ -59,7 +59,6 @@ async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
 
     return dict(ohlc_reversed=ohlc_reversed, last_price=ohlc[-1:][0])
 
-
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
     https://stackoverflow.com/questions/488670/calculate-exponential-moving-average-in-python
@@ -69,7 +68,6 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     return round(
         sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2
     )
-
 
 async def get_vwap(df, vwap_period) -> dict:
     """
@@ -187,7 +185,6 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
     """
     check whether delta time has exceed time threhold
     """
-    log.debug (f'  server_time {server_time} time_stamp {time_stamp} time_threshold {time_threshold}')
     return True if time_stamp==[] else delta_time(server_time, time_stamp) > time_threshold
 
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
@@ -211,7 +208,6 @@ def is_transaction_price_plus_above_threshold(
 
     return price_plus_pct(last_transaction_price, pct_threshold) < current_price
 
-
 def get_max_time_stamp(result_strategy_label) -> int:
     """
     """
@@ -220,7 +216,6 @@ def get_max_time_stamp(result_strategy_label) -> int:
         if result_strategy_label == []
         else max([o["timestamp"] for o in result_strategy_label])
     )
-
 
 def get_order_id_max_time_stamp(result_strategy_label) -> int:
     """
@@ -258,6 +253,18 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
         system_tools.provide_path_for_file(end_point, instrument, status)
     )
 
+def provide_side_to_close_transaction(transaction: dict) -> str:
+    """ """
+
+    # determine side
+    transaction_side = transaction["direction"]
+    if transaction_side == "sell":
+        side="buy"
+    if transaction_side == "buy":
+        side= "sell"
+
+    return side
+
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """
     """
@@ -273,11 +280,8 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     params.update({"size": transaction["amount"]})
 
     # determine side
-    transaction_side = transaction["direction"]
-    if transaction_side == "sell":
-        params.update({"side": "buy"})
-    if transaction_side == "buy":
-        params.update({"side": "sell"})
+    side=provide_side_to_close_transaction(transaction)
+    params.update({"side": side})
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})
@@ -298,10 +302,6 @@ def is_everything_consistent(params) -> dict:
     is_consistent=False
     side= params["side"]
     label= params["label"]
-    log.error (f"params {params}")
-    log.error ("open" in label)
-    log.error ("Short" in label or "hedging" in label)
-    log.error ("Long" in label)
     
     if "open" in label:
         
