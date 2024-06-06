@@ -298,10 +298,11 @@ def get_strategy_config_all() -> list:
 def is_everything_consistent(params) -> dict:
     """
     """
-
-    is_consistent=False
-    side= params["side"]
     label= params["label"]
+
+    is_consistent= True if "closed" in label else False
+
+    side= params["side"]
     
     if "open" in label:
         
@@ -312,7 +313,7 @@ def is_everything_consistent(params) -> dict:
         if side == "buy":
             is_consistent= True if "Long" in label else False
 
-    return is_consistent
+    return  is_consistent
 
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
