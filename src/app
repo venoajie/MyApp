@@ -215,8 +215,10 @@ class StreamAccountData:
                                 == f"user.changes.any.{currency.upper()}.raw"
                             ):
                                 log.info(data_orders)
+                                
+                                my_trades_open_sqlite: dict = await sqlite_management.querying_table("my_trades_all_json")
 
-                                await update_user_changes(data_orders, currency)
+                                await update_user_changes(data_orders, my_trades_open_sqlite, currency)
 
                                 await resupply_sub_accountdb(currency)
                             
