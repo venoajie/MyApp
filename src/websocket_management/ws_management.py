@@ -19,7 +19,6 @@ from strategies import basic_strategy,hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
-
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
 NONE_DATA: None = [0, None, []]
@@ -244,141 +243,132 @@ async def resupply_sub_accountdb(currency) -> None:
     log.info(f"{sub_accounts}")
     log.info(f"resupply sub account db-DONE")
 
+async def manage_positions (positions: dict, currency: str) -> None:
 
-async def update_user_changes(data_orders, currency) -> None:
+    my_path_position = system_tools.provide_path_for_file("positions", currency)
+    pickling.replace_data(my_path_position, positions)
 
-    from transaction_management.deribit import myTrades_management
+async def manage_trades (trades: dict) -> None:
+
+    for trade in trades:
+
+        log.info(f"trade {trade}")
+
+        await sqlite_management.insert_tables("my_trades_all_json", trade)
+
+async def manage_orders (orders: dict) -> None:
+
+    for order in orders:
+
+        #! ##############################################################################
+
+        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+            "orders_all_json"
+        )
+        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
+        log.warning(
+            f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
+        )
+
+        #! ##############################################################################
+
+        log.warning(f"order {order}")
+        # log.error ("trade_seq" not in order)
+        # log.error ("trade_seq" in order)
+
+        if "trade_seq" not in order:
+            # get the order state
+            order_state = order["order_state"]
+
+        if "trade_seq" in order:
+
+            # get the order state
+            order_state = order["state"]
+
+        log.error(f"ORDER STATE {order_state}")
+
+        if (
+            order_state == "cancelled"
+            or order_state == "filled"
+            or order_state == "triggered"
+        ):
+
+            order_id = (
+                order["order_id"]
+                if order_state != "triggered"
+                else ["stop_order_id'"]
+            )
+
+            # open_orders_sqlite =  await syn.querying_all('orders_all_json')
+            open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+                "orders_all_json"
+            )
+            # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+
+            is_order_id_in_active_orders = [
+                o for o in open_orders_sqlite if o["order_id"] == order_id
+            ]
+
+            where_filter = f"order_id"
+            if is_order_id_in_active_orders == []:
+                order_id = order["label"]
+                where_filter = f"label_main"
+
+            log.critical(f" deleting {order_id}")
+            await sqlite_management.deleting_row(
+                "orders_all_json",
+                "databases/trading.sqlite3",
+                where_filter,
+                "=",
+                order_id,
+            )
+
+        if (
+            order_state == "open"
+            or order_state == "untriggered"
+            or order_state == "triggered"
+        ):
+
+            await sqlite_management.insert_tables("orders_all_json", order)
+
+        #! ###########################################################
+        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+            "orders_all_json"
+        )
+        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
+        log.critical(
+            f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
+        )
+
+    #! ###########################################################
+
+async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
+
     from websocket_management.cleaning_up_transactions import (
-        clean_up_closed_transactions,
-    )
-
+            clean_up_closed_transactions,
+        )
+    
     log.info(f"update_user_changes-START")
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
-
-    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-        "my_trades_all_json"
-    )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
+    
     if trades:
-        for trade in trades:
-
-            log.info(f"trade {trade}")
-
-            await sqlite_management.insert_tables("my_trades_all_json", trade)
-
+        await manage_trades (trades)
         await clean_up_closed_transactions(my_trades_open_all)
-
+        
     if orders:
-        # my_orders = open_orders_management.MyOrders(orders)
         log.debug(f"my_orders {orders}")
 
-        for order in orders:
-
-            #! ##############################################################################
-
-            open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-                "orders_all_json"
-            )
-            len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-            log.warning(
-                f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-            )
-
-            #! ##############################################################################
-
-            log.warning(f"order {order}")
-            # log.error ("trade_seq" not in order)
-            # log.error ("trade_seq" in order)
-
-            if "trade_seq" not in order:
-                # get the order state
-                order_state = order["order_state"]
-
-            if "trade_seq" in order:
-
-                # get the order state
-                order_state = order["state"]
-
-            log.error(f"ORDER STATE {order_state}")
-
-            if (
-                order_state == "cancelled"
-                or order_state == "filled"
-                or order_state == "triggered"
-            ):
-
-                #! EXAMPLES of order id state
-                # untriggered: insert
-                # {'web': False, 'triggered': False, 'trigger_price': 1874.0, 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'untriggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}
-
-                # triggered: cancel untrigger, insert trigger
-                # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'take_limit', 'order_state': 'triggered', 'order_id': 'ETH-TPTB-5703081', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768062826, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768062826, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}
-
-                # open: cancel trigger insert open
-                # {'web': False, 'triggered': True, 'trigger_price': 1874.0, 'trigger_order_id': 'ETH-TPTB-5703081', 'trigger_offset': None, 'trigger': 'last_price', 'time_in_force': 'good_til_cancelled', 'stop_price': 1874.0, 'stop_order_id': 'ETH-TPTB-5703081', 'risk_reducing': False, 'replaced': False, 'reject_post_only': False, 'reduce_only': False, 'profit_loss': 0.0, 'price': 1860.0, 'post_only': True, 'order_type': 'limit', 'order_state': 'open', 'order_id': 'ETH-32754477205', 'mmp': False, 'max_show': 1.0, 'last_update_timestamp': 1680768064536, 'label': 'test-123', 'is_liquidation': False, 'instrument_name': 'ETH-PERPETUAL', 'filled_amount': 0.0, 'direction': 'buy', 'creation_timestamp': 1680768064536, 'commission': 0.0, 'average_price': 0.0, 'api': True, 'amount': 1.0}], 'instrument_name': 'ETH-PERPETUAL'}
-
-                order_id = (
-                    order["order_id"]
-                    if order_state != "triggered"
-                    else ["stop_order_id'"]
-                )
-
-                # open_orders_sqlite =  await syn.querying_all('orders_all_json')
-                open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-                    "orders_all_json"
-                )
-                # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
-
-                is_order_id_in_active_orders = [
-                    o for o in open_orders_sqlite if o["order_id"] == order_id
-                ]
-
-                where_filter = f"order_id"
-                if is_order_id_in_active_orders == []:
-                    order_id = order["label"]
-                    where_filter = f"label_main"
-
-                log.critical(f" deleting {order_id}")
-                await sqlite_management.deleting_row(
-                    "orders_all_json",
-                    "databases/trading.sqlite3",
-                    where_filter,
-                    "=",
-                    order_id,
-                )
-
-            if (
-                order_state == "open"
-                or order_state == "untriggered"
-                or order_state == "triggered"
-            ):
-
-                await sqlite_management.insert_tables("orders_all_json", order)
-
-            #! ###########################################################
-            open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-                "orders_all_json"
-            )
-            len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-            log.critical(
-                f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-            )
-
-        #! ###########################################################
-
+        await manage_orders (orders)
         await clean_up_closed_transactions(my_trades_open_all)
 
     if positions:
-        # log.error (f'positions {positions}')
-
-        my_path_position = system_tools.provide_path_for_file("positions", currency)
-        pickling.replace_data(my_path_position, positions)
-
+        await manage_positions (positions, currency)
+    
     log.info(f"update_user_changes-END")
-
 
 def get_last_price(my_trades_open_strategy: list) -> float:
     """
