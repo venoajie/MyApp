@@ -57,6 +57,7 @@ class StreamAccountData:
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
 
+            
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
 
@@ -638,6 +639,7 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
+        log.critical (error)
         system_tools.catch_error_message(
             error, 10, "app"
         )
