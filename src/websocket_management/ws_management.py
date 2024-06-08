@@ -225,12 +225,10 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
-
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
     pickling.replace_data(my_path_portfolio, data_orders)
-
 
 async def resupply_sub_accountdb(currency) -> None:
 
@@ -339,6 +337,12 @@ async def manage_orders (orders: dict) -> None:
         log.critical(
             f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
         )
+        
+        everything_consistent= basic_strategy.is_everything_consistent(order)
+        log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+        
+        if  not everything_consistent:
+            await cancel_by_order_id(order["cancel_id"])
 
     #! ###########################################################
 
