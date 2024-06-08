@@ -639,7 +639,10 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
 
     except Exception as error:
-        log.critical (error)
-        system_tools.catch_error_message(
+        
+        if error=="server rejected WebSocket connection: HTTP 503":
+            log.critical (error)
+        else:
+            system_tools.catch_error_message(
             error, 10, "app"
         )
