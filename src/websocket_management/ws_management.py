@@ -58,6 +58,11 @@ async def get_account_summary() -> list:
     return account_summary["result"]
 
 
+async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
+    import deribit_get
+
+    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+
 async def get_sub_account(currency) -> list:
     """ """
 
@@ -343,6 +348,7 @@ async def manage_orders (orders: dict) -> None:
         
         if  not everything_consistent:
             await cancel_by_order_id(order["cancel_id"])
+            await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
     #! ###########################################################
 
