@@ -282,25 +282,7 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
     if error == True:  # to respond 'def is_current_file_running'  result
         sys.exit(1)
 
-    if error =="server rejected WebSocket connection":
-        log.info(f"{error}")
-        telegram_app.telegram_bot_sendtext(
-            "server rejected WebSocket connection: HTTP 503"
-        )
-
-    if error =="HTTP 503":
-        log.info(f"{error}")
-        telegram_app.telegram_bot_sendtext(
-            "server rejected WebSocket connection: HTTP 503"
-        )
-
-    if error =="websockets.exceptions.InvalidStatusCode: server rejected WebSocket connection: HTTP 503":
-        log.info(f"{error}")
-        telegram_app.telegram_bot_sendtext(
-            "server rejected WebSocket connection: HTTP 503"
-        )
-
-    if error =="server rejected WebSocket connection: HTTP 503":
+    if "HTTP 503" in error:
         log.info(f"{error}")
         telegram_app.telegram_bot_sendtext(
             "server rejected WebSocket connection: HTTP 503"
