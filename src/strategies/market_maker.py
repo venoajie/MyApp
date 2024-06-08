@@ -92,7 +92,7 @@ class MarketMaker(BasicStrategy):
         if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]\
             or size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
 
-            params.update({"side": abs(size_from_positions)})
+            params.update({"size": abs(size_from_positions)})
                         
         print(f"params {params} ")
 
