@@ -167,8 +167,15 @@ def hourly_sizing_for_perpetual_grid(
     daily_target_turn_over = daily_turn_over(
         pct_daily_profit_target, pct_profit_per_transaction
     )
+    print(
+                    f"daily_target_turn_over   {daily_target_turn_over}" 
+                )
 
     hourly_target_turn_over = daily_target_turn_over / 24
+
+    print(
+                    f"hourly_target_turn_over   {hourly_target_turn_over}" 
+                )
 
     return max(1, int(hourly_target_turn_over * notional))
 

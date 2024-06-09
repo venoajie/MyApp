@@ -88,7 +88,7 @@ class MarketMaker(BasicStrategy):
 
         params.update({"size": qty_order_and_interval_time["qty_per_order"]})
         print(
-                    f"notional   {notional} take_profit_pct_daily   {take_profit_pct_daily} profit_target_pct_transaction   {profit_target_pct_transaction} qty_order_and_interval_time   {qty_order_and_interval_time}" 
+                    f"profit_target_pct_transaction   {profit_target_pct_transaction} qty_order_and_interval_time   {qty_order_and_interval_time}" 
                 ) 
         params.update(
             {
