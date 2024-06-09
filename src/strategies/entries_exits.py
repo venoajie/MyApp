@@ -32,6 +32,7 @@ strategies = [
         "halt_minute_before_reorder": 60 * 4,
         "equity_risked_usd": 60,
         "equity_risked_pct": (1 / 100),
+        "cancellable": True,
     },
     {
         "strategy": "marketMakerShort",
@@ -52,6 +53,7 @@ strategies = [
         "halt_minute_before_reorder": 10,
         "equity_risked_usd": None,
         "equity_risked_pct": equity_risked_pct_default * 8,
+        "cancellable": True,
     },
     {
         "strategy": "marketMakerLong",
@@ -72,6 +74,7 @@ strategies = [
         "halt_minute_before_reorder": 10,
         "equity_risked_usd": None,
         "equity_risked_pct": equity_risked_pct_default * 8,
+        "cancellable": True,
     },
 ]
 

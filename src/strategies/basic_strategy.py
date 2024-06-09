@@ -109,7 +109,7 @@ async def get_market_condition(
 
 #    log.error(f'ema_low_9 {ema_low_9}')
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
-    log.warning(f'ema_high_9 {ema_high_9} ema_low_9 {ema_low_9} delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
+    #log.warning(f'ema_high_9 {ema_high_9} ema_low_9 {ema_low_9} delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
     ohlc_short = await cleaned_up_ohlc("close",9, table)
     ohlc_long = await cleaned_up_ohlc("close",20, table)
     
@@ -374,8 +374,14 @@ class BasicStrategy:
         side: str = strategy_config["side"]
 
         params.update({"side": side})
+        
+        try:
+            cancellable= strategy_config["cancellable"]
+        except:
+            cancellable= False
 
         # get transaction label and update the respective parameters
+        params.update({"cancellable": cancellable})
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
         
