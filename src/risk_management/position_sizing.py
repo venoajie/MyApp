@@ -174,11 +174,11 @@ def hourly_sizing(
         pct_daily_profit_target, pct_profit_per_transaction
     )["hourly"]
     
-    qty_orders_per_hour= int(hourly_target_turn_over * notional)
+    qty_orders_per_hour= (hourly_target_turn_over * notional)
     
     return {
-        "quantity_per_hour": max(1, qty_orders_per_hour),
-        "interval_time_before_reorder": qty_orders_per_hour/notional*SECONDS_IN_ONE_HOUR,
+        "quantity_per_hour": max(1, int(qty_orders_per_hour)),
+        "interval_time_before_reorder": (qty_orders_per_hour/notional)*SECONDS_IN_ONE_HOUR,
     }
    
 
@@ -204,6 +204,7 @@ def qty_order_and_interval_time(
     hourly_qty = hourly_sizing(
         notional, pct_daily_profit_target, pct_profit_per_transaction
     )
+    print (f"{hourly_qty}")
 
     minute_delay_before_reorder = hourly_qty["interval_time_before_reorder"]
     
