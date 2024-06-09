@@ -19,20 +19,6 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
-    """
-    """
-
-    # get query for close price
-    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, limit)
-
-    # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    #log.info(ohlc_all)
-
-    return (ohlc_all)
-
-
 async def get_hlc_vol(limit: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
@@ -47,19 +33,33 @@ async def get_hlc_vol(limit: int = 9, table: str = "ohlc1_eth_perp_json") -> lis
     return (ohlc_all)
 
 
-async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_ohlc_closed("close", table, limit)
+    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, limit)
+
+    # executing query above
+    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    #log.info(ohlc_all)
+
+    return (ohlc_all)
+
+
+async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+    """
+    """
+
+    # get query for close price
+    get_ohlc_query = sqlite_management.get_price_ohlc(price, table, limit)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
     #log.debug(ohlc_all)
 
     # pick value only
-    ohlc = [o["close"] for o in ohlc_all]
+    ohlc = [o[price] for o in ohlc_all]
 
     #log.warning(ohlc)
 
@@ -108,7 +108,11 @@ async def get_market_condition(
     import pandas as pd
     
     ohlc_short = await cleaned_up_ohlc(9, table)
+    ohlc_high_9 = await cleaned_up_ohlc("high",9,table)
+    ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
+    log.error(f'ohlc_high_9 {ohlc_high_9}')
+    log.error(f'ohlc_low_9 {ohlc_low_9}')
     ohlc_long = await cleaned_up_ohlc(20, table)
 
     ohlc = await cleaned_up_ohlc(limit, table)
@@ -118,9 +122,6 @@ async def get_market_condition(
     ohlc_all= await get_price_ohlc ("close", vwap_period)
     ohlc_low= await get_price_ohlc ("low", vwap_period)
     ohlc_high= await get_price_ohlc ("high", vwap_period)
-    hlc_vol= await get_hlc_vol(limit, table)
-    log.error(f'ohlc_low {ohlc_low}')
-    log.error(f'ohlc_high {ohlc_high}')
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
     #log.error(f'df {df}')
