@@ -168,7 +168,7 @@ def hourly_sizing_for_perpetual_grid(
         pct_daily_profit_target, pct_profit_per_transaction
     )
     print(
-                    f"daily_target_turn_over   {daily_target_turn_over}" 
+                    f"daily_target_turn_over   {daily_target_turn_over} pct_daily_profit_target   {pct_daily_profit_target} pct_profit_per_transaction   {pct_profit_per_transaction}" 
                 )
 
     hourly_target_turn_over = daily_target_turn_over / 24
