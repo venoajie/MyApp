@@ -529,13 +529,16 @@ class BasicStrategy:
 
         strategy_config: list = self.get_strategy_config(transaction["label"])
 
-        # get take profit pct
-        tp_pct: float = strategy_config["take_profit_pct"]
-
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
         supported_by_market: bool= False
+
+        # get take profit pct
+        try:
+            tp_pct: float = transaction["profit_target_pct_transaction"]
+        except:
+            tp_pct: float = strategy_config["take_profit_pct"]
 
         if transaction_side == "sell":
             tp_price_reached: bool = is_transaction_price_minus_below_threshold(
