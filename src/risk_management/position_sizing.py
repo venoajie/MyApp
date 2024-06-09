@@ -150,12 +150,12 @@ def compute_position_leverage_and_delta(notional: float, my_trades_open: list) -
 
 
 def daily_turn_over(
-    pct_daily_profit_target: float, pct_profit_per_transaction: float
+    pct_daily_profit_target: float, pct_profit_per_transaction: float, ordered_side: int = 2
 ) -> float:
     """
+    ordered_side = 2, consisted of long and short
     """
-    # 2= long and short
-    ordered_side = 2
+    
     return (pct_daily_profit_target / pct_profit_per_transaction) / ordered_side
 
 
@@ -173,16 +173,16 @@ def hourly_sizing_for_perpetual_grid(
     return max(1, int(hourly_target_turn_over * notional))
 
 
-def quantities_per_order(hourly_qty: float, ONE_MINUTE: int = 60) -> float:
+def quantities_per_order(hourly_qty: float, SIXTY_MINUTES: int = 60) -> float:
     """
     """
-    return 1 if hourly_qty < ONE_MINUTE else int(hourly_qty / ONE_MINUTE)
+    return 1 if hourly_qty < SIXTY_MINUTES else int(hourly_qty / SIXTY_MINUTES)
 
 
-def interval_time_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
+def interval_time_before_reorder(hourly_qty: float, SIXTY_MINUTES: int=60) -> float:
     """
     """
-    qty_per_order = hourly_qty / ONE_MINUTE
+    qty_per_order = hourly_qty / SIXTY_MINUTES
 
     interval_time = qty_per_order
     # dealing with qty rounding
@@ -192,22 +192,21 @@ def interval_time_before_reorder(hourly_qty: float, ONE_MINUTE: int) -> float:
 
 
 def qty_order_and_interval_time(
-    notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float
+    notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float, SIXTY_MINUTES: int=60
 ) -> dict:
     """
     """
-    ONE_MINUTE = 60
 
     hourly_qty = hourly_sizing_for_perpetual_grid(
         notional, pct_daily_profit_target, pct_profit_per_transaction
     )
 
-    minute_delay_before_reorder = interval_time_before_reorder(hourly_qty, ONE_MINUTE)
+    minute_delay_before_reorder = interval_time_before_reorder(hourly_qty, SIXTY_MINUTES)
 
     return dict(
         interval_time_between_order=minute_delay_before_reorder,
         interval_time_between_order_in_ms=minute_delay_before_reorder
-        * ONE_MINUTE
+        * SIXTY_MINUTES
         * 1000,
-        qty_per_order=quantities_per_order(hourly_qty, ONE_MINUTE),
+        qty_per_order=quantities_per_order(hourly_qty, SIXTY_MINUTES),
     )

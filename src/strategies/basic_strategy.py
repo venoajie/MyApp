@@ -33,6 +33,20 @@ async def get_closed_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") 
     return (ohlc_all)
 
 
+async def get_hlc_vol(limit: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
+    """
+    """
+
+    # get query for close price
+    get_ohlc_query = sqlite_management.querying_hlc_vol(table, limit)
+
+    # executing query above
+    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    #log.info(ohlc_all)
+
+    return (ohlc_all)
+
+
 async def cleaned_up_ohlc(limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
@@ -102,7 +116,8 @@ async def get_market_condition(
     vwap_period = 100
     
     ohlc_all= await get_closed_ohlc(vwap_period)
-    #log.error(f'ohlc_all {ohlc_all}')
+    hlc_vol= await get_hlc_vol(limit, table)
+    log.error(f'hlc_vol {hlc_vol}')
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
     #log.error(f'df {df}')

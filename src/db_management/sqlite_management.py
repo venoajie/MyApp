@@ -593,6 +593,13 @@ def querying_ohlc_closed_vol(
 
     return all_data if limit == None else f"""{all_data} limit {limit}"""
 
+def querying_hlc_vol(table: str = "ohlc1_eth_perp_json", limit: int = None
+) -> str:
+
+    all_data = f"""SELECT  tick, JSON_EXTRACT (data, '$.volume') AS volume, JSON_EXTRACT (data, '$.high') AS high, JSON_EXTRACT (data, '$.low') AS low, JSON_EXTRACT (data, '$.close')  AS close FROM {table} ORDER BY tick DESC"""
+
+    return all_data if limit == None else f"""{all_data} limit {limit}"""
+
 def querying_ohlc_closed(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
 ) -> str:
