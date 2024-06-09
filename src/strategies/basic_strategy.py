@@ -40,10 +40,8 @@ async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohl
     # get query for close price
     get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, limit)
 
-    log.info(get_ohlc_query)
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    log.info(ohlc_all)
 
     return (ohlc_all)
 
@@ -55,12 +53,10 @@ async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "oh
     # get query for close price
     ohlc_all = await get_price_ohlc(price, limit, table)
     
-    log.debug(ohlc_all)
-
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
 
-    return dict(ohlc_reversed=ohlc[: limit - 1], last_price=ohlc[-1:][0])
+    return dict(ohlc=ohlc[: limit - 1], last_price=ohlc[-1:][0])
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
@@ -97,10 +93,7 @@ async def get_market_condition(
     import pandas as pd
     
     ohlc_high_9 = await cleaned_up_ohlc("high",9,table)
-    log.error(f'ohlc_high_9 {ohlc_high_9}')
     ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
-
-    log.error(f'ohlc_low_9 {ohlc_low_9}')
     ohlc_short = await cleaned_up_ohlc(9, table)
     ohlc_long = await cleaned_up_ohlc(20, table)
 
@@ -117,12 +110,19 @@ async def get_market_condition(
     df_vwap = await get_vwap(df, vwap_period)     
     vwap=df_vwap.iloc[-1]
 
-    ema = await get_ema(ohlc["ohlc_reversed"], ratio)
+    ema = await get_ema(ohlc["ohlc"], ratio)
+
+    ema_high_9 = await get_ema(ohlc_high_9, ratio)
+
+    ema_low_9 = await get_ema(ohlc_low_9, ratio)
+
+    log.error(f'ema_high_9 {ema_high_9}')
+    log.error(f'ema_low_9 {ema_low_9}')
 
     #log.error(ema)
-    ema_short = await get_ema(ohlc_short["ohlc_reversed"], ratio)
+    ema_short = await get_ema(ohlc_short["ohlc"], ratio)
 
-    ema_long = await get_ema(ohlc_long["ohlc_reversed"], ratio)
+    ema_long = await get_ema(ohlc_long["ohlc"], ratio)
 
     last_price = ohlc["last_price"]
 
