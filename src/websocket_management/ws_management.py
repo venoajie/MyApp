@@ -359,6 +359,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         )
     
     log.info(f"update_user_changes-START")
+    log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
