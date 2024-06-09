@@ -149,7 +149,7 @@ def compute_position_leverage_and_delta(notional: float, my_trades_open: list) -
     }
 
 
-def daily_turn_over(
+def daily_turn_over_times(
     pct_daily_profit_target: float, pct_profit_per_transaction: float, ordered_side: int = 2
 ) -> float:
     """
@@ -164,17 +164,17 @@ def hourly_sizing_for_perpetual_grid(
 ) -> float:
     """
     """
-    daily_target_turn_over = daily_turn_over(
+    daily_turn_over_times = daily_turn_over_times(
         pct_daily_profit_target, pct_profit_per_transaction
     )
     print(
-                    f"daily_target_turn_over   {daily_target_turn_over} pct_daily_profit_target   {pct_daily_profit_target} pct_profit_per_transaction   {pct_profit_per_transaction}" 
+                    f"daily_target_turn_over   {daily_turn_over_times} notional   {notional}  pct_daily_profit_target   {pct_daily_profit_target} pct_profit_per_transaction   {pct_profit_per_transaction}" 
                 )
 
-    hourly_target_turn_over = daily_target_turn_over / 24
+    hourly_target_turn_over = daily_turn_over_times / 24
 
     print(
-                    f"hourly_target_turn_over   {hourly_target_turn_over}" 
+                    f"hourly_target_turn_over   {hourly_target_turn_over}  {(hourly_target_turn_over * notional)}  {int(hourly_target_turn_over * notional)}" 
                 )
 
     return max(1, int(hourly_target_turn_over * notional))
