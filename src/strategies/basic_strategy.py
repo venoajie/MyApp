@@ -369,9 +369,7 @@ class BasicStrategy:
         params.update({"type": "limit"})
 
         strategy_config: dict = self.get_strategy_config()
-        strategy_config_label: str = strategy_config["strategy"]
 
-        take_profit_pct_transaction: float = strategy_config["take_profit_pct"]
         side: str = strategy_config["side"]
 
         params.update({"side": side})
@@ -388,31 +386,8 @@ class BasicStrategy:
 
         params.update({"everything_is_consistent": is_everything_consistent(params
                                  )})
-
-        if "marketMaker" in strategy_config_label:
-            from risk_management.position_sizing import (
-                qty_order_and_interval_time as order_and_interval, daily_turn_over
-            )
-            #pct_daily_profit_target=1/100
-            #daily_turnover= daily_turn_over(pct_daily_profit_target)
-
-            take_profit_pct_daily: float = strategy_config["take_profit_pct_daily"]
-
-            qty_order_and_interval_time: dict = order_and_interval(
-                notional, take_profit_pct_daily, take_profit_pct_transaction
-            )
-
-            params.update({"size": qty_order_and_interval_time["qty_per_order"]})
-            params.update(
-                {
-                    "interval_time_between_order_in_ms": qty_order_and_interval_time[
-                        "interval_time_between_order_in_ms"
-                    ]
-                }
-            )
-        if "hedgingSpot" in strategy_config_label:
-
-            params.update({"size": max(1, int(notional / 10))})
+        # general size
+        params.update({"size": max(1, int(notional / 10))})
 
         return params
 
