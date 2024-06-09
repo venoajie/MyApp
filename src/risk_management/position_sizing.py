@@ -168,6 +168,7 @@ def hourly_sizing(
 ) -> float:
     """
     """
+    SECONDS_IN_ONE_HOUR=3600
 
     hourly_target_turn_over = turnOver_times(
         pct_daily_profit_target, pct_profit_per_transaction
@@ -177,7 +178,7 @@ def hourly_sizing(
     
     return {
         "quantity_per_hour": max(1, qty_orders_per_hour),
-        "interval_time_before_reorder": qty_orders_per_hour/notional,
+        "interval_time_before_reorder": qty_orders_per_hour/notional*SECONDS_IN_ONE_HOUR,
     }
    
 
