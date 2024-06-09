@@ -53,7 +53,7 @@ async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "oh
     """
 
     # get query for close price
-    ohlc_all = await get_price_ohlc(price, table, limit)
+    ohlc_all = await get_price_ohlc(price, limit, table)
     
     log.debug(ohlc_all)
 
