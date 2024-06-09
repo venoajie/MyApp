@@ -96,11 +96,12 @@ async def get_market_condition(
     ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
 
+    log.error(f'ohlc_high_9 {ohlc_high_9}')
     ema_high_9 = await get_ema(ohlc_high_9, ratio)
+    log.error(f'ema_high_9 {ema_high_9}')
 
     ema_low_9 = await get_ema(ohlc_low_9, ratio)
 
-    log.error(f'ema_high_9 {ema_high_9}')
     log.error(f'ema_low_9 {ema_low_9}')
     ohlc_short = await cleaned_up_ohlc("close",9, table)
     ohlc_long = await cleaned_up_ohlc("close",20, table)
