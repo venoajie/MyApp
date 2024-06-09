@@ -63,10 +63,13 @@ class MarketMaker(BasicStrategy):
         return order_allowed
     
     async def is_send_and_cancel_open_order_allowed(
-        self, size_from_positions: int, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict
+        self, size_from_positions: int, notional: float, ask_price: float, bid_price: float, server_time: int, market_condition: dict,take_profit_pct_daily: float=1/100
     ) -> dict:
         """
         """
+        from risk_management.position_sizing import (
+                qty_order_and_interval_time as order_and_interval, daily_turn_over
+            )
         open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
@@ -88,6 +91,20 @@ class MarketMaker(BasicStrategy):
 
         #resizing qty
         side= params["side"]
+        profit_target_pct_transaction= market_condition["profit_target_pct"]
+        
+        qty_order_and_interval_time: dict = order_and_interval(
+                notional, take_profit_pct_daily, profit_target_pct_transaction
+            )
+
+        params.update({"size": qty_order_and_interval_time["qty_per_order"]})
+        params.update(
+            {
+                "interval_time_between_order_in_ms": qty_order_and_interval_time[
+                    "interval_time_between_order_in_ms"
+                ]
+            }
+            )
 
         if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]\
             or size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:

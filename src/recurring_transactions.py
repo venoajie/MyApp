@@ -89,12 +89,14 @@ async def run_every_5_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    limit = 100
-    ratio = 0.9
-    threshold = 0.01 / 100
+    ONE_PCT= 1/100
+    WINDOW = 9
+    RATIO = 0.9
+    THRESHOLD = 0.01*ONE_PCT
+    TAKE_PROFIT_PCT_DAILY= ONE_PCT
 
     market_condition = await basic_strategy.get_market_condition(
-        threshold, limit, ratio
+        THRESHOLD, WINDOW, RATIO
     )
     
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
@@ -148,6 +150,7 @@ async def run_every_5_seconds() -> None:
             size_from_positions,
             server_time,
             market_condition,
+            TAKE_PROFIT_PCT_DAILY
         )    
 
 async def run_every_60_seconds() -> None:

@@ -19,12 +19,12 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-async def get_hlc_vol(limit: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
+async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_hlc_vol(table, limit)
+    get_ohlc_query = sqlite_management.querying_hlc_vol(table, window)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
@@ -33,12 +33,12 @@ async def get_hlc_vol(limit: int = 9, table: str = "ohlc1_eth_perp_json") -> lis
     return (ohlc_all)
 
 
-async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+async def get_price_ohlc(price: str="close", window: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, limit)
+    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, window)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
@@ -46,17 +46,17 @@ async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohl
     return (ohlc_all)
 
 
-async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
+async def cleaned_up_ohlc(price: str="close", window: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
     """
     """
 
     # get query for close price
-    ohlc_all = await get_price_ohlc(price, limit, table)
+    ohlc_all = await get_price_ohlc(price, window, table)
     
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
 
-    return dict(ohlc=ohlc[: limit - 1], last_price=ohlc[-1:][0])
+    return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
@@ -101,25 +101,24 @@ async def get_market_condition(
     ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
 
-    log.error(f'ohlc_high_9 {ohlc_high_9}')
+#    log.error(f'ohlc_high_9 {ohlc_high_9}')
     ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
-    log.error(f'ema_high_9 {ema_high_9}')
+#    log.error(f'ema_high_9 {ema_high_9}')
 
     ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
-    log.error(f'ema_low_9 {ema_low_9}')
+#    log.error(f'ema_low_9 {ema_low_9}')
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
     log.error(f'delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
     ohlc_short = await cleaned_up_ohlc("close",9, table)
     ohlc_long = await cleaned_up_ohlc("close",20, table)
+    
 
     ohlc = await cleaned_up_ohlc("close",limit, table)
 
     vwap_period = 100
     
     ohlc_all= await get_price_ohlc ("close", vwap_period)
-    ohlc_low= await get_price_ohlc ("low", vwap_period)
-    ohlc_high= await get_price_ohlc ("high", vwap_period)
 
     df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
     #log.error(f'df {df}')
@@ -135,8 +134,6 @@ async def get_market_condition(
     ema_long = await get_ema(ohlc_long["ohlc"], ratio)
 
     last_price = ohlc["last_price"]
-
-    delta_price_pct = delta_pct(last_price, ema)
 
     rising_price = False
     falling_price = False
@@ -161,8 +158,7 @@ async def get_market_condition(
         neutral_price=neutral_price,
         falling_price=falling_price,
         last_price=last_price,
-        delta_price_pct=delta_price_pct,
-        vwap=vwap,
+        profit_target_pct=delta_price_pct_ema_low_high,
         ema=ema,
     )
 
@@ -395,8 +391,10 @@ class BasicStrategy:
 
         if "marketMaker" in strategy_config_label:
             from risk_management.position_sizing import (
-                qty_order_and_interval_time as order_and_interval,
+                qty_order_and_interval_time as order_and_interval, daily_turn_over
             )
+            pct_daily_profit_target=1/100
+            daily_turnover= daily_turn_over(pct_daily_profit_target)
 
             take_profit_pct_daily: float = strategy_config["take_profit_pct_daily"]
 

@@ -440,6 +440,7 @@ async def opening_transactions(
     size_from_positions,
     server_time,
     market_condition,
+    take_profit_pct_daily
 ) -> None:
     """ """
 
@@ -527,9 +528,10 @@ async def opening_transactions(
                     if  "marketMaker" in strategy_attr["strategy"]:
 
                         market_maker = MM.MarketMaker(strategy_label)
+                        
 
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
-                            size_from_positions, notional, best_ask_prc, best_bid_prc, server_time, market_condition
+                            size_from_positions, notional, best_ask_prc, best_bid_prc, server_time, market_condition,take_profit_pct_daily
                         )
                         
                         constraint= False if send_order["order_allowed"]==False\

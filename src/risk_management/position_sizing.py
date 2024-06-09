@@ -182,13 +182,10 @@ def quantities_per_order(hourly_qty: float, SIXTY_MINUTES: int = 60) -> float:
 def interval_time_before_reorder(hourly_qty: float, SIXTY_MINUTES: int=60) -> float:
     """
     """
-    qty_per_order = hourly_qty / SIXTY_MINUTES
 
-    interval_time = qty_per_order
-    # dealing with qty rounding
-    if qty_per_order < 1:
-        interval_time = 1 / interval_time
-    return interval_time
+    interval_time = quantities_per_order(hourly_qty, SIXTY_MINUTES)
+        
+    return 1 / interval_time if interval_time < 1 else interval_time
 
 
 def qty_order_and_interval_time(
