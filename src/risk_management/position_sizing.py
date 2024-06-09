@@ -164,14 +164,14 @@ def hourly_sizing_for_perpetual_grid(
 ) -> float:
     """
     """
-    daily_turn_over_times = daily_turn_over_times(
+    daily_turn_over = daily_turn_over_times(
         pct_daily_profit_target, pct_profit_per_transaction
     )
     print(
-                    f"daily_target_turn_over   {daily_turn_over_times} notional   {notional}  pct_daily_profit_target   {pct_daily_profit_target} pct_profit_per_transaction   {pct_profit_per_transaction}" 
+                    f"daily_target_turn_over   {daily_turn_over} notional   {notional}  pct_daily_profit_target   {pct_daily_profit_target} pct_profit_per_transaction   {pct_profit_per_transaction}" 
                 )
 
-    hourly_target_turn_over = daily_turn_over_times / 24
+    hourly_target_turn_over = daily_turn_over / 24
 
     print(
                     f"hourly_target_turn_over   {hourly_target_turn_over}  {(hourly_target_turn_over * notional)}  {int(hourly_target_turn_over * notional)}" 
