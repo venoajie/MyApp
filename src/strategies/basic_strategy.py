@@ -52,26 +52,12 @@ async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "oh
     """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.get_price_ohlc(price, table, limit)
-
-    # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    #log.debug(ohlc_all)
+    ohlc_all = await get_price_ohlc(price, table, limit)
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
 
-    #log.warning(ohlc)
-
-    # reversing result as price will be processed from the latest to current one
-    ohlc.reverse()
-
-    #log.error(ohlc)
-
-    # exclude last price to minimize its impact to TA calc
-    ohlc_reversed = ohlc[: limit - 1]
-
-    return dict(ohlc_reversed=ohlc_reversed, last_price=ohlc[-1:][0])
+    return dict(ohlc_reversed=ohlc[: limit - 1], last_price=ohlc[-1:][0])
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
