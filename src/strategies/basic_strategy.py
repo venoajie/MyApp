@@ -79,10 +79,15 @@ async def get_vwap(df, vwap_period) -> dict:
     return df['volume'].rolling(window=vwap_period).apply(lambda x: np.dot(x, df['close']) / x.sum(), raw=False)
     
 
-def delta (last_price, prev_price) -> float:
+def delta (last_price: float, prev_price: float) -> float:
     """
     """
     return last_price - prev_price
+
+def delta_pct (last_price: float, prev_price: float) -> float:
+    """
+    """
+    return abs(delta(last_price, prev_price)/prev_price)
 
 
 async def get_market_condition(
@@ -103,10 +108,12 @@ async def get_market_condition(
     ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
     log.error(f'ema_low_9 {ema_low_9}')
+    delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
+    log.error(f'delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
     ohlc_short = await cleaned_up_ohlc("close",9, table)
     ohlc_long = await cleaned_up_ohlc("close",20, table)
 
-    ohlc = await cleaned_up_ohlc(limit, table)
+    ohlc = await cleaned_up_ohlc("close",limit, table)
 
     vwap_period = 100
     
@@ -129,14 +136,13 @@ async def get_market_condition(
 
     last_price = ohlc["last_price"]
 
-    delta_price = delta(last_price, ema)
-    delta_price_pct = abs(delta_price / ema)
+    delta_price_pct = delta_pct(last_price, ema)
 
     rising_price = False
     falling_price = False
     neutral_price = False
     
-    log.debug (f'  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long} delta_price_pct {delta_price_pct}')
+    log.debug (f'  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}')
     #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
     #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
     #log.debug (f'  ohlc {ohlc}')
