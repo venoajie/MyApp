@@ -68,8 +68,8 @@ class MarketMaker(BasicStrategy):
         """
         """
         from risk_management.position_sizing import (
-                qty_order_and_interval_time as order_and_interval, daily_turn_over
-            )
+                qty_order_and_interval_time as order_and_interval)
+        
         open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
