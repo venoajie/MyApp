@@ -53,6 +53,7 @@ async def cleaned_up_ohlc(price: str="close", limit: int = 100, table: str = "oh
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, table, limit)
+    
     log.debug(ohlc_all)
 
     # pick value only
@@ -94,12 +95,12 @@ async def get_market_condition(
     """
     import pandas as pd
     
-    ohlc_short = await cleaned_up_ohlc(9, table)
     ohlc_high_9 = await cleaned_up_ohlc("high",9,table)
     ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
     log.error(f'ohlc_high_9 {ohlc_high_9}')
     log.error(f'ohlc_low_9 {ohlc_low_9}')
+    ohlc_short = await cleaned_up_ohlc(9, table)
     ohlc_long = await cleaned_up_ohlc(20, table)
 
     ohlc = await cleaned_up_ohlc(limit, table)
