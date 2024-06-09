@@ -40,6 +40,7 @@ async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohl
     # get query for close price
     get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, limit)
 
+    log.info(get_ohlc_query)
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
     log.info(ohlc_all)
@@ -96,9 +97,9 @@ async def get_market_condition(
     import pandas as pd
     
     ohlc_high_9 = await cleaned_up_ohlc("high",9,table)
+    log.error(f'ohlc_high_9 {ohlc_high_9}')
     ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
-    log.error(f'ohlc_high_9 {ohlc_high_9}')
     log.error(f'ohlc_low_9 {ohlc_low_9}')
     ohlc_short = await cleaned_up_ohlc(9, table)
     ohlc_long = await cleaned_up_ohlc(20, table)
