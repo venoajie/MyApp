@@ -206,9 +206,9 @@ def qty_order_and_interval_time(
     )
 
     minute_delay_before_reorder = hourly_qty["interval_time_before_reorder"]
-
+    
     return dict(
         interval_time_between_order=minute_delay_before_reorder,
         interval_time_between_order_in_ms=interval_time_before_reorder_in_ms(minute_delay_before_reorder),
-        qty_per_order= hourly_qty["quantity_per_hour"],
+        qty_per_order= quantities_per_order(hourly_qty["quantity_per_hour"], SIXTY_MINUTES),
     )
