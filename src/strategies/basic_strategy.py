@@ -42,7 +42,7 @@ async def get_price_ohlc(price: str="close", limit: int = 100, table: str = "ohl
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    #log.info(ohlc_all)
+    log.info(ohlc_all)
 
     return (ohlc_all)
 
