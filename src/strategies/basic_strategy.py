@@ -369,6 +369,7 @@ class BasicStrategy:
         params.update({"type": "limit"})
 
         strategy_config: dict = self.get_strategy_config()
+        strategy_config_label: str = strategy_config["strategy"]
 
         side: str = strategy_config["side"]
 
@@ -386,8 +387,9 @@ class BasicStrategy:
 
         params.update({"everything_is_consistent": is_everything_consistent(params
                                  )})
-        # general size
-        params.update({"size": max(1, int(notional / 10))})
+        if "hedgingSpot" in strategy_config_label:
+
+            params.update({"size": max(1, int(notional / 10))})
 
         return params
 

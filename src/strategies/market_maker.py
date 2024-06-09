@@ -80,17 +80,6 @@ class MarketMaker(BasicStrategy):
             notional, ask_price, bid_price
         )
 
-        time_interval: float = params["interval_time_between_order_in_ms"]
-        max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
-
-        #is cancel order allowed?
-        cancel_allowed: bool = await self.is_cancel_order_allowed(len_orders, 
-                                server_time, 
-                                max_tstamp_orders, 
-                                time_interval)         
-
-        #resizing qty
-        side= params["side"]
         profit_target_pct_transaction= market_condition["profit_target_pct"]
         
         qty_order_and_interval_time: dict = order_and_interval(
@@ -105,6 +94,17 @@ class MarketMaker(BasicStrategy):
                 ]
             }
             )
+        time_interval: float = params["interval_time_between_order_in_ms"]
+        max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
+
+        #is cancel order allowed?
+        cancel_allowed: bool = await self.is_cancel_order_allowed(len_orders, 
+                                server_time, 
+                                max_tstamp_orders, 
+                                time_interval)         
+
+        #resizing qty
+        side= params["side"]
 
         if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]\
             or size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
