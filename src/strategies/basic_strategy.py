@@ -393,8 +393,8 @@ class BasicStrategy:
             from risk_management.position_sizing import (
                 qty_order_and_interval_time as order_and_interval, daily_turn_over
             )
-            pct_daily_profit_target=1/100
-            daily_turnover= daily_turn_over(pct_daily_profit_target)
+            #pct_daily_profit_target=1/100
+            #daily_turnover= daily_turn_over(pct_daily_profit_target)
 
             take_profit_pct_daily: float = strategy_config["take_profit_pct_daily"]
 
