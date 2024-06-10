@@ -173,7 +173,6 @@ def is_current_file_running(script: str) -> bool:
     for q in psutil.process_iter():
         
         if q.name().startswith("python") or q.name().startswith("py"):
-            print (f"for q in {q} {q.name()} cmdline {q.cmdline()} q.pid {q.pid} os.getpid {os.getpid()}")
             if (
                 len(q.cmdline()) > 1
                 and script in q.cmdline()[1]
