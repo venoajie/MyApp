@@ -51,12 +51,15 @@ class MarketMaker(BasicStrategy):
         
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
+        ranging = market_condition["neutral_price"]
         
         if (len_orders == [] or len_orders == 0):
                 
             if side == "buy" and bullish:
                 order_allowed: bool = True
             if side == "sell" and bearish:
+                order_allowed: bool = True
+            if ranging:
                 order_allowed: bool = True
         print(f"side {side} bullish {bullish} bearish {bearish} order_allowed {order_allowed} ")
 
