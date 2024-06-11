@@ -187,15 +187,16 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
 
 async def manage_params (params: dict) -> None:
 
-    log.info(f"params {params}")
-
-    await sqlite_management.insert_tables("supporting_items_json", params)
+    log.debug(f"additional_params {params}")
+    
+    if "open" in params:
+        await sqlite_management.insert_tables("supporting_items_json", params)
 
 
 async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
-    await manage_params(params)
+    
     await private_data.get_cancel_order_all()
     await private_data.send_limit_order(params)
 
@@ -214,7 +215,8 @@ async def if_order_is_true(order, instrument: str = None) -> None:
 
         is_app_running=system_tools.is_current_file_running("app")
         everything_consistent= basic_strategy.is_everything_consistent(params)
-        log.error (f'is_app_running {is_app_running} everything_consistent {everything_consistent}')
+        
+        await manage_params(params)
         
         if is_app_running and everything_consistent:
             await send_limit_order(params)
