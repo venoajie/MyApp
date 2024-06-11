@@ -568,7 +568,7 @@ async def replace_row(
 def querying_additional_params(table: str = "supporting_items_json"
 ) -> str:
 
-    return f"""SELECT *  FROM {table}"""
+    return  f"SELECT * from {table};"
 
 
 def querying_last_open_interest(
