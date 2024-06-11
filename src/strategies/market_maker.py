@@ -115,20 +115,22 @@ class MarketMaker(BasicStrategy):
         #resizing qty
         side= params["side"]
 
-        if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]:
-
-            params.update({"size": max(abs(size_from_positions), 
-                                       int(notional)) }
-                          )
+        if  side=="buy":  
             params.update({"take_profit": bid_price+(profit_target_pct_transaction*bid_price)})
-                        
-        if size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
-           
-            params.update({"size": max(abs(size_from_positions), 
+
+            if size_from_positions < 0 and  market_condition["rising_price"]:
+                params.update({"size": max(abs(size_from_positions), 
                                        int(notional)) }
                           )
+                        
+        if side == "sell"  :
+           
             params.update({"take_profit": ask_price-(profit_target_pct_transaction*ask_price)})
             
+            if size_from_positions > 0 and  market_condition["falling_price"]:
+                params.update({"size": max(abs(size_from_positions), 
+                                       int(notional)) }
+                          )
         print(f"params {params} ")
 
         #is open order allowed?
