@@ -466,11 +466,6 @@ async def opening_transactions(
     """ """
 
     log.warning(f"OPENING TRANSACTIONS-START")
-    additional_params = sqlite_management.querying_additional_params()
-    log.info(f"get_additional_params {additional_params}")
-    params=await sqlite_management.executing_query_with_return(additional_params)
-    log.info(f"params {params}")
-
 
     try:
         my_trades_open_all: list = my_trades_open_sqlite["all"]
