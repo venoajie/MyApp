@@ -289,13 +289,13 @@ async def manage_orders (orders: dict) -> None:
             "orders_all_json"
         )
         len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        log.warning(
-            f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        )
+        #log.warning(
+        #    f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
+        #)
 
         #! ##############################################################################
 
-        log.warning(f"order {order}")
+        #log.warning(f"order {order}")
         # log.error ("trade_seq" not in order)
         # log.error ("trade_seq" in order)
 
