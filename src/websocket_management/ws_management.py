@@ -185,10 +185,17 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
     """ """
     return system_tools.reading_from_db_pickle(end_point, instrument, status)
 
+async def manage_params (params: dict) -> None:
+
+    log.info(f"params {params}")
+
+    await sqlite_management.insert_tables("supporting_items_json", params)
+
 
 async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
+    await manage_params(params)
     await private_data.get_cancel_order_all()
     await private_data.send_limit_order(params)
 
@@ -254,9 +261,20 @@ async def manage_positions (positions: dict, currency: str) -> None:
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
+        log.info(f"trade {trade}")
+        label=trade["label"]
 
+        log.info(f"label {label}")
+        additional_params = sqlite_management.querying_additional_params()
+        log.info(f"get_additional_params {additional_params}")
+        additional_params_label = [
+                o for o in additional_params if label in o
+            ]
+        log.info(f"additional_params_label {additional_params_label}")
+        trade.update({"take_profit": additional_params["take_profit"]})
         log.info(f"trade {trade}")
 
+        await sqlite_management.executing_query_with_return()
         await sqlite_management.insert_tables("my_trades_all_json", trade)
 
 async def manage_orders (orders: dict) -> None:
@@ -533,7 +551,7 @@ async def opening_transactions(
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             size_from_positions, notional, best_ask_prc, best_bid_prc, server_time, market_condition,take_profit_pct_daily
                         )
-                        
+                                            
                         constraint= False if send_order["order_allowed"]==False\
                             else delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, net_sum_strategy, send_order["order_parameters"]["side"])
             

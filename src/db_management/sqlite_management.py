@@ -565,6 +565,12 @@ async def replace_row(
         await telegram_bot_sendtext("sqlite failed replace_row", "failed_order")
 
 
+def querying_additional_params(table: str = "supporting_items_json"
+) -> str:
+
+    return f"""SELECT  JSON_EXTRACT (data)  FROM {table}"""
+
+
 def querying_last_open_interest(
     last_tick: int, table: str = "ohlc1_eth_perp_json"
 ) -> str:

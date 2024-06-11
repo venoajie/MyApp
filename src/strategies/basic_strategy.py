@@ -385,11 +385,14 @@ class BasicStrategy:
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
         
+        
         if side == "sell":
             params.update({"entry_price": ask_price})
+            
                 
         if side == "buy":
             params.update({"entry_price": bid_price})
+            
 
         params.update({"everything_is_consistent": is_everything_consistent(params
                                  )})

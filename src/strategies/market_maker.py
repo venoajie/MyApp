@@ -55,10 +55,12 @@ class MarketMaker(BasicStrategy):
         
         if (len_orders == [] or len_orders == 0):
                 
-            if side == "buy" and bullish:
-                order_allowed: bool = True
-            if side == "sell" and bearish:
-                order_allowed: bool = True
+            if side == "buy":
+                if bullish:
+                    order_allowed: bool = True
+            if side == "sell":
+                if bearish:
+                    order_allowed: bool = True
             if ranging:
                 order_allowed: bool = True
         print(f"side {side} bullish {bullish} bearish {bearish} order_allowed {order_allowed} ")
@@ -113,13 +115,20 @@ class MarketMaker(BasicStrategy):
         #resizing qty
         side= params["side"]
 
-        if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]\
-            or size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
+        if size_from_positions < 0 and side=="buy"  and market_condition["rising_price"]:
 
             params.update({"size": max(abs(size_from_positions), 
                                        int(notional)) }
                           )
+            params.update({"take_profit": bid_price+(profit_target_pct_transaction*bid_price)})
                         
+        if size_from_positions > 0 and side == "sell" and market_condition["falling_price"]:
+           
+            params.update({"size": max(abs(size_from_positions), 
+                                       int(notional)) }
+                          )
+            params.update({"take_profit": ask_price-(profit_target_pct_transaction*ask_price)})
+            
         print(f"params {params} ")
 
         #is open order allowed?
