@@ -379,7 +379,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         )
     
     log.info(f"update_user_changes-START")
-    log.info (data_orders)
+    #log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -392,7 +392,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         
     if orders:
         log.warning(f"my_orders {data_orders}")
-        log.debug(f"my_orders {orders}")
+        #log.debug(f"my_orders {orders}")
 
         await manage_orders (orders)
         await clean_up_closed_transactions(my_trades_open_all)
