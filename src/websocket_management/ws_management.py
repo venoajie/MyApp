@@ -263,10 +263,10 @@ async def manage_positions (positions: dict, currency: str) -> None:
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
-        log.info(f"trade {trade}")
+        #log.info(f"trade {trade}")
         label=trade["label"]
 
-        log.info(f"label {label}")
+        #log.info(f"label {label}")
         additional_params = sqlite_management.querying_additional_params()
         log.info(f"get_additional_params {additional_params}")
         params_data=await sqlite_management.executing_query_with_return(additional_params)
