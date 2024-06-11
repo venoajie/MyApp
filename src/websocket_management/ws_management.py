@@ -270,6 +270,7 @@ async def manage_trades (trades: dict) -> None:
         additional_params = sqlite_management.querying_additional_params()
         log.info(f"get_additional_params {additional_params}")
         params_data=await sqlite_management.executing_query_with_return(additional_params)
+        log.info(f"params_data {params_data}")
         params=params_data["data"]
         log.info(f"params {params}")
         additional_params_label = [
