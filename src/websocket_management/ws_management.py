@@ -269,14 +269,15 @@ async def manage_trades (trades: dict) -> None:
         log.info(f"label {label}")
         additional_params = sqlite_management.querying_additional_params()
         log.info(f"get_additional_params {additional_params}")
+        params=await sqlite_management.executing_query_with_return(additional_params)
+        log.info(f"params {params}")
         additional_params_label = [
-                o for o in additional_params if label in o
+                o for o in params if label in o
             ]
         log.info(f"additional_params_label {additional_params_label}")
         trade.update({"take_profit": additional_params["take_profit"]})
         log.info(f"trade {trade}")
 
-        await sqlite_management.executing_query_with_return()
         await sqlite_management.insert_tables("my_trades_all_json", trade)
 
 async def manage_orders (orders: dict) -> None:
