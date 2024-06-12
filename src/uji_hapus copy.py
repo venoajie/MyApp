@@ -3014,9 +3014,6 @@ my_trades_open = [
         "amount": 1.0,
     },
 ]
-label='marketMakerShort-open-1718128706842'
-params= [{'label': 'marketMakerShort-open-1718128706842', 'take_profit': None}, {'label': 'marketMakerLong-open-1718128716991', 'take_profit': None}]
-additional_params_label = [
-            o for o in params if label in o["label"]
-        ]
+additional_params_label = {'label': 'marketMakerShort-open-1718206487598', 'take_profit': 3621.2549183913197}
 print(additional_params_label)
+log.info(additional_params["take_profit"])
