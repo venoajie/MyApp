@@ -15,7 +15,7 @@ from utilities import (
 )
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import basic_strategy, hedging_spot, market_maker as MM
+from strategies import basic_strategy,hedging_spot, market_maker as MM
 import deribit_get
 from configuration import config
 
@@ -63,7 +63,6 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-
 async def get_sub_account(currency) -> list:
     """ """
 
@@ -83,8 +82,7 @@ async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
 
     except Exception as error:
         await system_tools.raise_error_message(
-            error,
-            "Capture market data - failed to fetch last open_interest",
+            error, "Capture market data - failed to fetch last open_interest",
         )
     return last_open_interest[0]["open_interest"]
 
@@ -98,8 +96,7 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
     except Exception as error:
         await system_tools.raise_error_message(
-            error,
-            "Capture market data - failed to fetch last_tick_fr_sqlite",
+            error, "Capture market data - failed to fetch last_tick_fr_sqlite",
         )
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
@@ -192,7 +189,7 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
 async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
-
+    
     await private_data.get_cancel_order_all()
     await private_data.send_limit_order(params)
 
@@ -209,15 +206,14 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        is_app_running = system_tools.is_current_file_running("app")
-        everything_consistent = basic_strategy.is_everything_consistent(params)
-
+        is_app_running=system_tools.is_current_file_running("app")
+        everything_consistent= basic_strategy.is_everything_consistent(params)
+        
         await inserting_additional_params(params)
-
+        
         if is_app_running and everything_consistent:
             await send_limit_order(params)
             await asyncio.sleep(10)
-
 
 async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
@@ -236,12 +232,10 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
-
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
     pickling.replace_data(my_path_portfolio, data_orders)
-
 
 async def resupply_sub_accountdb(currency) -> None:
 
@@ -254,47 +248,46 @@ async def resupply_sub_accountdb(currency) -> None:
     log.info(f"{sub_accounts}")
     log.info(f"resupply sub account db-DONE")
 
-
-async def manage_positions(positions: dict, currency: str) -> None:
+async def manage_positions (positions: dict, currency: str) -> None:
 
     my_path_position = system_tools.provide_path_for_file("positions", currency)
     pickling.replace_data(my_path_position, positions)
 
-
-async def inserting_additional_params(params: dict) -> None:
+async def inserting_additional_params (params: dict) -> None:
 
     log.debug(f"additional_params {params}")
-
+    
     if "open" in params:
         await sqlite_management.insert_tables("supporting_items_json", params)
 
 
-async def manage_params(trade) -> None:
+async def manage_params (trade) -> None:
 
-    # log.info(f"trade {trade}")
-    label = trade["label"]
+    #log.info(f"trade {trade}")
+    label=trade["label"]
 
-    # log.info(f"label {label}")
+    #log.info(f"label {label}")
     additional_params = sqlite_management.querying_additional_params()
-    # log.info(f"get_additional_params {additional_params}")
-    params = await sqlite_management.executing_query_with_return(additional_params)
-    log.info(f"params_data {params}")
-
+    #log.info(f"get_additional_params {additional_params}")
+    params=await sqlite_management.executing_query_with_return(additional_params)
+    #log.info(f"params_data {params}")
+    
     log.info(f"params {params}")
-    additional_params_label = [o for o in params if label in o]
+    additional_params_label = [
+            o for o in params if label in o["label"]
+        ]
     log.info(f"additional_params_label {additional_params_label}")
     trade.update({"take_profit": additional_params["take_profit"]})
     log.info(f"trade {trade}")
 
-
-async def manage_trades(trades: dict) -> None:
+async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
-        await manage_params(trade)
+        await manage_params (trade) 
         await sqlite_management.insert_tables("my_trades_all_json", trade)
+        
 
-
-async def manage_orders(orders: dict) -> None:
+async def manage_orders (orders: dict) -> None:
 
     for order in orders:
 
@@ -304,13 +297,13 @@ async def manage_orders(orders: dict) -> None:
             "orders_all_json"
         )
         len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        # log.warning(
+        #log.warning(
         #    f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        # )
+        #)
 
         #! ##############################################################################
 
-        # log.warning(f"order {order}")
+        #log.warning(f"order {order}")
         # log.error ("trade_seq" not in order)
         # log.error ("trade_seq" in order)
 
@@ -332,7 +325,9 @@ async def manage_orders(orders: dict) -> None:
         ):
 
             order_id = (
-                order["order_id"] if order_state != "triggered" else ["stop_order_id'"]
+                order["order_id"]
+                if order_state != "triggered"
+                else ["stop_order_id'"]
             )
 
             # open_orders_sqlite =  await syn.querying_all('orders_all_json')
@@ -375,121 +370,96 @@ async def manage_orders(orders: dict) -> None:
         log.critical(
             f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
         )
-
-        everything_consistent = basic_strategy.is_everything_consistent(order)
-        log.critical(
-            f" ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}"
-        )
-
-        if not everything_consistent:
+        
+        everything_consistent= basic_strategy.is_everything_consistent(order)
+        log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+        
+        if  not everything_consistent:
             await cancel_by_order_id(order["cancel_id"])
-            await telegram_bot_sendtext(
-                "size or open order is inconsistent", "general_error"
-            )
+            await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
     #! ###########################################################
-
 
 async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
 
     from websocket_management.cleaning_up_transactions import (
-        clean_up_closed_transactions,
-    )
-
+            clean_up_closed_transactions,
+        )
+    
     log.info(f"update_user_changes-START")
-    # log.info (data_orders)
+    #log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
     my_trades_open_all: list = my_trades_open_sqlite["all"]
-
+    
     if trades:
-
-        await manage_trades(trades)
+        
+        await manage_trades (trades)
         await clean_up_closed_transactions(my_trades_open_all)
-
+        
     if orders:
-        # log.warning(f"my_orders {data_orders}")
-        # log.debug(f"my_orders {orders}")
+        #log.warning(f"my_orders {data_orders}")
+        #log.debug(f"my_orders {orders}")
 
-        await manage_orders(orders)
+        await manage_orders (orders)
         await clean_up_closed_transactions(my_trades_open_all)
 
     if positions:
-        await manage_positions(positions, currency)
-
+        await manage_positions (positions, currency)
+    
     log.info(f"update_user_changes-END")
 
-
 def get_last_price(my_trades_open_strategy: list) -> float:
-    """ """
-    my_trades_open_strategy_buy = [
-        o for o in my_trades_open_strategy if o["amount_dir"] > 0
-    ]
-    my_trades_open_strategy_sell = [
-        o for o in my_trades_open_strategy if o["amount_dir"] < 0
-    ]
-    buy_traded_price = [o["price"] for o in my_trades_open_strategy_buy]
-    sell_traded_price = [o["price"] for o in my_trades_open_strategy_sell]
+    """
+    """
+    my_trades_open_strategy_buy= [o for o in my_trades_open_strategy if o["amount_dir"] > 0] 
+    my_trades_open_strategy_sell= [o for o in my_trades_open_strategy if o["amount_dir"] < 0] 
+    buy_traded_price= [o["price"] for o in my_trades_open_strategy_buy] 
+    sell_traded_price= [o["price"] for o in my_trades_open_strategy_sell] 
 
-    log.info(
-        f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
-    )
-    log.debug([o["amount_dir"] for o in my_trades_open_strategy_buy])
+    log.info (
+                    f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
+                )
+    log.debug ([o["amount_dir"] for o in my_trades_open_strategy_buy] )
 
-    log.error([o["amount_dir"] for o in my_trades_open_strategy_sell])
-
-    return {
-        "min_buy_traded_price": 0 if buy_traded_price == [] else min(buy_traded_price),
-        "max_sell_traded_price": (
-            0 if sell_traded_price == [] else max(sell_traded_price)
-        ),
-    }
-
+    log.error ([o["amount_dir"] for o in my_trades_open_strategy_sell] )
+    
+    return  {
+            "min_buy_traded_price": 0 if buy_traded_price ==[] else min(buy_traded_price),
+            "max_sell_traded_price": 0 if sell_traded_price ==[] else max(sell_traded_price)
+        }
 
 def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
-    """ """
-    delta_price = abs(abs(last_traded_price) - market_price)
-    return (
-        0
-        if (last_traded_price == [] or last_traded_price == 0)
-        else delta_price / last_traded_price
-    )
+    """
+    """
+    delta_price= abs(abs(last_traded_price)-market_price)
+    return 0 if  (last_traded_price == [] or last_traded_price == 0) \
+        else delta_price/last_traded_price
 
+def delta_price_constraint(threshold: float, last_price_all: dict, market_price: float, net_sum_strategy: int, side: str) -> bool:
+    """
+    """
+    is_reorder_ok= False
+    last_traded_price=None
 
-def delta_price_constraint(
-    threshold: float,
-    last_price_all: dict,
-    market_price: float,
-    net_sum_strategy: int,
-    side: str,
-) -> bool:
-    """ """
-    is_reorder_ok = False
-    last_traded_price = None
-
-    if side == "buy":
-        last_traded_price = last_price_all["min_buy_traded_price"]
-        delta_price_exceed_threhold = (
-            delta_price_pct(last_traded_price, market_price) > threshold
+    if side=="buy":
+        last_traded_price= last_price_all["min_buy_traded_price"]
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price < last_traded_price
-        )
-        is_reorder_ok = delta_price_exceed_threhold or net_sum_strategy <= 0
+        is_reorder_ok=  delta_price_exceed_threhold or net_sum_strategy <= 0
 
-    if side == "sell":
-        last_traded_price = last_price_all["max_sell_traded_price"]
-        delta_price_exceed_threhold = (
-            delta_price_pct(last_traded_price, market_price) > threshold
+    if side=="sell":
+        last_traded_price= last_price_all["max_sell_traded_price"]
+        delta_price_exceed_threhold= delta_price_pct(last_traded_price,market_price) > threshold \
             and market_price > last_traded_price
-        )
-        is_reorder_ok = delta_price_exceed_threhold or net_sum_strategy >= 0
+        is_reorder_ok= delta_price_exceed_threhold or net_sum_strategy >= 0
 
     log.debug(
-        f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}"
-    )
-    return True if last_traded_price == 0 else is_reorder_ok
-
+                    f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}" 
+                )       
+    return True if last_traded_price==0 else is_reorder_ok
 
 async def opening_transactions(
     instrument,
@@ -499,7 +469,7 @@ async def opening_transactions(
     size_from_positions,
     server_time,
     market_condition,
-    take_profit_pct_daily,
+    take_profit_pct_daily
 ) -> None:
     """ """
 
@@ -542,30 +512,30 @@ async def opening_transactions(
                     f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
                 )
 
-                sum_my_trades_open_sqlite_all_strategy: list = (
-                    str_mod.sum_my_trades_open_sqlite(
-                        my_trades_open_all, strategy_label
-                    )
+                sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
+                    my_trades_open_all, strategy_label
                 )
                 size_is_consistent: bool = await is_size_consistent(
                     sum_my_trades_open_sqlite_all_strategy, size_from_positions
                 )
 
                 if size_is_consistent:  # and open_order_is_consistent:
-
-                    THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
-
-                    my_trades_open = [
-                        o for o in my_trades_open_all if "open" in (o["label_main"])
-                    ]
+   
+                    THRESHOLD_BEFORE_REORDER = ONE_PCT/2
+                    
+                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
 
                     my_trades_open_strategy = [
-                        o for o in my_trades_open if strategy_label in (o["label_main"])
-                    ]
-
-                    last_price_all = get_last_price(my_trades_open_strategy)
-
-                    log.debug(f"last_price   {last_price_all}")
+                o
+                for o in my_trades_open
+                if strategy_label in (o["label_main"])
+            ]
+   
+                    last_price_all= get_last_price(my_trades_open_strategy)
+                 
+                    log.debug(
+                    f"last_price   {last_price_all}"
+                )
 
                     if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -573,49 +543,31 @@ async def opening_transactions(
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                        send_order: dict = (
-                            await hedging.is_send_and_cancel_open_order_allowed(
-                                notional,
-                                best_ask_prc,
-                                server_time,
-                                market_condition,
-                                THRESHOLD_TIME_TO_CANCEL,
-                            )
+                        send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
+                            notional,
+                            best_ask_prc,
+                            server_time,
+                            market_condition,
+                            THRESHOLD_TIME_TO_CANCEL,
                         )
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
 
-                    if "marketMaker" in strategy_attr["strategy"]:
+                    if  "marketMaker" in strategy_attr["strategy"]:
 
                         market_maker = MM.MarketMaker(strategy_label)
+                        
 
-                        send_order: dict = (
-                            await market_maker.is_send_and_cancel_open_order_allowed(
-                                size_from_positions,
-                                notional,
-                                best_ask_prc,
-                                best_bid_prc,
-                                server_time,
-                                market_condition,
-                                take_profit_pct_daily,
-                            )
+                        send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
+                            size_from_positions, notional, best_ask_prc, best_bid_prc, server_time, market_condition,take_profit_pct_daily
                         )
-
-                        constraint = (
-                            False
-                            if send_order["order_allowed"] == False
-                            else delta_price_constraint(
-                                THRESHOLD_BEFORE_REORDER,
-                                last_price_all,
-                                index_price,
-                                net_sum_strategy,
-                                send_order["order_parameters"]["side"],
-                            )
-                        )
-
+                                            
+                        constraint= False if send_order["order_allowed"]==False\
+                            else delta_price_constraint(THRESHOLD_BEFORE_REORDER, last_price_all, index_price, net_sum_strategy, send_order["order_parameters"]["side"])
+            
                         if constraint:
-
+                            
                             await if_order_is_true(send_order, instrument)
                             await if_cancel_is_true(send_order)
                             log.info(send_order)
@@ -697,14 +649,12 @@ async def closing_transactions(
         # get startegy details
         strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-        my_trades_open_sqlite_transaction_net_strategy: list = (
-            str_mod.my_trades_open_sqlite_detailing(
-                my_trades_open_all, label, "transaction_net"
-            )
+        my_trades_open_sqlite_transaction_net_strategy: list = str_mod.my_trades_open_sqlite_detailing(
+            my_trades_open_all, label, "transaction_net"
         )
 
-        sum_my_trades_open_sqlite_all_strategy: list = (
-            str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
+        sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
+            my_trades_open_all, label
         )
         size_is_consistent: bool = await is_size_consistent(
             sum_my_trades_open_sqlite_all_strategy, size_from_positions
@@ -793,13 +743,8 @@ async def closing_transactions(
 
                     market_maker = MM.MarketMaker(label_main)
 
-                    send_closing_order: dict = (
-                        await market_maker.is_send_exit_order_allowed(
-                            market_condition,
-                            best_ask_prc,
-                            best_bid_prc,
-                            open_trade_strategy_label,
-                        )
+                    send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
+                        market_condition,best_ask_prc, best_bid_prc, open_trade_strategy_label
                     )
                     log.critical(f" send_closing_order {send_closing_order}")
                     await if_order_is_true(send_closing_order, instrument)
