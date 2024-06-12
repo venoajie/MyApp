@@ -563,7 +563,12 @@ class BasicStrategy:
             tp_pct: float = strategy_config["take_profit_pct"]
 
         if transaction_side == "sell":
-            tp_price_reached: bool = is_transaction_price_minus_below_threshold(
+            try:
+                tp_price_reached=bid_price < transaction["take_profit"]
+                print(transaction["take_profit"])
+                print(f"tp_price_reached {tp_price_reached}")
+            except:
+                tp_price_reached: bool = is_transaction_price_minus_below_threshold(
                 last_transaction_price, bid_price, tp_pct
             )
 
@@ -576,7 +581,14 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
-            tp_price_reached: bool = is_transaction_price_plus_above_threshold(
+            try:
+                tp_price_reached= ask_price > transaction["take_profit"]
+                
+                print(transaction["take_profit"])
+                print(f"tp_price_reached {tp_price_reached}")
+                
+            except:
+                tp_price_reached: bool = is_transaction_price_plus_above_threshold(
                 last_transaction_price, ask_price, tp_pct
             )
             supported_by_market: bool = (
