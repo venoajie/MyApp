@@ -255,7 +255,7 @@ async def manage_positions (positions: dict, currency: str) -> None:
 
 async def inserting_additional_params (params: dict) -> None:
 
-    log.debug(f"additional_params {params}")
+    log.debug(f"inserting_additional_params {params}")
     
     if "open" in params:
         await sqlite_management.insert_tables("supporting_items_json", params)
