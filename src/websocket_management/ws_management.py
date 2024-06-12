@@ -185,13 +185,6 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
     """ """
     return system_tools.reading_from_db_pickle(end_point, instrument, status)
 
-async def manage_params (params: dict) -> None:
-
-    log.debug(f"additional_params {params}")
-    
-    if "open" in params:
-        await sqlite_management.insert_tables("supporting_items_json", params)
-
 
 async def send_limit_order(params) -> None:
     """ """
@@ -216,7 +209,7 @@ async def if_order_is_true(order, instrument: str = None) -> None:
         is_app_running=system_tools.is_current_file_running("app")
         everything_consistent= basic_strategy.is_everything_consistent(params)
         
-        await manage_params(params)
+        await inserting_additional_params(params)
         
         if is_app_running and everything_consistent:
             await send_limit_order(params)
@@ -260,27 +253,39 @@ async def manage_positions (positions: dict, currency: str) -> None:
     my_path_position = system_tools.provide_path_for_file("positions", currency)
     pickling.replace_data(my_path_position, positions)
 
+async def inserting_additional_params (params: dict) -> None:
+
+    log.debug(f"additional_params {params}")
+    
+    if "open" in params:
+        await sqlite_management.insert_tables("supporting_items_json", params)
+
+
+async def manage_params (trade) -> None:
+
+    #log.info(f"trade {trade}")
+    label=trade["label"]
+
+    #log.info(f"label {label}")
+    additional_params = sqlite_management.querying_additional_params()
+    #log.info(f"get_additional_params {additional_params}")
+    params=await sqlite_management.executing_query_with_return(additional_params)
+    log.info(f"params_data {params}")
+    
+    log.info(f"params {params}")
+    additional_params_label = [
+            o for o in params if label in o
+        ]
+    log.info(f"additional_params_label {additional_params_label}")
+    trade.update({"take_profit": additional_params["take_profit"]})
+    log.info(f"trade {trade}")
+
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
-        #log.info(f"trade {trade}")
-        label=trade["label"]
-
-        #log.info(f"label {label}")
-        additional_params = sqlite_management.querying_additional_params()
-        #log.info(f"get_additional_params {additional_params}")
-        params=await sqlite_management.executing_query_with_return(additional_params)
-        log.info(f"params_data {params}")
-        
-        log.info(f"params {params}")
-        additional_params_label = [
-                o for o in params if label in o
-            ]
-        log.info(f"additional_params_label {additional_params_label}")
-        trade.update({"take_profit": additional_params["take_profit"]})
-        log.info(f"trade {trade}")
-
+        await manage_params (trade) 
         await sqlite_management.insert_tables("my_trades_all_json", trade)
+        
 
 async def manage_orders (orders: dict) -> None:
 
@@ -390,6 +395,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
     my_trades_open_all: list = my_trades_open_sqlite["all"]
     
     if trades:
+        
         await manage_trades (trades)
         await clean_up_closed_transactions(my_trades_open_all)
         
