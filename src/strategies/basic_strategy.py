@@ -332,7 +332,7 @@ def is_everything_consistent(params) -> dict:
     label = params["label"]
 
     is_consistent = True if "closed" in label else False
-    log.warning(f"params {params}")
+    #log.warning(f"params {params}")
 
     try:
         side = params["direction"]

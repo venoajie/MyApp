@@ -209,9 +209,8 @@ async def if_order_is_true(order, instrument: str = None) -> None:
         is_app_running=system_tools.is_current_file_running("app")
         everything_consistent= basic_strategy.is_everything_consistent(params)
         
-        await inserting_additional_params(params)
-        
         if is_app_running and everything_consistent:
+            await inserting_additional_params(params)
             await send_limit_order(params)
             await asyncio.sleep(10)
 
@@ -256,10 +255,10 @@ async def manage_positions (positions: dict, currency: str) -> None:
 async def inserting_additional_params (params: dict) -> None:
 
     log.debug(f"inserting_additional_params {params}")
+    print("open" in params)
     
     if "open" in params:
         await sqlite_management.insert_tables("supporting_items_json", params)
-
 
 async def manage_params (trade) -> None:
 
