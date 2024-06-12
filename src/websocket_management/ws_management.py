@@ -276,9 +276,9 @@ async def manage_params (trade) -> None:
             o for o in params if label in o["label"]
         ][0]
     log.info(f"additional_params_label {additional_params_label}")
-    log.info(additional_params["take_profit"])
+    log.info(additional_params_label["take_profit"])
     log.info(f"trade {trade}")
-    trade.update({"take_profit": additional_params["take_profit"]})
+    trade.update({"take_profit": additional_params_label["take_profit"]})
 
 async def manage_trades (trades: dict) -> None:
 
