@@ -145,7 +145,7 @@ class MarketMaker(BasicStrategy):
 
             if size_from_positions > 0 and market_condition["falling_price"]:
                 params.update({"size": max(abs(size_from_positions), int(notional))})
-        print(f"params {params} ")
+        print(f"MM params {params} ")
 
         # is open order allowed?
         if params["everything_is_consistent"]:
