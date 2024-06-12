@@ -160,10 +160,10 @@ def get_nearest_tick(price: float, tick: float) -> float:
 
 
 def get_closest_value(lst, k) -> float:
-    """ 
-    
-        References:
-            https://www.geeksforgeeks.org/python-find-closest-number-to-k-in-given-list/
+    """
+
+    References:
+        https://www.geeksforgeeks.org/python-find-closest-number-to-k-in-given-list/
     """
 
     import bisect

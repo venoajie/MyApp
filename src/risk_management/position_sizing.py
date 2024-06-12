@@ -150,66 +150,74 @@ def compute_position_leverage_and_delta(notional: float, my_trades_open: list) -
 
 
 def turnOver_times(
-    pct_daily_profit_target: float, pct_profit_per_transaction: float, ordered_side: int = 2
+    pct_daily_profit_target: float,
+    pct_profit_per_transaction: float,
+    ordered_side: int = 2,
 ) -> float:
     """
     ordered_side = 2, consisted of long and short
     """
-    daily=(pct_daily_profit_target / pct_profit_per_transaction) / ordered_side
-    
+    daily = (pct_daily_profit_target / pct_profit_per_transaction) / ordered_side
+
     return {
         "daily": daily,
-        "hourly": daily/24,
+        "hourly": daily / 24,
     }
-    
+
 
 def hourly_sizing(
     notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float
 ) -> float:
-    """
-    """
-    SECONDS_IN_ONE_HOUR=3600
+    """ """
+    SECONDS_IN_ONE_HOUR = 3600
 
     hourly_target_turn_over = turnOver_times(
         pct_daily_profit_target, pct_profit_per_transaction
     )["hourly"]
-    
-    qty_orders_per_hour= (hourly_target_turn_over * notional)
-    
+
+    qty_orders_per_hour = hourly_target_turn_over * notional
+
     return {
         "quantity_per_hour": max(1, int(qty_orders_per_hour)),
-        "interval_time_before_reorder": (qty_orders_per_hour/notional)*SECONDS_IN_ONE_HOUR,
+        "interval_time_before_reorder": (qty_orders_per_hour / notional)
+        * SECONDS_IN_ONE_HOUR,
     }
-   
+
 
 def quantities_per_order(hourly_qty: float, SIXTY_MINUTES: int = 60) -> float:
-    """
-    """
+    """ """
     return 1 if hourly_qty < SIXTY_MINUTES else int(hourly_qty / SIXTY_MINUTES)
 
 
-def interval_time_before_reorder_in_ms(minute_delay_before_reorder: float, SIXTY_MINUTES: int=60) -> float:
-    """
-    """
-        
-    return minute_delay_before_reorder   * SIXTY_MINUTES  * 1000
+def interval_time_before_reorder_in_ms(
+    minute_delay_before_reorder: float, SIXTY_MINUTES: int = 60
+) -> float:
+    """ """
+
+    return minute_delay_before_reorder * SIXTY_MINUTES * 1000
 
 
 def qty_order_and_interval_time(
-    notional: float, pct_daily_profit_target: float, pct_profit_per_transaction: float, SIXTY_MINUTES: int=60
+    notional: float,
+    pct_daily_profit_target: float,
+    pct_profit_per_transaction: float,
+    SIXTY_MINUTES: int = 60,
 ) -> dict:
-    """
-    """
+    """ """
 
     hourly_qty = hourly_sizing(
         notional, pct_daily_profit_target, pct_profit_per_transaction
     )
-    print (f"{hourly_qty}")
+    print(f"{hourly_qty}")
 
     minute_delay_before_reorder = hourly_qty["interval_time_before_reorder"]
-    
+
     return dict(
         interval_time_between_order=minute_delay_before_reorder,
-        interval_time_between_order_in_ms=interval_time_before_reorder_in_ms(minute_delay_before_reorder),
-        qty_per_order= quantities_per_order(hourly_qty["quantity_per_hour"], SIXTY_MINUTES),
+        interval_time_between_order_in_ms=interval_time_before_reorder_in_ms(
+            minute_delay_before_reorder
+        ),
+        qty_per_order=quantities_per_order(
+            hourly_qty["quantity_per_hour"], SIXTY_MINUTES
+        ),
     )

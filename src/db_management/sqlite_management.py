@@ -65,9 +65,7 @@ async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
 
 
 def create_table_json(table) -> str:
-
-    """
-    """
+    """ """
     query = f"""
                 CREATE 
                 TABLE IF NOT EXISTS 
@@ -86,9 +84,7 @@ def create_table_json(table) -> str:
 
 
 def create_virtual_table(table: str, item: str, item_data_type: str) -> str:
-
-    """
-    """
+    """ """
     query = f""" 
             ALTER 
             TABLE 
@@ -107,10 +103,9 @@ def create_virtual_table(table: str, item: str, item_data_type: str) -> str:
 
 
 async def create_tables(type: str = None):
-
     """
     type: json/None
-    
+
     Naming conventions to ensure portability:
         - all in lower case (except myTrades to distingush my own trade (private) and exchanges trade (public))
         - use underscores
@@ -119,7 +114,7 @@ async def create_tables(type: str = None):
             - db in pickle: eth-myTrades-open
             - sqlite: myTrades_open -> eth will be resolved through queries
 
-    https://antonz.org/json-virtual-columns/ 
+    https://antonz.org/json-virtual-columns/
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     """
     async with aiosqlite.connect(
@@ -321,11 +316,10 @@ async def create_tables(type: str = None):
 
 
 async def insert_tables(table_name, params):
-
     """
     alternative insert format (safer):
     https://stackoverflow.com/questions/56910918/saving-json-data-to-sqlite-python
-    
+
     """
     try:
 
@@ -368,10 +362,9 @@ async def querying_table(
     operator=None,
     filter_value=None,
 ) -> list:
-
     """
-            Reference
-            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+    Reference
+    # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     """
 
     from utilities import string_modification as str_mod
@@ -411,9 +404,11 @@ async def querying_table(
 
     return dict(
         all=[] if combine_result in NONE_DATA else (combine_result),
-        list_data_only=[]
-        if combine_result in NONE_DATA
-        else str_mod.parsing_sqlite_json_output([o["data"] for o in combine_result]),
+        list_data_only=(
+            []
+            if combine_result in NONE_DATA
+            else str_mod.parsing_sqlite_json_output([o["data"] for o in combine_result])
+        ),
     )
 
 
@@ -424,9 +419,7 @@ async def deleting_row(
     operator=None,
     filter_value=None,
 ) -> list:
-
-    """
-    """
+    """ """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
     print(f"deleting_row {query_table}")
@@ -446,9 +439,7 @@ async def deleting_row(
 async def querying_completed_transactions(
     database: str = "databases/trading.sqlite3",
 ) -> list:
-
-    """
-    """
+    """ """
 
     query_table = f"""SELECT  * FROM (select REPLACE(REPLACE (label_main,'closed-',''), 'open-','') as label, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)"""
 
@@ -482,9 +473,7 @@ async def deleting_row(
     operator=None,
     filter_value=None,
 ) -> list:
-
-    """
-    """
+    """ """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
     query_table_filter_none = f"DELETE FROM {table}"
@@ -510,9 +499,7 @@ async def add_additional_column(
     table: str = "ohlc1_eth_perp_json",
     database: str = "databases/trading.sqlite3",
 ) -> list:
-
-    """
-    """
+    """ """
 
     try:
         query_table = f"ALTER TABLE {table} ADD {column_name} {dataType}"
@@ -542,9 +529,7 @@ async def replace_row(
     operator=None,
     filter_value=None,
 ) -> list:
-
-    """
-    """
+    """ """
 
     try:
 
@@ -565,8 +550,7 @@ async def replace_row(
         await telegram_bot_sendtext("sqlite failed replace_row", "failed_order")
 
 
-def querying_additional_params(table: str = "supporting_items_json"
-) -> str:
+def querying_additional_params(table: str = "supporting_items_json") -> str:
 
     return f"""SELECT JSON_EXTRACT (data, '$.label') AS label, JSON_EXTRACT (data, '$.take_profit')  AS take_profit FROM {table}"""
 
@@ -591,6 +575,7 @@ def querying_open_interest(
         (open_interest - LAG (open_interest, 1, 0) OVER (ORDER BY tick)) as delta_oi FROM {table}"""
     return all_data if limit == None else f"""{all_data} limit {limit}"""
 
+
 def querying_ohlc_price_vol(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
 ) -> str:
@@ -599,12 +584,13 @@ def querying_ohlc_price_vol(
 
     return all_data if limit == None else f"""{all_data} limit {limit}"""
 
-def querying_hlc_vol(table: str = "ohlc1_eth_perp_json", limit: int = None
-) -> str:
+
+def querying_hlc_vol(table: str = "ohlc1_eth_perp_json", limit: int = None) -> str:
 
     all_data = f"""SELECT  tick, JSON_EXTRACT (data, '$.volume') AS volume, JSON_EXTRACT (data, '$.high') AS high, JSON_EXTRACT (data, '$.low') AS low, JSON_EXTRACT (data, '$.close')  AS close FROM {table} ORDER BY tick DESC"""
 
     return all_data if limit == None else f"""{all_data} limit {limit}"""
+
 
 def querying_ohlc_closed(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
@@ -635,13 +621,12 @@ async def executing_query_with_return(
     filter_value=None,
     database: str = "databases/trading.sqlite3",
 ) -> list:
-
     """
-            Reference
-            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
-                        
-            Return type: 'list'/'dataframe'
-            
+    Reference
+    # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+
+    Return type: 'list'/'dataframe'
+
     """
 
     filter_val = (f"{filter_value}",)
@@ -681,10 +666,9 @@ async def executing_general_query(
     operator=None,
     filter_value=None,
 ) -> list:
-
     """
-            Reference
-            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+    Reference
+    # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
     """
 
     filter_val = (f"{filter_value}",)

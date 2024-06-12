@@ -17,21 +17,18 @@ from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has
 
 @dataclass(unsafe_hash=True, slots=True)
 class DirectionalTrading(BasicStrategy):
-
     """ """
 
     def get_basic_params(self) -> dict:
-        """
-        """
+        """ """
         return BasicStrategy(self.strategy_label)
 
     async def is_send_and_cancel_open_order_allowed(
         self, notional: float, ask_price: float, bid_price: float, server_time: int
     ) -> dict:
-        """
-        """
-        open_orders_label_strategy: dict = await self.get_basic_params().get_orders_attributes(
-            "open"
+        """ """
+        open_orders_label_strategy: dict = (
+            await self.get_basic_params().get_orders_attributes("open")
         )
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
@@ -94,8 +91,7 @@ class DirectionalTrading(BasicStrategy):
     async def is_send_exit_order_allowed(
         self, ask_price: float, bid_price: float, selected_transaction: list
     ) -> dict:
-        """
-        """
+        """ """
         return await self.get_basic_params().is_send_exit_order_allowed(
             ask_price, bid_price, selected_transaction
         )

@@ -13,20 +13,16 @@ from utilities.string_modification import get_net_sum_strategy_super_main
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
-
     """ """
 
     def get_basic_params(self) -> dict:
-        """
-        """
+        """ """
         return BasicStrategy(self.strategy_label)
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
     ) -> bool:
-        """
-
-        """
+        """ """
         return abs(current_size) < notional and current_outstanding_order_len == 0
 
     async def is_send_and_cancel_open_order_allowed(
@@ -37,11 +33,11 @@ class HedgingSpot(BasicStrategy):
         market_condition: dict,
         threshold: float = 30,
     ) -> dict:
-        """
+        """ """
 
-        """
-
-        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
+        open_orders_label_strategy: (
+            dict
+        ) = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
 
@@ -61,8 +57,10 @@ class HedgingSpot(BasicStrategy):
         )
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
-        size_and_order_appropriate_for_ordering: bool = self.are_size_and_order_appropriate_for_ordering(
-            notional, sum_my_trades, len_orders
+        size_and_order_appropriate_for_ordering: bool = (
+            self.are_size_and_order_appropriate_for_ordering(
+                notional, sum_my_trades, len_orders
+            )
         )
 
         cancel_allowed: bool = False
@@ -89,15 +87,13 @@ class HedgingSpot(BasicStrategy):
         )
 
     def hedged_value_to_notional(self, notional: float, hedged_value: float) -> float:
-        """ 
-        """
+        """ """
         return abs(hedged_value / notional)
 
     def is_hedged_value_to_notional_exceed_threshold(
         self, notional: float, hedged_value: float, threshold: float
     ) -> float:
-        """ 
-        """
+        """ """
         return self.hedged_value_to_notional(notional, hedged_value) > threshold
 
     async def is_send_exit_order_allowed(
@@ -107,8 +103,7 @@ class HedgingSpot(BasicStrategy):
         bid_price: float,
         selected_transaction: list,
     ) -> dict:
-        """
-        """
+        """ """
 
         is_bullish = market_condition["rising_price"]
         # is_bearish = market_condition["falling_price"]
@@ -131,7 +126,7 @@ class HedgingSpot(BasicStrategy):
 
         return dict(
             order_allowed=exit_allowed,
-            order_parameters=[]
-            if exit_allowed == False
-            else exit_params["order_parameters"],
+            order_parameters=(
+                [] if exit_allowed == False else exit_params["order_parameters"]
+            ),
         )

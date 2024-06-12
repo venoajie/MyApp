@@ -42,9 +42,7 @@ async def create_dataBase_sqlite(
 
 
 def texting_table_json(table) -> str:
-
-    """
-    """
+    """ """
     query = f"""
                 CREATE 
                 TABLE IF NOT EXISTS 
@@ -63,9 +61,7 @@ def texting_table_json(table) -> str:
 
 
 def texting_virtual_table(table: str, item: str, item_data_type: str) -> str:
-
-    """
-    """
+    """ """
     item2 = "last_update_timestamp" if item == "timestamp" else item
     query = f""" 
             ALTER 
@@ -85,10 +81,9 @@ def texting_virtual_table(table: str, item: str, item_data_type: str) -> str:
 
 
 async def create_tables_json_sqlite(table, type: str = None):
-
     """
     type: json/None
-    
+
     Naming conventions to ensure portability:
         - all in lower case (except myTrades to distingush my own trade (private) and exchanges trade (public))
         - use underscores
@@ -97,7 +92,7 @@ async def create_tables_json_sqlite(table, type: str = None):
             - db in pickle: eth-myTrades-open
             - sqlite: myTrades_open -> eth will be resolved through queries
 
-    https://antonz.org/json-virtual-columns/ 
+    https://antonz.org/json-virtual-columns/
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     """
     async with aiosqlite.connect(
@@ -215,13 +210,12 @@ async def executing_query_with_return(
     filter_value=None,
     database: str = "databases/trading.sqlite3",
 ) -> list:
-
     """
-            Reference
-            # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
-                        
-            Return type: 'list'/'dataframe'
-            
+    Reference
+    # https://stackoverflow.com/questions/65934371/return-data-from-sqlite-with-headers-python3
+
+    Return type: 'list'/'dataframe'
+
     """
 
     filter_val = (f"{filter_value}",)
@@ -254,8 +248,7 @@ async def executing_query_with_return(
 
 
 async def querying_tables_item_data(table_name: str):
-    """
-    """
+    """ """
     import ast
 
     # Read sqlite query results into a pandas DataFrame

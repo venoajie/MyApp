@@ -41,7 +41,9 @@ async def instrument_ticker(currency, message_channel, instruments_kind) -> None
 
                 # combine analysis of each instrument futures result
                 tickers = futures_analysis.combining_individual_futures_analysis(
-                    index_price[0]["price"], instrument, ticker_instrument[0],
+                    index_price[0]["price"],
+                    instrument,
+                    ticker_instrument[0],
                 )
                 ticker_all: list = pickling.read_data(my_path_futures_analysis)
 
@@ -63,7 +65,9 @@ async def instrument_ticker(currency, message_channel, instruments_kind) -> None
 
     except Exception as error:
         await system_tools.raise_error_message(
-            error, 10, "instrument ticker - failed to process data",
+            error,
+            10,
+            "instrument ticker - failed to process data",
         )
 
 

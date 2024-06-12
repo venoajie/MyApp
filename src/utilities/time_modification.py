@@ -76,9 +76,11 @@ def convert_time_to_utc(
     return {
         "utc_now": time_format_standardization(utc_f)["strptime"],
         "jkt_now": time_format_standardization(utc_f_jkt)["strptime"],
-        "transaction_time": None
-        if transaction_time == None
-        else time_format_standardization(utc_f_transaction_time)["strptime"],
+        "transaction_time": (
+            None
+            if transaction_time == None
+            else time_format_standardization(utc_f_transaction_time)["strptime"]
+        ),
     }
 
 
@@ -197,15 +199,21 @@ def time_delta_between_two_times(
         time_delta_unix = transaction_time_end_unix - start_time
 
     return {
-        "seconds": time_delta_unix / seconds_divider
-        if "unix" in time_format
-        else time_delta_utc,
-        "hours": time_delta_unix / 3600 / seconds_divider
-        if "unix" in time_format
-        else time_delta_utc / 3600,
-        "days": time_delta_unix / 3600 / seconds_divider / 24
-        if "unix" in time_format
-        else time_delta_utc / 3600 / 24,
+        "seconds": (
+            time_delta_unix / seconds_divider
+            if "unix" in time_format
+            else time_delta_utc
+        ),
+        "hours": (
+            time_delta_unix / 3600 / seconds_divider
+            if "unix" in time_format
+            else time_delta_utc / 3600
+        ),
+        "days": (
+            time_delta_unix / 3600 / seconds_divider / 24
+            if "unix" in time_format
+            else time_delta_utc / 3600 / 24
+        ),
     }
 
 
@@ -273,7 +281,7 @@ def resampling_time_frame(ohlc_data: list, time_frame: str = "5min"):
         https://stackoverflow.com/questions/70143660/pandas-ohlc-aggregation-resample-with-time-of-ohlc
         https://stackoverflow.com/questions/36681945/group-dataframe-in-5-minute-intervals
         https://stackoverflow.com/questions/36222928/pandas-ohlc-aggregation-on-ohlc-data
-        """
+    """
     import pandas as pd
 
     df = pd.DataFrame(ohlc_data)

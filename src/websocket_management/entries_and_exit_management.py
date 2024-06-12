@@ -209,8 +209,10 @@ async def opening_transactions(
                     f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
                 )
 
-                sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
-                    my_trades_open_all, strategy_label
+                sum_my_trades_open_sqlite_all_strategy: list = (
+                    str_mod.sum_my_trades_open_sqlite(
+                        my_trades_open_all, strategy_label
+                    )
                 )
                 size_is_consistent: bool = await is_size_consistent(
                     sum_my_trades_open_sqlite_all_strategy, size_from_positions
@@ -224,12 +226,14 @@ async def opening_transactions(
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                        send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
-                            notional,
-                            best_ask_prc,
-                            server_time,
-                            market_condition,
-                            THRESHOLD_TIME_TO_CANCEL,
+                        send_order: dict = (
+                            await hedging.is_send_and_cancel_open_order_allowed(
+                                notional,
+                                best_ask_prc,
+                                server_time,
+                                market_condition,
+                                THRESHOLD_TIME_TO_CANCEL,
+                            )
                         )
 
                         await if_order_is_true(send_order, instrument)
@@ -239,8 +243,10 @@ async def opening_transactions(
 
                         market_maker = MM.MarketMaker(strategy_label)
 
-                        send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
-                            notional, best_ask_prc, best_bid_prc, server_time
+                        send_order: dict = (
+                            await market_maker.is_send_and_cancel_open_order_allowed(
+                                notional, best_ask_prc, best_bid_prc, server_time
+                            )
                         )
 
                         await if_order_is_true(send_order, instrument)
@@ -324,12 +330,14 @@ async def closing_transactions(
         # get startegy details
         strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-        my_trades_open_sqlite_transaction_net_strategy: list = str_mod.my_trades_open_sqlite_detailing(
-            my_trades_open_all, label, "transaction_net"
+        my_trades_open_sqlite_transaction_net_strategy: list = (
+            str_mod.my_trades_open_sqlite_detailing(
+                my_trades_open_all, label, "transaction_net"
+            )
         )
 
-        sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
-            my_trades_open_all, label
+        sum_my_trades_open_sqlite_all_strategy: list = (
+            str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
         )
         size_is_consistent: bool = await is_size_consistent(
             sum_my_trades_open_sqlite_all_strategy, size_from_positions
@@ -414,12 +422,14 @@ async def closing_transactions(
 
                     await if_order_is_true(send_closing_order, instrument)
 
-                if False and "marketMaker" in strategy_attr["strategy"] :
+                if False and "marketMaker" in strategy_attr["strategy"]:
 
                     market_maker = MM.MarketMaker(label_main)
 
-                    send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
-                        best_ask_prc, best_bid_prc, open_trade_strategy_label
+                    send_closing_order: dict = (
+                        await market_maker.is_send_exit_order_allowed(
+                            best_ask_prc, best_bid_prc, open_trade_strategy_label
+                        )
                     )
                     log.critical(f" send_closing_order {send_closing_order}")
                     await if_order_is_true(send_closing_order, instrument)

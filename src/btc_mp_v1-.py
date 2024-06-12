@@ -325,7 +325,11 @@ def update_graph(n, value):
                     y0=lvn,
                     x1=df_mp.index[0] + dt.timedelta(hours=1),
                     y1=lvn,
-                    line=dict(color="darksalmon", width=2, dash="dashdot",),
+                    line=dict(
+                        color="darksalmon",
+                        width=2,
+                        dash="dashdot",
+                    ),
                 )
 
         fig.add_shape(
@@ -334,7 +338,11 @@ def update_graph(n, value):
             y0=dl_list[i],
             x1=df_mp.index[0],
             y1=dh_list[i],
-            line=dict(color="gray", width=1, dash="dashdot",),
+            line=dict(
+                color="gray",
+                width=1,
+                dash="dashdot",
+            ),
         )
 
     fig.layout.xaxis.type = (

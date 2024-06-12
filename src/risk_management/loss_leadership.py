@@ -7,10 +7,7 @@ https://quant.stackexchange.com/questions/9527/is-price-gaping-the-major-risk-th
 def compute_individual_loss(
     ask_price: float, bid_price: float, side: str, acquisition_cost: float
 ) -> dict:
-    """
-
-
-    """
+    """ """
     if side == "sell":
         loss_in_usd = acquisition_cost - bid_price
 

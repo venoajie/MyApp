@@ -12,7 +12,7 @@ from db_management import sqlite_management
 
 
 async def clean_up_closed_transactions(transactions_all: list = None) -> None:
-    """ 
+    """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
     2. move them to table for closed transactions/my_trades_closed_json
@@ -139,11 +139,13 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
 
                 for res in result:
 
-                    my_trades_open_sqlite: list = await sqlite_management.querying_table(
-                        "my_trades_all_json"
+                    my_trades_open_sqlite: list = (
+                        await sqlite_management.querying_table("my_trades_all_json")
                     )
-                    my_trades_open: list = await sqlite_management.executing_label_and_size_query(
-                        "my_trades_all_json"
+                    my_trades_open: list = (
+                        await sqlite_management.executing_label_and_size_query(
+                            "my_trades_all_json"
+                        )
                     )
 
                     result_to_dict = (
@@ -169,8 +171,8 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
 
                 for res in result:
 
-                    my_trades_open_sqlite: list = await sqlite_management.querying_table(
-                        "my_trades_all_json"
+                    my_trades_open_sqlite: list = (
+                        await sqlite_management.querying_table("my_trades_all_json")
                     )
                     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
                     result_to_dict = (

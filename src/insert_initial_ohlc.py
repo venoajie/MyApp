@@ -62,7 +62,9 @@ async def insert_ohlc(
 
     except Exception as error:
         system_tools.catch_error_message(
-            error, 10, "WebSocket connection - failed to get ohlc",
+            error,
+            10,
+            "WebSocket connection - failed to get ohlc",
         )
 
 

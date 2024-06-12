@@ -9,7 +9,6 @@ Provide table manipulation queries:
 
 
 def create_db(db_name: str = "databases/trading", ext: str = "sqlite3") -> str:
-
     """
     db_name: folder location + file name
     """
@@ -17,7 +16,6 @@ def create_db(db_name: str = "databases/trading", ext: str = "sqlite3") -> str:
 
 
 def create_table_json(table) -> str:
-
     """
     default table for data saved in json format
     """
@@ -41,9 +39,7 @@ def create_table_json(table) -> str:
 
 
 def create_virtual_table(table: str, item: str, item_data_type: str) -> str:
-
-    """
-    """
+    """ """
     query = f""" 
             ALTER 
             TABLE 

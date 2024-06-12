@@ -13,7 +13,6 @@ def catch_error(error, idle: int = None) -> list:
 
 
 class Read_Configuration:
-
     """
     # Read .env file
     """

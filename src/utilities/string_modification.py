@@ -83,8 +83,7 @@ def extract_integers_from_text(words: list) -> int:
 
 
 def remove_apostrophes_from_json(json_load: list) -> int:
-    """
-    """
+    """ """
     import ast
 
     return [ast.literal_eval(str(i)) for i in json_load]
@@ -93,7 +92,7 @@ def remove_apostrophes_from_json(json_load: list) -> int:
 def parsing_sqlite_json_output(json_load: list) -> int:
     """
     parsing_sqlite_json_output
-    
+
     References:
         https://stackoverflow.com/questions/46991650/remove-quotes-from-list-of-dictionaries-in-python
         https://stackoverflow.com/questions/14611352/malformed-string-valueerror-ast-literal-eval-with-string-representation-of-tup
@@ -147,7 +146,6 @@ def get_strings_before_character(
 
 
 def parsing_label(label: str, integer: int = None) -> dict:
-
     """
 
     Args:
@@ -156,14 +154,14 @@ def parsing_label(label: str, integer: int = None) -> dict:
     Returns:
         dict
 
-    Example: 
+    Example:
         'hedgingSpot-open-1671189554374'
         main: 'hedgingSpot'
         super_main: 'hedgingSpot'
         int = 1671189554374
         transaction_status:'hedgingSpot-open'
         transaction_net:'hedgingSpot-1671189554374'
-        
+
         'every5mtestLong-open-1681617021717'
         main: 'every5mtestLong'
         super_main: 'every5mtest'
@@ -219,9 +217,11 @@ def parsing_label(label: str, integer: int = None) -> dict:
 
     return {
         # "super_main":  bool([o not in main for o in side]),
-        "super_main": None
-        if super_main == None
-        else (main if all([o not in main for o in side]) else super_main[0]),
+        "super_main": (
+            None
+            if super_main == None
+            else (main if all([o not in main for o in side]) else super_main[0])
+        ),
         "main": main,
         "int": get_integer,
         "transaction_status": status,
@@ -268,7 +268,7 @@ def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> 
 
 
 def get_net_sum_strategy_hedged(my_trades_open_sqlite: list) -> float:
-    """ 
+    """
     strategy need to be hedged
     """
     from strategies import entries_exits
@@ -311,7 +311,7 @@ def get_net_sum_strategy_main(my_trades_open_sqlite: list, label: str) -> float:
 def my_trades_open_sqlite_detailing(
     transactions, label, detail_level: str = None
 ) -> list:
-    """ 
+    """
     detail_level: main/individual
     """
     if detail_level == "main":
@@ -348,7 +348,7 @@ def my_trades_open_sqlite_detailing(
 
 
 def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None) -> None:
-    """ 
+    """
     detail_level: main/individual
     """
     detailing = (
@@ -381,10 +381,7 @@ def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None) -> 
 
 
 def transform_nested_dict_to_list(list_example) -> dict:
-
-    """
-
-    """
+    """ """
     len_tick = len(list_example["volume"])
 
     my_list = []
@@ -409,7 +406,6 @@ def transform_nested_dict_to_list(list_example) -> dict:
 def filtering_list_with_missing_key(
     list_examples: list, missing_key: str = "label"
 ) -> dict:
-
     """
     https://stackoverflow.com/questions/34710571/can-i-use-a-list-comprehension-on-a-list-of-dictionaries-if-a-key-is-missing
 

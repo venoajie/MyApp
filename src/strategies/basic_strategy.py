@@ -13,29 +13,29 @@ from loguru import logger as log
 
 
 async def querying_label_and_size(table) -> list:
-    """
-    """
+    """ """
 
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
+
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
-    """
-    """
+    """ """
 
     # get query for close price
     get_ohlc_query = sqlite_management.querying_hlc_vol(table, window)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
-    #log.info(ohlc_all)
+    # log.info(ohlc_all)
 
-    return (ohlc_all)
+    return ohlc_all
 
 
-async def get_price_ohlc(price: str="close", window: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
-    """
-    """
+async def get_price_ohlc(
+    price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
+) -> list:
+    """ """
 
     # get query for close price
     get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, window)
@@ -43,20 +43,22 @@ async def get_price_ohlc(price: str="close", window: int = 100, table: str = "oh
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
 
-    return (ohlc_all)
+    return ohlc_all
 
 
-async def cleaned_up_ohlc(price: str="close", window: int = 100, table: str = "ohlc1_eth_perp_json") -> list:
-    """
-    """
+async def cleaned_up_ohlc(
+    price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
+) -> list:
+    """ """
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, window, table)
-    
+
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
 
     return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
+
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     """
@@ -68,6 +70,7 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
         sum([ratio * ohlc[-x - 1] * ((1 - ratio) ** x) for x in range(len(ohlc))]), 2
     )
 
+
 async def get_vwap(df, vwap_period) -> dict:
     """
     https://github.com/vishnugovind10/emacrossover/blob/main/emavwap1.0.py
@@ -75,60 +78,59 @@ async def get_vwap(df, vwap_period) -> dict:
 
     """
     import numpy as np
-    
-    return df['volume'].rolling(window=vwap_period).apply(lambda x: np.dot(x, df['close']) / x.sum(), raw=False)
-    
 
-def delta (last_price: float, prev_price: float) -> float:
-    """
-    """
+    return (
+        df["volume"]
+        .rolling(window=vwap_period)
+        .apply(lambda x: np.dot(x, df["close"]) / x.sum(), raw=False)
+    )
+
+
+def delta(last_price: float, prev_price: float) -> float:
+    """ """
     return last_price - prev_price
 
-def delta_pct (last_price: float, prev_price: float) -> float:
-    """
-    """
-    return abs(delta(last_price, prev_price)/prev_price)
+
+def delta_pct(last_price: float, prev_price: float) -> float:
+    """ """
+    return abs(delta(last_price, prev_price) / prev_price)
 
 
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
-    """
-    """
+    """ """
     import pandas as pd
-    
-    ohlc_high_9 = await cleaned_up_ohlc("high",9,table)
-    ohlc_low_9 = await cleaned_up_ohlc("low",9,table)
 
+    ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
+    ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
 
-#    log.error(f'ohlc_high_9 {ohlc_high_9}')
+    #    log.error(f'ohlc_high_9 {ohlc_high_9}')
     ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
-#    log.error(f'ema_high_9 {ema_high_9}')
+    #    log.error(f'ema_high_9 {ema_high_9}')
 
     ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
-#    log.error(f'ema_low_9 {ema_low_9}')
+    #    log.error(f'ema_low_9 {ema_low_9}')
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
-    #log.warning(f'ema_high_9 {ema_high_9} ema_low_9 {ema_low_9} delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
-    ohlc_short = await cleaned_up_ohlc("close",9, table)
-    ohlc_long = await cleaned_up_ohlc("close",20, table)
-    
+    # log.warning(f'ema_high_9 {ema_high_9} ema_low_9 {ema_low_9} delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
+    ohlc_short = await cleaned_up_ohlc("close", 9, table)
+    ohlc_long = await cleaned_up_ohlc("close", 20, table)
 
-    ohlc = await cleaned_up_ohlc("close",limit, table)
+    ohlc = await cleaned_up_ohlc("close", limit, table)
 
     vwap_period = 100
-    
-    ohlc_all= await get_price_ohlc ("close", vwap_period)
 
-    df  = pd.DataFrame(ohlc_all, columns=['close', 'volume'])
-    #log.error(f'df {df}')
-    df_vwap = await get_vwap(df, vwap_period)     
-    vwap=df_vwap.iloc[-1]
+    ohlc_all = await get_price_ohlc("close", vwap_period)
+
+    df = pd.DataFrame(ohlc_all, columns=["close", "volume"])
+    # log.error(f'df {df}')
+    df_vwap = await get_vwap(df, vwap_period)
+    vwap = df_vwap.iloc[-1]
 
     ema = await get_ema(ohlc["ohlc"], ratio)
 
-
-    #log.error(ema)
+    # log.error(ema)
     ema_short = await get_ema(ohlc_short["ohlc"], ratio)
 
     ema_long = await get_ema(ohlc_long["ohlc"], ratio)
@@ -138,19 +140,21 @@ async def get_market_condition(
     rising_price = False
     falling_price = False
     neutral_price = False
-    
-    log.debug (f'  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}')
-    #log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
-    #log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
-    #log.debug (f'  ohlc {ohlc}')
+
+    log.debug(
+        f"  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}"
+    )
+    # log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
+    # log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
+    # log.debug (f'  ohlc {ohlc}')
 
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
-        
+
     if last_price < ema_short and ema_short < ema_long:
         falling_price = True
 
-    if rising_price== False and falling_price== False:
+    if rising_price == False and falling_price == False:
         neutral_price = True
 
     return dict(
@@ -188,26 +192,36 @@ def get_label(status: str, label_main_or_label_transactions: str) -> str:
 
     return label
 
+
 def delta_time(server_time, time_stamp) -> int:
     """
     get difference between now and transaction time
     """
     return server_time - time_stamp
 
+
 def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) -> bool:
     """
     check whether delta time has exceed time threhold
     """
-    return True if time_stamp==[] else delta_time(server_time, time_stamp) > time_threshold
+    return (
+        True
+        if time_stamp == []
+        else delta_time(server_time, time_stamp) > time_threshold
+    )
+
 
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
     return price * pct_threshold
 
+
 def price_plus_pct(price: float, pct_threshold: float) -> float:
     return price + pct_price_in_usd(price, pct_threshold)
 
+
 def price_minus_pct(price: float, pct_threshold: float) -> float:
     return price - pct_price_in_usd(price, pct_threshold)
+
 
 def is_transaction_price_minus_below_threshold(
     last_transaction_price: float, current_price: float, pct_threshold: float
@@ -215,24 +229,25 @@ def is_transaction_price_minus_below_threshold(
 
     return price_minus_pct(last_transaction_price, pct_threshold) >= current_price
 
+
 def is_transaction_price_plus_above_threshold(
     last_transaction_price: float, current_price: float, pct_threshold: float
 ) -> bool:
 
     return price_plus_pct(last_transaction_price, pct_threshold) < current_price
 
+
 def get_max_time_stamp(result_strategy_label) -> int:
-    """
-    """
+    """ """
     return (
         []
         if result_strategy_label == []
         else max([o["timestamp"] for o in result_strategy_label])
     )
 
+
 def get_order_id_max_time_stamp(result_strategy_label) -> int:
-    """
-    """
+    """ """
     return (
         0
         if get_max_time_stamp(result_strategy_label) == []
@@ -243,10 +258,11 @@ def get_order_id_max_time_stamp(result_strategy_label) -> int:
         ][0]
     )
 
+
 def get_transactions_len(result_strategy_label) -> int:
-    """
-    """
+    """ """
     return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
+
 
 def get_transactions_sum(result_strategy_label) -> int:
     """
@@ -258,6 +274,7 @@ def get_transactions_sum(result_strategy_label) -> int:
         else sum([o["amount_dir"] for o in result_strategy_label])
     )
 
+
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """
     from utilities import pickling, system_tools
@@ -266,21 +283,22 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
         system_tools.provide_path_for_file(end_point, instrument, status)
     )
 
+
 def provide_side_to_close_transaction(transaction: dict) -> str:
     """ """
 
     # determine side
     transaction_side = transaction["direction"]
     if transaction_side == "sell":
-        side="buy"
+        side = "buy"
     if transaction_side == "buy":
-        side= "sell"
+        side = "sell"
 
     return side
 
+
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
-    """
-    """
+    """ """
     transaction: dict = selected_transaction[0]
 
     # provide dict placeholder for params
@@ -293,7 +311,7 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     params.update({"size": transaction["amount"]})
 
     # determine side
-    side=provide_side_to_close_transaction(transaction)
+    side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
 
     label_closed: str = get_label("closed", transaction["label"])
@@ -301,48 +319,46 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
 
     return params
 
+
 def get_strategy_config_all() -> list:
-    """
-    """
+    """ """
     from strategies import entries_exits
 
     return entries_exits.strategies
 
-def is_everything_consistent(params) -> dict:
-    """
-    """
-    label= params["label"]
 
-    is_consistent= True if "closed" in label else False
-    log.warning (f"params {params}")
+def is_everything_consistent(params) -> dict:
+    """ """
+    label = params["label"]
+
+    is_consistent = True if "closed" in label else False
+    log.warning(f"params {params}")
 
     try:
-        side= params["direction"]
-    
-    except:
-        side= params["side"]
-    
-    if "open" in label:
-        
-        if side == "sell":
-            is_consistent= True if ("Short" in label or "hedging" in label)\
-                else False
-                
-        if side == "buy":
-            is_consistent= True if "Long" in label else False
+        side = params["direction"]
 
-    return  is_consistent
+    except:
+        side = params["side"]
+
+    if "open" in label:
+
+        if side == "sell":
+            is_consistent = True if ("Short" in label or "hedging" in label) else False
+
+        if side == "buy":
+            is_consistent = True if "Long" in label else False
+
+    return is_consistent
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
-
     """ """
 
     strategy_label: str
 
     def get_strategy_config(self, strategy_label: str = None) -> dict:
-        """
-        """
+        """ """
 
         params: list = get_strategy_config_all()
 
@@ -360,12 +376,11 @@ class BasicStrategy:
             ][0]
 
         return str_config
-    
+
     def get_basic_opening_parameters(
         self, notional: float = None, ask_price: float = None, bid_price: float = None
     ) -> dict:
-        """
-        """
+        """ """
 
         # provide placeholder for params
         params = {}
@@ -379,28 +394,24 @@ class BasicStrategy:
         side: str = strategy_config["side"]
 
         params.update({"side": side})
-        
+
         try:
-            cancellable= strategy_config["cancellable"]
+            cancellable = strategy_config["cancellable"]
         except:
-            cancellable= False
+            cancellable = False
 
         # get transaction label and update the respective parameters
         params.update({"cancellable": cancellable})
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
-        
-        
+
         if side == "sell":
             params.update({"entry_price": ask_price})
-            
-                
+
         if side == "buy":
             params.update({"entry_price": bid_price})
-            
 
-        params.update({"everything_is_consistent": is_everything_consistent(params
-                                 )})
+        params.update({"everything_is_consistent": is_everything_consistent(params)})
         if "hedgingSpot" in strategy_config_label:
 
             params.update({"size": max(1, int(notional / 10))})
@@ -435,7 +446,8 @@ class BasicStrategy:
                 ]
 
         return dict(
-            result_strategy_label=result_strategy_label, result_all=result_cleaned,
+            result_strategy_label=result_strategy_label,
+            result_all=result_cleaned,
         )
 
     async def get_side_ratio(self) -> dict:
@@ -447,29 +459,25 @@ class BasicStrategy:
         result_strategy_label = my_trades_attributes["transactions_strategy_label"]
 
         if result_strategy_label != []:
-            long_transactions: list = (
-                [
-                    o["amount_dir"]
-                    for o in result_strategy_label
-                    if "Long" in o["label_main"]
-                ]
-            )
-            short_transactions: list = (
-                [
-                    o["amount_dir"]
-                    for o in result_strategy_label
-                    if "Short" in o["label_main"]
-                ]
-            )
+            long_transactions: list = [
+                o["amount_dir"]
+                for o in result_strategy_label
+                if "Long" in o["label_main"]
+            ]
+            short_transactions: list = [
+                o["amount_dir"]
+                for o in result_strategy_label
+                if "Short" in o["label_main"]
+            ]
             print(
                 f"basic str-long_transactions {long_transactions} short_transactions {short_transactions}"
             )
 
-            sum_long_transactions: float = 0 if long_transactions == [] else sum(
-                long_transactions
+            sum_long_transactions: float = (
+                0 if long_transactions == [] else sum(long_transactions)
             )
-            sum_short_transactions: float = 0 if short_transactions == [] else sum(
-                short_transactions
+            sum_short_transactions: float = (
+                0 if short_transactions == [] else sum(short_transactions)
             )
             print(
                 f"sum_long_transactions {sum_long_transactions} sum_short_transactions {sum_short_transactions}"
@@ -516,17 +524,23 @@ class BasicStrategy:
             "transactions_strategy_label"
         ]
         # assuming only 1
-        trade_seq_is_exist: list = False if my_trades_attributes_closed == [] else [
-            o for o in my_trades_attributes_closed if trade_seq == o["trade_seq"]
-        ] != []
+        trade_seq_is_exist: list = (
+            False
+            if my_trades_attributes_closed == []
+            else [o for o in my_trades_attributes_closed if trade_seq == o["trade_seq"]]
+            != []
+        )
         print(f"trade_seq_is_exist {trade_seq_is_exist}")
         return trade_seq_is_exist
 
     async def is_send_exit_order_allowed(
-        self, market_condition: dict, ask_price: float, bid_price: float, selected_transaction: list
+        self,
+        market_condition: dict,
+        ask_price: float,
+        bid_price: float,
+        selected_transaction: list,
     ) -> dict:
-        """
-        """
+        """ """
         # transform to dict
         transaction: dict = selected_transaction[0]
 
@@ -540,7 +554,7 @@ class BasicStrategy:
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
-        supported_by_market: bool= False
+        supported_by_market: bool = False
 
         # get take profit pct
         try:
@@ -552,19 +566,25 @@ class BasicStrategy:
             tp_price_reached: bool = is_transaction_price_minus_below_threshold(
                 last_transaction_price, bid_price, tp_pct
             )
-            
-            supported_by_market: bool= market_condition["falling_price"]\
-            and bid_price<last_transaction_price
-            print(f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}")
+
+            supported_by_market: bool = (
+                market_condition["falling_price"] and bid_price < last_transaction_price
+            )
+            print(
+                f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}"
+            )
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
             tp_price_reached: bool = is_transaction_price_plus_above_threshold(
                 last_transaction_price, ask_price, tp_pct
             )
-            supported_by_market: bool= market_condition["rising_price"]\
-            and ask_price > last_transaction_price
-            print(f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}")
+            supported_by_market: bool = (
+                market_condition["rising_price"] and ask_price > last_transaction_price
+            )
+            print(
+                f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}"
+            )
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
@@ -573,7 +593,9 @@ class BasicStrategy:
 
         no_outstanding_order: bool = len_orders == 0
 
-        order_allowed: bool = (tp_price_reached or supported_by_market) and no_outstanding_order
+        order_allowed: bool = (
+            tp_price_reached or supported_by_market
+        ) and no_outstanding_order
 
         if order_allowed:
 

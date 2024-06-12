@@ -190,7 +190,6 @@ def get_cancel_order_all():
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
-
     """ """
 
     connection_url: str
@@ -460,7 +459,12 @@ class GetPrivateData:
 
         if side != None:
             order_result = await self.send_order(
-                side, instrument, size, label_numbered, limit_prc, type,
+                side,
+                instrument,
+                size,
+                label_numbered,
+                limit_prc,
+                type,
             )
 
         # log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
@@ -561,15 +565,15 @@ class GetPrivateData:
 
     async def get_cancel_order_all(self):
         from db_management import sqlite_management
+
         # Set endpoint
         endpoint: str = "private/cancel_all"
 
         params = {"detailed": False}
 
         result = await self.parse_main(endpoint=endpoint, params=params)
-        await sqlite_management.deleting_row(
-            "orders_all_json")
-        
+        await sqlite_management.deleting_row("orders_all_json")
+
         return result
 
 
@@ -680,7 +684,10 @@ async def get_currencies(connection_url: str) -> list:
 
 
 async def get_ohlc(
-    connection_url: str, instrument_name, resolution, qty_candles,
+    connection_url: str,
+    instrument_name,
+    resolution,
+    qty_candles,
 ) -> list:
     from datetime import datetime
     from utilities import time_modification
@@ -691,7 +698,9 @@ async def get_ohlc(
     params = {}
 
     # Set endpoint
-    endpoint: str = f"public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}"
+    endpoint: str = (
+        f"public/get_tradingview_chart_data?end_timestamp={now_unix}&instrument_name={instrument_name.upper()}&resolution={resolution}&start_timestamp={start_timestamp}"
+    )
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
@@ -704,7 +713,9 @@ async def get_open_interest_aggregated_ohlc(
 
     """
     # Set endpoint
-    endpoint: str = f"indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}"
+    endpoint: str = (
+        f"indicator/open_interest_aggregated_ohlc?symbol={currency}&interval={resolution}"
+    )
 
     return await main(endpoint=endpoint, params=headers, connection_url=connection_url)
 
@@ -720,7 +731,9 @@ async def get_open_interest_historical() -> list:
     currency = "USD"
     resolution = "all"
     # Set endpoint
-    url: str = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
+    url: str = (
+        f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
+    )
 
     return await main_coinGlass()
 

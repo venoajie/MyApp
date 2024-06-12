@@ -130,7 +130,6 @@ app.layout = html.Div(
     [Input("interval-component", "n_intervals")],
 )
 def update_graph(n, df=dfresample.copy(), dfcontext=dfcontext):
-
     """
     main loop for resfreshing the data and to display the chart. It gets triggered every n second as per our
     settings.
@@ -356,7 +355,11 @@ def update_graph(n, df=dfresample.copy(), dfcontext=dfcontext):
                     y0=lvn,
                     x1=df1.iloc[5]["datetime"],
                     y1=lvn,
-                    line=dict(color="darksalmon", width=2, dash="dashdot",),
+                    line=dict(
+                        color="darksalmon",
+                        width=2,
+                        dash="dashdot",
+                    ),
                 )
     # ib high and low
     fig.add_shape(
@@ -365,7 +368,10 @@ def update_graph(n, df=dfresample.copy(), dfcontext=dfcontext):
         y0=ib_low_list[i],
         x1=df.iloc[0]["datetime"],
         y1=ib_high_list[i],
-        line=dict(color="cyan", width=3,),
+        line=dict(
+            color="cyan",
+            width=3,
+        ),
     )
     # day high and low
     fig.add_shape(
@@ -374,7 +380,11 @@ def update_graph(n, df=dfresample.copy(), dfcontext=dfcontext):
         y0=dl_list[i],
         x1=df.iloc[0]["datetime"],
         y1=dh_list[i],
-        line=dict(color="gray", width=1, dash="dashdot",),
+        line=dict(
+            color="gray",
+            width=1,
+            dash="dashdot",
+        ),
     )
     # ltp marker
     ltp = df1.iloc[-1]["Close"]

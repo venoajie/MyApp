@@ -4,12 +4,12 @@ import asyncio
 
 async def get_dataframe_from_ohlc_tables(tables: str = "ohlc60_eth_perp_json"):
     """_summary_
-https://www.tradingview.com/script/uuinZwsR-Big-Bar-Strategy/
-    Args:
-        tables (str, optional): _description_. Defaults to 'ohlc60_eth_perp_json'.
+    https://www.tradingview.com/script/uuinZwsR-Big-Bar-Strategy/
+        Args:
+            tables (str, optional): _description_. Defaults to 'ohlc60_eth_perp_json'.
 
-    Returns:
-        _type_: _description_
+        Returns:
+            _type_: _description_
     """
     import pandas as pd
 

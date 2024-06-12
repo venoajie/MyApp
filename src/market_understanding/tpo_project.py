@@ -407,7 +407,11 @@ def update_graph(n):
                 y0=lvn,
                 x1=df1.iloc[5]["datetime"],
                 y1=lvn,
-                line=dict(color="darksalmon", width=2, dash="dashdot",),
+                line=dict(
+                    color="darksalmon",
+                    width=2,
+                    dash="dashdot",
+                ),
             )
 
         excess = irank.excesslist
@@ -419,7 +423,11 @@ def update_graph(n):
                 y0=excess,
                 x1=df1.iloc[5]["datetime"],
                 y1=excess,
-                line=dict(color="cyan", width=2, dash="dashdot",),
+                line=dict(
+                    color="cyan",
+                    width=2,
+                    dash="dashdot",
+                ),
             )
 
     # @todo: last price marker. Color code as per close above poc or below

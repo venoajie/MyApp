@@ -27,7 +27,12 @@ async def raise_error(error, idle: int = None) -> None:
     await system_tools.raise_error_message(error, idle)
 
 
-async def opening_transactions(instrument, portfolio, strategies, server_time,) -> None:
+async def opening_transactions(
+    instrument,
+    portfolio,
+    strategies,
+    server_time,
+) -> None:
     """ """
 
     try:
@@ -75,8 +80,10 @@ async def opening_transactions(instrument, portfolio, strategies, server_time,) 
 
                     hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                    send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
-                        notional, best_ask_prc, server_time, THRESHOLD_TIME
+                    send_order: dict = (
+                        await hedging.is_send_and_cancel_open_order_allowed(
+                            notional, best_ask_prc, server_time, THRESHOLD_TIME
+                        )
                     )
 
                     await self.if_order_is_true(send_order, instrument)
@@ -86,8 +93,10 @@ async def opening_transactions(instrument, portfolio, strategies, server_time,) 
 
                     market_maker = MM.MarketMaker(strategy_label)
 
-                    send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
-                        notional, best_ask_prc, best_bid_prc, server_time
+                    send_order: dict = (
+                        await market_maker.is_send_and_cancel_open_order_allowed(
+                            notional, best_ask_prc, best_bid_prc, server_time
+                        )
                     )
 
                     await self.if_order_is_true(send_order, instrument)

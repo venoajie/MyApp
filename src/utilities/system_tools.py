@@ -171,7 +171,7 @@ def is_current_file_running(script: str) -> bool:
     import psutil
 
     for q in psutil.process_iter():
-        
+
         if q.name().startswith("python") or q.name().startswith("py"):
             if (
                 len(q.cmdline()) > 1

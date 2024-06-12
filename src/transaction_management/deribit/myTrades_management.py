@@ -23,7 +23,6 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
 @dataclass(unsafe_hash=True, slots=True)
 class MyTrades:
-
     """
 
     +----------------------------------------------------------------------------------------------+
@@ -128,9 +127,7 @@ class MyTrades:
     def transactions_same_side_and_label(
         self, side: str, label_strategy: str, my_trades_open: list = None
     ) -> dict:
-        """ 
-        
-        """
+        """ """
         if my_trades_open == None:
             my_trades_open = self.my_trades
 
@@ -150,9 +147,9 @@ class MyTrades:
 
         return {
             "my_trade_side": [] if my_trades_open == [] else my_trade_side,
-            "my_trade_side_strategy_label": []
-            if my_trades_open == []
-            else my_trade_side_strategy_label,
+            "my_trade_side_strategy_label": (
+                [] if my_trades_open == [] else my_trade_side_strategy_label
+            ),
             "net_sum_my_trade_side_strategy_label": net_sum_my_trade_side_strategy_label,
         }
 
@@ -165,9 +162,11 @@ class MyTrades:
         ]
         return {
             "transactions_same_id": transactions_under_same_id,
-            "transactions_same_id_contain_open_label": False
-            if transactions_under_same_id == []
-            else "open" in [o["label"] for o in transactions_under_same_id][0],
+            "transactions_same_id_contain_open_label": (
+                False
+                if transactions_under_same_id == []
+                else "open" in [o["label"] for o in transactions_under_same_id][0]
+            ),
         }
 
     def extracting_unique_label_id(self, my_trades_open: list) -> None:
@@ -196,7 +195,9 @@ class MyTrades:
         ]
 
     def closed_open_order_label_in_my_trades_open(
-        self, label: str, my_trades_open: list = None,
+        self,
+        label: str,
+        my_trades_open: list = None,
     ) -> None:
         """
         If label 'closed' from open order exist, then it is not orphan order. It is ok.
@@ -221,8 +222,10 @@ class MyTrades:
     ) -> None:
         """ """
 
-        gather_transactions_under_the_same_id_int = self.gather_transactions_under_the_same_id_int(
-            closed_label_id_int, my_trades_open
+        gather_transactions_under_the_same_id_int = (
+            self.gather_transactions_under_the_same_id_int(
+                closed_label_id_int, my_trades_open
+            )
         )
 
         # filter open trades which have the same label id with trade transaction
@@ -233,9 +236,9 @@ class MyTrades:
         log.debug(f"{closed_label_id_int} \n ")
 
         # sum transaction with the same label id
-        sum_closed_trades_in_my_trades_open_net = gather_transactions_under_the_same_id_int[
-            "transactions_same_id_net_qty"
-        ]
+        sum_closed_trades_in_my_trades_open_net = (
+            gather_transactions_under_the_same_id_int["transactions_same_id_net_qty"]
+        )
 
         log.critical(
             f"sum_closed_trades_in_my_trades_open_net {sum_closed_trades_in_my_trades_open_net}"

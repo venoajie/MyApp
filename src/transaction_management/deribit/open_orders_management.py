@@ -26,7 +26,6 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
 @dataclass(unsafe_hash=True, slots=True)
 class MyOrders:
-
     """
 
     +----------------------------------------------------------------------------------------------+
@@ -401,24 +400,27 @@ class MyOrders:
     def trade_based_on_strategy_label(
         self, open_transactions_label: list, strategy_label, type: str = "limit"
     ) -> None:
-        """
-        """
+        """ """
 
         transactions = self.transactions_strategy_label(
             open_transactions_label, strategy_label
         )
 
         return {
-            "net_sum_order_size": []
-            if transactions == []
-            else self.net_sum_order_size(transactions),
+            "net_sum_order_size": (
+                [] if transactions == [] else self.net_sum_order_size(transactions)
+            ),
             "len_transactions": [] if transactions == [] else len(transactions),
-            "transaction_strategy_label_type": []
-            if transactions == []
-            else ([o for o in transactions if type in o["order_type"]]),
-            "instrument": []
-            if transactions == []
-            else [o["instrument_name"] for o in transactions][0],
+            "transaction_strategy_label_type": (
+                []
+                if transactions == []
+                else ([o for o in transactions if type in o["order_type"]])
+            ),
+            "instrument": (
+                []
+                if transactions == []
+                else [o["instrument_name"] for o in transactions][0]
+            ),
         }
 
     def calculate_order_size_and_side_for_outstanding_transactions(
@@ -430,20 +432,19 @@ class MyOrders:
         net_sum_open_orders_strategy_market: int,
         max_size: float,
     ):
-
         """
         Compute order size attributes based on its position, order, and strategy setting
-        Convention: 
+        Convention:
             input: negative sign = short, vv
             output: all positive
-        
+
         Args:
             main_side (str): side as provided by the strategy configuration
             max_size (float): size as per position sizing
             net_sum_current_position (float): sum myTradebuy - sum myTrade sell
             net_sum_open_orders_strategy_limit (float): sum open orders buy - sum open orders sell, type - limit
             net_sum_open_orders_strategy_market (float): sum open orders buy - sum open orders sell, type - market
-            
+
         Returns:
             dict
 
@@ -645,8 +646,8 @@ class MyOrders:
             open_orders_lastUpdateTStamp_min = min(open_orders_lastUpdateTStamps)
             open_orders_deltaTime: int = server_time - open_orders_lastUpdateTStamp_min
 
-            open_order_id: list = self.open_orders_api_basedOn_label_last_update_timestamps_min_id(
-                label
+            open_order_id: list = (
+                self.open_orders_api_basedOn_label_last_update_timestamps_min_id(label)
             )
 
             return {

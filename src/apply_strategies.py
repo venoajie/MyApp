@@ -48,7 +48,6 @@ def parse_dotenv(sub_account) -> dict:
 
 @dataclass(unsafe_hash=True, slots=True)
 class ApplyHedgingSpot:
-
     """ """
 
     connection_url: str
@@ -232,7 +231,7 @@ class ApplyHedgingSpot:
         await private_data.send_limit_order(params)
 
     async def clean_up_closed_transactions(self, transactions_all) -> None:
-        """ 
+        """
         closed transactions: buy and sell in the same label id = 0. When flagged:
         1. remove them from db for open transactions/my_trades_all_json
         2. move them to table for closed transactions/my_trades_closed_json
@@ -365,11 +364,13 @@ class ApplyHedgingSpot:
 
                     for res in result:
 
-                        my_trades_open_sqlite: list = await sqlite_management.querying_table(
-                            "my_trades_all_json"
+                        my_trades_open_sqlite: list = (
+                            await sqlite_management.querying_table("my_trades_all_json")
                         )
-                        my_trades_open: list = await sqlite_management.executing_label_and_size_query(
-                            "my_trades_all_json"
+                        my_trades_open: list = (
+                            await sqlite_management.executing_label_and_size_query(
+                                "my_trades_all_json"
+                            )
                         )
                         # log.info(f" my_trades_open {my_trades_open} ")
                         # log.warning(([o['trade_seq']  for o in my_trades_open ]))
@@ -397,8 +398,8 @@ class ApplyHedgingSpot:
 
                     for res in result:
 
-                        my_trades_open_sqlite: list = await sqlite_management.querying_table(
-                            "my_trades_all_json"
+                        my_trades_open_sqlite: list = (
+                            await sqlite_management.querying_table("my_trades_all_json")
                         )
                         my_trades_open: list = my_trades_open_sqlite["list_data_only"]
                         result_to_dict = (
@@ -503,12 +504,14 @@ class ApplyHedgingSpot:
             # get startegy details
             strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-            my_trades_open_sqlite_individual_strategy: list = str_mod.my_trades_open_sqlite_detailing(
-                my_trades_open_all, label, "individual"
+            my_trades_open_sqlite_individual_strategy: list = (
+                str_mod.my_trades_open_sqlite_detailing(
+                    my_trades_open_all, label, "individual"
+                )
             )
 
-            sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
-                my_trades_open_all, label
+            sum_my_trades_open_sqlite_all_strategy: list = (
+                str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
             )
             size_is_consistent: bool = await self.is_size_consistent(
                 sum_my_trades_open_sqlite_all_strategy, size_from_positions
@@ -580,23 +583,27 @@ class ApplyHedgingSpot:
 
                         hedging = hedging_spot.HedgingSpot(label_main)
 
-                        send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                            notional,
-                            market_condition,
-                            best_ask_prc,
-                            best_bid_prc,
-                            open_trade_strategy_label,
-                            MIN_HEDGING_RATIO,
+                        send_closing_order: dict = (
+                            await hedging.is_send_exit_order_allowed(
+                                notional,
+                                market_condition,
+                                best_ask_prc,
+                                best_bid_prc,
+                                open_trade_strategy_label,
+                                MIN_HEDGING_RATIO,
+                            )
                         )
-                        log.critical (f' send_closing_order {send_closing_order}')
+                        log.critical(f" send_closing_order {send_closing_order}")
                         await self.if_order_is_true(send_closing_order, instrument)
 
                     if "marketMaker" in strategy_attr["strategy"]:
 
                         market_maker = MM.MarketMaker(label_main)
 
-                        send_closing_order: dict = await market_maker.is_send_exit_order_allowed(
-                            best_ask_prc, best_bid_prc, open_trade_strategy_label
+                        send_closing_order: dict = (
+                            await market_maker.is_send_exit_order_allowed(
+                                best_ask_prc, best_bid_prc, open_trade_strategy_label
+                            )
                         )
                         log.critical(f" send_closing_order {send_closing_order}")
                         await self.if_order_is_true(send_closing_order, instrument)
@@ -661,8 +668,10 @@ class ApplyHedgingSpot:
                         f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
                     )
 
-                    sum_my_trades_open_sqlite_all_strategy: list = str_mod.sum_my_trades_open_sqlite(
-                        my_trades_open_all, strategy_label
+                    sum_my_trades_open_sqlite_all_strategy: list = (
+                        str_mod.sum_my_trades_open_sqlite(
+                            my_trades_open_all, strategy_label
+                        )
                     )
                     size_is_consistent: bool = await self.is_size_consistent(
                         sum_my_trades_open_sqlite_all_strategy, size_from_positions
@@ -676,12 +685,14 @@ class ApplyHedgingSpot:
 
                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                            send_order: dict = await hedging.is_send_and_cancel_open_order_allowed(
-                                notional,
-                                best_ask_prc,
-                                server_time,
-                                market_condition,
-                                THRESHOLD_TIME_TO_CANCEL,
+                            send_order: dict = (
+                                await hedging.is_send_and_cancel_open_order_allowed(
+                                    notional,
+                                    best_ask_prc,
+                                    server_time,
+                                    market_condition,
+                                    THRESHOLD_TIME_TO_CANCEL,
+                                )
                             )
 
                             # await self.if_order_is_true(send_order, instrument)
@@ -691,8 +702,14 @@ class ApplyHedgingSpot:
 
                             market_maker = MM.MarketMaker(strategy_label)
 
-                            send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
-                                notional, best_ask_prc, best_bid_prc, server_time, market_condition
+                            send_order: dict = (
+                                await market_maker.is_send_and_cancel_open_order_allowed(
+                                    notional,
+                                    best_ask_prc,
+                                    best_bid_prc,
+                                    server_time,
+                                    market_condition,
+                                )
                             )
 
                             await self.if_order_is_true(send_order, instrument)
@@ -723,22 +740,26 @@ class ApplyHedgingSpot:
                 positions_all: list = reading_from_database[
                     "positions_from_sub_account"
                 ]
-                size_from_positions: float = 0 if positions_all == [] else sum(
-                    [o["size"] for o in positions_all]
+                size_from_positions: float = (
+                    0
+                    if positions_all == []
+                    else sum([o["size"] for o in positions_all])
                 )
 
                 my_trades_open_sqlite: dict = await sqlite_management.querying_table(
                     "my_trades_all_json"
                 )
                 my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-                my_trades_open_all: list = await sqlite_management.executing_label_and_size_query(
-                    "my_trades_all_json"
+                my_trades_open_all: list = (
+                    await sqlite_management.executing_label_and_size_query(
+                        "my_trades_all_json"
+                    )
                 )
                 # obtain instruments future relevant to strategies
                 instrument_transactions = [f"{self.currency.upper()}-PERPETUAL"]
 
-                clean_up_closed_transactions: None = await self.clean_up_closed_transactions(
-                    my_trades_open_all
+                clean_up_closed_transactions: None = (
+                    await self.clean_up_closed_transactions(my_trades_open_all)
                 )
                 log.error(
                     f"clean_up_closed_transactions {clean_up_closed_transactions}"
@@ -780,7 +801,7 @@ class ApplyHedgingSpot:
                 # log.warning (leverage_and_delta)
                 limit = 100
                 ratio = 0.9
-                threshold = (1 / 100)/2
+                threshold = (1 / 100) / 2
                 market_condition = await basic_strategy.get_market_condition(
                     threshold, limit, ratio
                 )
@@ -812,8 +833,8 @@ class ApplyHedgingSpot:
                         market_condition,
                     )
 
-                clean_up_closed_transactions: list = await self.clean_up_closed_transactions(
-                    my_trades_open_all
+                clean_up_closed_transactions: list = (
+                    await self.clean_up_closed_transactions(my_trades_open_all)
                 )
                 log.error(
                     f"clean_up_closed_transactions 2 {clean_up_closed_transactions}"

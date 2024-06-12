@@ -12,7 +12,6 @@ from functools import lru_cache
 
 @dataclass(unsafe_hash=True, slots=True)
 class Options:
-
     """
     # Options greek calculation
     +----------------------------------------------------------------------------------------------+
