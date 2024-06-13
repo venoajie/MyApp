@@ -227,7 +227,7 @@ async def cancel_the_cancellables() -> None:
 
     params: list = basic_strategy.get_strategy_config_all()
     cancellable_strategies: dict = [
-                o["strategy"] for o in params if  o["cancellables"]==True
+                o["strategy"] for o in params if  o["cancellable"]==True
             ]
 
     open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
