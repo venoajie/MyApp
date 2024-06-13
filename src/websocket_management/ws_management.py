@@ -223,30 +223,40 @@ async def cancel_by_order_id(open_order_id) -> None:
     return result
 
 async def cancel_the_cancellables() -> None:
+    from strategies import basic_strategy
+
+    params: list = basic_strategy.get_strategy_config_all()
+    cancellable_strategies: dict = [
+                o["strategy"] for o in params if  o["cancellables"]==True
+            ]
+
     open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
             "orders_all_json"
         )
     log.critical(f" open_orders_sqlite {open_orders_sqlite}")
-    open_orders_cancellables_id= [
-                o["order_id"] for o in open_orders_sqlite if o["cancellable"] == True
+    log.critical(f" cancellable_strategies {cancellable_strategies}")
+    for strategy in cancellable_strategies:
+        open_orders_cancellables_id= [
+                o["order_id"] for o in open_orders_sqlite if o["cancellable"] == True and strategy in o["label_main"]
             ]
-    log.critical(f" open_orders_cancellables_id {open_orders_cancellables_id}")
-    if open_orders_cancellables_id !=[]:
-        for open_order_id in open_orders_cancellables_id:
-            private_data = await get_private_data()
+        log.critical(f" open_orders_cancellables_id {open_orders_cancellables_id}")
 
-            result = await private_data.get_cancel_order_byOrderId(open_order_id)
-            log.info(f"CANCEL_the_cancellables {result}")
-        
-            log.critical(f" deleting {open_order_id}")
-            where_filter = f"order_id"
-            await sqlite_management.deleting_row(
-                "orders_all_json",
-                "databases/trading.sqlite3",
-                where_filter,
-                "=",
-                open_order_id,
-            )
+        if open_orders_cancellables_id !=[]:
+            for open_order_id in open_orders_cancellables_id:
+                private_data = await get_private_data()
+
+                result = await private_data.get_cancel_order_byOrderId(open_order_id)
+                log.info(f"CANCEL_the_cancellables {result}")
+            
+                log.critical(f" deleting {open_order_id}")
+                where_filter = f"order_id"
+                await sqlite_management.deleting_row(
+                    "orders_all_json",
+                    "databases/trading.sqlite3",
+                    where_filter,
+                    "=",
+                    open_order_id,
+                )
 
 async def if_cancel_is_true(order) -> None:
     """ """
