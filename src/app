@@ -15,7 +15,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
 from db_management import sqlite_management
-from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite)
+from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables)
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -499,28 +499,10 @@ class StreamAccountData:
         import deribit_get
 
         log.warning("Cancelling all orders")
-        msg= deribit_get.get_cancel_order_all()
-        await self.websocket_client.send(json.dumps(msg))
+        await cancel_the_cancellables()
+        #msg= deribit_get.get_cancel_order_all()
+        #await self.websocket_client.send(json.dumps(msg))
         
-    async def deleting_cancel_order(
-        self, table: list, database: str, data, cancelled_order
-    ) -> list:
-        """ """
-        result = await sqlite_management.deleting_row(
-            table, database, data, "=", cancelled_order
-        )
-        return result
-
-    def appending_data(self, data: dict, my_path_all: str) -> None:
-        """
-        """
-
-        if isinstance(data, list):
-            for dt in data:
-                pickling.append_data(my_path_all, dt, True)
-        else:
-            pickling.append_data(my_path_all, data, True)
-
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
