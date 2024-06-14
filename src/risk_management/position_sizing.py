@@ -157,7 +157,8 @@ def turnOver_times(
     """
     ordered_side = 2, consisted of long and short
     """
-    daily = (pct_daily_profit_target / pct_profit_per_transaction) / ordered_side
+    daily = pct_daily_profit_target/ordered_side if pct_profit_per_transaction == 0 \
+        else (pct_daily_profit_target / pct_profit_per_transaction) / ordered_side
 
     return {
         "daily": daily,
