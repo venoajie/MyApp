@@ -324,100 +324,6 @@ async def manage_trades (trades: dict) -> None:
         log.critical(f"trade {trade}")
         await sqlite_management.insert_tables("my_trades_all_json", trade)
         
-
-async def manage_orders (orders: dict) -> None:
-
-    for order in orders:
-
-        #! ##############################################################################
-
-        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-            "orders_all_json"
-        )
-        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        #log.warning(
-        #    f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        #)
-
-        #! ##############################################################################
-
-        #log.warning(f"order {order}")
-        # log.error ("trade_seq" not in order)
-        # log.error ("trade_seq" in order)
-
-        if "trade_seq" not in order:
-            # get the order state
-            order_state = order["order_state"]
-
-        if "trade_seq" in order:
-
-            # get the order state
-            order_state = order["state"]
-
-        log.error(f"ORDER STATE {order_state}")
-
-        if (
-            order_state == "cancelled"
-            or order_state == "filled"
-            or order_state == "triggered"
-        ):
-
-            order_id = (
-                order["order_id"]
-                if order_state != "triggered"
-                else ["stop_order_id'"]
-            )
-
-            # open_orders_sqlite =  await syn.querying_all('orders_all_json')
-            open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-                "orders_all_json"
-            )
-            # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
-
-            is_order_id_in_active_orders = [
-                o for o in open_orders_sqlite if o["order_id"] == order_id
-            ]
-
-            where_filter = f"order_id"
-            if is_order_id_in_active_orders == []:
-                order_id = order["label"]
-                where_filter = f"label_main"
-
-            log.critical(f" deleting {order_id}")
-            await sqlite_management.deleting_row(
-                "orders_all_json",
-                "databases/trading.sqlite3",
-                where_filter,
-                "=",
-                order_id,
-            )
-
-        if (
-            order_state == "open"
-            or order_state == "untriggered"
-            or order_state == "triggered"
-        ):
-
-            await sqlite_management.insert_tables("orders_all_json", order)
-
-        #! ###########################################################
-        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-            "orders_all_json"
-        )
-        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        log.critical(
-            f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        )
-        
-        everything_consistent= basic_strategy.is_everything_consistent(order)
-        log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
-        
-        if  not everything_consistent:
-            await cancel_by_order_id(order["cancel_id"])
-            await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-
-    #! ###########################################################
-
 async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
 
     from websocket_management.cleaning_up_transactions import (
@@ -438,10 +344,20 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         await clean_up_closed_transactions(my_trades_open_all)
         
     if orders:
+        from transaction_management.deribit.open_orders_management import manage_orders
         #log.warning(f"my_orders {data_orders}")
         #log.debug(f"my_orders {orders}")
 
         await manage_orders (orders)
+        for order in orders:
+            
+            everything_consistent= basic_strategy.is_everything_consistent(order)
+            log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+            
+            if  not everything_consistent:
+                await cancel_by_order_id(order["cancel_id"])
+                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
         await clean_up_closed_transactions(my_trades_open_all)
 
     if positions:
