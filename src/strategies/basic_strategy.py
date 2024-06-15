@@ -18,7 +18,6 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
-
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
 
@@ -30,7 +29,6 @@ async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> li
     # log.info(ohlc_all)
 
     return ohlc_all
-
 
 async def get_price_ohlc(
     price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
@@ -56,6 +54,8 @@ async def cleaned_up_ohlc(
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
+
+    log.warning (f"ohlc test{ohlc}")
 
     return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
@@ -145,10 +145,7 @@ async def get_market_condition(
     log.debug(
         f"  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}"
     )
-    # log.warning (f'delta_price {delta_price} delta_price_pct {delta_price_pct} delta_price_pct > threshold {delta_price_pct > threshold} delta_price_pct < threshold {delta_price_pct < threshold}')
-    # log.warning (f'  rising_price {rising_price} falling_price {falling_price}')
-    # log.debug (f'  ohlc {ohlc}')
-
+    
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
 
@@ -566,8 +563,7 @@ class BasicStrategy:
         if transaction_side == "sell":
             try:
                 tp_price_reached=bid_price < transaction["take_profit"]
-                print(transaction["take_profit"])
-                print(f"tp_price_reached {tp_price_reached}")
+                
             except:
                 tp_price_reached: bool = is_transaction_price_minus_below_threshold(
                 last_transaction_price, bid_price, tp_pct
@@ -576,17 +572,12 @@ class BasicStrategy:
             supported_by_market: bool = (
                 market_condition["falling_price"] and bid_price < last_transaction_price
             )
-            print(
-                f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}"
-            )
+            
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
             try:
                 tp_price_reached= ask_price > transaction["take_profit"]
-                
-                print(transaction["take_profit"])
-                print(f"tp_price_reached {tp_price_reached}")
                 
             except:
                 tp_price_reached: bool = is_transaction_price_plus_above_threshold(
@@ -595,9 +586,7 @@ class BasicStrategy:
             supported_by_market: bool = (
                 market_condition["rising_price"] and ask_price > last_transaction_price
             )
-            print(
-                f"transaction_side {transaction_side} supported_by_market {supported_by_market} last_transaction_price {last_transaction_price}"
-            )
+            
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
@@ -616,7 +605,7 @@ class BasicStrategy:
             trade_seq = params["label"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
-            print(f"order_has_sent_before {order_has_sent_before}")
+
             if order_has_sent_before:
                 order_allowed == False
 

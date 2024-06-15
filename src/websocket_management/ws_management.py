@@ -239,7 +239,7 @@ async def cancel_the_cancellables() -> None:
         open_orders_cancellables_id= [
                 o["order_id"] for o in open_orders_sqlite if strategy in o["label_main"]
             ]
-        log.critical(f" open_orders_cancellables_id {strategy} {open_orders_cancellables_id}")
+        #log.critical(f" open_orders_cancellables_id {strategy} {open_orders_cancellables_id}")
 
         if open_orders_cancellables_id !=[]:
             for open_order_id in open_orders_cancellables_id:

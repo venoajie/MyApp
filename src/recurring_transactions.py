@@ -97,6 +97,7 @@ async def run_every_5_seconds() -> None:
     market_condition = await basic_strategy.get_market_condition(
         THRESHOLD, WINDOW, RATIO
     )
+    print(f"market_condition {market_condition}")
 
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
