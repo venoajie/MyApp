@@ -51,10 +51,10 @@ async def cleaned_up_ohlc(
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, window, table)
-    log.info (f"ohlc test{ohlc_all}")
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
+    log.info (f"ohlc test{ohlc}")
     ohlc.reverse
 
     log.error (f"ohlc test{ohlc}")
