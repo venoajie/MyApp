@@ -282,11 +282,6 @@ async def resupply_sub_accountdb(currency) -> None:
     log.info(f"{sub_accounts}")
     log.info(f"resupply sub account db-DONE")
 
-async def manage_positions (positions: dict, currency: str) -> None:
-
-    my_path_position = system_tools.provide_path_for_file("positions", currency)
-    pickling.replace_data(my_path_position, positions)
-
 async def inserting_additional_params (params: dict) -> None:
 
     log.debug(f"inserting_additional_params {params}")
@@ -294,76 +289,6 @@ async def inserting_additional_params (params: dict) -> None:
     
     if "open" in params["label"]:
         await sqlite_management.insert_tables("supporting_items_json", params)
-
-async def manage_params (trade) -> None:
-
-    #log.info(f"trade {trade}")
-    label=trade["label"]
-
-    if "open" in label:
-
-        #log.info(f"label {label}")
-        additional_params = sqlite_management.querying_additional_params()
-        #log.info(f"get_additional_params {additional_params}")
-        params=await sqlite_management.executing_query_with_return(additional_params)
-        #log.info(f"params_data {params}")
-        
-        log.info(f"label {label} params {params}")
-        additional_params_label = [
-                o for o in params if label in o["label"]
-            ][0]
-        log.info(f"additional_params_label {additional_params_label}")
-        #log.info(additional_params_label["take_profit"])
-        #log.info(f"trade {trade}")
-        trade.update({"take_profit": additional_params_label["take_profit"]})
-
-async def manage_trades (trades: dict) -> None:
-
-    for trade in trades:
-        await manage_params (trade) 
-        log.critical(f"trade {trade}")
-        await sqlite_management.insert_tables("my_trades_all_json", trade)
-        
-async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
-
-    from websocket_management.cleaning_up_transactions import (
-            clean_up_closed_transactions,
-        )
-    
-    log.info(f"update_user_changes-START")
-    #log.info (data_orders)
-
-    positions = data_orders["positions"]
-    trades = data_orders["trades"]
-    orders = data_orders["orders"]
-    my_trades_open_all: list = my_trades_open_sqlite["all"]
-    
-    if trades:
-        
-        await manage_trades (trades)
-        await clean_up_closed_transactions(my_trades_open_all)
-        
-    if orders:
-        from transaction_management.deribit.open_orders_management import manage_orders
-        #log.warning(f"my_orders {data_orders}")
-        #log.debug(f"my_orders {orders}")
-
-        await manage_orders (orders)
-        for order in orders:
-            
-            everything_consistent= basic_strategy.is_everything_consistent(order)
-            log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
-            
-            if  not everything_consistent:
-                await cancel_by_order_id(order["cancel_id"])
-                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-
-        await clean_up_closed_transactions(my_trades_open_all)
-
-    if positions:
-        await manage_positions (positions, currency)
-    
-    log.info(f"update_user_changes-END")
 
 def get_last_price(my_trades_open_strategy: list) -> float:
     """

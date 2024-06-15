@@ -4,15 +4,7 @@
 from loguru import logger as log
 
 # user defined formula
-from utilities import (
-    system_tools,
-)
 from db_management import sqlite_management
-
-def catch_error(error, idle: int = None) -> list:
-    """ """
-    system_tools.catch_error_message(error, idle)
-
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
@@ -21,15 +13,17 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
 
 async def manage_orders (orders: dict) -> None:
+    log.error(f"{orders}")
 
     for order in orders:
+
+        log.error(f"{order}")
 
         #! ##############################################################################
 
         open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
             "orders_all_json"
         )
-        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
 
         if "trade_seq" not in order:
             # get the order state

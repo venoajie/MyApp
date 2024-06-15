@@ -15,7 +15,8 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
 from db_management import sqlite_management
-from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb, update_user_changes,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables)
+from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables,cancel_by_order_id)
+from strategies import basic_strategy
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -24,6 +25,81 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
     import deribit_get
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+
+async def manage_params (trade) -> None:
+
+    #log.info(f"trade {trade}")
+    label=trade["label"]
+
+    if "open" in label:
+
+        #log.info(f"label {label}")
+        additional_params = sqlite_management.querying_additional_params()
+        #log.info(f"get_additional_params {additional_params}")
+        params=await sqlite_management.executing_query_with_return(additional_params)
+        #log.info(f"params_data {params}")
+        
+        log.info(f"label {label} params {params}")
+        additional_params_label = [
+                o for o in params if label in o["label"]
+            ][0]
+        log.info(f"additional_params_label {additional_params_label}")
+        #log.info(additional_params_label["take_profit"])
+        #log.info(f"trade {trade}")
+        trade.update({"take_profit": additional_params_label["take_profit"]})
+
+async def manage_trades (trades: dict) -> None:
+
+    for trade in trades:
+        await manage_params (trade) 
+        log.critical(f"trade {trade}")
+        await sqlite_management.insert_tables("my_trades_all_json", trade)
+
+async def manage_positions (positions: dict, currency: str) -> None:
+
+    my_path_position = system_tools.provide_path_for_file("positions", currency)
+    pickling.replace_data(my_path_position, positions)
+        
+async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
+
+    from websocket_management.cleaning_up_transactions import (
+            clean_up_closed_transactions,
+        )
+    
+    log.info(f"update_user_changes-START")
+    #log.info (data_orders)
+
+    positions = data_orders["positions"]
+    trades = data_orders["trades"]
+    orders = data_orders["orders"]
+    my_trades_open_all: list = my_trades_open_sqlite["all"]
+    
+    if trades:
+        
+        await manage_trades (trades)
+        await clean_up_closed_transactions(my_trades_open_all)
+        
+    if orders:
+        from transaction_management.deribit.open_orders_management import manage_orders
+        #log.warning(f"my_orders {data_orders}")
+        #log.debug(f"my_orders {orders}")
+
+        await manage_orders (orders)
+        for order in orders:
+            
+            everything_consistent= basic_strategy.is_everything_consistent(order)
+            log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+            
+            if  not everything_consistent:
+                await cancel_by_order_id(order["cancel_id"])
+                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
+        await clean_up_closed_transactions(my_trades_open_all)
+
+    if positions:
+        await manage_positions (positions, currency)
+    
+    log.info(f"update_user_changes-END")
 
 class StreamAccountData:
 
@@ -56,7 +132,6 @@ class StreamAccountData:
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
-
             
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
