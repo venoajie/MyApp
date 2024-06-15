@@ -55,7 +55,7 @@ async def cleaned_up_ohlc(
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
     log.info (f"ohlc test{ohlc}")
-    ohlc.reverse
+    ohlc.reverse()
 
     log.error (f"ohlc test{ohlc}")
 
