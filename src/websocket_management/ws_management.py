@@ -243,10 +243,8 @@ async def cancel_the_cancellables() -> None:
 
         if open_orders_cancellables_id !=[]:
             for open_order_id in open_orders_cancellables_id:
-                private_data = await get_private_data()
 
-                result = await private_data.get_cancel_order_byOrderId(open_order_id)
-                log.info(f"CANCEL_the_cancellables {result}")
+                await cancel_by_order_id(open_order_id)
             
                 log.critical(f" deleting {open_order_id}")
                 where_filter = f"order_id"
@@ -266,11 +264,6 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
-async def update_portfolio(data_orders, currency) -> None:
-
-    my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
-    pickling.replace_data(my_path_portfolio, data_orders)
-
 async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
@@ -283,9 +276,8 @@ async def resupply_sub_accountdb(currency) -> None:
     log.info(f"resupply sub account db-DONE")
 
 async def inserting_additional_params (params: dict) -> None:
-
-    log.debug(f"inserting_additional_params {params}")
-    print("open" in params["label"])
+    """
+    """
     
     if "open" in params["label"]:
         await sqlite_management.insert_tables("supporting_items_json", params)
@@ -435,8 +427,7 @@ async def opening_transactions(
 
                     if  "marketMaker" in strategy_attr["strategy"]:
 
-                        market_maker = MM.MarketMaker(strategy_label)
-                        
+                        market_maker = MM.MarketMaker(strategy_label)                        
 
                         send_order: dict = await market_maker.is_send_and_cancel_open_order_allowed(
                             size_from_positions, notional, best_ask_prc, best_bid_prc, server_time, market_condition,take_profit_pct_daily

@@ -71,13 +71,16 @@ async def get_ema(ohlc, ratio: float = 0.9) -> dict:
     )
 
 
-async def get_vwap(df, vwap_period) -> dict:
+async def get_vwap(ohlc_all, vwap_period) -> dict:
     """
     https://github.com/vishnugovind10/emacrossover/blob/main/emavwap1.0.py
     https://stackoverflow.com/questions/44854512/how-to-calculate-vwap-volume-weighted-average-price-using-groupby-and-apply
 
     """
     import numpy as np
+    import pandas as pd
+
+    df = pd.DataFrame(ohlc_all, columns=["close", "volume"])
 
     return (
         df["volume"]
@@ -100,7 +103,6 @@ async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
-    import pandas as pd
 
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
     ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
@@ -123,9 +125,8 @@ async def get_market_condition(
 
     ohlc_all = await get_price_ohlc("close", vwap_period)
 
-    df = pd.DataFrame(ohlc_all, columns=["close", "volume"])
     # log.error(f'df {df}')
-    df_vwap = await get_vwap(df, vwap_period)
+    df_vwap = await get_vwap(ohlc_all, vwap_period)
     vwap = df_vwap.iloc[-1]
 
     ema = await get_ema(ohlc["ohlc"], ratio)

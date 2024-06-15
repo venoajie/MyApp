@@ -15,7 +15,7 @@ from loguru import logger as log
 from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
 from db_management import sqlite_management
-from websocket_management.ws_management import (update_portfolio, resupply_sub_accountdb,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables,cancel_by_order_id)
+from websocket_management.ws_management import (resupply_sub_accountdb,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables,cancel_by_order_id)
 from strategies import basic_strategy
 
 def parse_dotenv(sub_account) -> dict:
@@ -60,6 +60,11 @@ async def manage_positions (positions: dict, currency: str) -> None:
     my_path_position = system_tools.provide_path_for_file("positions", currency)
     pickling.replace_data(my_path_position, positions)
         
+async def update_portfolio(data_orders, currency) -> None:
+
+    my_path_portfolio = system_tools.provide_path_for_file("portfolio", currency)
+    pickling.replace_data(my_path_portfolio, data_orders)
+
 async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
 
     from websocket_management.cleaning_up_transactions import (
@@ -280,7 +285,6 @@ class StreamAccountData:
                             #! ########################################################################################################################
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
-                                #log.info(data_orders)
 
                                 await update_portfolio(data_orders, currency)
 
