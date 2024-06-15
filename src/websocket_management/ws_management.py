@@ -233,8 +233,8 @@ async def cancel_the_cancellables() -> None:
     open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
             "orders_all_json"
         )
-    log.critical(f" open_orders_sqlite {open_orders_sqlite}")
-    log.critical(f" cancellable_strategies {cancellable_strategies}")
+    #log.critical(f" open_orders_sqlite {open_orders_sqlite}")
+    #log.critical(f" cancellable_strategies {cancellable_strategies}")
     for strategy in cancellable_strategies:
         open_orders_cancellables_id= [
                 o["order_id"] for o in open_orders_sqlite if strategy in o["label_main"]
