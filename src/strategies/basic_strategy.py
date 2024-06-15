@@ -51,13 +51,15 @@ async def cleaned_up_ohlc(
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, window, table)
+    log.info (f"ohlc test{ohlc_all}")
 
     ohlc_all.reverse
+    log.warning (f"ohlc test{ohlc_all}")
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
 
-    log.warning (f"ohlc test{ohlc}")
+    log.error (f"ohlc test{ohlc}")
 
     return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
