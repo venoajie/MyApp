@@ -91,7 +91,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
             log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
             
             if  not everything_consistent:
-                await cancel_by_order_id(order["cancel_id"])
+                await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
         await clean_up_closed_transactions(my_trades_open_all)
