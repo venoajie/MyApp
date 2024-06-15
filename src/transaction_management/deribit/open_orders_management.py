@@ -8,8 +8,6 @@ from utilities import (
     system_tools,
 )
 from db_management import sqlite_management
-from strategies import basic_strategy
-
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -32,15 +30,6 @@ async def manage_orders (orders: dict) -> None:
             "orders_all_json"
         )
         len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        #log.warning(
-        #    f" order sqlite BEFORE {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        #)
-
-        #! ##############################################################################
-
-        #log.warning(f"order {order}")
-        # log.error ("trade_seq" not in order)
-        # log.error ("trade_seq" in order)
 
         if "trade_seq" not in order:
             # get the order state
@@ -96,13 +85,3 @@ async def manage_orders (orders: dict) -> None:
         ):
 
             await sqlite_management.insert_tables("orders_all_json", order)
-
-        #! ###########################################################
-        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-            "orders_all_json"
-        )
-        len_open_orders_sqlite_list_data = len([o for o in open_orders_sqlite])
-        log.critical(
-            f" order sqlite AFTER {len_open_orders_sqlite_list_data} {open_orders_sqlite}"
-        )
-            #! ###########################################################
