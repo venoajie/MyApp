@@ -53,11 +53,9 @@ async def cleaned_up_ohlc(
     ohlc_all = await get_price_ohlc(price, window, table)
     log.info (f"ohlc test{ohlc_all}")
 
-    ohlc_all.reverse
-    log.warning (f"ohlc test{ohlc_all}")
-
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
+    ohlc.reverse
 
     log.error (f"ohlc test{ohlc}")
 
