@@ -54,10 +54,8 @@ async def cleaned_up_ohlc(
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
-    log.info (f"ohlc test{ohlc}")
-    ohlc.reverse()
 
-    log.error (f"ohlc test{ohlc}")
+    ohlc.reverse()
 
     return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
@@ -404,6 +402,7 @@ class BasicStrategy:
         params.update({"cancellable": cancellable})
         label_open: str = get_label("open", self.strategy_label)
         params.update({"label": label_open})
+        params.update({"has_closed_label": False})
 
         if side == "sell":
             params.update({"entry_price": ask_price})
