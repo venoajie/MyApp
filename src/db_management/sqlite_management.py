@@ -567,6 +567,13 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
     return f"SELECT * from {table} where not (label_main LIKE '%value1%' or label_main LIKE '%value2%' or label_main LIKE'%value3%');"
 
 
+def update_status_closed_orders(filter_value: str,
+                                table: str = "my_trades_all_json", 
+                                column_name="data",
+                                new_value=True) -> str:
+    
+    return f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE label_main LIKE {filter_value};"""
+
 def querying_open_interest(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
 ) -> str:
