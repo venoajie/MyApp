@@ -338,6 +338,8 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
     label_integer=get_label_integer(label)
     transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
+    log.error(f"transactions_all{transactions_all}")
+
     sum_transactions_under_label_main = sum(
                     [
                         o['amount']
@@ -345,8 +347,6 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
                         if label_integer in o["label"]
                     ]
                 )
-            
-
     return basic_size if has_closed else abs(sum_transactions_under_label_main)
 
 
@@ -619,6 +619,9 @@ class BasicStrategy:
 
         tp_pct = get_take_profit_pct(transaction,strategy_config)
 
+        size= await provide_size_to_close_transaction(transaction)
+        log.critical (f"size {size}")
+
         if transaction_side == "sell":
             try:
                 tp_price_reached=bid_price < transaction["take_profit"]
@@ -659,7 +662,7 @@ class BasicStrategy:
         ) and no_outstanding_order
 
         if order_allowed:
-            size= await provide_size_to_close_transaction(transaction)
+            
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
