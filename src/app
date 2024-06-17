@@ -47,6 +47,7 @@ async def manage_params (trade) -> None:
         log.info(f"label {label} params {params}")
 
         trade.update({"take_profit": additional_params_label["take_profit"]})
+        trade.update({"has_closed_label": False})
 
     if "closed" in label:
         label_time_only= str_mod (label) ["int"]
