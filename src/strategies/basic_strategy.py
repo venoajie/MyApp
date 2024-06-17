@@ -487,10 +487,10 @@ class BasicStrategy:
         log.error (f"result {result}")
 
         # clean up result with no label main
-        result_cleaned = [o for o in result if o["label_main"] != None]
+        result_cleaned = [o for o in result if o["label"] != None]
 
         result_strategy_label: list = [
-            o for o in result_cleaned if self.strategy_label in o["label_main"]
+            o for o in result_cleaned if self.strategy_label in o["label"]
         ]
 
         if result != []:
