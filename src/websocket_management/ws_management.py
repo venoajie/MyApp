@@ -472,10 +472,12 @@ async def closing_transactions(
     my_trades_open_all: list = my_trades_open_sqlite["all"]
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
+    log.error (f"my_trades_open {my_trades_open}")
 
     label_transaction_main = str_mod.remove_redundant_elements(
         [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
     )
+    log.error (f"label_transaction_main {label_transaction_main}")
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
