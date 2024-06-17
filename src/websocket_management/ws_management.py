@@ -533,7 +533,7 @@ async def closing_transactions(
         )
         #: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
 
-        if not size_is_consistent:  # and open_order_is_consistent:
+        if  size_is_consistent:  # and open_order_is_consistent:
 
             open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
                 [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
