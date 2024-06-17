@@ -269,7 +269,7 @@ def get_transactions_sum(result_strategy_label) -> int:
     return (
         0
         if result_strategy_label == []
-        else sum([o["amount_dir"] for o in result_strategy_label])
+        else sum([o["amount"] for o in result_strategy_label])
     )
 
 
@@ -347,9 +347,9 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
                         if label_integer in o["label"]
                     ]
                 )
-    log.error(f"sum_transactions_under_label_main{sum_transactions_under_label_main}")
+    log.error(f"sum_transactions_under_label_main{has_closed}has_closed {sum_transactions_under_label_main}")
 
-    return basic_size if has_closed else abs(sum_transactions_under_label_main)
+    return basic_size if (has_closed==0 or has_closed) else abs(sum_transactions_under_label_main)
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
@@ -524,12 +524,12 @@ class BasicStrategy:
 
         if result_strategy_label != []:
             long_transactions: list = [
-                o["amount_dir"]
+                o["amount"]
                 for o in result_strategy_label
                 if "Long" in o["label"]
             ]
             short_transactions: list = [
-                o["amount_dir"]
+                o["amount"]
                 for o in result_strategy_label
                 if "Short" in o["label"]
             ]
