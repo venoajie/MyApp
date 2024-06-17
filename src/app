@@ -28,7 +28,7 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
 async def manage_params (trade) -> None:
 
-    #log.info(f"trade {trade}")
+    log.info(f"trade {trade}")
     try:
         label=trade["label"]
         if "open" in label:
@@ -47,12 +47,13 @@ async def manage_params (trade) -> None:
         if "closed" in label:
             label_time_only= str_mod.parsing_label (label) ["int"]
             log.info (f"label_time_only {label_time_only}")
-            await sqlite_management.update_status_closed_orders("my_trades_all_json", trade)
+            await sqlite_management.update_status_closed_orders(label_time_only)
 
     except:
-        trade.update({"label": "custom"})
-        trade.update({"has_closed_label": False})
-    log.critical(f"trade {trade}")
+        #trade.update({"label": "custom"})
+        #trade.update({"has_closed_label": False})
+        log.critical(f"except trade {trade}")
+    
     await sqlite_management.insert_tables("my_trades_all_json", trade)
 
 async def manage_trades (trades: dict) -> None:
@@ -89,7 +90,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         log.error (f"trades {trades}")
         
         await manage_trades (trades)
-        await clean_up_closed_transactions(my_trades_open_all)
+        #await clean_up_closed_transactions(my_trades_open_all)
         
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
@@ -106,7 +107,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
                 await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
-        await clean_up_closed_transactions(my_trades_open_all)
+        #await clean_up_closed_transactions(my_trades_open_all)
 
     if positions:
         await manage_positions (positions, currency)
