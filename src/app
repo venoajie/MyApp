@@ -30,7 +30,6 @@ async def manage_params (trade) -> None:
 
     #log.info(f"trade {trade}")
     label=trade["label"]
-
     if "open" in label:
 
         #log.info(f"label {label}")
@@ -53,12 +52,15 @@ async def manage_params (trade) -> None:
         label_time_only= str_mod (label) ["int"]
         await sqlite_management.update_status_closed_orders("my_trades_all_json", trade)
 
+    log.critical(f"trade {trade}")
+    await sqlite_management.insert_tables("my_trades_all_json", trade)
+
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
         await manage_params (trade) 
-        log.critical(f"trade {trade}")
-        await sqlite_management.insert_tables("my_trades_all_json", trade)
+        
+        
 
 async def manage_positions (positions: dict, currency: str) -> None:
 
