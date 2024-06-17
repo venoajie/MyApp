@@ -102,7 +102,10 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
-    for trade_open in my_trades_open_sqlite:
+    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
+
+    for trade_open in my_trades_open_list_data_only:
+        print (f"trade_open {trade_open}")
         trade=trade_open[0]
         print (f"trade {trade}")
         where_filter = f"trade_seq"
@@ -122,7 +125,7 @@ async def run_every_5_seconds() -> None:
 
     print ("SLEEP")
     time.sleep(10)
-    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
+    
 
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
