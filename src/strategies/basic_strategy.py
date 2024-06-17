@@ -588,14 +588,14 @@ class BasicStrategy:
             "transactions_strategy_label"
         ]
         # assuming only 1
-        trade_seq_is_exist: list = (
+        label_is_exist: list = (
             False
             if my_trades_attributes_closed == []
-            else [o for o in my_trades_attributes_closed if trade_seq == o["trade_seq"]]
+            else [o for o in my_trades_attributes_closed if trade_seq == o["label"]]
             != []
         )
-        print(f"trade_seq_is_exist {trade_seq_is_exist}")
-        return trade_seq_is_exist
+        print(f"label is exist {label_is_exist}")
+        return label_is_exist
 
 
     async def is_send_exit_order_allowed(
@@ -670,8 +670,7 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
-            log.info(f"params {params}")
-            trade_seq = params["trade_seq"]
+            trade_seq = params["label"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 
