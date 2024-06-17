@@ -567,18 +567,35 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
     return f"SELECT * from {table} where not (label_main LIKE '%value1%' or label_main LIKE '%value2%' or label_main LIKE'%value3%');"
 
 
-def update_status_closed_orders(filter_value: str,
-                                table: str = "my_trades_all_json", 
-                                column_name="data",
-                                new_value=True) -> str:
+async def update_status_closed_trades(filter_value) -> str:
     
     """ 
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
     https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
     """
+    table: str = "my_trades_all_json"
+    column_name="data"
+    new_value=True
     
-    return f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.label')  LIKE '%{filter_value}';"""
+    query= f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.label')  LIKE '%{filter_value}';"""
+
+    try:
+
+        async with aiosqlite.connect(
+            "databases/trading.sqlite3", isolation_level=None
+        ) as db:
+
+            # input was in list format. Insert them to db one by one
+            # log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
+            # log.error(f"params {params}")
+            await db.execute(query)
+
+    except Exception as error:
+        print(f"update column {query} {error}")
+
+        await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
+        # await telegram_bot_sendtext(f"sqlite operation","failed_order")
 
 def querying_open_interest(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
