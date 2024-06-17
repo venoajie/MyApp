@@ -484,6 +484,7 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
+        log.error (f"result {result}")
 
         # clean up result with no label main
         result_cleaned = [o for o in result if o["label_main"] != None]
