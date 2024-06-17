@@ -45,9 +45,20 @@ async def manage_params (trade) -> None:
             trade.update({"has_closed_label": False})
 
         if "closed" in label:
-            label_time_only= str_mod.parsing_label (label) ["int"]
-            log.info (f"label_time_only {label_time_only}")
-            await sqlite_management.update_status_closed_orders(label_time_only)
+            label_integer= str_mod.parsing_label (label) ["int"]
+            transactions_all: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
+            log.info (f"transactions_all {transactions_all}")
+            has_closed_label = (
+                    [
+                        o['has_closed_label']
+                        for o in transactions_all
+                        if label_integer in o["label"] and "open" in o["label"]
+                    ]
+                )
+    
+            log.info (f"label_time_only {label_integer} has_closed_label {has_closed_label}")
+            if not has_closed_label:
+                await sqlite_management.update_status_closed_trades(label_integer)
 
     except:
         #trade.update({"label": "custom"})
