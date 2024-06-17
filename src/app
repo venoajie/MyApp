@@ -44,7 +44,7 @@ async def manage_params (trade) -> None:
         trade.update({"has_closed_label": False})
 
     if "closed" in label:
-        label_time_only= str_mod (label) ["int"]
+        label_time_only= str_mod.parsing_label (label) ["int"]
         log.info (f"label_time_only {label_time_only}")
         await sqlite_management.update_status_closed_orders("my_trades_all_json", trade)
 
