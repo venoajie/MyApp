@@ -104,9 +104,8 @@ async def run_every_5_seconds() -> None:
     )
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
-    for trade_open in my_trades_open_list_data_only:
-        print (f"trade_open {trade_open}")
-        trade=trade_open[0]
+    for trade in my_trades_open_list_data_only:
+        
         print (f"trade {trade}")
         where_filter = f"trade_seq"
         trade_seq = trade["trade_seq"]
