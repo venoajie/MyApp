@@ -237,7 +237,7 @@ async def cancel_the_cancellables() -> None:
     #log.critical(f" cancellable_strategies {cancellable_strategies}")
     for strategy in cancellable_strategies:
         open_orders_cancellables_id= [
-                o["order_id"] for o in open_orders_sqlite if strategy in o["label_main"]
+                o["order_id"] for o in open_orders_sqlite if strategy in o["label"]
             ]
         #log.critical(f" open_orders_cancellables_id {strategy} {open_orders_cancellables_id}")
 
@@ -394,12 +394,12 @@ async def opening_transactions(
    
                     THRESHOLD_BEFORE_REORDER = ONE_PCT/2
                     
-                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label_main"])]
+                    my_trades_open = [o for o in my_trades_open_all if "open" in (o["label"])]
 
                     my_trades_open_strategy = [
                 o
                 for o in my_trades_open
-                if strategy_label in (o["label_main"])
+                if strategy_label in (o["label"])
             ]
    
                     last_price_all= get_last_price(my_trades_open_strategy)
