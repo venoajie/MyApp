@@ -39,14 +39,19 @@ async def manage_params (trade) -> None:
         params=await sqlite_management.executing_query_with_return(additional_params)
         #log.info(f"params_data {params}")
         
-        log.info(f"label {label} params {params}")
         additional_params_label = [
                 o for o in params if label in o["label"]
             ][0]
-        log.info(f"additional_params_label {additional_params_label}")
+        #log.info(f"additional_params_label {additional_params_label}")
         #log.info(additional_params_label["take_profit"])
         #log.info(f"trade {trade}")
+        log.info(f"label {label} params {params}")
+
         trade.update({"take_profit": additional_params_label["take_profit"]})
+
+    if "closed" in label:
+        label_time_only= str_mod (label) ["int"]
+        await sqlite_management.update_status_closed_orders("my_trades_all_json", trade)
 
 async def manage_trades (trades: dict) -> None:
 

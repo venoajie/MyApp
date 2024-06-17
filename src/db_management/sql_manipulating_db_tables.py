@@ -55,3 +55,4 @@ def create_virtual_table(table: str, item: str, item_data_type: str) -> str:
             """
 
     return query
+

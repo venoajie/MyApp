@@ -282,17 +282,72 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
     )
 
 
+def get_transaction_side(transaction: dict) -> str:
+    """ """
+    
+    try:
+        side = transaction["direction"]
+
+    except:
+        side = transaction["side"]
+
+    return side
+
 def provide_side_to_close_transaction(transaction: dict) -> str:
     """ """
 
     # determine side
-    transaction_side = transaction["direction"]
+    transaction_side = get_transaction_side(transaction)
     if transaction_side == "sell":
         side = "buy"
     if transaction_side == "buy":
         side = "sell"
 
     return side
+
+def get_transaction_size(transaction: dict) -> int:
+    """ """
+    return transaction["amount"]
+
+def get_transaction_instrument(transaction: dict) -> int:
+    """ """
+    return transaction["instrument_name"]
+
+def get_transaction_label(transaction: dict) -> str:
+    """ """
+    return transaction["label"]
+
+def get_transaction_price(transaction: dict) -> float:
+    """ """
+    return transaction["price"]
+
+def has_closed_label(transaction: dict) -> bool:
+    """ """
+    return transaction["has_closed_label"]
+
+def get_label_integer(label: dict) -> bool:
+    """ """
+    
+    return str_mod.parsing_label(label)
+
+async def provide_size_to_close_transaction(transaction: dict) -> str:
+    """ """
+    basic_size=  get_transaction_size(transaction)
+    label= get_transaction_label(transaction)
+    has_closed= has_closed_label(transaction)
+    label_integer=get_label_integer(label)
+    transactions_all: list = await querying_label_and_size("my_trades_all_json")
+
+    sum_transactions_under_label_main = sum(
+                    [
+                        o['amount']
+                        for o in transactions_all
+                        if label_integer in o["label"]
+                    ]
+                )
+            
+
+    return basic_size if has_closed else abs(sum_transactions_under_label_main)
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
@@ -325,18 +380,14 @@ def get_strategy_config_all() -> list:
     return entries_exits.strategies
 
 
-def is_everything_consistent(params) -> dict:
+def is_everything_consistent(params) -> bool:
     """ """
-    label = params["label"]
+    label = get_transaction_label(params)
 
     is_consistent = True if "closed" in label else False
     #log.warning(f"params {params}")
 
-    try:
-        side = params["direction"]
-
-    except:
-        side = params["side"]
+    side = get_transaction_side(params)
 
     if "open" in label:
 
@@ -347,6 +398,16 @@ def is_everything_consistent(params) -> dict:
             is_consistent = True if "Long" in label else False
 
     return is_consistent
+
+def get_take_profit_pct(transaction: dict,strategy_config: dict) -> float:
+    """ """
+
+    try:
+        tp_pct: float = transaction["profit_target_pct_transaction"]
+    except:
+        tp_pct: float = strategy_config["take_profit_pct"]
+
+    return tp_pct
 
 
 @dataclass(unsafe_hash=True, slots=True)
@@ -532,6 +593,7 @@ class BasicStrategy:
         print(f"trade_seq_is_exist {trade_seq_is_exist}")
         return trade_seq_is_exist
 
+
     async def is_send_exit_order_allowed(
         self,
         market_condition: dict,
@@ -544,22 +606,18 @@ class BasicStrategy:
         transaction: dict = selected_transaction[0]
 
         # get price
-        last_transaction_price: float = transaction["price"]
+        last_transaction_price: float = get_transaction_price(transaction)
 
-        transaction_side: str = transaction["direction"]
+        transaction_side: str = get_transaction_side(transaction)
 
-        strategy_config: list = self.get_strategy_config(transaction["label"])
+        strategy_config: list = self.get_strategy_config(get_transaction_label(transaction))
 
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
         supported_by_market: bool = False
 
-        # get take profit pct
-        try:
-            tp_pct: float = transaction["profit_target_pct_transaction"]
-        except:
-            tp_pct: float = strategy_config["take_profit_pct"]
+        tp_pct = get_take_profit_pct(transaction,strategy_config)
 
         if transaction_side == "sell":
             try:
@@ -601,8 +659,10 @@ class BasicStrategy:
         ) and no_outstanding_order
 
         if order_allowed:
+            size= await provide_size_to_close_transaction(transaction)
 
-            params.update({"instrument": transaction["instrument_name"]})
+            params.update({"instrument": get_transaction_instrument(transaction)})
+            params.update({"size": size})
             trade_seq = params["label"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)

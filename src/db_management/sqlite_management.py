@@ -572,7 +572,13 @@ def update_status_closed_orders(filter_value: str,
                                 column_name="data",
                                 new_value=True) -> str:
     
-    return f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE label_main LIKE {filter_value};"""
+    """ 
+    https://www.beekeeperstudio.io/blog/sqlite-json-with-text
+    https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
+    https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
+    """
+    
+    return f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.label')  LIKE '%{filter_value}';"""
 
 def querying_open_interest(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
@@ -617,9 +623,40 @@ def querying_arithmetic_operator(
 
 def querying_label_and_size(table) -> str:
     tab = f"SELECT label_main, amount_dir, price, timestamp, order_id FROM {table}"
+
     if "trade" in table:
-        tab = f"SELECT label_main, amount_dir, price, timestamp, order_id, trade_seq FROM {table}"
+        tab = f"SELECT label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table}"
     return tab
+
+
+async def executing_label_and_size_query(table) -> dict:
+    """
+    Provide execution template for querying summary of trading results from sqlite.
+    Consist of transaction label, size, and price only.
+    """
+
+    # get query
+    query = querying_label_and_size(table)
+
+    # execute query
+    result = await executing_query_with_return(query)
+
+    # define none from queries result. If the result=None, return []
+    NONE_DATA: None = [0, None, []]
+
+    return [] if result in NONE_DATA else (result)
+
+
+def querying_trade_table_basics(table: str = "my_trades_all_json", filter: str = None, operator: str = None, filter_value: str = None
+) -> str:
+
+    if filter ==None:
+        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
+    else:
+        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
+        
+
+    return selected_data
 
 
 async def executing_query_with_return(
@@ -708,25 +745,6 @@ async def executing_general_query(
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
-
-
-async def executing_label_and_size_query(table) -> dict:
-    """
-    Provide execution template for querying summary of trading results from sqlite.
-    Consist of transaction label, size, and price only.
-    """
-
-    # get query
-    query = querying_label_and_size(table)
-
-    # execute query
-    result = await executing_query_with_return(query)
-
-    # define none from queries result. If the result=None, return []
-    NONE_DATA: None = [0, None, []]
-
-    return [] if result in NONE_DATA else (result)
-
 
 def query_pd(table_name: str, field: str = None):
     """
