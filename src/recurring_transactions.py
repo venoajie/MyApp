@@ -104,26 +104,6 @@ async def run_every_5_seconds() -> None:
     )
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
 
-    for trade in my_trades_open_list_data_only:
-        
-        where_filter = f"order_id"
-        order_id = trade["order_id"]
-        trade.update({"has_closed_label": False})
-        await sqlite_management.deleting_row(
-                        "my_trades_all_json",
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        order_id,
-                    )
-        await sqlite_management.insert_tables(
-                        "my_trades_all_json", trade
-                    )
-
-    print ("SLEEP")
-    time.sleep(10)
-    
-
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
