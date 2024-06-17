@@ -482,6 +482,7 @@ class BasicStrategy:
 
     async def transaction_per_label(self, table, label_filter: str = None) -> dict:
         """ """
+        
 
         result: list = await querying_label_and_size(table)
         log.error (f"result {result}")
