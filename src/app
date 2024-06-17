@@ -45,6 +45,7 @@ async def manage_params (trade) -> None:
 
     if "closed" in label:
         label_time_only= str_mod (label) ["int"]
+        log.info (f"label_time_only {label_time_only}")
         await sqlite_management.update_status_closed_orders("my_trades_all_json", trade)
 
     log.critical(f"trade {trade}")
@@ -53,10 +54,9 @@ async def manage_params (trade) -> None:
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
+        log.warning (f"trade {trade}")
         await manage_params (trade) 
         
-        
-
 async def manage_positions (positions: dict, currency: str) -> None:
 
     my_path_position = system_tools.provide_path_for_file("positions", currency)
@@ -82,6 +82,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
     my_trades_open_all: list = my_trades_open_sqlite["all"]
     
     if trades:
+        log.error (f"trades {trades}")
         
         await manage_trades (trades)
         await clean_up_closed_transactions(my_trades_open_all)
