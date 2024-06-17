@@ -497,7 +497,7 @@ class BasicStrategy:
 
             if label_filter != None:
                 result_strategy_label: list = [
-                    o for o in result_strategy_label if label_filter in o["label_main"]
+                    o for o in result_strategy_label if label_filter in o["label"]
                 ]
 
             if label_filter == "super_main":
@@ -505,7 +505,7 @@ class BasicStrategy:
                     o
                     for o in result
                     if str_mod.parsing_label(self.strategy_label)["super_main"]
-                    == str_mod.parsing_label(o["label_main"])["super_main"]
+                    == str_mod.parsing_label(o["label"])["super_main"]
                 ]
 
         return dict(
@@ -525,12 +525,12 @@ class BasicStrategy:
             long_transactions: list = [
                 o["amount_dir"]
                 for o in result_strategy_label
-                if "Long" in o["label_main"]
+                if "Long" in o["label"]
             ]
             short_transactions: list = [
                 o["amount_dir"]
                 for o in result_strategy_label
-                if "Short" in o["label_main"]
+                if "Short" in o["label"]
             ]
             print(
                 f"basic str-long_transactions {long_transactions} short_transactions {short_transactions}"
