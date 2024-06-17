@@ -349,7 +349,7 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
                 )
     log.error(f"sum_transactions_under_label_main{has_closed}has_closed {sum_transactions_under_label_main}")
 
-    return basic_size if (has_closed==0 or has_closed) else abs(sum_transactions_under_label_main)
+    return basic_size if (has_closed==0) else abs(sum_transactions_under_label_main)
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
@@ -670,11 +670,11 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
-            trade_seq = params["label"]
+            trade_seq = params["trade_seq"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 
-            if order_has_sent_before:
+            if order_has_sent_before or size==0:
                 order_allowed == False
 
         return dict(
