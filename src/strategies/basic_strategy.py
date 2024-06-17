@@ -338,7 +338,6 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
     label_integer=get_label_integer(label)["int"]
     transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
-    log.error(f"label_integer{label_integer}")
     log.error(f"transactions_all{transactions_all}")
 
     sum_transactions_under_label_main = sum(
@@ -348,6 +347,8 @@ async def provide_size_to_close_transaction(transaction: dict) -> str:
                         if label_integer in o["label"]
                     ]
                 )
+    log.error(f"sum_transactions_under_label_main{sum_transactions_under_label_main}")
+
     return basic_size if has_closed else abs(sum_transactions_under_label_main)
 
 
