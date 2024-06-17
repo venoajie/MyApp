@@ -102,8 +102,8 @@ async def run_every_5_seconds() -> None:
     my_trades_open_sqlite: dict = await sqlite_management.querying_table(
         "my_trades_all_json"
     )
-    print (f"my_trades_open_sqlite {my_trades_open_sqlite}")
-    for trade in my_trades_open_sqlite:
+    for trade_open in my_trades_open_sqlite:
+        trade=trade_open[0]
         print (f"trade {trade}")
         where_filter = f"trade_seq"
         trade_seq = trade["trade_seq"]
