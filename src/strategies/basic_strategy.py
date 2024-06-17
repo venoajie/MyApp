@@ -670,6 +670,7 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
+            log.info(f"params {params}")
             trade_seq = params["trade_seq"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
