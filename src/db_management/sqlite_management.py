@@ -622,7 +622,7 @@ def querying_arithmetic_operator(
 
 
 def querying_label_and_size(table) -> str:
-    tab = f"SELECT label_main, amount_dir, price, timestamp, order_id FROM {table}"
+    tab = f"SELECT label_main as label, amount_dir, price, timestamp, order_id FROM {table}"
 
     if "trade" in table:
         tab = f"SELECT label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table}"
