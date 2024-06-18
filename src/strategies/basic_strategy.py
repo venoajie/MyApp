@@ -330,26 +330,35 @@ def get_label_integer(label: dict) -> bool:
     
     return str_mod.parsing_label(label)
 
-async def provide_size_to_close_transaction(transaction: dict,transactions_all: list= None) -> str:
+async def summing_transactions_under_label_int(transaction: dict,transactions_all: list= None) -> str:
     """ """
-    basic_size=  get_transaction_size(transaction)
     label= get_transaction_label(transaction)
-    has_closed= has_closed_label(transaction)
+    
     label_integer=get_label_integer(label)["int"]
     
     if transactions_all==None:
         transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
-    log.error(f"transactions_all{transactions_all}")
-
-    sum_transactions_under_label_main = sum(
+    transactions_under_label_main = (
                     [
                         o['amount']
                         for o in transactions_all
                         if label_integer in o["label"]
                     ]
                 )
-    log.error(f"sum_transactions_under_label_main{has_closed}has_closed {sum_transactions_under_label_main}")
+
+    return sum(transactions_under_label_main)
+
+async def provide_size_to_close_transaction(transaction: dict,transactions_all: list= None) -> str:
+    """ """
+    basic_size=  get_transaction_size(transaction)
+    label= get_transaction_label(transaction)
+
+    if "open" in label:
+        has_closed= has_closed_label(transaction)
+
+    sum_transactions_under_label_main = summing_transactions_under_label_int(transaction,transactions_all)
+    log.error(f"sum_transactions_under_label_main {sum_transactions_under_label_main} has_closed {has_closed}")
 
     return basic_size if (has_closed==0) else abs(sum_transactions_under_label_main)
 
