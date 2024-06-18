@@ -115,7 +115,7 @@ async def run_every_5_seconds() -> None:
     # remove transactions without label
     my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
     
-    await clean_up_closed_transactions(my_trades_open)
+    await clean_up_closed_transactions()
 
     my_trades_open_remove_closed_labels = (
         []
