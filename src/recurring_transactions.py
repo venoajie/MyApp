@@ -14,7 +14,8 @@ from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get as get_dbt
 from db_management import sqlite_management
 
-from strategies import entries_exits, basic_strategy
+from strategies import entries_exits
+from strategies.basic_strategy import querying_label_and_size,get_market_condition
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
 )
@@ -99,7 +100,7 @@ async def run_every_5_seconds() -> None:
     THRESHOLD = 0.01 * ONE_PCT
     TAKE_PROFIT_PCT_DAILY = ONE_PCT
 
-    market_condition = await basic_strategy.get_market_condition(
+    market_condition = await get_market_condition(
         THRESHOLD, WINDOW, RATIO
     )
     print(f"market_condition {market_condition}")
@@ -133,6 +134,8 @@ async def run_every_5_seconds() -> None:
             ]
         )
     )
+
+    transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
     await closing_transactions(
         label_transaction_net,

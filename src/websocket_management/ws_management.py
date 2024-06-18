@@ -499,6 +499,31 @@ async def opening_transactions(
 
     log.warning(f"OPENING TRANSACTIONS-DONE")
 
+def get_label_transaction_main(label_transaction_net: list) -> list:
+    """ """
+    
+    return str_mod.remove_redundant_elements(
+        [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
+    )
+
+def get_trades_within_respective_strategy(my_trades_open: list, label: str) -> list:
+    """ """
+    
+    return [
+            o
+            for o in my_trades_open
+            if str_mod.parsing_label(o["label"])["main"] == label
+        ]
+
+def get_min_max_price_from_transaction_in_strategy(get_prices_in_label_transaction_main: list) -> list:
+    """ """
+    return dict(
+            max_price=(0 if get_prices_in_label_transaction_main == []
+            else max(get_prices_in_label_transaction_main)
+            ),
+            min_price=(0 if get_prices_in_label_transaction_main == []
+            else min(get_prices_in_label_transaction_main))
+            )
 
 async def closing_transactions(
     label_transaction_net,
@@ -514,41 +539,28 @@ async def closing_transactions(
 
     log.critical(f"CLOSING TRANSACTIONS-START")
 
-    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-        "my_trades_all_json"
-    )
     my_trades_open_all: list = my_trades_open_sqlite["all"]
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
     log.error(f"my_trades_open {my_trades_open}")
 
-    label_transaction_main = str_mod.remove_redundant_elements(
-        [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
-    )
+    label_transaction_main = get_label_transaction_main(label_transaction_net)
+
     log.error(f"label_transaction_main {label_transaction_main}")
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
 
-        my_trades_open_strategy = [
-            o
-            for o in my_trades_open
-            if str_mod.parsing_label(o["label"])["main"] == label
-        ]
+        my_trades_open_strategy = get_trades_within_respective_strategy(my_trades_open,label)
 
         get_prices_in_label_transaction_main = [
             o["price"] for o in my_trades_open_strategy
         ]
-        max_price = (
-            0
-            if get_prices_in_label_transaction_main == []
-            else max(get_prices_in_label_transaction_main)
-        )
-        min_price = (
-            0
-            if get_prices_in_label_transaction_main == []
-            else min(get_prices_in_label_transaction_main)
-        )
+        max_price = get_min_max_price_from_transaction_in_strategy(
+            get_prices_in_label_transaction_main)["max_price"]
+        
+        min_price = get_min_max_price_from_transaction_in_strategy(
+            get_prices_in_label_transaction_main)["min_price"]
 
         if "Short" in label or "hedging" in label:
             transaction = [
@@ -578,6 +590,7 @@ async def closing_transactions(
         sum_my_trades_open_sqlite_all_strategy: list = (
             str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
         )
+
         size_is_consistent: bool = await is_size_consistent(
             sum_my_trades_open_sqlite_all_strategy, size_from_positions
         )
@@ -681,8 +694,3 @@ async def closing_transactions(
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")
 
-
-async def current_server_time() -> float:
-    """ """
-    current_time = await deribit_get.get_server_time()
-    return current_time["result"]
