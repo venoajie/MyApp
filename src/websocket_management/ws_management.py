@@ -292,8 +292,6 @@ async def inserting_additional_params(params: dict) -> None:
 
 def get_last_price(my_trades_open_strategy: list) -> float:
     """ """
-    
-    log.warning(f"my_trades_open_strategy {my_trades_open_strategy}")
     my_trades_open_strategy_buy = [
         o for o in my_trades_open_strategy if o["amount_dir"] > 0
     ]
@@ -377,9 +375,12 @@ async def opening_transactions(
 
     try:
         my_trades_open_all: list = my_trades_open_sqlite["all"]
+
+        transactions_all_summarized: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
         
         log.error (my_trades_open_sqlite)
-        log.error (my_trades_open_all)
+        log.warning (my_trades_open_all)
+        log.info (transactions_all_summarized)
 
         ticker: list = reading_from_db("ticker", instrument)
 
@@ -428,7 +429,7 @@ async def opening_transactions(
                     THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
 
                     my_trades_open = [
-                        o for o in my_trades_open_sqlite["list_data_only"] if "open" in (o["label"])
+                        o for o in my_trades_open_all if "open" in (o["label"])
                     ]
 
                     my_trades_open_strategy = [
