@@ -292,6 +292,8 @@ async def inserting_additional_params(params: dict) -> None:
 
 def get_last_price(my_trades_open_strategy: list) -> float:
     """ """
+    
+    log.warning(f"my_trades_open_strategy {my_trades_open_strategy}")
     my_trades_open_strategy_buy = [
         o for o in my_trades_open_strategy if o["amount_dir"] > 0
     ]
