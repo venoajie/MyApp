@@ -21,7 +21,6 @@ from websocket_management.cleaning_up_transactions import (
 )
 
 from websocket_management.ws_management import (
-    current_server_time,
     opening_transactions,
     reading_from_pkl_database,
     closing_transactions,
@@ -52,6 +51,11 @@ async def get_currencies(connection_url) -> float:
 
     return result
 
+
+async def current_server_time() -> float:
+    """ """
+    current_time = await get_dbt.get_server_time()
+    return current_time["result"]
 
 async def run_every_5_seconds__() -> None:
     """
