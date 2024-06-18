@@ -16,7 +16,7 @@ def get_transactions_with_closed_label (transactions_all: list) -> list:
     """ """
 
     return [
-            o for o in transactions_all if "closed" in o["label_main"]
+            o for o in transactions_all if "closed" in o["label"]
         ]
 
 
@@ -96,7 +96,7 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
     log.info("clean_up_closed_transactions-START")
 
     # clean up transactions all
-    transactions_all = [o for o in transactions_all if o["label_main"] != None]
+    transactions_all = [o for o in transactions_all if o["label"] != None]
 
     if transactions_all != []:
         trades_with_closed_labels = get_transactions_with_closed_label(transactions_all)
@@ -106,7 +106,7 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
             # get label net
             label_net = str_mod.remove_redundant_elements(
                 [
-                    str_mod.parsing_label(o["label_main"])["transaction_net"]
+                    str_mod.parsing_label(o["label"])["transaction_net"]
                     for o in [transaction]
                 ]
             )[0]
@@ -119,7 +119,7 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
                     [
                         o
                         for o in transactions_all
-                        if str_mod.parsing_label(o["label_main"])["transaction_net"]
+                        if str_mod.parsing_label(o["label"])["transaction_net"]
                         == label_net
                     ]
                 )
@@ -137,14 +137,14 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
                 transactions_closed = [
                     o
                     for o in transactions_under_label_main
-                    if "closed" in o["label_main"]
+                    if "closed" in o["label"]
                 ]
 
                 # get_closed_labels under_label_main
                 transactions_open = [
                     o
                     for o in transactions_under_label_main
-                    if "open" in o["label_main"]
+                    if "open" in o["label"]
                 ]
 
                 # get minimum trade seq from closed/open label main (to be paired vs open/closed label)
@@ -155,7 +155,7 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
                 transactions_under_label_main = [
                     o
                     for o in transactions_under_label_main
-                    if o["trade_seq"] == min_closed or "open" in o["label_main"]
+                    if o["trade_seq"] == min_closed or "open" in o["label"]
                 ]
 
                 if len(transactions_open) > 1:
@@ -184,7 +184,7 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
 
                 for transaction in transactions_excess:
                     trade_seq = transaction["trade_seq"]
-                    label = transaction["label_main"]
+                    label = transaction["label"]
                     tstamp = transaction["timestamp"]
                     new_label = str_mod.parsing_label(label, tstamp)["flipping_closed"]
                     transaction["label"] = new_label
