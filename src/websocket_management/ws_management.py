@@ -375,7 +375,8 @@ async def opening_transactions(
 
     try:
         my_trades_open_all: list = my_trades_open_sqlite["all"]
-        # log.error (my_trades_open_all)
+        
+        log.error (my_trades_open_all)
 
         ticker: list = reading_from_db("ticker", instrument)
 
