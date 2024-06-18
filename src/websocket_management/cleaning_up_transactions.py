@@ -10,7 +10,7 @@ from loguru import logger as log
 # user defined formula
 from utilities import system_tools, string_modification as str_mod
 from db_management import sqlite_management
-from strategies.basic_strategy import summing_transactions_under_label_int, get_transaction_label,get_label_integer
+from strategies.basic_strategy import summing_transactions_under_label_int, get_transaction_label,get_label_integer,querying_label_and_size
 
 def get_transactions_with_closed_label (transactions_all: list) -> list:
     """ """
@@ -55,6 +55,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     """
 
     log.info("clean_up_closed_transactions-START")
+    transactions_all: list = await querying_label_and_size("my_trades_all_json")
     transaction_with_closed_labels = get_transactions_with_closed_label(transactions_all)
     log.error (f"transactions_all {transactions_all}")
     log.warning (f"transaction_with_closed_labels {transaction_with_closed_labels}")
