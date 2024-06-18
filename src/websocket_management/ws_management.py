@@ -426,7 +426,7 @@ async def opening_transactions(
                     THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
 
                     my_trades_open = [
-                        o for o in my_trades_open_all if "open" in (o["label"])
+                        o for o in my_trades_open_sqlite["list_data_only"] if "open" in (o["label"])
                     ]
 
                     my_trades_open_strategy = [
