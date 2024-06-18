@@ -10,7 +10,7 @@ from loguru import logger as log
 # user defined formula
 from utilities import system_tools, string_modification as str_mod
 from db_management import sqlite_management
-from strategies.basic_strategy import summing_transactions_under_label_int, get_transaction_label,has_closed_label,get_label_integer
+from strategies.basic_strategy import summing_transactions_under_label_int, get_transaction_label,get_label_integer
 
 def get_transactions_with_closed_label (transactions_all: list) -> list:
     """ """
