@@ -293,10 +293,10 @@ async def inserting_additional_params(params: dict) -> None:
 def get_last_price(my_trades_open_strategy: list) -> float:
     """ """
     my_trades_open_strategy_buy = [
-        o for o in my_trades_open_strategy if o["amount_dir"] > 0
+        o for o in my_trades_open_strategy if o["amount"] > 0
     ]
     my_trades_open_strategy_sell = [
-        o for o in my_trades_open_strategy if o["amount_dir"] < 0
+        o for o in my_trades_open_strategy if o["amount"] < 0
     ]
     buy_traded_price = [o["price"] for o in my_trades_open_strategy_buy]
     sell_traded_price = [o["price"] for o in my_trades_open_strategy_sell]
