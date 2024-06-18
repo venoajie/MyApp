@@ -61,7 +61,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     2. move them to table for closed transactions/my_trades_closed_json
     """
 
-    log.info("clean_up_closed_transactions-START")
+    log.critical("clean_up_closed_transactions-START")
     transactions_all: list = await querying_label_and_size("my_trades_all_json")
     transaction_with_closed_labels = get_transactions_with_closed_label(
         transactions_all
@@ -105,6 +105,8 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                     "=",
                     order_id,
                 )
+
+    log.critical("clean_up_closed_transactions-STOP")
 
 
 async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
