@@ -674,6 +674,7 @@ class BasicStrategy:
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 
+            log.critical (f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}")
 
             if order_has_sent_before or size==0:
                 order_allowed == False
