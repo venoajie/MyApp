@@ -20,6 +20,14 @@ def get_transactions_with_closed_label (transactions_all: list) -> list:
         ]
 
 
+def get_closed_open_transactions_under_same_label_int (transactions_all: list, label: str) -> list:
+    """ """
+    label_integer=get_label_integer(label)["int"]
+
+    return [
+            o for o in transactions_all if label_integer in o["label"]
+        ]
+
 def check_if_transaction_has_closed_label_before (transactions_all, label_integer) -> bool:
     """ """
     has_closed_label = (
@@ -52,13 +60,12 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     log.warning (f"transaction_with_closed_labels {transaction_with_closed_labels}")
     time.sleep(5)
     for transaction in transaction_with_closed_labels:
-        has_closed= has_closed_label(transaction)
 
         size_to_close= provide_size_to_close_transaction(transaction, transactions_all)
-        log.debug (f"transaction {transaction} size_to_close {size_to_close} has_closed {has_closed}")
+        log.debug (f"transaction {transaction} size_to_close {size_to_close}")
         time.sleep(5)
 
-        if size_to_close==0 and has_closed:
+        if size_to_close==0 :
                     
             label= get_transaction_label(transaction)
             
@@ -71,7 +78,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                 )
             where_filter = f"order_id"
             log.info (f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}")
-            for transaction in             transactions_with_zero_sum:
+            for transaction in transactions_with_zero_sum:
                 log.warning (f"transaction_with_zero_sum {transaction}")
                 time.sleep(5)
                 order_id=transaction["order_id"]
