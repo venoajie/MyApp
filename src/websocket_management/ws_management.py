@@ -431,7 +431,7 @@ async def opening_transactions(
                     log.warning(f"my_trades_open_all {my_trades_open_all}")
 
                     my_trades_open = [
-                        o for o in my_trades_open_all if "open" in (o["label"])
+                        o for o in transactions_all_summarized if "open" in (o["label"])
                     ]
 
                     my_trades_open_strategy = [
