@@ -590,7 +590,7 @@ async def closing_transactions(
         sum_my_trades_open_sqlite_all_strategy: list = (
             str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
         )
-
+        
         size_is_consistent: bool = await is_size_consistent(
             sum_my_trades_open_sqlite_all_strategy, size_from_positions
         )
