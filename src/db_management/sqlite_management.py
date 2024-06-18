@@ -585,10 +585,6 @@ async def update_status_closed_trades(filter_value) -> str:
         async with aiosqlite.connect(
             "databases/trading.sqlite3", isolation_level=None
         ) as db:
-
-            # input was in list format. Insert them to db one by one
-            # log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
-            # log.error(f"params {params}")
             await db.execute(query)
 
     except Exception as error:

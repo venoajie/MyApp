@@ -16,6 +16,7 @@ from utilities import pickling, system_tools, string_modification as str_mod
 from configuration import id_numbering, config
 from db_management import sqlite_management
 from websocket_management.ws_management import (resupply_sub_accountdb,last_open_interest_fr_sqlite,last_tick_fr_sqlite,cancel_the_cancellables,cancel_by_order_id)
+from websocket_management.cleaning_up_transactions import check_if_transaction_has_closed_label_before
 from strategies import basic_strategy
 
 def parse_dotenv(sub_account) -> dict:
@@ -47,23 +48,17 @@ async def manage_params (trade) -> None:
         if "closed" in label:
             label_integer= str_mod.parsing_label (label) ["int"]
             transactions_all: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
-            log.info (f"transactions_all {transactions_all}")
-            has_closed_label = (
-                    [
-                        o['has_closed_label']
-                        for o in transactions_all
-                        if label_integer in o["label"] and "open" in o["label"]
-                    ]
-                )[0]
+
+            has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
     
-            log.info (f"label_time_only {label_integer} has_closed_label {has_closed_label}")
+            
             if not has_closed_label or has_closed_label==0:
                 await sqlite_management.update_status_closed_trades(label_integer)
 
     except:
-        #trade.update({"label": "custom"})
-        #trade.update({"has_closed_label": False})
         log.critical(f"except trade {trade}")
+    
+    log.info (f"label_time_only {label_integer} has_closed_label {has_closed_label}")
     
     await sqlite_management.insert_tables("my_trades_all_json", trade)
 

@@ -2,6 +2,7 @@
 
 # built ins
 import asyncio
+import time
 
 # installed
 from loguru import logger as log
@@ -9,9 +10,83 @@ from loguru import logger as log
 # user defined formula
 from utilities import system_tools, string_modification as str_mod
 from db_management import sqlite_management
+from strategies.basic_strategy import provide_size_to_close_transaction, get_transaction_label,has_closed_label,get_label_integer
+
+def get_transactions_with_closed_label (transactions_all: list) -> list:
+    """ """
+
+    return [
+            o for o in transactions_all if "closed" in o["label_main"]
+        ]
+
+
+def check_if_transaction_has_closed_label_before (transactions_all, label_integer) -> bool:
+    """ """
+    has_closed_label = (
+                    [
+                        o['has_closed_label']
+                        for o in transactions_all
+                        if label_integer in o["label"] and "open" in o["label"]
+                    ]
+                )[0]
+    
+    if has_closed_label == 0:
+        has_closed_label= False
+
+    if has_closed_label == 1:
+        has_closed_label= True
+
+    return False if transactions_all==[] else has_closed_label
 
 
 async def clean_up_closed_transactions(transactions_all: list = None) -> None:
+    """
+    closed transactions: buy and sell in the same label id = 0. When flagged:
+    1. remove them from db for open transactions/my_trades_all_json
+    2. move them to table for closed transactions/my_trades_closed_json
+    """
+
+    log.info("clean_up_closed_transactions-START")
+    transaction_with_closed_labels = get_transactions_with_closed_label(transactions_all)
+    log.error (f"transactions_all {transactions_all}")
+    log.warning (f"transaction_with_closed_labels {transaction_with_closed_labels}")
+    time.sleep(5)
+    for transaction in transaction_with_closed_labels:
+        has_closed= has_closed_label(transaction)
+
+        size_to_close= provide_size_to_close_transaction(transaction, transactions_all)
+        log.debug (f"transaction {transaction} size_to_close {size_to_close} has_closed {has_closed}")
+        time.sleep(5)
+
+        if size_to_close==0 and has_closed:
+                    
+            label= get_transaction_label(transaction)
+            
+            label_integer=get_label_integer(label)["int"]
+            transactions_with_zero_sum = (
+                    [
+                        o for o in transactions_all
+                        if label_integer in o["label"]
+                    ]
+                )
+            where_filter = f"order_id"
+            log.info (f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}")
+            for transaction in             transactions_with_zero_sum:
+                log.warning (f"transaction_with_zero_sum {transaction}")
+                time.sleep(5)
+                order_id=transaction["order_id"]
+                await sqlite_management.deleting_row(
+                        "my_trades_all_json",
+                        "databases/trading.sqlite3",
+                        where_filter,
+                        "=",
+                        order_id,
+                    )
+                await sqlite_management.insert_tables(
+                        "my_trades_closed_json", transaction
+                    )
+
+async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
@@ -24,9 +99,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     transactions_all = [o for o in transactions_all if o["label_main"] != None]
 
     if transactions_all != []:
-        trades_with_closed_labels = [
-            o for o in transactions_all if "closed" in o["label_main"]
-        ]
+        trades_with_closed_labels = get_transactions_with_closed_label(transactions_all)
 
         for transaction in trades_with_closed_labels:
 

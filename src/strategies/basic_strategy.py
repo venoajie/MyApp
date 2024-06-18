@@ -330,13 +330,15 @@ def get_label_integer(label: dict) -> bool:
     
     return str_mod.parsing_label(label)
 
-async def provide_size_to_close_transaction(transaction: dict) -> str:
+async def provide_size_to_close_transaction(transaction: dict,transactions_all: list= None) -> str:
     """ """
     basic_size=  get_transaction_size(transaction)
     label= get_transaction_label(transaction)
     has_closed= has_closed_label(transaction)
     label_integer=get_label_integer(label)["int"]
-    transactions_all: list = await querying_label_and_size("my_trades_all_json")
+    
+    if transactions_all==None:
+        transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
     log.error(f"transactions_all{transactions_all}")
 
@@ -594,7 +596,7 @@ class BasicStrategy:
             else [o for o in my_trades_attributes_closed if trade_seq == o["label"]]
             != []
         )
-        print(f"label is exist {label_is_exist}")
+        print(f"label was existed before {label_is_exist}")
         return label_is_exist
 
 
@@ -624,7 +626,6 @@ class BasicStrategy:
         tp_pct = get_take_profit_pct(transaction,strategy_config)
 
         size= await provide_size_to_close_transaction(transaction)
-        log.critical (f"size {size}")
 
         if transaction_side == "sell":
             try:
@@ -674,10 +675,7 @@ class BasicStrategy:
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 
-            log.critical (f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}")
-
             if order_has_sent_before or size==0:
-                print("AAAAAAAAAAA")
                 order_allowed = False
             log.critical (f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}")
 
