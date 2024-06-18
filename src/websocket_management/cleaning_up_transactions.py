@@ -66,15 +66,12 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     transaction_with_closed_labels = get_transactions_with_closed_label(
         transactions_all
     )
-    log.error(f"transactions_all {transactions_all}")
-    log.warning(f"transaction_with_closed_labels {transaction_with_closed_labels}")
-
+    
     for transaction in transaction_with_closed_labels:
 
         size_to_close = await summing_transactions_under_label_int(
             transaction, transactions_all
         )
-        log.debug(f"transaction {transaction} size_to_close {size_to_close}")
 
         if size_to_close == 0:
 
@@ -85,14 +82,9 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                 o for o in transactions_all if label_integer in o["label"]
             ]
             where_filter = f"order_id"
-            log.info(
-                f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}"
-            )
+            
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
-                log.warning(
-                    f"transaction_with_zero_sum {transaction} order_id {order_id}"
-                )
 
                 await sqlite_management.insert_tables(
                     "my_trades_closed_json", transaction
@@ -106,7 +98,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                     order_id,
                 )
 
-    log.critical("clean_up_closed_transactions-STOP")
+    log.critical("clean_up_closed_transactions-DONE")
 
 
 async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
