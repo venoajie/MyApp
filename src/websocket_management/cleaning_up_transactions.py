@@ -61,7 +61,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     time.sleep(5)
     for transaction in transaction_with_closed_labels:
 
-        size_to_close= provide_size_to_close_transaction(transaction, transactions_all)
+        size_to_close= await provide_size_to_close_transaction(transaction, transactions_all)
         log.debug (f"transaction {transaction} size_to_close {size_to_close}")
         time.sleep(5)
 
@@ -79,7 +79,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
             where_filter = f"order_id"
             log.info (f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}")
             for transaction in transactions_with_zero_sum:
-                log.warning (f"transaction_with_zero_sum {transaction}")
+                log.warning (f"transaction_with_zero_sum AAAAAAAAAAAAA {transaction}")
                 time.sleep(5)
                 order_id=transaction["order_id"]
                 await sqlite_management.deleting_row(
