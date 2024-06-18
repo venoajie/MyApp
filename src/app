@@ -50,16 +50,13 @@ async def manage_params (trade) -> None:
             transactions_all: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
 
             has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
-    
             
             if not has_closed_label or has_closed_label==0:
                 await sqlite_management.update_status_closed_trades(label_integer)
 
     except:
         log.critical(f"except trade {trade}")
-    
-    log.info (f"label_time_only {label_integer} has_closed_label {has_closed_label}")
-    
+        
     await sqlite_management.insert_tables("my_trades_all_json", trade)
 
 async def manage_trades (trades: dict) -> None:
