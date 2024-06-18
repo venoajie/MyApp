@@ -18,6 +18,7 @@ async def querying_label_and_size(table) -> list:
     # execute query
     return await sqlite_management.executing_label_and_size_query(table)
 
+
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
 
@@ -29,6 +30,7 @@ async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> li
     # log.info(ohlc_all)
 
     return ohlc_all
+
 
 async def get_price_ohlc(
     price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
@@ -145,7 +147,7 @@ async def get_market_condition(
     log.debug(
         f"  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}"
     )
-    
+
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
 
@@ -284,7 +286,7 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> li
 
 def get_transaction_side(transaction: dict) -> str:
     """ """
-    
+
     try:
         side = transaction["direction"]
 
@@ -292,6 +294,7 @@ def get_transaction_side(transaction: dict) -> str:
         side = transaction["side"]
 
     return side
+
 
 def provide_side_to_close_transaction(transaction: dict) -> str:
     """ """
@@ -305,62 +308,74 @@ def provide_side_to_close_transaction(transaction: dict) -> str:
 
     return side
 
+
 def get_transaction_size(transaction: dict) -> int:
     """ """
     return transaction["amount"]
+
 
 def get_transaction_instrument(transaction: dict) -> int:
     """ """
     return transaction["instrument_name"]
 
+
 def get_transaction_label(transaction: dict) -> str:
     """ """
     return transaction["label"]
+
 
 def get_transaction_price(transaction: dict) -> float:
     """ """
     return transaction["price"]
 
+
 def has_closed_label(transaction: dict) -> bool:
     """ """
     return transaction["has_closed_label"]
 
+
 def get_label_integer(label: dict) -> bool:
     """ """
-    
+
     return str_mod.parsing_label(label)
 
-async def summing_transactions_under_label_int(transaction: dict,transactions_all: list= None) -> str:
+
+async def summing_transactions_under_label_int(
+    transaction: dict, transactions_all: list = None
+) -> str:
     """ """
-    label= get_transaction_label(transaction)
-    
-    label_integer=get_label_integer(label)["int"]
-    
-    if transactions_all==None:
+    label = get_transaction_label(transaction)
+
+    label_integer = get_label_integer(label)["int"]
+
+    if transactions_all == None:
         transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
-    transactions_under_label_main = (
-                    [
-                        o['amount']
-                        for o in transactions_all
-                        if label_integer in o["label"]
-                    ]
-                )
+    transactions_under_label_main = [
+        o["amount"] for o in transactions_all if label_integer in o["label"]
+    ]
 
     return sum(transactions_under_label_main)
 
-async def provide_size_to_close_transaction(transaction: dict,transactions_all: list= None) -> str:
+
+async def provide_size_to_close_transaction(
+    transaction: dict, transactions_all: list = None
+) -> str:
     """ """
-    basic_size=  get_transaction_size(transaction)
-    label= get_transaction_label(transaction)
+    basic_size = get_transaction_size(transaction)
+    label = get_transaction_label(transaction)
 
     if "open" in label:
-        has_closed= has_closed_label(transaction)
+        has_closed = has_closed_label(transaction)
 
-    sum_transactions_under_label_main = await summing_transactions_under_label_int(transaction,transactions_all)
-    log.error(f"sum_transactions_under_label_main {sum_transactions_under_label_main} has_closed {has_closed}")
+    sum_transactions_under_label_main = await summing_transactions_under_label_int(
+        transaction, transactions_all
+    )
+    log.error(
+        f"sum_transactions_under_label_main {sum_transactions_under_label_main} has_closed {has_closed}"
+    )
 
-    return basic_size if (has_closed==0) else abs(sum_transactions_under_label_main)
+    return basic_size if (has_closed == 0) else abs(sum_transactions_under_label_main)
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
@@ -398,7 +413,7 @@ def is_everything_consistent(params) -> bool:
     label = get_transaction_label(params)
 
     is_consistent = True if "closed" in label else False
-    #log.warning(f"params {params}")
+    # log.warning(f"params {params}")
 
     side = get_transaction_side(params)
 
@@ -412,7 +427,8 @@ def is_everything_consistent(params) -> bool:
 
     return is_consistent
 
-def get_take_profit_pct(transaction: dict,strategy_config: dict) -> float:
+
+def get_take_profit_pct(transaction: dict, strategy_config: dict) -> float:
     """ """
 
     try:
@@ -493,10 +509,9 @@ class BasicStrategy:
 
     async def transaction_per_label(self, table, label_filter: str = None) -> dict:
         """ """
-        
 
         result: list = await querying_label_and_size(table)
-        log.error (f"result {result}")
+        log.error(f"result {result}")
 
         # clean up result with no label main
         result_cleaned = [o for o in result if o["label"] != None]
@@ -535,14 +550,10 @@ class BasicStrategy:
 
         if result_strategy_label != []:
             long_transactions: list = [
-                o["amount"]
-                for o in result_strategy_label
-                if "Long" in o["label"]
+                o["amount"] for o in result_strategy_label if "Long" in o["label"]
             ]
             short_transactions: list = [
-                o["amount"]
-                for o in result_strategy_label
-                if "Short" in o["label"]
+                o["amount"] for o in result_strategy_label if "Short" in o["label"]
             ]
             print(
                 f"basic str-long_transactions {long_transactions} short_transactions {short_transactions}"
@@ -608,7 +619,6 @@ class BasicStrategy:
         print(f"label was existed before {label_is_exist}")
         return label_is_exist
 
-
     async def is_send_exit_order_allowed(
         self,
         market_condition: dict,
@@ -625,44 +635,46 @@ class BasicStrategy:
 
         transaction_side: str = get_transaction_side(transaction)
 
-        strategy_config: list = self.get_strategy_config(get_transaction_label(transaction))
+        strategy_config: list = self.get_strategy_config(
+            get_transaction_label(transaction)
+        )
 
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
         supported_by_market: bool = False
 
-        tp_pct = get_take_profit_pct(transaction,strategy_config)
+        tp_pct = get_take_profit_pct(transaction, strategy_config)
 
-        size= await provide_size_to_close_transaction(transaction)
+        size = await provide_size_to_close_transaction(transaction)
 
         if transaction_side == "sell":
             try:
-                tp_price_reached=bid_price < transaction["take_profit"]
-                
+                tp_price_reached = bid_price < transaction["take_profit"]
+
             except:
                 tp_price_reached: bool = is_transaction_price_minus_below_threshold(
-                last_transaction_price, bid_price, tp_pct
-            )
+                    last_transaction_price, bid_price, tp_pct
+                )
 
             supported_by_market: bool = (
                 market_condition["falling_price"] and bid_price < last_transaction_price
             )
-            
+
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
             try:
-                tp_price_reached= ask_price > transaction["take_profit"]
-                
+                tp_price_reached = ask_price > transaction["take_profit"]
+
             except:
                 tp_price_reached: bool = is_transaction_price_plus_above_threshold(
-                last_transaction_price, ask_price, tp_pct
-            )
+                    last_transaction_price, ask_price, tp_pct
+                )
             supported_by_market: bool = (
                 market_condition["rising_price"] and ask_price > last_transaction_price
             )
-            
+
             params.update({"entry_price": ask_price})
 
         orders = await self.transaction_attributes("orders_all_json", "closed")
@@ -676,7 +688,6 @@ class BasicStrategy:
         ) and no_outstanding_order
 
         if order_allowed:
-            
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
@@ -684,9 +695,11 @@ class BasicStrategy:
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 
-            if order_has_sent_before or size==0:
+            if order_has_sent_before or size == 0:
                 order_allowed = False
-            log.critical (f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}")
+            log.critical(
+                f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}"
+            )
 
         return dict(
             order_allowed=order_allowed,

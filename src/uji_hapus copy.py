@@ -3014,6 +3014,9 @@ my_trades_open = [
         "amount": 1.0,
     },
 ]
-additional_params_label = {'label': 'marketMakerShort-open-1718206487598', 'take_profit': 3621.2549183913197}
+additional_params_label = {
+    "label": "marketMakerShort-open-1718206487598",
+    "take_profit": 3621.2549183913197,
+}
 print(additional_params_label)
 log.info(additional_params["take_profit"])

@@ -6,13 +6,14 @@ from loguru import logger as log
 # user defined formula
 from db_management import sqlite_management
 
+
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
 
-async def manage_orders (orders: dict) -> None:
+async def manage_orders(orders: dict) -> None:
     log.error(f"{orders}")
 
     for order in orders:
@@ -43,9 +44,7 @@ async def manage_orders (orders: dict) -> None:
         ):
 
             order_id = (
-                order["order_id"]
-                if order_state != "triggered"
-                else ["stop_order_id'"]
+                order["order_id"] if order_state != "triggered" else ["stop_order_id'"]
             )
 
             # open_orders_sqlite =  await syn.querying_all('orders_all_json')

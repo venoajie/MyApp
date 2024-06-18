@@ -568,17 +568,16 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
 
 
 async def update_status_closed_trades(filter_value) -> str:
-    
-    """ 
+    """
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
     https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
     """
     table: str = "my_trades_all_json"
-    column_name="data"
-    new_value=True
-    
-    query= f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.label')  LIKE '%{filter_value}';"""
+    column_name = "data"
+    new_value = True
+
+    query = f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.label')  LIKE '%{filter_value}';"""
 
     try:
 
@@ -592,6 +591,7 @@ async def update_status_closed_trades(filter_value) -> str:
 
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         # await telegram_bot_sendtext(f"sqlite operation","failed_order")
+
 
 def querying_open_interest(
     price: float = "close", table: str = "ohlc1_eth_perp_json", limit: int = None
@@ -660,14 +660,17 @@ async def executing_label_and_size_query(table) -> dict:
     return [] if result in NONE_DATA else (result)
 
 
-def querying_trade_table_basics(table: str = "my_trades_all_json", filter: str = None, operator: str = None, filter_value: str = None
+def querying_trade_table_basics(
+    table: str = "my_trades_all_json",
+    filter: str = None,
+    operator: str = None,
+    filter_value: str = None,
 ) -> str:
 
-    if filter ==None:
+    if filter == None:
         selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
     else:
         selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
-        
 
     return selected_data
 
@@ -758,6 +761,7 @@ async def executing_general_query(
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
+
 
 def query_pd(table_name: str, field: str = None):
     """

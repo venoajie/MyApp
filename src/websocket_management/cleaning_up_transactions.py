@@ -10,41 +10,48 @@ from loguru import logger as log
 # user defined formula
 from utilities import system_tools, string_modification as str_mod
 from db_management import sqlite_management
-from strategies.basic_strategy import summing_transactions_under_label_int, get_transaction_label,get_label_integer,querying_label_and_size
+from strategies.basic_strategy import (
+    summing_transactions_under_label_int,
+    get_transaction_label,
+    get_label_integer,
+    querying_label_and_size,
+)
 
-def get_transactions_with_closed_label (transactions_all: list) -> list:
+
+def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
 
-    return [
-            o for o in transactions_all if "closed" in o["label"]
-        ]
+    return [o for o in transactions_all if "closed" in o["label"]]
 
 
-def get_closed_open_transactions_under_same_label_int (transactions_all: list, label: str) -> list:
+def get_closed_open_transactions_under_same_label_int(
+    transactions_all: list, label: str
+) -> list:
     """ """
-    label_integer=get_label_integer(label)["int"]
+    label_integer = get_label_integer(label)["int"]
 
-    return [
-            o for o in transactions_all if label_integer in o["label"]
-        ]
+    return [o for o in transactions_all if label_integer in o["label"]]
 
-def check_if_transaction_has_closed_label_before (transactions_all, label_integer) -> bool:
+
+def check_if_transaction_has_closed_label_before(
+    transactions_all, label_integer
+) -> bool:
     """ """
     has_closed_label = (
-                    [
-                        o['has_closed_label']
-                        for o in transactions_all
-                        if label_integer in o["label"] and "open" in o["label"]
-                    ]
-                )[0]
-    
+        [
+            o["has_closed_label"]
+            for o in transactions_all
+            if label_integer in o["label"] and "open" in o["label"]
+        ]
+    )[0]
+
     if has_closed_label == 0:
-        has_closed_label= False
+        has_closed_label = False
 
     if has_closed_label == 1:
-        has_closed_label= True
+        has_closed_label = True
 
-    return False if transactions_all==[] else has_closed_label
+    return False if transactions_all == [] else has_closed_label
 
 
 async def clean_up_closed_transactions(transactions_all: list = None) -> None:
@@ -56,43 +63,49 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
 
     log.info("clean_up_closed_transactions-START")
     transactions_all: list = await querying_label_and_size("my_trades_all_json")
-    transaction_with_closed_labels = get_transactions_with_closed_label(transactions_all)
-    log.error (f"transactions_all {transactions_all}")
-    log.warning (f"transaction_with_closed_labels {transaction_with_closed_labels}")
-    time.sleep(5)
+    transaction_with_closed_labels = get_transactions_with_closed_label(
+        transactions_all
+    )
+    log.error(f"transactions_all {transactions_all}")
+    log.warning(f"transaction_with_closed_labels {transaction_with_closed_labels}")
+
     for transaction in transaction_with_closed_labels:
 
-        size_to_close= await summing_transactions_under_label_int(transaction, transactions_all)
-        log.debug (f"transaction {transaction} size_to_close {size_to_close}")
-        time.sleep(5)
+        size_to_close = await summing_transactions_under_label_int(
+            transaction, transactions_all
+        )
+        log.debug(f"transaction {transaction} size_to_close {size_to_close}")
 
-        if size_to_close==0 :
-                    
-            label= get_transaction_label(transaction)
-            
-            label_integer=get_label_integer(label)["int"]
-            transactions_with_zero_sum = (
-                    [
-                        o for o in transactions_all
-                        if label_integer in o["label"]
-                    ]
-                )
+        if size_to_close == 0:
+
+            label = get_transaction_label(transaction)
+
+            label_integer = get_label_integer(label)["int"]
+            transactions_with_zero_sum = [
+                o for o in transactions_all if label_integer in o["label"]
+            ]
             where_filter = f"order_id"
-            log.info (f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}")
+            log.info(
+                f"transactions_with_zero_sum {transactions_with_zero_sum} label {label}"
+            )
             for transaction in transactions_with_zero_sum:
-                log.warning (f"transaction_with_zero_sum AAAAAAAAAAAAA {transaction}")
-                time.sleep(5)
-                order_id=transaction["order_id"]
-                await sqlite_management.deleting_row(
-                        "my_trades_all_json",
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        order_id,
-                    )
+                order_id = transaction["order_id"]
+                log.warning(
+                    f"transaction_with_zero_sum {transaction} order_id {order_id}"
+                )
+
                 await sqlite_management.insert_tables(
-                        "my_trades_closed_json", transaction
-                    )
+                    "my_trades_closed_json", transaction
+                )
+
+                await sqlite_management.deleting_row(
+                    "my_trades_all_json",
+                    "databases/trading.sqlite3",
+                    where_filter,
+                    "=",
+                    order_id,
+                )
+
 
 async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
     """
@@ -143,16 +156,12 @@ async def clean_up_closed_transactions_(transactions_all: list = None) -> None:
 
                 # get_closed_labels under_label_main
                 transactions_closed = [
-                    o
-                    for o in transactions_under_label_main
-                    if "closed" in o["label"]
+                    o for o in transactions_under_label_main if "closed" in o["label"]
                 ]
 
                 # get_closed_labels under_label_main
                 transactions_open = [
-                    o
-                    for o in transactions_under_label_main
-                    if "open" in o["label"]
+                    o for o in transactions_under_label_main if "open" in o["label"]
                 ]
 
                 # get minimum trade seq from closed/open label main (to be paired vs open/closed label)

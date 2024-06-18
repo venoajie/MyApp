@@ -16,8 +16,8 @@ from db_management import sqlite_management
 
 from strategies import entries_exits, basic_strategy
 from websocket_management.cleaning_up_transactions import (
-        clean_up_closed_transactions,
-    )
+    clean_up_closed_transactions,
+)
 
 from websocket_management.ws_management import (
     current_server_time,
@@ -75,6 +75,8 @@ async def run_every_5_seconds__() -> None:
 async def run_every_5_seconds() -> None:
     """ """
 
+    await clean_up_closed_transactions()
+
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
 
@@ -114,8 +116,6 @@ async def run_every_5_seconds() -> None:
 
     # remove transactions without label
     my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
-    
-    await clean_up_closed_transactions()
 
     my_trades_open_remove_closed_labels = (
         []
@@ -156,6 +156,8 @@ async def run_every_5_seconds() -> None:
             market_condition,
             TAKE_PROFIT_PCT_DAILY,
         )
+
+    await clean_up_closed_transactions()
 
 
 async def run_every_60_seconds() -> None:
