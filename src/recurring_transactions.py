@@ -139,7 +139,7 @@ async def run_every_5_seconds() -> None:
         )
     )
 
-    transactions_all: list = await querying_label_and_size("my_trades_all_json")
+    transactions_all_summarized: list = await querying_label_and_size("my_trades_all_json")
 
     await closing_transactions(
         label_transaction_net,
