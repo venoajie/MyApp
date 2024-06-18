@@ -678,7 +678,7 @@ class BasicStrategy:
 
             if order_has_sent_before or size==0:
                 print("AAAAAAAAAAA")
-                order_allowed == False
+                order_allowed = False
             log.critical (f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}")
 
         return dict(
