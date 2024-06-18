@@ -357,7 +357,7 @@ async def provide_size_to_close_transaction(transaction: dict,transactions_all: 
     if "open" in label:
         has_closed= has_closed_label(transaction)
 
-    sum_transactions_under_label_main = summing_transactions_under_label_int(transaction,transactions_all)
+    sum_transactions_under_label_main = await summing_transactions_under_label_int(transaction,transactions_all)
     log.error(f"sum_transactions_under_label_main {sum_transactions_under_label_main} has_closed {has_closed}")
 
     return basic_size if (has_closed==0) else abs(sum_transactions_under_label_main)
