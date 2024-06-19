@@ -24,6 +24,7 @@ from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
     closing_transactions,
+    get_my_trades_from_exchange,
 )
 
 
@@ -81,6 +82,8 @@ async def run_every_5_seconds() -> None:
     """ """
 
     await clean_up_closed_transactions()
+    trades= await get_my_trades_from_exchange(10)
+    print(f"trades {trades}")
 
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
