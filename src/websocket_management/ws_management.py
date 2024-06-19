@@ -359,13 +359,13 @@ def delta_price_constraint(
     return True if last_traded_price == 0 else is_reorder_ok
 
 
-    async def get_my_trades_from_exchange(self, count: int = 1000) -> list:
-        """
-        """
-        private_data = await self.get_private_data()
-        trades: list = await private_data.get_user_trades_by_currency(count)
+async def get_my_trades_from_exchange(self, count: int = 1000) -> list:
+    """
+    """
+    private_data = await self.get_private_data()
+    trades: list = await private_data.get_user_trades_by_currency(count)
 
-        return [] if trades == [] else trades["result"]["trades"]
+    return [] if trades == [] else trades["result"]["trades"]
 
 async def opening_transactions(
     instrument,
