@@ -82,8 +82,8 @@ async def run_every_5_seconds() -> None:
     """ """
 
     await clean_up_closed_transactions()
-    trades= await get_my_trades_from_exchange(currency, 10)
-    print(f"trades {trades}")
+    #trades= await get_my_trades_from_exchange(currency, 10)
+    #print(f"trades {trades}")
 
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
