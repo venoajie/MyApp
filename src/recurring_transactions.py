@@ -82,7 +82,7 @@ async def run_every_5_seconds() -> None:
     """ """
 
     await clean_up_closed_transactions()
-    trades= await get_my_trades_from_exchange(10)
+    trades= await get_my_trades_from_exchange(currency, 10)
     print(f"trades {trades}")
 
     # gathering basic data
