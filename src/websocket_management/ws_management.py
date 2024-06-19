@@ -217,10 +217,10 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             await send_limit_order(params)
             await asyncio.sleep(10)
 
-async def get_my_trades_from_exchange(count: int = 1000) -> list:
+async def get_my_trades_from_exchange(currency,count: int = 1000) -> list:
     """
     """
-    private_data = await get_private_data()
+    private_data = await get_private_data(currency)
     trades: list = await private_data.get_user_trades_by_currency(count)
 
     return [] if trades == [] else trades["result"]["trades"]
