@@ -10,10 +10,9 @@ import time
 import aiohttp
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification as str_mod
+from utilities import pickling, system_tools, find_unique_elements, string_modification as str_mod
 import deribit_get as get_dbt
 from db_management import sqlite_management
-
 from strategies import entries_exits
 from strategies.basic_strategy import querying_label_and_size,get_market_condition
 from websocket_management.cleaning_up_transactions import (
@@ -58,25 +57,37 @@ async def current_server_time() -> float:
     current_time = await get_dbt.get_server_time()
     return current_time["result"]
 
-async def run_every_5_seconds__() -> None:
-    """
-    reconsider:
-    - execution pretty fast
-    - db may not update on time
-    """
 
-    from websocket_management.cleaning_up_transactions import (
-        clean_up_closed_transactions,
-    )
+async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
+) -> dict:
+    """ """
+    from_sqlite_open= await querying_label_and_size("my_trades_all_json")
+    print(f"from_sqlite_open {from_sqlite_open}")
+    from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
+    print(f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
+    
+    closed_query= await sqlite_management.querying_closed_transactions()
+    from_sqlite_closed= await sqlite_management.executing_query_with_return(closed_query)
+    print(f"from_sqlite_closed {from_sqlite_closed}")    
+    from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
+    print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
 
-    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
-        "my_trades_all_json"
-    )
-    my_trades_open_all: list = my_trades_open_sqlite["all"]
-    #    print(my_trades_open_all)
+    from_sqlite= await querying_label_and_size("my_trades_all_json")
 
-    await clean_up_closed_transactions(my_trades_open_all)
+    from_exchange= await get_my_trades_from_exchange(quantities, currency)
+    print(f"from_exchange {from_exchange}")
+    from_exchange_order_id= [o["order_id"] for o in from_exchange]
+    print(f"from_exchange_order_id {from_exchange_order_id}")
 
+    combined_closed_open= from_sqlite_open_order_id+from_sqlite_closed_order_id
+    print(f"combined_closed_open {combined_closed_open}")
+    unrecorded_order_id= find_unique_elements(combined_closed_open, from_exchange_order_id) 
+    print(f"unrecorded_order_id find_unique_elements {unrecorded_order_id}")
+    unrecorded_order_id=set(from_exchange_order_id).difference(combined_closed_open)
+    print(f"unrecorded_order_id set {unrecorded_order_id}")
+
+
+    return 
 
 async def run_every_5_seconds() -> None:
     """ """

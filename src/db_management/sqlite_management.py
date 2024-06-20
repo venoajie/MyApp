@@ -642,6 +642,9 @@ def querying_label_and_size(table) -> str:
     return tab
 
 
+def querying_closed_transactions(limit: int=20, order: str="id", table: str="my_trades_closed_json") -> str:
+    return f"SELECT * FROM {table} ORDER BY {id} DESC LIMIT {limit}"
+
 async def executing_label_and_size_query(table) -> dict:
     """
     Provide execution template for querying summary of trading results from sqlite.

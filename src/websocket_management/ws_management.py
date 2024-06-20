@@ -172,16 +172,16 @@ def compute_notional_value(index_price: float, equity: float) -> float:
     return index_price * equity
 
 
-async def is_size_consistent(
-    sum_my_trades_open_sqlite_all_strategy, size_from_positions
+def is_size_consistent(
+    sum_my_trades_open_sqlite_all_strategy, size_from_position
 ) -> bool:
     """ """
 
     log.warning(
-        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_positions}"
+        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position}"
     )
 
-    return sum_my_trades_open_sqlite_all_strategy == size_from_positions
+    return sum_my_trades_open_sqlite_all_strategy == size_from_position
 
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
@@ -217,7 +217,7 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             await send_limit_order(params)
             await asyncio.sleep(10)
 
-async def get_my_trades_from_exchange(currency,count: int = 1000) -> list:
+async def get_my_trades_from_exchange(count: int, currency) -> list:
     """
     """
     private_data = await get_private_data(currency)
@@ -428,7 +428,7 @@ async def opening_transactions(
                         my_trades_open_all, strategy_label
                     )
                 )
-                size_is_consistent: bool = await is_size_consistent(
+                size_is_consistent: bool =  is_size_consistent(
                     sum_my_trades_open_sqlite_all_strategy, size_from_positions
                 )
 
@@ -606,7 +606,7 @@ async def closing_transactions(
             str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
         )
         
-        size_is_consistent: bool = await is_size_consistent(
+        size_is_consistent: bool =  is_size_consistent(
             sum_my_trades_open_sqlite_all_strategy, size_from_positions
         )
         #: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
