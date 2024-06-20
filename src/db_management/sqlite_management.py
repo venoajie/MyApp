@@ -652,15 +652,17 @@ async def executing_closed_transactions(limit: int=20, order: str="id", table: s
     """
 
     # get query
-    query = querying_label_and_size(table)
+    query = querying_closed_transactions(limit,order,table)
+
 
     # execute query
-    result = await querying_closed_transactions(limit, order, table)
+    result = await executing_query_with_return(query)
 
     # define none from queries result. If the result=None, return []
     NONE_DATA: None = [0, None, []]
 
     return [] if result in NONE_DATA else (result)
+
 
 async def executing_label_and_size_query(table) -> dict:
     """
