@@ -57,48 +57,41 @@ async def current_server_time() -> float:
     current_time = await get_dbt.get_server_time()
     return current_time["result"]
 
-def is_size_consistent(
-                    sum_my_trades_open_sqlite_all_strategy, size_from_position):
-
-    print(
-        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position}"
-    )
-
+def is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_position):
+    """ """
     return sum_my_trades_open_sqlite_all_strategy == size_from_position
     
-async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
-) -> dict:
+async def get_unrecorded_order_id(from_sqlite_open, 
+                                  from_sqlite_closed,
+                                  from_exchange,
+                                  quantities: int = 20, 
+                                  currency: str = 'ETH'
+                                  ) -> dict:
     """ """
     
-    from_sqlite_closed= await sqlite_management.executing_closed_transactions()
-    #print(f"from_sqlite_closed {from_sqlite_closed}")    
+    
     from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
-    #print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
-    
-    from_sqlite_open= await querying_label_and_size("my_trades_all_json")
-    #print(f"from_sqlite_open {from_sqlite_open}")
-    from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
-    #print(f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
-    
-    from_sqlite= await querying_label_and_size("my_trades_all_json")
 
-    from_exchange= await get_my_trades_from_exchange(quantities, currency)
-    #print(f"from_exchange {from_exchange}")
+    from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
+
     from_exchange_order_id= [o["order_id"] for o in from_exchange]
-    #print(f"from_exchange_order_id {from_exchange_order_id}")
 
     combined_closed_open= from_sqlite_open_order_id+from_sqlite_closed_order_id
-    #print(f"combined_closed_open {combined_closed_open}")
+
     unrecorded_order_id= str_mod.find_unique_elements(combined_closed_open, from_exchange_order_id) 
-    #print(f"unrecorded_order_id find_unique_elements {unrecorded_order_id}")
+
     unrecorded_order_id=set(from_exchange_order_id).difference(combined_closed_open)
-    print(f"unrecorded_order_id set {list(unrecorded_order_id)}")
+    
     return unrecorded_order_id
 
 async def run_every_5_seconds() -> None:
     """ """
 
-    await get_unrecorded_order_id()
+    QTY= 10
+    from_sqlite_open= await querying_label_and_size("my_trades_all_json")
+    from_sqlite_closed= await sqlite_management.executing_closed_transactions()
+    from_exchange= await get_my_trades_from_exchange(QTY, currency)
+    unrecorded_order_id=await get_unrecorded_order_id(from_sqlite_open,from_sqlite_closed,from_exchange, QTY)
     await clean_up_closed_transactions()
     #trades= await get_my_trades_from_exchange(currency, 10)
     #print(f"trades {trades}")
@@ -166,7 +159,6 @@ async def run_every_5_seconds() -> None:
                 for o in transactions_all_summarized
             ])
     
-
     size_is_consistent: bool =  is_size_consistent(
                     sum_my_trades_sqlite, size_from_positions
                 )
@@ -196,8 +188,12 @@ async def run_every_5_seconds() -> None:
                 market_condition,
                 TAKE_PROFIT_PCT_DAILY,
             )
+
     if not size_is_consistent:
-        pass
+        print(f"unrecorded_order_id {unrecorded_order_id}")
+        for order_id in unrecorded_order_id:
+            transaction= [o for o in from_exchange if o["order_id"] == order_id]
+            print(f"order_id  {order_id} transaction {transaction}")
 
     await clean_up_closed_transactions()
 
