@@ -374,9 +374,9 @@ async def opening_transactions(
 
         transactions_all_summarized: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
         
-        log.error (my_trades_open_sqlite)
-        log.warning (my_trades_open_all)
-        log.info (transactions_all_summarized)
+        #log.error (my_trades_open_sqlite)
+        #log.warning (my_trades_open_all)
+        #log.info (transactions_all_summarized)
 
         ticker: list = reading_from_db("ticker", instrument)
 
