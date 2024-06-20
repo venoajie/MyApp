@@ -172,18 +172,6 @@ def compute_notional_value(index_price: float, equity: float) -> float:
     return index_price * equity
 
 
-def is_size_consistent(
-    sum_my_trades_open_sqlite_all_strategy, size_from_position
-) -> bool:
-    """ """
-
-    log.warning(
-        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position}"
-    )
-
-    return sum_my_trades_open_sqlite_all_strategy == size_from_position
-
-
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
     """ """
     return system_tools.reading_from_db_pickle(end_point, instrument, status)
@@ -423,89 +411,72 @@ async def opening_transactions(
                     f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
                 )
 
-                sum_my_trades_open_sqlite_all_strategy: list = (
-                    str_mod.sum_my_trades_open_sqlite(
-                        my_trades_open_all, strategy_label
-                    )
-                )
-                size_is_consistent: bool =  is_size_consistent(
-                    sum_my_trades_open_sqlite_all_strategy, size_from_positions
-                )
+                THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
 
-                if size_is_consistent:  # and open_order_is_consistent:
+                my_trades_open = [
+                    o for o in transactions_all_summarized if "open" in (o["label"])
+                ]
 
-                    THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
+                my_trades_open_strategy = [
+                    o for o in my_trades_open if strategy_label in (o["label"])
+                ]
 
-                    log.warning(f"my_trades_open_all {my_trades_open_all}")
+                last_price_all = get_last_price(my_trades_open_strategy)
 
-                    my_trades_open = [
-                        o for o in transactions_all_summarized if "open" in (o["label"])
-                    ]
+                log.debug(f"last_price   {last_price_all}")
 
-                    my_trades_open_strategy = [
-                        o for o in my_trades_open if strategy_label in (o["label"])
-                    ]
+                if "hedgingSpot" in strategy_attr["strategy"]:
 
-                    last_price_all = get_last_price(my_trades_open_strategy)
+                    THRESHOLD_TIME_TO_CANCEL = 3
 
-                    log.debug(f"last_price   {last_price_all}")
+                    hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                    if "hedgingSpot" in strategy_attr["strategy"]:
-
-                        THRESHOLD_TIME_TO_CANCEL = 3
-
-                        hedging = hedging_spot.HedgingSpot(strategy_label)
-
-                        send_order: dict = (
-                            await hedging.is_send_and_cancel_open_order_allowed(
-                                notional,
-                                best_ask_prc,
-                                server_time,
-                                market_condition,
-                                THRESHOLD_TIME_TO_CANCEL,
-                            )
+                    send_order: dict = (
+                        await hedging.is_send_and_cancel_open_order_allowed(
+                            notional,
+                            best_ask_prc,
+                            server_time,
+                            market_condition,
+                            THRESHOLD_TIME_TO_CANCEL,
                         )
+                    )
+
+                    await if_order_is_true(send_order, instrument)
+                    await if_cancel_is_true(send_order)
+
+                if "marketMaker" in strategy_attr["strategy"]:
+
+                    market_maker = MM.MarketMaker(strategy_label)
+
+                    send_order: dict = (
+                        await market_maker.is_send_and_cancel_open_order_allowed(
+                            size_from_positions,
+                            notional,
+                            best_ask_prc,
+                            best_bid_prc,
+                            server_time,
+                            market_condition,
+                            take_profit_pct_daily,
+                        )
+                    )
+
+                    constraint = (
+                        False
+                        if send_order["order_allowed"] == False
+                        else delta_price_constraint(
+                            THRESHOLD_BEFORE_REORDER,
+                            last_price_all,
+                            index_price,
+                            net_sum_strategy,
+                            send_order["order_parameters"]["side"],
+                        )
+                    )
+
+                    if constraint:
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
-
-                    if "marketMaker" in strategy_attr["strategy"]:
-
-                        market_maker = MM.MarketMaker(strategy_label)
-
-                        send_order: dict = (
-                            await market_maker.is_send_and_cancel_open_order_allowed(
-                                size_from_positions,
-                                notional,
-                                best_ask_prc,
-                                best_bid_prc,
-                                server_time,
-                                market_condition,
-                                take_profit_pct_daily,
-                            )
-                        )
-
-                        constraint = (
-                            False
-                            if send_order["order_allowed"] == False
-                            else delta_price_constraint(
-                                THRESHOLD_BEFORE_REORDER,
-                                last_price_all,
-                                index_price,
-                                net_sum_strategy,
-                                send_order["order_parameters"]["side"],
-                            )
-                        )
-
-                        if constraint:
-
-                            await if_order_is_true(send_order, instrument)
-                            await if_cancel_is_true(send_order)
-                            log.info(send_order)
-
-                else:
-                    log.critical(f" size_is_consistent {size_is_consistent} ")
-                    # await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                        log.info(send_order)
 
     except Exception as error:
         await raise_error(error)
@@ -544,7 +515,6 @@ async def closing_transactions(
     strategies,
     my_trades_open_sqlite,
     my_trades_open,
-    size_from_positions,
     market_condition,
     currency,
 ) -> float:
@@ -605,107 +575,97 @@ async def closing_transactions(
         sum_my_trades_open_sqlite_all_strategy: list = (
             str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
         )
-        
-        size_is_consistent: bool =  is_size_consistent(
-            sum_my_trades_open_sqlite_all_strategy, size_from_positions
+
+        open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
+            [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
         )
-        #: bool = await self.is_open_orders_consistent(open_orders_from_sub_account_get, open_orders_open_from_db)
 
-        if size_is_consistent:  # and open_order_is_consistent:
+        instrument: list = [
+            o["instrument_name"] for o in open_trade_strategy_label
+        ][0]
 
-            open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
-                [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
+        ticker: list = reading_from_db("ticker", instrument)
+
+        if ticker != []:
+
+            # index price
+            index_price: float = ticker[0]["index_price"]
+
+            # get instrument_attributes
+            instrument_attributes_all: list = reading_from_db(
+                "instruments", currency
+            )[0]["result"]
+            instrument_attributes: list = [
+                o
+                for o in instrument_attributes_all
+                if o["instrument_name"] == instrument
+            ]
+            tick_size: float = instrument_attributes[0]["tick_size"]
+            taker_commission: float = instrument_attributes[0]["taker_commission"]
+            min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+            contract_size: float = instrument_attributes[0]["contract_size"]
+            # log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
+
+            # get bid and ask price
+            best_bid_prc: float = ticker[0]["best_bid_price"]
+            best_ask_prc: float = ticker[0]["best_ask_price"]
+
+            # obtain spot equity
+            equity: float = portfolio[0]["equity"]
+
+            # compute notional value
+            notional: float = compute_notional_value(index_price, equity)
+
+            net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+                my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
             )
 
-            instrument: list = [
-                o["instrument_name"] for o in open_trade_strategy_label
-            ][0]
+            log.error(
+                f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} "
+            )
 
-            ticker: list = reading_from_db("ticker", instrument)
+            if "hedgingSpot" in strategy_attr["strategy"]:
 
-            if ticker != []:
-
-                # index price
-                index_price: float = ticker[0]["index_price"]
-
-                # get instrument_attributes
-                instrument_attributes_all: list = reading_from_db(
-                    "instruments", currency
-                )[0]["result"]
-                instrument_attributes: list = [
-                    o
-                    for o in instrument_attributes_all
-                    if o["instrument_name"] == instrument
-                ]
-                tick_size: float = instrument_attributes[0]["tick_size"]
-                taker_commission: float = instrument_attributes[0]["taker_commission"]
-                min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
-                contract_size: float = instrument_attributes[0]["contract_size"]
-                # log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
-
-                # get bid and ask price
-                best_bid_prc: float = ticker[0]["best_bid_price"]
-                best_ask_prc: float = ticker[0]["best_ask_price"]
-
-                # obtain spot equity
-                equity: float = portfolio[0]["equity"]
-
-                # compute notional value
-                notional: float = compute_notional_value(index_price, equity)
-
-                net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
-                    my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
+                closest_price = num_mod.get_closest_value(
+                    get_prices_in_label_transaction_main, best_bid_prc
                 )
 
-                log.error(
-                    f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} "
+                if "hedging" in label:
+                    nearest_transaction_to_index = [
+                        o
+                        for o in my_trades_open_strategy
+                        if o["price"] == closest_price
+                    ]
+
+                log.debug(
+                    f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
                 )
 
-                if "hedgingSpot" in strategy_attr["strategy"]:
+                hedging = hedging_spot.HedgingSpot(label_main)
 
-                    closest_price = num_mod.get_closest_value(
-                        get_prices_in_label_transaction_main, best_bid_prc
-                    )
+                send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                    market_condition,
+                    best_ask_prc,
+                    best_bid_prc,
+                    nearest_transaction_to_index,
+                )
 
-                    if "hedging" in label:
-                        nearest_transaction_to_index = [
-                            o
-                            for o in my_trades_open_strategy
-                            if o["price"] == closest_price
-                        ]
+                await if_order_is_true(send_closing_order, instrument)
 
-                    log.debug(
-                        f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
-                    )
+            if "marketMaker" in strategy_attr["strategy"]:
 
-                    hedging = hedging_spot.HedgingSpot(label_main)
+                market_maker = MM.MarketMaker(label_main)
 
-                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                send_closing_order: dict = (
+                    await market_maker.is_send_exit_order_allowed(
                         market_condition,
                         best_ask_prc,
                         best_bid_prc,
-                        nearest_transaction_to_index,
+                        open_trade_strategy_label,
                     )
-
-                    await if_order_is_true(send_closing_order, instrument)
-
-                if "marketMaker" in strategy_attr["strategy"]:
-
-                    market_maker = MM.MarketMaker(label_main)
-
-                    send_closing_order: dict = (
-                        await market_maker.is_send_exit_order_allowed(
-                            market_condition,
-                            best_ask_prc,
-                            best_bid_prc,
-                            open_trade_strategy_label,
-                        )
-                    )
-                    log.critical(f" send_closing_order {send_closing_order}")
-                    await if_order_is_true(send_closing_order, instrument)
-
-        else:
-            log.critical(f" size_is_consistent {size_is_consistent} ")
+                )
+                log.critical(f" send_closing_order {send_closing_order}")
+                await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")
 
