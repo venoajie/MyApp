@@ -643,7 +643,7 @@ def querying_label_and_size(table) -> str:
 
 
 def querying_closed_transactions(limit: int=20, order: str="id", table: str="my_trades_closed_json") -> str:
-    return f"SELECT * FROM {table} ORDER BY {id} DESC LIMIT {limit}"
+    return f"SELECT * FROM {table} ORDER BY {order} DESC LIMIT {limit}"
 
 async def executing_closed_transactions(limit: int=20, order: str="id", table: str="my_trades_closed_json") -> dict:
     """
