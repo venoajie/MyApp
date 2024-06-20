@@ -526,8 +526,8 @@ async def closing_transactions(
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
     transactions_all_summarized: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
-    log.error(f"my_trades_open {my_trades_open}")
-    log.error(f"transactions_all_summarized {transactions_all_summarized}")
+    #log.error(f"my_trades_open {my_trades_open}")
+    #log.error(f"transactions_all_summarized {transactions_all_summarized}")
 
     label_transaction_main = get_label_transaction_main(label_transaction_net)
 
