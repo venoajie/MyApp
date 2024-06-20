@@ -84,7 +84,7 @@ async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
     unrecorded_order_id= str_mod.find_unique_elements(combined_closed_open, from_exchange_order_id) 
     #print(f"unrecorded_order_id find_unique_elements {unrecorded_order_id}")
     unrecorded_order_id=set(from_exchange_order_id).difference(combined_closed_open)
-    print(f"unrecorded_order_id set {list[unrecorded_order_id]}")
+    print(f"unrecorded_order_id set {list(unrecorded_order_id)}")
     return unrecorded_order_id
 
 async def run_every_5_seconds() -> None:
