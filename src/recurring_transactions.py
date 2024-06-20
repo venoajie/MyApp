@@ -171,32 +171,35 @@ async def run_every_5_seconds() -> None:
     size_is_consistent: bool =  is_size_consistent(
                     sum_my_trades_sqlite, size_from_positions
                 )
-
-
+    print (f"size_is_consistent {size_is_consistent}  sum_my_trades_sqlite {sum_my_trades_sqlite}  transactions_all_summarized {transactions_all_summarized}")
     
 
-    await closing_transactions(
-        label_transaction_net,
-        portfolio,
-        strategies,
-        my_trades_open_sqlite,
-        my_trades_open,
-        size_from_positions,
-        market_condition,
-        currency,
-    )
+    if size_is_consistent:
 
-    for instrument in instrument_transactions:
-        await opening_transactions(
-            instrument,
+        await closing_transactions(
+            label_transaction_net,
             portfolio,
             strategies,
             my_trades_open_sqlite,
+            my_trades_open,
             size_from_positions,
-            server_time,
             market_condition,
-            TAKE_PROFIT_PCT_DAILY,
+            currency,
         )
+
+        for instrument in instrument_transactions:
+            await opening_transactions(
+                instrument,
+                portfolio,
+                strategies,
+                my_trades_open_sqlite,
+                size_from_positions,
+                server_time,
+                market_condition,
+                TAKE_PROFIT_PCT_DAILY,
+            )
+    if not size_is_consistent:
+        pass
 
     await clean_up_closed_transactions()
 
