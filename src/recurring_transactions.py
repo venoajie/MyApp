@@ -11,6 +11,7 @@ import aiohttp
 
 # user defined formula
 from strategies import entries_exits
+from strategies.basic_strategy import get_additional_params_for_open_label
 from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
 from utilities import pickling, system_tools, string_modification as str_mod
 from deribit_get import (
@@ -197,9 +198,15 @@ async def run_every_5_seconds() -> None:
     if not size_is_consistent:
         print(f"unrecorded_order_id {unrecorded_order_id}")
         for order_id in unrecorded_order_id:
+
             transaction= [o for o in trades_from_exchange if o["order_id"] == order_id]
+
+            label=transaction["label"]
+            if "open" in label:
+                 await get_additional_params_for_open_label (transaction, transaction["label"])
+
             await insert_tables("my_trades_all_json", transaction)
-            print(f"order_id  {order_id} transaction {transaction}")
+            print(f"label  {label} order_id  {order_id} transaction {transaction}")
 
     await clean_up_closed_transactions()
 

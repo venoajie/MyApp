@@ -379,6 +379,19 @@ async def provide_size_to_close_transaction(
     return basic_size if (has_closed == 0) else abs(sum_transactions_under_label_main)
 
 
+async def get_additional_params_for_open_label (trade: list, label: str) -> None:
+   
+    additional_params = sqlite_management.querying_additional_params()
+
+    params=await sqlite_management.executing_query_with_return(additional_params)
+    
+    additional_params_label = [
+            o for o in params if label in o["label"]
+        ][0]
+    
+    trade.update({"take_profit": additional_params_label["take_profit"]})
+    trade.update({"has_closed_label": False})
+
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """ """
     transaction: dict = selected_transaction[0]
