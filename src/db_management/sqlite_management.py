@@ -653,7 +653,7 @@ async def executing_closed_transactions(limit: int=20, order: str="id", table: s
 
     # get query
     query = querying_closed_transactions(limit,order,table)
-    print(f"querying_closed_transactions {query}")
+    #print(f"querying_closed_transactions {query}")
 
 
     # execute query
