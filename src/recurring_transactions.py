@@ -92,6 +92,7 @@ async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
 async def run_every_5_seconds() -> None:
     """ """
 
+    await get_unrecorded_order_id()
     await clean_up_closed_transactions()
     #trades= await get_my_trades_from_exchange(currency, 10)
     #print(f"trades {trades}")
