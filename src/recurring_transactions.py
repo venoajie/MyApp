@@ -57,7 +57,15 @@ async def current_server_time() -> float:
     current_time = await get_dbt.get_server_time()
     return current_time["result"]
 
+def is_size_consistent(
+                    sum_my_trades_open_sqlite_all_strategy, size_from_position):
 
+    print(
+        f" size_from_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position}"
+    )
+
+    return sum_my_trades_open_sqlite_all_strategy == size_from_position
+    
 async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
 ) -> dict:
     """ """
@@ -153,6 +161,19 @@ async def run_every_5_seconds() -> None:
     )
 
     transactions_all_summarized: list = await querying_label_and_size("my_trades_all_json")
+    print (f"transactions_all_summarized {transactions_all_summarized}")
+    sum_my_trades_sqlite= [o["amount"]
+                for o in transactions_all_summarized
+            ]
+    
+    print (f"sum_my_trades_sqlite {sum_my_trades_sqlite} transactions_all_summarized {transactions_all_summarized}")
+
+    size_is_consistent: bool =  is_size_consistent(
+                    sum_my_trades, size_from_positions
+                )
+
+
+    
 
     await closing_transactions(
         label_transaction_net,
