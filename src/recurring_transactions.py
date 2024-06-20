@@ -10,7 +10,7 @@ import time
 import aiohttp
 
 # user defined formula
-from utilities import pickling, system_tools, find_unique_elements, string_modification as str_mod
+from utilities import pickling, system_tools, string_modification as str_mod
 import deribit_get as get_dbt
 from db_management import sqlite_management
 from strategies import entries_exits
@@ -81,7 +81,7 @@ async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
 
     combined_closed_open= from_sqlite_open_order_id+from_sqlite_closed_order_id
     print(f"combined_closed_open {combined_closed_open}")
-    unrecorded_order_id= find_unique_elements(combined_closed_open, from_exchange_order_id) 
+    unrecorded_order_id= str_mod.find_unique_elements(combined_closed_open, from_exchange_order_id) 
     print(f"unrecorded_order_id find_unique_elements {unrecorded_order_id}")
     unrecorded_order_id=set(from_exchange_order_id).difference(combined_closed_open)
     print(f"unrecorded_order_id set {unrecorded_order_id}")
