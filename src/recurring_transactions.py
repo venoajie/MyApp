@@ -169,7 +169,7 @@ async def run_every_5_seconds() -> None:
     print (f"sum_my_trades_sqlite {sum_my_trades_sqlite} transactions_all_summarized {transactions_all_summarized}")
 
     size_is_consistent: bool =  is_size_consistent(
-                    sum_my_trades, size_from_positions
+                    sum_my_trades_sqlite, size_from_positions
                 )
 
 
