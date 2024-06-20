@@ -203,7 +203,7 @@ async def run_every_5_seconds() -> None:
 
             print(f"order_id  {order_id} transaction {transaction}")
 
-            label=transaction["label"]
+            label=transaction[0]["label"]
             if "open" in label:
                  await get_additional_params_for_open_label (transaction, transaction["label"])
 
