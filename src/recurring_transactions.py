@@ -161,19 +161,17 @@ async def run_every_5_seconds() -> None:
     )
 
     transactions_all_summarized: list = await querying_label_and_size("my_trades_all_json")
-    print (f"transactions_all_summarized {transactions_all_summarized}")
-    sum_my_trades_sqlite= [o["amount"]
+    #print (f"transactions_all_summarized {transactions_all_summarized}")
+    sum_my_trades_sqlite= sum([o["amount"]
                 for o in transactions_all_summarized
-            ]
+            ])
     
-    print (f"sum_my_trades_sqlite {sum_my_trades_sqlite} transactions_all_summarized {transactions_all_summarized}")
 
     size_is_consistent: bool =  is_size_consistent(
                     sum_my_trades_sqlite, size_from_positions
                 )
-    print (f"size_is_consistent {size_is_consistent}  sum_my_trades_sqlite {sum_my_trades_sqlite}  transactions_all_summarized {transactions_all_summarized}")
+    print (f"size_is_consistent {size_is_consistent} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_positions} ")
     
-
     if size_is_consistent:
 
         await closing_transactions(
