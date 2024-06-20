@@ -68,14 +68,14 @@ async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
     print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
     
     from_sqlite_open= await querying_label_and_size("my_trades_all_json")
-    print(f"from_sqlite_open {from_sqlite_open}")
+    #print(f"from_sqlite_open {from_sqlite_open}")
     from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
     print(f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
     
     from_sqlite= await querying_label_and_size("my_trades_all_json")
 
     from_exchange= await get_my_trades_from_exchange(quantities, currency)
-    print(f"from_exchange {from_exchange}")
+    #print(f"from_exchange {from_exchange}")
     from_exchange_order_id= [o["order_id"] for o in from_exchange]
     print(f"from_exchange_order_id {from_exchange_order_id}")
 
