@@ -10,22 +10,29 @@ import time
 import aiohttp
 
 # user defined formula
-from utilities import pickling, system_tools, string_modification as str_mod
-import deribit_get as get_dbt
-from db_management import sqlite_management
 from strategies import entries_exits
-from strategies.basic_strategy import querying_label_and_size,get_market_condition
-from websocket_management.cleaning_up_transactions import (
-    clean_up_closed_transactions,
-)
-
+from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
+from utilities import pickling, system_tools, string_modification as str_mod
+from deribit_get import (
+    get_instruments,
+    get_currencies,
+    get_server_time
+    )
+from db_management.sqlite_management import (
+    insert_tables,
+    querying_table,
+    executing_closed_transactions
+    )
+from strategies.basic_strategy import (
+    querying_label_and_size,
+    get_market_condition
+    )
 from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
     closing_transactions,
-    get_my_trades_from_exchange,
-)
-
+    get_my_trades_from_exchange
+    )
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
@@ -39,7 +46,7 @@ def catch_error(error, idle: int = None) -> list:
 async def get_instruments(connection_url, currency) -> float:
     """ """
 
-    result = await get_dbt.get_instruments(connection_url, currency)
+    result = await get_instruments(connection_url, currency)
 
     return result
 
@@ -47,15 +54,27 @@ async def get_instruments(connection_url, currency) -> float:
 async def get_currencies(connection_url) -> float:
     """ """
 
-    result = await get_dbt.get_currencies(connection_url)
+    result = await get_currencies(connection_url)
 
     return result
 
-
 async def current_server_time() -> float:
     """ """
-    current_time = await get_dbt.get_server_time()
+    current_time = await get_server_time()
     return current_time["result"]
+
+def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> float:
+    """ """
+    return (
+        []
+        if my_trades_open_remove_closed_labels == []
+        else str_mod.remove_redundant_elements(
+            [
+                str_mod.parsing_label(o["label"])["transaction_net"]
+                for o in my_trades_open_remove_closed_labels
+            ]
+        )
+    )
 
 def is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_position):
     """ """
@@ -63,12 +82,9 @@ def is_size_consistent(sum_my_trades_open_sqlite_all_strategy, size_from_positio
     
 async def get_unrecorded_order_id(from_sqlite_open, 
                                   from_sqlite_closed,
-                                  from_exchange,
-                                  quantities: int = 20, 
-                                  currency: str = 'ETH'
+                                  from_exchange
                                   ) -> dict:
-    """ """
-    
+    """ """  
     
     from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
 
@@ -88,13 +104,11 @@ async def run_every_5_seconds() -> None:
     """ """
 
     QTY= 10
-    from_sqlite_open= await querying_label_and_size("my_trades_all_json")
-    from_sqlite_closed= await sqlite_management.executing_closed_transactions()
-    from_exchange= await get_my_trades_from_exchange(QTY, currency)
-    unrecorded_order_id=await get_unrecorded_order_id(from_sqlite_open,from_sqlite_closed,from_exchange, QTY)
-    await clean_up_closed_transactions()
-    #trades= await get_my_trades_from_exchange(currency, 10)
-    #print(f"trades {trades}")
+    ONE_PCT = 1 / 100
+    WINDOW = 9
+    RATIO = 0.9
+    THRESHOLD = 0.01 * ONE_PCT
+    TAKE_PROFIT_PCT_DAILY = ONE_PCT
 
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
@@ -105,25 +119,19 @@ async def run_every_5_seconds() -> None:
     # fetch positions for all instruments
     positions_all: list = reading_from_database["positions_from_sub_account"]
     # print(f"positions_all-recurring {positions_all} ")
-    size_from_positions: float = (
+    size_from_positions: int = (
         0 if positions_all == [] else sum([o["size"] for o in positions_all])
     )
 
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    ONE_PCT = 1 / 100
-    WINDOW = 9
-    RATIO = 0.9
-    THRESHOLD = 0.01 * ONE_PCT
-    TAKE_PROFIT_PCT_DAILY = ONE_PCT
-
     market_condition = await get_market_condition(
         THRESHOLD, WINDOW, RATIO
     )
     print(f"market_condition {market_condition}")
 
-    my_trades_open_sqlite: dict = await sqlite_management.querying_table(
+    my_trades_open_sqlite: dict = await querying_table(
         "my_trades_all_json"
     )
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -142,23 +150,21 @@ async def run_every_5_seconds() -> None:
         else [o for o in my_trades_open if "closed" not in o["label"]]
     )
 
-    label_transaction_net = (
-        []
-        if my_trades_open_remove_closed_labels == []
-        else str_mod.remove_redundant_elements(
-            [
-                str_mod.parsing_label(o["label"])["transaction_net"]
-                for o in my_trades_open_remove_closed_labels
-            ]
-        )
-    )
+    label_transaction_net = get_label_transaction_net(my_trades_open_remove_closed_labels)
 
+    trades_from_sqlite_open= await querying_label_and_size("my_trades_all_json")
+    trades_from_sqlite_closed= await executing_closed_transactions()
+    trades_from_exchange= await get_my_trades_from_exchange(QTY, currency)
+    unrecorded_order_id= await get_unrecorded_order_id(trades_from_sqlite_open,trades_from_sqlite_closed,trades_from_exchange)
+    
+    await clean_up_closed_transactions()
+    
     transactions_all_summarized: list = await querying_label_and_size("my_trades_all_json")
     #print (f"transactions_all_summarized {transactions_all_summarized}")
     sum_my_trades_sqlite= sum([o["amount"]
                 for o in transactions_all_summarized
             ])
-    
+    total_difference_and_solution_is_zero=abs(sum_my_trades_sqlite-size_from_positions)
     size_is_consistent: bool =  is_size_consistent(
                     sum_my_trades_sqlite, size_from_positions
                 )
@@ -172,7 +178,6 @@ async def run_every_5_seconds() -> None:
             strategies,
             my_trades_open_sqlite,
             my_trades_open,
-            size_from_positions,
             market_condition,
             currency,
         )
@@ -192,7 +197,8 @@ async def run_every_5_seconds() -> None:
     if not size_is_consistent:
         print(f"unrecorded_order_id {unrecorded_order_id}")
         for order_id in unrecorded_order_id:
-            transaction= [o for o in from_exchange if o["order_id"] == order_id]
+            transaction= [o for o in trades_from_exchange if o["order_id"] == order_id]
+            await insert_tables("my_trades_all_json", transaction)
             print(f"order_id  {order_id} transaction {transaction}")
 
     await clean_up_closed_transactions()
