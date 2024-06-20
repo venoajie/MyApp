@@ -63,7 +63,7 @@ async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
     """ """
     
     from_sqlite_closed= await sqlite_management.executing_closed_transactions()
-    print(f"from_sqlite_closed {from_sqlite_closed}")    
+    #print(f"from_sqlite_closed {from_sqlite_closed}")    
     from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
     print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
     
