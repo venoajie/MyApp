@@ -61,17 +61,17 @@ async def current_server_time() -> float:
 async def get_unrecorded_order_id(quantities: int = 20, currency: str = 'ETH'
 ) -> dict:
     """ """
+    
+    from_sqlite_closed= await sqlite_management.executing_closed_transactions()
+    print(f"from_sqlite_closed {from_sqlite_closed}")    
+    from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
+    print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
+    
     from_sqlite_open= await querying_label_and_size("my_trades_all_json")
     print(f"from_sqlite_open {from_sqlite_open}")
     from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
     print(f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
     
-    closed_query=  sqlite_management.querying_closed_transactions()
-    from_sqlite_closed= await sqlite_management.executing_query_with_return(closed_query)
-    print(f"from_sqlite_closed {from_sqlite_closed}")    
-    from_sqlite_closed_order_id= [o["order_id"] for o in from_sqlite_closed]
-    print(f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
-
     from_sqlite= await querying_label_and_size("my_trades_all_json")
 
     from_exchange= await get_my_trades_from_exchange(quantities, currency)

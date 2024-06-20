@@ -645,6 +645,23 @@ def querying_label_and_size(table) -> str:
 def querying_closed_transactions(limit: int=20, order: str="id", table: str="my_trades_closed_json") -> str:
     return f"SELECT * FROM {table} ORDER BY {id} DESC LIMIT {limit}"
 
+async def executing_closed_transactions(limit: int=20, order: str="id", table: str="my_trades_closed_json") -> dict:
+    """
+    Provide execution template for querying summary of trading results from sqlite.
+    Consist of transaction label, size, and price only.
+    """
+
+    # get query
+    query = querying_label_and_size(table)
+
+    # execute query
+    result = await querying_closed_transactions(limit, order, table)
+
+    # define none from queries result. If the result=None, return []
+    NONE_DATA: None = [0, None, []]
+
+    return [] if result in NONE_DATA else (result)
+
 async def executing_label_and_size_query(table) -> dict:
     """
     Provide execution template for querying summary of trading results from sqlite.
