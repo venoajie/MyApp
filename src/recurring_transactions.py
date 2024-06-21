@@ -92,6 +92,9 @@ async def get_unrecorded_order_id(from_sqlite_open,
     from_sqlite_open_order_id= [o["order_id"] for o in from_sqlite_open]
 
     from_exchange_order_id= [o["order_id"] for o in from_exchange]
+    print (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
+    print (f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
+    print (f"from_exchange_order_id {from_exchange_order_id}")
 
     combined_closed_open= from_sqlite_open_order_id+from_sqlite_closed_order_id
 
@@ -156,7 +159,7 @@ async def run_every_5_seconds() -> None:
     trades_from_sqlite_open= await querying_label_and_size("my_trades_all_json")
     trades_from_sqlite_closed= await executing_closed_transactions()
     trades_from_exchange= await get_my_trades_from_exchange(QTY, currency)
-    print(f"trades_from_exchange AAAAAAAAAA {trades_from_exchange}")
+    
     unrecorded_order_id= await get_unrecorded_order_id(trades_from_sqlite_open,trades_from_sqlite_closed,trades_from_exchange)
     
     await clean_up_closed_transactions()
