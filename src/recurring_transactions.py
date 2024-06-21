@@ -206,7 +206,7 @@ async def run_every_5_seconds() -> None:
             label= [o["label"] for o in trades_from_exchange if o["order_id"] == order_id][0]
             print(f"label  {label} order_id  {order_id}")
             if "open" in label:
-                 await get_additional_params_for_open_label (transaction, label)
+                 await get_additional_params_for_open_label (transaction[0], label)
 
             await insert_tables("my_trades_all_json", transaction)
             print(f"transaction {transaction}")
