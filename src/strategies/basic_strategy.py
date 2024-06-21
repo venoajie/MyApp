@@ -364,7 +364,7 @@ async def provide_size_to_close_transaction(
     """ """
     basic_size = get_transaction_size(transaction)
     label = get_transaction_label(transaction)
-    print(f"transaction {transaction}")
+    #print(f"transaction {transaction}")
 
     if "open" in label:
         has_closed = has_closed_label(transaction)
