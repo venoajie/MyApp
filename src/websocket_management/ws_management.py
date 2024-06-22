@@ -7,17 +7,47 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import (
-    pickling,
-    system_tools,
-    string_modification as str_mod,
-    number_modification as num_mod,
+from utilities.pickling import replace_data, read_data
+
+from websocket_management.cleaning_up_transactions import (
+    reconciling_between_db_and_exchg_data,
 )
+from utilities.system_tools import (
+    raise_error_message,
+    provide_path_for_file,
+    reading_from_db_pickle,
+    is_current_file_running,
+)
+
+from utilities.string_modification import (
+    get_net_sum_strategy_super_main,
+    get_net_sum_strategy_main,
+    remove_redundant_elements,
+    parsing_label,
+    my_trades_open_sqlite_detailing,
+    sum_my_trades_open_sqlite,
+    parsing_sqlite_json_output,
+    get_net_sum_strategy_super_main,
+)
+
+from db_management.sqlite_management import (
+    executing_query_with_return,
+    executing_label_and_size_query,
+)
+
+from utilities.number_modification import get_closest_value
+
 from market_understanding import futures_analysis
 from db_management import sqlite_management
-from strategies import basic_strategy, hedging_spot, market_maker as MM
-import deribit_get
-from configuration import config
+from strategies import hedging_spot, market_maker as MM
+from strategies.basic_strategy import (
+    querying_label_and_size,
+    is_everything_consistent,
+    get_strategy_config_all,
+)
+
+from deribit_get import telegram_bot_sendtext
+from configuration.config import main_dotenv
 
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
@@ -25,12 +55,12 @@ NONE_DATA: None = [0, None, []]
 
 
 def parse_dotenv(sub_account) -> dict:
-    return config.main_dotenv(sub_account)
+    return main_dotenv(sub_account)
 
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
-    await system_tools.raise_error_message(error, idle)
+    await raise_error_message(error, idle)
 
 
 async def get_private_data(currency: str = None) -> list:
@@ -59,9 +89,8 @@ async def get_account_summary() -> list:
 
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
-    import deribit_get
 
-    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+    return await telegram_bot_sendtext(bot_message, purpose)
 
 
 async def get_sub_account(currency) -> list:
@@ -77,12 +106,10 @@ async def get_sub_account(currency) -> list:
 async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
     """ """
     try:
-        last_open_interest = await sqlite_management.executing_query_with_return(
-            last_tick_query_ohlc1
-        )
+        last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
 
     except Exception as error:
-        await system_tools.raise_error_message(
+        await raise_error_message(
             error,
             "Capture market data - failed to fetch last open_interest",
         )
@@ -92,12 +119,10 @@ async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
 async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
     """ """
     try:
-        last_tick1_fr_sqlite = await sqlite_management.executing_query_with_return(
-            last_tick_query_ohlc1
-        )
+        last_tick1_fr_sqlite = await executing_query_with_return(last_tick_query_ohlc1)
 
     except Exception as error:
-        await system_tools.raise_error_message(
+        await raise_error_message(
             error,
             "Capture market data - failed to fetch last_tick_fr_sqlite",
         )
@@ -110,24 +135,24 @@ async def distribute_ticker_result_as_per_data_type(
     """ """
 
     try:
-        # ticker: list = pickling.read_data(my_path_ticker)
+        # ticker: list = read_data(my_path_ticker)
 
         if data_orders["type"] == "snapshot":
-            pickling.replace_data(my_path_ticker, data_orders)
+            replace_data(my_path_ticker, data_orders)
 
-            # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+            # ticker_fr_snapshot: list = read_data(my_path_ticker)
 
         else:
-            ticker_change: list = pickling.read_data(my_path_ticker)
+            ticker_change: list = read_data(my_path_ticker)
             if ticker_change != []:
                 # log.debug (ticker_change)
 
                 for item in data_orders:
                     ticker_change[0][item] = data_orders[item]
-                    pickling.replace_data(my_path_ticker, ticker_change)
+                    replace_data(my_path_ticker, ticker_change)
 
     except Exception as error:
-        await system_tools.raise_error_message(
+        await raise_error_message(
             error,
             "WebSocket management - failed to distribute_incremental_ticker_result_as_per_data_type",
         )
@@ -136,28 +161,26 @@ async def distribute_ticker_result_as_per_data_type(
 async def reading_from_pkl_database(currency) -> float:
     """ """
 
-    path_sub_accounts: str = system_tools.provide_path_for_file(
-        "sub_accounts", currency
-    )
+    path_sub_accounts: str = provide_path_for_file("sub_accounts", currency)
 
-    path_portfolio: str = system_tools.provide_path_for_file("portfolio", currency)
-    path_positions: str = system_tools.provide_path_for_file("positions", currency)
-    positions = pickling.read_data(path_positions)
-    sub_account = pickling.read_data(path_sub_accounts)
+    path_portfolio: str = provide_path_for_file("portfolio", currency)
+    path_positions: str = provide_path_for_file("positions", currency)
+    positions = read_data(path_positions)
+    sub_account = read_data(path_sub_accounts)
     positions_from_sub_account = sub_account[0]["positions"]
     open_orders_from_sub_account = sub_account[0]["open_orders"]
-    portfolio = pickling.read_data(path_portfolio)
+    portfolio = read_data(path_portfolio)
 
     # at start, usually position == None
     if positions in NONE_DATA:
         positions = positions_from_sub_account  # await self.get_positions ()
-        pickling.replace_data(path_positions, positions)
+        replace_data(path_positions, positions)
 
     # log.debug (my_trades_open)
     if portfolio in NONE_DATA:
         portfolio = await get_account_summary()
-        pickling.replace_data(path_portfolio, portfolio)
-        portfolio = pickling.read_data(path_portfolio)
+        replace_data(path_portfolio, portfolio)
+        portfolio = read_data(path_portfolio)
 
     return {
         "positions": positions,
@@ -174,7 +197,14 @@ def compute_notional_value(index_price: float, equity: float) -> float:
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
     """ """
-    return system_tools.reading_from_db_pickle(end_point, instrument, status)
+    return reading_from_db_pickle(end_point, instrument, status)
+
+
+def is_size_consistent(
+    sum_my_trades_open_sqlite_all_strategy: int, size_from_position: int
+) -> bool:
+    """ """
+    return sum_my_trades_open_sqlite_all_strategy == size_from_position
 
 
 async def send_limit_order(params) -> None:
@@ -197,17 +227,17 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        is_app_running = system_tools.is_current_file_running("app")
-        everything_consistent = basic_strategy.is_everything_consistent(params)
+        is_app_running = is_current_file_running("app")
+        everything_consistent = is_everything_consistent(params)
 
         if is_app_running and everything_consistent:
             await inserting_additional_params(params)
             await send_limit_order(params)
             await asyncio.sleep(10)
 
+
 async def get_my_trades_from_exchange(count: int, currency) -> list:
-    """
-    """
+    """ """
     private_data = await get_private_data(currency)
     trades: list = await private_data.get_user_trades_by_currency(count)
 
@@ -223,39 +253,51 @@ async def cancel_by_order_id(open_order_id) -> None:
     return result
 
 
-async def cancel_the_cancellables() -> None:
-    from strategies import basic_strategy
+async def cancel_the_cancellables(filter: str = None) -> None:
 
-    params: list = basic_strategy.get_strategy_config_all()
+    params: list = get_strategy_config_all()
     cancellable_strategies: dict = [
         o["strategy"] for o in params if o["cancellable"] == True
     ]
 
-    open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
-        "orders_all_json"
-    )
-    # log.critical(f" open_orders_sqlite {open_orders_sqlite}")
-    # log.critical(f" cancellable_strategies {cancellable_strategies}")
-    for strategy in cancellable_strategies:
-        open_orders_cancellables_id = [
-            o["order_id"] for o in open_orders_sqlite if strategy in o["label"]
-        ]
-        # log.critical(f" open_orders_cancellables_id {strategy} {open_orders_cancellables_id}")
+    open_orders_sqlite = await executing_label_and_size_query("orders_all_json")
 
-        if open_orders_cancellables_id != []:
-            for open_order_id in open_orders_cancellables_id:
+    if open_orders_sqlite != []:
 
-                await cancel_by_order_id(open_order_id)
+        for strategy in cancellable_strategies:
 
-                log.critical(f" deleting {open_order_id}")
-                where_filter = f"order_id"
-                await sqlite_management.deleting_row(
-                    "orders_all_json",
-                    "databases/trading.sqlite3",
-                    where_filter,
-                    "=",
-                    open_order_id,
-                )
+            open_orders_cancellables = [
+                o for o in open_orders_sqlite if strategy in o["label"]
+            ]
+
+            if open_orders_cancellables != []:
+
+                if filter != None and open_orders_cancellables != []:
+
+                    open_orders_cancellables = [
+                        o for o in open_orders_sqlite if filter in o["label"]
+                    ]
+
+            if open_orders_cancellables != []:
+
+                open_orders_cancellables_id = [
+                    o["order_id"] for o in open_orders_cancellables
+                ]
+
+                if open_orders_cancellables_id != []:
+                    for open_order_id in open_orders_cancellables_id:
+
+                        await cancel_by_order_id(open_order_id)
+
+                        log.critical(f" deleting {open_order_id}")
+                        where_filter = f"order_id"
+                        await sqlite_management.deleting_row(
+                            "orders_all_json",
+                            "databases/trading.sqlite3",
+                            where_filter,
+                            "=",
+                            open_order_id,
+                        )
 
 
 async def if_cancel_is_true(order) -> None:
@@ -273,8 +315,8 @@ async def resupply_sub_accountdb(currency) -> None:
     log.info(f"resupply sub account db-START")
     sub_accounts = await get_sub_account(currency)
 
-    my_path_sub_account = system_tools.provide_path_for_file("sub_accounts", currency)
-    pickling.replace_data(my_path_sub_account, sub_accounts)
+    my_path_sub_account = provide_path_for_file("sub_accounts", currency)
+    replace_data(my_path_sub_account, sub_accounts)
     log.info(f"{sub_accounts}")
     log.info(f"resupply sub account db-DONE")
 
@@ -372,11 +414,13 @@ async def opening_transactions(
     try:
         my_trades_open_all: list = my_trades_open_sqlite["all"]
 
-        transactions_all_summarized: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
-        
-        #log.error (my_trades_open_sqlite)
-        #log.warning (my_trades_open_all)
-        #log.info (transactions_all_summarized)
+        transactions_all_summarized: list = await querying_label_and_size(
+            "my_trades_all_json"
+        )
+
+        # log.error (my_trades_open_sqlite)
+        # log.warning (my_trades_open_all)
+        # log.info (transactions_all_summarized)
 
         ticker: list = reading_from_db("ticker", instrument)
 
@@ -401,10 +445,10 @@ async def opening_transactions(
 
                 log.critical(f" {strategy_label}")
 
-                net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+                net_sum_strategy = get_net_sum_strategy_super_main(
                     my_trades_open_sqlite, strategy_label
                 )
-                net_sum_strategy_main = str_mod.get_net_sum_strategy_main(
+                net_sum_strategy_main = get_net_sum_strategy_main(
                     my_trades_open_sqlite, strategy_label
                 )
                 log.debug(
@@ -483,31 +527,63 @@ async def opening_transactions(
 
     log.warning(f"OPENING TRANSACTIONS-DONE")
 
+
 def get_label_transaction_main(label_transaction_net: list) -> list:
     """ """
-    
-    return str_mod.remove_redundant_elements(
-        [(str_mod.parsing_label(o))["main"] for o in label_transaction_net]
+
+    return remove_redundant_elements(
+        [(parsing_label(o))["main"] for o in label_transaction_net]
     )
+
 
 def get_trades_within_respective_strategy(my_trades_open: list, label: str) -> list:
     """ """
-    
-    return [
-            o
-            for o in my_trades_open
-            if str_mod.parsing_label(o["label"])["main"] == label
-        ]
 
-def get_min_max_price_from_transaction_in_strategy(get_prices_in_label_transaction_main: list) -> list:
+    return [o for o in my_trades_open if parsing_label(o["label"])["main"] == label]
+
+
+def get_min_max_price_from_transaction_in_strategy(
+    get_prices_in_label_transaction_main: list,
+) -> list:
     """ """
     return dict(
-            max_price=(0 if get_prices_in_label_transaction_main == []
+        max_price=(
+            0
+            if get_prices_in_label_transaction_main == []
             else max(get_prices_in_label_transaction_main)
-            ),
-            min_price=(0 if get_prices_in_label_transaction_main == []
-            else min(get_prices_in_label_transaction_main))
-            )
+        ),
+        min_price=(
+            0
+            if get_prices_in_label_transaction_main == []
+            else min(get_prices_in_label_transaction_main)
+        ),
+    )
+
+
+async def balancing_the_imbalance(
+    unrecorded_order_id: str = None,
+    trades_from_exchange: list = None,
+    sum_my_trades_open_sqlite_all_strategy: int = None,
+    size_from_position: int = None,
+) -> None:
+    """ """
+    size_is_consistent: bool = is_size_consistent(
+        sum_my_trades_open_sqlite_all_strategy, size_from_position
+    )
+
+    print(
+        f"size_is_consistent {size_is_consistent} sum_my_trades_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position} "
+    )
+
+    if not size_is_consistent:
+
+        # cancel open order only
+        await cancel_the_cancellables("open")
+
+        await reconciling_between_db_and_exchg_data(
+            unrecorded_order_id, trades_from_exchange
+        )
+
 
 async def closing_transactions(
     label_transaction_net,
@@ -525,9 +601,11 @@ async def closing_transactions(
     my_trades_open_all: list = my_trades_open_sqlite["all"]
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-    transactions_all_summarized: list = await basic_strategy.querying_label_and_size("my_trades_all_json")
-    #log.error(f"my_trades_open {my_trades_open}")
-    #log.error(f"transactions_all_summarized {transactions_all_summarized}")
+    transactions_all_summarized: list = await querying_label_and_size(
+        "my_trades_all_json"
+    )
+    # log.error(f"my_trades_open {my_trades_open}")
+    # log.error(f"transactions_all_summarized {transactions_all_summarized}")
 
     label_transaction_main = get_label_transaction_main(label_transaction_net)
 
@@ -536,16 +614,20 @@ async def closing_transactions(
     for label in label_transaction_main:
         log.debug(f"label {label}")
 
-        my_trades_open_strategy = get_trades_within_respective_strategy(my_trades_open,label)
+        my_trades_open_strategy = get_trades_within_respective_strategy(
+            my_trades_open, label
+        )
 
         get_prices_in_label_transaction_main = [
             o["price"] for o in my_trades_open_strategy
         ]
         max_price = get_min_max_price_from_transaction_in_strategy(
-            get_prices_in_label_transaction_main)["max_price"]
-        
+            get_prices_in_label_transaction_main
+        )["max_price"]
+
         min_price = get_min_max_price_from_transaction_in_strategy(
-            get_prices_in_label_transaction_main)["min_price"]
+            get_prices_in_label_transaction_main
+        )["min_price"]
 
         if "Short" in label or "hedging" in label:
             transaction = [
@@ -556,33 +638,29 @@ async def closing_transactions(
                 o for o in my_trades_open_strategy if o["price"] == min_price
             ]
 
-        label = [
-            str_mod.parsing_label(o["label"])["transaction_net"] for o in transaction
-        ][0]
+        label = [parsing_label(o["label"])["transaction_net"] for o in transaction][0]
 
         # result example: 'hedgingSpot'/'supplyDemandShort60'
-        label_main = str_mod.parsing_label(label)["main"]
+        label_main = parsing_label(label)["main"]
 
         # get startegy details
         strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
         my_trades_open_sqlite_transaction_net_strategy: list = (
-            str_mod.my_trades_open_sqlite_detailing(
+            my_trades_open_sqlite_detailing(
                 my_trades_open_all, label, "transaction_net"
             )
         )
 
-        sum_my_trades_open_sqlite_all_strategy: list = (
-            str_mod.sum_my_trades_open_sqlite(my_trades_open_all, label)
+        sum_my_trades_open_sqlite_all_strategy: list = sum_my_trades_open_sqlite(
+            my_trades_open_all, label
         )
 
-        open_trade_strategy_label = str_mod.parsing_sqlite_json_output(
+        open_trade_strategy_label = parsing_sqlite_json_output(
             [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
         )
 
-        instrument: list = [
-            o["instrument_name"] for o in open_trade_strategy_label
-        ][0]
+        instrument: list = [o["instrument_name"] for o in open_trade_strategy_label][0]
 
         ticker: list = reading_from_db("ticker", instrument)
 
@@ -592,9 +670,9 @@ async def closing_transactions(
             index_price: float = ticker[0]["index_price"]
 
             # get instrument_attributes
-            instrument_attributes_all: list = reading_from_db(
-                "instruments", currency
-            )[0]["result"]
+            instrument_attributes_all: list = reading_from_db("instruments", currency)[
+                0
+            ]["result"]
             instrument_attributes: list = [
                 o
                 for o in instrument_attributes_all
@@ -616,7 +694,7 @@ async def closing_transactions(
             # compute notional value
             notional: float = compute_notional_value(index_price, equity)
 
-            net_sum_strategy = str_mod.get_net_sum_strategy_super_main(
+            net_sum_strategy = get_net_sum_strategy_super_main(
                 my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
             )
 
@@ -626,7 +704,7 @@ async def closing_transactions(
 
             if "hedgingSpot" in strategy_attr["strategy"]:
 
-                closest_price = num_mod.get_closest_value(
+                closest_price = get_closest_value(
                     get_prices_in_label_transaction_main, best_bid_prc
                 )
 
@@ -668,4 +746,3 @@ async def closing_transactions(
                 await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")
-
