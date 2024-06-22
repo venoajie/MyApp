@@ -412,7 +412,6 @@ async def opening_transactions(
     log.warning(f"OPENING TRANSACTIONS-START")
 
     try:
-        my_trades_open_all: list = my_trades_open_sqlite["all"]
 
         transactions_all_summarized: list = await querying_label_and_size(
             "my_trades_all_json"
@@ -588,12 +587,10 @@ async def balancing_the_imbalance(
 
 async def closing_transactions(
     label_transaction_net,
-    portfolio,
     strategies,
     my_trades_open_sqlite,
     my_trades_open,
     market_condition,
-    currency,
 ) -> float:
     """ """
 
@@ -602,15 +599,12 @@ async def closing_transactions(
     my_trades_open_all: list = my_trades_open_sqlite["all"]
 
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-    transactions_all_summarized: list = await querying_label_and_size(
-        "my_trades_all_json"
-    )
     # log.error(f"my_trades_open {my_trades_open}")
     # log.error(f"transactions_all_summarized {transactions_all_summarized}")
 
     label_transaction_main = get_label_transaction_main(label_transaction_net)
 
-    log.error(f"label_transaction_main {label_transaction_main}")
+    #log.error(f"label_transaction_main {label_transaction_main}")
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
@@ -653,10 +647,6 @@ async def closing_transactions(
             )
         )
 
-        sum_my_trades_open_sqlite_all_strategy: list = sum_my_trades_open_sqlite(
-            my_trades_open_all, label
-        )
-
         open_trade_strategy_label = parsing_sqlite_json_output(
             [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
         )
@@ -667,41 +657,23 @@ async def closing_transactions(
 
         if ticker != []:
 
-            # index price
-            index_price: float = ticker[0]["index_price"]
-
             # get instrument_attributes
-            instrument_attributes_all: list = reading_from_db("instruments", currency)[
-                0
-            ]["result"]
-            instrument_attributes: list = [
-                o
-                for o in instrument_attributes_all
-                if o["instrument_name"] == instrument
-            ]
-            tick_size: float = instrument_attributes[0]["tick_size"]
-            taker_commission: float = instrument_attributes[0]["taker_commission"]
-            min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
-            contract_size: float = instrument_attributes[0]["contract_size"]
-            # log.error (f'tick_size A {tick_size} taker_commission {taker_commission} min_trade_amount {min_trade_amount} contract_size {contract_size}')
-
+            #instrument_attributes_all: list = reading_from_db("instruments", currency)[
+            #    0
+            #]["result"]
+            #instrument_attributes: list = [
+            ##    o
+            #    for o in instrument_attributes_all
+            #    if o["instrument_name"] == instrument
+            #]
+            #tick_size: float = instrument_attributes[0]["tick_size"]
+            #taker_commission: float = instrument_attributes[0]["taker_commission"]
+            #min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+            #contract_size: float = instrument_attributes[0]["contract_size"]
+            
             # get bid and ask price
             best_bid_prc: float = ticker[0]["best_bid_price"]
             best_ask_prc: float = ticker[0]["best_ask_price"]
-
-            # obtain spot equity
-            equity: float = portfolio[0]["equity"]
-
-            # compute notional value
-            notional: float = compute_notional_value(index_price, equity)
-
-            net_sum_strategy = get_net_sum_strategy_super_main(
-                my_trades_open_sqlite, open_trade_strategy_label[0]["label"]
-            )
-
-            log.error(
-                f"sum_my_trades_open_sqlite_all_strategy {sum_my_trades_open_sqlite_all_strategy} net_sum_strategy {net_sum_strategy} "
-            )
 
             if "hedgingSpot" in strategy_attr["strategy"]:
 
