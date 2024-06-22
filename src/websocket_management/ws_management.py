@@ -99,61 +99,6 @@ async def get_sub_account(currency) -> list:
     return result_sub_account["result"]
 
 
-async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
-    """ """
-    try:
-        last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
-
-    except Exception as error:
-        await raise_error_message(
-            error,
-            "Capture market data - failed to fetch last open_interest",
-        )
-    return last_open_interest[0]["open_interest"]
-
-
-async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
-    """ """
-    try:
-        last_tick1_fr_sqlite = await executing_query_with_return(last_tick_query_ohlc1)
-
-    except Exception as error:
-        await raise_error_message(
-            error,
-            "Capture market data - failed to fetch last_tick_fr_sqlite",
-        )
-    return last_tick1_fr_sqlite[0]["MAX (tick)"]
-
-
-async def distribute_ticker_result_as_per_data_type(
-    my_path_ticker, data_orders, instrument
-) -> None:
-    """ """
-
-    try:
-        # ticker: list = read_data(my_path_ticker)
-
-        if data_orders["type"] == "snapshot":
-            replace_data(my_path_ticker, data_orders)
-
-            # ticker_fr_snapshot: list = read_data(my_path_ticker)
-
-        else:
-            ticker_change: list = read_data(my_path_ticker)
-            if ticker_change != []:
-                # log.debug (ticker_change)
-
-                for item in data_orders:
-                    ticker_change[0][item] = data_orders[item]
-                    replace_data(my_path_ticker, ticker_change)
-
-    except Exception as error:
-        await raise_error_message(
-            error,
-            "WebSocket management - failed to distribute_incremental_ticker_result_as_per_data_type",
-        )
-
-
 async def reading_from_pkl_database(currency) -> float:
     """ """
 

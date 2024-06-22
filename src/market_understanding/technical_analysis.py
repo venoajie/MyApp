@@ -47,7 +47,7 @@ async def get_price_ohlc(
     get_ohlc_query = querying_ohlc_price_vol(price, table, window)
 
     # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    ohlc_all = await executing_query_with_return(get_ohlc_query)
 
     return ohlc_all
 
@@ -62,10 +62,15 @@ async def cleaned_up_ohlc(
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
+    tick = [o["tick"] for o in ohlc_all]
+    print(f"ohlc_all{ohlc_all}")
 
     ohlc.reverse()
+    print(f"ohlc{ohlc}")
+    tick.reverse()
+    print(f"tick{tick}")
 
-    return dict(ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
+    return dict(tick=max(tick[: window - 1]),ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
@@ -112,10 +117,18 @@ async def get_market_condition(
 
     ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
-    ohlc_short = await cleaned_up_ohlc("close", 9, table)
-    ohlc_long = await cleaned_up_ohlc("close", 20, table)
+    ohlc_close_9 = await cleaned_up_ohlc("close", 9, table)
+    ohlc_close_20 = await cleaned_up_ohlc("close", 20, table)
 
-    ohlc = await cleaned_up_ohlc("close", limit, table)
+    # log.error(ema)
+    ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
+    ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
+    result.update({"tick": ohlc_high_9["tick"]})
+    result.update({"1m_ema_close_20": ema_close_20})
+    result.update({"1m_ema_close_9": ema_close_9})
+    result.update({"1m_ema_high_9": ema_high_9})
+    result.update({"1m_ema_low_9": ema_low_9})
+    
 
     vwap_period = 100
 
@@ -124,14 +137,7 @@ async def get_market_condition(
     # log.error(f'df {df}')
     df_vwap = await get_vwap(ohlc_all, vwap_period)
     vwap = df_vwap.iloc[-1]
+    result.update({"1m_vwap": vwap})
+    print(f"TA {result}")
 
-    ema = await get_ema(ohlc["ohlc"], ratio)
-
-    # log.error(ema)
-    ema_short = await get_ema(ohlc_short["ohlc"], ratio)
-
-    ema_long = await get_ema(ohlc_long["ohlc"], ratio)
-
-    last_price = ohlc["last_price"]
-
-    await insert_tables("my_trades_all_json", trade)
+    await insert_tables("market_analytics_json", result)

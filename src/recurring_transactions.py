@@ -11,41 +11,41 @@ import aiohttp
 
 # user defined formula
 from strategies import entries_exits
-
-from utilities.string_modification import remove_redundant_elements, parsing_label
-
-from utilities.system_tools import catch_error_message, provide_path_for_file
-
 from utilities.pickling import replace_data
-from deribit_get import get_instruments, get_currencies, get_server_time
 
+from utilities.string_modification import (
+    remove_redundant_elements, 
+    parsing_label)
+from utilities.system_tools import (
+    catch_error_message, 
+    provide_path_for_file)
+from deribit_get import (
+    get_instruments, 
+    get_currencies, 
+    get_server_time)
 from db_management.sqlite_management import (
     querying_table,
-    executing_closed_transactions,
-)
-from strategies.basic_strategy import querying_label_and_size, get_market_condition
+    executing_closed_transactions)
+from strategies.basic_strategy import (
+    querying_label_and_size, 
+    get_market_condition)
 from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
     closing_transactions,
     get_my_trades_from_exchange,
     is_size_consistent,
-    balancing_the_imbalance,
-)
-
+    balancing_the_imbalance)
 from websocket_management.cleaning_up_transactions import (
     get_unrecorded_order_id,
-    clean_up_closed_transactions,
-)
+    clean_up_closed_transactions)
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-
 def catch_error(error, idle: int = None) -> list:
     """ """
     catch_error_message(error, idle)
-
 
 async def get_instruments_from_deribit(connection_url, currency) -> float:
     """ """
@@ -93,7 +93,7 @@ async def run_every_5_seconds() -> None:
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
-    TAKE_PROFIT_PCT_DAILY = ONE_PCT
+    TAKE_PROFIT_PCT_DAILY = ONE_PCT*1
 
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)

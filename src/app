@@ -32,11 +32,11 @@ from db_management.sqlite_management import (
     querying_last_open_interest,
     deleting_row,
     querying_arithmetic_operator,
-    querying_table,insert_tables
+    querying_table,insert_tables,
+    executing_query_with_return
 )
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
-    last_open_interest_fr_sqlite,last_tick_fr_sqlite,
     cancel_the_cancellables)
 from websocket_management.cleaning_up_transactions import (
     check_if_transaction_has_closed_label_before)
@@ -134,6 +134,33 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         await manage_positions (positions, currency)
     
     log.info(f"update_user_changes-END")
+
+
+
+async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
+    """ """
+    try:
+        last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
+
+    except Exception as error:
+        await raise_error_message(
+            error,
+            "Capture market data - failed to fetch last open_interest",
+        )
+    return last_open_interest[0]["open_interest"]
+
+
+async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
+    """ """
+    try:
+        last_tick1_fr_sqlite = await executing_query_with_return(last_tick_query_ohlc1)
+
+    except Exception as error:
+        await raise_error_message(
+            error,
+            "Capture market data - failed to fetch last_tick_fr_sqlite",
+        )
+    return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
 class StreamAccountData:
 
