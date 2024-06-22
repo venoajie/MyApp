@@ -89,6 +89,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     log.critical("clean_up_closed_transactions-START")
     if transactions_all != None:
         transactions_all: list = await querying_label_and_size("my_trades_all_json")
+        log.warning(transactions_all)
         
     log.info(transactions_all)
 
