@@ -206,6 +206,18 @@ async def run_every_60_seconds() -> None:
     await count_and_delete_ohlc_rows(rows_threshold)
 
 
+async def run_every_1_second() -> None:
+    """ """
+
+    from market_understanding.technical_analysis import get_market_condition
+    
+    ONE_PCT=1/100
+    WINDOW = 9
+    RATIO = 0.9
+    THRESHOLD = 0.01 * ONE_PCT
+
+    await get_market_condition(THRESHOLD, WINDOW, RATIO)
+
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
 
@@ -254,6 +266,7 @@ if __name__ == "__main__":
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
 
+        schedule.every(1).seconds.do(run_every_1_second)
         schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
