@@ -62,6 +62,8 @@ async def get_currencies(connection_url) -> float:
 
     result = await get_currencies(connection_url)
 
+    print (f"get_currencies {connection_url} {result}")
+
     return result
 
 
