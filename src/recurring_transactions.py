@@ -133,7 +133,7 @@ async def run_every_5_seconds() -> None:
     strategies = entries_exits.strategies
 
     market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
-    print(f"market_condition {market_condition}")
+    #print(f"market_condition {market_condition}")
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -159,7 +159,7 @@ async def run_every_5_seconds() -> None:
     trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
     trades_from_sqlite_closed = await executing_closed_transactions()
     trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-    print(f"trades_from_exchange AAAAAAAAAA {trades_from_exchange}")
+    #print(f"trades_from_exchange AAAAAAAAAA {trades_from_exchange}")
     unrecorded_order_id = await get_unrecorded_order_id(
         trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
     )
