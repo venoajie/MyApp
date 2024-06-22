@@ -73,9 +73,7 @@ async def get_private_data(currency: str = None) -> list:
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
     connection_url: str = "https://www.deribit.com/api/v2/"
 
-    return GetPrivateData(
-        connection_url, client_id, client_secret, currency
-    )
+    return GetPrivateData(connection_url, client_id, client_secret, currency)
 
 
 async def get_account_summary() -> list:
@@ -433,10 +431,10 @@ async def opening_transactions(
                 net_sum_strategy = get_net_sum_strategy_super_main(
                     my_trades_open_sqlite, strategy_label
                 )
-                
-                #log.debug(
+
+                # log.debug(
                 #    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
-                #)
+                # )
 
                 THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
 
@@ -450,7 +448,7 @@ async def opening_transactions(
 
                 last_price_all = get_last_price(my_trades_open_strategy)
 
-                #log.debug(f"last_price   {last_price_all}")
+                # log.debug(f"last_price   {last_price_all}")
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -503,7 +501,7 @@ async def opening_transactions(
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
-                        #log.info(send_order)
+                        # log.info(send_order)
 
     except Exception as error:
         await raise_error(error)
@@ -564,8 +562,7 @@ async def balancing_the_imbalance(
         await cancel_the_cancellables("open")
 
         await reconciling_between_db_and_exchg_data(
-            trades_from_exchange,
-            unrecorded_order_id 
+            trades_from_exchange, unrecorded_order_id
         )
 
 
@@ -588,7 +585,7 @@ async def closing_transactions(
 
     label_transaction_main = get_label_transaction_main(label_transaction_net)
 
-    #log.error(f"label_transaction_main {label_transaction_main}")
+    # log.error(f"label_transaction_main {label_transaction_main}")
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
@@ -642,19 +639,19 @@ async def closing_transactions(
         if ticker != []:
 
             # get instrument_attributes
-            #instrument_attributes_all: list = reading_from_db("instruments", currency)[
+            # instrument_attributes_all: list = reading_from_db("instruments", currency)[
             #    0
-            #]["result"]
-            #instrument_attributes: list = [
+            # ]["result"]
+            # instrument_attributes: list = [
             ##    o
             #    for o in instrument_attributes_all
             #    if o["instrument_name"] == instrument
-            #]
-            #tick_size: float = instrument_attributes[0]["tick_size"]
-            #taker_commission: float = instrument_attributes[0]["taker_commission"]
-            #min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
-            #contract_size: float = instrument_attributes[0]["contract_size"]
-            
+            # ]
+            # tick_size: float = instrument_attributes[0]["tick_size"]
+            # taker_commission: float = instrument_attributes[0]["taker_commission"]
+            # min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+            # contract_size: float = instrument_attributes[0]["contract_size"]
+
             # get bid and ask price
             best_bid_prc: float = ticker[0]["best_bid_price"]
             best_ask_prc: float = ticker[0]["best_ask_price"]
@@ -699,7 +696,7 @@ async def closing_transactions(
                         open_trade_strategy_label,
                     )
                 )
-                #log.critical(f" send_closing_order {send_closing_order}")
+                # log.critical(f" send_closing_order {send_closing_order}")
                 await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")

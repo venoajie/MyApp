@@ -36,9 +36,9 @@ class MarketMaker(BasicStrategy):
             if minimum_waiting_time_has_passed:
                 cancel_allowed: bool = True
 
-            #print(
+            # print(
             #    f"minimum_waiting_time_has_passed {minimum_waiting_time_has_passed} len_orders {len_orders} "
-            #)
+            # )
 
         return cancel_allowed
 
@@ -108,9 +108,9 @@ class MarketMaker(BasicStrategy):
 
         params.update({"size": qty_order_and_interval_time["qty_per_order"]})
         params.update({"profit_target_pct_transaction": profit_target_pct_transaction})
-        #print(
+        # print(
         #    f"profit_target_pct_transaction   {profit_target_pct_transaction} qty_order_and_interval_time   {qty_order_and_interval_time}"
-        #)
+        # )
         params.update(
             {
                 "interval_time_between_order_in_ms": qty_order_and_interval_time[
@@ -145,7 +145,7 @@ class MarketMaker(BasicStrategy):
 
             if size_from_positions > 0 and market_condition["falling_price"]:
                 params.update({"size": max(abs(size_from_positions), int(notional))})
-        #print(f"MM params {params} ")
+        # print(f"MM params {params} ")
 
         # is open order allowed?
         if params["everything_is_consistent"]:

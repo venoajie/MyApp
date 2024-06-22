@@ -7,8 +7,15 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from db_management import sqlite_management
-from utilities import string_modification as str_mod
+# user defined formula
+from db_management.sqlite_management import (
+    executing_label_and_size_query,
+    querying_hlc_vol,
+    executing_query_with_return,
+    querying_ohlc_price_vol,
+    querying_additional_params,
+)
+
 from loguru import logger as log
 
 

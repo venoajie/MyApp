@@ -7,8 +7,14 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from db_management import sqlite_management
-from utilities import string_modification as str_mod
+from db_management.sqlite_management import (
+    executing_label_and_size_query,
+    querying_hlc_vol,
+    executing_query_with_return,
+    querying_ohlc_price_vol,
+    querying_additional_params,
+)
+from utilities.string_modification import parsing_label
 from loguru import logger as log
 
 
@@ -16,17 +22,17 @@ async def querying_label_and_size(table) -> list:
     """ """
 
     # execute query
-    return await sqlite_management.executing_label_and_size_query(table)
+    return await executing_label_and_size_query(table)
 
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_hlc_vol(table, window)
+    get_ohlc_query = querying_hlc_vol(table, window)
 
     # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    ohlc_all = await executing_query_with_return(get_ohlc_query)
     # log.info(ohlc_all)
 
     return ohlc_all
@@ -38,10 +44,10 @@ async def get_price_ohlc(
     """ """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, window)
+    get_ohlc_query = querying_ohlc_price_vol(price, table, window)
 
     # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    ohlc_all = await executing_query_with_return(get_ohlc_query)
 
     return ohlc_all
 
@@ -180,12 +186,10 @@ def get_label(status: str, label_main_or_label_transactions: str) -> str:
     if status == "closed":
 
         # parsing label id
-        label_id: int = str_mod.parsing_label(label_main_or_label_transactions)["int"]
+        label_id: int = parsing_label(label_main_or_label_transactions)["int"]
 
         # parsing label strategy
-        label_main: str = str_mod.parsing_label(label_main_or_label_transactions)[
-            "main"
-        ]
+        label_main: str = parsing_label(label_main_or_label_transactions)["main"]
 
         # combine id + label strategy
         label: str = f"""{label_main}-closed-{label_id}"""
@@ -337,7 +341,7 @@ def has_closed_label(transaction: dict) -> bool:
 def get_label_integer(label: dict) -> bool:
     """ """
 
-    return str_mod.parsing_label(label)
+    return parsing_label(label)
 
 
 async def summing_transactions_under_label_int(
@@ -364,7 +368,7 @@ async def provide_size_to_close_transaction(
     """ """
     basic_size = get_transaction_size(transaction)
     label = get_transaction_label(transaction)
-    #print(f"transaction {transaction}")
+    # print(f"transaction {transaction}")
 
     if "open" in label:
         has_closed = has_closed_label(transaction)
@@ -381,9 +385,9 @@ async def provide_size_to_close_transaction(
 
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
-    additional_params = sqlite_management.querying_additional_params()
+    additional_params = querying_additional_params()
 
-    params = await sqlite_management.executing_query_with_return(additional_params)
+    params = await executing_query_with_return(additional_params)
 
     additional_params_label = [o for o in params if label in o["label"]][0]
 
@@ -473,7 +477,7 @@ class BasicStrategy:
             str_config: dict = [
                 o
                 for o in params
-                if str_mod.parsing_label(self.strategy_label)["main"] in o["strategy"]
+                if parsing_label(self.strategy_label)["main"] in o["strategy"]
             ][0]
 
         return str_config
@@ -524,7 +528,7 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
-        #log.error(f"result {result}")
+        # log.error(f"result {result}")
 
         # clean up result with no label main
         result_cleaned = [o for o in result if o["label"] != None]
@@ -544,8 +548,8 @@ class BasicStrategy:
                 result_strategy_label: list = [
                     o
                     for o in result
-                    if str_mod.parsing_label(self.strategy_label)["super_main"]
-                    == str_mod.parsing_label(o["label"])["super_main"]
+                    if parsing_label(self.strategy_label)["super_main"]
+                    == parsing_label(o["label"])["super_main"]
                 ]
 
         return dict(
@@ -710,9 +714,9 @@ class BasicStrategy:
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
-            #log.critical(
+            # log.critical(
             #    f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}"
-            #)
+            # )
 
         return dict(
             order_allowed=order_allowed,

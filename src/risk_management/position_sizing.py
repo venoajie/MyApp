@@ -212,7 +212,7 @@ def qty_order_and_interval_time(
     hourly_qty = hourly_sizing(
         notional, pct_daily_profit_target, pct_profit_per_transaction
     )
-    #print(f"{hourly_qty}")
+    # print(f"{hourly_qty}")
 
     minute_delay_before_reorder = hourly_qty["interval_time_before_reorder"]
 

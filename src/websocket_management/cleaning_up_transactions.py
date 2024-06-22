@@ -6,13 +6,10 @@ import asyncio
 # installed
 from loguru import logger as log
 
-from db_management.sqlite_management import (
-    executing_closed_transactions,
-    insert_tables)
+from db_management.sqlite_management import executing_closed_transactions, insert_tables
 
 # user defined formula
-from utilities.string_modification import (
-    find_unique_elements)
+from utilities.string_modification import find_unique_elements
 from db_management import sqlite_management
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -45,20 +42,18 @@ async def get_unrecorded_order_id(
     return unrecorded_order_id
 
 
-async def reconciling_between_db_and_exchg_data(trades_from_exchange: list,
-                                                unrecorded_order_id: str
+async def reconciling_between_db_and_exchg_data(
+    trades_from_exchange: list, unrecorded_order_id: str
 ) -> None:
     """ """
 
-    if unrecorded_order_id==None:
-            
+    if unrecorded_order_id == None:
+
         trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
         trades_from_sqlite_closed = await executing_closed_transactions()
-        unrecorded_order_id= get_unrecorded_order_id(
-            trades_from_sqlite_open, 
-            trades_from_sqlite_closed, 
-            trades_from_exchange
-            )
+        unrecorded_order_id = get_unrecorded_order_id(
+            trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
+        )
 
     print(f"unrecorded_order_id {unrecorded_order_id}")
     for order_id in unrecorded_order_id:
@@ -125,7 +120,9 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     if transactions_all == None:
         transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
-    transaction_with_closed_labels = get_transactions_with_closed_label(transactions_all)
+    transaction_with_closed_labels = get_transactions_with_closed_label(
+        transactions_all
+    )
 
     for transaction in transaction_with_closed_labels:
 

@@ -12,10 +12,7 @@ import aiohttp
 # user defined formula
 from strategies import entries_exits
 
-from utilities.string_modification import (
-    remove_redundant_elements,
-    parsing_label
-)
+from utilities.string_modification import remove_redundant_elements, parsing_label
 
 from utilities.system_tools import catch_error_message, provide_path_for_file
 
@@ -38,7 +35,8 @@ from websocket_management.ws_management import (
 
 from websocket_management.cleaning_up_transactions import (
     get_unrecorded_order_id,
-    clean_up_closed_transactions)
+    clean_up_closed_transactions,
+)
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
@@ -62,7 +60,7 @@ async def get_currencies_from_deribit(connection_url) -> float:
 
     result = await get_currencies(connection_url)
 
-    print (f"get_currencies {connection_url} {result}")
+    print(f"get_currencies {connection_url} {result}")
 
     return result
 
@@ -85,6 +83,7 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
             ]
         )
     )
+
 
 async def run_every_5_seconds() -> None:
     """ """
@@ -113,7 +112,7 @@ async def run_every_5_seconds() -> None:
     strategies = entries_exits.strategies
 
     market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
-    #print(f"market_condition {market_condition}")
+    # print(f"market_condition {market_condition}")
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -139,7 +138,7 @@ async def run_every_5_seconds() -> None:
     trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
     trades_from_sqlite_closed = await executing_closed_transactions()
     trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-    #print(f"trades_from_exchange AAAAAAAAAA {trades_from_exchange}")
+    # print(f"trades_from_exchange AAAAAAAAAA {trades_from_exchange}")
     unrecorded_order_id = await get_unrecorded_order_id(
         trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
     )
@@ -191,7 +190,6 @@ async def run_every_5_seconds() -> None:
                 TAKE_PROFIT_PCT_DAILY,
             )
 
-    
     trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
     await balancing_the_imbalance(trades_from_exchange)
 
@@ -206,6 +204,7 @@ async def run_every_60_seconds() -> None:
     rows_threshold = 1000000
 
     await count_and_delete_ohlc_rows(rows_threshold)
+
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
