@@ -164,12 +164,10 @@ async def run_every_5_seconds() -> None:
 
     await closing_transactions(
         label_transaction_net,
-        portfolio,
         strategies,
         my_trades_open_sqlite,
         my_trades_open,
         market_condition,
-        currency,
     )
 
     size_is_consistent: bool = is_size_consistent(
