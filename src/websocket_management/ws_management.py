@@ -21,11 +21,9 @@ from utilities.system_tools import (
 
 from utilities.string_modification import (
     get_net_sum_strategy_super_main,
-    get_net_sum_strategy_main,
     remove_redundant_elements,
     parsing_label,
     my_trades_open_sqlite_detailing,
-    sum_my_trades_open_sqlite,
     parsing_sqlite_json_output,
     get_net_sum_strategy_super_main,
 )
@@ -37,7 +35,7 @@ from db_management.sqlite_management import (
 
 from utilities.number_modification import get_closest_value
 
-from market_understanding import futures_analysis
+#from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (

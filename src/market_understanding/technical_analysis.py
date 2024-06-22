@@ -7,13 +7,12 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-# user defined formula
 from db_management.sqlite_management import (
     executing_label_and_size_query,
     querying_hlc_vol,
     executing_query_with_return,
     querying_ohlc_price_vol,
-    querying_additional_params,
+    insert_tables
 )
 
 from loguru import logger as log
@@ -23,17 +22,17 @@ async def querying_label_and_size(table) -> list:
     """ """
 
     # execute query
-    return await sqlite_management.executing_label_and_size_query(table)
+    return await executing_label_and_size_query(table)
 
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_hlc_vol(table, window)
+    get_ohlc_query = querying_hlc_vol(table, window)
 
     # executing query above
-    ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
+    ohlc_all = await executing_query_with_return(get_ohlc_query)
     # log.info(ohlc_all)
 
     return ohlc_all
@@ -45,7 +44,7 @@ async def get_price_ohlc(
     """ """
 
     # get query for close price
-    get_ohlc_query = sqlite_management.querying_ohlc_price_vol(price, table, window)
+    get_ohlc_query = querying_ohlc_price_vol(price, table, window)
 
     # executing query above
     ohlc_all = await sqlite_management.executing_query_with_return(get_ohlc_query)
@@ -103,6 +102,7 @@ async def get_market_condition(
 ) -> dict:
     """ """
 
+    result={}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
     ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
 
@@ -133,3 +133,5 @@ async def get_market_condition(
     ema_long = await get_ema(ohlc_long["ohlc"], ratio)
 
     last_price = ohlc["last_price"]
+
+    await insert_tables("my_trades_all_json", trade)
