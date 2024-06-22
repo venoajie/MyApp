@@ -469,7 +469,7 @@ class GetPrivateData:
 
         # log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
         result_order= order_result["result"]["order"]
-        log.warning(f"result {order_result["result"]}")
+        log.warning(f"""result {order_result["result"]}""")
         log.info(f"""{result_order["label"]} {result_order["direction"]} {result_order["amount"]} {result_order["order_id"]}""")
 
         if order_result != None and "error" in order_result:
