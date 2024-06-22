@@ -468,7 +468,7 @@ class GetPrivateData:
             )
 
         # log.warning(f'side {side} instrument {instrument} label_numbered {label_numbered} size {size} type {type} limit_prc {limit_prc}')
-        result= order_result["result"]
+        result= order_result["result"]["order"]
         log.info(f"result {result}")
         log.info(f"""result {result["label"]} side {result["direction"]} size {result["amount"]} order_id {result["order_id"]}""")
 
