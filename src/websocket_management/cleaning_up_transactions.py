@@ -6,10 +6,13 @@ import asyncio
 # installed
 from loguru import logger as log
 
-from db_management.sqlite_management import insert_tables
+from db_management.sqlite_management import (
+    executing_closed_transactions,
+    insert_tables)
 
 # user defined formula
-from utilities import system_tools, string_modification as str_mod
+from utilities.string_modification import (
+    find_unique_elements)
 from db_management import sqlite_management
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -20,10 +23,42 @@ from strategies.basic_strategy import (
 )
 
 
-async def reconciling_between_db_and_exchg_data(
-    unrecorded_order_id: str, trades_from_exchange: list = None
+async def get_unrecorded_order_id(
+    from_sqlite_open, from_sqlite_closed, from_exchange
+) -> dict:
+    """ """
+
+    from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
+
+    from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]
+
+    from_exchange_order_id = [o["order_id"] for o in from_exchange]
+
+    combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
+
+    unrecorded_order_id = find_unique_elements(
+        combined_closed_open, from_exchange_order_id
+    )
+
+    unrecorded_order_id = set(from_exchange_order_id).difference(combined_closed_open)
+
+    return unrecorded_order_id
+
+
+async def reconciling_between_db_and_exchg_data(trades_from_exchange: list,
+                                                unrecorded_order_id: str
 ) -> None:
     """ """
+
+    if unrecorded_order_id==None:
+            
+        trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
+        trades_from_sqlite_closed = await executing_closed_transactions()
+        unrecorded_order_id= get_unrecorded_order_id(
+            trades_from_sqlite_open, 
+            trades_from_sqlite_closed, 
+            trades_from_exchange
+            )
 
     print(f"unrecorded_order_id {unrecorded_order_id}")
     for order_id in unrecorded_order_id:

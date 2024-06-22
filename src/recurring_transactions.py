@@ -14,8 +14,7 @@ from strategies import entries_exits
 
 from utilities.string_modification import (
     remove_redundant_elements,
-    parsing_label,
-    find_unique_elements,
+    parsing_label
 )
 
 from utilities.system_tools import catch_error_message, provide_path_for_file
@@ -37,7 +36,9 @@ from websocket_management.ws_management import (
     balancing_the_imbalance,
 )
 
-from websocket_management.cleaning_up_transactions import clean_up_closed_transactions
+from websocket_management.cleaning_up_transactions import (
+    get_unrecorded_order_id,
+    clean_up_closed_transactions)
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
@@ -82,29 +83,6 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
             ]
         )
     )
-
-
-async def get_unrecorded_order_id(
-    from_sqlite_open, from_sqlite_closed, from_exchange
-) -> dict:
-    """ """
-
-    from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
-
-    from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]
-
-    from_exchange_order_id = [o["order_id"] for o in from_exchange]
-
-    combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
-
-    unrecorded_order_id = find_unique_elements(
-        combined_closed_open, from_exchange_order_id
-    )
-
-    unrecorded_order_id = set(from_exchange_order_id).difference(combined_closed_open)
-
-    return unrecorded_order_id
-
 
 async def run_every_5_seconds() -> None:
     """ """
@@ -176,8 +154,8 @@ async def run_every_5_seconds() -> None:
     )
 
     await balancing_the_imbalance(
-        unrecorded_order_id,
         trades_from_exchange,
+        unrecorded_order_id,
         sum_my_trades_sqlite,
         size_from_positions,
     )
@@ -213,7 +191,9 @@ async def run_every_5_seconds() -> None:
                 TAKE_PROFIT_PCT_DAILY,
             )
 
-    await balancing_the_imbalance()
+    
+    trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+    await balancing_the_imbalance(trades_from_exchange)
 
     await clean_up_closed_transactions()
 
@@ -226,10 +206,6 @@ async def run_every_60_seconds() -> None:
     rows_threshold = 1000000
 
     await count_and_delete_ohlc_rows(rows_threshold)
-
-
-#
-
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"

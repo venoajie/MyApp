@@ -561,8 +561,8 @@ def get_min_max_price_from_transaction_in_strategy(
 
 
 async def balancing_the_imbalance(
+    trades_from_exchange,
     unrecorded_order_id: str = None,
-    trades_from_exchange: list = None,
     sum_my_trades_open_sqlite_all_strategy: int = None,
     size_from_position: int = None,
 ) -> None:
@@ -581,7 +581,8 @@ async def balancing_the_imbalance(
         await cancel_the_cancellables("open")
 
         await reconciling_between_db_and_exchg_data(
-            unrecorded_order_id, trades_from_exchange
+            trades_from_exchange,
+            unrecorded_order_id 
         )
 
 
