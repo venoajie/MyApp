@@ -213,7 +213,7 @@ async def run_every_5_seconds() -> None:
                 TAKE_PROFIT_PCT_DAILY,
             )
 
-    balancing_the_imbalance()
+    await balancing_the_imbalance()
 
     await clean_up_closed_transactions()
 
