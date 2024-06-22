@@ -175,7 +175,7 @@ async def run_every_5_seconds() -> None:
         sum_my_trades_sqlite - size_from_positions
     )
 
-    balancing_the_imbalance(
+    await balancing_the_imbalance(
         unrecorded_order_id,
         trades_from_exchange,
         sum_my_trades_sqlite,
