@@ -57,7 +57,7 @@ async def get_instruments(connection_url, currency) -> float:
     return result
 
 
-async def get_currencies(connection_url) -> float:
+async def get_currencies_from_deribit(connection_url) -> float:
     """ """
 
     result = await get_currencies(connection_url)
@@ -214,7 +214,7 @@ async def check_and_save_every_60_minutes():
 
     try:
 
-        get_currencies_all = await get_currencies(connection_url)
+        get_currencies_all = await get_currencies_from_deribit(connection_url)
         currencies = [o["currency"] for o in get_currencies_all["result"]]
         #        print(currencies)
 
