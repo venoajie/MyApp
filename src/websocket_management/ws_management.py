@@ -339,13 +339,6 @@ def get_last_price(my_trades_open_strategy: list) -> float:
     buy_traded_price = [o["price"] for o in my_trades_open_strategy_buy]
     sell_traded_price = [o["price"] for o in my_trades_open_strategy_sell]
 
-    log.info(
-        f"buy_traded_price   {buy_traded_price} sell_traded_price   {sell_traded_price}"
-    )
-    log.debug([o["amount"] for o in my_trades_open_strategy_buy])
-
-    log.error([o["amount"] for o in my_trades_open_strategy_sell])
-
     return {
         "min_buy_traded_price": 0 if buy_traded_price == [] else min(buy_traded_price),
         "max_sell_traded_price": (
@@ -391,9 +384,6 @@ def delta_price_constraint(
         )
         is_reorder_ok = delta_price_exceed_threhold or net_sum_strategy >= 0
 
-    log.debug(
-        f"constraint   {is_reorder_ok} last_traded_price   {last_traded_price}  market_price   {market_price} side   {side}"
-    )
     return True if last_traded_price == 0 else is_reorder_ok
 
 
@@ -416,10 +406,6 @@ async def opening_transactions(
         transactions_all_summarized: list = await querying_label_and_size(
             "my_trades_all_json"
         )
-
-        # log.error (my_trades_open_sqlite)
-        # log.warning (my_trades_open_all)
-        # log.info (transactions_all_summarized)
 
         ticker: list = reading_from_db("ticker", instrument)
 
@@ -447,12 +433,10 @@ async def opening_transactions(
                 net_sum_strategy = get_net_sum_strategy_super_main(
                     my_trades_open_sqlite, strategy_label
                 )
-                net_sum_strategy_main = get_net_sum_strategy_main(
-                    my_trades_open_sqlite, strategy_label
-                )
-                log.debug(
-                    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
-                )
+                
+                #log.debug(
+                #    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
+                #)
 
                 THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
 
@@ -466,7 +450,7 @@ async def opening_transactions(
 
                 last_price_all = get_last_price(my_trades_open_strategy)
 
-                log.debug(f"last_price   {last_price_all}")
+                #log.debug(f"last_price   {last_price_all}")
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
@@ -519,7 +503,7 @@ async def opening_transactions(
 
                         await if_order_is_true(send_order, instrument)
                         await if_cancel_is_true(send_order)
-                        log.info(send_order)
+                        #log.info(send_order)
 
     except Exception as error:
         await raise_error(error)
