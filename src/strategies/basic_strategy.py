@@ -364,7 +364,7 @@ async def provide_size_to_close_transaction(
     """ """
     basic_size = get_transaction_size(transaction)
     label = get_transaction_label(transaction)
-    print(f"transaction {transaction}")
+    #print(f"transaction {transaction}")
 
     if "open" in label:
         has_closed = has_closed_label(transaction)
@@ -524,7 +524,7 @@ class BasicStrategy:
         """ """
 
         result: list = await querying_label_and_size(table)
-        log.error(f"result {result}")
+        #log.error(f"result {result}")
 
         # clean up result with no label main
         result_cleaned = [o for o in result if o["label"] != None]
