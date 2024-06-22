@@ -46,7 +46,7 @@ from strategies.basic_strategy import (
     get_strategy_config_all,
 )
 
-from deribit_get import telegram_bot_sendtext
+from deribit_get import GetPrivateData, telegram_bot_sendtext
 from configuration.config import main_dotenv
 
 ONE_MINUTE: int = 60000
@@ -73,7 +73,7 @@ async def get_private_data(currency: str = None) -> list:
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
     connection_url: str = "https://www.deribit.com/api/v2/"
 
-    return deribit_get.GetPrivateData(
+    return GetPrivateData(
         connection_url, client_id, client_secret, currency
     )
 
