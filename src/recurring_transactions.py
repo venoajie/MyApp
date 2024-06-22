@@ -49,7 +49,7 @@ def catch_error(error, idle: int = None) -> list:
     catch_error_message(error, idle)
 
 
-async def get_instruments(connection_url, currency) -> float:
+async def get_instruments_from_deribit(connection_url, currency) -> float:
     """ """
 
     result = await get_instruments(connection_url, currency)
@@ -218,7 +218,7 @@ async def check_and_save_every_60_minutes():
 
         for currency in currencies:
 
-            instruments = await get_instruments(connection_url, currency)
+            instruments = await get_instruments_from_deribit(connection_url, currency)
             # print (f'instruments {instruments}')
 
             my_path_instruments = provide_path_for_file("instruments", currency)

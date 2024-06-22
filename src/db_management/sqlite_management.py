@@ -37,7 +37,7 @@ async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> 
 
 
 @contextmanager
-async def db_ops(db_name: str = "databases/trading.sqlite3") -> None:
+async def db_ops(db_name: str = "databases/trading.sqlite3"):
     """
     # prepare sqlite initial connection + close
             Return and rtype: None
