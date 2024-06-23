@@ -11,6 +11,7 @@ from db_management.sqlite_management import (
     executing_label_and_size_query,
     querying_hlc_vol,
     executing_query_with_return,
+    querying_table,
     querying_ohlc_price_vol,
     insert_tables
 )
@@ -117,7 +118,7 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
         )
 
     if "market_analytics_json" in last_tick_query_ohlc1:
-        return last_tick1_fr_sqlite ["MAX (tick)"]
+        return last_tick1_fr_sqlite
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
 async def get_market_condition(
@@ -146,7 +147,11 @@ async def get_market_condition(
     result.update({"1m_ema_close_9": ema_close_9})
     result.update({"1m_ema_high_9": ema_high_9})
     result.update({"1m_ema_low_9": ema_low_9})
-    last_tick= await last_tick_fr_sqlite("market_analytics_json")
+    TA_result= await querying_table("market_analytics_json")
+    log.error(f'TA_result {TA_result}')
+    last_tick= max([
+                o["tick"] for o in TA_result
+            ])
     log.error(f'last_tick {last_tick}')
     
 
