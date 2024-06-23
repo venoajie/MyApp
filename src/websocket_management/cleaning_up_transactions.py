@@ -9,7 +9,9 @@ from loguru import logger as log
 from db_management.sqlite_management import executing_closed_transactions, insert_tables
 
 # user defined formula
-from utilities.string_modification import find_unique_elements
+from utilities.string_modification import (
+    find_unique_elements,
+    get_duplicated_elements)
 from db_management import sqlite_management
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -54,6 +56,12 @@ async def reconciling_between_db_and_exchg_data(
         unrecorded_order_id = await get_unrecorded_order_id(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
         )
+
+        if unrecorded_order_id == None:
+            print(f"trades_from_sqlite_open {trades_from_sqlite_open}")
+            duplicated_elements= get_duplicated_elements(trades_from_sqlite_open)
+            print(f"duplicated_elements {duplicated_elements}")
+
 
     print(f"unrecorded_order_id {unrecorded_order_id}")
     for order_id in unrecorded_order_id:
