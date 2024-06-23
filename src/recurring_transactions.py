@@ -45,12 +45,7 @@ from websocket_management.cleaning_up_transactions import (
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-
-def count_down_to_reboot(hour: float = 1/60) -> list:
-    """ """
-    
-    stop_time = datetime.datetime.now() + datetime.timedelta(hours=hour)
-    return stop_time
+stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -200,11 +195,10 @@ async def run_every_5_seconds() -> None:
 
     await clean_up_closed_transactions()
 
-    hour_to_reboot =  count_down_to_reboot()
-    print (f"stop_time {hour_to_reboot} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > hour_to_reboot}")
+    print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
     # in relevant function ...
-    if datetime.datetime.now() > hour_to_reboot:
+    if datetime.datetime.now() > stop_time:
         print (f"test")
 
 
