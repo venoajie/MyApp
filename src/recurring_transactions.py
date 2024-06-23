@@ -200,7 +200,7 @@ async def run_every_5_seconds() -> None:
 
     await clean_up_closed_transactions()
 
-    hour_to_reboot = count_down_to_reboot
+    hour_to_reboot =  count_down_to_reboot()
     print (f"stop_time {hour_to_reboot} datetime.datetime.now() {datetime.datetime.now()}")
 
     # in relevant function ...
