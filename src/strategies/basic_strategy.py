@@ -123,7 +123,7 @@ async def get_market_condition(
 
 
     TA_result= await querying_table("market_analytics_json-last")
-    TA_result_data= TA_result["list_data_only"]
+    TA_result_data= TA_result["list_data_only"][0]
 
     log.debug(
         f"  TA_result_data {TA_result_data}"
