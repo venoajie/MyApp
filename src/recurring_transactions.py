@@ -3,7 +3,7 @@
 
 # built ins
 import asyncio
-import datetime
+#import datetime
 
 # installed
 import aioschedule as schedule
@@ -45,7 +45,7 @@ from websocket_management.cleaning_up_transactions import (
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
+#stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -198,12 +198,12 @@ async def run_every_5_seconds() -> None:
     print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
     # in relevant function ...
-    if datetime.datetime.now() > stop_time:
-        import subprocess
+    #if datetime.datetime.now() > stop_time:
+    #    import subprocess
 
-        await cancel_the_cancellables()
-        print (f"test")     
-        subprocess.call(["shutdown", "-r", "-t", "0"])
+    #    await cancel_the_cancellables()
+    #    print (f"test")     
+    #    subprocess.call(["shutdown", "-r", "-t", "0"])
         
 
 
