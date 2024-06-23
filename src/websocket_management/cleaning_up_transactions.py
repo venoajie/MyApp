@@ -32,15 +32,17 @@ async def get_unrecorded_order_id(
     from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]
 
     from_exchange_order_id = [o["order_id"] for o in from_exchange]
-    
+
     combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
 
     unrecorded_order_id = find_unique_elements(
         combined_closed_open, from_exchange_order_id
     )
-    print(f"unrecorded_order_id {unrecorded_order_id}")
+    print(f"unrecorded_order_id set {unrecorded_order_id}")
 
     unrecorded_order_id = set(from_exchange_order_id).difference(combined_closed_open)
+    print(f"unrecorded_order_id set {unrecorded_order_id}")
+    print(f"unrecorded_order_id set {list(unrecorded_order_id)}")
 
     return unrecorded_order_id
 
