@@ -168,7 +168,7 @@ async def run_every_5_seconds() -> None:
         market_condition,
     )
 
-    size_is_consistent: bool = is_size_consistent(
+    size_is_consistent: bool = await is_size_consistent(
         sum_my_trades_sqlite, size_from_positions
     )
     print(
