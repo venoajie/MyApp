@@ -45,7 +45,7 @@ from websocket_management.cleaning_up_transactions import (
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-stop_time = datetime.datetime.now() + datetime.timedelta(hours=1)
+stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
