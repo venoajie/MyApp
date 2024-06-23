@@ -45,7 +45,7 @@ from websocket_management.cleaning_up_transactions import (
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
+stop_time = datetime.datetime.now() + datetime.timedelta(hours=1)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -199,7 +199,11 @@ async def run_every_5_seconds() -> None:
 
     # in relevant function ...
     if datetime.datetime.now() > stop_time:
-        print (f"test")
+        import os
+        await cancel_the_cancellables()
+        print (f"test")     
+        os.system('systemctl reboot -i')
+        
 
 
 
