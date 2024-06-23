@@ -67,12 +67,9 @@ async def cleaned_up_ohlc(
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
     tick = [o["tick"] for o in ohlc_all]
-    print(f"ohlc_all{ohlc_all}")
 
     ohlc.reverse()
-    print(f"ohlc{ohlc}")
     tick.reverse()
-    print(f"tick{tick}")
 
     return dict(tick=max(tick[: window - 1]),ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
@@ -138,7 +135,7 @@ async def get_market_condition(
             ])
     log.error(f'last_tick {last_tick_from_prev_TA}')
     
-    if current_tick > last_tick_from_prev_TA:
+    if last_tick_from_prev_TA==[] or current_tick > last_tick_from_prev_TA:
 
         ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
 
