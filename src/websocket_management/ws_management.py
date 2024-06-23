@@ -160,6 +160,10 @@ async def is_size_consistent(
         0 if positions_all == [] else sum([o["size"] for o in positions_all])
     )
         
+    log.error(
+        f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
+    )
+
     return sum_my_trades_sqlite == size_from_position
 
 
@@ -508,10 +512,6 @@ async def balancing_the_imbalance(
     """ """
     size_is_consistent: bool = await is_size_consistent(
         sum_my_trades_open_sqlite_all_strategy, size_from_position
-    )
-
-    log.error(
-        f"size_is_consistent {size_is_consistent} sum_my_trades_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position} "
     )
 
     if not size_is_consistent:
