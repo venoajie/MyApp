@@ -13,8 +13,15 @@ from loguru import logger as log
 
 async def run_every_15_seconds() -> None:
     """ """
+    import datetime
+    stop_time = datetime.datetime.now() + datetime.timedelta(hours=1)
 
-    print (f"test")
+    # ...
+    print (f"stop_time {stop_time}")
+
+    # in relevant function ...
+    if datetime.datetime.now() > stop_time:
+        print (f"test")
 
 if __name__ == "__main__":
 
