@@ -8,6 +8,7 @@ from loguru import logger as log
 
 from db_management.sqlite_management import (
     executing_closed_transactions, 
+    querying_table,
     insert_tables,
     deleting_row,
     executing_query_with_return,
@@ -69,7 +70,10 @@ async def reconciling_between_db_and_exchg_data(
             if duplicated_elements != []:
                 duplicated_labels= [o["label"] for o in duplicated_elements]
                 print(f"duplicated_labels AAAA {duplicated_labels}")
-                print(f"trades_from_sqlite_open AAAA {trades_from_sqlite_open}")
+                
+                my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
+                my_trades_open_all: list = my_trades_open_sqlite["all"]
+                print(f"my_trades_open_all AAAA {my_trades_open_all}")
                 for label in duplicated_labels:
                     timestamp = [o["timestamp"] for o in trades_from_sqlite_open if o["label"] == label]
                     print(f"label {label} timestamp {timestamp}")
