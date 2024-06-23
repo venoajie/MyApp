@@ -381,7 +381,6 @@ async def querying_table(
     if "market_analytics" in table and "last" in table:
         query_table = f"SELECT  * FROM market_analytics_json ORDER BY id DESC LIMIT 1"
 
-    log.warning (f"query_table {table} {query_table}")
     combine_result = []
 
     try:
