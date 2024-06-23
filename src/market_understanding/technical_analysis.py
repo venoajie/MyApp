@@ -115,6 +115,9 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
             error,
             "Capture market data - failed to fetch last_tick_fr_sqlite",
         )
+
+    if "market_analytics_json" in last_tick_query_ohlc1:
+        return last_tick1_fr_sqlite ["MAX (tick)"]
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
 async def get_market_condition(
