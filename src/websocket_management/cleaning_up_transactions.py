@@ -71,8 +71,8 @@ async def reconciling_between_db_and_exchg_data(
                 print(f"duplicated_labels AAAA {duplicated_labels}")
                 print(f"trades_from_sqlite_open AAAA {trades_from_sqlite_open}")
                 for label in duplicated_labels:
-                    last_id = [o["id"] for o in trades_from_sqlite_open if o["label"] == label]
-                    print(f"label {label} last_id {last_id}")
+                    timestamp = [o["timestamp"] for o in trades_from_sqlite_open if o["label"] == label]
+                    print(f"label {label} timestamp {timestamp}")
 
     
     for order_id in unrecorded_order_id:
