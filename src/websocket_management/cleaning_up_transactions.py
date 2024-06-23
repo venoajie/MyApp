@@ -78,7 +78,7 @@ async def reconciling_between_db_and_exchg_data(
                     await deleting_row(
                 "my_trades_all_json", "databases/trading.sqlite3", where_filter, "=", id
             )
-    else:
+    if unrecorded_order_id != [] or unrecorded_order_id != None:
         for order_id in unrecorded_order_id:
 
             transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
