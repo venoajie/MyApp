@@ -29,7 +29,7 @@ from utilities.string_modification import (
 )
 
 from db_management.sqlite_management import (
-    executing_query_with_return,
+    querying_label_and_size,
     executing_label_and_size_query,
 )
 
@@ -141,11 +141,26 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
     return reading_from_db_pickle(end_point, instrument, status)
 
 
-def is_size_consistent(
-    sum_my_trades_open_sqlite_all_strategy: int, size_from_position: int
+async def is_size_consistent(
+    sum_my_trades_sqlite: int, size_from_position: int,currency:str="ETH"
 ) -> bool:
     """ """
-    return sum_my_trades_open_sqlite_all_strategy == size_from_position
+    if sum_my_trades_sqlite==None:
+        transactions_all_summarized: list = await querying_label_and_size(
+        "my_trades_all_json"
+    )
+        sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
+    
+    if size_from_position==None:
+        # gathering basic data
+        reading_from_database: dict = await reading_from_pkl_database(currency)
+        positions_all: list = reading_from_database["positions_from_sub_account"]
+    # print(f"positions_all-recurring {positions_all} ")
+        size_from_position: int = (
+        0 if positions_all == [] else sum([o["size"] for o in positions_all])
+    )
+        
+    return sum_my_trades_sqlite == size_from_position
 
 
 async def send_limit_order(params) -> None:
@@ -491,11 +506,11 @@ async def balancing_the_imbalance(
     size_from_position: int = None,
 ) -> None:
     """ """
-    size_is_consistent: bool = is_size_consistent(
+    size_is_consistent: bool = await is_size_consistent(
         sum_my_trades_open_sqlite_all_strategy, size_from_position
     )
 
-    print(
+    log.error(
         f"size_is_consistent {size_is_consistent} sum_my_trades_sqlite {sum_my_trades_open_sqlite_all_strategy} size_from_positions {size_from_position} "
     )
 

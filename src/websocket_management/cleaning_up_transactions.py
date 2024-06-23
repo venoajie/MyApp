@@ -154,7 +154,6 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                     order_id,
                 )
 
-
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     log.info("count_and_delete_ohlc_rows-START")
