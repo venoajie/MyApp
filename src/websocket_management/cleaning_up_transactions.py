@@ -66,6 +66,12 @@ async def reconciling_between_db_and_exchg_data(
         if unrecorded_order_id == []:
             duplicated_elements= await querying_duplicated_transactions()
             print(f"duplicated_elements AAAA {duplicated_elements}")
+            if duplicated_elements != []:
+                duplicated_labels= [o["labels"] for o in duplicated_elements]
+                print(f"duplicated_labels AAAA {duplicated_labels}")
+                for label in duplicated_labels:
+                    last_id = [o[id] for o in trades_from_sqlite_open if o["label"] == label]
+                    print(f"label {label} last_id {last_id}")
 
     
     for order_id in unrecorded_order_id:
