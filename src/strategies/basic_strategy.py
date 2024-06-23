@@ -113,37 +113,7 @@ async def get_market_condition(
 ) -> dict:
     """ """
 
-    ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
-    ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
-
-    #    log.error(f'ohlc_high_9 {ohlc_high_9}')
-    ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
-    #    log.error(f'ema_high_9 {ema_high_9}')
-
-    ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
-
-    #    log.error(f'ema_low_9 {ema_low_9}')
-    delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
-    # log.warning(f'ema_high_9 {ema_high_9} ema_low_9 {ema_low_9} delta_price_pct_ema_low_high {delta_price_pct_ema_low_high}')
-    ohlc_short = await cleaned_up_ohlc("close", 9, table)
-    ohlc_long = await cleaned_up_ohlc("close", 20, table)
-
     ohlc = await cleaned_up_ohlc("close", limit, table)
-
-    vwap_period = 100
-
-    ohlc_all = await get_price_ohlc("close", vwap_period)
-
-    # log.error(f'df {df}')
-    df_vwap = await get_vwap(ohlc_all, vwap_period)
-    vwap = df_vwap.iloc[-1]
-
-    ema = await get_ema(ohlc["ohlc"], ratio)
-
-    # log.error(ema)
-    ema_short = await get_ema(ohlc_short["ohlc"], ratio)
-
-    ema_long = await get_ema(ohlc_long["ohlc"], ratio)
 
     last_price = ohlc["last_price"]
 
@@ -151,11 +121,18 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
 
-    log.debug(
-        f"  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}"
-    )
 
     TA_result= await querying_table("market_analytics_json-last")
+    TA_result_data= TA_result["list_data_only"]
+    ema_short= TA_result_data["1m_ema_close_9"]
+    ema_long= TA_result_data["1m_ema_close_20"]
+    ema_low_9= TA_result_data["1m_ema_low_9"]
+    ema_high_9= TA_result_data["1m_ema_high_9"]
+
+    ema = TA_result_data["1m_ema_close_9"]
+
+    #    log.error(f'ema_low_9 {ema_low_9}')
+    delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
 
     log.debug(
         f"  TA_result {TA_result}"
