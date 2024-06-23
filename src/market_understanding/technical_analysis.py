@@ -19,7 +19,7 @@ from utilities.system_tools import (
     raise_error_message,
 )
 
-from loguru import logger as log
+#from loguru import logger as log
 
 
 async def querying_label_and_size(table) -> list:
@@ -129,11 +129,11 @@ async def get_market_condition(
 
     TA_result= await querying_table("market_analytics_json")
     TA_result_data= TA_result["list_data_only"]
-    log.error(f'TA_result {TA_result_data}')
+    #log.error(f'TA_result {TA_result_data}')
     last_tick_from_prev_TA= 0 if TA_result_data==[] else max([
                 o["tick"] for o in TA_result_data
             ])
-    log.error(f'last_tick {last_tick_from_prev_TA}')
+    #log.error(f'last_tick {last_tick_from_prev_TA}')
     
     if last_tick_from_prev_TA==0 or current_tick > last_tick_from_prev_TA:
 
@@ -165,6 +165,6 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        print(f"TA {result}")
+        #print(f"TA {result}")
 
         await insert_tables("market_analytics_json", result)
