@@ -49,17 +49,18 @@ async def reconciling_between_db_and_exchg_data(
 ) -> None:
     """ """
 
-    if unrecorded_order_id == None:
+    if unrecorded_order_id == []:
 
         trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
         trades_from_sqlite_closed = await executing_closed_transactions()
         unrecorded_order_id = await get_unrecorded_order_id(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
         )
-        print(f"unrecorded_order_id {unrecorded_order_id}")
+        print(f"unrecorded_order_id AAAA {unrecorded_order_id}")
 
-        if unrecorded_order_id == None:
+        if unrecorded_order_id == []:
             duplicated_elements= get_duplicated_elements(trades_from_sqlite_open)
+            print(f"duplicated_elements AAAA {duplicated_elements}")
 
     
     for order_id in unrecorded_order_id:
