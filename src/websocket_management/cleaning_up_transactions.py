@@ -51,7 +51,7 @@ async def reconciling_between_db_and_exchg_data(
 
         trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
         trades_from_sqlite_closed = await executing_closed_transactions()
-        unrecorded_order_id = get_unrecorded_order_id(
+        unrecorded_order_id = await get_unrecorded_order_id(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
         )
 
