@@ -6,13 +6,18 @@ import asyncio
 # installed
 from loguru import logger as log
 
-from db_management.sqlite_management import executing_closed_transactions, insert_tables
+from db_management.sqlite_management import (
+    executing_closed_transactions, 
+    insert_tables,
+    deleting_row,
+    executing_query_with_return,
+    querying_arithmetic_operator,
+    querying_duplicated_transactions)
 
 # user defined formula
 from utilities.string_modification import (
     find_unique_elements,
     get_duplicated_elements)
-from db_management import sqlite_management
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -59,7 +64,7 @@ async def reconciling_between_db_and_exchg_data(
         print(f"unrecorded_order_id AAAA {unrecorded_order_id}")
 
         if unrecorded_order_id == []:
-            duplicated_elements= get_duplicated_elements(trades_from_sqlite_open)
+            duplicated_elements= querying_duplicated_transactions()
             print(f"duplicated_elements AAAA {duplicated_elements}")
 
     
@@ -149,11 +154,11 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
 
-                await sqlite_management.insert_tables(
+                await insert_tables(
                     "my_trades_closed_json", transaction
                 )
 
-                await sqlite_management.deleting_row(
+                await deleting_row(
                     "my_trades_all_json",
                     "databases/trading.sqlite3",
                     where_filter,
@@ -171,24 +176,24 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     for table in tables:
 
-        count_rows_query = sqlite_management.querying_arithmetic_operator(
+        count_rows_query = querying_arithmetic_operator(
             "tick", "COUNT", table
         )
-        rows = await sqlite_management.executing_query_with_return(count_rows_query)
+        rows = await executing_query_with_return(count_rows_query)
         rows = rows[0]["COUNT (tick)"]
 
         if rows > rows_threshold:
 
             where_filter = f"tick"
-            first_tick_query = sqlite_management.querying_arithmetic_operator(
+            first_tick_query = querying_arithmetic_operator(
                 "tick", "MIN", table
             )
-            first_tick_fr_sqlite = await sqlite_management.executing_query_with_return(
+            first_tick_fr_sqlite = await executing_query_with_return(
                 first_tick_query
             )
             first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
-            await sqlite_management.deleting_row(
+            await deleting_row(
                 table, database, where_filter, "=", first_tick
             )
     log.info("count_and_delete_ohlc_rows-DONE")
