@@ -378,6 +378,9 @@ async def querying_table(
     if filter == None:
         query_table = f"SELECT  * FROM {table}"
 
+    if "market_analytics" in table and "last" in table:
+        query_table = f"""SELECT  * FROM {table} ORDER BY id DESC LIMIT 1"""
+
     combine_result = []
 
     try:

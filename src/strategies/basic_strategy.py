@@ -13,6 +13,7 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     querying_ohlc_price_vol,
     querying_additional_params,
+    querying_table
 )
 from utilities.string_modification import parsing_label
 from loguru import logger as log
@@ -152,6 +153,12 @@ async def get_market_condition(
 
     log.debug(
         f"  last_market_price {last_price} vwap {vwap} ema {ema} ema_short {ema_short} ema_long {ema_long}"
+    )
+
+    TA_result= await querying_table("market_analytics_json-last")
+
+    log.debug(
+        f"  TA_result {TA_result}"
     )
 
     if last_price > ema_short and ema_short > ema_long:
