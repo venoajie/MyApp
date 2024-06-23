@@ -3,6 +3,7 @@
 
 # built ins
 import asyncio
+import datetime
 
 # installed
 import aioschedule as schedule
@@ -43,6 +44,13 @@ from websocket_management.cleaning_up_transactions import (
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
+
+
+def count_down_to_reboot(hour: float = 1) -> list:
+    """ """
+    
+    stop_time = datetime.datetime.now() + datetime.timedelta(hours=hour)
+    return stop_time
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -191,6 +199,15 @@ async def run_every_5_seconds() -> None:
     await balancing_the_imbalance(trades_from_exchange)
 
     await clean_up_closed_transactions()
+
+    hour_to_reboot = count_down_to_reboot
+    print (f"stop_time {hour_to_reboot} datetime.datetime.now() {datetime.datetime.now()}")
+
+    # in relevant function ...
+    if datetime.datetime.now() > hour_to_reboot:
+        print (f"test")
+
+
 
 
 async def run_every_60_seconds() -> None:
