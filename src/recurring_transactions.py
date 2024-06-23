@@ -199,10 +199,11 @@ async def run_every_5_seconds() -> None:
 
     # in relevant function ...
     if datetime.datetime.now() > stop_time:
-        import os
+        import subprocess
+
         await cancel_the_cancellables()
         print (f"test")     
-        os.system('systemctl reboot -i')
+        subprocess.run("reboot") 
         
 
 
