@@ -126,7 +126,7 @@ async def get_market_condition(
     TA_result_data= TA_result["list_data_only"]
 
     log.debug(
-        f"  TA_result {TA_result}"
+        f"  TA_result_data {TA_result_data}"
     )
     ema_short= TA_result_data["1m_ema_close_9"]
     ema_long= TA_result_data["1m_ema_close_20"]
