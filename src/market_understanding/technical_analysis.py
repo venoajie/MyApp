@@ -14,6 +14,9 @@ from db_management.sqlite_management import (
     querying_ohlc_price_vol,
     insert_tables
 )
+from utilities.system_tools import (
+    raise_error_message,
+)
 
 from loguru import logger as log
 
@@ -102,6 +105,18 @@ async def get_vwap(ohlc_all, vwap_period) -> dict:
     )
 
 
+async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
+    """ """
+    try:
+        last_tick1_fr_sqlite = await executing_query_with_return(last_tick_query_ohlc1)
+
+    except Exception as error:
+        await raise_error_message(
+            error,
+            "Capture market data - failed to fetch last_tick_fr_sqlite",
+        )
+    return last_tick1_fr_sqlite[0]["MAX (tick)"]
+
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
@@ -128,6 +143,8 @@ async def get_market_condition(
     result.update({"1m_ema_close_9": ema_close_9})
     result.update({"1m_ema_high_9": ema_high_9})
     result.update({"1m_ema_low_9": ema_low_9})
+    last_tick= last_tick_fr_sqlite("market_analytics_json")
+    log.error(f'last_tick {last_tick}')
     
 
     vwap_period = 100
