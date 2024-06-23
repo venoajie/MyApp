@@ -75,25 +75,30 @@ async def reconciling_between_db_and_exchg_data(
                 my_trades_open_all: list = my_trades_open_sqlite["all"]
                 #print(f"my_trades_open_all AAAA {my_trades_open_all}")
                 for label in duplicated_labels:
-                    id = [o["id"] for o in my_trades_open_all if o["label_main"] == label]
+                    id = max([o["id"] for o in my_trades_open_all if o["label_main"] == label])
+                    where_filter = f"id"
+                    await deleting_row(
+                "my_trades_all_json", "databases/trading.sqlite3", where_filter, "=", id
+            )
                     print(f"label {label} id {id}")
 
     
-    for order_id in unrecorded_order_id:
+    else:
+        for order_id in unrecorded_order_id:
 
-        transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
+            transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
 
-        print(f"transaction {transaction}")
+            print(f"transaction {transaction}")
 
-        label = [o["label"] for o in trades_from_exchange if o["order_id"] == order_id][
-            0
-        ]
-        print(f"label  {label} order_id  {order_id}")
-        if "open" in label:
-            await get_additional_params_for_open_label(transaction[0], label)
+            label = [o["label"] for o in trades_from_exchange if o["order_id"] == order_id][
+                0
+            ]
+            print(f"label  {label} order_id  {order_id}")
+            if "open" in label:
+                await get_additional_params_for_open_label(transaction[0], label)
 
-        await insert_tables("my_trades_all_json", transaction)
-        print(f"transaction {transaction}")
+            await insert_tables("my_trades_all_json", transaction)
+            print(f"transaction {transaction}")
 
 
 def get_transactions_with_closed_label(transactions_all: list) -> list:
