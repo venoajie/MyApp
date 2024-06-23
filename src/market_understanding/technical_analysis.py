@@ -150,8 +150,8 @@ async def get_market_condition(
     TA_result= await querying_table("market_analytics_json")
     TA_result_data= TA_result["list_data_only"]
     log.error(f'TA_result {TA_result_data}')
-    last_tick= ([
-                o["tick"] for o in TA_result
+    last_tick= max([
+                o["tick"] for o in TA_result_data
             ])
     log.error(f'last_tick {last_tick}')
     
