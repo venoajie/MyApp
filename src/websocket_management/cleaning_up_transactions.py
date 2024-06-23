@@ -24,7 +24,7 @@ from strategies.basic_strategy import (
 
 async def get_unrecorded_order_id(
     from_sqlite_open, from_sqlite_closed, from_exchange
-) -> dict:
+) -> list:
     """ """
 
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
@@ -60,6 +60,7 @@ async def reconciling_between_db_and_exchg_data(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
         )
         print(f"unrecorded_order_id 3 {unrecorded_order_id}")
+        print(f"trades_from_exchange {trades_from_exchange}")
 
         if unrecorded_order_id == None:
             print(f"unrecorded_order_id 4 {unrecorded_order_id}")
