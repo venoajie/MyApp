@@ -615,7 +615,7 @@ class BasicStrategy:
             else [o for o in my_trades_attributes_closed if trade_seq == o["label"]]
             != []
         )
-        log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
+        #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
         print(f"label was existed before {label_is_exist} {my_trades_attributes_closed}")
         return label_is_exist
 
