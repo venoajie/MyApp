@@ -1,6 +1,27 @@
 # -*- coding: utf-8 -*-
 
 
+def get_duplicated_elements(data: list) -> list:
+    """
+
+    Args:
+        data (list)
+
+    Returns:
+        list:
+
+    Example:
+        data_original = ['A', 'A', 'B', 'B', 'B', 'C']
+        data_cleaned = ['A','B']
+
+    Reference:
+        https://www.geeksforgeeks.org/python-program-print-duplicates-list-integers/
+        
+        """
+
+    return list(set([x for x in data if data.count(x) > 1]))
+
+
 def remove_redundant_elements(data: list) -> list:
     """
     Remove redundant items in a list
