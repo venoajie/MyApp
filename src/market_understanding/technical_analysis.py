@@ -148,7 +148,11 @@ async def get_market_condition(
     result.update({"1m_ema_high_9": ema_high_9})
     result.update({"1m_ema_low_9": ema_low_9})
     TA_result= await querying_table("market_analytics_json")
-    log.error(f'TA_result {TA_result}')
+    TA_result_all= TA_result["all"]
+    TA_result_data= ([
+                o["data"] for o in TA_result
+            ])
+    log.error(f'TA_result {TA_result_data}')
     last_tick= max([
                 o["tick"] for o in TA_result
             ])
