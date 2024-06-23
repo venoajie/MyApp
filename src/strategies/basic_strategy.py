@@ -124,6 +124,10 @@ async def get_market_condition(
 
     TA_result= await querying_table("market_analytics_json-last")
     TA_result_data= TA_result["list_data_only"]
+
+    log.debug(
+        f"  TA_result {TA_result}"
+    )
     ema_short= TA_result_data["1m_ema_close_9"]
     ema_long= TA_result_data["1m_ema_close_20"]
     ema_low_9= TA_result_data["1m_ema_low_9"]
@@ -134,9 +138,6 @@ async def get_market_condition(
     #    log.error(f'ema_low_9 {ema_low_9}')
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
 
-    log.debug(
-        f"  TA_result {TA_result}"
-    )
 
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
