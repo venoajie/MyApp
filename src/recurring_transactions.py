@@ -203,7 +203,7 @@ async def run_every_5_seconds() -> None:
 
         await cancel_the_cancellables()
         print (f"test")     
-        subprocess.run("reboot") 
+        subprocess.call(["shutdown", "-r", "-t", "0"])
         
 
 
