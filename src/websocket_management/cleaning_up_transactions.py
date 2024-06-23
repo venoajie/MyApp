@@ -67,7 +67,7 @@ async def reconciling_between_db_and_exchg_data(
             duplicated_elements= await querying_duplicated_transactions()
 
             if duplicated_elements != [] or duplicated_elements == 0:
-                print (f" duplicated_elements {duplicated_elements}")
+                print (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}")
                 duplicated_labels= [o["label"] for o in duplicated_elements]
                 
                 my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
