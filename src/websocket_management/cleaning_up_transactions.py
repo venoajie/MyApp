@@ -69,8 +69,9 @@ async def reconciling_between_db_and_exchg_data(
             if duplicated_elements != []:
                 duplicated_labels= [o["label"] for o in duplicated_elements]
                 print(f"duplicated_labels AAAA {duplicated_labels}")
+                print(f"trades_from_sqlite_open AAAA {trades_from_sqlite_open}")
                 for label in duplicated_labels:
-                    last_id = [o[id] for o in trades_from_sqlite_open if o["label"] == label]
+                    last_id = [o["id"] for o in trades_from_sqlite_open if o["label"] == label]
                     print(f"label {label} last_id {last_id}")
 
     
