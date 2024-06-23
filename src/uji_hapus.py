@@ -11,11 +11,11 @@ import aiohttp
 from loguru import logger as log
 
 
+import datetime
+stop_time = datetime.datetime.now() + datetime.timedelta(hours=1)
+
 async def run_every_15_seconds() -> None:
     """ """
-    import datetime
-    stop_time = datetime.datetime.now() + datetime.timedelta(hours=1)
-
     # ...
     print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()}")
 
