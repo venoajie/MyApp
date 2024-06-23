@@ -46,7 +46,7 @@ symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
 
-def count_down_to_reboot(hour: float = 1) -> list:
+def count_down_to_reboot(hour: float = 1/60) -> list:
     """ """
     
     stop_time = datetime.datetime.now() + datetime.timedelta(hours=hour)
