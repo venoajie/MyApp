@@ -66,7 +66,7 @@ async def reconciling_between_db_and_exchg_data(
         if unrecorded_order_id == []:
             duplicated_elements= await querying_duplicated_transactions()
 
-            if duplicated_elements != [] or duplicated_elements != 0:
+            if duplicated_elements != [] or duplicated_elements == 0:
                 print (f" duplicated_elements {duplicated_elements}")
                 duplicated_labels= [o["label"] for o in duplicated_elements]
                 
