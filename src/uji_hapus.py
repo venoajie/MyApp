@@ -1,20 +1,33 @@
-from db_management import sql_executing_queries
+#!/usr/bin/env/python
+# -*- coding: utf-8 -*-
+
+# built ins
 import asyncio
 
+# installed
+import aioschedule as schedule
+import time
+import aiohttp
+from loguru import logger as log
 
-async def result():
-    from market_understanding.price_action import get_candles_size
 
-    candles = await get_candles_size.get_dataframe_from_ohlc_tables(
-        "ohlc1D_eth_perp_json"
-    )
-    return candles
+async def run_every_15_seconds() -> None:
+    """ """
 
+    print (f"test")
 
 if __name__ == "__main__":
 
     try:
-        asyncio.get_event_loop().run_until_complete(result())
+        # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
+
+        schedule.every(1).seconds.do(run_every_15_seconds)
+
+        loop = asyncio.get_event_loop()
+
+        while True:
+            loop.run_until_complete(schedule.run_pending())
+            time.sleep(0.91)
 
     except Exception as error:
         print(error)
