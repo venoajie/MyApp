@@ -31,6 +31,7 @@ from strategies.basic_strategy import (
     get_market_condition)
 from websocket_management.ws_management import (
     opening_transactions,
+    cancel_the_cancellables,
     reading_from_pkl_database,
     closing_transactions,
     get_my_trades_from_exchange,
@@ -262,7 +263,7 @@ if __name__ == "__main__":
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
 
-        schedule.every(1).seconds.do(run_every_15_seconds)
+        schedule.every(15).seconds.do(run_every_15_seconds)
         schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
