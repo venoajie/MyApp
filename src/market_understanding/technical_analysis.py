@@ -130,12 +130,12 @@ async def get_market_condition(
     TA_result= await querying_table("market_analytics_json")
     TA_result_data= TA_result["list_data_only"]
     log.error(f'TA_result {TA_result_data}')
-    last_tick_from_prev_TA= max([
+    last_tick_from_prev_TA= 0 if TA_result_data==[] else max([
                 o["tick"] for o in TA_result_data
             ])
     log.error(f'last_tick {last_tick_from_prev_TA}')
     
-    if last_tick_from_prev_TA==[] or current_tick > last_tick_from_prev_TA:
+    if last_tick_from_prev_TA==0 or current_tick > last_tick_from_prev_TA:
 
         ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
 
