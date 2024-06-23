@@ -8,7 +8,7 @@ import asyncio
 import aioschedule as schedule
 import time
 import aiohttp
-
+from loguru import logger as log
 # user defined formula
 from strategies import entries_exits
 from utilities.pickling import replace_data
@@ -111,8 +111,14 @@ async def run_every_5_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
+    log.warning (f"market_condition-START")
     market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
-    # print(f"market_condition {market_condition}")
+    print(f"market_condition {market_condition}")
+    log.warning (f"market_condition-Done")
+    log.warning (f"market_condition-START")
+    TA_result= await querying_table("market_analytics_json")
+    print(f"market_condition 2 {TA_result}")
+    log.warning (f"market_condition-Done")
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -206,7 +212,7 @@ async def run_every_60_seconds() -> None:
     await count_and_delete_ohlc_rows(rows_threshold)
 
 
-async def run_every_1_second() -> None:
+async def run_every_15_seconds() -> None:
     """ """
 
     from market_understanding.technical_analysis import get_market_condition
@@ -266,7 +272,7 @@ if __name__ == "__main__":
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
 
-        schedule.every(1).seconds.do(run_every_1_second)
+        schedule.every(1).seconds.do(run_every_15_seconds)
         schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
