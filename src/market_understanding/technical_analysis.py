@@ -143,7 +143,7 @@ async def get_market_condition(
     result.update({"1m_ema_close_9": ema_close_9})
     result.update({"1m_ema_high_9": ema_high_9})
     result.update({"1m_ema_low_9": ema_low_9})
-    last_tick= last_tick_fr_sqlite("market_analytics_json")
+    last_tick= await last_tick_fr_sqlite("market_analytics_json")
     log.error(f'last_tick {last_tick}')
     
 
