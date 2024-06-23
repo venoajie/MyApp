@@ -60,6 +60,8 @@ async def reconciling_between_db_and_exchg_data(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
         )
         print(f"unrecorded_order_id 3 {unrecorded_order_id}")
+        print(f"trades_from_sqlite_open {trades_from_sqlite_open}")
+        print(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
         print(f"trades_from_exchange {trades_from_exchange}")
 
         if unrecorded_order_id == None:
