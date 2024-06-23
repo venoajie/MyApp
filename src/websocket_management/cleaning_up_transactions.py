@@ -116,7 +116,6 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
     2. move them to table for closed transactions/my_trades_closed_json
     """
 
-    log.critical("clean_up_closed_transactions-START")
     if transactions_all == None:
         transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
@@ -154,8 +153,6 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                     "=",
                     order_id,
                 )
-
-    log.critical("clean_up_closed_transactions-DONE")
 
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
