@@ -178,7 +178,7 @@ def is_current_file_running(script: str) -> bool:
                 and script in q.cmdline()[1]
                 and q.pid != os.getpid()
             ):
-                print("'{}' Process is already running".format(script))
+                #print("'{}' Process is already running".format(script))
                 return True
 
     return False

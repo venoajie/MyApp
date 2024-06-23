@@ -171,9 +171,6 @@ async def run_every_5_seconds() -> None:
     size_is_consistent: bool = await is_size_consistent(
         sum_my_trades_sqlite, size_from_positions
     )
-    print(
-        f"size_is_consistent {size_is_consistent} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_positions} "
-    )
 
     if size_is_consistent:
 
