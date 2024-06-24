@@ -195,7 +195,7 @@ async def run_every_5_seconds() -> None:
 
     await clean_up_closed_transactions()
 
-    print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+    #print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
     # in relevant function ...
     #if datetime.datetime.now() > stop_time:
