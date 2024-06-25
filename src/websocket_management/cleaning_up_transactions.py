@@ -53,7 +53,7 @@ async def get_unrecorded_order_id(
 def get_order_id(data_from_db: list) -> list:
     """ """
 
-    log.critical (f"data_from_db {data_from_db}")
+    #log.critical (f"data_from_db {data_from_db}")
 
     return [o["order_id"] for o in data_from_db]
 
