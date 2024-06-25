@@ -120,7 +120,7 @@ async def clean_up_duplicate_elements() -> None:
 
     for order_id in order_id_from_db_open:
         log.warning (f"order_id {order_id}")
-        log.debug (f"order_id_from_db_closed {order_id_from_db_closed} {order_id in order_id_from_db_closed}")
+        log.debug (f"order_id_from_db_closed {order_id in order_id_from_db_closed}")
         if order_id in order_id_from_db_closed:
             log.critical (f"del duplicate order id {order_id}")
             where_filter = f"order_id"
