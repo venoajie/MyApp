@@ -17,7 +17,6 @@ from db_management.sqlite_management import (
 )
 from utilities.string_modification import parsing_label
 from loguru import logger as log
-from websocket_management.cleaning_up_transactions import is_order_has_sent_before
 
 async def querying_label_and_size(table) -> list:
     """ """
@@ -325,6 +324,29 @@ def get_label_integer(label: dict) -> bool:
 
     return parsing_label(label)
 
+
+def get_order_id(data_from_db: list) -> list:
+    """ """
+
+    return [o["order_id"] for o in data_from_db]
+
+async def is_order_has_sent_before(order_id: str) -> bool:
+    """ """
+    data_from_db_open= await querying_label_and_size("my_trades_all_json")
+    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
+    order_id_from_db_open= get_order_id (data_from_db_open)
+    order_id_from_db_closed= get_order_id (data_from_db_closed)
+    combined_id=order_id_from_db_open+order_id_from_db_closed
+
+    # assuming only 1
+    label_is_exist: list = (
+        False
+        if combined_id == []
+        else  order_id in combined_id 
+    )
+    #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
+    print(f"label was existed before {label_is_exist}")
+    return label_is_exist
 
 async def summing_transactions_under_label_int(
     transaction: dict, transactions_all: list = None
@@ -669,9 +691,9 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
-            trade_seq = params["order_id"]
+            order_id = params["order_id"]
 
-            order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
+            order_has_sent_before = await is_order_has_sent_before(order_id)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False

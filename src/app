@@ -39,10 +39,11 @@ from websocket_management.ws_management import (
     resupply_sub_accountdb,
     cancel_the_cancellables)
 from websocket_management.cleaning_up_transactions import (
-    check_if_transaction_has_closed_label_before, is_order_has_sent_before)
+    check_if_transaction_has_closed_label_before)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     querying_label_and_size,
+    is_order_has_sent_before,
     is_everything_consistent)
 
 

@@ -24,7 +24,7 @@ from strategies.basic_strategy import (
     summing_transactions_under_label_int,
     get_transaction_label,
     get_label_integer,
-    querying_label_and_size,
+    querying_label_and_size
 )
 
 
@@ -54,25 +54,6 @@ def get_order_id(data_from_db: list) -> list:
     """ """
 
     return [o["order_id"] for o in data_from_db]
-
-
-async def is_order_has_sent_before(order_id: str) -> bool:
-    """ """
-    data_from_db_open= await querying_label_and_size("my_trades_all_json")
-    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
-    order_id_from_db_open= get_order_id (data_from_db_open)
-    order_id_from_db_closed= get_order_id (data_from_db_closed)
-    combined_id=order_id_from_db_open+order_id_from_db_closed
-
-    # assuming only 1
-    label_is_exist: list = (
-        False
-        if combined_id == []
-        else  order_id in combined_id 
-    )
-    #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
-    print(f"label was existed before {label_is_exist}")
-    return label_is_exist
 
 
 async def reconciling_between_db_and_exchg_data(
