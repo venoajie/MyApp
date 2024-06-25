@@ -108,7 +108,7 @@ async def clean_up_duplicate_elements() -> None:
     label_from_db_open= get_order_label (data_from_db_open)
     label_from_db_closed= get_order_label (data_from_db_closed)
 
-    log.warning (f"order_id_from_db_open {label_from_db_open}")
+    #log.warning (f"order_id_from_db_open {label_from_db_open}")
 
     for label in label_from_db_open:
         log.warning (f"order_id {label}")
