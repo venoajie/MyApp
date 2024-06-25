@@ -668,6 +668,8 @@ def querying_label_and_size(table) -> str:
 
     if "trade" in table:
         tab = f"SELECT label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table}"
+        if "closed" in table:
+            tab = f"SELECT label_main as label, amount_dir as amount, order_id, trade_seq FROM {table}"
     return tab
 
 
