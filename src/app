@@ -57,11 +57,11 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 async def manage_params (trade) -> None:
     order_id=trade["order_id"]
 
-    order_has_sent_before= await is_order_has_sent_before(order_id)
+    order_has_exist_before= await is_order_has_sent_before(order_id)
 
-    log.info(f"trade {trade} order_has_sent_before {order_has_sent_before} not {not order_has_sent_before}")
+    log.info(f"trade {trade} order_has_sent_before {order_has_exist_before} not {not order_has_exist_before}")
 
-    if not order_has_sent_before:
+    if not order_has_exist_before:
         try:
             label=trade["label"]
             if "open" in label:
