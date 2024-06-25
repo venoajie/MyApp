@@ -124,7 +124,14 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
 
         await manage_orders (orders)
         for order in orders:
-            
+                    
+            label=order["label"]
+
+            label_has_exist_before= await is_order_has_sent_before(label)
+
+            if label_has_exist_before:
+                await cancel_the_cancellables()
+
             everything_consistent= is_everything_consistent(order)
             log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
             
