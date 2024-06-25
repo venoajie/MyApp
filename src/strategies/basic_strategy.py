@@ -691,6 +691,7 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
+            log.info (f"params {params}")
             order_id = params["order_id"]
 
             order_has_sent_before = await is_order_has_sent_before(order_id)
