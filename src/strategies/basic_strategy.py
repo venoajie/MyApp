@@ -330,22 +330,35 @@ def get_order_id(data_from_db: list) -> list:
 
     return [o["order_id"] for o in data_from_db]
 
-async def is_order_has_sent_before(order_id: str) -> bool:
+
+def get_order_label(data_from_db: list) -> list:
+    """ """
+
+    return [o["label"] for o in data_from_db]
+
+async def is_order_has_sent_before(verifier: str, verification_basis: str="order_id") -> bool:
     """ """
     data_from_db_open= await querying_label_and_size("my_trades_all_json")
     data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
-    order_id_from_db_open= get_order_id (data_from_db_open)
-    order_id_from_db_closed= get_order_id (data_from_db_closed)
-    combined_id=order_id_from_db_open+order_id_from_db_closed
+    
+    if verification_basis=="label":
+        result_from_db_open= get_order_label (data_from_db_open)
+        result_from_db_closed= get_order_label (data_from_db_closed)
+    
+    if verification_basis=="order_id":
+        result_from_db_open= get_order_id (data_from_db_open)
+        result_from_db_closed= get_order_id (data_from_db_closed)
+
+    combined_result=result_from_db_open+result_from_db_closed
 
     # assuming only 1
     label_is_exist: list = (
         False
-        if combined_id == []
-        else  order_id in combined_id 
+        if combined_result == []
+        else  verifier in combined_result 
     )
     #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
-    print(f"label was existed before {label_is_exist}")
+    print(f"trasaction was existed before {label_is_exist}")
     return label_is_exist
 
 async def summing_transactions_under_label_int(
@@ -692,9 +705,9 @@ class BasicStrategy:
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
             log.info (f"params {params}")
-            order_id = params["order_id"]
+            label = params["label"]
 
-            order_has_sent_before = await is_order_has_sent_before(order_id)
+            order_has_sent_before = await is_order_has_sent_before(label,"label")
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
