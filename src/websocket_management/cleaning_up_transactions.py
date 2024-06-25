@@ -24,7 +24,8 @@ from strategies.basic_strategy import (
     summing_transactions_under_label_int,
     get_transaction_label,
     get_label_integer,
-    querying_label_and_size
+    querying_label_and_size,
+    get_order_label
 )
 
 
@@ -48,15 +49,6 @@ async def get_unrecorded_order_id(
     unrecorded_order_id = list(set(from_exchange_order_id).difference(combined_closed_open))
 
     return unrecorded_order_id
-
-
-def get_order_id(data_from_db: list) -> list:
-    """ """
-
-    #log.critical (f"data_from_db {data_from_db}")
-
-    return [o["order_id"] for o in data_from_db]
-
 
 async def reconciling_between_db_and_exchg_data(
     trades_from_exchange: list, unrecorded_order_id: str
@@ -113,23 +105,23 @@ async def clean_up_duplicate_elements() -> None:
     
     data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
     data_from_db_open= await querying_label_and_size("my_trades_all_json")
-    order_id_from_db_open= get_order_id (data_from_db_open)
-    order_id_from_db_closed= get_order_id (data_from_db_closed)
+    label_from_db_open= get_order_label (data_from_db_open)
+    label_from_db_closed= get_order_label (data_from_db_closed)
 
-    log.warning (f"order_id_from_db_open {order_id_from_db_open}")
+    log.warning (f"order_id_from_db_open {label_from_db_open}")
 
-    for order_id in order_id_from_db_open:
-        log.warning (f"order_id {order_id}")
-        log.debug (f"order_id_from_db_closed {order_id in order_id_from_db_closed}")
-        if order_id in order_id_from_db_closed:
-            log.critical (f"del duplicate order id {order_id}")
+    for label in label_from_db_closed:
+        log.warning (f"order_id {label}")
+        log.debug (f"order_id_from_db_closed {label in label_from_db_closed}")
+        if label in label_from_db_closed:
+            log.critical (f"del duplicate order id {label}")
             where_filter = f"order_id"
             await deleting_row(
                     "my_trades_all_json",
                     "databases/trading.sqlite3",
                     where_filter,
                     "=",
-                    order_id,
+                    label,
                 )
 
 

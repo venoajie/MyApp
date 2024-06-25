@@ -324,31 +324,18 @@ def get_label_integer(label: dict) -> bool:
 
     return parsing_label(label)
 
-
-def get_order_id(data_from_db: list) -> list:
-    """ """
-
-    return [o["order_id"] for o in data_from_db]
-
-
 def get_order_label(data_from_db: list) -> list:
     """ """
 
     return [o["label"] for o in data_from_db]
 
-async def is_order_has_sent_before(verifier: str, verification_basis: str="order_id") -> bool:
+async def is_order_has_sent_before(verifier: str="label") -> bool:
     """ """
     data_from_db_open= await querying_label_and_size("my_trades_all_json")
     data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
+    result_from_db_open= get_order_label (data_from_db_open)
+    result_from_db_closed= get_order_label (data_from_db_closed)
     
-    if verification_basis=="label":
-        result_from_db_open= get_order_label (data_from_db_open)
-        result_from_db_closed= get_order_label (data_from_db_closed)
-    
-    if verification_basis=="order_id":
-        result_from_db_open= get_order_id (data_from_db_open)
-        result_from_db_closed= get_order_id (data_from_db_closed)
-
     combined_result=result_from_db_open+result_from_db_closed
 
     # assuming only 1
