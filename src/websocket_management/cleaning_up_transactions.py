@@ -115,7 +115,7 @@ async def clean_up_duplicate_elements() -> None:
         log.debug (f"label_from_db_open {label in label_from_db_open}")
         if label in label_from_db_closed:
             log.critical (f"del duplicate order id {label}")
-            where_filter = f"order_id"
+            where_filter = f"label"
             await deleting_row(
                     "my_trades_all_json",
                     "databases/trading.sqlite3",
