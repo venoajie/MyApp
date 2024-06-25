@@ -39,7 +39,7 @@ from websocket_management.ws_management import (
     resupply_sub_accountdb,
     cancel_the_cancellables)
 from websocket_management.cleaning_up_transactions import (
-    check_if_transaction_has_closed_label_before)
+    check_if_transaction_has_closed_label_before, is_order_has_sent_before)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     querying_label_and_size,
@@ -55,27 +55,32 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
 async def manage_params (trade) -> None:
+    order_id=trade["order_id"]
 
-    log.info(f"trade {trade}")
-    try:
-        label=trade["label"]
-        if "open" in label:
+    order_has_sent_before= await is_order_has_sent_before(order_id)
 
-            await get_additional_params_for_open_label (trade, label)
+    log.info(f"trade {trade} order_has_sent_before {order_has_sent_before} not {not order_has_sent_before}")
 
-        if "closed" in label:
-            label_integer= parsing_label (label) ["int"]
-            transactions_all: list = await querying_label_and_size("my_trades_all_json")
+    if not order_has_sent_before:
+        try:
+            label=trade["label"]
+            if "open" in label:
 
-            has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
+                await get_additional_params_for_open_label (trade, label)
+
+            if "closed" in label:
+                label_integer= parsing_label (label) ["int"]
+                transactions_all: list = await querying_label_and_size("my_trades_all_json")
+
+                has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
+                
+                if not has_closed_label or has_closed_label==0:
+                    await update_status_closed_trades(label_integer)
+
+        except:
+            log.critical(f"except trade {trade}")
             
-            if not has_closed_label or has_closed_label==0:
-                await update_status_closed_trades(label_integer)
-
-    except:
-        log.critical(f"except trade {trade}")
-        
-    await insert_tables("my_trades_all_json", trade)
+        await insert_tables("my_trades_all_json", trade)
 
 async def manage_trades (trades: dict) -> None:
 
@@ -105,7 +110,6 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
-    my_trades_open_all: list = my_trades_open_sqlite["all"]
     
     if trades:
         log.error (f"trades {trades}")

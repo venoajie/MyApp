@@ -17,7 +17,7 @@ from db_management.sqlite_management import (
 )
 from utilities.string_modification import parsing_label
 from loguru import logger as log
-
+from websocket_management.cleaning_up_transactions import is_order_has_sent_before
 
 async def querying_label_and_size(table) -> list:
     """ """
@@ -597,26 +597,6 @@ class BasicStrategy:
             transactions_len=get_transactions_len(result_strategy_label),
         )
 
-    async def is_order_has_sent_before(self, trade_seq) -> bool:
-        """ """
-        get_my_trades_attributes_closed = await self.transaction_attributes(
-            "my_trades_all_json", "closed"
-        )
-
-        my_trades_attributes_closed = get_my_trades_attributes_closed[
-            "transactions_strategy_label"
-        ]
-        # assuming only 1
-        label_is_exist: list = (
-            False
-            if my_trades_attributes_closed == []
-            else [o for o in my_trades_attributes_closed if trade_seq == o["label"]]
-            != []
-        )
-        #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
-        print(f"label was existed before {label_is_exist} {my_trades_attributes_closed}")
-        return label_is_exist
-
     async def is_send_exit_order_allowed(
         self,
         market_condition: dict,
@@ -689,7 +669,7 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
-            trade_seq = params["label"]
+            trade_seq = params["order_id"]
 
             order_has_sent_before = await self.is_order_has_sent_before(trade_seq)
 

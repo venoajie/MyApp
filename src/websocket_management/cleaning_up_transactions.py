@@ -50,6 +50,31 @@ async def get_unrecorded_order_id(
     return unrecorded_order_id
 
 
+def get_order_id(data_from_db: list) -> list:
+    """ """
+
+    return [o["order_id"] for o in data_from_db]
+
+
+async def is_order_has_sent_before(order_id: str) -> bool:
+    """ """
+    data_from_db_open= await querying_label_and_size("my_trades_all_json")
+    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
+    order_id_from_db_open= get_order_id (data_from_db_open)
+    order_id_from_db_closed= get_order_id (data_from_db_closed)
+    combined_id=order_id_from_db_open+order_id_from_db_closed
+
+    # assuming only 1
+    label_is_exist: list = (
+        False
+        if combined_id == []
+        else  order_id in combined_id 
+    )
+    #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
+    print(f"label was existed before {label_is_exist}")
+    return label_is_exist
+
+
 async def reconciling_between_db_and_exchg_data(
     trades_from_exchange: list, unrecorded_order_id: str
 ) -> None:
@@ -99,6 +124,27 @@ def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
 
     return [o for o in transactions_all if "closed" in o["label"]]
+
+async def clean_up_duplicate_elements() -> None:
+    """ """
+    
+    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
+    data_from_db_open= await querying_label_and_size("my_trades_all_json")
+    order_id_from_db_open= get_order_id (data_from_db_open)
+    order_id_from_db_closed= get_order_id (data_from_db_closed)
+
+    for order_id in order_id_from_db_open:
+        if order_id in order_id_from_db_closed:
+            log.critical (f"del duplicate order id {order_id}")
+            where_filter = f"order_id"
+            await deleting_row(
+                    "my_trades_all_json",
+                    "databases/trading.sqlite3",
+                    where_filter,
+                    "=",
+                    order_id,
+                )
+
 
 
 def get_closed_open_transactions_under_same_label_int(

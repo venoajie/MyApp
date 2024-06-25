@@ -40,7 +40,8 @@ from websocket_management.ws_management import (
     balancing_the_imbalance)
 from websocket_management.cleaning_up_transactions import (
     get_unrecorded_order_id,
-    clean_up_closed_transactions)
+    clean_up_closed_transactions,
+    clean_up_duplicate_elements)
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
@@ -190,10 +191,13 @@ async def run_every_5_seconds() -> None:
                 TAKE_PROFIT_PCT_DAILY,
             )
 
-    trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-    await balancing_the_imbalance(trades_from_exchange)
+    else:
+        await clean_up_duplicate_elements()
+        trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+        await balancing_the_imbalance(trades_from_exchange)
 
     await clean_up_closed_transactions()
+    
 
     #print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
