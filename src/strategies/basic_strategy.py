@@ -694,7 +694,7 @@ class BasicStrategy:
             log.info (f"params {params}")
             label = params["label"]
 
-            order_has_sent_before = await is_order_has_sent_before(label,"label")
+            order_has_sent_before = await is_order_has_sent_before(label)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
