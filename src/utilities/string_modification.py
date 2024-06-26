@@ -16,8 +16,8 @@ def get_duplicated_elements(data: list) -> list:
 
     Reference:
         https://www.geeksforgeeks.org/python-program-print-duplicates-list-integers/
-        
-        """
+
+    """
 
     return list(set([x for x in data if data.count(x) > 1]))
 

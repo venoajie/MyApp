@@ -14,17 +14,14 @@ from loguru import logger as log
 # user defined formula
 from utilities.pickling import (
     replace_data,
-    read_data,
-)
+    read_data)
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
-    catch_error_message
-)
+    catch_error_message)
 from utilities.string_modification import (
     parsing_label,
-    extract_currency_from_text
-)
+    extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
@@ -33,8 +30,7 @@ from db_management.sqlite_management import (
     deleting_row,
     querying_arithmetic_operator,
     querying_table,insert_tables,
-    executing_query_with_return
-)
+    executing_query_with_return)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
     cancel_the_cancellables)
@@ -55,38 +51,40 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-async def manage_params (trade) -> None:
-    label=trade["label"]
+async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_error") -> None:
 
-    label_has_exist_before= await is_order_has_sent_before(label)
+    label_integer= parsing_label (label) ["int"]
+    transactions_all: list = await querying_label_and_size("my_trades_all_json")
 
-    log.info(f"trade {trade} order_has_sent_before {label_has_exist_before} not {not label_has_exist_before}")
+    has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
+    
+    if not has_closed_label or has_closed_label==0:
+        await update_status_closed_trades(label_integer)
 
-    if not label_has_exist_before:
-        try:
-            if "open" in label:
-
-                await get_additional_params_for_open_label (trade, label)
-
-            if "closed" in label:
-                label_integer= parsing_label (label) ["int"]
-                transactions_all: list = await querying_label_and_size("my_trades_all_json")
-
-                has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
-                
-                if not has_closed_label or has_closed_label==0:
-                    await update_status_closed_trades(label_integer)
-
-        except:
-            log.critical(f"except trade {trade}")
-            
-        await insert_tables("my_trades_all_json", trade)
 
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
-        log.warning (f"trade {trade}")
-        await manage_params (trade) 
+            
+        label=trade["label"]
+
+        label_has_exist_before= await is_order_has_sent_before(label)
+
+        log.info(f"trade {trade} order_has_sent_before {label_has_exist_before} not {not label_has_exist_before}")
+
+        if not label_has_exist_before:
+            try:
+                if "open" in label:
+                    await get_additional_params_for_open_label (trade, label)
+
+                if "closed" in label:
+                    await convert_status_has_closed_label_from_no_to_yes(label)
+
+            except:
+                log.critical(f"except trade {trade}")
+                
+            await insert_tables("my_trades_all_json", trade)
+
         
 async def manage_positions (positions: dict, currency: str) -> None:
 
@@ -99,10 +97,6 @@ async def update_portfolio(data_orders, currency) -> None:
     replace_data(my_path_portfolio, data_orders)
 
 async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
-
-    from websocket_management.cleaning_up_transactions import (
-            clean_up_closed_transactions,
-        )
     
     log.info(f"update_user_changes-START")
     #log.info (data_orders)
@@ -115,12 +109,9 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         log.error (f"trades {trades}")
         
         await manage_trades (trades)
-        #await clean_up_closed_transactions(my_trades_open_all)
         
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
-        #log.warning(f"my_orders {data_orders}")
-        #log.debug(f"my_orders {orders}")
 
         await manage_orders (orders)
         for order in orders:
@@ -139,13 +130,10 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
                 await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
-        #await clean_up_closed_transactions(my_trades_open_all)
-
     if positions:
         await manage_positions (positions, currency)
     
     log.info(f"update_user_changes-END")
-
 
 
 async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:

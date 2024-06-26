@@ -7,25 +7,24 @@ import asyncio
 from loguru import logger as log
 
 from db_management.sqlite_management import (
-    executing_closed_transactions, 
+    executing_closed_transactions,
     querying_table,
     insert_tables,
     deleting_row,
     executing_query_with_return,
     querying_arithmetic_operator,
-    querying_duplicated_transactions)
+    querying_duplicated_transactions,
+)
 
 # user defined formula
-from utilities.string_modification import (
-    find_unique_elements,
-    get_duplicated_elements)
+from utilities.string_modification import find_unique_elements, get_duplicated_elements
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
     get_transaction_label,
     get_label_integer,
     querying_label_and_size,
-    get_order_label
+    get_order_label,
 )
 
 
@@ -46,9 +45,12 @@ async def get_unrecorded_order_id(
         combined_closed_open, from_exchange_order_id
     )
 
-    unrecorded_order_id = list(set(from_exchange_order_id).difference(combined_closed_open))
+    unrecorded_order_id = list(
+        set(from_exchange_order_id).difference(combined_closed_open)
+    )
 
     return unrecorded_order_id
+
 
 async def reconciling_between_db_and_exchg_data(
     trades_from_exchange: list, unrecorded_order_id: str
@@ -64,30 +66,42 @@ async def reconciling_between_db_and_exchg_data(
         )
 
         if unrecorded_order_id == []:
-            duplicated_elements= await querying_duplicated_transactions()
+            duplicated_elements = await querying_duplicated_transactions()
 
             if duplicated_elements != 0:
-                print (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}")
-                duplicated_labels= [o["label"] for o in duplicated_elements]
-                
+                print(
+                    f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
+                )
+                duplicated_labels = [o["label"] for o in duplicated_elements]
+
                 my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
                 my_trades_open_all: list = my_trades_open_sqlite["all"]
 
                 for label in duplicated_labels:
-                    id = max([o["id"] for o in my_trades_open_all if o["label_main"] == label])
+                    id = max(
+                        [
+                            o["id"]
+                            for o in my_trades_open_all
+                            if o["label_main"] == label
+                        ]
+                    )
                     where_filter = f"id"
                     await deleting_row(
-                "my_trades_all_json", "databases/trading.sqlite3", where_filter, "=", id
-            )
+                        "my_trades_all_json",
+                        "databases/trading.sqlite3",
+                        where_filter,
+                        "=",
+                        id,
+                    )
     if unrecorded_order_id != None:
         print(f"unrecorded_order_id {unrecorded_order_id}")
         for order_id in unrecorded_order_id:
 
             transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
 
-            label = [o["label"] for o in trades_from_exchange if o["order_id"] == order_id][
-                0
-            ]
+            label = [
+                o["label"] for o in trades_from_exchange if o["order_id"] == order_id
+            ][0]
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction[0], label)
@@ -100,30 +114,30 @@ def get_transactions_with_closed_label(transactions_all: list) -> list:
 
     return [o for o in transactions_all if "closed" in o["label"]]
 
+
 async def clean_up_duplicate_elements() -> None:
     """ """
-    
-    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
-    data_from_db_open= await querying_label_and_size("my_trades_all_json")
-    label_from_db_open= get_order_label (data_from_db_open)
-    label_from_db_closed= get_order_label (data_from_db_closed)
 
-    #log.warning (f"order_id_from_db_open {label_from_db_open}")
+    data_from_db_closed = await querying_label_and_size("my_trades_closed_json")
+    data_from_db_open = await querying_label_and_size("my_trades_all_json")
+    label_from_db_open = get_order_label(data_from_db_open)
+    label_from_db_closed = get_order_label(data_from_db_closed)
+
+    # log.warning (f"order_id_from_db_open {label_from_db_open}")
 
     for label in label_from_db_open:
-        log.warning (f"order_id {label}")
-        log.debug (f"label_from_db_open {label in label_from_db_closed}")
+        log.warning(f"order_id {label}")
+        log.debug(f"label_from_db_open {label in label_from_db_closed}")
         if label in label_from_db_closed:
-            log.critical (f"del duplicate order id {label}")
+            log.critical(f"del duplicate order id {label}")
             where_filter = f"label_main"
             await deleting_row(
-                    "my_trades_all_json",
-                    "databases/trading.sqlite3",
-                    where_filter,
-                    "=",
-                    label,
-                )
-
+                "my_trades_all_json",
+                "databases/trading.sqlite3",
+                where_filter,
+                "=",
+                label,
+            )
 
 
 def get_closed_open_transactions_under_same_label_int(
@@ -189,9 +203,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
 
-                await insert_tables(
-                    "my_trades_closed_json", transaction
-                )
+                await insert_tables("my_trades_closed_json", transaction)
 
                 await deleting_row(
                     "my_trades_all_json",
@@ -200,6 +212,7 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                     "=",
                     order_id,
                 )
+
 
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
@@ -211,24 +224,16 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     for table in tables:
 
-        count_rows_query = querying_arithmetic_operator(
-            "tick", "COUNT", table
-        )
+        count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
         rows = await executing_query_with_return(count_rows_query)
         rows = rows[0]["COUNT (tick)"]
 
         if rows > rows_threshold:
 
             where_filter = f"tick"
-            first_tick_query = querying_arithmetic_operator(
-                "tick", "MIN", table
-            )
-            first_tick_fr_sqlite = await executing_query_with_return(
-                first_tick_query
-            )
+            first_tick_query = querying_arithmetic_operator("tick", "MIN", table)
+            first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
             first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
-            await deleting_row(
-                table, database, where_filter, "=", first_tick
-            )
+            await deleting_row(table, database, where_filter, "=", first_tick)
     log.info("count_and_delete_ohlc_rows-DONE")

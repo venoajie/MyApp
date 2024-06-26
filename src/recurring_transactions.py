@@ -3,33 +3,27 @@
 
 # built ins
 import asyncio
-#import datetime
+
+# import datetime
 
 # installed
 import aioschedule as schedule
 import time
 import aiohttp
 from loguru import logger as log
+
 # user defined formula
 from strategies import entries_exits
 from utilities.pickling import replace_data
 
-from utilities.string_modification import (
-    remove_redundant_elements, 
-    parsing_label)
-from utilities.system_tools import (
-    catch_error_message, 
-    provide_path_for_file)
-from deribit_get import (
-    get_instruments, 
-    get_currencies, 
-    get_server_time)
+from utilities.string_modification import remove_redundant_elements, parsing_label
+from utilities.system_tools import catch_error_message, provide_path_for_file
+from deribit_get import get_instruments, get_currencies, get_server_time
 from db_management.sqlite_management import (
     querying_table,
-    executing_closed_transactions)
-from strategies.basic_strategy import (
-    querying_label_and_size, 
-    get_market_condition)
+    executing_closed_transactions,
+)
+from strategies.basic_strategy import querying_label_and_size, get_market_condition
 from websocket_management.ws_management import (
     opening_transactions,
     cancel_the_cancellables,
@@ -37,20 +31,24 @@ from websocket_management.ws_management import (
     closing_transactions,
     get_my_trades_from_exchange,
     is_size_consistent,
-    balancing_the_imbalance)
+    balancing_the_imbalance,
+)
 from websocket_management.cleaning_up_transactions import (
     get_unrecorded_order_id,
     clean_up_closed_transactions,
-    clean_up_duplicate_elements)
+    clean_up_duplicate_elements,
+)
 
 symbol = "ETH-PERPETUAL"
 currency = "ETH"
 
-#stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
+# stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
+
 
 def catch_error(error, idle: int = None) -> list:
     """ """
     catch_error_message(error, idle)
+
 
 async def get_instruments_from_deribit(connection_url, currency) -> float:
     """ """
@@ -98,7 +96,7 @@ async def run_every_5_seconds() -> None:
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
-    TAKE_PROFIT_PCT_DAILY = ONE_PCT*1
+    TAKE_PROFIT_PCT_DAILY = ONE_PCT * 1
 
     # gathering basic data
     reading_from_database: dict = await reading_from_pkl_database(currency)
@@ -142,7 +140,7 @@ async def run_every_5_seconds() -> None:
     trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
     trades_from_sqlite_closed = await executing_closed_transactions()
     trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-    
+
     unrecorded_order_id = await get_unrecorded_order_id(
         trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
     )
@@ -197,20 +195,16 @@ async def run_every_5_seconds() -> None:
         await balancing_the_imbalance(trades_from_exchange)
 
     await clean_up_closed_transactions()
-    
 
-    #print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+    # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
     # in relevant function ...
-    #if datetime.datetime.now() > stop_time:
+    # if datetime.datetime.now() > stop_time:
     #    import subprocess
 
     #    await cancel_the_cancellables()
-    #    print (f"test")     
+    #    print (f"test")
     #    subprocess.call(["shutdown", "-r", "-t", "0"])
-        
-
-
 
 
 async def run_every_60_seconds() -> None:
@@ -227,13 +221,14 @@ async def run_every_15_seconds() -> None:
     """ """
 
     from market_understanding.technical_analysis import get_market_condition
-    
-    ONE_PCT=1/100
+
+    ONE_PCT = 1 / 100
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
 
     await get_market_condition(THRESHOLD, WINDOW, RATIO)
+
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"

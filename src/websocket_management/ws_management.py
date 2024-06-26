@@ -35,7 +35,7 @@ from db_management.sqlite_management import (
 
 from utilities.number_modification import get_closest_value
 
-#from market_understanding import futures_analysis
+# from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (
@@ -142,24 +142,24 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
 
 
 async def is_size_consistent(
-    sum_my_trades_sqlite: int, size_from_position: int,currency:str="ETH"
+    sum_my_trades_sqlite: int, size_from_position: int, currency: str = "ETH"
 ) -> bool:
     """ """
-    if sum_my_trades_sqlite==None:
+    if sum_my_trades_sqlite == None:
         transactions_all_summarized: list = await querying_label_and_size(
-        "my_trades_all_json"
-    )
+            "my_trades_all_json"
+        )
         sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
-    
-    if size_from_position==None:
+
+    if size_from_position == None:
         # gathering basic data
         reading_from_database: dict = await reading_from_pkl_database(currency)
         positions_all: list = reading_from_database["positions_from_sub_account"]
-    # print(f"positions_all-recurring {positions_all} ")
+        # print(f"positions_all-recurring {positions_all} ")
         size_from_position: int = (
-        0 if positions_all == [] else sum([o["size"] for o in positions_all])
-    )
-        
+            0 if positions_all == [] else sum([o["size"] for o in positions_all])
+        )
+
     log.error(
         f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
     )

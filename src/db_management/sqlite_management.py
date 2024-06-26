@@ -468,8 +468,12 @@ async def querying_completed_transactions(
 
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
 
-async def querying_duplicated_transactions(label: str="my_trades_all_json", group_by: str ="label_main",
-    database: str = "databases/trading.sqlite3") -> list:
+
+async def querying_duplicated_transactions(
+    label: str = "my_trades_all_json",
+    group_by: str = "label_main",
+    database: str = "databases/trading.sqlite3",
+) -> list:
     """ """
 
     query_table = f"""SELECT label_main as label, id, COUNT (*)  qty FROM {label} GROUP BY {group_by} HAVING qty >1"""
@@ -494,6 +498,7 @@ async def querying_duplicated_transactions(label: str="my_trades_all_json", grou
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
     return 0 if (combine_result == [] or combine_result == None) else (combine_result)
+
 
 async def deleting_row(
     table: str = "mytrades",

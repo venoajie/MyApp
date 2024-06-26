@@ -14,7 +14,8 @@ from loguru import logger as log
 async def run_every_15_seconds() -> None:
     """ """
 
-    print (f"test")
+    print(f"test")
+
 
 if __name__ == "__main__":
 

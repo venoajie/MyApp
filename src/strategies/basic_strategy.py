@@ -13,10 +13,11 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     querying_ohlc_price_vol,
     querying_additional_params,
-    querying_table
+    querying_table,
 )
 from utilities.string_modification import parsing_label
 from loguru import logger as log
+
 
 async def querying_label_and_size(table) -> list:
     """ """
@@ -120,20 +121,18 @@ async def get_market_condition(
     falling_price = False
     neutral_price = False
 
+    TA_result = await querying_table("market_analytics_json-last")
+    TA_result_data = TA_result["list_data_only"][0]
 
-    TA_result= await querying_table("market_analytics_json-last")
-    TA_result_data= TA_result["list_data_only"][0]
-
-    ema_short= TA_result_data["1m_ema_close_9"]
-    ema_long= TA_result_data["1m_ema_close_20"]
-    ema_low_9= TA_result_data["1m_ema_low_9"]
-    ema_high_9= TA_result_data["1m_ema_high_9"]
+    ema_short = TA_result_data["1m_ema_close_9"]
+    ema_long = TA_result_data["1m_ema_close_20"]
+    ema_low_9 = TA_result_data["1m_ema_low_9"]
+    ema_high_9 = TA_result_data["1m_ema_high_9"]
 
     ema = TA_result_data["1m_ema_close_9"]
 
     #    log.error(f'ema_low_9 {ema_low_9}')
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
-
 
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
@@ -324,29 +323,30 @@ def get_label_integer(label: dict) -> bool:
 
     return parsing_label(label)
 
+
 def get_order_label(data_from_db: list) -> list:
     """ """
 
     return [o["label"] for o in data_from_db]
 
-async def is_order_has_sent_before(verifier: str="label") -> bool:
+
+async def is_order_has_sent_before(verifier: str = "label") -> bool:
     """ """
-    data_from_db_open= await querying_label_and_size("my_trades_all_json")
-    data_from_db_closed= await querying_label_and_size("my_trades_closed_json")
-    result_from_db_open= get_order_label (data_from_db_open)
-    result_from_db_closed= get_order_label (data_from_db_closed)
-    
-    combined_result=result_from_db_open+result_from_db_closed
+    data_from_db_open = await querying_label_and_size("my_trades_all_json")
+    data_from_db_closed = await querying_label_and_size("my_trades_closed_json")
+    result_from_db_open = get_order_label(data_from_db_open)
+    result_from_db_closed = get_order_label(data_from_db_closed)
+
+    combined_result = result_from_db_open + result_from_db_closed
 
     # assuming only 1
     label_is_exist: list = (
-        False
-        if combined_result == []
-        else  verifier in combined_result 
+        False if combined_result == [] else verifier in combined_result
     )
-    #log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
+    # log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
     print(f"trasaction was existed before {label_is_exist}")
     return label_is_exist
+
 
 async def summing_transactions_under_label_int(
     transaction: dict, transactions_all: list = None
@@ -691,7 +691,7 @@ class BasicStrategy:
 
             params.update({"instrument": get_transaction_instrument(transaction)})
             params.update({"size": size})
-            log.info (f"params {params}")
+            log.info(f"params {params}")
             label = params["label"]
 
             order_has_sent_before = await is_order_has_sent_before(label)

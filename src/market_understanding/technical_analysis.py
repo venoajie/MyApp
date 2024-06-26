@@ -13,13 +13,13 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     querying_table,
     querying_ohlc_price_vol,
-    insert_tables
+    insert_tables,
 )
 from utilities.system_tools import (
     raise_error_message,
 )
 
-#from loguru import logger as log
+# from loguru import logger as log
 
 
 async def querying_label_and_size(table) -> list:
@@ -71,7 +71,9 @@ async def cleaned_up_ohlc(
     ohlc.reverse()
     tick.reverse()
 
-    return dict(tick=max(tick[: window - 1]),ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
+    return dict(
+        tick=max(tick[: window - 1]), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
+    )
 
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
@@ -118,24 +120,25 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
         return last_tick1_fr_sqlite
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
+
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
 
-    result={}
+    result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
-    current_tick= ohlc_high_9["tick"]
+    current_tick = ohlc_high_9["tick"]
 
-    TA_result= await querying_table("market_analytics_json")
-    TA_result_data= TA_result["list_data_only"]
-    #log.error(f'TA_result {TA_result_data}')
-    last_tick_from_prev_TA= 0 if TA_result_data==[] else max([
-                o["tick"] for o in TA_result_data
-            ])
-    #log.error(f'last_tick {last_tick_from_prev_TA}')
-    
-    if last_tick_from_prev_TA==0 or current_tick > last_tick_from_prev_TA:
+    TA_result = await querying_table("market_analytics_json")
+    TA_result_data = TA_result["list_data_only"]
+    # log.error(f'TA_result {TA_result_data}')
+    last_tick_from_prev_TA = (
+        0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
+    )
+    # log.error(f'last_tick {last_tick_from_prev_TA}')
+
+    if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
         ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
 
@@ -151,7 +154,7 @@ async def get_market_condition(
         # log.error(ema)
         ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
-        
+
         result.update({"1m_ema_close_20": ema_close_20})
         result.update({"1m_ema_close_9": ema_close_9})
         result.update({"1m_ema_high_9": ema_high_9})
@@ -165,6 +168,6 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        #print(f"TA {result}")
+        # print(f"TA {result}")
 
         await insert_tables("market_analytics_json", result)
