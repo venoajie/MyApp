@@ -734,9 +734,6 @@ class StreamAccountData:
         #log.info(ws_channel)
         await self.websocket_client.send(json.dumps(msg))
 
-        
-async def check_and_save_every_test():
-    log.warning("test")
 
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
@@ -755,10 +752,6 @@ def main():
         
 if __name__ == "__main__":
     try:
-        
-        schedule.every(5).seconds.do(check_and_save_every_test)
-        loop = asyncio.get_event_loop()
-        log.info("test")
         main()
         
         while True:
