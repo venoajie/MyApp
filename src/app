@@ -736,7 +736,7 @@ class StreamAccountData:
 
         
 async def check_and_save_every_test():
-    log.warning(f"test")
+    log.warning("test")
 
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
@@ -745,8 +745,9 @@ def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     try:
+        log.info("test")
         StreamAccountData(client_id=client_id, client_secret=client_secret)
-        log.error(f"test")
+        log.error("test")
         schedule.every(5).seconds.do(check_and_save_every_test)
 
     except Exception as error:
