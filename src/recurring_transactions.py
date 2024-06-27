@@ -26,7 +26,6 @@ from db_management.sqlite_management import (
 from strategies.basic_strategy import querying_label_and_size, get_market_condition
 from websocket_management.ws_management import (
     opening_transactions,
-    cancel_the_cancellables,
     reading_from_pkl_database,
     closing_transactions,
     get_my_trades_from_exchange,
