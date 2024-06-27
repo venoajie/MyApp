@@ -755,10 +755,11 @@ async def check_and_save_every_test():
 if __name__ == "__main__":
     try:
         main()
+        schedule.every(5).seconds.do(check_and_save_every_test)
 
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
-        schedule.every(5).seconds.do(check_and_save_every_test)
+        
 
     except Exception as error:
         catch_error_message(
