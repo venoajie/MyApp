@@ -756,9 +756,14 @@ def main():
 if __name__ == "__main__":
     try:
         
+        loop = asyncio.get_event_loop()
         log.info("test")
         schedule.every(5).seconds.do(check_and_save_every_test)
         main()
+        
+        while True:
+            loop.run_until_complete(schedule.run_pending())
+
 
     except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
