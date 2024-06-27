@@ -734,6 +734,10 @@ class StreamAccountData:
         #log.info(ws_channel)
         await self.websocket_client.send(json.dumps(msg))
 
+        
+async def check_and_save_every_test():
+    log.warning(f"test")
+
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
@@ -742,19 +746,16 @@ def main():
 
     try:
         StreamAccountData(client_id=client_id, client_secret=client_secret)
+        schedule.every(5).seconds.do(check_and_save_every_test)
 
     except Exception as error:
         catch_error_message(
             error, 10, "app"
         )
         
-        
-async def check_and_save_every_test():
-    log.warning(f"test")
-
 if __name__ == "__main__":
     try:
-        schedule.every(5).seconds.do(check_and_save_every_test)
+        
         main()
 
     except (KeyboardInterrupt, SystemExit):
