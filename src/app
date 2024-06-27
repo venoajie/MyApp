@@ -745,8 +745,6 @@ def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     try:
-        log.info("test")
-        schedule.every(5).seconds.do(check_and_save_every_test)
         StreamAccountData(client_id=client_id, client_secret=client_secret)
         log.error("test")
 
@@ -758,6 +756,8 @@ def main():
 if __name__ == "__main__":
     try:
         
+        log.info("test")
+        schedule.every(5).seconds.do(check_and_save_every_test)
         main()
 
     except (KeyboardInterrupt, SystemExit):
