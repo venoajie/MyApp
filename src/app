@@ -746,9 +746,9 @@ def main():
 
     try:
         log.info("test")
+        schedule.every(5).seconds.do(check_and_save_every_test)
         StreamAccountData(client_id=client_id, client_secret=client_secret)
         log.error("test")
-        schedule.every(5).seconds.do(check_and_save_every_test)
 
     except Exception as error:
         catch_error_message(
