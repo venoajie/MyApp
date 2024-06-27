@@ -756,9 +756,9 @@ def main():
 if __name__ == "__main__":
     try:
         
+        schedule.every(5).seconds.do(check_and_save_every_test)
         loop = asyncio.get_event_loop()
         log.info("test")
-        schedule.every(5).seconds.do(check_and_save_every_test)
         main()
         
         while True:
