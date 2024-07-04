@@ -5,3 +5,4 @@
 - cut loss
 - time (> 5 min) and qty quotation (qty/time)
 - be careful with liquidity
+- no violent move in higher TF
