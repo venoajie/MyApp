@@ -3,3 +3,5 @@
 - spot hedging dynamically
 - inventory management: enough liquidity to absorb loss since loss is unavoidable
 - cut loss
+- time (> 5 min) and qty quotation (qty/time)
+- be careful with liquidity
