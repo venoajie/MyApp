@@ -1,1 +1,5 @@
-
+- opportunistic
+- aware of macro trend
+- spot hedging dynamically
+- inventory management: enough liquidity to absorb loss since loss is unavoidable
+- cut loss
