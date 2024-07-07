@@ -28,7 +28,7 @@ from db_management.sqlite_management import (
     update_status_closed_trades,
     replace_row,
     querying_arithmetic_operator,
-    querying_table,insert_tables)
+    insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
     cancel_the_cancellables)
@@ -97,10 +97,10 @@ async def update_portfolio(data_orders, currency) -> None:
     my_path_portfolio = provide_path_for_file("portfolio", currency)
     replace_data(my_path_portfolio, data_orders)
 
-async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> None:
+async def update_user_changes(data_orders, currency) -> None:
     
     log.info(f"update_user_changes-START")
-    #log.info (data_orders)
+    log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -113,6 +113,8 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
         
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
+        
+        log.warning (f"orders {orders}")
 
         await manage_orders (orders)
         for order in orders:
@@ -132,6 +134,7 @@ async def update_user_changes(data_orders, my_trades_open_sqlite, currency) -> N
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
     if positions:
+        log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
     
     log.info(f"update_user_changes-END")
@@ -304,10 +307,9 @@ class StreamAccountData:
                     if "params" in list(message):
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
-                            #log.debug(message_channel)
 
                             data_orders: list = message["params"]["data"]
-                            #log.info(data_orders)
+
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
@@ -323,15 +325,10 @@ class StreamAccountData:
                                 message_channel
                                 == f"user.changes.any.{currency.upper()}.raw"
                             ):
-                                log.info(data_orders)
                                 
-                                my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-
-                                await update_user_changes(data_orders, my_trades_open_sqlite, currency)
+                                await update_user_changes(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)
-                            
-                            log.error(message_channel)
                             
                             TABLE_OHLC1: str = "ohlc1_eth_perp_json"
                             TABLE_OHLC30: str = "ohlc30_eth_perp_json"
@@ -341,9 +338,6 @@ class StreamAccountData:
                             DATABASE: str = "databases/trading.sqlite3"
                             
                             if "chart.trades" in message_channel:
-                                log.info(data_orders)
-                                    
-                                
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                 data_orders,
@@ -355,8 +349,7 @@ class StreamAccountData:
                                                                 DATABASE
                                                                 )
 
-                            instrument_ticker = (message_channel)[19:]
-                            
+                            instrument_ticker = (message_channel)[19:]                            
                             if (
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
@@ -453,7 +446,6 @@ class StreamAccountData:
     async def on_restart(self) -> None:
         """
         """
-        import deribit_get
 
         log.warning("Cancelling all orders")
         await cancel_the_cancellables()

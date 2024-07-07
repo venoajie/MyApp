@@ -5,7 +5,6 @@
 # built ins
 import asyncio
 
-
 from db_management.sqlite_management import (
     replace_row,
     querying_last_open_interest,
