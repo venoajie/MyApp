@@ -149,7 +149,7 @@ async def closing_outstanding_transactions(
                     nearest_transaction_to_index,
                 )
 
-                await if_order_is_true(send_closing_order, instrument)
+                #await if_order_is_true(send_closing_order, instrument)
 
             if "marketMaker" in strategy_attr["strategy"]:
 
