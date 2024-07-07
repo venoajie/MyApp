@@ -35,6 +35,7 @@ from db_management.sqlite_management import (
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
     cancel_the_cancellables)
+from websocket_management.allocating_ohlc import ohlc_result_per_time_frame
 from websocket_management.cleaning_up_transactions import (
     check_if_transaction_has_closed_label_before)
 from strategies.basic_strategy import (
@@ -330,8 +331,6 @@ class StreamAccountData:
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
                             #log.debug(message_channel)
-#                            if "PERPETUAL." in message_channel:
-#                                log.critical(message_channel)
 
                             data_orders: list = message["params"]["data"]
                             #log.info(data_orders)
