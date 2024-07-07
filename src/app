@@ -362,12 +362,12 @@ class StreamAccountData:
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
-                                log.debug(data_orders)
+                                #log.debug(data_orders)
 
                                 try:
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
-                                        #log.info(data_orders)
+                                        log.debug(data_orders)
 
                                         if "open_interest" in data_orders:
 
