@@ -332,15 +332,17 @@ class StreamAccountData:
                                 await resupply_sub_accountdb(currency)
                             
                             log.error(message_channel)
+                            
+                            TABLE_OHLC1: str = "ohlc1_eth_perp_json"
+                            TABLE_OHLC30: str = "ohlc30_eth_perp_json"
+                            TABLE_OHLC60: str = "ohlc60_eth_perp_json"
+                            TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
+                            WHERE_FILTER_TICK: str = "tick"
+                            
                             if "chart.trades" in message_channel:
                                 log.info(data_orders)
                                     
                                 DATABASE: str = "databases/trading.sqlite3"
-                                TABLE_OHLC1: str = "ohlc1_eth_perp_json"
-                                TABLE_OHLC30: str = "ohlc30_eth_perp_json"
-                                TABLE_OHLC60: str = "ohlc60_eth_perp_json"
-                                TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
-                                WHERE_FILTER_TICK: str = "tick"
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                 data_orders,
@@ -351,14 +353,6 @@ class StreamAccountData:
                                                                 WHERE_FILTER_TICK,
                                                                 DATABASE
                                                                 )
-
-                            last_tick_query_ohlc1: str = querying_arithmetic_operator(
-                                "tick", "MAX", TABLE_OHLC1
-                            )
-
-                            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
-                                last_tick_query_ohlc1
-                            )
 
                             instrument_ticker = (message_channel)[19:]
                             
@@ -383,6 +377,15 @@ class StreamAccountData:
                                         if "open_interest" in data_orders:
 
                                             open_interest = data_orders["open_interest"]
+                                                            
+                                            last_tick_query_ohlc1: str = querying_arithmetic_operator(
+                                                "tick", "MAX", TABLE_OHLC1
+                                            )
+
+                                            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
+                                                last_tick_query_ohlc1
+                                            )
+
 
                                             await replace_row(
                                                 open_interest,
