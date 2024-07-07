@@ -69,162 +69,161 @@ async def ohlc_result_per_time_frame(message_channel,
     last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
         last_tick_query_ohlc1
     )
-                                
-    if "chart.trades.ETH-PERPETUAL." in message_channel:
-        
-        last_tick_fr_data_orders: int = data_orders["tick"]
+                            
+    
+    last_tick_fr_data_orders: int = data_orders["tick"]
+
+    if (
+        TABLE_OHLC30 != None
+        or TABLE_OHLC1 != None
+        or TABLE_OHLC60 != None
+        or TABLE_OHLC1 != None
+    ):
 
         if (
-            TABLE_OHLC30 != None
-            or TABLE_OHLC1 != None
-            or TABLE_OHLC60 != None
-            or TABLE_OHLC1 != None
+            message_channel
+            == "chart.trades.ETH-PERPETUAL.1"
+        ):
+            
+            # refilling current ohlc table with updated data
+            if (
+                last_tick1_fr_sqlite
+                == last_tick_fr_data_orders
+            ):
+
+                await replace_row(
+                    data_orders,
+                    "data",
+                    TABLE_OHLC1,
+                    DATABASE,
+                    WHERE_FILTER_TICK,
+                    "is",
+                    last_tick1_fr_sqlite,
+                )
+
+            # new tick ohlc
+            else:
+
+                # prepare query
+                open_interest_last_value_query = querying_last_open_interest(
+                    last_tick1_fr_sqlite, TABLE_OHLC1
+                )
+
+                # get current oi
+                open_interest_last_value =  await last_open_interest_fr_sqlite(
+                    open_interest_last_value_query
+                )
+
+                # insert new ohlc data
+                await insert_tables(
+                    TABLE_OHLC1, data_orders
+                )
+
+                # update last tick
+                last_tick1_fr_sqlite =  await last_tick_fr_sqlite(
+                    last_tick_query_ohlc1
+                )
+
+                # insert open interest in previous tick to the new tick
+                await replace_row(
+                    open_interest_last_value,
+                    "open_interest",
+                    TABLE_OHLC1,
+                    DATABASE,
+                    WHERE_FILTER_TICK,
+                    "is",
+                    last_tick1_fr_sqlite,
+                )
+            
+        if (
+            message_channel
+            == "chart.trades.ETH-PERPETUAL.30"
         ):
 
+            last_tick30_fr_sqlite =  await last_tick_fr_sqlite(
+                last_tick_query_ohlc30
+            )
+
             if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.1"
-            ):
-                
-                # refilling current ohlc table with updated data
-                if (
-                    last_tick1_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
-
-                    await replace_row(
-                        data_orders,
-                        "data",
-                        TABLE_OHLC1,
-                        DATABASE,
-                        WHERE_FILTER_TICK,
-                        "is",
-                        last_tick1_fr_sqlite,
-                    )
-
-                # new tick ohlc
-                else:
-
-                    # prepare query
-                    open_interest_last_value_query = querying_last_open_interest(
-                        last_tick1_fr_sqlite, TABLE_OHLC1
-                    )
-
-                    # get current oi
-                    open_interest_last_value =  await last_open_interest_fr_sqlite(
-                        open_interest_last_value_query
-                    )
-
-                    # insert new ohlc data
-                    await insert_tables(
-                        TABLE_OHLC1, data_orders
-                    )
-
-                    # update last tick
-                    last_tick1_fr_sqlite =  await last_tick_fr_sqlite(
-                        last_tick_query_ohlc1
-                    )
-
-                    # insert open interest in previous tick to the new tick
-                    await replace_row(
-                        open_interest_last_value,
-                        "open_interest",
-                        TABLE_OHLC1,
-                        DATABASE,
-                        WHERE_FILTER_TICK,
-                        "is",
-                        last_tick1_fr_sqlite,
-                    )
-                
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.30"
+                last_tick30_fr_sqlite
+                == last_tick_fr_data_orders
             ):
 
-                last_tick30_fr_sqlite =  await last_tick_fr_sqlite(
-                    last_tick_query_ohlc30
+                await deleting_row(
+                    TABLE_OHLC30,
+                    DATABASE,
+                    WHERE_FILTER_TICK,
+                    "=",
+                    last_tick30_fr_sqlite,
                 )
 
-                if (
-                    last_tick30_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
-
-                    await deleting_row(
-                        TABLE_OHLC30,
-                        DATABASE,
-                        WHERE_FILTER_TICK,
-                        "=",
-                        last_tick30_fr_sqlite,
-                    )
-
-                    await insert_tables(
-                        TABLE_OHLC30, data_orders
-                    )
-
-                else:
-                    await insert_tables(
-                        TABLE_OHLC30, data_orders
-                    )
-
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.60"
-            ):
-
-                last_tick60_fr_sqlite = await last_tick_fr_sqlite(
-                    last_tick_query_ohlc60
+                await insert_tables(
+                    TABLE_OHLC30, data_orders
                 )
 
-                if (
-                    last_tick60_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
-
-                    await deleting_row(
-                        TABLE_OHLC60,
-                        DATABASE,
-                        WHERE_FILTER_TICK,
-                        "=",
-                        last_tick60_fr_sqlite,
-                    )
-
-                    await insert_tables(
-                        TABLE_OHLC60, data_orders
-                    )
-
-                else:
-                    await insert_tables(
-                        TABLE_OHLC60, data_orders
-                    )
-
-            if (
-                message_channel
-                == "chart.trades.ETH-PERPETUAL.1D"
-            ):
-
-                last_tick1D_fr_sqlite = await last_tick_fr_sqlite(
-                    last_tick_query_ohlc1D
+            else:
+                await insert_tables(
+                    TABLE_OHLC30, data_orders
                 )
 
-                if (
-                    last_tick1D_fr_sqlite
-                    == last_tick_fr_data_orders
-                ):
+        if (
+            message_channel
+            == "chart.trades.ETH-PERPETUAL.60"
+        ):
 
-                    await deleting_row(
-                        TABLE_OHLC1D,
-                        DATABASE,
-                        WHERE_FILTER_TICK,
-                        "=",
-                        last_tick1D_fr_sqlite,
-                    )
+            last_tick60_fr_sqlite = await last_tick_fr_sqlite(
+                last_tick_query_ohlc60
+            )
 
-                    await insert_tables(
-                        TABLE_OHLC1D, data_orders
-                    )
+            if (
+                last_tick60_fr_sqlite
+                == last_tick_fr_data_orders
+            ):
 
-                else:
-                    await insert_tables(
-                        TABLE_OHLC1D, data_orders
-                    )
+                await deleting_row(
+                    TABLE_OHLC60,
+                    DATABASE,
+                    WHERE_FILTER_TICK,
+                    "=",
+                    last_tick60_fr_sqlite,
+                )
+
+                await insert_tables(
+                    TABLE_OHLC60, data_orders
+                )
+
+            else:
+                await insert_tables(
+                    TABLE_OHLC60, data_orders
+                )
+
+        if (
+            message_channel
+            == "chart.trades.ETH-PERPETUAL.1D"
+        ):
+
+            last_tick1D_fr_sqlite = await last_tick_fr_sqlite(
+                last_tick_query_ohlc1D
+            )
+
+            if (
+                last_tick1D_fr_sqlite
+                == last_tick_fr_data_orders
+            ):
+
+                await deleting_row(
+                    TABLE_OHLC1D,
+                    DATABASE,
+                    WHERE_FILTER_TICK,
+                    "=",
+                    last_tick1D_fr_sqlite,
+                )
+
+                await insert_tables(
+                    TABLE_OHLC1D, data_orders
+                )
+
+            else:
+                await insert_tables(
+                    TABLE_OHLC1D, data_orders
+                )
