@@ -14,7 +14,7 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
 
 async def manage_orders(orders: dict) -> None:
-    log.error(f"{orders}")
+    log.debug(f"{orders}")
 
     for order in orders:
 
