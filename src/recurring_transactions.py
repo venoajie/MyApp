@@ -95,9 +95,6 @@ async def run_every_3_seconds() -> None:
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
 
-    label_transaction_net = get_label_transaction_net(
-        my_trades_open_remove_closed_labels
-    )
 
 
     # fetch strategies attributes
@@ -116,7 +113,10 @@ async def run_every_3_seconds() -> None:
         if my_trades_open == []
         else [o for o in my_trades_open if "closed" not in o["label"]]
     )    
-    
+
+    label_transaction_net = get_label_transaction_net(
+        my_trades_open_remove_closed_labels
+    )    
     await closing_transactions(
         label_transaction_net,
         strategies,
