@@ -35,6 +35,8 @@ from websocket_management.ws_management import (
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     last_tick_fr_sqlite)
+from websocket_management.closing_transactions import (
+    closing_outstanding_transactions)
 from websocket_management.cleaning_up_transactions import (
     check_if_transaction_has_closed_label_before)
 from strategies.basic_strategy import (

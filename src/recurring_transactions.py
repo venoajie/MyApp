@@ -87,6 +87,46 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
     )
 
 
+async def run_every_3_seconds() -> None:
+    """ """
+    ONE_PCT = 1 / 100
+    
+    WINDOW = 9
+    RATIO = 0.9
+    THRESHOLD = 0.01 * ONE_PCT
+
+    label_transaction_net = get_label_transaction_net(
+        my_trades_open_remove_closed_labels
+    )
+
+
+    # fetch strategies attributes
+    strategies = entries_exits.strategies
+
+    market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
+
+    my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
+
+    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
+
+    # remove transactions without label
+    my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
+    my_trades_open_remove_closed_labels = (
+        []
+        if my_trades_open == []
+        else [o for o in my_trades_open if "closed" not in o["label"]]
+    )    
+    
+    await closing_transactions(
+        label_transaction_net,
+        strategies,
+        my_trades_open_sqlite,
+        my_trades_open,
+        market_condition,
+    )
+
+
+
 async def run_every_5_seconds() -> None:
     """ """
 
@@ -116,25 +156,10 @@ async def run_every_5_seconds() -> None:
     market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
-
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
     server_time = await current_server_time()
-
-    # remove transactions without label
-    my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
-
-    my_trades_open_remove_closed_labels = (
-        []
-        if my_trades_open == []
-        else [o for o in my_trades_open if "closed" not in o["label"]]
-    )
-
-    label_transaction_net = get_label_transaction_net(
-        my_trades_open_remove_closed_labels
-    )
 
     trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
     trades_from_sqlite_closed = await executing_closed_transactions()
@@ -160,14 +185,6 @@ async def run_every_5_seconds() -> None:
         unrecorded_order_id,
         sum_my_trades_sqlite,
         size_from_positions,
-    )
-
-    await closing_transactions(
-        label_transaction_net,
-        strategies,
-        my_trades_open_sqlite,
-        my_trades_open,
-        market_condition,
     )
 
     size_is_consistent: bool = await is_size_consistent(
@@ -278,7 +295,8 @@ if __name__ == "__main__":
         schedule.every().hour.do(check_and_save_every_60_minutes)
 
         schedule.every(15).seconds.do(run_every_15_seconds)
-        schedule.every(5).seconds.do(run_every_5_seconds)
+        schedule.every(3).seconds.do(run_every_3_seconds)
+        #schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
