@@ -362,6 +362,7 @@ class StreamAccountData:
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
+                                log.debug(instrument_ticker)
 
                                 try:
 
