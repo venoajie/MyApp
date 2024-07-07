@@ -331,6 +331,10 @@ class StreamAccountData:
 
                                 await resupply_sub_accountdb(currency)
                             
+                            log.error(message_channel)
+                            if "chart.trades" in message_channel:
+                                log.info(data_orders)
+                                
                             DATABASE: str = "databases/trading.sqlite3"
                             TABLE_OHLC1: str = "ohlc1_eth_perp_json"
                             TABLE_OHLC30: str = "ohlc30_eth_perp_json"

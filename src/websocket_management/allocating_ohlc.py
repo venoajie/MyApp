@@ -43,13 +43,13 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
 async def ohlc_result_per_time_frame(message_channel, 
-                     data_orders,
-                     TABLE_OHLC1: str = "ohlc1_eth_perp_json",
-                     TABLE_OHLC30: str = "ohlc30_eth_perp_json",
-                     TABLE_OHLC60: str = "ohlc60_eth_perp_json",
-                     TABLE_OHLC1D: str = "ohlc1D_eth_perp_json",
-                     WHERE_FILTER_TICK: str = "tick",
-                     DATABASE: str = "databases/trading.sqlite3") -> None:
+                                     data_orders,
+                                     TABLE_OHLC1: str = "ohlc1_eth_perp_json",
+                                     TABLE_OHLC30: str = "ohlc30_eth_perp_json",
+                                     TABLE_OHLC60: str = "ohlc60_eth_perp_json",
+                                     TABLE_OHLC1D: str = "ohlc1D_eth_perp_json",
+                                     WHERE_FILTER_TICK: str = "tick",
+                                     DATABASE: str = "databases/trading.sqlite3") -> None:
               
     last_tick_query_ohlc1: str = querying_arithmetic_operator(
         WHERE_FILTER_TICK, "MAX", TABLE_OHLC1
