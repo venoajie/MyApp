@@ -338,11 +338,12 @@ class StreamAccountData:
                             TABLE_OHLC60: str = "ohlc60_eth_perp_json"
                             TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
+                            DATABASE: str = "databases/trading.sqlite3"
                             
                             if "chart.trades" in message_channel:
                                 log.info(data_orders)
                                     
-                                DATABASE: str = "databases/trading.sqlite3"
+                                
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                 data_orders,
