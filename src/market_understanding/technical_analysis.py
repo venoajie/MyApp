@@ -134,7 +134,7 @@ async def get_market_condition(
 ) -> dict:
     """ """
     table_60= "ohlc60_eth_perp_json"
-    ohlc_60= await cleaned_up_ohlc("open", 2, table_60)
+    ohlc_60= await cleaned_up_ohlc("close", 2, table_60)
     print (f"ohlc_60 {ohlc_60}")
 
     result = {}
