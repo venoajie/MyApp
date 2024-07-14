@@ -135,7 +135,7 @@ async def get_market_condition(
     """ """
     table_60= "ohlc60_eth_perp_json"
     ohlc_60= await cleaned_up_ohlc("close", 2, table_60)
-    #print (f"ohlc_60 {ohlc_60}")
+    print (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
@@ -167,6 +167,8 @@ async def get_market_condition(
         result.update({"1m_ema_close_20": ema_close_20})
         result.update({"1m_ema_close_9": ema_close_9})
         result.update({"1m_ema_high_9": ema_high_9})
+        result.update({"1m_ema_low_9": ema_low_9})
+
         result.update({"60_open": ohlc_60})
         result.update({"60_last_price": ohlc_60["last_price"]})
 
