@@ -93,7 +93,7 @@ async def run_every_3_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    market_condition= querying_table("market_analytics_json")
+    market_condition= await querying_table("market_analytics_json")
     log.error (f"market_condition {market_condition}")
 
     market_condition = await get_market_condition()
