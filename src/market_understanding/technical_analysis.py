@@ -160,7 +160,7 @@ async def get_market_condition(
         ohlc_close_9 = await cleaned_up_ohlc("close", 9, table)
         ohlc_close_20 = await cleaned_up_ohlc("close", 20, table)
 
-        # log.error(ema)
+        
         ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
 
@@ -171,6 +171,7 @@ async def get_market_condition(
 
         result.update({"60_open": ohlc_60["ohlc"][0]})
         result.update({"60_last_price": ohlc_60["last_price"]})
+        print (f"result{result}")
         result.update({"last_price": result["last_price"]})
 
         vwap_period = 100
