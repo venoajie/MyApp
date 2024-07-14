@@ -135,7 +135,7 @@ async def get_market_condition(
     """ """
     table_60= "ohlc60_eth_perp_json"
     ohlc_60= await cleaned_up_ohlc("close", 2, table_60)
-    print (f"ohlc_60 {ohlc_60}")
+    #print (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
@@ -180,6 +180,6 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        print(f"TA {result}")
+        #print(f"TA {result}")
 
         await insert_tables("market_analytics_json", result)
