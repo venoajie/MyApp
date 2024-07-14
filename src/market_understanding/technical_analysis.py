@@ -172,7 +172,7 @@ async def get_market_condition(
         result.update({"60_open": ohlc_60["ohlc"][0]})
         result.update({"60_last_price": ohlc_60["last_price"]})
         print (f"result{ohlc_high_9}")
-        result.update({"last_price": ohlc_high_9["last_price"]})
+        result.update({"last_price": ohlc_high_9["ohlc"]["last_price"]})
 
         vwap_period = 100
 
