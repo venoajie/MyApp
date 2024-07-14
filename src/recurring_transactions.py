@@ -94,6 +94,8 @@ async def run_every_3_seconds() -> None:
     strategies = entries_exits.strategies
 
     market_condition = await get_market_condition()
+    market_condition= querying_table("market_analytics_json")
+    log.error (f"market_condition {market_condition}")
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
 
