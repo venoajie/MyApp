@@ -108,8 +108,7 @@ def delta_pct(last_price: float, prev_price: float) -> float:
     return abs(delta(last_price, prev_price) / prev_price)
 
 
-async def get_market_condition(
-    threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
+async def get_market_condition(limit: int = 100, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
 

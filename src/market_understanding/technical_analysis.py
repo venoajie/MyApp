@@ -121,10 +121,19 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
 
+def get_last_tick_from_prev_TA(TA_result_data) -> int:
+    """ """
+    return (
+        0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
+    )
+
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
+    table_60= "ohlc60_eth_perp_json"
+    ohlc_60= await cleaned_up_ohlc("open", 2, table_60)
+    print (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
@@ -133,9 +142,7 @@ async def get_market_condition(
     TA_result = await querying_table("market_analytics_json")
     TA_result_data = TA_result["list_data_only"]
     # log.error(f'TA_result {TA_result_data}')
-    last_tick_from_prev_TA = (
-        0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
-    )
+    last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
     # log.error(f'last_tick {last_tick_from_prev_TA}')
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:

@@ -89,18 +89,11 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 
 async def run_every_3_seconds() -> None:
     """ """
-    ONE_PCT = 1 / 100
-    
-    WINDOW = 9
-    RATIO = 0.9
-    THRESHOLD = 0.01 * ONE_PCT
-
-
 
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
+    market_condition = await get_market_condition()
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
 
@@ -126,15 +119,11 @@ async def run_every_3_seconds() -> None:
     )
 
 
-
 async def run_every_5_seconds() -> None:
     """ """
 
     QTY = 10
     ONE_PCT = 1 / 100
-    WINDOW = 9
-    RATIO = 0.9
-    THRESHOLD = 0.01 * ONE_PCT
     TAKE_PROFIT_PCT_DAILY = ONE_PCT * 1
 
     # gathering basic data
@@ -153,7 +142,7 @@ async def run_every_5_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    market_condition = await get_market_condition(THRESHOLD, WINDOW, RATIO)
+    market_condition = await get_market_condition()
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]

@@ -8,8 +8,9 @@ from dataclassy import dataclass
 
 # user defined formula
 from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has_passed
-from utilities.string_modification import get_net_sum_strategy_super_main
-
+from db_management.sqlite_management import (
+        querying_table,
+)
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -18,6 +19,16 @@ class HedgingSpot(BasicStrategy):
     def get_basic_params(self) -> dict:
         """ """
         return BasicStrategy(self.strategy_label)
+
+    async def get_market_condition(limit: int = 100, table: str = "ohlc1_eth_perp_json"
+    ) -> dict:
+        """ """
+        rising_price = False
+        falling_price = False
+        neutral_price = False
+
+        TA_result = await querying_table("market_analytics_json-last")
+        TA_result_data = TA_result["list_data_only"][0]
 
     def are_size_and_order_appropriate_for_ordering(
         self, notional: float, current_size: float, current_outstanding_order_len: int
