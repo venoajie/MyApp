@@ -112,14 +112,6 @@ async def get_market_condition(limit: int = 100, table: str = "ohlc1_eth_perp_js
 ) -> dict:
     """ """
 
-    ohlc = await cleaned_up_ohlc("close", limit, table)
-
-    last_price = ohlc["last_price"]
-
-    rising_price = False
-    falling_price = False
-    neutral_price = False
-
     TA_result = await querying_table("market_analytics_json-last")
     TA_result_data = TA_result["list_data_only"][0]
 
