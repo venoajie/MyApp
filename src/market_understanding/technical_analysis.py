@@ -63,7 +63,7 @@ async def cleaned_up_ohlc(
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, window, table)
-    print (f"ohlc_60 ohlc_all {ohlc_all}")
+    #print (f"ohlc_60 ohlc_all {ohlc_all}")
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
@@ -135,7 +135,7 @@ async def get_market_condition(
     """ """
     table_60= "ohlc60_eth_perp_json"
     ohlc_60= await cleaned_up_ohlc("close", 2, table_60)
-    print (f"ohlc_60 {ohlc_60}")
+    #print (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
@@ -167,7 +167,8 @@ async def get_market_condition(
         result.update({"1m_ema_close_20": ema_close_20})
         result.update({"1m_ema_close_9": ema_close_9})
         result.update({"1m_ema_high_9": ema_high_9})
-        result.update({"1m_ema_low_9": ema_low_9})
+        result.update({"60_open": ohlc_60[0]})
+        result.update({"60_last_price": ohlc_60["last_price"]})
 
         vwap_period = 100
 
@@ -177,6 +178,6 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        # print(f"TA {result}")
+        print(f"TA {result}")
 
         await insert_tables("market_analytics_json", result)
