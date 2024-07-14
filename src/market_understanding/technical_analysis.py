@@ -71,7 +71,7 @@ async def cleaned_up_ohlc(
 
     ohlc.reverse()
     tick.reverse()
-    print (f"ohlc_60 reverse {ohlc}")
+    #print (f"ohlc_60 reverse {ohlc}")
 
     return dict(
         tick=max(tick[: window - 1]), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
@@ -171,6 +171,7 @@ async def get_market_condition(
 
         result.update({"60_open": ohlc_60["ohlc"][0]})
         result.update({"60_last_price": ohlc_60["last_price"]})
+        result.update({"last_price": result["last_price"]})
 
         vwap_period = 100
 
@@ -180,6 +181,6 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        #print(f"TA {result}")
+        print(f"TA {result}")
 
         await insert_tables("market_analytics_json", result)
