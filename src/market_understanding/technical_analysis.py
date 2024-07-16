@@ -129,7 +129,7 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
 
 
 async def get_market_condition(
-    threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
+    limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
