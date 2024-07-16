@@ -48,9 +48,9 @@ async def get_price_ohlc(
     """ """
 
     # get query for close price
-    get_ohlc_query = querying_ohlc_price_vol(price, window, table)
-    print (f"get_ohlc_query {get_ohlc_query}")
     print (f"get_price_ohlc price {price} table {table} window {window}")
+    get_ohlc_query = querying_ohlc_price_vol(price, table, window)
+    print (f"get_ohlc_query {get_ohlc_query}")
 
     # executing query above
     ohlc_all = await executing_query_with_return(get_ohlc_query)
@@ -65,7 +65,7 @@ async def cleaned_up_ohlc(
 
     print (f"cleaned_up_ohlc price {price} table {table} window {window}")
     # get query for close price
-    ohlc_all = await get_price_ohlc(price, window, table)
+    ohlc_all = await get_price_ohlc(price, table, window)
     
     print (f"ohlc_60 ohlc_all {ohlc_all}")
 
@@ -137,11 +137,11 @@ async def get_market_condition(
 ) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
-    ohlc_60 = await cleaned_up_ohlc("close", 2, table_60)
+    ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
     # print (f"ohlc_60 {ohlc_60}")
 
     result = {}
-    ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
+    ohlc_high_9 = await cleaned_up_ohlc("high", table, 9)
     current_tick = ohlc_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
@@ -152,7 +152,7 @@ async def get_market_condition(
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
-        ohlc_low_9 = await cleaned_up_ohlc("low", 9, table)
+        ohlc_low_9 = await cleaned_up_ohlc("low", table, 9)
 
         #    log.error(f'ohlc_high_9 {ohlc_high_9}')
         ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
@@ -160,8 +160,8 @@ async def get_market_condition(
         result.update({"tick": current_tick})
         ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
-        ohlc_close_9 = await cleaned_up_ohlc("close", 9, table)
-        ohlc_close_20 = await cleaned_up_ohlc("close", 20, table)
+        ohlc_close_9 = await cleaned_up_ohlc("close", table, 9)
+        ohlc_close_20 = await cleaned_up_ohlc("close", table, 20)
 
         ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
