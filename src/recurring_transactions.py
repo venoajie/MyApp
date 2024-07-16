@@ -96,7 +96,7 @@ async def run_every_3_seconds() -> None:
 
     market_condition_all = await querying_table("market_analytics_json-last")
 
-    market_condition= market_condition_all["list_data_only"]
+    market_condition= market_condition_all["list_data_only"][0]
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
 
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -145,7 +145,7 @@ async def run_every_5_seconds() -> None:
     strategies = entries_exits.strategies
 
     market_condition_all = await querying_table("market_analytics_json-last")
-    market_condition= market_condition_all["list_data_only"]
+    market_condition= market_condition_all["list_data_only"][0]
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
