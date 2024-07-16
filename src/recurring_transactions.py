@@ -23,7 +23,8 @@ from db_management.sqlite_management import (
     querying_table,
     executing_closed_transactions,
 )
-from strategies.basic_strategy import querying_label_and_size, get_market_condition
+from strategies.basic_strategy import querying_label_and_size
+from market_understanding.technical_analysis import get_market_condition
 from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
@@ -224,7 +225,7 @@ async def run_every_60_seconds() -> None:
 async def run_every_15_seconds() -> None:
     """ """
 
-    from market_understanding.technical_analysis import get_market_condition
+    
 
     ONE_PCT = 1 / 100
     WINDOW = 9
