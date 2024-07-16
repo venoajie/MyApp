@@ -77,8 +77,8 @@ class HedgingSpot(BasicStrategy):
 
     async def is_send_and_cancel_open_order_allowed(
         self,
-        index_price,
         notional: float,
+        index_price,
         ask_price: float,
         server_time: int,
         TA_result_data: dict,

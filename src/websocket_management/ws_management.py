@@ -354,7 +354,7 @@ async def opening_transactions(
     my_trades_open_sqlite,
     size_from_positions,
     server_time,
-    market_condition,
+    TA_result_data,
     take_profit_pct_daily,
 ) -> None:
     """ """
@@ -415,15 +415,18 @@ async def opening_transactions(
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
                     THRESHOLD_TIME_TO_CANCEL = 3
+                    THRESHOLD_MARKET_CONDITION = .4 * ONE_PCT
 
                     hedging = hedging_spot.HedgingSpot(strategy_label)
 
                     send_order: dict = (
                         await hedging.is_send_and_cancel_open_order_allowed(
                             notional,
+                            index_price,
                             best_ask_prc,
                             server_time,
-                            market_condition,
+                            TA_result_data,
+                            THRESHOLD_MARKET_CONDITION,
                             THRESHOLD_TIME_TO_CANCEL,
                         )
                     )
