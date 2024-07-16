@@ -635,9 +635,12 @@ async def closing_transactions(
                 )
 
                 hedging = hedging_spot.HedgingSpot(label_main)
+                THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT
 
                 send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                     market_condition,
+                    THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT: float,
+                    index_price: float,
                     best_ask_prc,
                     best_bid_prc,
                     nearest_transaction_to_index,
