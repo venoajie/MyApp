@@ -24,7 +24,7 @@ from db_management.sqlite_management import (
     executing_closed_transactions,
 )
 from strategies.basic_strategy import querying_label_and_size
-from market_understanding.technical_analysis import get_market_condition
+from market_understanding.technical_analysis import get_market_condition, insert_market_condition_result
 from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
@@ -94,7 +94,8 @@ async def run_every_3_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    market_condition = await get_market_condition()
+    market_condition = await querying_table("market_analytics_json")
+
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
 
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -142,7 +143,7 @@ async def run_every_5_seconds() -> None:
     # fetch strategies attributes
     strategies = entries_exits.strategies
 
-    market_condition = await get_market_condition()
+    market_condition = await querying_table("market_analytics_json")
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
@@ -232,7 +233,7 @@ async def run_every_15_seconds() -> None:
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
 
-    await get_market_condition(THRESHOLD, WINDOW, RATIO)
+    await insert_market_condition_result(THRESHOLD, WINDOW, RATIO)
 
 
 async def check_and_save_every_60_minutes():

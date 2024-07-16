@@ -181,5 +181,13 @@ async def get_market_condition(
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
         print(f"TA {result}")
+        return result
 
-        await insert_tables("market_analytics_json", result)
+
+async def insert_market_condition_result(
+    limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
+) -> dict:
+    """ """
+    result = await get_market_condition(limit, ratio, table)
+    
+    await insert_tables("market_analytics_json", result)
