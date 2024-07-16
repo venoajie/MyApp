@@ -44,6 +44,8 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
     falling_price=False
     strong_falling_price = False
 
+    print(f" TA_result_data{TA_result_data}")
+
     open_60 = TA_result_data["60_open"]
 
     delta_price_pct = delta_pct(index_price, open_60)
