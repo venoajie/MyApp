@@ -63,7 +63,7 @@ async def cleaned_up_ohlc(
 ) -> list:
     """ """
 
-    print (f"cleaned_up_ohlc price {price} table {table} window {window}")
+    log.info (f"cleaned_up_ohlc price {price} table {table} window {window}")
     # get query for close price
     ohlc_all = await get_price_ohlc(price, table, window)
     
@@ -76,6 +76,7 @@ async def cleaned_up_ohlc(
     ohlc.reverse()
     tick.reverse()
     log.info (f"ohlc_60 reverse {ohlc}")
+    log.info (f"tick reverse {tick}")
     print (f"tick {max(tick[: window - 1])}")
     print (f"ohlc {ohlc[: window - 1]}")
     print (f"last_price {ohlc[-1:]}")
