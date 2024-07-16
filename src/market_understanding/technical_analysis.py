@@ -50,7 +50,7 @@ async def get_price_ohlc(
     # get query for close price
     get_ohlc_query = querying_ohlc_price_vol(price, table, window)
     print (f"get_ohlc_query {get_ohlc_query}")
-    print (f"price {price} table {table} window {window}")
+    print (f"get_price_ohlc price {price} table {table} window {window}")
 
     # executing query above
     ohlc_all = await executing_query_with_return(get_ohlc_query)
@@ -63,7 +63,7 @@ async def cleaned_up_ohlc(
 ) -> list:
     """ """
 
-    print (f"price {price} table {table} window {window}")
+    print (f"cleaned_up_ohlc price {price} table {table} window {window}")
     # get query for close price
     ohlc_all = await get_price_ohlc(price, table, window)
     
