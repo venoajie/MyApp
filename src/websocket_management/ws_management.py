@@ -645,7 +645,7 @@ async def closing_transactions(
 
                 await if_order_is_true(send_closing_order, instrument)
 
-            if "marketMaker" in strategy_attr["strategy"]:
+            if "marketMaker" in strategy_attr["strategy"] and False:
 
                 market_maker = MM.MarketMaker(label_main)
 
