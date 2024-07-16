@@ -165,7 +165,7 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """ """
 
-        market_condition = get_market_condition_hedging(
+        market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
 
