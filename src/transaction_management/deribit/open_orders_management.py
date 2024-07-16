@@ -26,29 +26,29 @@ async def manage_orders(orders: dict) -> None:
             "orders_all_json"
         )
 
-        if "oto_order_ids"  in order:
+        if "oto_order_ids" in order:
             # get the order state
-            oto_order_ids=order["oto_order_ids"]
+            oto_order_ids = order["oto_order_ids"]
             log.error(f"oto_order_ids {oto_order_ids}")
 
-        if "is_primary_otoco"  in order:
+        if "is_primary_otoco" in order:
             # get the order state
-            is_primary_otoco=order["is_primary_otoco'"]
+            is_primary_otoco = order["is_primary_otoco'"]
             log.error(f"is_primary_otoco {is_primary_otoco}")
 
-        if "is_secondary_oto"  in order:
+        if "is_secondary_oto" in order:
             # get the order state
-            is_secondary_oto=order["is_secondary_oto'"]
+            is_secondary_oto = order["is_secondary_oto'"]
             log.error(f"is_secondary_oto {is_secondary_oto}")
 
-        if "oco_ref"  in order:
+        if "oco_ref" in order:
             # get the order state
-            oco_ref=order["oco_ref'"]
+            oco_ref = order["oco_ref'"]
             log.error(f"oco_ref {oco_ref}")
 
-        if "oto_order_ids"  in order:
+        if "oto_order_ids" in order:
             # get the order state
-            oto_order_ids=order["oto_order_ids"]
+            oto_order_ids = order["oto_order_ids"]
             log.error(f"oto_order_ids {oto_order_ids}")
 
         if "trade_seq" not in order:

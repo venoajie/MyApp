@@ -63,7 +63,7 @@ async def cleaned_up_ohlc(
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, window, table)
-    #print (f"ohlc_60 ohlc_all {ohlc_all}")
+    # print (f"ohlc_60 ohlc_all {ohlc_all}")
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
@@ -71,7 +71,7 @@ async def cleaned_up_ohlc(
 
     ohlc.reverse()
     tick.reverse()
-    #print (f"ohlc_60 reverse {ohlc}")
+    # print (f"ohlc_60 reverse {ohlc}")
 
     return dict(
         tick=max(tick[: window - 1]), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
@@ -125,17 +125,16 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
 def get_last_tick_from_prev_TA(TA_result_data) -> int:
     """ """
-    return (
-        0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
-    )
+    return 0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
+
 
 async def get_market_condition(
     threshold, limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
-    table_60= "ohlc60_eth_perp_json"
-    ohlc_60= await cleaned_up_ohlc("close", 2, table_60)
-    #print (f"ohlc_60 {ohlc_60}")
+    table_60 = "ohlc60_eth_perp_json"
+    ohlc_60 = await cleaned_up_ohlc("close", 2, table_60)
+    # print (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", 9, table)
@@ -160,7 +159,6 @@ async def get_market_condition(
         ohlc_close_9 = await cleaned_up_ohlc("close", 9, table)
         ohlc_close_20 = await cleaned_up_ohlc("close", 20, table)
 
-        
         ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
 
@@ -171,7 +169,7 @@ async def get_market_condition(
 
         result.update({"60_open": ohlc_60["ohlc"][0]})
         result.update({"60_last_price": ohlc_60["last_price"]})
-        #print (f"result{ohlc_high_9}")
+        # print (f"result{ohlc_high_9}")
         result.update({"last_price": ohlc_high_9["last_price"]})
 
         vwap_period = 100

@@ -7,9 +7,13 @@ import asyncio
 from dataclassy import dataclass
 
 # user defined formula
-from strategies.basic_strategy import BasicStrategy, is_minimum_waiting_time_has_passed,delta_pct
+from strategies.basic_strategy import (
+    BasicStrategy,
+    is_minimum_waiting_time_has_passed,
+    delta_pct,
+)
 from db_management.sqlite_management import (
-        querying_table,
+    querying_table,
 )
 
 
@@ -24,6 +28,7 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
 
+
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
 ) -> float:
@@ -34,24 +39,24 @@ def is_hedged_value_to_notional_exceed_threshold(
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
     neutral_price,
-    rising_price, 
-    strong_rising_price, 
+    rising_price,
+    strong_rising_price,
     falling_price,
-    strong_falling_price  = False, False, False, False, False
-    
-    open_60 = TA_result_data["60_open"]
-    
-    delta_price_pct= delta_pct(index_price, open_60)
+    strong_falling_price = False, False, False, False, False
 
-    if index_price > open_60 : 
+    open_60 = TA_result_data["60_open"]
+
+    delta_price_pct = delta_pct(index_price, open_60)
+
+    if index_price > open_60:
         rising_price = True
-        
+
         if delta_price_pct > threshold:
             strong_rising_price = True
 
-    if index_price < open_60 : 
+    if index_price < open_60:
         falling_price = True
-        
+
         if delta_price_pct > threshold:
             strong_falling_price = True
 
@@ -63,7 +68,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
         strong_rising_price=strong_rising_price,
         neutral_price=neutral_price,
         falling_price=falling_price,
-        strong_falling_price=strong_falling_price
+        strong_falling_price=strong_falling_price,
     )
 
 
@@ -84,7 +89,6 @@ class HedgingSpot(BasicStrategy):
         TA_result_data: dict,
         threshold_market_condition: float,
         threshold: float = 30,
-        
     ) -> dict:
         """ """
 
@@ -93,8 +97,10 @@ class HedgingSpot(BasicStrategy):
         ) = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
-        
-        market_condition= get_market_condition_hedging(TA_result_data, index_price, threshold_market_condition)
+
+        market_condition = get_market_condition_hedging(
+            TA_result_data, index_price, threshold_market_condition
+        )
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -107,7 +113,9 @@ class HedgingSpot(BasicStrategy):
             "my_trades_all_json"
         )
 
-        print(f"is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}")
+        print(
+            f"is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
+        )
 
         sum_my_trades: int = my_trades["transactions_sum"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(
@@ -135,7 +143,9 @@ class HedgingSpot(BasicStrategy):
                 cancel_allowed: bool = True
 
         if params["everything_is_consistent"]:
-            order_allowed: bool = size_and_order_appropriate_for_ordering and (bearish or strong_bearish)
+            order_allowed: bool = size_and_order_appropriate_for_ordering and (
+                bearish or strong_bearish
+            )
 
         return dict(
             order_allowed=order_allowed,
@@ -154,8 +164,10 @@ class HedgingSpot(BasicStrategy):
         selected_transaction: list,
     ) -> dict:
         """ """
-        
-        market_condition= get_market_condition_hedging(TA_result_data, index_price, threshold_market_condition)
+
+        market_condition = get_market_condition_hedging(
+            TA_result_data, index_price, threshold_market_condition
+        )
 
         bullish = market_condition["rising_price"]
         strong_bullish = market_condition["strong_rising_price"]
@@ -175,7 +187,9 @@ class HedgingSpot(BasicStrategy):
             market_condition, ask_price, bid_price, selected_transaction
         )
 
-        exit_allowed: bool = exit_params["order_allowed"] and (bullish or strong_bullish)
+        exit_allowed: bool = exit_params["order_allowed"] and (
+            bullish or strong_bullish
+        )
 
         return dict(
             order_allowed=exit_allowed,

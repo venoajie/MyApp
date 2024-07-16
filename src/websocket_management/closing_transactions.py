@@ -6,9 +6,7 @@ import asyncio
 # installed
 from loguru import logger as log
 
-from websocket_management.ws_management import (
-    reading_from_db, if_order_is_true
-)
+from websocket_management.ws_management import reading_from_db, if_order_is_true
 
 from utilities.string_modification import (
     remove_redundant_elements,
@@ -71,7 +69,6 @@ async def closing_outstanding_transactions(
     my_trades_open: list = my_trades_open_sqlite["list_data_only"]
 
     label_transaction_main = get_label_transaction_main(label_transaction_net)
-
 
     for label in label_transaction_main:
         log.debug(f"label {label}")
@@ -149,7 +146,7 @@ async def closing_outstanding_transactions(
                     nearest_transaction_to_index,
                 )
 
-                #await if_order_is_true(send_closing_order, instrument)
+                # await if_order_is_true(send_closing_order, instrument)
 
             if "marketMaker" in strategy_attr["strategy"]:
 
@@ -164,6 +161,6 @@ async def closing_outstanding_transactions(
                     )
                 )
                 log.critical(f" send_closing_order {send_closing_order}")
-                #await if_order_is_true(send_closing_order, instrument)
+                # await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")

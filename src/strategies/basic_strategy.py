@@ -107,10 +107,12 @@ def delta_pct(last_price: float, prev_price: float) -> float:
     """ """
     return abs(delta(last_price, prev_price) / prev_price)
 
-async def get_market_condition(limit: int = 100, table: str = "ohlc1_eth_perp_json"
+
+async def get_market_condition(
+    limit: int = 100, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
-    rising_price, falling_price, neutral_price= False, False, False
+    rising_price, falling_price, neutral_price = False, False, False
 
     TA_result = await querying_table("market_analytics_json-last")
     TA_result_data = TA_result["list_data_only"][0]

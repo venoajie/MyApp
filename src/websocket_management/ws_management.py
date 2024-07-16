@@ -415,7 +415,7 @@ async def opening_transactions(
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
                     THRESHOLD_TIME_TO_CANCEL = 3
-                    THRESHOLD_MARKET_CONDITION = .4 * ONE_PCT
+                    THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT
 
                     hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -431,10 +431,10 @@ async def opening_transactions(
                         )
                     )
 
-                    await if_order_is_true(send_order, instrument)
-                    await if_cancel_is_true(send_order)
+                    #await if_order_is_true(send_order, instrument)
+                    #await if_cancel_is_true(send_order)
 
-                if "marketMaker" in strategy_attr["strategy"]:
+                if "marketMaker" in strategy_attr["strategy"] and False:
 
                     market_maker = MM.MarketMaker(strategy_label)
 
