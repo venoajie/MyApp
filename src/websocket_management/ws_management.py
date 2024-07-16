@@ -657,7 +657,7 @@ async def closing_transactions(
                         open_trade_strategy_label,
                     )
                 )
-                # log.critical(f" send_closing_order {send_closing_order}")
-                await if_order_is_true(send_closing_order, instrument)
+                log.critical(f" send_closing_order {send_closing_order}")
+                #await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")
