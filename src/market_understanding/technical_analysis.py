@@ -49,6 +49,7 @@ async def get_price_ohlc(
 
     # get query for close price
     get_ohlc_query = querying_ohlc_price_vol(price, table, window)
+    print (f"get_ohlc_query {get_ohlc_query}")
 
     # executing query above
     ohlc_all = await executing_query_with_return(get_ohlc_query)
