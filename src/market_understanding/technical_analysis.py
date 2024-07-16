@@ -77,12 +77,12 @@ async def cleaned_up_ohlc(
     tick.reverse()
     log.info (f"ohlc_60 reverse {ohlc}")
     log.info (f"tick reverse {tick}")
-    print (f"tick {max(tick[: window - 1])}")
+    print (f"tick {max(tick)}")
     print (f"ohlc {ohlc[: window - 1]}")
     print (f"last_price {ohlc[-1:]}")
 
     return dict(
-        tick=max(tick[: window - 1]), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
+        tick=max(tick), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
     )
 
 
