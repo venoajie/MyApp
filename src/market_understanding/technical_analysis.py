@@ -65,7 +65,7 @@ async def cleaned_up_ohlc(
 
     print (f"cleaned_up_ohlc price {price} table {table} window {window}")
     # get query for close price
-    ohlc_all = await get_price_ohlc(price, table, window)
+    ohlc_all = await get_price_ohlc(price, window, table)
     
     print (f"ohlc_60 ohlc_all {ohlc_all}")
 
