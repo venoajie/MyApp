@@ -613,6 +613,8 @@ async def closing_transactions(
             # min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
             # contract_size: float = instrument_attributes[0]["contract_size"]
 
+            index_price: float = ticker[0]["index_price"]
+
             # get bid and ask price
             best_bid_prc: float = ticker[0]["best_bid_price"]
             best_ask_prc: float = ticker[0]["best_ask_price"]
@@ -639,8 +641,8 @@ async def closing_transactions(
 
                 send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                     market_condition,
-                    THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT: float,
-                    index_price: float,
+                    THRESHOLD_MARKET_CONDITION,
+                    index_price,
                     best_ask_prc,
                     best_bid_prc,
                     nearest_transaction_to_index,
