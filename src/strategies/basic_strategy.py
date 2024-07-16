@@ -107,32 +107,6 @@ def delta_pct(last_price: float, prev_price: float) -> float:
     """ """
     return abs(delta(last_price, prev_price) / prev_price)
 
-
-async def get_market_condition_hedging(TA_result_data) -> dict:
-    """ """
-    rising_price, falling_price= False, False
-    open_60 = TA_result_data["60_open"]
-
-    last_price = TA_result_data["last_price"]
-
-    if last_price > ema_short and ema_short > ema_long:
-        rising_price = True
-
-    if last_price < ema_short and ema_short < ema_long:
-        falling_price = True
-
-    if rising_price == False and falling_price == False:
-        neutral_price = True
-
-    return dict(
-        rising_price=rising_price,
-        neutral_price=neutral_price,
-        falling_price=falling_price,
-        last_price=last_price,
-        profit_target_pct=delta_price_pct_ema_low_high,
-        ema=ema,
-    )
-
 async def get_market_condition(limit: int = 100, table: str = "ohlc1_eth_perp_json"
 ) -> dict:
     """ """
