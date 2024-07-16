@@ -5,7 +5,7 @@ import asyncio
 
 # installed
 from dataclassy import dataclass
-
+from loguru import logger as log
 # user defined formula
 from db_management.sqlite_management import (
     executing_label_and_size_query,
@@ -48,9 +48,9 @@ async def get_price_ohlc(
     """ """
 
     # get query for close price
-    print (f"get_price_ohlc price {price} table {table} window {window}")
+    log.error (f"get_price_ohlc price {price} table {table} window {window}")
     get_ohlc_query = querying_ohlc_price_vol(price, table, window)
-    print (f"get_ohlc_query {get_ohlc_query}")
+    log.info (f"get_ohlc_query {get_ohlc_query}")
 
     # executing query above
     ohlc_all = await executing_query_with_return(get_ohlc_query)
@@ -67,7 +67,7 @@ async def cleaned_up_ohlc(
     # get query for close price
     ohlc_all = await get_price_ohlc(price, table, window)
     
-    print (f"ohlc_60 ohlc_all {ohlc_all}")
+    log.warning (f"ohlc_60 ohlc_all {ohlc_all}")
 
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
@@ -75,7 +75,7 @@ async def cleaned_up_ohlc(
 
     ohlc.reverse()
     tick.reverse()
-    print (f"ohlc_60 reverse {ohlc}")
+    log.info (f"ohlc_60 reverse {ohlc}")
     print (f"tick {max(tick[: window - 1])}")
     print (f"ohlc {ohlc[: window - 1]}")
     print (f"last_price {ohlc[-1:]}")
@@ -141,7 +141,7 @@ async def get_market_condition(
     """ """
     table_60 = "ohlc60_eth_perp_json"
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
-    # print (f"ohlc_60 {ohlc_60}")
+    log.warning (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", table, 9)
