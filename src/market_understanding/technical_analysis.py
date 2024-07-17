@@ -78,7 +78,7 @@ async def cleaned_up_ohlc(
     log.info (f"ohlc_60 reverse {ohlc}")
     log.info (f"tick reverse {tick}")
     print (f"tick max {max(tick)}")
-    print (f"ohlc window {window}")
+    log.info (f"reverse price {price} table {table} window {window}")
     print (f"ohlc window {window - 1}")
     print (f"ohlc {ohlc[: window - 1]}")
     print (f"last_price {ohlc[-1:]}")
