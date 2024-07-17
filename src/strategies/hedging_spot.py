@@ -28,6 +28,10 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
 
+def determine_size (notional: float, factor: float) -> int:
+    """ """
+    return max(1, int(notional / factor))
+
 
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
@@ -38,9 +42,8 @@ def is_hedged_value_to_notional_exceed_threshold(
 
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
-    neutral_price, rising_price,strong_rising_price=False, False, False
-    falling_price=False
-    strong_falling_price = False
+    neutral_price, rising_price,falling_price =False, False, False
+    strong_rising_price, strong_falling_price=False, False
 
     #print(f" TA_result_data{TA_result_data}")
 
@@ -108,6 +111,10 @@ class HedgingSpot(BasicStrategy):
         strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
 
+        FACTOR= 10 if strong_bullish or strong_bearish else 100
+     
+        size= determine_size (notional, FACTOR)
+
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
@@ -119,7 +126,7 @@ class HedgingSpot(BasicStrategy):
 
         sum_my_trades: int = my_trades["transactions_sum"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(
-            notional, ask_price, None
+            ask_price, None, notional
         )
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")

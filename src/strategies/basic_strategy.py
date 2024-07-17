@@ -479,7 +479,7 @@ class BasicStrategy:
         return str_config
 
     def get_basic_opening_parameters(
-        self, notional: float = None, ask_price: float = None, bid_price: float = None
+        self, ask_price: float = None, bid_price: float = None, notional: float = None
     ) -> dict:
         """ """
 
@@ -490,8 +490,7 @@ class BasicStrategy:
         params.update({"type": "limit"})
 
         strategy_config: dict = self.get_strategy_config()
-        strategy_config_label: str = strategy_config["strategy"]
-
+        
         side: str = strategy_config["side"]
 
         params.update({"side": side})
@@ -514,9 +513,6 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
 
         params.update({"everything_is_consistent": is_everything_consistent(params)})
-        if "hedgingSpot" in strategy_config_label:
-
-            params.update({"size": max(1, int(notional / 10))})
 
         return params
 
