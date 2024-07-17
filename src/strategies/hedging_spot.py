@@ -91,7 +91,7 @@ class HedgingSpot(BasicStrategy):
         server_time: int,
         TA_result_data: dict,
         threshold_market_condition: float,
-        threshold: float = 30,
+        threshold: float,
     ) -> dict:
         """ """
 
@@ -111,9 +111,12 @@ class HedgingSpot(BasicStrategy):
         strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
 
-        FACTOR= 10 if strong_bullish or strong_bearish else 100
+        bearish_factor= 10 if strong_bearish else 20
+        FACTOR= bearish_factor if (strong_bearish or bearish) else 100
      
         size= determine_size (notional, FACTOR)
+
+        params.update({"size": size})
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().transaction_attributes(
@@ -140,7 +143,8 @@ class HedgingSpot(BasicStrategy):
 
         if len_orders != [] and len_orders > 0:
             ONE_MINUTE: int = 60000
-            time_interval = ONE_MINUTE * threshold
+            bearish_interval_threshold= (threshold/6) if strong_bearish else (threshold/3)
+            time_interval = ONE_MINUTE * bearish_interval_threshold if (strong_bearish or bearish) else threshold
             max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
 
             minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
