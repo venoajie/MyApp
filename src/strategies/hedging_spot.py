@@ -38,8 +38,7 @@ def is_hedged_value_to_notional_exceed_threshold(
 
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
-    neutral_price, rising_price=False, False
-    strong_rising_price=False
+    neutral_price, rising_price,strong_rising_price=False, False, False
     falling_price=False
     strong_falling_price = False
 
