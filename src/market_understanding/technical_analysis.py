@@ -43,7 +43,7 @@ async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> li
 
 
 async def get_price_ohlc(
-    price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
+    price: str = "close", table: str = "ohlc1_eth_perp_json", window: int = 100
 ) -> list:
     """ """
 
@@ -59,8 +59,7 @@ async def get_price_ohlc(
 
 
 async def cleaned_up_ohlc(
-    price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
-) -> list:
+    price: str = "close", table: str = "ohlc1_eth_perp_json", window: int = 100) -> list:
     """ """
 
     # get query for close price
