@@ -48,9 +48,7 @@ async def get_price_ohlc(
     """ """
 
     # get query for close price
-    log.error (f"get_price_ohlc price {price} table {table} window {window}")
     get_ohlc_query = querying_ohlc_price_vol(price, table, window)
-    log.info (f"get_ohlc_query {get_ohlc_query}")
 
     # executing query above
     ohlc_all = await executing_query_with_return(get_ohlc_query)
@@ -66,8 +64,7 @@ async def cleaned_up_ohlc(
     ohlc_all = await get_price_ohlc(price, table, window)
     
     log.warning (f"ohlc_60 ohlc_all {ohlc_all}")
-    log.error (f"cleaned_up_ohlc price {price} table {table} window {window}")
-
+    
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
     tick = [o["tick"] for o in ohlc_all]
@@ -75,12 +72,6 @@ async def cleaned_up_ohlc(
     ohlc.reverse()
     tick.reverse()
     log.info (f"ohlc_60 reverse {ohlc}")
-    log.info (f"tick reverse {tick}")
-    print (f"tick max {max(tick)}")
-    log.debug (f"reverse price {price} table {table} window {window}")
-    print (f"ohlc window {window - 1}")
-    print (f"ohlc {ohlc[: window - 1]}")
-    print (f"last_price {ohlc[-1:]}")
 
     return dict(
         tick=max(tick), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
@@ -143,7 +134,6 @@ async def get_market_condition(
     table_60 = "ohlc60_eth_perp_json"
     table_1 = "ohlc1_eth_perp_json"
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
-    log.warning (f"ohlc_60 {ohlc_60}")
 
     result = {}
     ohlc_high_9 = await cleaned_up_ohlc("high", table_1, 9)
@@ -189,7 +179,7 @@ async def get_market_condition(
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
-        print(f"TA {result}")
+        log.error(f"TA {result}")
         return result
 
 
