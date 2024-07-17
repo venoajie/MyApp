@@ -226,16 +226,14 @@ async def run_every_60_seconds() -> None:
 
 
 async def run_every_15_seconds() -> None:
-    """ """
-
-    
+    """ """  
 
     ONE_PCT = 1 / 100
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
 
-    await insert_market_condition_result(THRESHOLD, WINDOW, RATIO)
+    await insert_market_condition_result(WINDOW, RATIO)
 
 
 async def check_and_save_every_60_minutes():

@@ -138,15 +138,15 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
 
 
 async def get_market_condition(
-    limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
-) -> dict:
+    limit: int = 100, ratio: float = 0.9) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
+    table_1 = "ohlc1_eth_perp_json"
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
     log.warning (f"ohlc_60 {ohlc_60}")
 
     result = {}
-    ohlc_high_9 = await cleaned_up_ohlc("high", table, 9)
+    ohlc_high_9 = await cleaned_up_ohlc("high", table_1, 9)
     current_tick = ohlc_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
@@ -157,7 +157,7 @@ async def get_market_condition(
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
-        ohlc_low_9 = await cleaned_up_ohlc("low", table, 9)
+        ohlc_low_9 = await cleaned_up_ohlc("low", table_1, 9)
 
         #    log.error(f'ohlc_high_9 {ohlc_high_9}')
         ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
@@ -165,8 +165,8 @@ async def get_market_condition(
         result.update({"tick": current_tick})
         ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
 
-        ohlc_close_9 = await cleaned_up_ohlc("close", table, 9)
-        ohlc_close_20 = await cleaned_up_ohlc("close", table, 20)
+        ohlc_close_9 = await cleaned_up_ohlc("close", table_1, 9)
+        ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 20)
 
         ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
@@ -193,10 +193,9 @@ async def get_market_condition(
         return result
 
 
-async def insert_market_condition_result(
-    limit: int = 100, ratio: float = 0.9, table: str = "ohlc1_eth_perp_json"
+async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9
 ) -> dict:
     """ """
-    result = await get_market_condition(limit, ratio, table)
+    result = await get_market_condition(limit, ratio)
     
     await insert_tables("market_analytics_json", result)
