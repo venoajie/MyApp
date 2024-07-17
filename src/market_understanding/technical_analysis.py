@@ -183,7 +183,7 @@ async def get_market_condition(
 
         vwap_period = 100
 
-        ohlc_all = await get_price_ohlc("close", vwap_period)
+        ohlc_all = await get_price_ohlc("close", table_1, vwap_period)
 
         # log.error(f'df {df}')
         df_vwap = await get_vwap(ohlc_all, vwap_period)
