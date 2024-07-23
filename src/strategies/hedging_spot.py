@@ -28,9 +28,25 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
 
-def determine_size (notional: float, factor: float) -> int:
+
+def determine_size(notional: float, factor: float) -> int:
     """ """
-    return max(1, int(notional / factor))
+    return max(1, int(notional * factor))
+
+
+def get_bearish_factor(strong_bearish: bool, bearish: bool) -> float:
+    """
+    Determine factor for size determination.
+    strong bearish : 10% of total amount
+    bearish        : 5% of total amount
+    neutral        : 1% of total amount
+    """
+
+    ONE_PCT = 1 / 100
+
+    BEARISH_FACTOR = 10 * ONE_PCT if strong_bearish else 5 * ONE_PCT
+
+    return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
 
 
 def is_hedged_value_to_notional_exceed_threshold(
@@ -40,12 +56,61 @@ def is_hedged_value_to_notional_exceed_threshold(
     return hedged_value_to_notional(notional, hedged_value) > threshold
 
 
+def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> bool:
+    """
+    Determine order outstanding timing for size determination.
+    strong bearish : 30% of normal interval
+    bearish        : 6% of normal interval
+    """
+
+    ONE_PCT = 1 / 100
+
+    ONE_MINUTE: int = 60000
+
+    bearish_interval_threshold = (
+        (threshold * ONE_PCT * 30) if strong_bearish else (threshold * ONE_PCT * 60)
+    )
+
+    return (
+        ONE_MINUTE * bearish_interval_threshold
+        if (strong_bearish or bearish)
+        else threshold
+    )
+
+
+async def is_cancelling_order_allowed(
+    strong_bearish: bool,
+    bearish: bool,
+    threshold: float,
+    len_orders: int,
+    open_orders_label_strategy: dict,
+    server_time: int,
+) -> bool:
+    """ """
+
+    cancel_allowed: bool = False
+
+    if len_orders != [] and len_orders > 0:
+
+        time_interval = get_timing_factor(strong_bearish, bearish, threshold)
+
+        max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
+
+        minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
+            server_time, max_tstamp_orders, time_interval
+        )
+        if minimum_waiting_time_has_passed:
+            cancel_allowed: bool = True
+
+    return cancel_allowed
+
+
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
-    neutral_price, rising_price,falling_price =False, False, False
-    strong_rising_price, strong_falling_price=False, False
+    neutral_price, rising_price, falling_price = False, False, False
+    strong_rising_price, strong_falling_price = False, False
 
-    #print(f" TA_result_data{TA_result_data}")
+    # print(f" TA_result_data{TA_result_data}")
 
     open_60 = TA_result_data["60_open"]
 
@@ -111,10 +176,9 @@ class HedgingSpot(BasicStrategy):
         strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
 
-        bearish_factor= 10 if strong_bearish else 20
-        FACTOR= bearish_factor if (strong_bearish or bearish) else 100
-     
-        size= determine_size (notional, FACTOR)
+        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish)
+
+        size = determine_size(notional, SIZE_FACTOR)
 
         params.update({"size": size})
 
@@ -139,19 +203,14 @@ class HedgingSpot(BasicStrategy):
             )
         )
 
-        cancel_allowed: bool = False
-
-        if len_orders != [] and len_orders > 0:
-            ONE_MINUTE: int = 60000
-            bearish_interval_threshold= (threshold/6) if strong_bearish else (threshold/3)
-            time_interval = ONE_MINUTE * bearish_interval_threshold if (strong_bearish or bearish) else threshold
-            max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
-
-            minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
-                server_time, max_tstamp_orders, time_interval
-            )
-            if minimum_waiting_time_has_passed:
-                cancel_allowed: bool = True
+        cancel_allowed: bool = is_cancelling_order_allowed(
+            strong_bearish,
+            bearish,
+            threshold,
+            len_orders,
+            open_orders_label_strategy,
+            server_time,
+        )
 
         if params["everything_is_consistent"]:
             order_allowed: bool = size_and_order_appropriate_for_ordering and (

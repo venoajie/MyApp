@@ -24,7 +24,10 @@ from db_management.sqlite_management import (
     executing_closed_transactions,
 )
 from strategies.basic_strategy import querying_label_and_size
-from market_understanding.technical_analysis import get_market_condition, insert_market_condition_result
+from market_understanding.technical_analysis import (
+    get_market_condition,
+    insert_market_condition_result,
+)
 from websocket_management.ws_management import (
     opening_transactions,
     reading_from_pkl_database,
@@ -96,7 +99,7 @@ async def run_every_3_seconds() -> None:
 
     market_condition_all = await querying_table("market_analytics_json-last")
 
-    market_condition= market_condition_all["list_data_only"][0]
+    market_condition = market_condition_all["list_data_only"][0]
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
 
     my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
@@ -145,7 +148,7 @@ async def run_every_5_seconds() -> None:
     strategies = entries_exits.strategies
 
     market_condition_all = await querying_table("market_analytics_json-last")
-    market_condition= market_condition_all["list_data_only"][0]
+    market_condition = market_condition_all["list_data_only"][0]
 
     my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
     instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
@@ -226,7 +229,7 @@ async def run_every_60_seconds() -> None:
 
 
 async def run_every_15_seconds() -> None:
-    """ """  
+    """ """
 
     ONE_PCT = 1 / 100
     WINDOW = 9

@@ -490,7 +490,7 @@ class BasicStrategy:
         params.update({"type": "limit"})
 
         strategy_config: dict = self.get_strategy_config()
-        
+
         side: str = strategy_config["side"]
 
         params.update({"side": side})

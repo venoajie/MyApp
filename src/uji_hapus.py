@@ -1,4 +1,4 @@
 id = 5
 combined_id = [1, 2, 3, 4]
-test = id in combined_id
+test = bool([i for i in combined_id if i*1 > 5])
 print(test)

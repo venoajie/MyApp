@@ -6,6 +6,7 @@ import asyncio
 # installed
 from dataclassy import dataclass
 from loguru import logger as log
+
 # user defined formula
 from db_management.sqlite_management import (
     executing_label_and_size_query,
@@ -57,25 +58,24 @@ async def get_price_ohlc(
 
 
 async def cleaned_up_ohlc(
-    price: str = "close", table: str = "ohlc1_eth_perp_json", window: int = 100) -> list:
+    price: str = "close", table: str = "ohlc1_eth_perp_json", window: int = 100
+) -> list:
     """ """
 
     # get query for close price
     ohlc_all = await get_price_ohlc(price, table, window)
-    
-    log.warning (f"ohlc_60 ohlc_all {ohlc_all}")
-    
+
+    log.warning(f"ohlc_60 ohlc_all {ohlc_all}")
+
     # pick value only
     ohlc = [o[price] for o in ohlc_all]
     tick = [o["tick"] for o in ohlc_all]
 
     ohlc.reverse()
     tick.reverse()
-    log.info (f"ohlc_60 reverse {ohlc}")
+    log.info(f"ohlc_60 reverse {ohlc}")
 
-    return dict(
-        tick=max(tick), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0]
-    )
+    return dict(tick=max(tick), ohlc=ohlc[: window - 1], last_price=ohlc[-1:][0])
 
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
@@ -127,17 +127,35 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
     """ """
     return 0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
 
+def is_ohlc_fluctuation_exceed_threshold(ohlc: list, current_price: float, fluctuation_threshold: float) -> bool:
+    """ """
+    return bool([i for i in ohlc if abs(i-current_price)/current_price > fluctuation_threshold])
 
-async def get_market_condition(
-    limit: int = 100, ratio: float = 0.9) -> dict:
+async def get_market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
     table_1 = "ohlc1_eth_perp_json"
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
 
     result = {}
-    ohlc_high_9 = await cleaned_up_ohlc("high", table_1, 9)
-    current_tick = ohlc_high_9["tick"]
+    ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 9)
+    ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 9)
+    ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 9)
+    
+    ohlc_1_high_9_prices = ohlc_1_high_9["ohlc"]
+    ohlc_1_low_9_prices = ohlc_1_low_9["ohlc"]
+    ohlc_1_close_9_prices = ohlc_1_close_9["ohlc"]
+    last_price = ohlc_1_high_9["last_price"]
+    combining_ohlc_1=ohlc_1_high_9_prices+ohlc_1_low_9_prices+ohlc_1_close_9_prices
+    print(f"combining_ohlc_1 {combining_ohlc_1}")
+    fluctuation_threshold= .4/100
+    
+    ohlc_fluctuation_exceed_threshold= is_ohlc_fluctuation_exceed_threshold(combining_ohlc_1, 
+                                         last_price, fluctuation_threshold)
+    
+    print(f"ohlc_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
+    result.update({"fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold})
+    current_tick = ohlc_1_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
     TA_result_data = TA_result["list_data_only"]
@@ -147,18 +165,15 @@ async def get_market_condition(
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
-        ohlc_low_9 = await cleaned_up_ohlc("low", table_1, 9)
-
-        #    log.error(f'ohlc_high_9 {ohlc_high_9}')
-        ema_high_9 = await get_ema(ohlc_high_9["ohlc"], ratio)
+        #    log.error(f'ohlc_1_high_9 {ohlc_1_high_9}')
+        ema_high_9 = await get_ema(ohlc_1_high_9["ohlc"], ratio)
         #    log.error(f'ema_high_9 {ema_high_9}')
         result.update({"tick": current_tick})
-        ema_low_9 = await get_ema(ohlc_low_9["ohlc"], ratio)
-
-        ohlc_close_9 = await cleaned_up_ohlc("close", table_1, 9)
+        ema_low_9 = await get_ema(ohlc_1_low_9["ohlc"], ratio)
+        
         ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 20)
 
-        ema_close_9 = await get_ema(ohlc_close_9["ohlc"], ratio)
+        ema_close_9 = await get_ema(ohlc_1_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
 
         result.update({"1m_ema_close_20": ema_close_20})
@@ -168,8 +183,8 @@ async def get_market_condition(
 
         result.update({"60_open": ohlc_60["ohlc"][0]})
         result.update({"60_last_price": ohlc_60["last_price"]})
-        # print (f"result{ohlc_high_9}")
-        result.update({"last_price": ohlc_high_9["last_price"]})
+        # print (f"result{ohlc_1_high_9}")
+        result.update({"last_price": last_price})
 
         vwap_period = 100
 
@@ -183,9 +198,8 @@ async def get_market_condition(
         return result
 
 
-async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9
-) -> dict:
+async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9) -> dict:
     """ """
     result = await get_market_condition(limit, ratio)
-    
+
     await insert_tables("market_analytics_json", result)
