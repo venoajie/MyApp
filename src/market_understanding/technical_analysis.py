@@ -152,7 +152,8 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation
     
     combining_ohlc_1=ohlc_1_high_9_prices+ohlc_1_low_9_prices+ohlc_1_close_9_prices
     log.error(f"combining_ohlc_1 {combining_ohlc_1}")
-    log.warning(f"ohlc_open_price {ohlc_open_price} last_price {last_price} last_price > ohlc_open_price {last_price > ohlc_open_price}")
+    log.warning(f"ohlc_open_price {ohlc_open_price} last_price {last_price}")
+    log.warning(f"last_price > ohlc_open_price {last_price > ohlc_open_price}")
     
     ohlc_fluctuation_exceed_threshold= is_ohlc_fluctuation_exceed_threshold(combining_ohlc_1, 
                                          last_price, fluctuation_threshold)
