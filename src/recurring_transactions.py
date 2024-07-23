@@ -287,7 +287,7 @@ if __name__ == "__main__":
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
 
-        schedule.every(1).seconds.do(run_every_15_seconds)
+        schedule.every(15).seconds.do(run_every_15_seconds)
         schedule.every(3).seconds.do(run_every_3_seconds)
         schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
