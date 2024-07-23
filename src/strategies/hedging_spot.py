@@ -166,6 +166,8 @@ class HedgingSpot(BasicStrategy):
             "orders_all_json", "open"
         )
 
+        fluctuation_exceed_threshold = TA_result_data["fluctuation_exceed_threshold"]
+
         market_condition = get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
@@ -213,9 +215,9 @@ class HedgingSpot(BasicStrategy):
         )
 
         if params["everything_is_consistent"]:
-            order_allowed: bool = size_and_order_appropriate_for_ordering and (
-                bearish or strong_bearish
-            )
+            order_allowed: bool = size_and_order_appropriate_for_ordering \
+                and (bearish or strong_bearish)\
+                        and fluctuation_exceed_threshold
 
         return dict(
             order_allowed=order_allowed,

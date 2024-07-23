@@ -131,7 +131,7 @@ def is_ohlc_fluctuation_exceed_threshold(ohlc: list, current_price: float, fluct
     """ """
     return bool([i for i in ohlc if abs(i-current_price)/current_price > fluctuation_threshold])
 
-async def get_market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
+async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= .4/100) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
     table_1 = "ohlc1_eth_perp_json"
@@ -148,7 +148,6 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
     last_price = ohlc_1_high_9["last_price"]
     combining_ohlc_1=ohlc_1_high_9_prices+ohlc_1_low_9_prices+ohlc_1_close_9_prices
     print(f"combining_ohlc_1 {combining_ohlc_1}")
-    fluctuation_threshold= .4/100
     
     ohlc_fluctuation_exceed_threshold= is_ohlc_fluctuation_exceed_threshold(combining_ohlc_1, 
                                          last_price, fluctuation_threshold)
@@ -198,8 +197,8 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9) -> dict:
         return result
 
 
-async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9) -> dict:
+async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= 1/100) -> dict:
     """ """
-    result = await get_market_condition(limit, ratio)
+    result = await get_market_condition(limit, ratio, fluctuation_threshold)
 
     await insert_tables("market_analytics_json", result)
