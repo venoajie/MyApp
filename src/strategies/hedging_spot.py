@@ -182,8 +182,6 @@ class HedgingSpot(BasicStrategy):
 
         size = determine_size(notional, SIZE_FACTOR)
 
-        params.update({"size": size})
-
         len_orders: int = open_orders_label_strategy["transactions_len"]
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
@@ -197,6 +195,8 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
+
+        params.update({"size": size})
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
         size_and_order_appropriate_for_ordering: bool = (
