@@ -78,7 +78,7 @@ def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> 
     )
 
 
-async def is_cancelling_order_allowed(
+def is_cancelling_order_allowed(
     strong_bearish: bool,
     bearish: bool,
     threshold: float,
