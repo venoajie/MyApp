@@ -197,7 +197,7 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation
         return result
 
 
-async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= 1/100) -> dict:
+async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= (1/100)/100) -> dict:
     """ """
     result = await get_market_condition(limit, ratio, fluctuation_threshold)
 
