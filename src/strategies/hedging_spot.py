@@ -113,6 +113,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
     # print(f" TA_result_data{TA_result_data}")
 
     open_60 = TA_result_data["60_open"]
+    current_higher_open = TA_result_data["1m_current_higher_open"]
 
     delta_price_pct = delta_pct(index_price, open_60)
 
