@@ -415,9 +415,8 @@ async def opening_transactions(
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
                     THRESHOLD_TIME_TO_CANCEL = 3
-                    THRESHOLD_MARKET_CONDITION = (
-                        ONE_PCT * 0.4
-                    )  # based on avg movement in 1 hour
+                    THRESHOLD_MARKET_CONDITION = ONE_PCT * 0.5
+                     # based on avg movement in 1 hour
                     
                     last_price_traded=  last_price_all ["max_sell_traded_price"]
 
