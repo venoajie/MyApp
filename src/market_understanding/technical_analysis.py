@@ -135,7 +135,7 @@ def is_ohlc_fluctuation_exceed_threshold(
     ohlc: list, current_price: float, fluctuation_threshold: float
 ) -> bool:
     """ """
-    log.debug (f"ohlc {ohlc} current_price {current_price} fluctuation_threshold {fluctuation_threshold}")
+    #log.debug (f"ohlc {ohlc} current_price {current_price} fluctuation_threshold {fluctuation_threshold}")
     return bool(
         [
             i
@@ -157,6 +157,7 @@ async def get_market_condition(
     ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 9)
     ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 9)
     ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 9)
+    log.info (f"ohlc_1_close_9 {ohlc_1_close_9}")
     ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 3)
 
     #ohlc_1_high_9_prices = ohlc_1_high_9["ohlc"]
