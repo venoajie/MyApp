@@ -170,7 +170,7 @@ async def get_market_condition(
     # log.warning(f"last_price > ohlc_open_price {last_price > ohlc_open_price}")
 
     ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
-        ohlc_1_open_3, last_price, fluctuation_threshold
+        ohlc_1_open_3["ohlc"], last_price, fluctuation_threshold
     )
 
     print(f"ohlc_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
