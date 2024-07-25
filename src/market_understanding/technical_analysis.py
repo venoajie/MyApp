@@ -73,10 +73,12 @@ async def cleaned_up_ohlc(
 
     ohlc.reverse()
     tick.reverse()
-    ohlc_window= ohlc[: window - 1]
-    ohlc_price= ohlc_window [-1:][0]
+    ohlc_window = ohlc[: window - 1]
+    ohlc_price = ohlc_window[-1:][0]
 
-    return dict(tick=max(tick), ohlc=ohlc_window, ohlc_price=ohlc_price, last_price=ohlc[-1:][0])
+    return dict(
+        tick=max(tick), ohlc=ohlc_window, ohlc_price=ohlc_price, last_price=ohlc[-1:][0]
+    )
 
 
 async def get_ema(ohlc, ratio: float = 0.9) -> dict:
@@ -128,11 +130,23 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
     """ """
     return 0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
 
-def is_ohlc_fluctuation_exceed_threshold(ohlc: list, current_price: float, fluctuation_threshold: float) -> bool:
-    """ """
-    return bool([i for i in ohlc if abs(i-current_price)/current_price > fluctuation_threshold])
 
-async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= .4/100) -> dict:
+def is_ohlc_fluctuation_exceed_threshold(
+    ohlc: list, current_price: float, fluctuation_threshold: float
+) -> bool:
+    """ """
+    return bool(
+        [
+            i
+            for i in ohlc
+            if abs(i - current_price) / current_price > fluctuation_threshold
+        ]
+    )
+
+
+async def get_market_condition(
+    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=0.4 / 100
+) -> dict:
     """ """
     table_60 = "ohlc60_eth_perp_json"
     table_1 = "ohlc1_eth_perp_json"
@@ -142,25 +156,25 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation
     ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 9)
     ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 9)
     ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 9)
-    ohlc_1_open_9 = await cleaned_up_ohlc("open", table_1, 9)
-    
+    ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 3)
+
     ohlc_1_high_9_prices = ohlc_1_high_9["ohlc"]
     ohlc_1_low_9_prices = ohlc_1_low_9["ohlc"]
     ohlc_1_close_9_prices = ohlc_1_close_9["ohlc"]
     last_price = ohlc_1_high_9["last_price"]
-    ohlc_open_price = ohlc_1_open_9["ohlc_price"]
-    
-    combining_ohlc_1=ohlc_1_high_9_prices+ohlc_1_low_9_prices+ohlc_1_close_9_prices
-    #log.error(f"combining_ohlc_1 {combining_ohlc_1}")
-    #log.warning(f"ohlc_open_price {ohlc_open_price} last_price {last_price}")
-    #log.warning(f"last_price > ohlc_open_price {last_price > ohlc_open_price}")
-    
-    ohlc_fluctuation_exceed_threshold= is_ohlc_fluctuation_exceed_threshold(combining_ohlc_1, 
-                                         last_price, fluctuation_threshold)
-    
+    ohlc_open_price = ohlc_1_open_3["ohlc_price"]
+
+    # log.error(f"combining_ohlc_1 {combining_ohlc_1}")
+    # log.warning(f"ohlc_open_price {ohlc_open_price} last_price {last_price}")
+    # log.warning(f"last_price > ohlc_open_price {last_price > ohlc_open_price}")
+
+    ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
+        ohlc_1_open_3, last_price, fluctuation_threshold
+    )
+
     print(f"ohlc_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
     result.update({"fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold})
-    result.update({"1m_current_higher_open": last_price > ohlc_open_price })
+    result.update({"1m_current_higher_open": last_price > ohlc_open_price})
     current_tick = ohlc_1_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
@@ -176,7 +190,7 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation
         #    log.error(f'ema_high_9 {ema_high_9}')
         result.update({"tick": current_tick})
         ema_low_9 = await get_ema(ohlc_1_low_9["ohlc"], ratio)
-        
+
         ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 20)
 
         ema_close_9 = await get_ema(ohlc_1_close_9["ohlc"], ratio)
@@ -204,7 +218,9 @@ async def get_market_condition(limit: int = 100, ratio: float = 0.9, fluctuation
         return result
 
 
-async def insert_market_condition_result(limit: int = 100, ratio: float = 0.9, fluctuation_threshold= (1/100)/100) -> dict:
+async def insert_market_condition_result(
+    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=(1 / 100) / 100
+) -> dict:
     """ """
     result = await get_market_condition(limit, ratio, fluctuation_threshold)
 

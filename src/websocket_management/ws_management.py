@@ -416,17 +416,26 @@ async def opening_transactions(
 
                     THRESHOLD_TIME_TO_CANCEL = 3
                     THRESHOLD_MARKET_CONDITION = ONE_PCT * 0.5
-                     # based on avg movement in 1 hour
-                    
-                    last_price_traded=  last_price_all ["max_sell_traded_price"]
+                    # based on avg movement in 1 hour
 
-                    is_exceed_threshold= True if  last_price_traded ==0 \
-                        else ((index_price-last_price_traded)/last_price_traded)\
-                            >THRESHOLD_MARKET_CONDITION
+                    last_price_traded = last_price_all["max_sell_traded_price"]
 
-                    log.debug(f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}")
-                    if last_price_traded== 0 or last_price_traded ==[] or is_exceed_threshold:
-                        
+                    is_exceed_threshold = (
+                        True
+                        if last_price_traded == 0
+                        else ((index_price - last_price_traded) / last_price_traded)
+                        > THRESHOLD_MARKET_CONDITION
+                    )
+
+                    log.debug(
+                        f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
+                    )
+                    if (
+                        last_price_traded == 0
+                        or last_price_traded == []
+                        or is_exceed_threshold
+                    ):
+
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
                         send_order: dict = (

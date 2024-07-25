@@ -216,9 +216,11 @@ class HedgingSpot(BasicStrategy):
         )
 
         if params["everything_is_consistent"]:
-            order_allowed: bool = size_and_order_appropriate_for_ordering \
-                and (bearish or strong_bearish)\
-                        and fluctuation_exceed_threshold
+            order_allowed: bool = (
+                size_and_order_appropriate_for_ordering
+                and (bearish or strong_bearish)
+                and fluctuation_exceed_threshold
+            )
 
         return dict(
             order_allowed=order_allowed,
