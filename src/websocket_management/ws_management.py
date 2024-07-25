@@ -421,8 +421,9 @@ async def opening_transactions(
                     
                     last_price_traded=  last_price_all ["max_sell_traded_price"]
 
-                    is_exceed_threshold= 0 if  last_price_traded ==0 \
-                        else ((index_price-last_price_traded)/last_price_traded)>THRESHOLD_MARKET_CONDITION
+                    is_exceed_threshold= True if  last_price_traded ==0 \
+                        else ((index_price-last_price_traded)/last_price_traded)\
+                            >THRESHOLD_MARKET_CONDITION
 
                     log.debug(f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}")
                     if last_price_traded== 0 or last_price_traded ==[] or is_exceed_threshold:
