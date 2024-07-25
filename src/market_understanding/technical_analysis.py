@@ -154,11 +154,11 @@ async def get_market_condition(
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
 
     result = {}
-    ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 9)
-    ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 9)
-    ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 9)
+    ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 10)
+    ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 10)
+    ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 10)
     log.info (f"ohlc_1_close_9 {ohlc_1_close_9}")
-    ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 3)
+    ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 4)
 
     #ohlc_1_high_9_prices = ohlc_1_high_9["ohlc"]
     #ohlc_1_low_9_prices = ohlc_1_low_9["ohlc"]
@@ -193,7 +193,7 @@ async def get_market_condition(
         result.update({"tick": current_tick})
         ema_low_9 = await get_ema(ohlc_1_low_9["ohlc"], ratio)
 
-        ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 20)
+        ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 21)
 
         ema_close_9 = await get_ema(ohlc_1_close_9["ohlc"], ratio)
         ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
@@ -221,7 +221,7 @@ async def get_market_condition(
 
 
 async def insert_market_condition_result(
-    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=(1 / 100) / 100
+    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=(.4 / 100) 
 ) -> dict:
     """ """
     result = await get_market_condition(limit, ratio, fluctuation_threshold)
