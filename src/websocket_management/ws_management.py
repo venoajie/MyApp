@@ -435,17 +435,6 @@ async def opening_transactions(
                     # Any o/s open positions? If yes, get the last traded price
                     # To avoid trading with the same price, check whether the diff between
                     # last traded price vs current price exceed threshold
-                    send_order: dict = await (is_send_and_cancel_open_order_allowed(
-                                strategy_label,
-                                notional,
-                                index_price,
-                                best_ask_prc,
-                                server_time,
-                                TA_result_data,
-                                THRESHOLD_MARKET_CONDITION,
-                                THRESHOLD_TIME_TO_CANCEL,
-                            )
-                        )
 
                     if (
                         last_price_traded == 0
