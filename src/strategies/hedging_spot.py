@@ -112,7 +112,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
 
     open_60 = TA_result_data["60_open"]
     current_higher_open = TA_result_data["1m_current_higher_open"]
-    print (f"TA_result_data {TA_result_data}")
+    #print (f"TA_result_data {TA_result_data}")
     fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
@@ -168,7 +168,7 @@ class HedgingSpot(BasicStrategy):
         ) = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
-        print (f"TA_result_data {TA_result_data}")
+        #print (f"TA_result_data {TA_result_data}")
 
         fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
