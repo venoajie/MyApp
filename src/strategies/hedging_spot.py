@@ -180,6 +180,7 @@ class HedgingSpot(BasicStrategy):
 
         strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
+        neutral = market_condition["neutral_price"]
 
         SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish)
 
@@ -192,7 +193,7 @@ class HedgingSpot(BasicStrategy):
         )
 
         print(
-            f"is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
+            f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
         )
 
         sum_my_trades: int = my_trades["transactions_sum"]
