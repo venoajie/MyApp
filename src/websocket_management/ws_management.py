@@ -37,7 +37,6 @@ from utilities.number_modification import get_closest_value
 # from market_understanding import futures_analysis
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
-from strategies.hedging_spot import is_send_and_cancel_open_order_allowed
 from strategies.basic_strategy import (
     querying_label_and_size,
     is_everything_consistent,
