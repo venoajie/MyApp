@@ -143,7 +143,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
     )
 
 
-def get_basic_params(strategy_label) -> dict:
+async def get_basic_params(strategy_label) -> dict:
     """ """
     return BasicStrategy(strategy_label)
 
@@ -159,7 +159,7 @@ async def is_send_and_cancel_open_order_allowed(
 ) -> dict:
     """ """
 
-    basic_params=  get_basic_params(strategy_label)
+    basic_params= await get_basic_params(strategy_label)
     open_orders_label_strategy: (
         dict
     ) = basic_params.transaction_attributes(
