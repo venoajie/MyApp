@@ -187,6 +187,7 @@ class HedgingSpot(BasicStrategy):
         size = determine_size(notional, SIZE_FACTOR)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
+        
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
         )
