@@ -206,7 +206,7 @@ async def get_market_condition(
 
         ohlc_all = await get_price_ohlc("close", table_1, vwap_period)
 
-        # log.error(f'df {df}')
+        log.error(f'AAAAAAAAAAAAAAAAAAAAa')
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
