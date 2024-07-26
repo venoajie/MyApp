@@ -134,7 +134,9 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
 def is_ohlc_fluctuation_exceed_threshold(
     ohlc: list, current_price: float, fluctuation_threshold: float
 ) -> bool:
-    """ """
+    """ 
+    one of ohlc item exceed threshold
+    """
     #log.debug (f"ohlc {ohlc} current_price {current_price} fluctuation_threshold {fluctuation_threshold}")
     return bool(
         [
@@ -157,25 +159,17 @@ async def get_market_condition(
     ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 10)
     ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 10)
     ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 10)
-    #log.info (f"ohlc_1_close_9 {ohlc_1_close_9}")
     ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 4)
 
-    #ohlc_1_high_9_prices = ohlc_1_high_9["ohlc"]
-    #ohlc_1_low_9_prices = ohlc_1_low_9["ohlc"]
-    #ohlc_1_close_9_prices = ohlc_1_close_9["ohlc"]
     last_price = ohlc_1_high_9["last_price"]
     ohlc_open_price = ohlc_1_open_3["ohlc_price"]
-
-    # log.error(f"combining_ohlc_1 {combining_ohlc_1}")
-    # log.warning(f"ohlc_open_price {ohlc_open_price} last_price {last_price}")
-    # log.warning(f"last_price > ohlc_open_price {last_price > ohlc_open_price}")
 
     ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
         ohlc_1_open_3["ohlc"], last_price, fluctuation_threshold
     )
 
-    print(f"ohlc_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
-    result.update({"fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold})
+    print(f"ohlc_1_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
+    result.update({"1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold})
     result.update({"1m_current_higher_open": last_price > ohlc_open_price})
     current_tick = ohlc_1_high_9["tick"]
 
