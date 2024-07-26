@@ -170,7 +170,7 @@ class HedgingSpot(BasicStrategy):
         )
         print (f"TA_result_data {TA_result_data}")
 
-        fluctuation_exceed_threshold = TA_result_data["fluctuation_exceed_threshold"]
+        fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
