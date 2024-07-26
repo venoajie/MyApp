@@ -8,7 +8,7 @@ from loguru import logger as log
 
 # user defined formula
 from utilities.pickling import replace_data, read_data
-
+from websocket_management.ws_management import is_send_and_cancel_open_order_allowed
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data,
 )
@@ -430,11 +430,27 @@ async def opening_transactions(
                     log.debug(
                         f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
                     )
+                    
+                    # How hedge positions are checked:
+                    # Any o/s open positions? If yes, get the last traded price
+                    # To avoid trading with the same price, check whether the diff between
+                    # last traded price vs current price exceed threshold
+                    send_order: dict = (is_send_and_cancel_open_order_allowed(
+                                strategy_label,
+                                notional,
+                                index_price,
+                                best_ask_prc,
+                                server_time,
+                                TA_result_data,
+                                THRESHOLD_MARKET_CONDITION,
+                                THRESHOLD_TIME_TO_CANCEL,
+                            )
+                        )
+
                     if (
                         last_price_traded == 0
                         or last_price_traded == []
-                        or is_exceed_threshold
-                    ):
+                        ) or is_exceed_threshold:
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
