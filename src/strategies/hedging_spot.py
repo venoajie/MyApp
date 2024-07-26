@@ -159,7 +159,7 @@ async def is_send_and_cancel_open_order_allowed(
 ) -> dict:
     """ """
 
-    basic_params= await get_basic_params(strategy_label)
+    basic_params=  get_basic_params(strategy_label)
     open_orders_label_strategy: (
         dict
     ) = basic_params.transaction_attributes(
