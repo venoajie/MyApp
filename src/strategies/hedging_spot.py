@@ -110,24 +110,25 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
     neutral_price, rising_price, falling_price = False, False, False
     strong_rising_price, strong_falling_price = False, False
 
-    # print(f" TA_result_data{TA_result_data}")
-
     open_60 = TA_result_data["60_open"]
     current_higher_open = TA_result_data["1m_current_higher_open"]
+    fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
 
-    if index_price > open_60:
-        rising_price = True
+    if fluctuation_exceed_threshold:
 
-        if delta_price_pct > threshold:
-            strong_rising_price = True
+        if index_price > open_60:
+            rising_price = True
 
-    if index_price < open_60:
-        falling_price = True
+            if delta_price_pct > threshold:
+                strong_rising_price = True
 
-        if delta_price_pct > threshold:
-            strong_falling_price = True
+        if index_price < open_60:
+            falling_price = True
+
+            if delta_price_pct > threshold:
+                strong_falling_price = True
 
     if rising_price == False and falling_price == False:
         neutral_price = True
