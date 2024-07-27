@@ -422,7 +422,7 @@ async def opening_transactions(
                     is_exceed_threshold = (
                         True
                         if last_price_traded == 0
-                        else ((index_price - last_price_traded) / last_price_traded)
+                        else (abs(index_price - last_price_traded) / last_price_traded)
                         > THRESHOLD_MARKET_CONDITION
                     )
 
