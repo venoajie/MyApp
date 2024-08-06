@@ -1,5 +1,25 @@
 # # -*- coding: utf-8 -*-
 
+# in super bearish: 100% hedged in less than x minutes
+# in bearish: 80% hedged in less than x minutes
+# other than that: release all inventories
+
+# issues: 
+    # -liquidity
+    # -order: possibility executed more than one time
+
+#determine size and open order o/s minute agrresiveness
+# what is bearish?
+    # current < open (1 tf)
+
+# what is super bearish?
+    # current < open (2 tf)
+
+# what is bullish?
+    # current > open (2 tf)
+    # current > open (2 tf)
+
+
 # built ins
 import asyncio
 
