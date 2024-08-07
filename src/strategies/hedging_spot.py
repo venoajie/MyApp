@@ -9,6 +9,9 @@
     # -order: possibility executed more than one time
 
 #determine size and open order o/s minute agrresiveness
+
+# super_bearish bearish relatively_bearish neutral relatively_bullish bullish super_bullish
+
 # what is bearish?
     # current < open (1 tf)
 
