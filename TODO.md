@@ -54,11 +54,10 @@ TA | [hma-as-a-trend-reversal-indicator](https://medium.com/swlh/reducing-lag-in
 TA | [trade-stocks-based-on-news](https://medium.com/geekculture/what-happens-when-you-trade-stocks-based-on-news-52c27960a1e5) |  | | 
 Strategy | [strategy](https://medium.com/prooftrading/the-trading-strategy-63183bd231cd) |  | | 
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
-Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
-Pair | [statistic](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
-MM | [statistical-arbitrage](https://thisgoke.medium.com/statistical-arbitrage-in-the-cryptocurrency-market-strategies-best-practices-and-key-statistical-42e7c719ad8f) |  | | 
-TA | [statistic](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
-TA | [liquidation](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
+Pair | [herding-indicators](https://medium.com/tej-api-financial-data-anlaysis/application-herding-indicators-3cd7dbf575b5) |  | | 
+MM | [statistical-arbitrage-best-practices-and-key-statistica](https://thisgoke.medium.com/statistical-arbitrage-in-the-cryptocurrency-market-strategies-best-practices-and-key-statistical-42e7c719ad8f) |  | | 
+TA | [switch-from-time-driven-bars-to-information-driven-bars](https://medium.com/@degensugarboo/time-to-switch-from-time-driven-bars-to-information-driven-bars-cfdf28cdcd6c) |  | | 
+TA | [liquidations-a-speculators-guide-to-maximizing-returns](https://medium.com/@degensugarboo/liquidations-a-speculators-guide-to-maximizing-returns-dbea6e87382e) |  | | 
 TA | [Moving Average](https://algo-trading.medium.com/moving-average-exotic-use-30c15562ceed) |  | | 
 VWAP | [VWAP](https://medium.com/@larsterbraak/cost-decomposition-for-a-vwap-execution-algorithm-buy-side-perspective-1126f9eebf40) |  | | 
 Liquidity | [Amihud Illiquidity](https://medium.datadriveninvestor.com/make-80-returns-with-this-innovative-trading-strategy-with-python-4b31352f714c) |  | | 
