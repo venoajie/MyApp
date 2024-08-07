@@ -49,12 +49,12 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
+database | [duckdb](https://medium.datadriveninvestor.com/unleashing-the-power-of-momentum-trading-with-python-b878b7b5f805) |  | | 
 https://medium.datadriveninvestor.com/unleashing-the-power-of-momentum-trading-with-python-b878b7b5f805
 https://medium.com/swlh/reducing-lag-in-data-the-hull-moving-average-as-a-trend-reversal-indicator-9bb307c5c22b
 https://medium.com/geekculture/what-happens-when-you-trade-stocks-based-on-news-52c27960a1e5
 
 
-database | [duckdb](https://towardsdatascience.com/fugue-and-duckdb-fast-sql-code-in-python-e2e2dfc0f8eb) |  | | 
 
 Strategy | [strategy](https://medium.com/prooftrading/the-trading-strategy-63183bd231cd) |  | | 
 Pair | [pairing-up-for-profit](https://medium.com/@The-Quant-Trading-Room/pairing-up-for-profit-a-match-made-in-market-neutral-heaven-2ca8e42124c3) |  | | 
