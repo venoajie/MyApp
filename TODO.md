@@ -49,9 +49,9 @@ Orchestration | [airflow](https://medium.com/@victor.regism/setting-up-orchestra
 
 | Subject         | Link       | Summary        | Status       | Action         | Note         |
 | :---         |     :---:      |    :---:      | :---         | :---         | :---         |
-database | [duckdb](https://medium.datadriveninvestor.com/unleashing-the-power-of-momentum-trading-with-python-b878b7b5f805) |  | | 
-https://medium.datadriveninvestor.com/unleashing-the-power-of-momentum-trading-with-python-b878b7b5f805
-https://medium.com/swlh/reducing-lag-in-data-the-hull-moving-average-as-a-trend-reversal-indicator-9bb307c5c22b
+TA | [momentum-trading-with-python](https://medium.datadriveninvestor.com/unleashing-the-power-of-momentum-trading-with-python-b878b7b5f805) |  | | 
+TA | [hma-as-a-trend-reversal-indicator](https://medium.com/swlh/reducing-lag-in-data-the-hull-moving-average-as-a-trend-reversal-indicator-9bb307c5c22b) |  | | 
+
 https://medium.com/geekculture/what-happens-when-you-trade-stocks-based-on-news-52c27960a1e5
 
 
