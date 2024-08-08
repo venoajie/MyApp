@@ -8,15 +8,21 @@
     # -liquidity
     # -order: possibility executed more than one time
 
-#determine size and open order o/s minute agrresiveness
+# determine size and open order o/s minute agrresiveness
+# condition     : super_bearish      bearish    relatively_bearish
+# qty in 1 hour :     120%              80%             50%
+# os order sec  :       1m              3 m             3m
 
-# super_bearish bearish relatively_bearish neutral relatively_bullish bullish super_bullish
+# tf: 5 min, 15 min, 60 min
 
-# what is bearish?
+# what is relatively_bearish?
     # current < open (1 tf)
 
-# what is super bearish?
+# what is bearish?
     # current < open (2 tf)
+
+# what is super bearish?
+    # current < open (3 tf)
 
 # what is bullish?
     # current > open (2 tf)
