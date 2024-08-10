@@ -429,16 +429,15 @@ async def opening_transactions(
                     log.debug(
                         f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
                     )
-                    
+
                     # How hedge positions are checked:
                     # Any o/s open positions? If yes, get the last traded price
                     # To avoid trading with the same price, check whether the diff between
                     # last traded price vs current price exceed threshold
 
                     if (
-                        last_price_traded == 0
-                        or last_price_traded == []
-                        ) or is_exceed_threshold:
+                        last_price_traded == 0 or last_price_traded == []
+                    ) or is_exceed_threshold:
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 

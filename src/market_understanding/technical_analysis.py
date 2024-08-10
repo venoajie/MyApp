@@ -134,10 +134,10 @@ def get_last_tick_from_prev_TA(TA_result_data) -> int:
 def is_ohlc_fluctuation_exceed_threshold(
     ohlc: list, current_price: float, fluctuation_threshold: float
 ) -> bool:
-    """ 
+    """
     one of ohlc item exceed threshold
     """
-    #log.debug (f"ohlc {ohlc} current_price {current_price} fluctuation_threshold {fluctuation_threshold}")
+    # log.debug (f"ohlc {ohlc} current_price {current_price} fluctuation_threshold {fluctuation_threshold}")
     return bool(
         [
             i
@@ -169,7 +169,9 @@ async def get_market_condition(
     )
 
     print(f"ohlc_1_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
-    result.update({"1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold})
+    result.update(
+        {"1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
+    )
     result.update({"1m_current_higher_open": last_price > ohlc_open_price})
     current_tick = ohlc_1_high_9["tick"]
 
@@ -177,7 +179,7 @@ async def get_market_condition(
     TA_result_data = TA_result["list_data_only"]
     # log.error(f'TA_result {TA_result_data}')
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
-    log.error(f'last_tick {last_tick_from_prev_TA} current_tick {current_tick}')
+    log.error(f"last_tick {last_tick_from_prev_TA} current_tick {current_tick}")
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
@@ -206,7 +208,7 @@ async def get_market_condition(
 
         ohlc_all = await get_price_ohlc("close", table_1, vwap_period)
 
-        log.error(f'AAAAAAAAAAAAAAAAAAAAa')
+        log.error(f"AAAAAAAAAAAAAAAAAAAAa")
         df_vwap = await get_vwap(ohlc_all, vwap_period)
         vwap = df_vwap.iloc[-1]
         result.update({"1m_vwap": vwap})
@@ -215,7 +217,7 @@ async def get_market_condition(
 
 
 async def insert_market_condition_result(
-    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=(.4 / 100) 
+    limit: int = 100, ratio: float = 0.9, fluctuation_threshold=(0.4 / 100)
 ) -> dict:
     """ """
     result = await get_market_condition(limit, ratio, fluctuation_threshold)

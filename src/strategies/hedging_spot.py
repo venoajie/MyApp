@@ -4,29 +4,29 @@
 # in bearish: 80% hedged in less than x minutes
 # other than that: release all inventories
 
-# issues: 
-    # -liquidity
-    # -order: possibility executed more than one time
+# issues:
+# -liquidity
+# -order: possibility executed more than one time
 
 # determine size and open order o/s minute agrresiveness
 # condition     : super_bearish      bearish    relatively_bearish
 # qty in 1 hour :     120%              80%             50%
-# os order sec  :       1m              3 m             3m
+# os order sec  :       1m              3 m             m
 
 # tf: 5 min, 15 min, 60 min
 
 # what is relatively_bearish?
-    # current < open (1 tf)
+# current < open (1 tf)
 
 # what is bearish?
-    # current < open (2 tf)
+# current < open (2 tf)
 
 # what is super bearish?
-    # current < open (3 tf)
+# current < open (3 tf)
 
 # what is bullish?
-    # current > open (2 tf)
-    # current > open (2 tf)
+# current > open (2 tf)
+# current > open (2 tf)
 
 
 # built ins
@@ -63,19 +63,33 @@ def determine_size(notional: float, factor: float) -> int:
     return max(1, int(notional * factor))
 
 
-def get_bearish_factor(strong_bearish: bool, bearish: bool) -> float:
+def get_bearish_factor(
+    strong_bearish: bool, bearish: bool, relatively_bearish: bool
+) -> float:
     """
     Determine factor for size determination.
-    strong bearish : 10% of total amount
-    bearish        : 5% of total amount
-    neutral        : 1% of total amount
+    strong bearish      : 10% of total amount
+    bearish             : 5% of total amount
+    relatively_bearish  : 5% of total amount
+    neutral             : 1% of total amount
     """
 
     ONE_PCT = 1 / 100
+    PCT_SUPER_BEARISH = 10
+    PCT_BEARISH = 5
+    PCT_RELATIVELY_BEARISH = 5
+    PCT_NEUTRAL = 5
 
-    BEARISH_FACTOR = 10 * ONE_PCT if strong_bearish else 5 * ONE_PCT
+    BEARISH_FACTOR = PCT_SUPER_BEARISH if strong_bearish else PCT_BEARISH
+    BEARISH_FACTOR = (
+        BEARISH_FACTOR if (strong_bearish or bearish) else PCT_RELATIVELY_BEARISH
+    )
 
-    return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
+    return (
+        BEARISH_FACTOR
+        if (strong_bearish or bearish or relatively_bearish)
+        else PCT_NEUTRAL
+    ) * ONE_PCT
 
 
 def is_hedged_value_to_notional_exceed_threshold(
@@ -137,11 +151,11 @@ def is_cancelling_order_allowed(
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
     neutral_price, rising_price, falling_price = False, False, False
-    strong_rising_price, strong_falling_price = False, False
+    strong_rising_price, super_bearish, relatively_bearish = False, False, False
 
     open_60 = TA_result_data["60_open"]
     current_higher_open = TA_result_data["1m_current_higher_open"]
-    #print (f"TA_result_data {TA_result_data}")
+    # print (f"TA_result_data {TA_result_data}")
     fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
@@ -158,7 +172,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
             falling_price = True
 
             if delta_price_pct > threshold:
-                strong_falling_price = True
+                super_bearish = True
 
     if rising_price == False and falling_price == False:
         neutral_price = True
@@ -168,8 +182,10 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
         strong_rising_price=strong_rising_price,
         neutral_price=neutral_price,
         falling_price=falling_price,
-        strong_falling_price=strong_falling_price,
+        super_bearish=super_bearish,
+        relatively_bearish=relatively_bearish,
     )
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -196,7 +212,7 @@ class HedgingSpot(BasicStrategy):
         ) = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
-        #print (f"TA_result_data {TA_result_data}")
+        # print (f"TA_result_data {TA_result_data}")
 
         fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
@@ -206,17 +222,18 @@ class HedgingSpot(BasicStrategy):
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
+        relatively_bearish = market_condition["relatively_bearish"]
 
         strong_bullish = market_condition["strong_rising_price"]
-        strong_bearish = market_condition["strong_falling_price"]
+        strong_bearish = market_condition["super_bearish"]
         neutral = market_condition["neutral_price"]
 
-        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish)
+        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish, relatively_bearish)
 
         size = determine_size(notional, SIZE_FACTOR)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-        
+
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
         )
