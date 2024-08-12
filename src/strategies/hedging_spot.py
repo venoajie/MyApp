@@ -62,8 +62,16 @@ def determine_size(notional: float, factor: float) -> int:
     """ """
     return max(1, int(notional * factor))
 
+def bearish_size_factor() -> int:
+    """ """
+    return 100
 
-def get_bearish_factor(
+def strong_bearish_size_factor() -> int:
+    """ """
+    return 120
+
+
+def get_bearish_factor_size(
     strong_bearish: bool, bearish: bool, relatively_bearish: bool
 ) -> float:
     """
@@ -75,22 +83,14 @@ def get_bearish_factor(
     """
 
     ONE_PCT = 1 / 100
-    PCT_SUPER_BEARISH = 10
-    PCT_BEARISH = 5
-    PCT_RELATIVELY_BEARISH = 5
-    PCT_NEUTRAL = 5
 
-    BEARISH_FACTOR = PCT_SUPER_BEARISH if strong_bearish else PCT_BEARISH
-    BEARISH_FACTOR = (
-        BEARISH_FACTOR if (strong_bearish or bearish) else PCT_RELATIVELY_BEARISH
-    )
+    if relatively_bearish or bearish:
+        SIZE_FACTOR= bearish_size_factor()
 
-    return (
-        BEARISH_FACTOR
-        if (strong_bearish or bearish or relatively_bearish)
-        else PCT_NEUTRAL
-    ) * ONE_PCT
+    if strong_bearish:
+        SIZE_FACTOR= strong_bearish_size_factor()
 
+    return SIZE_FACTOR * ONE_PCT
 
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
@@ -228,7 +228,7 @@ class HedgingSpot(BasicStrategy):
         strong_bearish = market_condition["super_bearish"]
         neutral = market_condition["neutral_price"]
 
-        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish, relatively_bearish)
+        SIZE_FACTOR = get_bearish_factor_size(strong_bearish, bearish, relatively_bearish)
 
         size = determine_size(notional, SIZE_FACTOR)
 
