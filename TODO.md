@@ -86,6 +86,18 @@ TA | [liquidity](https://nhristov.io/exploiting-liquidity-traps-with-a-custom-tr
 
 
 
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
+```
+
+
+
+
+
 
 
 
