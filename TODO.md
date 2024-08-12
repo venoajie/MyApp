@@ -87,6 +87,7 @@ TA | [liquidity](https://nhristov.io/exploiting-liquidity-traps-with-a-custom-tr
 
 
 ```mermaid
+flowchart LR
 
 A[Hard] -->|Text| B(Round)
 B --> C{Decision}
