@@ -14,7 +14,7 @@
 flowchart LR
 
 A[Hard] -->|Text| B(Round)
-B --> C{Current < open 1H?}
-C -->|Yes| D[Result 1]
+B --> C{Current < Open 1H?}
+C -->|Yes| D{Current < Open 15M?}
 C -->|No| E[Result 2]
 ```
