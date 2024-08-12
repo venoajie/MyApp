@@ -81,12 +81,17 @@ TA | [momentum](https://sedemquame.medium.com/building-a-momentum-trading-algori
 TA | [liquidity](https://nhristov.io/exploiting-liquidity-traps-with-a-custom-trading-algorithm-b98be5125042) |  | | 
 
 
+
+```mermaid
 flowchart LR
 
 A[Hard] -->|Text| B(Round)
 B --> C{Decision}
 C -->|One| D[Result 1]
 C -->|Two| E[Result 2]
+```
+
+
 
 
 
