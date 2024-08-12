@@ -22,8 +22,8 @@ D -->|Yes| E[Release them]
 D -->|No| G[Stop]
 
 linkStyle 2 stroke-width:2px,fill:none,stroke:green;
-linkStyle 3 stroke-width:2px,fill:none,stroke:green;
-linkStyle 4 stroke-width:2px,fill:none,stroke:red;
+linkStyle 3 stroke-width:2px,fill:none,stroke:red;
+linkStyle 4 stroke-width:2px,fill:none,stroke:green;
 linkStyle 5 stroke-width:2px,fill:none,stroke:red;
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
