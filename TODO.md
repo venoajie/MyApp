@@ -80,24 +80,3 @@ MP | [market profile](https://medium.com/coinmonks/high-probability-scalping-set
 TA | [momentum](https://sedemquame.medium.com/building-a-momentum-trading-algorithm-using-python-1924a5939204) |  | | 
 TA | [liquidity](https://nhristov.io/exploiting-liquidity-traps-with-a-custom-trading-algorithm-b98be5125042) |  | | 
 
-
-
-```mermaid
-flowchart LR
-
-A[Hard] -->|Text| B(Round)
-B --> C{Current < open 1H?}
-C -->|Yes| D[Result 1]
-C -->|No| E[Result 2]
-```
-
-
-
-
-
-
-
-
-
-
-

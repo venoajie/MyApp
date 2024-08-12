@@ -25,6 +25,7 @@
 
 
 ## Transaction flow:
+
 - Fetch both market and exchange data through websocket and temporary save them either sqlite3 or in pickle format.
 - Modify market data for further analysis
 - Check the balance in crypto currency. Check whether they have properly hedged
