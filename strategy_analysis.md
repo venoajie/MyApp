@@ -10,7 +10,6 @@
 
 - [x] Check Market
 
-
 ```mermaid
 flowchart LR
 
@@ -21,6 +20,8 @@ C -->|No| F[Send orders]
 B -->|No| D[Any outstanding hedgings?]
 D -->|Yes| E[Release them]
 D -->|No| G[Stop]
+
+linkStyle 2 stroke-width:2px,fill:none,stroke:green;
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
