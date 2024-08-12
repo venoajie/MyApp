@@ -17,8 +17,8 @@ flowchart LR
 A[Check Market] --> B{Is Bearish?}
 B -->|Yes| C{Is fully hedged?}
 B -->|No| D[Any hedging?]
-D -->|Yes| C{Is fully hedged?}
-D -->|No| D[Any hedging?]
+D -->|Yes| E{Is fully hedged?}
+D -->|No| F[Any hedging?]
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
