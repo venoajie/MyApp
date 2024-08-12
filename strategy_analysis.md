@@ -6,11 +6,8 @@
 
 #### WIP. Tested in Python 3.8 and Ubuntu 20.04 environment
 
-## Current feature list:
+## Hedging:
 - [x] Automatic **hedging** for equity balances in crypto spot
-
-
-## Transaction flow:
 
 
 ```mermaid
