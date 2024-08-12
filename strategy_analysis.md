@@ -16,11 +16,11 @@ flowchart LR
 
 A[Check Market] --> B{Is bearish?}
 B -->|Yes| C{Is fully hedged?}
-C -->|Yes| A[Check Market]
+C -->|Yes| H[Stop]
 C -->|No| F[Send orders]
-B -->|No| D[Any hedgings?]
+B -->|No| D[Any outstanding hedgings?]
 D -->|Yes| E[Release them]
-D -->|No| A[Check Market]
+D -->|No| G[Stop]
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
