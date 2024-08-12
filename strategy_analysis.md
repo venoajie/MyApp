@@ -17,7 +17,7 @@ flowchart LR
 A[Check Market] --> B{Is bearish?}
 B -->|Yes| C{Is fully hedged?}
 C -->|Yes| A[Check Market]
-C -->|No| E[Send orders]
+C -->|No| F[Send orders]
 B -->|No| D[Any hedgings?]
 D -->|Yes| E[Release them]]
 D -->|No| A[Check Market]
