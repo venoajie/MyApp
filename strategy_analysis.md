@@ -18,7 +18,7 @@ A[Check Market] --> B{Is Bearish?}
 B -->|Yes| C{Is fully hedged?}
 B -->|No| D[Any hedging?]
 D -->|Yes| E{Is fully hedged?}
-D -->|No| A[Return to check market]
+D -->|No| A[Check Market]
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
