@@ -14,10 +14,12 @@
 ```mermaid
 flowchart LR
 
-A[Check Market] --> B{Is Bearish?}
+A[Check Market] --> B{Is bearish?}
 B -->|Yes| C{Is fully hedged?}
-B -->|No| D[Any hedging?]
-D -->|Yes| E{Is fully hedged?}
+C -->|Yes| A[Check Market]
+C -->|No| E[Send orders]
+B -->|No| D[Any hedgings?]
+D -->|Yes| E[Release them]]
 D -->|No| A[Check Market]
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
