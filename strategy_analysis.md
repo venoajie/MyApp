@@ -26,6 +26,7 @@ linkStyle 2 stroke-width:2px,fill:none,stroke:green;
 linkStyle 3 stroke-width:2px,fill:none,stroke:red;
 linkStyle 4 stroke-width:2px,fill:none,stroke:red;
 linkStyle 5 stroke-width:2px,fill:none,stroke:green;
+linkStyle 5 stroke-width:2px,fill:none,stroke:red;
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
