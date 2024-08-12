@@ -21,6 +21,7 @@ B -->|No| D[Any outstanding hedgings?]
 D -->|Yes| E[Release them]
 D -->|No| G[Stop]
 
+linkStyle 1 stroke-width:2px,fill:none,stroke:green;
 linkStyle 2 stroke-width:2px,fill:none,stroke:green;
 linkStyle 3 stroke-width:2px,fill:none,stroke:red;
 linkStyle 4 stroke-width:2px,fill:none,stroke:red;
