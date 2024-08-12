@@ -17,6 +17,6 @@ A[Hard] -->|Text| B(Round)
 B --> C{Current < Open 1H?}
 C -->|Yes| D{Current < Open 15M?}
 C -->|No| E[Result 2]
-D -->|Yes| F {Current < Open 5M?}
+D -->|Yes| F{Current < Open 5M?}
 D -->|No| G[Result 2]
 ```
