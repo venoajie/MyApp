@@ -19,7 +19,7 @@ B -->|Yes| C{Is fully hedged?}
 C -->|Yes| A[Check Market]
 C -->|No| F[Send orders]
 B -->|No| D[Any hedgings?]
-D -->|Yes| E[Release them]]
+D -->|Yes| E[Release them]
 D -->|No| A[Check Market]
 ```
 - [x] Automatic **hedging** for equity balances in crypto spot
