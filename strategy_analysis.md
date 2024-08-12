@@ -7,6 +7,17 @@
 #### WIP. Tested in Python 3.8 and Ubuntu 20.04 environment
 
 ## Hedging:
+
+- [x] Check Market
+
+
+```mermaid
+flowchart LR
+
+A[Check Market] --> B{Is Bearish?}
+B -->|Yes| D{Is fully hedged?}
+B -->|No| E[Result   2]
+```
 - [x] Automatic **hedging** for equity balances in crypto spot
 
 
