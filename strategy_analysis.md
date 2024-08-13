@@ -1,14 +1,8 @@
 
 # MyApp
-#### Provide non-hft trading platform that allowed multiple strategy in the same instrument. Could improve the capital efficiency and risk management.
-
-#### Supported exchanges: Deribit. Others coming soon
-
-#### WIP. Tested in Python 3.8 and Ubuntu 20.04 environment
-
 ## Hedging:
 
-- [x] Check Market
+### Hedging:
 
 ```mermaid
 flowchart LR
@@ -28,7 +22,7 @@ linkStyle 4 stroke-width:2px,fill:none,stroke:red;
 linkStyle 5 stroke-width:2px,fill:none,stroke:green;
 linkStyle 5 stroke-width:2px,fill:none,stroke:red;
 ```
-- [x] When bearish is detected:
+### When bearish is detected:
 
 
 ```mermaid
