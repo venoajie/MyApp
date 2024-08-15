@@ -81,7 +81,7 @@ def bearish_size_factor() -> int:
 
 def strong_bearish_size_factor() -> int:
     """ """
-    return 120
+    return 100
 
 
 def get_bearish_factor_size(
@@ -96,6 +96,8 @@ def get_bearish_factor_size(
     """
 
     ONE_PCT = 1 / 100
+
+    SIZE_FACTOR=100
 
     if relatively_bearish or bearish:
         SIZE_FACTOR = bearish_size_factor()
