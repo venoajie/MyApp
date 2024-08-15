@@ -298,7 +298,7 @@ class HedgingSpot(BasicStrategy):
         )
 
         print(
-            f"are_future_size_and_order_appropriate_for_ordering {are_future_size_and_order_appropriate_for_ordering}"
+            f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}"
         )
 
         cancel_allowed: bool = is_cancelling_order_allowed(
@@ -314,7 +314,7 @@ class HedgingSpot(BasicStrategy):
             order_allowed: bool = (
                 size_and_order_appropriate_for_ordering
                 and (bearish or strong_bearish)
-                and fluctuation_exceed_threshold
+                #and fluctuation_exceed_threshold
             )
 
         return dict(
