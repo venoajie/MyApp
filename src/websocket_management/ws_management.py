@@ -452,9 +452,8 @@ async def opening_transactions(
                                 THRESHOLD_TIME_TO_CANCEL,
                             )
                         )
-
-                    # await if_order_is_true(send_order, instrument)
-                    # await if_cancel_is_true(send_order)
+                    await if_order_is_true(send_order, instrument)
+                    await if_cancel_is_true(send_order)
 
                 if False and "marketMaker" in strategy_attr["strategy"]:
 
