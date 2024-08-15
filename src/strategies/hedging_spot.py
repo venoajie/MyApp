@@ -282,17 +282,17 @@ class HedgingSpot(BasicStrategy):
 
         params.update({"size": size})
 
-        max_len_orders = max_len_orders(params, 
+        max_orders = max_len_orders(params, 
             strong_bearish, bearish, relatively_bearish)
         proforma_qty = proforma_size(
             sum_my_trades, sum_my_orders, size)
 
         print(
-            f"max_len_orders {max_len_orders} sum_my_trades {sum_my_trades} sum_my_orders {sum_my_orders} proforma_qty {proforma_qty} notional {notional}"
+            f"max_len_orders {max_orders} sum_my_trades {sum_my_trades} sum_my_orders {sum_my_orders} proforma_qty {proforma_qty} notional {notional}"
         )
 
         size_and_order_appropriate_for_ordering: bool = (
-            are_future_size_and_order_appropriate_for_ordering(notional, proforma_qty,len_orders,max_len_orders)
+            are_future_size_and_order_appropriate_for_ordering(notional, proforma_qty,len_orders,max_orders)
         )
 
         cancel_allowed: bool = is_cancelling_order_allowed(
