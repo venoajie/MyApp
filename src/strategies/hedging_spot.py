@@ -83,6 +83,20 @@ def strong_bearish_size_factor() -> int:
     """ """
     return 100
 
+def max_len_orders(params, 
+            strong_bearish, bearish, relatively_bearish) -> int:
+    """ """
+    max_len_orders = params["weighted_factor"]
+    max_len=max_len_orders["relatively"]
+    if strong_bearish:
+        max_len=max_len_orders["extreme"]
+    if bearish:
+        max_len=max_len_orders["normal"]
+    if relatively_bearish:
+        max_len=max_len_orders["relatively"]
+
+    return max_len
+
 
 def get_bearish_factor_size(
     strong_bearish: bool, bearish: bool, relatively_bearish: bool
@@ -268,7 +282,8 @@ class HedgingSpot(BasicStrategy):
 
         params.update({"size": size})
 
-        max_len_orders = params["weighted_factor"]
+        max_len_orders = max_len_orders(params, 
+            strong_bearish, bearish, relatively_bearish)
         proforma_qty = proforma_size(
             sum_my_trades, sum_my_orders, size)
 
