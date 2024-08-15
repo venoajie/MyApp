@@ -61,6 +61,10 @@ def are_future_size_and_order_appropriate_for_ordering(
     threshold: float,
 ) -> bool:
     """ """
+    
+    print(
+            f"abs(proforma_size) < notional {abs(proforma_size) < notional} current_outstanding_order_len < threshold {current_outstanding_order_len < threshold} current_outstanding_order_len {current_outstanding_order_len}"
+        )
     return abs(proforma_size) < notional and current_outstanding_order_len < threshold
 
 
@@ -291,6 +295,10 @@ class HedgingSpot(BasicStrategy):
 
         size_and_order_appropriate_for_ordering: bool = (
             are_future_size_and_order_appropriate_for_ordering(notional, proforma_qty,len_orders,max_orders)
+        )
+
+        print(
+            f"are_future_size_and_order_appropriate_for_ordering {are_future_size_and_order_appropriate_for_ordering}"
         )
 
         cancel_allowed: bool = is_cancelling_order_allowed(
