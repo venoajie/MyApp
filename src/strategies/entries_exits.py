@@ -29,6 +29,7 @@ strategies = [
         "averaging": (5 / 100),
         "cut_loss_usd": 15,
         "cut_loss_pct": (3 / 100),
+        "weighted_factor": {"relatively": 1, "normal": 5, "extreme": 10},
         "halt_minute_before_reorder": 60 * 4,
         "equity_risked_usd": 60,
         "equity_risked_pct": (1 / 100),

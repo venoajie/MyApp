@@ -40,6 +40,7 @@ from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
     delta_pct,
+    proforma_size,
 )
 from db_management.sqlite_management import (
     querying_table,
@@ -53,6 +54,16 @@ def are_size_and_order_appropriate_for_ordering(
     return abs(current_size) < notional and current_outstanding_order_len == 0
 
 
+def are_future_size_and_order_appropriate_for_ordering(
+    notional: float,
+    proforma_size: float,
+    current_outstanding_order_len: int,
+    threshold: float,
+) -> bool:
+    """ """
+    return abs(proforma_size) < notional and current_outstanding_order_len < threshold
+
+
 def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
@@ -62,9 +73,11 @@ def determine_size(notional: float, factor: float) -> int:
     """ """
     return max(1, int(notional * factor))
 
+
 def bearish_size_factor() -> int:
     """ """
     return 100
+
 
 def strong_bearish_size_factor() -> int:
     """ """
@@ -85,12 +98,13 @@ def get_bearish_factor_size(
     ONE_PCT = 1 / 100
 
     if relatively_bearish or bearish:
-        SIZE_FACTOR= bearish_size_factor()
+        SIZE_FACTOR = bearish_size_factor()
 
     if strong_bearish:
-        SIZE_FACTOR= strong_bearish_size_factor()
+        SIZE_FACTOR = strong_bearish_size_factor()
 
     return SIZE_FACTOR * ONE_PCT
+
 
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
@@ -228,7 +242,9 @@ class HedgingSpot(BasicStrategy):
         strong_bearish = market_condition["super_bearish"]
         neutral = market_condition["neutral_price"]
 
-        SIZE_FACTOR = get_bearish_factor_size(strong_bearish, bearish, relatively_bearish)
+        SIZE_FACTOR = get_bearish_factor_size(
+            strong_bearish, bearish, relatively_bearish
+        )
 
         size = determine_size(notional, SIZE_FACTOR)
 
@@ -243,17 +259,24 @@ class HedgingSpot(BasicStrategy):
         )
 
         sum_my_trades: int = my_trades["transactions_sum"]
+        sum_my_orders: int = open_orders_label_strategy["transactions_sum"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
 
         params.update({"size": size})
 
-        print(f"sum_my_trades {sum_my_trades} notional {notional}")
+        max_len_orders = params["weighted_factor"]
+        proforma_qty = proforma_size(
+            sum_my_trades, sum_my_orders, size, len_orders, max_len_orders
+        )
+
+        print(
+            f"max_len_orders {max_len_orders} sum_my_trades {sum_my_trades} sum_my_orders {sum_my_orders} proforma_qty {proforma_qty} notional {notional}"
+        )
+
         size_and_order_appropriate_for_ordering: bool = (
-            are_size_and_order_appropriate_for_ordering(
-                notional, sum_my_trades, len_orders
-            )
+            are_future_size_and_order_appropriate_for_ordering(notional, proforma_qty)
         )
 
         cancel_allowed: bool = is_cancelling_order_allowed(

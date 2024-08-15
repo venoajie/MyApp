@@ -421,6 +421,22 @@ def get_strategy_config_all() -> list:
     return entries_exits.strategies
 
 
+def positions_and_orders(net_current_trading_position: int, current_orders: int) -> int:
+    """ """
+
+    return net_current_trading_position + current_orders
+
+
+def proforma_size(
+    net_current_trading_position: int, current_orders: int, next_orders: int
+) -> int:
+    """ """
+
+    return (
+        positions_and_orders(net_current_trading_position, current_orders) + next_orders
+    )
+
+
 def is_everything_consistent(params) -> bool:
     """ """
     label = get_transaction_label(params)
@@ -469,7 +485,6 @@ class BasicStrategy:
             ][0]
 
         else:
-
             str_config: dict = [
                 o
                 for o in params
@@ -499,6 +514,10 @@ class BasicStrategy:
             cancellable = strategy_config["cancellable"]
         except:
             cancellable = False
+
+        if "hedgingSpot" in self.strategy_label:
+            weighted_factor = strategy_config["weighted_factor"]
+            params.update({"weighted_factor": weighted_factor})
 
         # get transaction label and update the respective parameters
         params.update({"cancellable": cancellable})
