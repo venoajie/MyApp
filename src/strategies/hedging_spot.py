@@ -103,6 +103,7 @@ def get_bearish_factor_size(
     strong_bearish: bool, bearish: bool, relatively_bearish: bool
 ) -> float:
     """
+    Combine with max order stacks
     Determine factor for size determination.
     strong bearish      : 10% of total amount
     bearish             : 5% of total amount
