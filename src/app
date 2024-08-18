@@ -203,7 +203,10 @@ class StreamAccountData:
                 currencies = ["ETH", "BTC"]
                 
                 # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
-                currency = "ETH"
+                try:
+                    currency = "ETH"
+                except:
+                    currency = "BTC"
 
                 my_path_instruments = provide_path_for_file(
                     "instruments", currency
