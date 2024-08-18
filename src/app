@@ -201,6 +201,9 @@ class StreamAccountData:
                 self.loop.create_task(self.ws_refresh_auth())
 
                 currencies = ["ETH", "BTC"]
+
+                for curr in currencies:
+                    log.error (f"curr {curr}")
                 # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
                 currency = "ETH"
 
