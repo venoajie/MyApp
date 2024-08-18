@@ -200,7 +200,7 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
 
-                currencies = ["ETH", "BTC"]
+                currencies = ["BTC","ETH", "BTC"]
 
                 # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
                 currency = "ETH"
