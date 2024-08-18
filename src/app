@@ -223,6 +223,8 @@ class StreamAccountData:
 
                 for instrument in instruments_name:
 
+                    log.error (f"instrument {instrument}")
+
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
