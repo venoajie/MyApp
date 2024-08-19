@@ -61,6 +61,14 @@ async def get_instruments_from_deribit(connection_url, currency) -> float:
     return result
 
 
+async def future_spreads(currency) -> float:
+    """ """
+    from strategies.futures_spread import get_futures_combo_instruments
+
+    result = await get_futures_combo_instruments (currency)
+
+    return result
+
 async def get_currencies_from_deribit(connection_url) -> float:
     """ """
 
@@ -93,6 +101,9 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 
 async def run_every_3_seconds() -> None:
     """ """
+
+    future_spreads("ETH")
+    
 
     # fetch strategies attributes
     strategies = entries_exits.strategies
