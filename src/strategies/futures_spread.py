@@ -28,7 +28,7 @@ async def get_futures_combo_instruments(
     instruments = instruments_raw[0]["result"]
 
     instruments_kind: list = [
-        o for o in instruments if o["kind"] ="future_combo"
+        o for o in instruments if o["kind"] =="future_combo"
     ]
 
     print (f"instruments_kind {instruments_kind}")
