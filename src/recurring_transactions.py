@@ -102,7 +102,7 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 async def run_every_3_seconds() -> None:
     """ """
 
-    future_spreads("ETH")
+    await future_spreads("ETH")
     
 
     # fetch strategies attributes
