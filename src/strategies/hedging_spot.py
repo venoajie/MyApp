@@ -1,34 +1,5 @@
 # # -*- coding: utf-8 -*-
 
-# in super bearish: 100% hedged in less than x minutes
-# in bearish: 80% hedged in less than x minutes
-# other than that: release all inventories
-
-# issues:
-# -liquidity
-# -order: possibility executed more than one time
-
-# determine size and open order o/s minute agrresiveness
-# condition     : super_bearish      bearish    relatively_bearish
-# qty in 1 hour :     120%              80%             50%
-# os order sec  :       1m              3 m             m
-
-# tf: 5 min, 15 min, 60 min
-
-# what is relatively_bearish?
-# current < open (1 tf)
-
-# what is bearish?
-# current < open (2 tf)
-
-# what is super bearish?
-# current < open (3 tf)
-
-# what is bullish?
-# current > open (2 tf)
-# current > open (2 tf)
-
-
 # built ins
 import asyncio
 
@@ -40,7 +11,6 @@ from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
     delta_pct,
-    proforma_size,
 )
 from db_management.sqlite_management import (
     querying_table,
@@ -54,17 +24,6 @@ def are_size_and_order_appropriate_for_ordering(
     return abs(current_size) < notional and current_outstanding_order_len == 0
 
 
-def are_future_size_and_order_appropriate_for_ordering(
-    notional: float,
-    proforma_size: float,
-    current_outstanding_order_len: int,
-    threshold: float,
-) -> bool:
-    """ """
-    
-    return abs(proforma_size) < notional and current_outstanding_order_len < threshold
-
-
 def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
@@ -75,53 +34,19 @@ def determine_size(notional: float, factor: float) -> int:
     return max(1, int(notional * factor))
 
 
-def bearish_size_factor() -> int:
-    """ """
-    return 100
-
-
-def strong_bearish_size_factor() -> int:
-    """ """
-    return 100
-
-def max_len_orders(params, 
-            strong_bearish, bearish, relatively_bearish) -> int:
-    """ """
-    max_len_orders = params["weighted_factor"]
-    max_len=max_len_orders["relatively"]
-    if strong_bearish:
-        max_len=max_len_orders["extreme"]
-    if bearish:
-        max_len=max_len_orders["normal"]
-    if relatively_bearish:
-        max_len=max_len_orders["relatively"]
-
-    return max_len
-
-
-def get_bearish_factor_size(
-    strong_bearish: bool, bearish: bool, relatively_bearish: bool
-) -> float:
+def get_bearish_factor(strong_bearish: bool, bearish: bool) -> float:
     """
-    Combine with max order stacks
     Determine factor for size determination.
-    strong bearish      : 10% of total amount
-    bearish             : 5% of total amount
-    relatively_bearish  : 5% of total amount
-    neutral             : 1% of total amount
+    strong bearish : 10% of total amount
+    bearish        : 5% of total amount
+    neutral        : 1% of total amount
     """
 
     ONE_PCT = 1 / 100
 
-    SIZE_FACTOR=100
+    BEARISH_FACTOR = 10 * ONE_PCT if strong_bearish else 5 * ONE_PCT
 
-    if relatively_bearish or bearish:
-        SIZE_FACTOR = bearish_size_factor()
-
-    if strong_bearish:
-        SIZE_FACTOR = strong_bearish_size_factor()
-
-    return SIZE_FACTOR * ONE_PCT
+    return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
 
 
 def is_hedged_value_to_notional_exceed_threshold(
@@ -183,26 +108,28 @@ def is_cancelling_order_allowed(
 async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
     neutral_price, rising_price, falling_price = False, False, False
-    strong_rising_price, super_bearish, relatively_bearish = False, False, False
+    strong_rising_price, strong_falling_price = False, False
 
     open_60 = TA_result_data["60_open"]
     current_higher_open = TA_result_data["1m_current_higher_open"]
-    # print (f"TA_result_data {TA_result_data}")
+    #print (f"TA_result_data {TA_result_data}")
     fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
 
-    if index_price > open_60:
-        rising_price = True
+    if fluctuation_exceed_threshold:
 
-        if delta_price_pct > threshold:
-            strong_rising_price = True
+        if index_price > open_60:
+            rising_price = True
 
-    if index_price < open_60:
-        falling_price = True
+            if delta_price_pct > threshold:
+                strong_rising_price = True
 
-        if delta_price_pct > threshold:
-            super_bearish = True
+        if index_price < open_60:
+            falling_price = True
+
+            if delta_price_pct > threshold:
+                strong_falling_price = True
 
     if rising_price == False and falling_price == False:
         neutral_price = True
@@ -212,10 +139,8 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
         strong_rising_price=strong_rising_price,
         neutral_price=neutral_price,
         falling_price=falling_price,
-        super_bearish=super_bearish,
-        relatively_bearish=relatively_bearish,
+        strong_falling_price=strong_falling_price,
     )
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
@@ -242,7 +167,7 @@ class HedgingSpot(BasicStrategy):
         ) = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
-        # print (f"TA_result_data {TA_result_data}")
+        #print (f"TA_result_data {TA_result_data}")
 
         fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
@@ -252,20 +177,17 @@ class HedgingSpot(BasicStrategy):
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
-        relatively_bearish = market_condition["relatively_bearish"]
 
         strong_bullish = market_condition["strong_rising_price"]
-        strong_bearish = market_condition["super_bearish"]
+        strong_bearish = market_condition["strong_falling_price"]
         neutral = market_condition["neutral_price"]
 
-        SIZE_FACTOR = get_bearish_factor_size(
-            strong_bearish, bearish, relatively_bearish
-        )
+        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish)
 
         size = determine_size(notional, SIZE_FACTOR)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
-
+        
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
         )
@@ -275,28 +197,17 @@ class HedgingSpot(BasicStrategy):
         )
 
         sum_my_trades: int = my_trades["transactions_sum"]
-        sum_my_orders: int = open_orders_label_strategy["transactions_sum"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
 
         params.update({"size": size})
 
-        max_orders = max_len_orders(params, 
-            strong_bearish, bearish, relatively_bearish)
-        proforma_qty = proforma_size(
-            sum_my_trades, sum_my_orders, size)
-
-        print(
-            f"max_len_orders {max_orders} sum_my_trades {sum_my_trades} sum_my_orders {sum_my_orders} proforma_qty {proforma_qty} notional {notional}"
-        )
-
+        print(f"sum_my_trades {sum_my_trades} notional {notional}")
         size_and_order_appropriate_for_ordering: bool = (
-            are_future_size_and_order_appropriate_for_ordering(notional, proforma_qty,len_orders,max_orders)
-        )
-
-        print(
-            f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}"
+            are_size_and_order_appropriate_for_ordering(
+                notional, sum_my_trades, len_orders
+            )
         )
 
         cancel_allowed: bool = is_cancelling_order_allowed(
@@ -312,7 +223,7 @@ class HedgingSpot(BasicStrategy):
             order_allowed: bool = (
                 size_and_order_appropriate_for_ordering
                 and (bearish or strong_bearish)
-                #and fluctuation_exceed_threshold
+                and fluctuation_exceed_threshold
             )
 
         return dict(
