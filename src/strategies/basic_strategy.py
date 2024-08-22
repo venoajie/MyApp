@@ -389,6 +389,13 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
      'max_show': 1.0, 'time_in_force': 'good_til_cancelled', 'direction': 'sell', 'price': -11.45, 'label': 'futureSpread-123'}
     
     trades:
+    {'liquidity': 'T', 'risk_reducing': False, 'order_type': 'market', 
+    'trade_id': 'ETH-215726649', 'fee_currency': 'ETH', 'contracts': 0.0, 
+    'reduce_only': False, 'self_trade': False, 'post_only': False,'mmp': False, 'tick_direction': 3,
+    'matching_id': None, 'order_id': 'ETH-48108854807', 'fee': 0.0, 'mark_price': 0.15, 'amount': 1.0, 
+    'api': False, 'trade_seq': 325, 'instrument_name': 'ETH-FS-23AUG24_PERP', 'profit_loss': None, 
+    'index_price': 2611.71, 'direction': 'sell', 'price': -0.65, 'state': 'filled', 'timestamp': 1724334628439}
+    
     {'liquidity': 'T', 'risk_reducing': False, 'order_type': 'limit', 'combo_trade_id': 'ETH-215711231', 
      'trade_id': 'ETH-215711232', 'fee_currency': 'ETH', 'contracts': 1.0, 'combo_id': 'ETH-FS-23AUG24_PERP', 
      'reduce_only': False, 'self_trade': False, 'post_only': False, 'mmp': False, 'tick_direction': 0, 

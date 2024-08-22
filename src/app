@@ -74,8 +74,9 @@ async def manage_trades (trades: dict) -> None:
             await get_additional_params_for_futureSpread_transactions(trade)
 
         log.info(f"trade {trade}")
-
-        if "trade_id" in trade:
+        
+        # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
+        if "-FS-" not in trade["instrument_name"]:
 
                 
             label=trade["label"]
