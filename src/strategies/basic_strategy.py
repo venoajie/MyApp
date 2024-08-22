@@ -379,6 +379,17 @@ async def provide_size_to_close_transaction(
     return basic_size if (has_closed == 0) else abs(sum_transactions_under_label_main)
 
 
+async def get_additional_params_for_combo_transactions(trade: list) -> None:
+
+    additional_params = querying_additional_params()
+
+    params = await executing_query_with_return(additional_params)
+
+    trade.update({"label": additional_params_label["take_profit"]})
+    trade.update({"has_closed_label": False})
+
+
+
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params = querying_additional_params()
