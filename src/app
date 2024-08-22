@@ -43,7 +43,8 @@ from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     querying_label_and_size,
     is_order_has_sent_before,
-    is_everything_consistent)
+    is_everything_consistent,
+    get_additional_params_for_futureSpread_transactions)
 
 
 def parse_dotenv(sub_account) -> dict:
@@ -68,6 +69,12 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
+
+        if "combo_id" in trade:
+            await get_additional_params_for_futureSpread_transactions(trade)
+
+        log.info(f"trade {trade}")
+
             
         label=trade["label"]
 
@@ -77,6 +84,7 @@ async def manage_trades (trades: dict) -> None:
 
         if not label_has_exist_before:
             try:
+                    
                 if "open" in label:
                     await get_additional_params_for_open_label (trade, label)
 

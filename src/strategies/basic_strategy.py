@@ -379,15 +379,42 @@ async def provide_size_to_close_transaction(
     return basic_size if (has_closed == 0) else abs(sum_transactions_under_label_main)
 
 
-async def get_additional_params_for_combo_transactions(trade: list) -> None:
+async def get_additional_params_for_futureSpread_transactions(trade: list) -> None:
+    """ 
+    send order:
+    {'is_liquidation': False, 'risk_reducing': False, 'creation_timestamp': 1724306764758, 'order_type': 'market', 
+     'order_state': 'filled', 'contracts': 1.0, 'average_price': -0.6, 'reduce_only': False, 'post_only': False, 
+     'last_update_timestamp': 1724306764758, 'filled_amount': 1.0, 'replaced': False, 'mmp': False, 
+     'order_id': 'ETH-48095626085', 'amount': 1.0, 'web': False, 'api': True, 'instrument_name': 'ETH-FS-23AUG24_PERP', 
+     'max_show': 1.0, 'time_in_force': 'good_til_cancelled', 'direction': 'sell', 'price': -11.45, 'label': 'futureSpread-123'}
+    
+    trades:
+    {'liquidity': 'T', 'risk_reducing': False, 'order_type': 'limit', 'combo_trade_id': 'ETH-215711231', 
+     'trade_id': 'ETH-215711232', 'fee_currency': 'ETH', 'contracts': 1.0, 'combo_id': 'ETH-FS-23AUG24_PERP', 
+     'reduce_only': False, 'self_trade': False, 'post_only': False, 'mmp': False, 'tick_direction': 0, 
+     'matching_id': None, 'order_id': 'ETH-48095626087', 'fee': 0.0, 'mark_price': 2624.63, 'amount': 1.0, 
+     'api': False, 'trade_seq': 53960, 'instrument_name': 'ETH-23AUG24', 'profit_loss': 3.28e-06, 
+     'index_price': 2625.7, 'direction': 'sell', 'price': 2624.85, 'state': 'filled', 'timestamp': 1724306764758, 
+     'label': 'futureSpread-123'}
+    
+    {'liquidity': 'T', 'risk_reducing': False, 'order_type': 'limit', 'combo_trade_id': 'ETH-215711231', 
+     'trade_id': 'ETH-215711233', 'fee_currency': 'ETH', 'contracts': 1.0, 'combo_id': 'ETH-FS-23AUG24_PERP', 
+     'reduce_only': False, 'self_trade': False, 'post_only': False, 'mmp': False, 'tick_direction': 0, 
+     'matching_id': None, 'order_id': 'ETH-48095626089', 'fee': 1.9e-07, 'mark_price': 2625.61, 'amount': 1.0, 
+     'api': False, 'trade_seq': 157027471, 'instrument_name': 'ETH-PERPETUAL', 'profit_loss': -3.61e-06, 
+     'index_price': 2625.7, 'direction': 'buy', 'price': 2625.45, 'state': 'filled', 'timestamp': 1724306764758, 
+     'label': 'futureSpread-123'}
+     
+     approach for now: ignore orders
+     
+     """
+     
+    side= trade["direction"]
+    side_buy= side=="buy"
+    timestamp= trade["timestamp"] + 1 if side_buy else -1
+    label=f"futureSpread{"Long"if side_buy else"Short"}-open-{timestamp}"
 
-    additional_params = querying_additional_params()
-
-    params = await executing_query_with_return(additional_params)
-
-    trade.update({"label": additional_params_label["take_profit"]})
-    trade.update({"has_closed_label": False})
-
+    trade.update({"label":label})
 
 
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
