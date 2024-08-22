@@ -412,7 +412,7 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
     side= trade["direction"]
     side_buy= side=="buy"
     timestamp= trade["timestamp"] + 1 if side_buy else -1
-    label=f"futureSpread{"Long"if side_buy else"Short"}-open-{timestamp}"
+    label=f"futureSpread-open-{timestamp}"
 
     trade.update({"label":label})
 
