@@ -13,6 +13,12 @@ TAKE_PROFIT_PCT_GRID = 1 / 100 / 4
 TAKE_PROFIT_PCT_MM = (1 / 100) / 2
 TAKE_PROFIT_PCT_DAILY = 0.03
 
+
+def preferred_spot_currencies() -> list:
+    """ """
+
+    return ["BTC","ETH"]
+  
 strategies = [
     {
         "strategy": "hedgingSpot",

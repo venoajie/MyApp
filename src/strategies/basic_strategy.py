@@ -323,6 +323,11 @@ def get_order_label(data_from_db: list) -> list:
 
     return [o["label"] for o in data_from_db]
 
+def combine_vars_to_get_future_spread_label(timestamp: int) -> str:
+    """ """
+
+    return f"futureSpread-open-{timestamp}"
+
 
 async def is_order_has_sent_before(verifier: str = "label") -> bool:
     """ """
@@ -419,7 +424,9 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
     side= trade["direction"]
     side_buy= side=="buy"
     timestamp= trade["timestamp"] + 1 if side_buy else trade["timestamp"]-1
-    label=f"futureSpread-open-{timestamp}"
+    
+    #get label
+    label= combine_vars_to_get_future_spread_label(timestamp)
 
     trade.update({"label":label})
 

@@ -45,7 +45,7 @@ from strategies.basic_strategy import (
     is_order_has_sent_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
-
+from strategies import entries_exits
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -72,8 +72,6 @@ async def manage_trades (trades: dict) -> None:
 
         if "combo_id" in trade:
             await get_additional_params_for_futureSpread_transactions(trade)
-
-        log.info(f"trade {trade}")
         
         # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
         if "-FS-" not in trade["instrument_name"]:
@@ -184,6 +182,10 @@ class StreamAccountData:
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
+        
+        currencies = entries_exits.preferred_spot_currencies()
+        for currency in currencies:
+            log.critical(f"currency {currency}")
             
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
@@ -210,15 +212,7 @@ class StreamAccountData:
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
-
-                currencies = ["ETH", "BTC"]
                 
-                # for currency in currencies: isu, multiple currency could interfere each other in the calculation function
-                try:
-                    currency = "ETH"
-                except:
-                    currency = "BTC"
-
                 my_path_instruments = provide_path_for_file(
                     "instruments", currency
                 )
@@ -576,6 +570,7 @@ def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     try:
+        
         StreamAccountData(client_id=client_id, client_secret=client_secret)
         log.error("test")
 
