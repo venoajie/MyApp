@@ -213,6 +213,8 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
+                currency="ETH"
+                
                 my_path_instruments = provide_path_for_file(
                     "instruments", currency
                 )
