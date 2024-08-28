@@ -151,6 +151,14 @@ async def update_user_changes(data_orders, currency) -> None:
     log.info(f"update_user_changes-END")
 
 
+async def spawn_task():
+    task_list = []
+
+    for n in range(5):
+        task_list.append(asyncio.create_task(task(n)))
+
+    await asyncio.gather(*task_list)
+    
 class StreamAccountData:
 
     """
@@ -184,14 +192,16 @@ class StreamAccountData:
         self.refresh_token_expiry_time: int = None
         
         currencies = entries_exits.preferred_spot_currencies()
+        task_list = []
         for currency in currencies:
+            task_list.append(asyncio.create_task(self.ws_manager(currency)))
             log.critical(f"currency {currency}")
             
         # Start Primary Coroutine
-        self.loop.run_until_complete(self.ws_manager())
+        #self.loop.run_until_complete(self.ws_manager(currency))
 
     # @lru_cache(maxsize=None)
-    async def ws_manager(self) -> None:
+    async def ws_manager(self,currency) -> None:
         async with websockets.connect(
             self.ws_connection_url,
             ping_interval=None,
@@ -213,7 +223,7 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                currency="ETH"
+                #currency="ETH"
                 
                 my_path_instruments = provide_path_for_file(
                     "instruments", currency
@@ -285,7 +295,7 @@ class StreamAccountData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    # log.warning (message)
+                    log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
