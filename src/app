@@ -151,6 +151,14 @@ async def update_user_changes(data_orders, currency) -> None:
     log.info(f"update_user_changes-END")
 
 
+async def on_restart() -> None:
+    """
+    """
+
+    log.warning("Cancelling all orders")
+    await cancel_the_cancellables()
+
+
 async def spawn_task():
 
     
@@ -212,7 +220,8 @@ class StreamAccountData:
                 await self.ws_auth()
 
                 # Establish restart procedure
-                await self.on_restart()
+                #
+                # await self.on_restart()
                 
                 # Establish Heartbeat
                 await self.establish_heartbeat()
@@ -436,7 +445,7 @@ class StreamAccountData:
                     )
         
                     # Establish restart procedure
-                    await self.on_restart()
+                    await on_restart()
                 
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
@@ -466,7 +475,7 @@ class StreamAccountData:
                 "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
             )
 
-    async def on_restart(self) -> None:
+    async def on_restart_(self) -> None:
         """
         """
 
@@ -573,10 +582,15 @@ class StreamAccountData:
 
 
 async def main():
+    """
+    https://stackoverflow.com/questions/70880668/is-it-possible-to-iterate-a-list-calling-async-function
+    https://stackoverflow.com/questions/56161595/how-to-use-async-for-in-python
+    """
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    await on_restart()
 
     try:
         
