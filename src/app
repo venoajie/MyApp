@@ -580,12 +580,12 @@ async def main():
 
     try:
         
-        StreamAccountData(client_id=client_id, client_secret=client_secret)
+        stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
             
         currencies = entries_exits.preferred_spot_currencies()
         task_list = []
         for currency in currencies:
-            task_list.append(asyncio.create_task(StreamAccountData.ws_manager(currency)))
+            task_list.append(asyncio.create_task(stream.ws_manager(currency)))
             log.critical(f"currency {currency}")
 
         await asyncio.gather(*task_list)
