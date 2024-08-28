@@ -152,13 +152,15 @@ async def update_user_changes(data_orders, currency) -> None:
 
 
 async def spawn_task():
+
+    currencies = entries_exits.preferred_spot_currencies()
     task_list = []
-
-    for n in range(5):
-        task_list.append(asyncio.create_task(task(n)))
-
-    await asyncio.gather(*task_list)
+    for currency in currencies:
+        task_list.append(asyncio.create_task(ws_manager(currency)))
+        log.critical(f"currency {currency}")
     
+    await asyncio.gather(*task_list)
+
 class StreamAccountData:
 
     """
@@ -196,7 +198,9 @@ class StreamAccountData:
         for currency in currencies:
             task_list.append(asyncio.create_task(self.ws_manager(currency)))
             log.critical(f"currency {currency}")
-            
+        
+        self.loop. asyncio.gather(*task_list)
+    
         # Start Primary Coroutine
         #self.loop.run_until_complete(self.ws_manager(currency))
 
@@ -584,6 +588,7 @@ def main():
     try:
         
         StreamAccountData(client_id=client_id, client_secret=client_secret)
+        
         log.error("test")
 
     except Exception as error:
