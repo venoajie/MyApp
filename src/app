@@ -153,12 +153,13 @@ async def update_user_changes(data_orders, currency) -> None:
 
 async def spawn_task():
 
+    
     currencies = entries_exits.preferred_spot_currencies()
     task_list = []
     for currency in currencies:
-        task_list.append(asyncio.create_task(ws_manager(currency)))
+        task_list.append(asyncio.create_task(self.ws_manager(currency)))
         log.critical(f"currency {currency}")
-    
+
     await asyncio.gather(*task_list)
 
 class StreamAccountData:
@@ -192,14 +193,6 @@ class StreamAccountData:
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
-        
-        currencies = entries_exits.preferred_spot_currencies()
-        task_list = []
-        for currency in currencies:
-            task_list.append(asyncio.create_task(self.ws_manager(currency)))
-            log.critical(f"currency {currency}")
-        
-        self.loop. asyncio.gather(*task_list)
     
         # Start Primary Coroutine
         #self.loop.run_until_complete(self.ws_manager(currency))
@@ -579,7 +572,7 @@ class StreamAccountData:
         await self.websocket_client.send(json.dumps(msg))
 
 
-def main():
+async def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
@@ -588,6 +581,15 @@ def main():
     try:
         
         StreamAccountData(client_id=client_id, client_secret=client_secret)
+            
+        currencies = entries_exits.preferred_spot_currencies()
+        task_list = []
+        for currency in currencies:
+            task_list.append(asyncio.create_task(StreamAccountData.ws_manager(currency)))
+            log.critical(f"currency {currency}")
+
+        await asyncio.gather(*task_list)
+
         
         log.error("test")
 
@@ -598,7 +600,8 @@ def main():
         
 if __name__ == "__main__":
     try:
-        main()
+        #main()
+        asyncio.run(main())
         
         while True:
             loop.run_until_complete(schedule.run_pending())
