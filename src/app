@@ -93,7 +93,7 @@ def get_instruments_name () -> list:
 
     #log.debug(f"instruments_holder_plc {instruments_holder_plc}")
                 
-    return list(instruments_holder_plc)
+    return list(str(instruments_holder_plc).strip('[]'))
     
 
 async def manage_trades (trades: dict) -> None:
