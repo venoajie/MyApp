@@ -93,6 +93,7 @@ def get_instruments_name () -> list:
 
     #log.debug(f"instruments_holder_plc {instruments_holder_plc}")
     instruments_holder=           str(instruments_holder_plc).strip('[]')
+    log.debug(f"instruments_holder_plc {instruments_holder}")
     return list(instruments_holder)
     
 
