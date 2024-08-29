@@ -235,7 +235,6 @@ class StreamAccountData:
                 my_path_instruments = provide_path_for_file(
                     "instruments", currency
                 )
-            
                 instruments_raw = read_data(my_path_instruments)
                 instruments = instruments_raw[0]["result"]
 
@@ -608,6 +607,15 @@ async def main():
         
             
         currencies = entries_exits.preferred_spot_currencies()
+        currency="ETH"
+        
+        instruments: list = [
+            read_data(o) for o in provide_path_for_file(
+            "instruments", currency
+        )
+        ]
+        log.info (instruments)
+                
         task_list = []
         for currency in currencies:
             task_list.append(asyncio.create_task(stream.ws_manager(currency)))
