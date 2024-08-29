@@ -55,6 +55,9 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
+def remove_double_brackets_in_list (data: list) -> list:
+    return [o for os in data  for o in os]
+
 async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_error") -> None:
 
     label_integer= parsing_label (label) ["int"]
@@ -86,17 +89,13 @@ def get_instruments_name () -> list:
         #log.critical(f"instruments_name {instruments_name}")
         instruments_holder_place.append(instruments_name)    
     
-    log.warning(f"instr_holder {instruments_holder_place}")    
     instruments_holder_plc= []
     for instr in instruments_holder_place:
         instruments_holder_plc.append(instr)
 
     #log.debug(f"instruments_holder_plc {instruments_holder_plc}")
-    instruments_holder=  [
-    x
-    for xs in instruments_holder_plc
-    for x in xs
-]
+    instruments_holder= remove_double_brackets_in_list(instruments_holder_plc)
+    
     log.debug(f"instruments_holder_plc {instruments_holder}")
     return (instruments_holder)
     
@@ -271,7 +270,7 @@ class StreamAccountData:
                 for instrument in instruments_name:
                     log.warning (f"instrument {instrument}")
 
-                    currency=extract_currency_from_text(instrument)
+                    currency=extract_currency_from_text(instrument).upper()
 
                     log.warning (f"currency {currency}")
                     log.error (f"instrument {instrument}")
