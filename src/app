@@ -581,6 +581,19 @@ class StreamAccountData:
         await self.websocket_client.send(json.dumps(msg))
 
 
+async def get_stream():
+    """
+    https://stackoverflow.com/questions/70880668/is-it-possible-to-iterate-a-list-calling-async-function
+    https://stackoverflow.com/questions/56161595/how-to-use-async-for-in-python
+    """
+    # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
+    sub_account = "deribit-147691"
+    client_id: str = parse_dotenv(sub_account)["client_id"]
+    client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    
+
+    StreamAccountData(client_id=client_id, client_secret=client_secret)
+        
 async def main():
     """
     https://stackoverflow.com/questions/70880668/is-it-possible-to-iterate-a-list-calling-async-function
@@ -590,16 +603,16 @@ async def main():
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    await on_restart()
+    
 
     try:
         
-        stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
+        #stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
             
         currencies = entries_exits.preferred_spot_currencies()
         task_list = []
         for currency in currencies:
-            task_list.append(asyncio.create_task(stream.ws_manager(currency)))
+            task_list.append(asyncio.create_task(await get_stream().ws_manager(currency)))
             log.critical(f"currency {currency}")
 
         await asyncio.gather(*task_list)
