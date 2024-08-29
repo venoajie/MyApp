@@ -535,6 +535,8 @@ class StreamAccountData:
                 "client_secret": self.client_secret,
             },
         }
+        ws_client=self.websocket_client.send(json.dumps(msg))
+        log.error (ws_client)
 
         await self.websocket_client.send(json.dumps(msg))
 
@@ -597,14 +599,14 @@ async def main():
         
         stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
         
-        async with websockets.connect(
-            "wss://test.deribit.com/ws/api/v2",
-            ping_interval=None,
-            compression=None,
-            close_timeout=60,
-        ) as websocket_client:
+        #async with websockets.connect(
+        #    "wss://test.deribit.com/ws/api/v2",
+        #    ping_interval=None,
+        #    compression=None,
+        #    close_timeout=60,
+        #) as websocket_client:
         
-            await stream.ws_auth()
+        #    await stream.ws_auth()
         
             
         currencies = entries_exits.preferred_spot_currencies()
