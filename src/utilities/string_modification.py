@@ -1,6 +1,28 @@
 # -*- coding: utf-8 -*-
 
 
+def remove_double_brackets_in_list (data: list) -> list:
+    """_summary_
+
+    Args:
+        data (list): instance: [
+                                ['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 
+                                'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'
+                                ], 
+                                ['ETH-30AUG24', 'ETH-6SEP24', 'ETH-27SEP24', 'ETH-27DEC24', 
+                                'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL'
+                                ]
+                                ]
+
+    Returns:
+        list: _description_
+        
+    Reference:
+        https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists
+    """
+    return [o for os in data  for o in os]
+
+
 def get_duplicated_elements(data: list) -> list:
     """
 
