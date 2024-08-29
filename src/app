@@ -86,7 +86,7 @@ def get_instruments_name () -> list:
         #log.critical(f"instruments_name {instruments_name}")
         instruments_holder_place.append(instruments_name)    
     
-    log.warning(f"instr_holder {instruments_holder_plc}")    
+    log.warning(f"instr_holder {instruments_holder_place}")    
     instruments_holder_plc= []
     for instr in instruments_holder_place:
         instruments_holder_plc.append(instr)
