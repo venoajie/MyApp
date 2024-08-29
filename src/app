@@ -617,7 +617,7 @@ async def main():
 
     try:
         
-        stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
+        StreamAccountData(client_id=client_id, client_secret=client_secret)
         
         #async with websockets.connect(
         #    "wss://test.deribit.com/ws/api/v2",
@@ -628,12 +628,12 @@ async def main():
         
         #    await stream.ws_auth()
                 
-        task_list = []
-        for currency in currencies:
-            task_list.append(asyncio.create_task(stream.ws_manager(instruments_name)))
-            log.critical(f"currency {currency}")
+        #task_list = []
+        #for currency in currencies:
+        #    task_list.append(asyncio.create_task(stream.ws_manager(instruments_name)))
+        #    log.critical(f"currency {currency}")
 
-        await asyncio.gather(*task_list)
+        #await asyncio.gather(*task_list)
 
         
         log.error("test")
