@@ -264,6 +264,8 @@ class StreamAccountData:
                 instruments_name=get_instruments_name()
                 log.debug(f"instruments {instruments_name}")
                 for instrument in instruments_name:
+                    log.warning (f"instrument {instrument}")
+
                     currency=extract_currency_from_text(instrument)
 
                     log.warning (f"currency {currency}")
