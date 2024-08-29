@@ -207,6 +207,7 @@ class StreamAccountData:
 
     # @lru_cache(maxsize=None)
     async def ws_manager(self,currency) -> None:
+        
         async with websockets.connect(
             self.ws_connection_url,
             ping_interval=None,
@@ -577,7 +578,7 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
-        #log.info(ws_channel)
+        log.info(await self.websocket_client.send(json.dumps(msg)))
         await self.websocket_client.send(json.dumps(msg))
 
 
