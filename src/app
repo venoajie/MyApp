@@ -80,9 +80,6 @@ def get_instruments_name () -> list:
                 o["instrument_name"] for o in instruments if o["kind"] == "future"
             ]
         instr_holder=[]
-        for instr in instruments_name:
-            instr_holder.append(instr)
-            
         #instruments_name: list = [
         #        o["instrument_name"] for o in instruments_kind
         #    ]
@@ -90,7 +87,13 @@ def get_instruments_name () -> list:
         instruments_holder_place.append(instruments_name)    
         log.debug(f"instr_holder {instr_holder}")
         
-    return instr_holder
+    instruments_holder_plc= []
+    for instr in instruments_holder_place:
+        instr_holder.append(instr)
+
+    log.debug(f"instruments_holder_plc {instruments_holder_plc}")
+                
+    return instruments_holder_plc
     
 
 async def manage_trades (trades: dict) -> None:
