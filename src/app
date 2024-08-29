@@ -83,6 +83,7 @@ def get_instruments_name () -> list:
         instruments_name: list = [
                 o["instrument_name"] for o in instruments_kind
             ]
+        log.critical(f"instruments_name {instruments_name}")
         instruments.append(instruments_name)
     
     return instruments
