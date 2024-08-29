@@ -257,7 +257,9 @@ class StreamAccountData:
                 #currency="ETH"
                 
                 for instrument in get_instruments_name():
+                    currency=instrument["base_currency"]
 
+                    log.warning (f"currency {currency}")
                     log.error (f"instrument {instrument}")
 
                     self.loop.create_task(
