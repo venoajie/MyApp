@@ -536,7 +536,6 @@ class StreamAccountData:
             },
         }
 
-        log.info(await self.websocket_client.send(json.dumps(msg)))
         await self.websocket_client.send(json.dumps(msg))
 
     async def ws_refresh_auth(self) -> None:
@@ -597,6 +596,8 @@ async def main():
     try:
         
         stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
+        await stream.ws_auth()
+        
             
         currencies = entries_exits.preferred_spot_currencies()
         task_list = []
