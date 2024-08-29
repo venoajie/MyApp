@@ -593,7 +593,7 @@ async def get_stream(currency):
     
     stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
     
-    asyncio.create_task(await get_stream().ws_manager(currency))
+    asyncio.create_task(stream.ws_manager(currency))
     
 async def main():
     """
