@@ -65,6 +65,30 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
     if not has_closed_label or has_closed_label==0:
         await update_status_closed_trades(label_integer)
 
+def get_instruments_name () -> list:
+
+
+    currencies = entries_exits.preferred_spot_currencies()
+    
+    instruments= []
+    for currency in currencies:
+        my_path_instruments = provide_path_for_file(
+                "instruments", currency
+            )
+        instruments_raw = read_data(my_path_instruments)
+        instruments = instruments_raw[0]["result"]
+        instruments_kind: list = [
+                o for o in instruments if o["kind"] == "future"
+            ]
+        instruments_name: list = [
+                o["instrument_name"] for o in instruments_kind
+            ]
+        instruments.append(instruments_name)
+    
+    
+    log.info (instruments)
+    return instruments
+    
 
 async def manage_trades (trades: dict) -> None:
 
@@ -232,28 +256,7 @@ class StreamAccountData:
                 
                 #currency="ETH"
                 
-                currencies = entries_exits.preferred_spot_currencies()
-                
-                instruments= []
-                for currency in currencies:
-                    my_path_instruments = provide_path_for_file(
-                            "instruments", currency
-                        )
-                    instruments_raw = read_data(my_path_instruments)
-                    instruments = instruments_raw[0]["result"]
-                    instruments_kind: list = [
-                            o for o in instruments if o["kind"] == "future"
-                        ]
-                    instruments_name: list = [
-                            o["instrument_name"] for o in instruments_kind
-                        ]
-                    instruments.append(instruments_name)
-                
-                
-                log.info (instruments)
-                
-
-                for instrument in instruments:
+                for instrument in get_instruments_name():
 
                     log.error (f"instrument {instrument}")
 
