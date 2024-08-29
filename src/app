@@ -67,7 +67,6 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
 
 def get_instruments_name () -> list:
 
-
     currencies = entries_exits.preferred_spot_currencies()
     
     instruments= []
@@ -77,16 +76,15 @@ def get_instruments_name () -> list:
             )
         instruments_raw = read_data(my_path_instruments)
         instruments = instruments_raw[0]["result"]
-        instruments_kind: list = [
-                o for o in instruments if o["kind"] == "future"
-            ]
         instruments_name: list = [
-                o["instrument_name"] for o in instruments_kind
+                o["instrument_name"] for o in instruments if o["kind"] == "future"
             ]
+        #instruments_name: list = [
+        #        o["instrument_name"] for o in instruments_kind
+        #    ]
         log.critical(f"instruments_name {instruments_name}")
-        instruments.append(instruments_name)
-    
-    log.critical(f"instruments {instruments}")
+        instruments.append(instruments_name)    
+        log.debug(f"instruments_name {instruments}")
         
     return instruments
     
@@ -257,6 +255,7 @@ class StreamAccountData:
                 
                 #currency="ETH"
                 instruments_name=get_instruments_name()
+                log.debug(f"instruments {instruments_name}")
                 for instrument_items in instruments_name:
                     currency=instrument_items["base_currency"]
                     instrument=instrument_items["instrument_name"]
