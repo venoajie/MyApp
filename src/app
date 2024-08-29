@@ -535,9 +535,7 @@ class StreamAccountData:
                 "client_secret": self.client_secret,
             },
         }
-        ws_client=self.websocket_client.send(json.dumps(msg))
-        log.error (ws_client)
-
+        
         await self.websocket_client.send(json.dumps(msg))
 
     async def ws_refresh_auth(self) -> None:
