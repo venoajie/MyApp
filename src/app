@@ -203,10 +203,10 @@ class StreamAccountData:
         self.refresh_token_expiry_time: int = None
     
         # Start Primary Coroutine
-        #self.loop.run_until_complete(self.ws_manager(currency))
+        self.loop.run_until_complete(self.ws_manager())
 
     # @lru_cache(maxsize=None)
-    async def ws_manager(self,currency) -> None:
+    async def ws_manager(self) -> None:
         
         async with websockets.connect(
             self.ws_connection_url,
@@ -246,8 +246,31 @@ class StreamAccountData:
                     o["instrument_name"] for o in instruments_kind
                 ]
                 # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
+                        
+                    
+                currencies = entries_exits.preferred_spot_currencies()
+                currency="ETH"
+                
+                instruments= []
+                for currency in currencies:
+                    my_path_instruments = provide_path_for_file(
+                            "instruments", currency
+                        )
+                    instruments_raw = read_data(my_path_instruments)
+                    instruments = instruments_raw[0]["result"]
+                    instruments_kind: list = [
+                            o for o in instruments if o["kind"] == "future"
+                        ]
+                    instruments_name: list = [
+                            o["instrument_name"] for o in instruments_kind
+                        ]
+                    instruments.append(instruments_name)
+                
+                
+                log.info (instruments)
+                
 
-                for instrument in instruments_name:
+                for instrument in instruments:
 
                     log.error (f"instrument {instrument}")
 
@@ -604,29 +627,10 @@ async def main():
         #) as websocket_client:
         
         #    await stream.ws_auth()
-        
-            
-        currencies = entries_exits.preferred_spot_currencies()
-        currency="ETH"
-        
-        empty_list = []
-        for currency in currencies:
-            my_path_instruments = provide_path_for_file(
-                    "instruments", currency
-                )
-            instruments_raw = read_data(my_path_instruments)
-            instruments = instruments_raw[0]["result"]
-            instruments_kind: list = [
-                    o for o in instruments if o["kind"] == "future"
-                ]
-            empty_list.append(instruments_kind)
-        
-        
-        log.info (empty_list)
                 
         task_list = []
         for currency in currencies:
-            task_list.append(asyncio.create_task(stream.ws_manager(currency)))
+            task_list.append(asyncio.create_task(stream.ws_manager(instruments_name)))
             log.critical(f"currency {currency}")
 
         await asyncio.gather(*task_list)
