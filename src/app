@@ -85,8 +85,6 @@ def get_instruments_name () -> list:
             ]
         instruments.append(instruments_name)
     
-    
-    log.info (instruments)
     return instruments
     
 
@@ -256,8 +254,9 @@ class StreamAccountData:
                 
                 #currency="ETH"
                 
-                for instrument in get_instruments_name():
-                    currency=instrument["base_currency"]
+                for instrument_items in get_instruments_name():
+                    currency=instrument_items["base_currency"]
+                    instrument=instrument_items["instrument_name"]
 
                     log.warning (f"currency {currency}")
                     log.error (f"instrument {instrument}")
