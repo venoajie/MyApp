@@ -263,9 +263,8 @@ class StreamAccountData:
                 #currency="ETH"
                 instruments_name=get_instruments_name()
                 log.debug(f"instruments {instruments_name}")
-                for instrument_items in instruments_name:
-                    currency=instrument_items["base_currency"]
-                    instrument=instrument_items["instrument_name"]
+                for instrument in instruments_name:
+                    currency=extract_currency_from_text(instrument)
 
                     log.warning (f"currency {currency}")
                     log.error (f"instrument {instrument}")
