@@ -232,24 +232,7 @@ class StreamAccountData:
                 
                 #currency="ETH"
                 
-                my_path_instruments = provide_path_for_file(
-                    "instruments", currency
-                )
-                instruments_raw = read_data(my_path_instruments)
-                instruments = instruments_raw[0]["result"]
-
-                instruments_kind: list = [
-                    o for o in instruments if o["kind"] == "future"
-                ]
-
-                instruments_name: list = [
-                    o["instrument_name"] for o in instruments_kind
-                ]
-                # instruments_name: list =  [o['instrument_name'] for o in instruments if o['kind'] == 'future']
-                        
-                    
                 currencies = entries_exits.preferred_spot_currencies()
-                currency="ETH"
                 
                 instruments= []
                 for currency in currencies:
