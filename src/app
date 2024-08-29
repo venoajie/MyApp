@@ -21,7 +21,7 @@ from utilities.system_tools import (
     raise_error_message,
     catch_error_message)
 from utilities.string_modification import (
-    parsing_label,
+    parsing_label,remove_double_brackets_in_list,
     extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
@@ -55,9 +55,6 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-def remove_double_brackets_in_list (data: list) -> list:
-    return [o for os in data  for o in os]
-
 async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_error") -> None:
 
     label_integer= parsing_label (label) ["int"]
@@ -82,22 +79,18 @@ def get_instruments_name () -> list:
         instruments_name: list = [
                 o["instrument_name"] for o in instruments if o["kind"] == "future"
             ]
-        #instr_holder=[]
-        #instruments_name: list = [
-        #        o["instrument_name"] for o in instruments_kind
-        #    ]
-        #log.critical(f"instruments_name {instruments_name}")
+        
         instruments_holder_place.append(instruments_name)    
     
+    #removing inner list 
+    # typical result: [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 
+    # 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 
+    # 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
     instruments_holder_plc= []
     for instr in instruments_holder_place:
         instruments_holder_plc.append(instr)
 
-    #log.debug(f"instruments_holder_plc {instruments_holder_plc}")
-    instruments_holder= remove_double_brackets_in_list(instruments_holder_plc)
-    
-    log.debug(f"instruments_holder_plc {instruments_holder}")
-    return (instruments_holder)
+    return remove_double_brackets_in_list(instruments_holder_plc)
     
 
 async def manage_trades (trades: dict) -> None:
@@ -264,16 +257,11 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                #currency="ETH"
                 instruments_name=get_instruments_name()
-                log.debug(f"instruments {instruments_name}")
+
                 for instrument in instruments_name:
-                    log.warning (f"instrument {instrument}")
 
                     currency=extract_currency_from_text(instrument).upper()
-
-                    log.warning (f"currency {currency}")
-                    log.error (f"instrument {instrument}")
 
                     self.loop.create_task(
                         self.ws_operation(
