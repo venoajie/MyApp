@@ -86,6 +86,8 @@ def get_instruments_name () -> list:
         log.critical(f"instruments_name {instruments_name}")
         instruments.append(instruments_name)
     
+    log.critical(f"instruments {instruments}")
+        
     return instruments
     
 
