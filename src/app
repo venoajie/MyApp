@@ -596,7 +596,15 @@ async def main():
     try:
         
         stream=StreamAccountData(client_id=client_id, client_secret=client_secret)
-        await stream.ws_auth()
+        
+        async with websockets.connect(
+            "wss://test.deribit.com/ws/api/v2",
+            ping_interval=None,
+            compression=None,
+            close_timeout=60,
+        ) as websocket_client:
+        
+            await stream.ws_auth()
         
             
         currencies = entries_exits.preferred_spot_currencies()
