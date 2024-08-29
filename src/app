@@ -78,7 +78,7 @@ def get_instruments_name () -> list:
         instruments = instruments_raw[0]["result"]
         instruments_name: list = [
                 o["instrument_name"] for o in instruments if o["kind"] == "future"
-            ]
+            ][0]
         #instruments_name: list = [
         #        o["instrument_name"] for o in instruments_kind
         #    ]
