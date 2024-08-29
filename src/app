@@ -256,8 +256,8 @@ class StreamAccountData:
                 self.loop.create_task(self.ws_refresh_auth())
                 
                 #currency="ETH"
-                
-                for instrument_items in get_instruments_name():
+                instruments_name=get_instruments_name()
+                for instrument_items in instruments_name:
                     currency=instrument_items["base_currency"]
                     instrument=instrument_items["instrument_name"]
 
