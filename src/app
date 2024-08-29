@@ -613,7 +613,7 @@ async def main():
         currencies = entries_exits.preferred_spot_currencies()
         task_list = []
         for currency in currencies:
-            task_list.append(await get_stream(currency))
+            task_list.append( get_stream(currency))
             log.critical(f"currency {currency}")
 
         await asyncio.gather(*task_list)
