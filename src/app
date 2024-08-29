@@ -410,9 +410,10 @@ class StreamAccountData:
                                 try:
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
-                                        log.debug(data_orders)
+                                        
 
-                                        if "open_interest" in data_orders:
+                                        if currency.lower()  in TABLE_OHLC1 and "open_interest" in data_orders:
+                                            log.debug(data_orders)
 
                                             open_interest = data_orders["open_interest"]
                                                             
