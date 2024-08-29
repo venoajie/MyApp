@@ -604,7 +604,7 @@ class StreamAccountData:
         await self.websocket_client.send(json.dumps(msg))
 
 
-async def main():
+def main():
     """
     https://stackoverflow.com/questions/70880668/is-it-possible-to-iterate-a-list-calling-async-function
     https://stackoverflow.com/questions/56161595/how-to-use-async-for-in-python
@@ -645,8 +645,8 @@ async def main():
         
 if __name__ == "__main__":
     try:
-        #main()
-        asyncio.run(main())
+        main()
+        #asyncio.run(main())
         
         while True:
             loop.run_until_complete(schedule.run_pending())
