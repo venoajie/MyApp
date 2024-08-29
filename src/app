@@ -79,17 +79,17 @@ def get_instruments_name () -> list:
         instruments_name: list = [
                 o["instrument_name"] for o in instruments if o["kind"] == "future"
             ]
-        instr_holder=[]
+        #instr_holder=[]
         #instruments_name: list = [
         #        o["instrument_name"] for o in instruments_kind
         #    ]
         log.critical(f"instruments_name {instruments_name}")
         instruments_holder_place.append(instruments_name)    
-        log.debug(f"instr_holder {instr_holder}")
+        #log.debug(f"instr_holder {instr_holder}")
         
     instruments_holder_plc= []
     for instr in instruments_holder_place:
-        instr_holder.append(instr)
+        instruments_holder_plc.append(instr)
 
     log.debug(f"instruments_holder_plc {instruments_holder_plc}")
                 
