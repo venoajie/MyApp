@@ -264,8 +264,11 @@ class StreamAccountData:
                 self.loop.create_task(self.ws_refresh_auth())
                 
                 instruments_name=get_instruments_name()
+                
+                log.warning(f"instruments_name {instruments_name}")
 
                 for instrument in instruments_name:
+                    log.debug(f"instrument {instrument}")
 
                     currency=extract_currency_from_text(instrument).upper()
                     self.loop.create_task(
