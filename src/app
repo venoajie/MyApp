@@ -134,6 +134,7 @@ async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = provide_path_for_file("portfolio", currency)
     
+    log.error(f"{my_path_portfolio}")
     log.error(f"{my_path_portfolio} {currency.lower()} {currency.lower()  in my_path_portfolio}")
     
     if currency.lower()  in my_path_portfolio:
