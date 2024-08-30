@@ -65,7 +65,12 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
     if not has_closed_label or has_closed_label==0:
         await update_status_closed_trades(label_integer)
 
-def get_instruments_name () -> list:
+def get_futures () -> list:
+    """_summary_
+
+    Returns:
+        list: _description_
+    """
     from strategies.basic_strategy import get_instruments_kind
 
     currencies = entries_exits.preferred_spot_currencies()
@@ -86,7 +91,10 @@ def get_instruments_name () -> list:
 
     return remove_double_brackets_in_list(instruments_holder_plc)
     
+def get_instruments_name () -> list:
 
+    return [o["instrument_name"] for o in get_futures()]
+    
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
 
