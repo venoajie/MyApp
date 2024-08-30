@@ -11,13 +11,7 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy, get_instruments_kind)
 
-from utilities.pickling import (
-    read_data)
-from utilities.system_tools import (
-    provide_path_for_file)
-
-async def get_futures_combo_instruments(
-    currency: str) -> list:
+async def get_futures_combo_instruments(currency: str) -> list:
     """_summary_
 
     Args:
@@ -40,19 +34,6 @@ async def get_futures_combo_instruments(
         list: _description_
     """
     
-    my_path_instruments = provide_path_for_file(
-        "instruments", currency
-    )
-
-    instruments_raw = read_data(my_path_instruments)
-    instruments = instruments_raw[0]["result"]
-
-    instruments_kind: list = [
-        o for o in instruments if o["kind"] =="future_combo"
-    ]
-
-    print (f"instruments_kind {instruments_kind}")
-
     return get_instruments_kind (currency,"future_combo" )
 
 
