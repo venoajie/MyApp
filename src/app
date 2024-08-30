@@ -132,13 +132,16 @@ async def manage_trades (trades: dict) -> None:
 async def manage_positions (positions: dict, currency: str) -> None:
 
     my_path_position = provide_path_for_file("positions", currency)
-    replace_data(my_path_position, positions)
+    log.error(f"{str(my_path_position)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_position)}")
+    
+    if currency_inline_with_database_address(currency,my_path_position):
+        replace_data(my_path_position, positions)
         
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = provide_path_for_file("portfolio", currency)
     
-    log.error(f"{str(my_path_portfolio)} {currency.lower()} {currency_inline_with_database_address}")
+    log.error(f"{str(my_path_portfolio)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_portfolio)}")
     
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
