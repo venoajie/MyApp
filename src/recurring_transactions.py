@@ -160,79 +160,82 @@ async def run_every_5_seconds() -> None:
         log.warning (f" portfolio {portfolio}")
 
         log.warning (f" positions_all {positions_all}")
+        log.critical (portfolio["equity"] >0)
+        
+        if portfolio["equity"] >0:
 
-        # fetch strategies attributes
-        strategies = entries_exits.strategies
+            # fetch strategies attributes
+            strategies = entries_exits.strategies
 
-        market_condition_all = await querying_table("market_analytics_json-last")
-        market_condition = market_condition_all["list_data_only"][0]
+            market_condition_all = await querying_table("market_analytics_json-last")
+            market_condition = market_condition_all["list_data_only"][0]
 
-        my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-        server_time = await current_server_time()
-        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-        server_time = await current_server_time()
+            my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
+            instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+            server_time = await current_server_time()
+            instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+            server_time = await current_server_time()
 
-        trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
-        trades_from_sqlite_closed = await executing_closed_transactions()
-        trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-
-        unrecorded_order_id = await get_unrecorded_order_id(
-            trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
-        )
-
-        await clean_up_closed_transactions()
-
-        transactions_all_summarized: list = await querying_label_and_size(
-            "my_trades_all_json"
-        )
-        # print (f"transactions_all_summarized {transactions_all_summarized}")
-        sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
-        total_difference_and_solution_is_zero = abs(
-            sum_my_trades_sqlite - size_from_positions
-        )
-
-        await balancing_the_imbalance(
-            trades_from_exchange,
-            unrecorded_order_id,
-            sum_my_trades_sqlite,
-            size_from_positions,
-        )
-
-        size_is_consistent: bool = await is_size_consistent(
-            sum_my_trades_sqlite, size_from_positions
-        )
-
-        if size_is_consistent:
-
-            for instrument in instrument_transactions:
-                await opening_transactions(
-                    instrument,
-                    portfolio,
-                    strategies,
-                    my_trades_open_sqlite,
-                    size_from_positions,
-                    server_time,
-                    market_condition,
-                    TAKE_PROFIT_PCT_DAILY,
-                )
-
-        else:
-            await clean_up_duplicate_elements()
+            trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
+            trades_from_sqlite_closed = await executing_closed_transactions()
             trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-            await balancing_the_imbalance(trades_from_exchange)
 
-        await clean_up_closed_transactions()
+            unrecorded_order_id = await get_unrecorded_order_id(
+                trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
+            )
 
-        # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+            await clean_up_closed_transactions()
 
-        # in relevant function ...
-        # if datetime.datetime.now() > stop_time:
-        #    import subprocess
+            transactions_all_summarized: list = await querying_label_and_size(
+                "my_trades_all_json"
+            )
+            # print (f"transactions_all_summarized {transactions_all_summarized}")
+            sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
+            total_difference_and_solution_is_zero = abs(
+                sum_my_trades_sqlite - size_from_positions
+            )
 
-        #    await cancel_the_cancellables()
-        #    print (f"test")
-        #    subprocess.call(["shutdown", "-r", "-t", "0"])
+            await balancing_the_imbalance(
+                trades_from_exchange,
+                unrecorded_order_id,
+                sum_my_trades_sqlite,
+                size_from_positions,
+            )
+
+            size_is_consistent: bool = await is_size_consistent(
+                sum_my_trades_sqlite, size_from_positions
+            )
+
+            if size_is_consistent:
+
+                for instrument in instrument_transactions:
+                    await opening_transactions(
+                        instrument,
+                        portfolio,
+                        strategies,
+                        my_trades_open_sqlite,
+                        size_from_positions,
+                        server_time,
+                        market_condition,
+                        TAKE_PROFIT_PCT_DAILY,
+                    )
+
+            else:
+                await clean_up_duplicate_elements()
+                trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+                await balancing_the_imbalance(trades_from_exchange)
+
+            await clean_up_closed_transactions()
+
+            # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+
+            # in relevant function ...
+            # if datetime.datetime.now() > stop_time:
+            #    import subprocess
+
+            #    await cancel_the_cancellables()
+            #    print (f"test")
+            #    subprocess.call(["shutdown", "-r", "-t", "0"])
 
 
 async def run_every_60_seconds() -> None:
