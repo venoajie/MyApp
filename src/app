@@ -75,10 +75,6 @@ def get_futures_for_active_currencies () -> list:
 
     currencies = entries_exits.preferred_spot_currencies()
     
-    futures= [o["instrument_name"]  for o in get_instruments_kind (currency,"future" ) if o ["base_currency"] in currencies]
-    
-    log.error (f" futures {futures}")
-    
     instruments_holder_place= []
     for currency in currencies:
         future_instruments= get_instruments_kind (currency,"future" )
