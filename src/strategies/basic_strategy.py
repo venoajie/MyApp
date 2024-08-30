@@ -17,6 +17,10 @@ from db_management.sqlite_management import (
 )
 from utilities.string_modification import parsing_label
 from loguru import logger as log
+from utilities.pickling import (
+    read_data)
+from utilities.system_tools import (
+    provide_path_for_file)
 
 
 async def querying_label_and_size(table) -> list:
@@ -252,6 +256,38 @@ def get_transactions_sum(result_strategy_label) -> int:
         else sum([o["amount"] for o in result_strategy_label])
     )
 
+
+def get_instruments_kind(currency: str, kind: str) -> list:
+    """_summary_
+
+    Args:
+        currency (str): _description_
+        kind (str): "future_combo",  "future"
+        Instance:  [
+                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1,'counter_currency': 'USD', 
+                    'settlement_period': 'month', 'settlement_currency': 'ETH', 'creation_timestamp': 1719564006000, 
+                    'instrument_id': 342036, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
+                    'expiration_timestamp': 1725004800000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
+                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_30AUG24', 'kind': 'future_combo', 
+                    'rfq': False, 'price_index': 'eth_usd'}, ]
+     Returns:
+        list: _description_
+        
+        
+    """ 
+    
+    my_path_instruments = provide_path_for_file(
+        "instruments", currency
+    )
+
+    instruments_raw = read_data(my_path_instruments)
+    instruments = instruments_raw[0]["result"]
+
+    instruments_kind: list = [
+        o for o in instruments if o["kind"] ==kind
+    ]
+    
+    return instruments_kind
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """

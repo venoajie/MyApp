@@ -66,21 +66,15 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
         await update_status_closed_trades(label_integer)
 
 def get_instruments_name () -> list:
+    from strategies.basic_strategy import get_instruments_kind
 
     currencies = entries_exits.preferred_spot_currencies()
     
     instruments_holder_place= []
     for currency in currencies:
-        my_path_instruments = provide_path_for_file(
-                "instruments", currency
-            )
-        instruments_raw = read_data(my_path_instruments)
-        instruments = instruments_raw[0]["result"]
-        instruments_name: list = [
-                o["instrument_name"] for o in instruments if o["kind"] == "future"
-            ]
+        future_instruments= get_instruments_kind (currency,"future" )
         
-        instruments_holder_place.append(instruments_name)    
+        instruments_holder_place.append(future_instruments)    
     
     #removing inner list 
     # typical result: [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 

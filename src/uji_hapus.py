@@ -2,24 +2,16 @@
 import asyncio
 import random
 
-class Demo:
-    def __init__(self):
-        self.queue = asyncio.Queue(1)
+tes= [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
+test= ['],['.join(x) for x in tes]
+print (test)
 
-    async def one(self):
-        ltp = 0
-        while True:
-            ltp += random.uniform(-1, 1)
-            await self.queue.put(ltp)
+test = str(tes).replace('], [', '').replace('],[', '')
+print (test)
 
-    async def two(self):
-        while True:
-            ltp = await self.queue.get()
-            print(ltp)
-            await asyncio.sleep(0)
-
-loop = asyncio.get_event_loop()
-d = Demo()
-loop.create_task(d.one())
-loop.create_task(d.two())
-loop.run_forever()
+print ([
+    x
+    for xs in tes
+    for x in xs
+])
+print ([test])
