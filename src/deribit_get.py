@@ -165,13 +165,13 @@ async def main(
             return response
 
 
-def get_subaccounts():
+def get_subaccounts(currency):
     # Set endpoint
     params = {
         "jsonrpc": "2.0",
         "method": "private/get_subaccounts_details",
         "id": 9322,
-        "params": {"currency": "eth", "with_open_orders": True},
+        "params": {"currency": currency, "with_open_orders": True},
     }
 
     return params

@@ -42,9 +42,6 @@ from websocket_management.cleaning_up_transactions import (
     clean_up_duplicate_elements,
 )
 
-symbol = "ETH-PERPETUAL"
-currency = "ETH"
-
 # stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
 
 
@@ -141,92 +138,101 @@ async def run_every_5_seconds() -> None:
     QTY = 10
     ONE_PCT = 1 / 100
     TAKE_PROFIT_PCT_DAILY = ONE_PCT * 1
+    
+    currencies=  entries_exits.preferred_spot_currencies()
+    
+    for currency in currencies:
 
-    # gathering basic data
-    reading_from_database: dict = await reading_from_pkl_database(currency)
+        # gathering basic data
+        reading_from_database: dict = await reading_from_pkl_database(currency)
 
-    # get portfolio data
-    portfolio: list = reading_from_database["portfolio"]
+        # get portfolio data
+        portfolio: list = reading_from_database["portfolio"]
 
-    # fetch positions for all instruments
-    positions_all: list = reading_from_database["positions_from_sub_account"]
-    #print(f"positions_all-recurring {positions_all} ")
-    size_from_positions: int = (
-        0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
-    )
+        # fetch positions for all instruments
+        positions_all: list = reading_from_database["positions_from_sub_account"]
+        #print(f"positions_all-recurring {positions_all} ")
+        size_from_positions: int = (
+            0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
+        )
+        
+        log.critical (f" currency {currency}")
+        log.warning (f" portfolio {portfolio}")
 
-    # fetch strategies attributes
-    strategies = entries_exits.strategies
+        log.warning (f" positions_all {positions_all}")
 
-    market_condition_all = await querying_table("market_analytics_json-last")
-    market_condition = market_condition_all["list_data_only"][0]
+        # fetch strategies attributes
+        strategies = entries_exits.strategies
 
-    my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-    instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-    server_time = await current_server_time()
-    instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
-    server_time = await current_server_time()
+        market_condition_all = await querying_table("market_analytics_json-last")
+        market_condition = market_condition_all["list_data_only"][0]
 
-    trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
-    trades_from_sqlite_closed = await executing_closed_transactions()
-    trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+        my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
+        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+        server_time = await current_server_time()
+        instrument_transactions = [f"{currency.upper()}-PERPETUAL"]
+        server_time = await current_server_time()
 
-    unrecorded_order_id = await get_unrecorded_order_id(
-        trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
-    )
-
-    await clean_up_closed_transactions()
-
-    transactions_all_summarized: list = await querying_label_and_size(
-        "my_trades_all_json"
-    )
-    # print (f"transactions_all_summarized {transactions_all_summarized}")
-    sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
-    total_difference_and_solution_is_zero = abs(
-        sum_my_trades_sqlite - size_from_positions
-    )
-
-    await balancing_the_imbalance(
-        trades_from_exchange,
-        unrecorded_order_id,
-        sum_my_trades_sqlite,
-        size_from_positions,
-    )
-
-    size_is_consistent: bool = await is_size_consistent(
-        sum_my_trades_sqlite, size_from_positions
-    )
-
-    if size_is_consistent:
-
-        for instrument in instrument_transactions:
-            await opening_transactions(
-                instrument,
-                portfolio,
-                strategies,
-                my_trades_open_sqlite,
-                size_from_positions,
-                server_time,
-                market_condition,
-                TAKE_PROFIT_PCT_DAILY,
-            )
-
-    else:
-        await clean_up_duplicate_elements()
+        trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
+        trades_from_sqlite_closed = await executing_closed_transactions()
         trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-        await balancing_the_imbalance(trades_from_exchange)
 
-    await clean_up_closed_transactions()
+        unrecorded_order_id = await get_unrecorded_order_id(
+            trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
+        )
 
-    # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+        await clean_up_closed_transactions()
 
-    # in relevant function ...
-    # if datetime.datetime.now() > stop_time:
-    #    import subprocess
+        transactions_all_summarized: list = await querying_label_and_size(
+            "my_trades_all_json"
+        )
+        # print (f"transactions_all_summarized {transactions_all_summarized}")
+        sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
+        total_difference_and_solution_is_zero = abs(
+            sum_my_trades_sqlite - size_from_positions
+        )
 
-    #    await cancel_the_cancellables()
-    #    print (f"test")
-    #    subprocess.call(["shutdown", "-r", "-t", "0"])
+        await balancing_the_imbalance(
+            trades_from_exchange,
+            unrecorded_order_id,
+            sum_my_trades_sqlite,
+            size_from_positions,
+        )
+
+        size_is_consistent: bool = await is_size_consistent(
+            sum_my_trades_sqlite, size_from_positions
+        )
+
+        if size_is_consistent:
+
+            for instrument in instrument_transactions:
+                await opening_transactions(
+                    instrument,
+                    portfolio,
+                    strategies,
+                    my_trades_open_sqlite,
+                    size_from_positions,
+                    server_time,
+                    market_condition,
+                    TAKE_PROFIT_PCT_DAILY,
+                )
+
+        else:
+            await clean_up_duplicate_elements()
+            trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+            await balancing_the_imbalance(trades_from_exchange)
+
+        await clean_up_closed_transactions()
+
+        # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
+
+        # in relevant function ...
+        # if datetime.datetime.now() > stop_time:
+        #    import subprocess
+
+        #    await cancel_the_cancellables()
+        #    print (f"test")
+        #    subprocess.call(["shutdown", "-r", "-t", "0"])
 
 
 async def run_every_60_seconds() -> None:
