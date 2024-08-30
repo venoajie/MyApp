@@ -93,6 +93,10 @@ def get_instruments_name () -> list:
     return remove_double_brackets_in_list(instruments_holder_plc)
     
 
+def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
+    return currency.lower()  in str(database_address)
+
+
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
@@ -134,10 +138,9 @@ async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = provide_path_for_file("portfolio", currency)
     
-    log.error(f"{my_path_portfolio}")
-    log.error(f"{str(my_path_portfolio)} {currency.lower()} {currency.lower()  in str(my_path_portfolio)}")
+    log.error(f"{str(my_path_portfolio)} {currency.lower()} {currency_inline_with_database_address}")
     
-    if currency.lower()  in my_path_portfolio:
+    if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
 
 async def update_user_changes(data_orders, currency) -> None:
@@ -415,9 +418,9 @@ class StreamAccountData:
                                 try:
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
-                                        log.error(f"{currency.lower()} {currency.lower()  in TABLE_OHLC1}")
+                                        log.error(f"{currency.lower()} {currency_inline_with_database_address(currency,TABLE_OHLC1) }")
                                         
-                                        if currency.lower()  in TABLE_OHLC1 and "open_interest" in data_orders:
+                                        if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
                                             log.debug(data_orders)
 
                                             open_interest = data_orders["open_interest"]
