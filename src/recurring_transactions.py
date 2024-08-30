@@ -156,13 +156,13 @@ async def run_every_5_seconds() -> None:
             0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
         )
         
+        equity= portfolio[0]["equity"]
         log.critical (f" currency {currency}")
-        log.warning (f" portfolio {portfolio}")
+        log.warning (f" portfolio {portfolio} equity {equity}")
 
         log.warning (f" positions_all {positions_all}")
-        log.critical (portfolio["equity"] >0)
         
-        if portfolio["equity"] >0:
+        if equity >0:
 
             # fetch strategies attributes
             strategies = entries_exits.strategies
