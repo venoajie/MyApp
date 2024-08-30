@@ -271,12 +271,12 @@ async def if_cancel_is_true(order) -> None:
 async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
-    log.info(f"resupply sub account db-START")
+    log.info(f"resupply {currency.upper()} sub account db-START")
     sub_accounts = await get_sub_account(currency)
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-    log.info(f"{sub_accounts}")
+    log.info(f"{currency} {sub_accounts}")
     log.info(f"resupply sub account db-DONE")
 
 
