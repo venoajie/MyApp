@@ -602,7 +602,7 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
-        #log.info(ws_channel)
+        log.critical(msg)
         await self.websocket_client.send(json.dumps(msg))
 
 
