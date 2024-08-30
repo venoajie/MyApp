@@ -598,94 +598,96 @@ async def closing_transactions(
                     o for o in my_trades_open_strategy if o["price"] == min_price
                 ]
 
-            label = [parsing_label(o["label"])["transaction_net"] for o in transaction][0]
+            if "futureSpread" not in label:
+                    
+                label = [parsing_label(o["label"])["transaction_net"] for o in transaction][0]
 
-            # result example: 'hedgingSpot'/'supplyDemandShort60'
-            label_main = parsing_label(label)["main"]
+                # result example: 'hedgingSpot'/'supplyDemandShort60'
+                label_main = parsing_label(label)["main"]
 
-            # get startegy details
-            strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
+                # get startegy details
+                strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
 
-            my_trades_open_sqlite_transaction_net_strategy: list = (
-                my_trades_open_sqlite_detailing(
-                    my_trades_open_all, label, "transaction_net"
+                my_trades_open_sqlite_transaction_net_strategy: list = (
+                    my_trades_open_sqlite_detailing(
+                        my_trades_open_all, label, "transaction_net"
+                    )
                 )
-            )
 
-            open_trade_strategy_label = parsing_sqlite_json_output(
-                [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
-            )
+                open_trade_strategy_label = parsing_sqlite_json_output(
+                    [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
+                )
 
-            instrument: list = [o["instrument_name"] for o in open_trade_strategy_label][0]
+                instrument: list = [o["instrument_name"] for o in open_trade_strategy_label][0]
 
-            ticker: list = reading_from_db("ticker", instrument)
+                ticker: list = reading_from_db("ticker", instrument)
 
-            if ticker != []:
+                if ticker != []:
 
-                # get instrument_attributes
-                # instrument_attributes_all: list = reading_from_db("instruments", currency)[
-                #    0
-                # ]["result"]
-                # instrument_attributes: list = [
-                ##    o
-                #    for o in instrument_attributes_all
-                #    if o["instrument_name"] == instrument
-                # ]
-                # tick_size: float = instrument_attributes[0]["tick_size"]
-                # taker_commission: float = instrument_attributes[0]["taker_commission"]
-                # min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
-                # contract_size: float = instrument_attributes[0]["contract_size"]
+                    # get instrument_attributes
+                    # instrument_attributes_all: list = reading_from_db("instruments", currency)[
+                    #    0
+                    # ]["result"]
+                    # instrument_attributes: list = [
+                    ##    o
+                    #    for o in instrument_attributes_all
+                    #    if o["instrument_name"] == instrument
+                    # ]
+                    # tick_size: float = instrument_attributes[0]["tick_size"]
+                    # taker_commission: float = instrument_attributes[0]["taker_commission"]
+                    # min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
+                    # contract_size: float = instrument_attributes[0]["contract_size"]
 
-                index_price: float = ticker[0]["index_price"]
+                    index_price: float = ticker[0]["index_price"]
 
-                # get bid and ask price
-                best_bid_prc: float = ticker[0]["best_bid_price"]
-                best_ask_prc: float = ticker[0]["best_ask_price"]
+                    # get bid and ask price
+                    best_bid_prc: float = ticker[0]["best_bid_price"]
+                    best_ask_prc: float = ticker[0]["best_ask_price"]
 
-                if "hedgingSpot" in strategy_attr["strategy"]:
+                    if "hedgingSpot" in strategy_attr["strategy"]:
 
-                    closest_price = get_closest_value(
-                        get_prices_in_label_transaction_main, best_bid_prc
-                    )
+                        closest_price = get_closest_value(
+                            get_prices_in_label_transaction_main, best_bid_prc
+                        )
 
-                    if "hedging" in label:
-                        nearest_transaction_to_index = [
-                            o
-                            for o in my_trades_open_strategy
-                            if o["price"] == closest_price
-                        ]
+                        if "hedging" in label:
+                            nearest_transaction_to_index = [
+                                o
+                                for o in my_trades_open_strategy
+                                if o["price"] == closest_price
+                            ]
 
-                    log.debug(
-                        f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
-                    )
+                        log.debug(
+                            f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
+                        )
 
-                    hedging = hedging_spot.HedgingSpot(label_main)
-                    THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT
+                        hedging = hedging_spot.HedgingSpot(label_main)
+                        THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT
 
-                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                        market_condition,
-                        THRESHOLD_MARKET_CONDITION,
-                        index_price,
-                        best_ask_prc,
-                        best_bid_prc,
-                        nearest_transaction_to_index,
-                    )
-
-                    await if_order_is_true(send_closing_order, instrument)
-
-                if "marketMaker" in strategy_attr["strategy"] and False:
-
-                    market_maker = MM.MarketMaker(label_main)
-
-                    send_closing_order: dict = (
-                        await market_maker.is_send_exit_order_allowed(
+                        send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                             market_condition,
+                            THRESHOLD_MARKET_CONDITION,
+                            index_price,
                             best_ask_prc,
                             best_bid_prc,
-                            open_trade_strategy_label,
+                            nearest_transaction_to_index,
                         )
-                    )
-                    log.critical(f" send_closing_order {send_closing_order}")
-                    # await if_order_is_true(send_closing_order, instrument)
+
+                        await if_order_is_true(send_closing_order, instrument)
+
+                    if "marketMaker" in strategy_attr["strategy"] and False:
+
+                        market_maker = MM.MarketMaker(label_main)
+
+                        send_closing_order: dict = (
+                            await market_maker.is_send_exit_order_allowed(
+                                market_condition,
+                                best_ask_prc,
+                                best_bid_prc,
+                                open_trade_strategy_label,
+                            )
+                        )
+                        log.critical(f" send_closing_order {send_closing_order}")
+                        # await if_order_is_true(send_closing_order, instrument)
 
     log.critical(f"CLOSING TRANSACTIONS-DONE")
