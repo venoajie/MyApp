@@ -35,11 +35,13 @@ strategies = [
         "averaging": (5 / 100),
         "cut_loss_usd": 15,
         "cut_loss_pct": (3 / 100),
-        "weighted_factor": {"relatively": 1, "normal": 5, "extreme": 10},
+        "weighted_factor": {"minimum": 1, "medium": 5, "extreme": 10, "flash_crash": 20},
+        "waiting_minute_before_cancel": 3, #basis?
         "halt_minute_before_reorder": 60 * 4,
         "equity_risked_usd": 60,
         "equity_risked_pct": (1 / 100),
         "cancellable": True,
+        "delta_price_pct": .5/100
     },
     {
         "strategy": "futureSpreadShort",

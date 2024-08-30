@@ -10,12 +10,11 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    delta_pct,
+    delta_pct,get_strategy_config_all
 )
 from db_management.sqlite_management import (
     querying_table,
 )
-
 
 def are_size_and_order_appropriate_for_ordering(
     notional: float, current_size: float, current_outstanding_order_len: int
@@ -34,7 +33,7 @@ def determine_size(notional: float, factor: float) -> int:
     return max(1, int(notional * factor))
 
 
-def get_bearish_factor(strong_bearish: bool, bearish: bool) -> float:
+def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> float:
     """
     Determine factor for size determination.
     strong bearish : 10% of total amount
@@ -43,8 +42,8 @@ def get_bearish_factor(strong_bearish: bool, bearish: bool) -> float:
     """
 
     ONE_PCT = 1 / 100
-
-    BEARISH_FACTOR = 10 * ONE_PCT if strong_bearish else 5 * ONE_PCT
+    
+    BEARISH_FACTOR = weighted_factor["extreme"] * ONE_PCT if strong_bearish else weighted_factor["medium"]  * ONE_PCT
 
     return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
 
@@ -56,7 +55,7 @@ def is_hedged_value_to_notional_exceed_threshold(
     return hedged_value_to_notional(notional, hedged_value) > threshold
 
 
-def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> bool:
+def get_timing_factor(weighted_factor, strong_bearish: bool, bearish: bool, threshold: float) -> bool:
     """
     Determine order outstanding timing for size determination.
     strong bearish : 30% of normal interval
@@ -156,9 +155,7 @@ class HedgingSpot(BasicStrategy):
         index_price,
         ask_price: float,
         server_time: int,
-        TA_result_data: dict,
-        threshold_market_condition: float,
-        threshold: float,
+        TA_result_data: dict
     ) -> dict:
         """ """
 
@@ -171,6 +168,11 @@ class HedgingSpot(BasicStrategy):
 
         fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
 
+        params: dict = self.get_basic_params().get_basic_opening_parameters(
+            ask_price, None, notional
+        )
+        threshold_market_condition= params["delta_price_pct"]
+        
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
@@ -181,8 +183,11 @@ class HedgingSpot(BasicStrategy):
         strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
         neutral = market_condition["neutral_price"]
-
-        SIZE_FACTOR = get_bearish_factor(strong_bearish, bearish)
+        
+        weighted_factor= params["weighted_factor"]
+        waiting_minute_before_cancel= params["waiting_minute_before_cancel"]
+        
+        SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
 
         size = determine_size(notional, SIZE_FACTOR)
 
@@ -196,14 +201,14 @@ class HedgingSpot(BasicStrategy):
             f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
         )
 
+        print(f"weighted_factor {weighted_factor}")
+
         sum_my_trades: int = my_trades["transactions_sum"]
-        params: dict = self.get_basic_params().get_basic_opening_parameters(
-            ask_price, None, notional
-        )
 
         params.update({"size": size})
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
+        
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
                 notional, sum_my_trades, len_orders
@@ -213,7 +218,7 @@ class HedgingSpot(BasicStrategy):
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
             bearish,
-            threshold,
+            waiting_minute_before_cancel,
             len_orders,
             open_orders_label_strategy,
             server_time,
@@ -236,13 +241,15 @@ class HedgingSpot(BasicStrategy):
     async def is_send_exit_order_allowed(
         self,
         TA_result_data,
-        threshold_market_condition: float,
         index_price: float,
         ask_price: float,
         bid_price: float,
         selected_transaction: list,
     ) -> dict:
         """ """
+        
+        strategy_config= get_strategy_config_all
+        threshold_market_condition= strategy_config["delta_price_pct"]
 
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition

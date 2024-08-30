@@ -413,22 +413,21 @@ async def opening_transactions(
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
-                    THRESHOLD_TIME_TO_CANCEL = 3
-                    THRESHOLD_MARKET_CONDITION = ONE_PCT * 0.5
+                    #THRESHOLD_MARKET_CONDITION = ONE_PCT * 0.5
                     # based on avg movement in 1 hour
 
                     last_price_traded = last_price_all["max_sell_traded_price"]
 
-                    is_exceed_threshold = (
-                        True
-                        if last_price_traded == 0
-                        else (abs(index_price - last_price_traded) / last_price_traded)
-                        > THRESHOLD_MARKET_CONDITION
-                    )
+                    #is_exceed_threshold = (
+                    #    True
+                    #    if last_price_traded == 0
+                    #    else (abs(index_price - last_price_traded) / last_price_traded)
+                    #    > THRESHOLD_MARKET_CONDITION
+                    #)
 
-                    log.debug(
-                        f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
-                    )
+                    #log.debug(
+                    #    f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
+                    #)
 
                     # How hedge positions are checked:
                     # Any o/s open positions? If yes, get the last traded price
@@ -437,7 +436,7 @@ async def opening_transactions(
 
                     if (
                         last_price_traded == 0 or last_price_traded == []
-                    ) or is_exceed_threshold:
+                    ):
 
                         hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -447,9 +446,7 @@ async def opening_transactions(
                                 index_price,
                                 best_ask_prc,
                                 server_time,
-                                TA_result_data,
-                                THRESHOLD_MARKET_CONDITION,
-                                THRESHOLD_TIME_TO_CANCEL,
+                                TA_result_data
                             )
                         )
                     await if_order_is_true(send_order, instrument)
@@ -662,11 +659,9 @@ async def closing_transactions(
                         )
 
                         hedging = hedging_spot.HedgingSpot(label_main)
-                        THRESHOLD_MARKET_CONDITION = 0.4 * ONE_PCT
 
                         send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                             market_condition,
-                            THRESHOLD_MARKET_CONDITION,
                             index_price,
                             best_ask_prc,
                             best_bid_prc,

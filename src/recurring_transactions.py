@@ -158,7 +158,7 @@ async def run_every_5_seconds() -> None:
         
         equity= portfolio[0]["equity"]
         log.critical (f" currency {currency}")
-        log.warning (f" portfolio {portfolio} equity {equity}")
+        log.warning (f" portfolio {portfolio} equity {equity >0}")
 
         log.warning (f" positions_all {positions_all}")
         
