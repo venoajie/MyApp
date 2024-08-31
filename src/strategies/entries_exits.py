@@ -19,6 +19,34 @@ def preferred_spot_currencies() -> list:
 
     return ["BTC","ETH"]
   
+def hedging_spot_attributes() -> list:
+    """ """
+    hedging= {
+        "strategy": "hedgingSpot",
+        "status": "active",
+        "instrument": ["PERPETUAL"],
+        "contribute_to_hedging": True,
+        "time_frame": 900,
+        "side": "sell",
+        "entry_price": 1000,
+        "invalidation_entry_price": None,
+        "take_profit_usd": 0,
+        "take_profit_pct": 0,
+        "quantity_discrete": 15,
+        "averaging": (5 / 100),
+        "cut_loss_usd": 15,
+        "cut_loss_pct": (3 / 100),
+        "weighted_factor": {"minimum": 1, "medium": 5, "extreme": 10, "flash_crash": 20},
+        "waiting_minute_before_cancel": 3, #basis?
+        "halt_minute_before_reorder": 60 * 4,
+        "equity_risked_usd": 60,
+        "equity_risked_pct": (1 / 100),
+        "cancellable": True,
+        "delta_price_pct": .5/100
+    }
+
+    return hedging
+  
 strategies = [
     {
         "strategy": "hedgingSpot",
