@@ -465,12 +465,16 @@ class StreamAccountData:
                                             
                                         try:
                                             
-                                            log.debug(f"{instrument_ticker}")
                                             log.critical (f"OPENING HEDGING-START")
                                                                 
                                             try:
                                                 index_price= data_orders["index_price"]
-                                                            
+                                                buffer=[]
+                                                while True:
+                                                    buffer.append(index_price)
+                                                    if len (buffer) > 10:
+                                                        buffer=[]
+                                                    log.debug(f"{buffer}")        
                                             except:
                                                 index_price= None
                                                 
