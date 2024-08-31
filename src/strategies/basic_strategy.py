@@ -15,7 +15,7 @@ from db_management.sqlite_management import (
     querying_additional_params,
     querying_table,
 )
-from utilities.string_modification import parsing_label
+from utilities.string_modification import parsing_label,extract_currency_from_text
 from loguru import logger as log
 from utilities.pickling import (
     read_data)
@@ -100,6 +100,20 @@ async def get_vwap(ohlc_all, vwap_period) -> dict:
         .rolling(window=vwap_period)
         .apply(lambda x: np.dot(x, df["close"]) / x.sum(), raw=False)
     )
+
+
+def size_rounding(instrument_name: str, proposed_size: float) -> int:
+    """ """
+
+    currency=extract_currency_from_text(instrument_name).upper()
+
+    instruments= get_instruments_kind(currency, "all")
+
+    min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]  
+    
+    rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
+    
+    return max(min_trade_amount, rounded_size) #size is never 0
 
 
 def delta(last_price: float, prev_price: float) -> float:
@@ -191,6 +205,7 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
         if time_stamp == []
         else delta_time(server_time, time_stamp) > time_threshold
     )
+    
 
 
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
@@ -257,7 +272,7 @@ def get_transactions_sum(result_strategy_label) -> int:
     )
 
 
-def get_instruments_kind(currency: str, kind: str) -> list:
+def get_instruments_kind(currency: str, kind: str= "all") -> list:
     """_summary_
 
     Args:
@@ -283,11 +298,9 @@ def get_instruments_kind(currency: str, kind: str) -> list:
     instruments_raw = read_data(my_path_instruments)
     instruments = instruments_raw[0]["result"]
 
-    instruments_kind: list = [
-        o for o in instruments if o["kind"] ==kind
+    return instruments if kind =="all" else  [
+        o for o in instruments if o["kind"] == kind
     ]
-    
-    return instruments_kind
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """

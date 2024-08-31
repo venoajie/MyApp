@@ -10,7 +10,7 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    delta_pct,get_strategy_config_all
+    delta_pct,get_strategy_config_all,size_rounding
 )
 from db_management.sqlite_management import (
     querying_table,
@@ -28,9 +28,11 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     return abs(hedged_value / notional)
 
 
-def determine_size(notional: float, factor: float) -> int:
+def determine_size(instrument_name: str, notional: float, factor: float) -> int:
     """ """
-    return max(1, int(notional * factor))
+    proposed_size= max(1, int(notional * factor))
+    
+    return size_rounding(instrument_name, proposed_size)
 
 
 def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> float:
