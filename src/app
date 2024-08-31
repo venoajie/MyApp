@@ -464,8 +464,8 @@ class StreamAccountData:
                                             )
                                             
                                         try:
-                                            
-                                            log.warning(f"OPENING HEDGING-START")
+                                            log.debug(f"{instrument_ticker} {index_price}")
+                                            log.critical (f"OPENING HEDGING-START")
                                                                 
                                             index_price= data_orders["index_price"]
                                             #log.warning(f"{instrument_ticker} {index_price}")
@@ -512,7 +512,7 @@ class StreamAccountData:
                                             
                                             log.warning(f"{instrument_ticker} {index_price}")
                                             
-                                            log.warning(f"OPENING HEDGING-DONE")
+                                            log.critical (f"OPENING HEDGING-DONE")
                                             
                                         except:
                                             continue
