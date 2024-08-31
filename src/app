@@ -465,6 +465,7 @@ class StreamAccountData:
                                             
                                         try:
                                             
+                                            log.debug(f"{instrument_ticker} {index_price}")
                                             log.critical (f"OPENING HEDGING-START")
                                                                 
                                             index_price= data_orders["index_price"]
