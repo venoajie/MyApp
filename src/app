@@ -491,9 +491,8 @@ class StreamAccountData:
                                             market_condition = market_condition_all["list_data_only"][0]
                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
-                                            log.debug(strategy_label)
-
                                             
+
                                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
                                             send_order: dict = (
@@ -507,7 +506,7 @@ class StreamAccountData:
                                                     market_condition
                                                 )
                                             )
-                                                
+                                            log.debug(send_order)    
                                             #await if_order_is_true(send_order, instrument)
                                             await if_cancel_is_true(send_order)
                                                
