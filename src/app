@@ -273,10 +273,10 @@ class StreamAccountData:
                 
                 instruments_name=get_instruments_name()
                 
-                log.warning(f"instruments_name {instruments_name}")
+                #log.warning(f"instruments_name {instruments_name}")
 
                 for instrument in instruments_name:
-                    log.debug(f"instrument {instrument}")
+                    #log.debug(f"instrument {instrument}")
 
                     currency=extract_currency_from_text(instrument).upper()
                     
@@ -381,6 +381,8 @@ class StreamAccountData:
                             #! ########################################################################################################################
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
+                                
+                                log.debug (f"portfolio {data_orders}")
 
                                 await update_portfolio(data_orders, currency)
 
@@ -390,6 +392,7 @@ class StreamAccountData:
                                 message_channel
                                 == f"user.changes.any.{currency.upper()}.raw"
                             ):
+                                log.warning (f"changes {data_orders}")
                                 
                                 await update_user_changes(data_orders, currency)
 
