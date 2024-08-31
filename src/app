@@ -380,7 +380,7 @@ class StreamAccountData:
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 
-                                log.debug (f"portfolio {data_orders}")
+                                #log.debug (f"portfolio {data_orders}")
 
                                 await update_portfolio(data_orders, currency)
 
@@ -390,7 +390,7 @@ class StreamAccountData:
                                 message_channel
                                 == f"user.changes.any.{currency.upper()}.raw"
                             ):
-                                log.warning (f"changes {data_orders}")
+                                #log.warning (f"changes {data_orders}")
                                 
                                 await update_user_changes(data_orders, currency)
 
@@ -462,12 +462,13 @@ class StreamAccountData:
                                                 "is",
                                                 last_tick1_fr_sqlite,
                                             )
+                                            
                                         try:
+                                            
+                                            log.warning(f"OPENING HEDGING-START")
                                                                 
-                                    
                                             index_price= data_orders["index_price"]
                                             #log.warning(f"{instrument_ticker} {index_price}")
-                                            
                                                                                 
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
@@ -488,13 +489,13 @@ class StreamAccountData:
                                                                 
                                                                 
                                             market_condition_all = await querying_table("market_analytics_json-last")
-                                            log.error (market_condition_all)
+
                                             market_condition = market_condition_all["list_data_only"][0]
                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
                                             
-                                
-                                                
+                                            log.warning(f"OPENING HEDGING-DONE")
+                                            
                                         except:
                                             continue
 
