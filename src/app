@@ -463,37 +463,37 @@ class StreamAccountData:
                                                 last_tick1_fr_sqlite,
                                             )
                                                                 
-                                    
+                                
+                                        index_price= data_orders["index_price"]
+                                        #log.warning(f"{instrument_ticker} {index_price}")
+                                        
+                                                                            
+                                        # gathering basic data
+                                        reading_from_database: dict = await reading_from_pkl_database(currency)
+                                                                            
+                                        # get portfolio data
+                                        portfolio: list = reading_from_database["portfolio"]
+                                        
+                                        # obtain spot equity
+                                        equity: float = portfolio[0]["equity"]
+                                        
+                                        notional: float = compute_notional_value(index_price, equity)
+                                        
+                                        ticker: list = reading_from_db("ticker", instrument)
+                                        
+                                        best_ask_prc: float = ticker[0]["best_ask_price"]
+                                        
+                                        server_time = await current_server_time()
+                                                            
+                                                            
+                                        market_condition_all = await querying_table("market_analytics_json-last")
+                                        market_condition = market_condition_all["list_data_only"][0]
+                                        
+                                        strategy_label= hedging_spot_attributes["strategy"]
+                                        log.debug(strategy_label)
+
                                         try:
                                             
-                                            index_price= data_orders["index_price"]
-                                            #log.warning(f"{instrument_ticker} {index_price}")
-                                            log.debug(f"{data_orders}")
-                                                                                
-                                            # gathering basic data
-                                            reading_from_database: dict = await reading_from_pkl_database(currency)
-                                                                                
-                                            # get portfolio data
-                                            portfolio: list = reading_from_database["portfolio"]
-                                            
-                                            # obtain spot equity
-                                            equity: float = portfolio[0]["equity"]
-                                            
-                                            notional: float = compute_notional_value(index_price, equity)
-                                            
-                                            ticker: list = reading_from_db("ticker", instrument)
-                                            
-                                            best_ask_prc: float = ticker[0]["best_ask_price"]
-                                            
-                                            server_time = await current_server_time()
-                                                                
-                                                                
-                                            market_condition_all = await querying_table("market_analytics_json-last")
-                                            market_condition = market_condition_all["list_data_only"][0]
-                                            
-                                            strategy_label= hedging_spot_attributes["strategy"]
-                                            log.debug(strategy_label)
-
                                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
                                             send_order: dict = (
