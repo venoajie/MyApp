@@ -462,19 +462,19 @@ class StreamAccountData:
                                             await self.distribute_ticker_result_as_per_data_type(
                                                 my_path_ticker, data_orders, instrument_ticker
                                             )
-                                                
+                                
+                                    try:
+                                        index_price= data_orders["index_price"]
+                                        log.warning(f"{instrument_ticker} {index_price}")
+                                    except:
+                                        continue
+                                                    
                                 except Exception as error:
                                     log.error(error)
                                     await raise_error_message(
                                         "WebSocket connection - failed to process data"
                                     )
 
-                                    continue
-                                
-                                try:
-                                    index_price= data_orders["index_price"]
-                                    log.warning(f"{instrument_ticker} {index_price}")
-                                except:
                                     continue
                                     
                 else:
