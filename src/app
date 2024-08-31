@@ -26,7 +26,7 @@ from utilities.string_modification import (
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
-    replace_row,
+    replace_row,querying_table,
     querying_arithmetic_operator,
     insert_tables)
 from websocket_management.ws_management import (
@@ -50,16 +50,16 @@ from strategies.basic_strategy import (
     is_order_has_sent_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
-from strategies import entries_exits, hedging_spot
-
+from strategies import  hedging_spot
+from strategies.entries_exits import hedging_spot_attributes,preferred_spot_currencies
+from deribit_get import get_instruments, telegram_bot_sendtext, get_server_time
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
-    import deribit_get
 
-    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+    return await telegram_bot_sendtext(bot_message, purpose)
 
 async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_error") -> None:
 
@@ -71,6 +71,12 @@ async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_e
     if not has_closed_label or has_closed_label==0:
         await update_status_closed_trades(label_integer)
 
+async def current_server_time() -> float:
+    """ """
+    current_time = await get_server_time()
+    return current_time["result"]
+
+
 def get_futures_for_active_currencies () -> list:
     """_summary_
 
@@ -79,7 +85,7 @@ def get_futures_for_active_currencies () -> list:
     """
     from strategies.basic_strategy import get_instruments_kind
 
-    currencies = entries_exits.preferred_spot_currencies()
+    currencies = preferred_spot_currencies()
     
     instruments_holder_place= []
     for currency in currencies:
@@ -204,18 +210,6 @@ async def on_restart() -> None:
 
     log.warning("Cancelling all orders")
     await cancel_the_cancellables()
-
-
-async def spawn_task():
-
-    
-    currencies = entries_exits.preferred_spot_currencies()
-    task_list = []
-    for currency in currencies:
-        task_list.append(asyncio.create_task(self.ws_manager(currency)))
-        log.critical(f"currency {currency}")
-
-    await asyncio.gather(*task_list)
 
 class StreamAccountData:
 
@@ -490,7 +484,15 @@ class StreamAccountData:
                                             ticker: list = reading_from_db("ticker", instrument)
                                             
                                             best_ask_prc: float = ticker[0]["best_ask_price"]
+                                            
+                                            server_time = await current_server_time()
                                                                 
+                                                                
+                                            market_condition_all = await querying_table("market_analytics_json-last")
+                                            market_condition = market_condition_all["list_data_only"][0]
+                                            
+                                            strategy_label= hedging_spot_attributes["strategy"]
+
                                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
                                             send_order: dict = (
@@ -501,12 +503,12 @@ class StreamAccountData:
                                                     index_price,
                                                     best_ask_prc,
                                                     server_time,
-                                                    TA_result_data
+                                                    market_condition
                                                 )
                                             )
                                                 
-                                            await if_order_is_true(send_order, instrument)
-                                            await if_cancel_is_true(send_order)
+                                            #await if_order_is_true(send_order, instrument)
+                                            #await if_cancel_is_true(send_order)
                                                
                                                 
                                         except:
