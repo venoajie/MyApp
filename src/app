@@ -483,7 +483,6 @@ class StreamAccountData:
                                             equity: float = portfolio[0]["equity"]
                                             
                                             notional: float = compute_notional_value(index_price, equity)
-                                            
                                                                 
                                             hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -533,6 +532,7 @@ class StreamAccountData:
 
         try:
             # ticker: list = pickling.read_data(my_path_ticker)
+            log.error (ticker_change)
 
             if data_orders["type"] == "snapshot":
                 replace_data(my_path_ticker, data_orders)
@@ -542,7 +542,7 @@ class StreamAccountData:
             else:
                 ticker_change: list = read_data(my_path_ticker)
                 if ticker_change != []:
-                    # log.debug (ticker_change)
+                    # 
 
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
