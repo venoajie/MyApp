@@ -210,6 +210,7 @@ async def run_every_5_seconds() -> None:
 
                 for instrument in instrument_transactions:
                     await opening_transactions(
+                        currency,
                         instrument,
                         portfolio,
                         strategies,

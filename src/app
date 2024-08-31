@@ -279,6 +279,7 @@ class StreamAccountData:
                     log.debug(f"instrument {instrument}")
 
                     currency=extract_currency_from_text(instrument).upper()
+                    
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
@@ -286,22 +287,23 @@ class StreamAccountData:
                         )
                     )
 
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe", ws_channel=f"user.portfolio.{currency}"
+                        )
+                    )
+
+                    self.loop.create_task(
+                        self.ws_operation(
+                            operation="subscribe",
+                            ws_channel=f"user.changes.any.{currency.upper()}.raw",
+                        )
+                    )
+                
+                
                     if "PERPETUAL" in instrument:
 
-
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe", ws_channel=f"user.portfolio.{currency}"
-                            )
-                        )
-
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"user.changes.any.{currency.upper()}.raw",
-                            )
-                        )
-                        
+    
 
                         self.loop.create_task(
                             self.ws_operation(

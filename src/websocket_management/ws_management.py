@@ -347,6 +347,7 @@ def delta_price_constraint(
 
 
 async def opening_transactions(
+    currency,
     instrument,
     portfolio,
     strategies,
@@ -393,12 +394,6 @@ async def opening_transactions(
                     my_trades_open_sqlite, strategy_label
                 )
 
-                # log.debug(
-                #    f"net_sum_strategy   {net_sum_strategy} net_sum_strategy_main   {net_sum_strategy_main}"
-                # )
-
-                THRESHOLD_BEFORE_REORDER = ONE_PCT / 2
-
                 my_trades_open = [
                     o for o in transactions_all_summarized if "open" in (o["label"])
                 ]
@@ -409,30 +404,10 @@ async def opening_transactions(
 
                 last_price_all = get_last_price(my_trades_open_strategy)
 
-                # log.debug(f"last_price   {last_price_all}")
 
                 if "hedgingSpot" in strategy_attr["strategy"]:
 
-                    #THRESHOLD_MARKET_CONDITION = ONE_PCT * 0.5
-                    # based on avg movement in 1 hour
-
                     last_price_traded = last_price_all["max_sell_traded_price"]
-
-                    #is_exceed_threshold = (
-                    #    True
-                    #    if last_price_traded == 0
-                    #    else (abs(index_price - last_price_traded) / last_price_traded)
-                    #    > THRESHOLD_MARKET_CONDITION
-                    #)
-
-                    #log.debug(
-                    #    f"last_price_traded   {last_price_traded} is_exceed_threshold   {is_exceed_threshold}"
-                    #)
-
-                    # How hedge positions are checked:
-                    # Any o/s open positions? If yes, get the last traded price
-                    # To avoid trading with the same price, check whether the diff between
-                    # last traded price vs current price exceed threshold
 
                     if (
                         last_price_traded == 0 or last_price_traded == []
@@ -442,6 +417,7 @@ async def opening_transactions(
 
                         send_order: dict = (
                             await hedging.is_send_and_cancel_open_order_allowed(
+                                currency,
                                 instrument,
                                 notional,
                                 index_price,
