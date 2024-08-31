@@ -420,7 +420,7 @@ class StreamAccountData:
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
                             ):
-                                #log.warning(message_channel)
+                                log.warning(message_channel)
                                 my_path_futures_analysis = provide_path_for_file(
                                     "futures_analysis", currency
                                 )
