@@ -489,7 +489,7 @@ class StreamAccountData:
                                         market_condition_all = await querying_table("market_analytics_json-last")
                                         market_condition = market_condition_all["list_data_only"][0]
                                         
-                                        strategy_label= hedging_spot_attributes["strategy"]
+                                        strategy_label= hedging_spot_attributes()["strategy"]
                                         log.debug(strategy_label)
 
                                         try:
