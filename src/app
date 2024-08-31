@@ -532,7 +532,7 @@ class StreamAccountData:
 
         try:
             # ticker: list = pickling.read_data(my_path_ticker)
-            log.error (ticker_change)
+            log.error (data_orders)
 
             if data_orders["type"] == "snapshot":
                 replace_data(my_path_ticker, data_orders)
