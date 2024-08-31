@@ -153,6 +153,7 @@ class HedgingSpot(BasicStrategy):
 
     async def is_send_and_cancel_open_order_allowed(
         self,
+        instrument_name: str,
         notional: float,
         index_price,
         ask_price: float,
@@ -191,7 +192,7 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
 
-        size = determine_size(notional, SIZE_FACTOR)
+        size = determine_size(instrument_name, notional, SIZE_FACTOR)
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
         

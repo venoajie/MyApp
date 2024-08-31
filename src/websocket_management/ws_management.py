@@ -93,7 +93,7 @@ async def get_sub_account(currency) -> list:
 
     private_data = await get_private_data(currency)
 
-    result_sub_account: dict = await private_data.get_subaccounts(currency)
+    result_sub_account: dict = await private_data.get_subaccounts()
 
     return result_sub_account["result"]
 
@@ -442,6 +442,7 @@ async def opening_transactions(
 
                         send_order: dict = (
                             await hedging.is_send_and_cancel_open_order_allowed(
+                                instrument,
                                 notional,
                                 index_price,
                                 best_ask_prc,
