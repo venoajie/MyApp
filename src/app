@@ -468,69 +468,75 @@ class StreamAccountData:
                                             log.debug(f"{instrument_ticker}")
                                             log.critical (f"OPENING HEDGING-START")
                                                                 
-                                            index_price= data_orders["index_price"]
-                                            #log.warning(f"{instrument_ticker} {index_price}")
-                                                                                
-                                            # gathering basic data
-                                            reading_from_database: dict = await reading_from_pkl_database(currency)
-                                                                                
-                                            # get portfolio data
-                                            portfolio: list = reading_from_database["portfolio"]
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            # obtain spot equity
-                                            equity: float = portfolio[0]["equity"]
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            notional: float = compute_notional_value(index_price, equity)
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            ticker: list = reading_from_db("ticker", instrument)
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            best_ask_prc: float = ticker[0]["best_ask_price"]
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            server_time = await current_server_time()
-                                                                
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                                                
-                                            market_condition_all = await querying_table("market_analytics_json-last")
-
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            market_condition = market_condition_all["list_data_only"][0]
-                                            
-                                            log.warning(f"{instrument_ticker} {index_price}")
-                                            
-                                            strategy_label= hedging_spot_attributes()["strategy"]
-                                            
+                                            try:
+                                                index_price= data_orders["index_price"]
+                                                            
+                                            except:
+                                                index_price= None
+                                                
                                             log.warning(f"{instrument_ticker} {index_price}")
 
-                                            hedging = hedging_spot.HedgingSpot(strategy_label)
+                                            if index_price is not None:
+                                                                                    
+                                                # gathering basic data
+                                                reading_from_database: dict = await reading_from_pkl_database(currency)
+                                                                                    
+                                                # get portfolio data
+                                                portfolio: list = reading_from_database["portfolio"]
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                # obtain spot equity
+                                                equity: float = portfolio[0]["equity"]
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                notional: float = compute_notional_value(index_price, equity)
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                ticker: list = reading_from_db("ticker", instrument)
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                best_ask_prc: float = ticker[0]["best_ask_price"]
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                server_time = await current_server_time()
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                                    
+                                                market_condition_all = await querying_table("market_analytics_json-last")
 
-                                            send_order: dict = (
-                                                await hedging.is_send_and_cancel_open_order_allowed(
-                                                    currency,
-                                                    instrument,
-                                                    notional,
-                                                    index_price,
-                                                    best_ask_prc,
-                                                    server_time,
-                                                    market_condition
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                market_condition = market_condition_all["list_data_only"][0]
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+                                                
+                                                strategy_label= hedging_spot_attributes()["strategy"]
+                                                
+                                                log.warning(f"{instrument_ticker} {index_price}")
+
+                                                hedging = hedging_spot.HedgingSpot(strategy_label)
+
+                                                send_order: dict = (
+                                                    await hedging.is_send_and_cancel_open_order_allowed(
+                                                        currency,
+                                                        instrument,
+                                                        notional,
+                                                        index_price,
+                                                        best_ask_prc,
+                                                        server_time,
+                                                        market_condition
+                                                    )
                                                 )
-                                            )
-                                            log.debug(send_order)    
-                                            #await if_order_is_true(send_order, instrument)
-                                            await if_cancel_is_true(send_order)
-                                            
-                                            log.critical (f"OPENING HEDGING-DONE")
+                                                log.debug(send_order)    
+                                                #await if_order_is_true(send_order, instrument)
+                                                await if_cancel_is_true(send_order)
+                                                
+                                                log.critical (f"OPENING HEDGING-DONE")
                                             
                                         except error as e:
                                             log.debug(f"{e}")
