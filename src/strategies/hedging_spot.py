@@ -177,7 +177,7 @@ class HedgingSpot(BasicStrategy):
             ask_price, None, notional
         )
         hedging_attributes= hedging_spot_attributes()
-        print (f"hedging_spot_attributes {hedging_attributes}")
+
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(
@@ -192,7 +192,7 @@ class HedgingSpot(BasicStrategy):
         neutral = market_condition["neutral_price"]
         
         weighted_factor= params["weighted_factor"]
-        waiting_minute_before_cancel= params["waiting_minute_before_cancel"]
+        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
 
