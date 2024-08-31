@@ -205,10 +205,11 @@ class HedgingSpot(BasicStrategy):
         )
 
         print(
+            f"my_trades {my_trades}"
+        )
+        print(
             f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
         )
-
-        print(f"weighted_factor {weighted_factor}")
 
         sum_my_trades: int = my_trades["transactions_sum"]
 
