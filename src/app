@@ -471,8 +471,8 @@ class StreamAccountData:
                                             buffer = []
                                             
                                             while True:
-                                                buffer.append()
-                                                log.debug(index_price)
+                                                buffer.append(index_price)
+                                                log.debug(buffer)
                                                 
                                             log.info(buffer)
                                        
