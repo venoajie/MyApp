@@ -469,12 +469,10 @@ class StreamAccountData:
                                             
                                                                                 
                                             buffer = []
-                                            while True:
-                                                
-                                                buffer.append(index_price)
-                                                log.debug(buffer)
-                                                if len (buffer)>10:
-                                                    buffer=[]
+                                            
+                                            buffer.append(index_price)
+                                            log.debug(buffer)
+                                            log.debug(len (buffer))
                                                 
                                                 
                                         except:
