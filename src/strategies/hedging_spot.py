@@ -5,6 +5,7 @@ import asyncio
 
 # installed
 from dataclassy import dataclass
+from strategies.entries_exits import hedging_spot_attributes
 
 # user defined formula
 from strategies.basic_strategy import (
@@ -175,7 +176,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
-        threshold_market_condition= params["delta_price_pct"]
+        threshold_market_condition= hedging_spot_attributes["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
