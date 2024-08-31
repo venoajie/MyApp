@@ -468,7 +468,7 @@ class StreamAccountData:
                                             
                                             index_price= data_orders["index_price"]
                                             #log.warning(f"{instrument_ticker} {index_price}")
-                                            #log.debug(f"{data_orders}")
+                                            log.debug(f"{data_orders}")
                                                                                 
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
