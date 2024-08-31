@@ -31,7 +31,10 @@ from db_management.sqlite_management import (
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
-    cancel_the_cancellables)
+    cancel_the_cancellables,
+    if_order_is_true,if_cancel_is_true,
+    compute_notional_value, reading_from_pkl_database
+    )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     last_tick_fr_sqlite)
@@ -45,7 +48,8 @@ from strategies.basic_strategy import (
     is_order_has_sent_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
-from strategies import entries_exits
+from strategies import entries_exits, hedging_spot
+
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -464,16 +468,40 @@ class StreamAccountData:
                                             )
                                     
                                         try:
+                                            
                                             index_price= data_orders["index_price"]
                                             log.warning(f"{instrument_ticker} {index_price}")
-                                            
+                                            log.debug(f"{data_orders}")
                                                                                 
-                                            buffer = []
+                                            # gathering basic data
+                                            reading_from_database: dict = await reading_from_pkl_database(currency)
+                                                                                
+                                            # get portfolio data
+                                            portfolio: list = reading_from_database["portfolio"]
                                             
-                                            buffer.append(index_price)
-                                            log.debug(buffer)
-                                            log.debug(len (buffer))
+                                            # obtain spot equity
+                                            equity: float = portfolio[0]["equity"]
+                                            
+                                            notional: float = compute_notional_value(index_price, equity)
+                                            
+                                                                
+                                            hedging = hedging_spot.HedgingSpot(strategy_label)
+
+                                            send_order: dict = (
+                                                await hedging.is_send_and_cancel_open_order_allowed(
+                                                    currency,
+                                                    instrument,
+                                                    notional,
+                                                    index_price,
+                                                    best_ask_prc,
+                                                    server_time,
+                                                    TA_result_data
+                                                )
+                                            )
                                                 
+                                            await if_order_is_true(send_order, instrument)
+                                            await if_cancel_is_true(send_order)
+                                               
                                                 
                                         except:
                                             continue
