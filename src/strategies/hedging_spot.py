@@ -203,10 +203,10 @@ class HedgingSpot(BasicStrategy):
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
         )
-        my_trades_currency= [o for o in my_trades["result_all"] if currency.upper() in o["order_id"] ]
+        my_trades_currency= [o for o in my_trades["result_all"] if currency.upper() in o["order_id"] and self.strategy_label in o["label"]]
 
         print(
-            f"my_trades {currency} {my_trades}"
+            f"my_trades {currency} {currency} {self.strategy_label}"
         )
         print(
             f"my_trades {currency} {my_trades_currency}"
