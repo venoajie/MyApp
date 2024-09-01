@@ -543,7 +543,7 @@ def proforma_size(
 def is_everything_consistent(params) -> bool:
     """ """
     
-    log.error (f"params {params}")
+    #log.error (f"params {params}")
     label = get_transaction_label(params)
 
     is_consistent = True if "closed" in label else False
