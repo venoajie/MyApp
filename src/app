@@ -53,6 +53,7 @@ from strategies.basic_strategy import (
 from strategies import  hedging_spot
 from strategies.entries_exits import hedging_spot_attributes,preferred_spot_currencies
 from deribit_get import get_instruments, telegram_bot_sendtext, get_server_time
+from configuration.label_numbering import get_now_unix_time
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -464,28 +465,20 @@ class StreamAccountData:
                                             )
                                             
                                         try:
-                                            from configuration.label_numbering import get_now_unix_time
+                                            
                                             
                                             
                                             log.critical (f"OPENING HEDGING-START-{instrument_ticker.upper()}")
                                             
-                                            log.info (f"get_now_unix_time")
-                                            system_time=     get_now_unix_time()
-                                            log.info (f"get_now_unix_time")
-                                            
+                                            server_time=     get_now_unix_time()  
+                                                                                      
                                             TA_result_data_all = await querying_table("market_analytics_json-last")
                                             
                                             TA_result_data = TA_result_data_all["list_data_only"][0]
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
 
-                                            log.debug (f"server_time")                                            
-                                            server_time = await current_server_time()
-                                            log.debug (f"server_time")                                            
-                                            
                                             tick_TA=TA_result_data["tick"]
-                                            
-                                            log.critical(f"system_time {system_time} server_time {server_time} tick_TA {tick_TA}")
                                                             
                                             try:
                                                 index_price= data_orders["index_price"]
