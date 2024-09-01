@@ -498,8 +498,6 @@ class StreamAccountData:
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time_seconds < 120}")
-                                                    
                                                 if delta_time_seconds < 120:#ensure freshness of ta
                                                                                                     
                                                     notional: float = compute_notional_value(index_price, equity)
@@ -521,7 +519,9 @@ class StreamAccountData:
                                                             TA_result_data
                                                         )
                                                     )
-
+                                                    
+                                                    log.debug(f"if_order_is_true {if_order_is_true} {send_order} ")
+                                                    
                                                     await if_order_is_true(send_order, instrument)
                                                     await if_cancel_is_true(send_order)
                                                 
