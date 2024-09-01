@@ -215,10 +215,11 @@ class HedgingSpot(BasicStrategy):
 
         sum_my_trades: int = sum([o["size"] for o in my_trades_currency_strategy ])
 
-        params.update({"size": size})
+        
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
-        print(f"params {params}")
+        label_open: str = self.get_basic_params.get_label("open", self.strategy_label)
+        print(f"label_open {label_open}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
@@ -241,6 +242,10 @@ class HedgingSpot(BasicStrategy):
                 and (bearish or strong_bearish)
                 and fluctuation_exceed_threshold
             )
+            params.update({"size": size})
+            label_open: str = self.get_basic_params.get_label("open", self.strategy_label)
+            params.update({"label": label_open})
+            
 
         return dict(
             order_allowed=order_allowed,

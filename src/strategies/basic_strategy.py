@@ -618,14 +618,12 @@ class BasicStrategy:
         except:
             cancellable = False
 
-        if "hedgingSpot" in self.strategy_label:
-            weighted_factor = strategy_config["weighted_factor"]
-            params.update({"weighted_factor": weighted_factor})
-
+        if "hedgingSpot" not in self.strategy_label:
+            label_open: str = get_label("open", self.strategy_label)
+            params.update({"label": label_open})
+            
         # get transaction label and update the respective parameters
         params.update({"cancellable": cancellable})
-        label_open: str = get_label("open", self.strategy_label)
-        params.update({"label": label_open})
         params.update({"has_closed_label": False})
 
         if side == "sell":
