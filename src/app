@@ -482,46 +482,47 @@ class StreamAccountData:
                                                 
                                             if index_price is not None:
                                             
-
-                                                tick_TA=1725174372932# 2024-09-01 07:06:12.932 TA_result_data["tick"]
+                                                tick_TA=TA_result_data["tick"]
                                                 server_time=     get_now_unix_time()  
                                                 
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds}")
+                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time < 5}")
+                                                    
+                                                if delta_time < 5:#ensure freshness of ta
+                                                                                            
+                                                    # gathering basic data
+                                                    reading_from_database: dict = await reading_from_pkl_database(currency)
                                                                                         
-                                                # gathering basic data
-                                                reading_from_database: dict = await reading_from_pkl_database(currency)
-                                                                                    
-                                                # get portfolio data
-                                                portfolio: list = reading_from_database["portfolio"]
-                                                                                                
-                                                # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]
-                                                                                                
-                                                notional: float = compute_notional_value(index_price, equity)
-                                                                                                
-                                                ticker: list = reading_from_db("ticker", instrument_ticker)
-                                                                                                
-                                                best_ask_prc: float = ticker[0]["best_ask_price"]
-                                                
-                                                hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                    # get portfolio data
+                                                    portfolio: list = reading_from_database["portfolio"]
+                                                                                                    
+                                                    # obtain spot equity
+                                                    equity: float = portfolio[0]["equity"]
+                                                                                                    
+                                                    notional: float = compute_notional_value(index_price, equity)
+                                                                                                    
+                                                    ticker: list = reading_from_db("ticker", instrument_ticker)
+                                                                                                    
+                                                    best_ask_prc: float = ticker[0]["best_ask_price"]
+                                                    
+                                                    hedging = hedging_spot.HedgingSpot(strategy_label)
 
-                                                send_order: dict = (
-                                                    await hedging.is_send_and_cancel_open_order_allowed(
-                                                        currency,
-                                                        instrument_ticker,
-                                                        notional,
-                                                        index_price,
-                                                        best_ask_prc,
-                                                        server_time,
-                                                        TA_result_data
+                                                    send_order: dict = (
+                                                        await hedging.is_send_and_cancel_open_order_allowed(
+                                                            currency,
+                                                            instrument_ticker,
+                                                            notional,
+                                                            index_price,
+                                                            best_ask_prc,
+                                                            server_time,
+                                                            TA_result_data
+                                                        )
                                                     )
-                                                )
 
-                                                #await if_order_is_true(send_order, instrument)
-                                                await if_cancel_is_true(send_order)
+                                                    #await if_order_is_true(send_order, instrument)
+                                                    await if_cancel_is_true(send_order)
                                                 
                                             log.critical (f"OPENING HEDGING-DONE")
                                             
