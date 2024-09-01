@@ -225,6 +225,7 @@ class HedgingSpot(BasicStrategy):
                 notional, sum_my_trades, len_orders
             )
         )
+        print(f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}")
 
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
