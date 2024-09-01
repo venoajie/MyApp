@@ -172,7 +172,7 @@ class HedgingSpot(BasicStrategy):
         )
         #print (f"TA_result_data {TA_result_data}")
 
-        fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
+        fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
@@ -242,6 +242,7 @@ class HedgingSpot(BasicStrategy):
                 and (bearish or strong_bearish)
                 and fluctuation_exceed_threshold
             )
+        print(f"order_allowed {order_allowed}")
         
         if order_allowed:
             label_open: str = get_label("open", self.strategy_label)
