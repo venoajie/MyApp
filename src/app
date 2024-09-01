@@ -686,7 +686,7 @@ def main():
     client_secret: str = parse_dotenv(sub_account)["client_secret"]   
 
     try:
-        asyncio.run(cancel_the_cancellables())
+
         StreamAccountData(client_id=client_id, client_secret=client_secret)
         
         #async with websockets.connect(
@@ -724,9 +724,7 @@ if __name__ == "__main__":
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
         
     except Exception as error:
-        
-        
-        
+                
         catch_error_message(
         error, 10, "app"
         )
