@@ -464,9 +464,22 @@ class StreamAccountData:
                                             )
                                             
                                         try:
+                                            from configuration.label_numbering import get_now_unix_time
+                                            
                                             
                                             log.critical (f"OPENING HEDGING-START-{instrument_ticker.upper()}")
-                                                                
+                                            
+                                            system_time=     get_now_unix_time()
+                                            TA_result_data = TA_result_data_all["list_data_only"][0]
+                                                                                            
+                                            strategy_label= hedging_spot_attributes()["strategy"]
+                                            
+                                            server_time = await current_server_time()
+                                            
+                                            tick_TA=TA_result_data["tick"]
+                                            
+                                            log.critical(f"system_time {system_time} server_time {server_time} tick_TA {tick_TA}")
+                                                            
                                             try:
                                                 index_price= data_orders["index_price"]
                                                 
@@ -490,13 +503,9 @@ class StreamAccountData:
                                                                                                 
                                                 best_ask_prc: float = ticker[0]["best_ask_price"]
                                                                                                 
-                                                server_time = await current_server_time()
-                                                                                                                    
-                                                market_condition_all = await querying_table("market_analytics_json-last")
                                                 
-                                                market_condition = market_condition_all["list_data_only"][0]
-                                                                                                
-                                                strategy_label= hedging_spot_attributes()["strategy"]
+                                                                                                                    
+                                                TA_result_data_all = await querying_table("market_analytics_json-last")
                                                 
                                                 hedging = hedging_spot.HedgingSpot(strategy_label)
 
@@ -508,7 +517,7 @@ class StreamAccountData:
                                                         index_price,
                                                         best_ask_prc,
                                                         server_time,
-                                                        market_condition
+                                                        TA_result_data
                                                     )
                                                 )
 
