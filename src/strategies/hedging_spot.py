@@ -255,6 +255,7 @@ class HedgingSpot(BasicStrategy):
             else:
                 
                 order_allowed=False
+        
         print(f" params {params}")
 
         return dict(
