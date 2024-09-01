@@ -192,7 +192,7 @@ class HedgingSpot(BasicStrategy):
         strong_bearish = market_condition["strong_falling_price"]
         neutral = market_condition["neutral_price"]
         
-        weighted_factor= params["weighted_factor"]
+        weighted_factor= hedging_attributes["weighted_factor"]
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
