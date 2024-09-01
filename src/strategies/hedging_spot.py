@@ -215,13 +215,9 @@ class HedgingSpot(BasicStrategy):
             f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
         )
 
-        sum_my_trades: int = sum([o["size"] for o in my_trades_currency_strategy ])
-
-        
+        sum_my_trades: int = sum([o["size"] for o in my_trades_currency_strategy ])        
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
-        label_open: str = self.get_basic_params.get_label("open", self.strategy_label)
-        print(f"label_open {label_open}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
