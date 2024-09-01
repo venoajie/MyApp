@@ -470,6 +470,8 @@ class StreamAccountData:
                                             log.critical (f"OPENING HEDGING-START-{instrument_ticker.upper()}")
                                             
                                             system_time=     get_now_unix_time()
+                                            TA_result_data_all = await querying_table("market_analytics_json-last")
+                                            
                                             TA_result_data = TA_result_data_all["list_data_only"][0]
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
@@ -505,7 +507,7 @@ class StreamAccountData:
                                                                                                 
                                                 
                                                                                                                     
-                                                TA_result_data_all = await querying_table("market_analytics_json-last")
+                                                
                                                 
                                                 hedging = hedging_spot.HedgingSpot(strategy_label)
 
