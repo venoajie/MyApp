@@ -542,6 +542,8 @@ def proforma_size(
 
 def is_everything_consistent(params) -> bool:
     """ """
+    
+    log.error (f"params {params}")
     label = get_transaction_label(params)
 
     is_consistent = True if "closed" in label else False
@@ -617,11 +619,7 @@ class BasicStrategy:
             cancellable = strategy_config["cancellable"]
         except:
             cancellable = False
-
-        if "hedgingSpot" not in self.strategy_label:
-            label_open: str = get_label("open", self.strategy_label)
-            params.update({"label": label_open})
-            
+       
         # get transaction label and update the respective parameters
         params.update({"cancellable": cancellable})
         params.update({"has_closed_label": False})
@@ -633,8 +631,12 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
 
         log.error(f"params {params}")
-        params.update({"everything_is_consistent": is_everything_consistent(params)})
-
+        
+        if "hedgingSpot" not in self.strategy_label:
+            params.update({"everything_is_consistent": is_everything_consistent(params)})
+            label_open: str = get_label("open", self.strategy_label)
+            params.update({"label": label_open})
+     
         return params
 
     async def transaction_per_label(self, table, label_filter: str = None) -> dict:
