@@ -466,6 +466,7 @@ class StreamAccountData:
                                         try:
                                             
                                             log.critical (f"OPENING HEDGING-START-{instrument_ticker.upper()}")
+                                            log.info (f"instrument_ticker {instrument_ticker} instrument {instrument}")
                                                                 
                                             try:
                                                 index_price= data_orders["index_price"]
@@ -486,7 +487,7 @@ class StreamAccountData:
                                                                                                 
                                                 notional: float = compute_notional_value(index_price, equity)
                                                                                                 
-                                                ticker: list = reading_from_db("ticker", instrument)
+                                                ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                                 
                                                 best_ask_prc: float = ticker[0]["best_ask_price"]
                                                                                                 
