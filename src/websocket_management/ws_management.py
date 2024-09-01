@@ -186,10 +186,9 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        is_app_running = is_current_file_running("app")
         everything_consistent = is_everything_consistent(params)
 
-        if is_app_running and everything_consistent:
+        if  everything_consistent:
             await inserting_additional_params(params)
             await send_limit_order(params)
             await asyncio.sleep(10)

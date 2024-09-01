@@ -520,7 +520,7 @@ class StreamAccountData:
                                                         )
                                                     )
                                                     
-                                                    log.debug(f"if_order_is_true {if_order_is_true} {send_order} ")
+                                                    log.debug(f"if_order_is_true {send_order} {instrument} ")
                                                     
                                                     await if_order_is_true(send_order, instrument)
                                                     await if_cancel_is_true(send_order)
