@@ -185,6 +185,7 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
+        print(market_condition)
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
