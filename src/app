@@ -480,7 +480,17 @@ class StreamAccountData:
                                             except:
                                                 index_price= None
                                                 
-                                            if index_price is not None:
+                                                
+                                            # gathering basic data
+                                            reading_from_database: dict = await reading_from_pkl_database(currency)
+                                                                                
+                                            # get portfolio data
+                                            portfolio: list = reading_from_database["portfolio"]
+                                                                                            
+                                            # obtain spot equity
+                                            equity: float = portfolio[0]["equity"]
+                                                                                
+                                            if index_price is not None and equity >0:
                                             
                                                 tick_TA=TA_result_data["tick"]
                                                 server_time=     get_now_unix_time()  
@@ -488,18 +498,9 @@ class StreamAccountData:
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time < 5}")
+                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time < 120}")
                                                     
-                                                if delta_time < 5:#ensure freshness of ta
-                                                                                            
-                                                    # gathering basic data
-                                                    reading_from_database: dict = await reading_from_pkl_database(currency)
-                                                                                        
-                                                    # get portfolio data
-                                                    portfolio: list = reading_from_database["portfolio"]
-                                                                                                    
-                                                    # obtain spot equity
-                                                    equity: float = portfolio[0]["equity"]
+                                                if delta_time < 120:#ensure freshness of ta
                                                                                                     
                                                     notional: float = compute_notional_value(index_price, equity)
                                                                                                     
