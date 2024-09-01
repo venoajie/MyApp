@@ -522,7 +522,7 @@ class StreamAccountData:
                                                         )
                                                     )
 
-                                                    #await if_order_is_true(send_order, instrument)
+                                                    await if_order_is_true(send_order, instrument)
                                                     await if_cancel_is_true(send_order)
                                                 
                                             log.critical (f"OPENING HEDGING-DONE")
