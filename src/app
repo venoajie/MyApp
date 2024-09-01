@@ -40,8 +40,6 @@ from websocket_management.ws_management import (
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     last_tick_fr_sqlite)
-from websocket_management.closing_transactions import (
-    closing_outstanding_transactions)
 from websocket_management.cleaning_up_transactions import (
     check_if_transaction_has_closed_label_before)
 from strategies.basic_strategy import (
@@ -52,7 +50,7 @@ from strategies.basic_strategy import (
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
 from strategies.entries_exits import hedging_spot_attributes,preferred_spot_currencies
-from deribit_get import get_instruments, telegram_bot_sendtext, get_server_time
+from deribit_get import telegram_bot_sendtext, get_server_time
 from configuration.label_numbering import get_now_unix_time
 
 def parse_dotenv(sub_account) -> dict:
@@ -121,7 +119,6 @@ async def manage_trades (trades: dict) -> None:
         
         # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
         if "-FS-" not in trade["instrument_name"]:
-
                 
             label=trade["label"]
 
@@ -155,9 +152,6 @@ async def manage_positions (positions: dict, currency: str) -> None:
 async def update_portfolio(data_orders, currency) -> None:
 
     my_path_portfolio = provide_path_for_file("portfolio", currency)
-    
-    #log.error(f"{str(my_path_portfolio)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_portfolio)}")
-    #log.error(f"{data_orders}")
     
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
@@ -678,7 +672,6 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
-        #log.critical(msg)
         await self.websocket_client.send(json.dumps(msg))
 
 
@@ -690,8 +683,7 @@ def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    
+    client_secret: str = parse_dotenv(sub_account)["client_secret"]   
 
     try:
         
@@ -713,10 +705,8 @@ def main():
 
         #await asyncio.gather(*task_list)
 
-        
-        log.error("test")
-
     except Exception as error:
+        asyncio.run(cancel_the_cancellables())
         catch_error_message(
             error, 10, "app"
         )
@@ -731,10 +721,14 @@ if __name__ == "__main__":
 
 
     except (KeyboardInterrupt, SystemExit):
+        
+        asyncio.run(cancel_the_cancellables())
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
         
-
     except Exception as error:
+        
+        asyncio.run(cancel_the_cancellables())
+        
         catch_error_message(
         error, 10, "app"
         )
