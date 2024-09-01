@@ -176,6 +176,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
+        print (f"params {params}")
         hedging_attributes= hedging_spot_attributes()
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
