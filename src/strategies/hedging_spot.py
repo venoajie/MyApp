@@ -11,7 +11,8 @@ from strategies.entries_exits import hedging_spot_attributes
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    delta_pct,get_strategy_config_all,size_rounding,is_everything_consistent
+    delta_pct,get_strategy_config_all,get_label,
+    size_rounding,is_everything_consistent
 )
 from db_management.sqlite_management import (
     querying_table,
@@ -249,7 +250,7 @@ class HedgingSpot(BasicStrategy):
             if everything_is_consistent:
                 params.update({"everything_is_consistent": everything_is_consistent})
                 params.update({"size": size})
-                label_open: str = self.get_basic_params.get_label("open", self.strategy_label)
+                label_open: str = get_label("open", self.strategy_label)
                 params.update({"label": label_open})           
 
         return dict(
