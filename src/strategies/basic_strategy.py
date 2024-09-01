@@ -115,7 +115,7 @@ def size_rounding(instrument_name: str, proposed_size: float) -> int:
     rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
     print(f"instrument_name {instrument_name} rounded_size {rounded_size} min_trade_amount {min_trade_amount}")
     
-    return max(min_trade_amount, rounded_size) #size is never 0
+    return int(max(min_trade_amount, rounded_size)) #size is never 0
 
 
 def delta(last_price: float, prev_price: float) -> float:
@@ -208,8 +208,6 @@ def is_minimum_waiting_time_has_passed(server_time, time_stamp, time_threshold) 
         else delta_time(server_time, time_stamp) > time_threshold
     )
     
-
-
 def pct_price_in_usd(price: float, pct_threshold: float) -> float:
     return price * pct_threshold
 
