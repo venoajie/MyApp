@@ -220,7 +220,7 @@ class HedgingSpot(BasicStrategy):
             f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
         )
 
-        sum_my_trades: int = sum([o["size"] for o in my_trades_currency_strategy ])        
+        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
         
