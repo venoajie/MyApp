@@ -113,7 +113,6 @@ def size_rounding(instrument_name: str, proposed_size: float) -> int:
     
     
     rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
-    print(f"instrument_name {instrument_name} rounded_size {rounded_size} min_trade_amount {min_trade_amount}")
     
     return int(max(min_trade_amount, rounded_size)) #size is never 0
 

@@ -120,7 +120,7 @@ async def get_market_condition_hedging(TA_result_data, index_price, threshold) -
 
     delta_price_pct = delta_pct(index_price, open_60)
 
-    if fluctuation_exceed_threshold:
+    if fluctuation_exceed_threshold or True:
 
         if index_price > open_60:
             rising_price = True
@@ -185,7 +185,7 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
-        print(TA_result_data)
+        #print(TA_result_data)
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
