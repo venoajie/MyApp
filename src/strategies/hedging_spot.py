@@ -73,11 +73,13 @@ def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> 
     bearish_interval_threshold = (
         (threshold * ONE_PCT * 30) if strong_bearish else (threshold * ONE_PCT * 60)
     )
+    
+    print (f"bearish_interval_threshold {bearish_interval_threshold} {ONE_MINUTE * bearish_interval_threshold if (strong_bearish or bearish) else ONE_MINUTE *  threshold}")
 
     return (
         ONE_MINUTE * bearish_interval_threshold
         if (strong_bearish or bearish)
-        else threshold
+        else ONE_MINUTE *  threshold
     )
 
 
@@ -99,7 +101,7 @@ def is_cancelling_order_allowed(
 
         max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
 
-        minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed(
+        minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed (
             server_time, max_tstamp_orders, time_interval
         )
         if minimum_waiting_time_has_passed:
@@ -164,6 +166,8 @@ class HedgingSpot(BasicStrategy):
         TA_result_data: dict
     ) -> dict:
         """ """
+        
+        one_minute=60000
 
         open_orders_label_strategy: (
             dict
