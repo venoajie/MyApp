@@ -483,7 +483,7 @@ class StreamAccountData:
                                             if index_price is not None:
                                             
 
-                                                tick_TA=TA_result_data["tick"]
+                                                tick_TA=1725174372932# 2024-09-01 07:06:12.932 TA_result_data["tick"]
                                                 server_time=     get_now_unix_time()  
                                                 
                                                 delta_time= server_time-tick_TA
