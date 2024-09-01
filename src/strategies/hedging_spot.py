@@ -218,6 +218,7 @@ class HedgingSpot(BasicStrategy):
         params.update({"size": size})
 
         print(f"sum_my_trades {sum_my_trades} notional {notional}")
+        print(f"params {params}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
