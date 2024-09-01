@@ -405,7 +405,7 @@ async def opening_transactions(
                 last_price_all = get_last_price(my_trades_open_strategy)
 
 
-                if "hedgingSpot" in strategy_attr["strategy"]:
+                if False and "hedgingSpot" in strategy_attr["strategy"]:
 
                     last_price_traded = last_price_all["max_sell_traded_price"]
 
