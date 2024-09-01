@@ -629,8 +629,6 @@ class BasicStrategy:
 
         if side == "buy":
             params.update({"entry_price": bid_price})
-
-        log.error(f"params {params}")
         
         if "hedgingSpot" not in self.strategy_label:
             params.update({"everything_is_consistent": is_everything_consistent(params)})
