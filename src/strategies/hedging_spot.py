@@ -241,16 +241,21 @@ class HedgingSpot(BasicStrategy):
                 and fluctuation_exceed_threshold
             )
         
-        if True:#order_allowed:
+        if order_allowed:
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
             everything_is_consistent= is_everything_consistent(params)
-            params.update({"everything_is_consistent": everything_is_consistent})
+            
             if everything_is_consistent:
                 
                 params.update({"size": size})
+                params.update({"everything_is_consistent": everything_is_consistent})
                            
-                print(f" param s{params}")
+                
+            else:
+                
+                order_allowed=False
+        print(f" params {params}")
 
         return dict(
             order_allowed=order_allowed,
