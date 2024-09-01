@@ -191,7 +191,7 @@ async def if_order_is_true(order, instrument: str = None) -> None:
         if  everything_consistent:
             await inserting_additional_params(params)
             await send_limit_order(params)
-            await asyncio.sleep(10)
+            #await asyncio.sleep(10)
 
 
 async def get_my_trades_from_exchange(count: int, currency) -> list:

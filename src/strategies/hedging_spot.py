@@ -59,7 +59,7 @@ def is_hedged_value_to_notional_exceed_threshold(
     return hedged_value_to_notional(notional, hedged_value) > threshold
 
 
-def get_timing_factor(weighted_factor, strong_bearish: bool, bearish: bool, threshold: float) -> bool:
+def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> bool:
     """
     Determine order outstanding timing for size determination.
     strong bearish : 30% of normal interval
