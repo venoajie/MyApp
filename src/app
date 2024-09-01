@@ -498,9 +498,9 @@ class StreamAccountData:
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time < 120}")
+                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds} {delta_time_seconds < 120}")
                                                     
-                                                if delta_time < 120:#ensure freshness of ta
+                                                if delta_time_seconds < 120:#ensure freshness of ta
                                                                                                     
                                                     notional: float = compute_notional_value(index_price, equity)
                                                                                                     
