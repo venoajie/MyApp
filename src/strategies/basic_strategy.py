@@ -632,6 +632,7 @@ class BasicStrategy:
         if side == "buy":
             params.update({"entry_price": bid_price})
 
+        log.error(f"params {params}")
         params.update({"everything_is_consistent": is_everything_consistent(params)})
 
         return params
