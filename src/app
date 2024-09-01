@@ -464,22 +464,16 @@ class StreamAccountData:
                                                 last_tick1_fr_sqlite,
                                             )
                                             
-                                        try:
-                                            
-                                            
-                                            
+                                        try:                                          
+                                                                                        
                                             log.critical (f"OPENING HEDGING-START-{instrument_ticker.upper()}")
-                                            
-                                            server_time=     get_now_unix_time()  
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json-last")
                                             
                                             TA_result_data = TA_result_data_all["list_data_only"][0]
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
-
-                                            tick_TA=TA_result_data["tick"]
-                                                            
+                
                                             try:
                                                 index_price= data_orders["index_price"]
                                                 
@@ -487,7 +481,16 @@ class StreamAccountData:
                                                 index_price= None
                                                 
                                             if index_price is not None:
-                                                                                    
+                                            
+
+                                                tick_TA=TA_result_data["tick"]
+                                                server_time=     get_now_unix_time()  
+                                                
+                                                delta_time= server_time-tick_TA
+                                                delta_time_seconds=delta_time/1000
+                                                
+                                                log.debug(f"server_time {server_time} tick_TA {tick_TA} delta_time_seconds {delta_time_seconds}")
+                                                                                        
                                                 # gathering basic data
                                                 reading_from_database: dict = await reading_from_pkl_database(currency)
                                                                                     
@@ -502,10 +505,6 @@ class StreamAccountData:
                                                 ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                                 
                                                 best_ask_prc: float = ticker[0]["best_ask_price"]
-                                                                                                
-                                                
-                                                                                                                    
-                                                
                                                 
                                                 hedging = hedging_spot.HedgingSpot(strategy_label)
 
