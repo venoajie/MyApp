@@ -188,9 +188,9 @@ async def get_market_condition(instrument,
     
     TA_result_data= [o for o in TA_result["list_data_only"] if currency_lower in o["instrument"]]
 
-    log.info (f"TA_result {TA_result}")
-    log.info (f"TA_result_data {TA_result_data}")
-    log.info (f"currency.lower() {currency_lower}")
+    #log.info (f"TA_result {TA_result}")
+    #log.info (f"TA_result_data {TA_result_data}")
+    #log.info (f"currency.lower() {currency_lower}")
     
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
     log.info (f"last_tick_from_prev_TA == 0 {last_tick_from_prev_TA == 0}")
@@ -236,6 +236,6 @@ async def insert_market_condition_result(currency,
 ) -> dict:
     """ """
     result = await get_market_condition(currency, limit, ratio, fluctuation_threshold)
-    log.info(f"TA {result}")
+    #log.info(f"TA {result}")
 
     await insert_tables("market_analytics_json", result)

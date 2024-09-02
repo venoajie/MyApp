@@ -379,8 +379,6 @@ class StreamAccountData:
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 
-                                #log.debug (f"portfolio {data_orders}")
-
                                 await update_portfolio(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)                               
@@ -389,7 +387,6 @@ class StreamAccountData:
                                 message_channel
                                 == f"user.changes.any.{currency.upper()}.raw"
                             ):
-                                #log.warning (f"changes {data_orders}")
                                 
                                 await update_user_changes(data_orders, currency)
 
@@ -401,9 +398,10 @@ class StreamAccountData:
                             TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
-                            #log.info (f" TABLE_OHLC1 {TABLE_OHLC1}")
                             
                             if "chart.trades" in message_channel:
+                                
+                                log.info (f" message_channel {message_channel}")
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                  instrument_ticker,
@@ -508,7 +506,7 @@ class StreamAccountData:
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds>120}")
+                                                log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
                                                 
                                                 if delta_time_seconds < 120:#ensure freshness of ta
                                                                                                     
