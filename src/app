@@ -502,11 +502,12 @@ class StreamAccountData:
                                                                                                     
                                                     ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                                     
-                                                    best_ask_prc: float = ticker[0]["best_ask_price"]
-                                                    
-                                                    hedging = hedging_spot.HedgingSpot(strategy_label)
-
-                                                    send_order: dict = (
+                                                    try:
+                                                        best_ask_prc: float = ticker[0]["best_ask_price"]
+                                                        
+                                                        hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                        
+                                                        send_order: dict = (
                                                         await hedging.is_send_and_cancel_open_order_allowed(
                                                             currency,
                                                             instrument_ticker,
@@ -517,11 +518,15 @@ class StreamAccountData:
                                                             TA_result_data
                                                         )
                                                     )
+                                                        
+                                                        log.debug(f"if_order_is_true {send_order} {instrument} ")
+                                                        
+                                                        await if_order_is_true(send_order, instrument)
+                                                        await if_cancel_is_true(send_order)
                                                     
-                                                    log.debug(f"if_order_is_true {send_order} {instrument} ")
-                                                    
-                                                    await if_order_is_true(send_order, instrument)
-                                                    await if_cancel_is_true(send_order)
+                                                    except:
+                                                        continue
+  
                                                 
                                             log.critical (f"OPENING HEDGING-DONE")
                                             
