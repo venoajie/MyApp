@@ -516,6 +516,7 @@ class StreamAccountData:
                                                     ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                                     
                                                     try:
+                                                        log.debug (f" ticker {ticker}")
                                                         best_ask_prc: float = ticker[0]["best_ask_price"]
                                                         log.debug (f" best_ask_prc {best_ask_prc}")
                                                 
