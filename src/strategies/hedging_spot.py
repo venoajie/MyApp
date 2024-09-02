@@ -282,9 +282,10 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """ """
         
-        strategy_config= get_strategy_config_all
-        threshold_market_condition= strategy_config["delta_price_pct"]
+        hedging_attributes= hedging_spot_attributes()
 
+        threshold_market_condition= hedging_attributes ["delta_price_pct"]
+        
         market_condition = await get_market_condition_hedging(
             TA_result_data, index_price, threshold_market_condition
         )
