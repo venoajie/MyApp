@@ -261,8 +261,8 @@ async def run_every_15_seconds() -> None:
     currencies=  entries_exits.preferred_spot_currencies()
     
     for currency in currencies:
-        log.debug (f"currency {currency}")
-        await insert_market_condition_result(currency, WINDOW, RATIO)
+
+        await insert_market_condition_result(f"{currency}-PERPETUAL", WINDOW, RATIO)
 
 
 async def check_and_save_every_60_minutes():
