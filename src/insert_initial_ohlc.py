@@ -10,10 +10,18 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities import system_tools, string_modification
+from utilities import system_tools
+
+from utilities.string_modification import (transform_nested_dict_to_list,
+    extract_currency_from_text)
+
 from db_management import sqlite_management
 
+instrument_name: str = "BTC-PERPETUAL"
+currency: str = (extract_currency_from_text(instrument_name)).lower
 
+print (f"instrument_name {instrument_name} currency {currency}")
+       
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
 
@@ -21,7 +29,7 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
 
 async def insert_ohlc(
-    instrument_name: str = "ETH-PERPETUAL", resolution: int = 1, qty_candles: int = 6000
+    instrument_name: str, resolution: int = 1, qty_candles: int = 6000
 ) -> None:
 
     from utilities import time_modification
@@ -44,21 +52,13 @@ async def insert_ohlc(
         log.warning(ohlc_endPoint)
         # log.warning (requests.get(ohlc_endPoint).json())
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
-        result = string_modification.transform_nested_dict_to_list(ohlc_request)
+        result = transform_nested_dict_to_list(ohlc_request)
         # log.warning (result)
+        table=f"ohlc{resolution}_{currency}_perp_json"
 
         for data in result:
-            if resolution == 1:
-                await sqlite_management.insert_tables("ohlc1_eth_perp_json", data)
-
-            if resolution == 30:
-                await sqlite_management.insert_tables("ohlc30_eth_perp_json", data)
-
-            if resolution == 60:
-                await sqlite_management.insert_tables("ohlc60_eth_perp_json", data)
-
-            if resolution == "1D":
-                await sqlite_management.insert_tables("ohlc1D_eth_perp_json", data)
+            print (f"insert tables {table}")
+            await sqlite_management.insert_tables(table, data)
 
     except Exception as error:
         system_tools.catch_error_message(
@@ -70,8 +70,8 @@ async def insert_ohlc(
 
 async def main():
     try:
-        resolutions = ["1D", 60]
-        instrument_name = "ETH-PERPETUAL"
+        resolutions = ["1D", 60, 30,1]
+        
         qty_candles = 6000
         for res in resolutions:
             await insert_ohlc(instrument_name, res, qty_candles)

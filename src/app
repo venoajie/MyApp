@@ -368,9 +368,11 @@ class StreamAccountData:
 
                             data_orders: list = message["params"]["data"]
 
+                            instrument_ticker = (message_channel)[19:]
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
+                            currency_lower=currency.lower()
                             #! ########################################################################################################################
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
@@ -391,16 +393,18 @@ class StreamAccountData:
 
                                 await resupply_sub_accountdb(currency)
                             
-                            TABLE_OHLC1: str = "ohlc1_eth_perp_json"
-                            TABLE_OHLC30: str = "ohlc30_eth_perp_json"
-                            TABLE_OHLC60: str = "ohlc60_eth_perp_json"
-                            TABLE_OHLC1D: str = "ohlc1D_eth_perp_json"
+                            TABLE_OHLC1: str = f"ohlc1_{currency_lower}_perp_json"
+                            TABLE_OHLC30: str = f"ohlc30_{currency_lower}_perp_json"
+                            TABLE_OHLC60: str = f"ohlc60_{currency_lower}_perp_json"
+                            TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
+                            log.info (f" TABLE_OHLC1 {TABLE_OHLC1}")
                             
                             if "chart.trades" in message_channel:
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
+                                                                 instrument_ticker,
                                                                 data_orders,
                                                                 TABLE_OHLC1,
                                                                 TABLE_OHLC30,

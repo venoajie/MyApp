@@ -45,11 +45,12 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
 async def ohlc_result_per_time_frame(
     message_channel,
+    instrument_ticker,
     data_orders,
-    TABLE_OHLC1: str = "ohlc1_eth_perp_json",
-    TABLE_OHLC30: str = "ohlc30_eth_perp_json",
-    TABLE_OHLC60: str = "ohlc60_eth_perp_json",
-    TABLE_OHLC1D: str = "ohlc1D_eth_perp_json",
+    TABLE_OHLC1: str,
+    TABLE_OHLC30: str,
+    TABLE_OHLC60: str,
+    TABLE_OHLC1D: str,
     WHERE_FILTER_TICK: str = "tick",
     DATABASE: str = "databases/trading.sqlite3",
 ) -> None:
@@ -80,7 +81,7 @@ async def ohlc_result_per_time_frame(
         or TABLE_OHLC1 != None
     ):
 
-        if message_channel == "chart.trades.ETH-PERPETUAL.1":
+        if message_channel == f"chart.trades.{instrument_ticker}.1":
 
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
@@ -125,7 +126,7 @@ async def ohlc_result_per_time_frame(
                     last_tick1_fr_sqlite,
                 )
 
-        if message_channel == "chart.trades.ETH-PERPETUAL.30":
+        if message_channel == f"chart.trades.{instrument_ticker}.30":
 
             last_tick30_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc30)
 
@@ -144,7 +145,7 @@ async def ohlc_result_per_time_frame(
             else:
                 await insert_tables(TABLE_OHLC30, data_orders)
 
-        if message_channel == "chart.trades.ETH-PERPETUAL.60":
+        if message_channel == f"chart.trades.{instrument_ticker}.60":
 
             last_tick60_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc60)
 
@@ -163,7 +164,7 @@ async def ohlc_result_per_time_frame(
             else:
                 await insert_tables(TABLE_OHLC60, data_orders)
 
-        if message_channel == "chart.trades.ETH-PERPETUAL.1D":
+        if message_channel == f"chart.trades.{instrument_ticker}.1D":
 
             last_tick1D_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc1D)
 
