@@ -80,6 +80,8 @@ async def ohlc_result_per_time_frame(
         or TABLE_OHLC60 != None
         or TABLE_OHLC1 != None
     ):
+        print(f"allocating ohlc {message_channel}")
+        print(f"last_tick_fr_data_orders {last_tick_fr_data_orders} last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
 
         if message_channel == f"chart.trades.{instrument_ticker}.1":
 
