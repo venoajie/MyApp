@@ -114,14 +114,13 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
     neutral_price, rising_price, falling_price = False, False, False
     strong_rising_price, strong_falling_price = False, False
     print (f"TA_result_data {TA_result_data}")
-    max_tick=max([i["tick"] for i in TA_result_data])
-    print (f"max_tick {max_tick}")
+    
     TA_data=[o for o in TA_result_data if o["tick"] == max([i["tick"] for i in TA_result_data])]
     print (f"TA_data {TA_data}")
 
-    open_60 = TA_result_data[f"60_open"]
-    current_higher_open = TA_result_data[f"1m_current_higher_open"]
-    fluctuation_exceed_threshold = TA_result_data[f"1m_fluctuation_exceed_threshold"]
+    open_60 = TA_data[f"60_open"]
+    current_higher_open = TA_data[f"1m_current_higher_open"]
+    fluctuation_exceed_threshold = TA_data[f"1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
 
