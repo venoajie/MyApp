@@ -177,7 +177,7 @@ async def get_market_condition(currency,
 
     TA_result = await querying_table("market_analytics_json")
     #TA_result_data = TA_result["list_data_only"]
-    TA_result_data= [o for o in TA_result["list_data_only"] if currency.lower in o]
+    TA_result_data= [o for o in TA_result["list_data_only"] if currency.lower() in o]
 
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
 

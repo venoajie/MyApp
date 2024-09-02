@@ -472,7 +472,7 @@ class StreamAccountData:
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json")
                                             
-                                            TA_result_data = [o for o in TA_result_data_all["list_data_only"] if currency.lower in o]
+                                            TA_result_data = [o for o in TA_result_data_all["list_data_only"] if currency.lower() in o]
                                             
                                             log.info (f"TA_result_data {TA_result_data}")
                                                                                             
