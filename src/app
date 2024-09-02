@@ -501,7 +501,8 @@ class StreamAccountData:
                                                                                 
                                             if index_price is not None and equity >0:
                                             
-                                                tick_TA=TA_result_data["tick"]
+                                                tick_TA=  max([o["tick"] for o in TA_result_data])
+                                                
                                                 server_time=     get_now_unix_time()  
                                                 
                                                 delta_time= server_time-tick_TA
