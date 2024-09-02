@@ -169,8 +169,6 @@ async def get_market_condition(currency,
     ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
         ohlc_1_open_3["ohlc"], last_price, fluctuation_threshold
     )
-
-    print(f"{currency_lower}-ohlc_1_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
     result.update(
         {f"{currency_lower}-1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
     )
@@ -180,10 +178,8 @@ async def get_market_condition(currency,
     TA_result = await querying_table("market_analytics_json")
     #TA_result_data = TA_result["list_data_only"]
     TA_result_data= [o for o in TA_result["list_data_only"] if currency.lower in o]
-    log.error(f'TA_result {TA_result_data}')
+
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
-    log.error(f"last_tick {last_tick_from_prev_TA} current_tick {current_tick}")
-    log.error(f"last_tick_from_prev_TA == 0  {last_tick_from_prev_TA == 0} current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA}")
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
