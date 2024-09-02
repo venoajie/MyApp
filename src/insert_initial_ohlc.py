@@ -50,10 +50,9 @@ async def insert_ohlc(
         log.warning(ohlc_endPoint)
         # log.warning (requests.get(ohlc_endPoint).json())
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
+        
         result = transform_nested_dict_to_list(ohlc_request)
-        log.warning (result)
-        s=5/0
-        log.warning (s)
+        
         table=f"ohlc{resolution}_{currency}_perp_json"
 
         for data in result:
