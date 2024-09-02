@@ -517,6 +517,8 @@ class StreamAccountData:
                                                                                                     
                                                     try:
                                                         best_ask_prc: float = ticker[0]["best_ask_price"]
+                                                        log.debug (f" best_ask_prc {best_ask_prc}")
+                                                
                                                         
                                                         hedging = hedging_spot.HedgingSpot(strategy_label)
                                                         
