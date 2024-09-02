@@ -373,7 +373,8 @@ class StreamAccountData:
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
-                            currency_lower=currency.lower()
+                            currency_lower=currency
+                            currency_upper=currency.upper()
                             #! ########################################################################################################################
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
@@ -474,7 +475,7 @@ class StreamAccountData:
                                             TA_result_data_all = await querying_table("market_analytics_json")
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
                                             
-                                            TA_result_data = [o for o in TA_result_data_only if currency in o["instrument"]]
+                                            TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
                                             
                                             log.debug (TA_result_data)
 
