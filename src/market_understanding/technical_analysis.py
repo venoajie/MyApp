@@ -183,6 +183,7 @@ async def get_market_condition(currency,
     log.info (f"currency.lower() {currency.lower()}")
     
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
+    log.info (f"last_tick_from_prev_TA {last_tick_from_prev_TA}")
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
