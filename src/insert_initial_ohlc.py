@@ -11,7 +11,7 @@ from loguru import logger as log
 
 # user defined formula
 from utilities import system_tools
-
+from utilities.time_modification import convert_time_to_unix
 from utilities.string_modification import (transform_nested_dict_to_list,
     extract_currency_from_text)
 
@@ -20,8 +20,6 @@ from db_management import sqlite_management
 instrument_name: str = "BTC-PERPETUAL"
 currency: str = (extract_currency_from_text(instrument_name)).lower
 
-print (f"instrument_name {instrument_name} currency {currency}")
-       
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
 
@@ -32,11 +30,11 @@ async def insert_ohlc(
     instrument_name: str, resolution: int = 1, qty_candles: int = 6000
 ) -> None:
 
-    from utilities import time_modification
+    
     import requests
 
     now_utc = datetime.now()
-    now_unix = time_modification.convert_time_to_unix(now_utc)
+    now_unix = convert_time_to_unix(now_utc)
 
     if resolution == "1D":
         resolution2 = 60 * 24
@@ -57,7 +55,7 @@ async def insert_ohlc(
         table=f"ohlc{resolution}_{currency}_perp_json"
 
         for data in result:
-            print (f"insert tables {table}")
+            log.debug (f"insert tables {table}")
             await sqlite_management.insert_tables(table, data)
 
     except Exception as error:
@@ -69,8 +67,11 @@ async def insert_ohlc(
 
 
 async def main():
+    
+    log.critical (f"instrument_name {instrument_name} currency {currency}")
+       
     try:
-        resolutions = ["1D", 60, 30,1]
+        resolutions = [60, 30,1,"1D"]
         
         qty_candles = 6000
         for res in resolutions:
