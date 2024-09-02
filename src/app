@@ -475,8 +475,8 @@ class StreamAccountData:
                                             
                                             TA_result_data = [o for o in TA_result_data_only if currency.lower() in o]
                                             
-                                            log.debug (TA_result_data_only)
-                                            log.info (f"TA_result_data {TA_result_data}")
+                                            #log.debug (TA_result_data_only)
+                                            log.info (f"currency.lower() {currency.lower()}")
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
                 
