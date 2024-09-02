@@ -440,8 +440,8 @@ class StreamAccountData:
                                         
                                         if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
                                             
-                                            log.debug(data_orders)
-                                            log.debug(TABLE_OHLC1)
+                                            #log.debug(data_orders)
+                                            #log.debug(TABLE_OHLC1)
 
                                             open_interest = data_orders["open_interest"]
                                                             
@@ -454,7 +454,7 @@ class StreamAccountData:
                                             )
 
 
-                                            log.debug(last_tick1_fr_sqlite)
+                                            #log.debug(last_tick1_fr_sqlite)
 
                                             await replace_row(
                                                 open_interest,

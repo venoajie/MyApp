@@ -11,12 +11,11 @@ from strategies.entries_exits import hedging_spot_attributes
 from strategies.basic_strategy import (
     BasicStrategy,
     is_minimum_waiting_time_has_passed,
-    delta_pct,get_strategy_config_all,get_label,
+    delta_pct,get_label,
     size_rounding,is_everything_consistent
 )
-from db_management.sqlite_management import (
-    querying_table,
-)
+
+from utilities.string_modification import (extract_currency_from_text)
 
 def are_size_and_order_appropriate_for_ordering(
     notional: float, current_size: float, current_outstanding_order_len: int
@@ -282,12 +281,18 @@ class HedgingSpot(BasicStrategy):
         selected_transaction: list,
     ) -> dict:
         """ """
+        {'liquidity': 'M', 'risk_reducing': False, 'order_type': 'limit', 'trade_id': 'ETH-216360019', 'fee_currency': 'ETH', 
+         'contracts': 4.0, 'reduce_only': False, 'self_trade': False, 'post_only': True, 'mmp': False, 'tick_direction': 3, 
+         'matching_id': None, 'order_id': 'ETH-48539980959', 'fee': 0.0, 'mark_price': 2455.62, 'amount': 4.0, 'api': True, 
+         'trade_seq': 157460588, 'instrument_name': 'ETH-PERPETUAL', 'profit_loss': 0.0, 'index_price': 2456.25, 'direction': 'sell', 
+         'price': 2455.25, 'state': 'filled', 'timestamp': 1725198276199, 'label': 'hedgingSpot-open-1725198275948'}
         
         hedging_attributes= hedging_spot_attributes()
+        currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
-        market_condition = await get_market_condition_hedging(
+        market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
 
