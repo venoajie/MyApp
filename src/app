@@ -439,7 +439,8 @@ class StreamAccountData:
                                         #log.error(f"{currency.lower()} {currency_inline_with_database_address(currency,TABLE_OHLC1) }")
                                         
                                         if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
-#                                            log.debug(data_orders)
+                                            
+                                            log.debug(data_orders)
 
                                             open_interest = data_orders["open_interest"]
                                                             
@@ -524,7 +525,8 @@ class StreamAccountData:
                                                         await if_order_is_true(send_order, instrument)
                                                         await if_cancel_is_true(send_order)
                                                     
-                                                    except:
+                                                    except error as e:
+                                                        log.debug(f"error {e} ")
                                                         continue
   
                                                 
