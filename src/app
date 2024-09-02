@@ -473,6 +473,8 @@ class StreamAccountData:
                                             TA_result_data_all = await querying_table("market_analytics_json-last")
                                             
                                             TA_result_data = TA_result_data_all["list_data_only"][0]
+                                            
+                                            log.info (f"TA_result_data {TA_result_data}")
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
                 
