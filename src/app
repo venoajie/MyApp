@@ -401,7 +401,8 @@ class StreamAccountData:
                             
                             if "chart.trades" in message_channel:
                                 
-                                log.info (f" message_channel {data_orders}")
+                                log.info (f" message_channel {message_channel}")
+                                log.info (f" data_orders {data_orders}")
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                  instrument_ticker,
