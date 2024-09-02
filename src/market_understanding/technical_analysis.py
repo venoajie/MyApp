@@ -189,7 +189,7 @@ async def get_market_condition(instrument,
     TA_result_data= [o for o in TA_result["list_data_only"] if currency_lower in o["instrument"]]
 
     #log.info (f"TA_result {TA_result}")
-    #log.info (f"TA_result_data {TA_result_data}")
+    log.debug (f"TA_result_data {TA_result_data}")
     #log.info (f"currency.lower() {currency_lower}")
     
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
