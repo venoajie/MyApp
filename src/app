@@ -370,6 +370,8 @@ class StreamAccountData:
                             data_orders: list = message["params"]["data"]
 
                             instrument_ticker = (message_channel)[19:]
+                            log.error (f"instrument_ticker {instrument_ticker}")       
+                            log.warning (f"message_channel {message_channel}")       
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
@@ -415,7 +417,8 @@ class StreamAccountData:
                                                                 DATABASE
                                                                 )
 
-                            instrument_ticker = (message_channel)[19:]                            
+                            instrument_ticker = (message_channel)[19:]         
+                            log.error (f"instrument_ticker {instrument_ticker}")                   
                             if (
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
