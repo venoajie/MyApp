@@ -156,6 +156,7 @@ async def get_market_condition(instrument,
 ) -> dict:
     """ """
     currency_lower= extract_currency_from_text(instrument).lower()
+    currency_upper= extract_currency_from_text(instrument).upper()
     table_60 = f"ohlc60_{currency_lower}_perp_json"
     table_1 = f"ohlc1_{currency_lower}_perp_json"
     ohlc_60 = await cleaned_up_ohlc("close", table_60, 2)
@@ -186,7 +187,7 @@ async def get_market_condition(instrument,
     
     TA_result = await querying_table("market_analytics_json")
     
-    TA_result_data= [o for o in TA_result["list_data_only"] if currency_lower in o["instrument"]]
+    TA_result_data= [o for o in TA_result["list_data_only"] if currency_upper in o["instrument"]]
 
     #log.info (f"TA_result {TA_result}")
     log.debug (f"TA_result_data {TA_result_data}")
