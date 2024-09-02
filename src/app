@@ -358,6 +358,7 @@ class StreamAccountData:
                             continue
 
                     elif "method" in list(message):
+                        log.critical (list(message))
                         # Respond to Heartbeat Message
                         if message["method"] == "heartbeat":
                             await self.heartbeat_response()
