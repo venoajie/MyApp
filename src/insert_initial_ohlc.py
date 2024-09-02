@@ -18,7 +18,7 @@ from utilities.string_modification import (transform_nested_dict_to_list,
 from db_management import sqlite_management
 
 instrument_name: str = "BTC-PERPETUAL"
-currency: str = (extract_currency_from_text(instrument_name)).lower
+currency: str = (extract_currency_from_text(instrument_name)).lower()
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     import deribit_get
