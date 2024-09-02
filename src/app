@@ -471,11 +471,10 @@ class StreamAccountData:
                                             log.critical (f"{currency_lower} OPENING HEDGING-START-{instrument_ticker.upper()}")
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json")
-
-                                            log.info (f"TA_result_data {TA_result_data_all}")
                                             
                                             TA_result_data = [o for o in TA_result_data_all["list_data_only"] if currency_lower in o]
                                             
+                                            log.debug (TA_result_data_all["list_data_only"])
                                             log.info (f"TA_result_data {TA_result_data}")
                                                                                             
                                             strategy_label= hedging_spot_attributes()["strategy"]
