@@ -399,7 +399,7 @@ class StreamAccountData:
                             TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
-                            log.info (f" TABLE_OHLC1 {TABLE_OHLC1}")
+                            #log.info (f" TABLE_OHLC1 {TABLE_OHLC1}")
                             
                             if "chart.trades" in message_channel:
                                 

@@ -256,8 +256,12 @@ async def run_every_15_seconds() -> None:
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
-
-    await insert_market_condition_result(WINDOW, RATIO)
+    
+    
+    currencies=  entries_exits.preferred_spot_currencies()
+    
+    for currency in currencies:
+        await insert_market_condition_result(currency, WINDOW, RATIO)
 
 
 async def check_and_save_every_60_minutes():
