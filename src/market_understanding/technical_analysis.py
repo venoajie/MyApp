@@ -176,10 +176,12 @@ async def get_market_condition(currency,
     current_tick = ohlc_1_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
-    TA_result_data = TA_result["list_data_only"]
-    log.info (f"TA_result_data {TA_result_data}")
+    
     TA_result_data= [o for o in TA_result["list_data_only"] if currency.lower() in o]
 
+    log.info (f"TA_result_data {TA_result_data}")
+    log.info (f"currency.lower() {currency.lower()}")
+    
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
