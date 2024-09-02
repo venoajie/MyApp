@@ -508,7 +508,7 @@ class StreamAccountData:
                                                 delta_time= server_time-tick_TA
                                                 delta_time_seconds=delta_time/1000
                                                 
-                                                log.debug (f" delta_time_seconds {delta_time_seconds} {delta_time_seconds>120}")
+                                                log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds>120}")
                                                 
                                                 if delta_time_seconds < 120:#ensure freshness of ta
                                                                                                     
