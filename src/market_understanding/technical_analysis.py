@@ -181,7 +181,7 @@ async def get_market_condition(currency,
     # log.error(f'TA_result {TA_result_data}')
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
     log.error(f"last_tick {last_tick_from_prev_TA} current_tick {current_tick}")
-    log.error(f"last_tick_from_prev_TA == 0 or {last_tick_from_prev_TA == 0} current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA}")
+    log.error(f"last_tick_from_prev_TA == 0  {last_tick_from_prev_TA == 0} current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA}")
 
     if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
