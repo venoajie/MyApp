@@ -128,6 +128,7 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
 def get_last_tick_from_prev_TA(TA_result_data) -> int:
     """ """
+    
     return 0 if TA_result_data == [] else max([o["tick"] for o in TA_result_data])
 
 
@@ -177,8 +178,9 @@ async def get_market_condition(currency,
     current_tick = ohlc_1_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")
-    TA_result_data = TA_result["list_data_only"]
-    # log.error(f'TA_result {TA_result_data}')
+    #TA_result_data = TA_result["list_data_only"]
+    TA_result_data= [o for o in TA_result["list_data_only"] if currency.lower in o]
+    log.error(f'TA_result {TA_result_data}')
     last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
     log.error(f"last_tick {last_tick_from_prev_TA} current_tick {current_tick}")
     log.error(f"last_tick_from_prev_TA == 0  {last_tick_from_prev_TA == 0} current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA}")
