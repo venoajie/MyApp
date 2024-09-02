@@ -171,9 +171,9 @@ async def get_market_condition(currency,
 
     print(f"{currency_lower}-ohlc_1_fluctuation_exceed_threshold {ohlc_fluctuation_exceed_threshold}")
     result.update(
-        {"{currency_lower}-1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
+        {f"{currency_lower}-1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
     )
-    result.update({"{currency_lower}-1m_current_higher_open": last_price > ohlc_open_price})
+    result.update({f"{currency_lower}-1m_current_higher_open": last_price > ohlc_open_price})
     current_tick = ohlc_1_high_9["tick"]
 
     TA_result = await querying_table("market_analytics_json")

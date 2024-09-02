@@ -110,15 +110,16 @@ def is_cancelling_order_allowed(
     return cancel_allowed
 
 
-async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
+async def get_market_condition_hedging(currency,TA_result_data, index_price, threshold) -> dict:
     """ """
+    currency_lower=currency.lower()
     neutral_price, rising_price, falling_price = False, False, False
     strong_rising_price, strong_falling_price = False, False
     print (f"TA_result_data {TA_result_data}")
 
-    open_60 = TA_result_data["60_open"]
-    current_higher_open = TA_result_data["1m_current_higher_open"]
-    fluctuation_exceed_threshold = TA_result_data["1m_fluctuation_exceed_threshold"]
+    open_60 = TA_result_data[f"{currency_lower}-60_open"]
+    current_higher_open = TA_result_data[f"{currency_lower}-1m_current_higher_open"]
+    fluctuation_exceed_threshold = TA_result_data[f"{{currency_lower}}-1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
 
@@ -186,7 +187,7 @@ class HedgingSpot(BasicStrategy):
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
-        market_condition = await get_market_condition_hedging(
+        market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
         #print(TA_result_data)
