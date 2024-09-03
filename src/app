@@ -402,10 +402,6 @@ class StreamAccountData:
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                 
-                                
-                                #log.info (f" instrument_ticker {instrument_ticker}")
-                                #log.info (f" data_orders {data_orders}")
-                                
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                  instrument_ticker,
                                                                 data_orders,
@@ -476,11 +472,7 @@ class StreamAccountData:
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
                                             
                                             TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
-                                            
-                                            #log.debug (TA_result_data)
-
-                                            #log.info (f"currency {currency}")
-                                                                                            
+                                                                                                        
                                             strategy_label= hedging_spot_attributes()["strategy"]
                 
                                             try:
@@ -532,9 +524,9 @@ class StreamAccountData:
                                                     )
                                                 )
                                                     
-                                                    log.debug(f"if_order_is_true {send_order} {instrument} ")
+                                                    log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
                                                     
-                                                    await if_order_is_true(send_order, instrument)
+                                                    await if_order_is_true(send_order, instrument_ticker)
                                                     await if_cancel_is_true(send_order)
                                                 
                                             log.critical (f"OPENING HEDGING-DONE")
