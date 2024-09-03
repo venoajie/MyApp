@@ -544,10 +544,11 @@ class StreamAccountData:
                                                             log.warning (f"instrument {instrument}")
                 
                                                             my_trades_open_hedging = [o for o in my_trades_open if "hedgingSpot" in (o["label"])]
+                                                            best_bid_prc: float = ticker[0]["best_bid_price"]
                                                             get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
                                                             closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
                                                             nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
-                                                            best_bid_prc: float = ticker[0]["best_bid_price"]
+                                                            
                                                             send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                                                                 TA_result_data,
                                                                 index_price,
