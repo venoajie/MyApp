@@ -534,6 +534,7 @@ class StreamAccountData:
                                                     
                                                     
                                                     transactions_all: list = await querying_table("my_trades_all_json")
+                                                    log.error (f"transactions_all {transactions_all}")
                                                     transactions_all_data: list = [o["data"] for o in transactions_all]
                                                     
                                                     
