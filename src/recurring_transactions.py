@@ -16,9 +16,14 @@ from loguru import logger as log
 from strategies import entries_exits
 from utilities.pickling import replace_data
 
-from utilities.string_modification import remove_redundant_elements, parsing_label,get_duplicated_elements
-from utilities.system_tools import catch_error_message, provide_path_for_file
-from deribit_get import get_instruments, get_currencies, get_server_time
+from utilities.string_modification import (remove_redundant_elements, 
+                                           parsing_label,
+                                           get_duplicated_elements)
+from utilities.system_tools import (catch_error_message, 
+                                    provide_path_for_file)
+from deribit_get import (get_instruments, 
+                         get_currencies, 
+                         get_server_time)
 from db_management.sqlite_management import (
     querying_table,
     executing_closed_transactions,
@@ -151,7 +156,7 @@ async def run_every_5_seconds() -> None:
 
         # fetch positions for all instruments
         positions_all: list = reading_from_database["positions_from_sub_account"]
-        #print(f"positions_all-recurring {positions_all} ")
+        log.info(f"positions_all-recurring {positions_all} ")
         size_from_positions: int = (
             0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
         )
@@ -180,9 +185,31 @@ async def run_every_5_seconds() -> None:
             trades_from_sqlite_closed = await executing_closed_transactions()
             trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
             active_instruments_name= get_duplicated_elements([ o["instrument_name"] for o in trades_from_exchange])
-            log.warning (f"instrument_name {active_instruments_name}")
+
             for instrument in active_instruments_name:
                 log.warning (f"instrument {instrument}")
+                
+                trades_from_exchange_instrument= ([ o for o in trades_from_exchange if o["instrument_name"]==instrument])
+                log.warning (f"trades_from_exchange_instrument {trades_from_exchange_instrument}")
+                    
+                sum_my_trades_from_exchange_instrument = sum([o["amount"] for o in trades_from_exchange_instrument])
+                log.debug (f"sum_my_trades_from_exchange_instrument {sum_my_trades_from_exchange_instrument}")
+                total_difference_and_solution_is_zero = abs(
+                    sum_my_trades_from_exchange_instrument - size_from_positions
+                )
+
+                size_is_consistent: bool = await is_size_consistent(
+                    sum_my_trades_sqlite, size_from_positions
+                )
+
+                
+                await balancing_the_imbalance(
+                trades_from_exchange_instrument,
+                unrecorded_order_id,
+                sum_my_trades_sqlite,
+                size_from_positions,
+            )
+
 
             unrecorded_order_id = await get_unrecorded_order_id(
                 trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
@@ -197,13 +224,6 @@ async def run_every_5_seconds() -> None:
             sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
             total_difference_and_solution_is_zero = abs(
                 sum_my_trades_sqlite - size_from_positions
-            )
-
-            await balancing_the_imbalance(
-                trades_from_exchange,
-                unrecorded_order_id,
-                sum_my_trades_sqlite,
-                size_from_positions,
             )
 
             size_is_consistent: bool = await is_size_consistent(
