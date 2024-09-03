@@ -179,7 +179,10 @@ async def run_every_5_seconds() -> None:
             trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
             trades_from_sqlite_closed = await executing_closed_transactions()
             trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-            log.warning (f"trades_from_exchange {trades_from_exchange}")
+            active_instruments_name= [ o["instrument_name"] for o in trades_from_exchange]
+            log.warning (f"instrument_name {active_instruments_name}")
+            for instrument in active_instruments_name:
+                log.warning (f"instrument {instrument}")
 
             unrecorded_order_id = await get_unrecorded_order_id(
                 trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
