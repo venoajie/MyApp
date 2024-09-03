@@ -489,7 +489,6 @@ class StreamAccountData:
                                             except:
                                                 index_price= None
                                                 
-                                                
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
                                                                                 
@@ -498,54 +497,45 @@ class StreamAccountData:
                                                                                             
                                             # obtain spot equity
                                             equity: float = portfolio[0]["equity"]
+                                            
+                                            ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                 
-                                            if index_price is not None and equity >0:
+                                            if ticker !=[] and index_price is not None and equity >0:
                                             
                                                 tick_TA=  max([o["tick"] for o in TA_result_data])
                                                 
                                                 server_time=     get_now_unix_time()  
                                                 
                                                 delta_time= server_time-tick_TA
-                                                delta_time_seconds=delta_time/1000
+                                                
+                                                delta_time_seconds=delta_time/1000                                                
                                                 
                                                 log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
                                                 
                                                 if delta_time_seconds < 120:#ensure freshness of ta
-                                                                                                    
+                                                    
                                                     notional: float = compute_notional_value(index_price, equity)
-                                                                                                    
-                                                    ticker: list = reading_from_db("ticker", instrument_ticker)
-                                                                                                    
-                                                    try:
-                                                        if ticker !=[]:
-                                                                
-                                                            best_ask_prc: float = ticker[0]["best_ask_price"]
-                                                            log.debug (f" best_ask_prc {best_ask_prc}")
+                                                        
+                                                    best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
                                                     
-                                                            
-                                                            hedging = hedging_spot.HedgingSpot(strategy_label)
-                                                            
-                                                            send_order: dict = (
-                                                            await hedging.is_send_and_cancel_open_order_allowed(
-                                                                currency,
-                                                                instrument_ticker,
-                                                                notional,
-                                                                index_price,
-                                                                best_ask_prc,
-                                                                server_time,
-                                                                TA_result_data
-                                                            )
-                                                        )
-                                                            
-                                                            log.debug(f"if_order_is_true {send_order} {instrument} ")
-                                                            
-                                                            await if_order_is_true(send_order, instrument)
-                                                            await if_cancel_is_true(send_order)
+                                                    hedging = hedging_spot.HedgingSpot(strategy_label)
                                                     
-                                                    except error as e:
-                                                        log.debug(f"error {e} ")
-                                                        continue
-  
+                                                    send_order: dict = (
+                                                    await hedging.is_send_and_cancel_open_order_allowed(
+                                                        currency,
+                                                        instrument_ticker,
+                                                        notional,
+                                                        index_price,
+                                                        best_ask_prc,
+                                                        server_time,
+                                                        TA_result_data
+                                                    )
+                                                )
+                                                    
+                                                    log.debug(f"if_order_is_true {send_order} {instrument} ")
+                                                    
+                                                    await if_order_is_true(send_order, instrument)
+                                                    await if_cancel_is_true(send_order)
                                                 
                                             log.critical (f"OPENING HEDGING-DONE")
                                             
