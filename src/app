@@ -368,8 +368,8 @@ class StreamAccountData:
                             message_channel = message["params"]["channel"]
 
                             data_orders: list = message["params"]["data"]       
-                            log.warning (f"message_channel {message_channel}")       
-                            log.warning (f"data_orders {data_orders}")       
+                            #log.warning (f"message_channel {message_channel}")       
+                            #log.warning (f"data_orders {data_orders}")       
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
@@ -403,7 +403,7 @@ class StreamAccountData:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                 
                                 
-                                log.info (f" instrument_ticker {instrument_ticker}")
+                                #log.info (f" instrument_ticker {instrument_ticker}")
                                 #log.info (f" data_orders {data_orders}")
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
