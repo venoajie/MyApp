@@ -156,14 +156,14 @@ async def run_every_5_seconds() -> None:
 
         # fetch positions for all instruments
         positions_all: list = reading_from_database["positions_from_sub_account"]
-        log.info(f"positions_all-recurring {positions_all} ")
+        #log.info(f"positions_all-recurring {positions_all} ")
         size_from_positions: int = (
             0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
         )
         
         equity= portfolio[0]["equity"]
         log.critical (f" currency {currency}")
-        log.warning (f" portfolio {portfolio} equity {equity >0}")
+        #log.warning (f" portfolio {portfolio} equity {equity >0}")
 
         #log.warning (f" positions_all {positions_all}")
         
@@ -203,7 +203,7 @@ async def run_every_5_seconds() -> None:
                     trades_from_sqlite_open, trades_from_sqlite_closed, balancing_trades
                 )
                 
-                log.debug (f"size_is_consistent {size_is_consistent} size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
+                #log.debug (f"size_is_consistent {size_is_consistent} size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
 
                 
                 if size_is_consistent:
