@@ -730,10 +730,10 @@ def querying_trade_table_basics(
     filter_value: str = None,
 ) -> str:
 
-    if filter == None:
-        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
+    if filter is None:
+        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
     else:
-        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
+        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
 
     return selected_data
 
