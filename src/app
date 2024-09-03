@@ -400,7 +400,8 @@ class StreamAccountData:
                             DATABASE: str = "databases/trading.sqlite3"
                                                         
                             if "chart.trades" in message_channel:
-                                instrument_ticker = (message_channel)[13:]
+                                instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
+                                
                                 
                                 log.info (f" instrument_ticker {instrument_ticker}")
                                 #log.info (f" data_orders {data_orders}")
