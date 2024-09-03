@@ -135,7 +135,7 @@ async def run_every_3_seconds() -> None:
 async def run_every_5_seconds() -> None:
     """ """
 
-    QTY = 10
+    QTY = 20
     ONE_PCT = 1 / 100
     TAKE_PROFIT_PCT_DAILY = ONE_PCT * 1
     
@@ -179,6 +179,7 @@ async def run_every_5_seconds() -> None:
             trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
             trades_from_sqlite_closed = await executing_closed_transactions()
             trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+            log.warning (f"trades_from_exchange {trades_from_exchange}")
 
             unrecorded_order_id = await get_unrecorded_order_id(
                 trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
