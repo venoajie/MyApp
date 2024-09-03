@@ -414,8 +414,10 @@ class StreamAccountData:
                                                                 DATABASE
                                                                 )
 
+                            instrument_ticker = (message_channel)   
+                            log.warning (f"instrument_ticker {instrument_ticker}")                   
                             instrument_ticker = (message_channel)[19:]         
-                            #log.error (f"instrument_ticker {instrument_ticker}")                   
+                            log.error (f"instrument_ticker {instrument_ticker}")                   
                             if (
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
