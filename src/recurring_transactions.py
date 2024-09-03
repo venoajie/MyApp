@@ -316,7 +316,7 @@ if __name__ == "__main__":
 
         schedule.every(15).seconds.do(run_every_15_seconds)
         #schedule.every(3).seconds.do(run_every_3_seconds)
-        #schedule.every(5).seconds.do(run_every_5_seconds)
+        schedule.every(5).seconds.do(run_every_5_seconds)
         #schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
