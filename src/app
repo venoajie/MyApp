@@ -539,12 +539,13 @@ class StreamAccountData:
 
                                                     if my_trades_open_hedging !=[]:
                                                     
-                                                        log.critical (f"CLOSING HEDGING-START {instrument}")
+                                                        log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
                                                                     
                                                         best_bid_prc: float = ticker[0]["best_bid_price"]
                                                         get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
                                                         closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
                                                         nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
+                                                        log.error (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                         
                                                         send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                                                             TA_result_data,
@@ -553,7 +554,7 @@ class StreamAccountData:
                                                             best_bid_prc,
                                                             nearest_transaction_to_index,
                                                         )
-                                                        #await if_order_is_true(send_closing_order, instrument)
+                                                        await if_order_is_true(send_closing_order, instrument)
 
                                                     log.critical (f"CLOSING HEDGING-DONE")
                                                     
