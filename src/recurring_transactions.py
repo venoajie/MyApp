@@ -189,11 +189,11 @@ async def run_every_5_seconds() -> None:
             for instrument in active_instruments_name:
                 log.warning (f"instrument {instrument}")
                 
-                trades_from_exchange_instrument= ([ o for o in trades_from_exchange if o["instrument_name"]==instrument])
+                trades_from_exchange_instrument= ([ o for o in trades_from_sqlite_open if o["instrument_name"]==instrument])
                 size_from_position: int = (
             0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument])
         )                    
-                log.warning (f"trades_from_exchange_instrument {trades_from_exchange_instrument}")
+                log.warning (f"trades_from_sqlite_open {trades_from_sqlite_open}")
                 size_from_my_trades = sum([o["amount"] for o in trades_from_exchange_instrument])
                 log.debug (f"size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
          
