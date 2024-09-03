@@ -517,29 +517,30 @@ class StreamAccountData:
                                                     ticker: list = reading_from_db("ticker", instrument_ticker)
                                                                                                     
                                                     try:
-                                                        log.debug (f" ticker {ticker}")
-                                                        best_ask_prc: float = ticker[0]["best_ask_price"]
-                                                        log.debug (f" best_ask_prc {best_ask_prc}")
-                                                
-                                                        
-                                                        hedging = hedging_spot.HedgingSpot(strategy_label)
-                                                        
-                                                        send_order: dict = (
-                                                        await hedging.is_send_and_cancel_open_order_allowed(
-                                                            currency,
-                                                            instrument_ticker,
-                                                            notional,
-                                                            index_price,
-                                                            best_ask_prc,
-                                                            server_time,
-                                                            TA_result_data
+                                                        if ticker !=[]:
+                                                                
+                                                            best_ask_prc: float = ticker[0]["best_ask_price"]
+                                                            log.debug (f" best_ask_prc {best_ask_prc}")
+                                                    
+                                                            
+                                                            hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                            
+                                                            send_order: dict = (
+                                                            await hedging.is_send_and_cancel_open_order_allowed(
+                                                                currency,
+                                                                instrument_ticker,
+                                                                notional,
+                                                                index_price,
+                                                                best_ask_prc,
+                                                                server_time,
+                                                                TA_result_data
+                                                            )
                                                         )
-                                                    )
-                                                        
-                                                        log.debug(f"if_order_is_true {send_order} {instrument} ")
-                                                        
-                                                        await if_order_is_true(send_order, instrument)
-                                                        await if_cancel_is_true(send_order)
+                                                            
+                                                            log.debug(f"if_order_is_true {send_order} {instrument} ")
+                                                            
+                                                            await if_order_is_true(send_order, instrument)
+                                                            await if_cancel_is_true(send_order)
                                                     
                                                     except error as e:
                                                         log.debug(f"error {e} ")
