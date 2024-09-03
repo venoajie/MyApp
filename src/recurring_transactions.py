@@ -190,17 +190,22 @@ async def run_every_5_seconds() -> None:
                 log.warning (f"instrument {instrument}")
                 
                 trades_from_exchange_instrument= ([ o for o in trades_from_exchange if o["instrument_name"]==instrument])
+                size_from_instrument_position: int = (
+            0 if positions_all == [] else sum([o["size"] for o in positions_all if ["instrument_name"]==instrument])
+        )
+                log.warning (f"size_from_instrument_position {size_from_instrument_position}")
                 log.warning (f"trades_from_exchange_instrument {trades_from_exchange_instrument}")
                     
                 sum_my_trades_from_exchange_instrument = sum([o["amount"] for o in trades_from_exchange_instrument])
                 log.debug (f"sum_my_trades_from_exchange_instrument {sum_my_trades_from_exchange_instrument}")
                 total_difference_and_solution_is_zero = abs(
-                    sum_my_trades_from_exchange_instrument - size_from_positions
+                    sum_my_trades_from_exchange_instrument - size_from_instrument_position
                 )
 
                 size_is_consistent: bool = await is_size_consistent(
-                    sum_my_trades_sqlite, size_from_positions
+                    sum_my_trades_from_exchange_instrument, size_from_instrument_position
                 )
+                log.debug (f"size_is_consistent {size_is_consistent}")
 
                 
                 await balancing_the_imbalance(
