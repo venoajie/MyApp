@@ -13,6 +13,8 @@ import orjson
 from loguru import logger as log
 
 # user defined formula
+
+from utilities.number_modification import get_closest_value
 from utilities.pickling import (
     replace_data,
     read_data)
@@ -525,11 +527,41 @@ class StreamAccountData:
                                                 )
                                                     
                                                     log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
+                                                    log.critical (f"OPENING HEDGING-DONE")    
                                                     
                                                     await if_order_is_true(send_order, instrument_ticker)
                                                     await if_cancel_is_true(send_order)
+                                                    
+                                                    transactions_all_summarized: list = await querying_label_and_size(
+            "my_trades_all_json"
+        )
+                                                    my_trades_open = [
+                    o for o in transactions_all_summarized if "open" in (o["label"])
+                ]
+                                                    my_trades_open_strategy = [
+                    o for o in my_trades_open if strategy_label in (o["label"])
+                ]
+                                                    get_prices_in_label_transaction_main = [
+                o["price"] for o in my_trades_open_strategy
+            ]
+                                                    closest_price = get_closest_value(
+                            get_prices_in_label_transaction_main, best_bid_prc
+                        )
+                                                    nearest_transaction_to_index = [
+                                                        o
+                                                        for o in my_trades_open_strategy
+                                                        if o["price"] == closest_price
+                                                    ]
+                                                    best_bid_prc: float = ticker[0]["best_bid_price"]
+                                                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                                                        TA_result_data,
+                                                        index_price,
+                                                        best_ask_prc,
+                                                        best_bid_prc,
+                                                        nearest_transaction_to_index,
+                                                    )
+                                                    await if_order_is_true(send_closing_order, instrument)
                                                 
-                                            log.critical (f"OPENING HEDGING-DONE")
                                             
                                         except error as e:
                                             log.info(f" error {e}")
