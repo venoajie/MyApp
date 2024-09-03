@@ -554,7 +554,7 @@ class StreamAccountData:
                                                             best_bid_prc,
                                                             nearest_transaction_to_index,
                                                         )
-                                                        await if_order_is_true(send_closing_order, instrument)
+                                                        await if_order_is_true(send_closing_order, instrument_ticker)
 
                                                     log.critical (f"CLOSING HEDGING-DONE")
                                                     
