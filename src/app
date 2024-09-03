@@ -533,7 +533,7 @@ class StreamAccountData:
                                                     await if_cancel_is_true(send_order)
                                                     
                                                     
-                                                    transactions_all: list = await querying_label_and_size("my_trades_all_json")
+                                                    transactions_all: list = await querying_table("my_trades_all_json")
                                                     
                                                     my_trades_open_hedging = [o for o in transactions_all if "open" in (o["label"])\
                                                         and "hedgingSpot" in (o["label"]) and  o["instrument_name"]==instrument_ticker]

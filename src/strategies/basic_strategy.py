@@ -319,7 +319,12 @@ def get_transaction_side(transaction: dict) -> str:
         side = transaction["direction"]
 
     except:
-        side = transaction["side"]
+        try:
+            
+            side = transaction["side"]
+
+        except:
+            side = "sell" if transaction["amount"]< 0 else "buy"
 
     return side
 
