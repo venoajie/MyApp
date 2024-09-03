@@ -207,6 +207,14 @@ async def run_every_5_seconds() -> None:
                 log.debug (f"size_is_consistent {size_is_consistent}")
 
                 
+                await balancing_the_imbalance(
+                trades_from_exchange_instrument,
+                unrecorded_order_id,
+                size_from_my_trades,
+                size_from_position,
+            )
+
+
 
             await clean_up_closed_transactions()
 
@@ -223,27 +231,11 @@ async def run_every_5_seconds() -> None:
                 sum_my_trades_sqlite, size_from_positions
             )
 
-            if size_is_consistent:
+                #await clean_up_duplicate_elements()
+                #trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+                #await balancing_the_imbalance(trades_from_exchange)
 
-                for instrument in instrument_transactions:
-                    await opening_transactions(
-                        currency,
-                        instrument,
-                        portfolio,
-                        strategies,
-                        my_trades_open_sqlite,
-                        size_from_positions,
-                        server_time,
-                        market_condition,
-                        TAKE_PROFIT_PCT_DAILY,
-                    )
-
-            else:
-                await clean_up_duplicate_elements()
-                trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-                await balancing_the_imbalance(trades_from_exchange)
-
-            await clean_up_closed_transactions()
+            #await clean_up_closed_transactions()
 
             # print (f"stop_time {stop_time} datetime.datetime.now() {datetime.datetime.now()} {datetime.datetime.now() > stop_time}")
 
