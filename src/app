@@ -531,16 +531,11 @@ class StreamAccountData:
                                                     
                                                     await if_order_is_true(send_order, instrument_ticker)
                                                     await if_cancel_is_true(send_order)
-                                                    
-                                                    
+                                                                                               
                                                     transactions_all: list = await querying_table("my_trades_all_json")
-                                                    
-                                                    
-                                                    log.error (f"""transactions_all_data {transactions_all["list_data_only"]}""")
                                                     
                                                     my_trades_open_hedging = [o for o in transactions_all["list_data_only"] if "open" in (o["label"])\
                                                         and "hedgingSpot" in (o["label"]) and  o["instrument_name"]==instrument_ticker]
-                                                    log.warning (f"my_trades_open_hedging {my_trades_open_hedging}")
 
                                                     if my_trades_open_hedging !=[]:
                                                     
