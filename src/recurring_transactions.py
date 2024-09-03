@@ -184,7 +184,7 @@ async def run_every_5_seconds() -> None:
             trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
             trades_from_sqlite_closed = await executing_closed_transactions()
             balancing_trades = await get_my_trades_from_exchange(QTY, currency)
-            active_instruments_name= get_duplicated_elements([ o["instrument_name"] for o in trades_from_exchange])
+            active_instruments_name= get_duplicated_elements([ o["instrument_name"] for o in trades_from_sqlite_open])
 
             for instrument in active_instruments_name:
                 log.warning (f"instrument {instrument}")
