@@ -16,7 +16,7 @@ from loguru import logger as log
 from strategies import entries_exits
 from utilities.pickling import replace_data
 
-from utilities.string_modification import remove_redundant_elements, parsing_label
+from utilities.string_modification import remove_redundant_elements, parsing_label,get_duplicated_elements
 from utilities.system_tools import catch_error_message, provide_path_for_file
 from deribit_get import get_instruments, get_currencies, get_server_time
 from db_management.sqlite_management import (
@@ -179,7 +179,7 @@ async def run_every_5_seconds() -> None:
             trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
             trades_from_sqlite_closed = await executing_closed_transactions()
             trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-            active_instruments_name= [ o["instrument_name"] for o in trades_from_exchange]
+            active_instruments_name= get_duplicated_elements([ o["instrument_name"] for o in trades_from_exchange])
             log.warning (f"instrument_name {active_instruments_name}")
             for instrument in active_instruments_name:
                 log.warning (f"instrument {instrument}")
