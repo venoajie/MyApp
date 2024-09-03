@@ -534,13 +534,11 @@ class StreamAccountData:
                                                     
                                                     
                                                     transactions_all: list = await querying_table("my_trades_all_json")
-                                                    log.error (f"transactions_all {transactions_all}")
-                                                    transactions_all_data: list = [o["data"] for o in transactions_all]
                                                     
                                                     
-                                                    log.error (f"transactions_all_data {transactions_all_data}")
+                                                    log.error (f"""transactions_all_data {transactions_all["list_data_only"]}""")
                                                     
-                                                    my_trades_open_hedging = [o for o in transactions_all if "open" in (o["label"])\
+                                                    my_trades_open_hedging = [o for o in transactions_all["list_data_only"] if "open" in (o["label"])\
                                                         and "hedgingSpot" in (o["label"]) and  o["instrument_name"]==instrument_ticker]
                                                     log.warning (f"my_trades_open_hedging {my_trades_open_hedging}")
 
