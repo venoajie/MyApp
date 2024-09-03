@@ -183,7 +183,7 @@ async def run_every_5_seconds() -> None:
 
             trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
             trades_from_sqlite_closed = await executing_closed_transactions()
-            trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
+            balancing_trades = await get_my_trades_from_exchange(QTY, currency)
             active_instruments_name= get_duplicated_elements([ o["instrument_name"] for o in trades_from_exchange])
 
             for instrument in active_instruments_name:
@@ -193,22 +193,21 @@ async def run_every_5_seconds() -> None:
                 size_from_position: int = (
             0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument])
         )                    
-                log.warning (f"trades_from_sqlite_open {trades_from_sqlite_open}")
                 size_from_my_trades = sum([o["amount"] for o in trades_from_exchange_instrument])
-                log.debug (f"size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
          
                 size_is_consistent: bool = await is_size_consistent(
                     size_from_my_trades, size_from_position
                 )
 
                 unrecorded_order_id = await get_unrecorded_order_id(
-                    trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
+                    trades_from_sqlite_open, trades_from_sqlite_closed, balancing_trades
                 )
                 
-                log.debug (f"size_is_consistent {size_is_consistent}")
+                log.debug (f"size_is_consistent {size_is_consistent} size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
 
                 
-                await balancing_the_imbalance(
+                if size_is_consistent:
+                    await balancing_the_imbalance(
                 trades_from_exchange_instrument,
                 unrecorded_order_id,
                 size_from_my_trades,
