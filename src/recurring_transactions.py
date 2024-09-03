@@ -199,20 +199,14 @@ async def run_every_5_seconds() -> None:
                 size_is_consistent: bool = await is_size_consistent(
                     size_from_my_trades, size_from_position
                 )
+
+                unrecorded_order_id = await get_unrecorded_order_id(
+                    trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
+                )
+                
                 log.debug (f"size_is_consistent {size_is_consistent}")
 
                 
-                await balancing_the_imbalance(
-                trades_from_exchange_instrument,
-                unrecorded_order_id,
-                size_from_my_trades,
-                size_from_position,
-            )
-
-
-            unrecorded_order_id = await get_unrecorded_order_id(
-                trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
-            )
 
             await clean_up_closed_transactions()
 
