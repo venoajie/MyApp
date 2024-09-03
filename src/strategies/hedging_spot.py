@@ -214,9 +214,9 @@ class HedgingSpot(BasicStrategy):
         )
         my_trades_currency_strategy= [o for o in my_trades["result_all"] if currency.upper() in o["order_id"] and self.strategy_label in o["label"]]
 
-        #print(
-        #    f"my_trades {currency} {my_trades_currency_strategy}"
-        #)
+        print(
+            f"my_trades {currency} {my_trades_currency_strategy}"
+        )
         
         print(
             f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
