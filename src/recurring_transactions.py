@@ -193,8 +193,9 @@ async def run_every_5_seconds() -> None:
                 size_from_instrument_position: int = (
             0 if positions_all == [] else sum([o["size"] for o in positions_all if ["instrument_name"]==instrument])
         )
+                log.debug (f"positions_all {positions_all}")
                 log.warning (f"size_from_instrument_position {size_from_instrument_position}")
-                log.warning (f"trades_from_exchange_instrument {trades_from_exchange_instrument}")
+                #log.warning (f"trades_from_exchange_instrument {trades_from_exchange_instrument}")
                     
                 sum_my_trades_from_exchange_instrument = sum([o["amount"] for o in trades_from_exchange_instrument])
                 log.debug (f"sum_my_trades_from_exchange_instrument {sum_my_trades_from_exchange_instrument}")
