@@ -617,7 +617,7 @@ async def closing_transactions(
                     best_bid_prc: float = ticker[0]["best_bid_price"]
                     best_ask_prc: float = ticker[0]["best_ask_price"]
 
-                    if "hedgingSpot" in strategy_attr["strategy"]:
+                    if False and "hedgingSpot" in strategy_attr["strategy"]:
 
                         closest_price = get_closest_value(
                             get_prices_in_label_transaction_main, best_bid_prc
