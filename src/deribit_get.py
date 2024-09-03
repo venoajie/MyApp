@@ -457,6 +457,9 @@ class GetPrivateData:
 
         order_result = None
 
+        log.info(
+            f"""params {params}"""
+        )
         if side != None:
             order_result = await self.send_order(
                 side,
