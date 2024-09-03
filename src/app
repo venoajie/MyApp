@@ -368,7 +368,8 @@ class StreamAccountData:
                             message_channel = message["params"]["channel"]
 
                             data_orders: list = message["params"]["data"]       
-                            #log.warning (f"message_channel {message_channel}")       
+                            log.warning (f"message_channel {message_channel}")       
+                            log.warning (f"data_orders {data_orders}")       
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
