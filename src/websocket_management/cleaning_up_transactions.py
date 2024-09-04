@@ -26,7 +26,7 @@ from strategies.basic_strategy import (
     querying_label_and_size,
     get_order_label,
 )
-from strategies.entries_exits import max_rows
+from strategies.config_strategies import max_rows
 
 async def get_unrecorded_order_id(
     from_sqlite_open, from_sqlite_closed, from_exchange

@@ -273,7 +273,7 @@ def get_transactions_sum(result_strategy_label) -> int:
 
 
 def get_settlement_period () -> list:
-    from strategies.entries_exits import hedging_spot_attributes, strategies
+    from strategies.config_strategies import hedging_spot_attributes, strategies
     
     return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in (strategies+hedging_spot_attributes())])))
 
@@ -532,9 +532,9 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
 
 def get_strategy_config_all() -> list:
     """ """
-    from strategies import entries_exits
+    from strategies import config_strategies
 
-    return entries_exits.strategies
+    return config_strategies.strategies
 
 
 def positions_and_orders(net_current_trading_position: int, current_orders: int) -> int:

@@ -13,7 +13,7 @@ import aiohttp
 from loguru import logger as log
 
 # user defined formula
-from strategies.entries_exits import (strategies, preferred_spot_currencies) 
+from strategies.config_strategies import (strategies, preferred_spot_currencies) 
 from utilities.pickling import replace_data
 
 from utilities.string_modification import (remove_redundant_elements, 
