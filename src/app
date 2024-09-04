@@ -471,6 +471,7 @@ class StreamAccountData:
                                             log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json")
+                                            log.warning (TA_result_data_all)
                                             log.warning (f"A")
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
                                             log.warning (f"A")
