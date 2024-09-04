@@ -30,10 +30,10 @@ def max_rows(table) -> int:
   
 def hedging_spot_attributes() -> list:
     """ """
-    hedging= {
+    hedging= [{
         "strategy": "hedgingSpot",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "sell",
@@ -52,7 +52,7 @@ def hedging_spot_attributes() -> list:
         "equity_risked_pct": (1 / 100),
         "cancellable": True,
         "delta_price_pct": .5/100
-    }
+    }]
 
     return hedging
   
@@ -60,7 +60,7 @@ strategies = [
     {
         "strategy": "hedgingSpot",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "sell",
@@ -83,7 +83,7 @@ strategies = [
     {
         "strategy": "futureSpreadShort",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "contribute_to_hedging": False,
         "time_frame": 900,
         "side": "buy",
@@ -103,7 +103,7 @@ strategies = [
     {
         "strategy": "futureSpreadLong",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL", "weekly"],
         "contribute_to_hedging": False,
         "time_frame": 900,
         "side": "buy",
@@ -123,7 +123,7 @@ strategies = [
     {
         "strategy": "customLong",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "buy",
@@ -143,7 +143,7 @@ strategies = [
     {
         "strategy": "customShort",
         "status": "active",
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "sell",
@@ -164,7 +164,7 @@ strategies = [
         "strategy": "marketMakerShort",
         "status": "active",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": None,
@@ -185,7 +185,7 @@ strategies = [
         "strategy": "marketMakerLong",
         "status": "active",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": None,
@@ -210,7 +210,7 @@ test = [
         "strategy": "basicGridShort",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": None,
@@ -229,7 +229,7 @@ test = [
         "strategy": "basicGridLong",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": None,
@@ -248,7 +248,7 @@ test = [
         "strategy": "every5mLong",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": None,
@@ -267,7 +267,7 @@ test = [
         "strategy": "every5mShort",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": None,
@@ -286,7 +286,7 @@ test = [
         "strategy": "every1hoursLong",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": None,
@@ -305,7 +305,7 @@ test = [
         "strategy": "every1hoursShort",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": None,
@@ -324,7 +324,7 @@ test = [
         "strategy": "every4hoursLong",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": None,
@@ -343,7 +343,7 @@ test = [
         "strategy": "every4hoursShort",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": None,
@@ -362,7 +362,7 @@ test = [
         "strategy": "supplyDemandShort60A",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "sell",
         "entry_price": 1880,
@@ -381,7 +381,7 @@ test = [
         "strategy": "supplyDemandLongB",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": 1860,
@@ -400,7 +400,7 @@ test = [
         "strategy": "supplyDemandLongD",
         "status": "inactive",
         "contribute_to_hedging": True,
-        "instrument": ["PERPETUAL"],
+        "settlement_period": ["PERPETUAL"],
         "time_frame": 3600,
         "side": "buy",
         "entry_price": 1872,

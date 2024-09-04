@@ -24,7 +24,7 @@ from utilities.system_tools import (
     catch_error_message)
 from utilities.string_modification import (
     parsing_label,remove_double_brackets_in_list,
-    extract_currency_from_text, get_duplicated_elements)
+    extract_currency_from_text, remove_redundant_elements)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
@@ -51,7 +51,7 @@ from strategies.basic_strategy import (
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
-from strategies.entries_exits import hedging_spot_attributes,preferred_spot_currencies
+from strategies.entries_exits import hedging_spot_attributes,preferred_spot_currencies,strategies
 from deribit_get import telegram_bot_sendtext, get_server_time
 from configuration.label_numbering import get_now_unix_time
 
@@ -103,6 +103,7 @@ def get_futures_for_active_currencies () -> list:
         instruments_holder_plc.append(instr)
 
     return remove_double_brackets_in_list(instruments_holder_plc)
+    
     
 def get_instruments_name () -> list:
 

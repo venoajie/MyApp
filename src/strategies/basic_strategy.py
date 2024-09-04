@@ -15,7 +15,7 @@ from db_management.sqlite_management import (
     querying_additional_params,
     querying_table,
 )
-from utilities.string_modification import parsing_label,extract_currency_from_text
+from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
 from loguru import logger as log
 from utilities.pickling import (
     read_data)
@@ -273,6 +273,12 @@ def get_transactions_sum(result_strategy_label) -> int:
     )
 
 
+def get_instruments_settlement_period () -> list:
+    from strategies.entries_exits import hedging_spot_attributes, strategies
+    
+    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in (strategies+hedging_spot_attributes())])))
+
+
 def get_instruments_kind(currency: str, kind: str= "all") -> list:
     """_summary_
 
@@ -298,6 +304,14 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
 
     instruments_raw = read_data(my_path_instruments)
     instruments = instruments_raw[0]["result"]
+    instruments_kind= instruments if kind =="all" else  [
+        o for o in instruments if o["kind"] == kind
+    ]
+    instrument_settlements= get_instruments_settlement_period()
+    
+    instruments_selected= [o for o in instruments_kind if o["settlement_period"] in instrument_settlements]
+    
+    log.error (f"instruments_selected {instruments_selected}")
 
     return instruments if kind =="all" else  [
         o for o in instruments if o["kind"] == kind
