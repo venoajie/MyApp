@@ -218,14 +218,11 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     log.info("count_and_delete_ohlc_rows-START")
-    tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json", "market_analytics_json"]
-    database: str = "databases/trading.sqlite3"
-    
-    
-
-    log.error(tables)
+    tables = ["market_analytics_json", "ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
+    database: str = "databases/trading.sqlite3"  
 
     for table in tables:
+        log.error(table)
         rows_threshold=10 if "market_analytics_json" in table else rows_threshold
 
         count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
@@ -235,18 +232,20 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
         if rows > rows_threshold:
 
             where_filter = f"tick"
+            log.error (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
             
             try:
                     
                 first_tick_query = querying_arithmetic_operator("tick", "MIN", table)
                 first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
+                print (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
                 first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
             except:
                     
                 first_tick_query = querying_arithmetic_operator("tick", None, table)
                 first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
-                print (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
+                log.warning (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
                 first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
             await deleting_row(table, database, where_filter, "=", first_tick)
