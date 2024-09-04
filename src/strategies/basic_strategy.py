@@ -309,7 +309,7 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     ]
     instrument_settlements= get_instruments_settlement_period()
     
-    log.error (f"instruments_kind {instruments_kind}")
+    log.error (f"instrument_settlements {instrument_settlements}")
     instruments_selected= [o for o in instruments_kind if o["settlement_period"] in instrument_settlements]
     
     log.error (f"instruments_selected {instruments_selected}")
