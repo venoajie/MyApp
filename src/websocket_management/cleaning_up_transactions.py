@@ -232,13 +232,13 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
         if rows > rows_threshold:
 
             where_filter = f"tick"
-            log.error (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
+            
             
             try:
                     
                 first_tick_query = querying_arithmetic_operator("tick", "MIN", table)
                 first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
-                print (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
+                log.error (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
                 first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
             except:
