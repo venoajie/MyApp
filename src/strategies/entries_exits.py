@@ -19,7 +19,7 @@ def preferred_spot_currencies() -> list:
 
     return ["BTC","ETH"]
 
-def max_rows(table) -> list:
+def max_rows(table) -> int:
     """ """
     match table:
         case "market_analytics_json":
