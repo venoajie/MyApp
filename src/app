@@ -509,14 +509,11 @@ class StreamAccountData:
                                                                                 
                                             # fetch positions for all instruments
                                             positions_all: list = reading_from_database["positions_from_sub_account"]
-                                            log.warning (f"positions_all {positions_all} {positions_all==[]} {currency} {instrument_ticker}")
-                                            log.warning ([o["size"] for o in positions_all])
-
+                                            log.warning (f"A")
                                             #log.info(f"positions_all-recurring {positions_all} ")
                                             size_from_position: int = (
-                                                0 if positions_all == [] else sum([o["size"] for o in positions_all if ["instrument_name"]==instrument_ticker])
+                                                0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_ticker])
                                             )
-                                            log.warning (f"positions_all {positions_all}")
                                             log.warning (f"A")
 
                                             size_is_consistent: bool = await is_size_consistent(
