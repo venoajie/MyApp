@@ -308,6 +308,8 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     instruments_kind= instruments if kind =="all" else  [
         o for o in instruments if o["kind"] == kind]
     
+    log.info (f"{instruments_kind}")
+    
     settlement_periods= get_settlement_period()
     log.warning ([o["settlement_period"] for o in instruments_kind])
 
