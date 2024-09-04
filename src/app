@@ -527,6 +527,7 @@ class StreamAccountData:
                                             log.warning (f"A")
                                             
                                             if not size_is_consistent:
+                                                log.critical (f"BALANCING-START")
                                                 await cancel_the_cancellables("open")
                                                 log.warning (f"A")
                                                 QTY=100
@@ -546,6 +547,7 @@ class StreamAccountData:
                                                 await reconciling_between_db_and_exchg_data(
                                                     my_trades_instrument, unrecorded_order_id
                                                     )
+                                                log.critical (f"BALANCING-DONE")
                                                 log.warning (f"A")
 
                                                                                             
