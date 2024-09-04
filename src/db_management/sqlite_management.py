@@ -669,12 +669,23 @@ def querying_arithmetic_operator(
 
 
 def querying_label_and_size(table) -> str:
-    tab = f"SELECT label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table}"
+    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table}"
 
     if "trade" in table:
         tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table}"
         if "closed" in table:
             tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table}"
+    return tab
+
+def querying_selected_columns_per_currency(table, filter) -> str:
+    where_clause= f"WHERE (instrument_name LIKE '%{filter}%')"
+    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
+
+    if "trade" in table:
+        
+        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table} {where_clause}"
+        if "closed" in table:
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause}"
     return tab
 
 
@@ -713,6 +724,23 @@ async def executing_label_and_size_query(table) -> dict:
 
     # get query
     query = querying_label_and_size(table)
+
+    # execute query
+    result = await executing_query_with_return(query)
+
+    # define none from queries result. If the result=None, return []
+    NONE_DATA: None = [0, None, []]
+
+    return [] if result in NONE_DATA else (result)
+
+async def executing_general_query_with_single_filter(table, filter) -> dict:
+    """
+    Provide execution template for querying summary of trading results from sqlite.
+    Consist of transaction label, size, and price only.
+    """
+
+    # get query
+    query = querying_selected_columns_per_currency(table, filter)
 
     # execute query
     result = await executing_query_with_return(query)
