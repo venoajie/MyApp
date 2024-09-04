@@ -22,13 +22,10 @@ def preferred_spot_currencies() -> list:
 
 def max_rows(table) -> int:
     """ """
-    match table:
-        case "market_analytics_json":
-            threshold= 10
-
-        case _:
-            threshold= 10000
-
+    if "market_analytics_json" in table:
+        threshold= 10
+    if "ohlc" in table:
+        threshold= 10000
     return threshold
   
 def hedging_spot_attributes() -> list:
