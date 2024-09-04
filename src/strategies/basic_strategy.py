@@ -445,7 +445,7 @@ async def provide_size_to_close_transaction(
         transaction, transactions_all
     )
 
-    return basic_size if (has_closed == 0) else abs(sum_transactions_under_label_main)
+    return abs(basic_size if (has_closed == 0) else (sum_transactions_under_label_main))
 
 
 async def get_additional_params_for_futureSpread_transactions(trade: list) -> None:

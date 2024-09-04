@@ -504,7 +504,7 @@ class StreamAccountData:
                                             portfolio: list = reading_from_database["portfolio"]
                                             log.warning (f"A")
                                             my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
-                                            log.error (f"transactions_all {my_trades_instrument}")
+
                                             log.warning (f"A")
                                             
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
