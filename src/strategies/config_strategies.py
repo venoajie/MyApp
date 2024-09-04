@@ -26,6 +26,8 @@ def max_rows(table) -> int:
         threshold= 10
     if "ohlc" in table:
         threshold= 10000
+    if "supporting_items_json" in table:
+        threshold= 200
     return threshold
   
 def hedging_spot_attributes() -> list:
