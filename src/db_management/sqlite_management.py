@@ -513,6 +513,7 @@ async def deleting_row(
     query_table_filter_none = f"DELETE FROM {table}"
 
     filter_val = (f"{filter_value}",)
+    log.error(f"query_table {query_table}")
 
     try:
         async with aiosqlite.connect(database, isolation_level=None) as db:
