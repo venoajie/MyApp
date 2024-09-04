@@ -101,15 +101,17 @@ async def reconciling_between_db_and_exchg_data(
 
             transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
             print(f"transaction {transaction} {order_id}")
+            
+            if transaction !=[]:
 
-            label = [
-                o["label"] for o in trades_from_exchange if o["order_id"] == order_id
-            ][0]
+                label = [
+                    o["label"] for o in trades_from_exchange if o["order_id"] == order_id
+                ][0]
 
-            if "open" in label:
-                await get_additional_params_for_open_label(transaction[0], label)
+                if "open" in label:
+                    await get_additional_params_for_open_label(transaction[0], label)
 
-            await insert_tables("my_trades_all_json", transaction)
+                await insert_tables("my_trades_all_json", transaction)
 
 
 def get_transactions_with_closed_label(transactions_all: list) -> list:
