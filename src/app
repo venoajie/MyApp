@@ -504,7 +504,7 @@ class StreamAccountData:
                                             my_trades_open_instrument = [o for o in transactions_all["list_data_only"] if  o["instrument_name"]==instrument_ticker]
                                             log.warning (f"A")
 
-                                            sum_my_trades_open_instrument = [o for o in my_trades_open_instrument]
+                                            sum_my_trades_open_instrument = [o["amount"] for o in my_trades_open_instrument]
                                             log.warning (f"A")
                                                                                 
                                             # fetch positions for all instruments
