@@ -163,74 +163,72 @@ async def get_market_condition(instrument,
 
     result = {}   
     ohlc_1_high_9 = await cleaned_up_ohlc("high", table_1, 10)
-    ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 10)
-    ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 10)
-    ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 4)
-
-    last_price = ohlc_1_high_9["last_price"]
-    ohlc_open_price = ohlc_1_open_3["ohlc_price"]
-
-    ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
-        ohlc_1_open_3["ohlc"], last_price, fluctuation_threshold
-    )
     current_tick = ohlc_1_high_9["tick"]
 
-    result.update({f"instrument": instrument})
+    if current_tick !=None:
+        ohlc_1_low_9 = await cleaned_up_ohlc("low", table_1, 10)
+        ohlc_1_close_9 = await cleaned_up_ohlc("close", table_1, 10)
+        ohlc_1_open_3 = await cleaned_up_ohlc("open", table_1, 4)
 
-    result.update({"tick": current_tick})
+        last_price = ohlc_1_high_9["last_price"]
+        ohlc_open_price = ohlc_1_open_3["ohlc_price"]
 
-    result.update(
-        {f"1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
-    )
-    
-    result.update({f"1m_current_higher_open": last_price > ohlc_open_price})
-    
-    TA_result = await querying_table("market_analytics_json")
-    
-    TA_result_data= [o for o in TA_result["list_data_only"] if currency_upper in o["instrument"]]
+        ohlc_fluctuation_exceed_threshold = is_ohlc_fluctuation_exceed_threshold(
+            ohlc_1_open_3["ohlc"], last_price, fluctuation_threshold
+        )
 
-    #log.info (f"TA_result {TA_result}")
-    #log.debug (f"TA_result_data {TA_result_data}")
-    #log.info (f"currency.lower() {currency_lower}")
-    
-    last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
-    log.info (f"instrument {instrument} last_tick_from_prev_TA {last_tick_from_prev_TA} current_tick {current_tick}")
-    log.info (f"last_tick_from_prev_TA == 0 {last_tick_from_prev_TA == 0}")
-    log.error (f"current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA} current_tick {current_tick} ")
 
-    if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
+        result.update({f"instrument": instrument})
 
-        #    log.error(f'ohlc_1_high_9 {ohlc_1_high_9}')
-        ema_high_9 = await get_ema(ohlc_1_high_9["ohlc"], ratio)
-        #    log.error(f'ema_high_9 {ema_high_9}')
+        result.update({"tick": current_tick})
+
+        result.update(
+            {f"1m_fluctuation_exceed_threshold": ohlc_fluctuation_exceed_threshold}
+        )
         
-        ema_low_9 = await get_ema(ohlc_1_low_9["ohlc"], ratio)
+        result.update({f"1m_current_higher_open": last_price > ohlc_open_price})
+        
+        TA_result = await querying_table("market_analytics_json")
+        
+        TA_result_data= [o for o in TA_result["list_data_only"] if currency_upper in o["instrument"]]
+        
+        last_tick_from_prev_TA = get_last_tick_from_prev_TA(TA_result_data)
+        log.info (f"instrument {instrument} last_tick_from_prev_TA {last_tick_from_prev_TA} current_tick {current_tick}")
+        log.info (f"last_tick_from_prev_TA == 0 {last_tick_from_prev_TA == 0}")
+        log.error (f"current_tick > last_tick_from_prev_TA {current_tick > last_tick_from_prev_TA} current_tick {current_tick} ")
 
-        ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 21)
+        if last_tick_from_prev_TA == 0 or current_tick > last_tick_from_prev_TA:
 
-        ema_close_9 = await get_ema(ohlc_1_close_9["ohlc"], ratio)
-        ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
+            #    log.error(f'ohlc_1_high_9 {ohlc_1_high_9}')
+            ema_high_9 = await get_ema(ohlc_1_high_9["ohlc"], ratio)
+            #    log.error(f'ema_high_9 {ema_high_9}')
+            
+            ema_low_9 = await get_ema(ohlc_1_low_9["ohlc"], ratio)
 
-        result.update({"1m_ema_close_20": ema_close_20})
-        result.update({"1m_ema_close_9": ema_close_9})
-        result.update({"1m_ema_high_9": ema_high_9})
-        result.update({"1m_ema_low_9": ema_low_9})
+            ohlc_close_20 = await cleaned_up_ohlc("close", table_1, 21)
 
-        result.update({"60_open": ohlc_60["ohlc"][0]})
-        result.update({"60_last_price": ohlc_60["last_price"]})
-        # print (f"result{ohlc_1_high_9}")
-        result.update({"last_price": last_price})
+            ema_close_9 = await get_ema(ohlc_1_close_9["ohlc"], ratio)
+            ema_close_20 = await get_ema(ohlc_close_20["ohlc"], ratio)
 
-        vwap_period = 100
+            result.update({"1m_ema_close_20": ema_close_20})
+            result.update({"1m_ema_close_9": ema_close_9})
+            result.update({"1m_ema_high_9": ema_high_9})
+            result.update({"1m_ema_low_9": ema_low_9})
 
-        ohlc_all = await get_price_ohlc(f"close", table_1, vwap_period)
+            result.update({"60_open": ohlc_60["ohlc"][0]})
+            result.update({"60_last_price": ohlc_60["last_price"]})
+            # print (f"result{ohlc_1_high_9}")
+            result.update({"last_price": last_price})
 
-        log.error(f"AAAAAAAAAAAAAAAAAAAAa")
-        df_vwap = await get_vwap(ohlc_all, vwap_period)
-        vwap = df_vwap.iloc[-1]
-        result.update({f"1m_vwap": vwap})
-        log.error(f"TA {result}")
-        return result
+            vwap_period = 100
+
+            ohlc_all = await get_price_ohlc(f"close", table_1, vwap_period)
+
+            df_vwap = await get_vwap(ohlc_all, vwap_period)
+            vwap = df_vwap.iloc[-1]
+            result.update({f"1m_vwap": vwap})
+            log.error(f"TA {result}")
+            return result
 
 
 async def insert_market_condition_result(currency,

@@ -218,12 +218,15 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
 async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
     log.info("count_and_delete_ohlc_rows-START")
-    tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
+    tables = ["ohlc1_eth_perp_json", "ohlc30_eth_perp_json", "market_analytics_json"]
     database: str = "databases/trading.sqlite3"
+    
+    
 
     log.error(tables)
 
     for table in tables:
+        rows_threshold=10 if "market_analytics_json" in table else rows_threshold
 
         count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
         rows = await executing_query_with_return(count_rows_query)
