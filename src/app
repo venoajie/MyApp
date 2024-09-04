@@ -534,7 +534,7 @@ class StreamAccountData:
                                                 balancing_trades = await get_my_trades_from_exchange(QTY, currency)
                                                 log.warning (f"A")
                                                 trades_from_sqlite_closed = await executing_general_query_with_single_filter(
-                                                    "my_trades_closed_json", instrument_ticker, 100, "id"
+                                                    "my_trades_closed_json", instrument_ticker, 20, "id"
                                                     )
 
                                                 log.warning (f"A")
