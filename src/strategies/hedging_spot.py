@@ -5,7 +5,7 @@ import asyncio
 
 # installed
 from dataclassy import dataclass
-from strategies.entries_exits import hedging_spot_attributes
+from strategies.config_strategies import hedging_spot_attributes
 
 # user defined formula
 from strategies.basic_strategy import (
