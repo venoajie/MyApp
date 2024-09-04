@@ -109,9 +109,7 @@ def size_rounding(instrument_name: str, proposed_size: float) -> int:
 
     instruments= get_instruments_kind(currency, "all")
 
-    min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]  
-    log.error ([o  for o in instruments if o["instrument_name"]== instrument_name])
-    
+    min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]    
     
     rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
     
@@ -305,15 +303,13 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
 
     instruments_raw = read_data(my_path_instruments)
     instruments = instruments_raw[0]["result"]
-    instruments_kind= instruments if kind =="all" else  [
+    non_spot_instruments=  [
+        o for o in instruments if o["kind"] != "spot"]
+    instruments_kind= non_spot_instruments if kind =="all" else  [
         o for o in instruments if o["kind"] == kind]
     
-    log.info (f"{instruments_kind}")
-    
     settlement_periods= get_settlement_period()
-    log.warning ([o["instrument_name"] for o in instruments_kind])
-    log.warning ([o["settlement_period"] for o in instruments_kind])
-
+    
     return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
