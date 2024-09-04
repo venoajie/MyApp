@@ -13,7 +13,7 @@ import aiohttp
 from loguru import logger as log
 
 # user defined formula
-from strategies import entries_exits
+from strategies.entries_exits import (strategies, preferred_spot_currencies) 
 from utilities.pickling import replace_data
 
 from utilities.string_modification import (remove_redundant_elements, 
@@ -106,10 +106,6 @@ async def run_every_3_seconds() -> None:
 
     await future_spreads("ETH")
     
-
-    # fetch strategies attributes
-    strategies = entries_exits.strategies
-
     market_condition_all = await querying_table("market_analytics_json-last")
 
     market_condition = market_condition_all["list_data_only"][0]
@@ -144,7 +140,7 @@ async def run_every_5_seconds() -> None:
     ONE_PCT = 1 / 100
     TAKE_PROFIT_PCT_DAILY = ONE_PCT * 1
     
-    currencies=  entries_exits.preferred_spot_currencies()
+    currencies=  preferred_spot_currencies()
     
     for currency in currencies:
 
@@ -170,8 +166,6 @@ async def run_every_5_seconds() -> None:
         if equity >0:
 
             # fetch strategies attributes
-            strategies = entries_exits.strategies
-
             market_condition_all = await querying_table("market_analytics_json-last")
             market_condition = market_condition_all["list_data_only"][0]
 
@@ -265,7 +259,7 @@ async def run_every_15_seconds() -> None:
     THRESHOLD = 0.01 * ONE_PCT
     
     
-    currencies=  entries_exits.preferred_spot_currencies()
+    currencies=  preferred_spot_currencies()
     
     for currency in currencies:
 
@@ -323,7 +317,7 @@ if __name__ == "__main__":
         schedule.every(15).seconds.do(run_every_15_seconds)
         #schedule.every(3).seconds.do(run_every_3_seconds)
         schedule.every(5).seconds.do(run_every_5_seconds)
-        schedule.every(3).seconds.do(run_every_60_seconds)
+        schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
