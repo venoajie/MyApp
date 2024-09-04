@@ -506,7 +506,7 @@ class StreamAccountData:
                                             
                                             transactions_all: list = await querying_table("my_trades_all_json")
                                             log.debug (f"transactions_all {transactions_all}")
-                                            transactions_all: list=executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            transactions_all: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
                                             log.error (f"transactions_all {transactions_all}")
                                             log.warning (f"A")
                                             
