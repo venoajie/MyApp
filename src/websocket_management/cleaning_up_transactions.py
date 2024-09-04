@@ -227,6 +227,7 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
 
         count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
         rows = await executing_query_with_return(count_rows_query)
+        log.debug (f"row {rows}")
         rows = rows[0]["COUNT (tick)"]
 
         if rows > rows_threshold:
