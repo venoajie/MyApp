@@ -53,10 +53,11 @@ async def get_unrecorded_order_id(
 
 
 async def reconciling_between_db_and_exchg_data(
-    trades_from_exchange: list, unrecorded_order_id: str
+    trades_from_exchange_all: list, unrecorded_order_id: str
 ) -> None:
     """ """
 
+    trades_from_exchange= [o for o in trades_from_exchange_all if "label" in o]
     if unrecorded_order_id == []:
 
         trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
