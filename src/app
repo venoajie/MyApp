@@ -271,7 +271,7 @@ class StreamAccountData:
                 
                 instruments_name=get_instruments_name()
                 
-                log.warning(f"instruments_name {instruments_name}")
+                #log.warning(f"instruments_name {instruments_name}")
 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")

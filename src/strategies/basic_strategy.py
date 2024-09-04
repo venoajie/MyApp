@@ -110,6 +110,7 @@ def size_rounding(instrument_name: str, proposed_size: float) -> int:
     instruments= get_instruments_kind(currency, "all")
 
     min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]  
+    log.error ([o  for o in instruments if o["instrument_name"]== instrument_name])
     
     
     rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
