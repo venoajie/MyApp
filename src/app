@@ -531,13 +531,20 @@ class StreamAccountData:
                                                 log.warning (f"A")
                                                 QTY=100
                                                 balancing_trades = await get_my_trades_from_exchange(QTY, currency)
+                                                log.warning (f"A")
                                                 trades_from_sqlite_closed = await executing_closed_transactions()
+                                                log.warning (f"A")
+                                                log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
+                                                log.warning (f"A")
                     my_trades_instrument, trades_from_sqlite_closed, balancing_trades
                 )
+                                                log.warning (f"A")
+                                                log.debug(f"unrecorded_order_id {unrecorded_order_id}")
                                                 await reconciling_between_db_and_exchg_data(
                                                     my_trades_instrument, unrecorded_order_id
                                                     )
+                                                log.warning (f"A")
 
                                                                                             
                                             else:
