@@ -471,11 +471,15 @@ class StreamAccountData:
                                             log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json")
+                                            log.warning (f"A")
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
+                                            log.warning (f"A")
                                             
                                             TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
+                                            log.warning (f"A")
                                                                                                         
                                             strategy_label= hedging_spot_attributes()["strategy"]
+                                            log.warning (f"A")
                 
                                             try:
                                                 index_price= data_orders["index_price"]
@@ -483,36 +487,51 @@ class StreamAccountData:
                                             except:
                                                 index_price= None
                                                 
+                                            log.warning (f"A")
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
+                                            log.warning (f"A")
                                                                                 
                                             # get portfolio data
                                             portfolio: list = reading_from_database["portfolio"]
+                                            log.warning (f"A")
                                                                                             
                                             # obtain spot equity
                                             equity: float = portfolio[0]["equity"]
+                                            log.warning (f"A")
                                             
                                             ticker: list = reading_from_db("ticker", instrument_ticker)
+                                            log.warning (f"A")
                                                                                 
                                             if ticker !=[] and index_price is not None and equity >0:
+                                                log.warning (f"A")
                                             
                                                 tick_TA=  max([o["tick"] for o in TA_result_data])
+                                                log.warning (f"A")
                                                 
                                                 server_time=     get_now_unix_time()  
+                                                log.warning (f"A")
                                                 
                                                 delta_time= server_time-tick_TA
+                                                log.warning (f"A")
                                                 
                                                 delta_time_seconds=delta_time/1000                                                
+                                                log.warning (f"A")
                                                 
                                                 log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
-                                                
+                                                log.warning (f"A")
+
                                                 if delta_time_seconds < 120:#ensure freshness of ta
+                                                    log.warning (f"A")
                                                     
                                                     notional: float = compute_notional_value(index_price, equity)
+                                                    log.warning (f"A")
                                                         
                                                     best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
+                                                    log.warning (f"A")
                                                     
                                                     hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                    log.warning (f"A")
                                                     
                                                     send_order: dict = (
                                                     await hedging.is_send_and_cancel_open_order_allowed(
@@ -526,6 +545,7 @@ class StreamAccountData:
                                                     )
                                                 )
                                                     
+                                                    log.warning (f"A")
                                                     log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
                                                     
                                                     if send_order["order_allowed"]:
