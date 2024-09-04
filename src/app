@@ -536,7 +536,6 @@ class StreamAccountData:
                                                 log.warning (f"A")
                                                 log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
-                                                log.warning (f"A")
                     my_trades_instrument, trades_from_sqlite_closed, balancing_trades
                 )
                                                 log.warning (f"A")
