@@ -33,7 +33,7 @@ def hedging_spot_attributes() -> list:
     hedging= [{
         "strategy": "hedgingSpot",
         "status": "active",
-        "settlement_period": ["PERPETUAL"],
+        "settlement_period": ["perpetual"],
         "contribute_to_hedging": True,
         "time_frame": 900,
         "side": "sell",
