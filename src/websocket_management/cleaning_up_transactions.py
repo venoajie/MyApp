@@ -252,6 +252,6 @@ async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
                 log.warning (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
                 first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
-            await deleting_row(table, database, where_filter, "=", first_tick)
+            await deleting_row(table, database, where_filter, "<", first_tick)
             
     log.info("count_and_delete_ohlc_rows-DONE")
