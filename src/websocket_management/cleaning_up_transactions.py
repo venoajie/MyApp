@@ -26,7 +26,7 @@ from strategies.basic_strategy import (
     querying_label_and_size,
     get_order_label,
 )
-
+from strategies.entries_exits import max_rows
 
 async def get_unrecorded_order_id(
     from_sqlite_open, from_sqlite_closed, from_exchange
@@ -215,42 +215,28 @@ async def clean_up_closed_transactions(transactions_all: list = None) -> None:
                 )
 
 
-async def count_and_delete_ohlc_rows(rows_threshold: int = 1000000):
+async def count_and_delete_ohlc_rows():
 
     log.info("count_and_delete_ohlc_rows-START")
     tables = ["market_analytics_json", "ohlc1_eth_perp_json", "ohlc30_eth_perp_json"]
     database: str = "databases/trading.sqlite3"  
 
     for table in tables:
-        log.error(table)
-        rows_threshold=10 if "market_analytics_json" in table else rows_threshold
+        rows_threshold= max_rows(table)
+        log.critical (f"rows_threshold {rows_threshold} {table}")
 
         count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
         rows = await executing_query_with_return(count_rows_query)
-        log.debug (f"count_rows_query {count_rows_query} rows_threshold{rows_threshold}")
-        log.debug (f"row {rows}")
+        
         rows = rows[0]["COUNT (tick)"]
-        log.debug (f"row {rows}")
-        log.debug (f"rows > rows_threshold {rows > rows_threshold}")
 
         if rows > rows_threshold:
 
             where_filter = f"tick"
-            
-            
-            try:
                     
-                first_tick_query = querying_arithmetic_operator("tick", "MIN", table)
-                first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
-                log.error (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
-                first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
-
-            except:
-                    
-                first_tick_query = querying_arithmetic_operator("tick", None, table)
-                first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
-                log.warning (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
-                first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
+            first_tick_query = querying_arithmetic_operator("tick", "MIN", table)
+            first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
+            first_tick = first_tick_fr_sqlite[0]["MIN (tick)"]
 
             await deleting_row(table, database, where_filter, "=", first_tick)
             

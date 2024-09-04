@@ -18,6 +18,17 @@ def preferred_spot_currencies() -> list:
     """ """
 
     return ["BTC","ETH"]
+
+def max_rows(table) -> list:
+    """ """
+    match table:
+        case "market_analytics_json":
+            threshold= 10
+
+        case _:
+            threshold= 10000
+
+    return threshold
   
 def hedging_spot_attributes() -> list:
     """ """

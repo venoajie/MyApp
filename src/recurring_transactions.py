@@ -253,9 +253,7 @@ async def run_every_60_seconds() -> None:
 
     from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
 
-    rows_threshold = 1000000
-
-    await count_and_delete_ohlc_rows(rows_threshold)
+    await count_and_delete_ohlc_rows()
 
 
 async def run_every_15_seconds() -> None:
@@ -325,7 +323,7 @@ if __name__ == "__main__":
         schedule.every(15).seconds.do(run_every_15_seconds)
         #schedule.every(3).seconds.do(run_every_3_seconds)
         schedule.every(5).seconds.do(run_every_5_seconds)
-        schedule.every(2).seconds.do(run_every_60_seconds)
+        schedule.every(3).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
         schedule.every().day.at("08:05").do(check_and_save_every_60_minutes)
