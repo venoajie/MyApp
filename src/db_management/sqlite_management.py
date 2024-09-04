@@ -678,7 +678,7 @@ def querying_label_and_size(table) -> str:
             tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table}"
     return tab
 
-def querying_selected_columns_per_currency(table, filter) -> str:
+def querying_selected_columns_filtered_with_a_variable(table: str, filter) -> str:
     where_clause= f"WHERE (instrument_name LIKE '%{filter}%')"
     tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
 
@@ -741,7 +741,7 @@ async def executing_general_query_with_single_filter(table, filter) -> dict:
     """
 
     # get query
-    query = querying_selected_columns_per_currency(table, filter)
+    query = querying_selected_columns_filtered_with_a_variable(table, filter)
 
     # execute query
     result = await executing_query_with_return(query)

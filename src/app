@@ -31,6 +31,7 @@ from db_management.sqlite_management import (
     replace_row,querying_table,
     querying_arithmetic_operator,
     executing_closed_transactions,
+    executing_general_query_with_single_filter,
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -504,6 +505,9 @@ class StreamAccountData:
                                             log.warning (f"A")
                                             
                                             transactions_all: list = await querying_table("my_trades_all_json")
+                                            log.debug (f"transactions_all {transactions_all}")
+                                            transactions_all: list=executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            log.error (f"transactions_all {transactions_all}")
                                             log.warning (f"A")
                                             
                                             my_trades_instrument = [o for o in transactions_all["list_data_only"] if  o["instrument_name"]==instrument_ticker]
