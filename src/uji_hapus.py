@@ -1,17 +1,9 @@
+from strategies.entries_exits import strategies,hedging_spot_attributes
+from utilities.string_modification import remove_redundant_elements, remove_double_brackets_in_list
 
-import asyncio
-import random
 
-tes= [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
-test= ['],['.join(x) for x in tes]
-print (test)
-
-test = str(tes).replace('], [', '').replace('],[', '')
-print (test)
-
-print ([
-    x
-    for xs in tes
-    for x in xs
-])
-print ([test])
+def get_instruments_settlement_period () -> list:
+    
+    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in (strategies+hedging_spot_attributes())])))
+    
+print(get_instruments_settlement_period())
