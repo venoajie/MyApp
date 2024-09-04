@@ -273,7 +273,7 @@ def get_transactions_sum(result_strategy_label) -> int:
     )
 
 
-def get_instruments_settlement_period () -> list:
+def get_settlement_period () -> list:
     from strategies.entries_exits import hedging_spot_attributes, strategies
     
     return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in (strategies+hedging_spot_attributes())])))
@@ -305,19 +305,11 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     instruments_raw = read_data(my_path_instruments)
     instruments = instruments_raw[0]["result"]
     instruments_kind= instruments if kind =="all" else  [
-        o for o in instruments if o["kind"] == kind
-    ]
-    instrument_settlements= get_instruments_settlement_period()
+        o for o in instruments if o["kind"] == kind]
     
-    log.error (f"instrument_settlements {instrument_settlements}")
-    log.error ([o["settlement_period"] for o in instruments_kind])
-    instruments_selected= [o for o in instruments_kind if o["settlement_period"] in instrument_settlements]
+    settlement_periods= get_settlement_period()
 
-    log.error (f"instruments_selected {instruments_selected}")
-
-    return instruments if kind =="all" else  [
-        o for o in instruments if o["kind"] == kind
-    ]
+    return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
 
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """
