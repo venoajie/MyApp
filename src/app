@@ -513,7 +513,7 @@ class StreamAccountData:
 
                                             #log.info(f"positions_all-recurring {positions_all} ")
                                             size_from_position: int = (
-                                                0 if positions_all == [] else sum([o["size"] for o in positions_all if ["kind"]=="future"])
+                                                0 if positions_all == [] else sum([o["size"] for o in positions_all if ["instrument_name"]==instrument_ticker])
                                             )
                                             log.warning (f"A")
 
