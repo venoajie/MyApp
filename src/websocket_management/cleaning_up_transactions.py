@@ -223,7 +223,6 @@ async def count_and_delete_ohlc_rows():
 
     for table in tables:
         rows_threshold= max_rows(table)
-        log.critical (f"rows_threshold {rows_threshold} {table}")
 
         count_rows_query = querying_arithmetic_operator("tick", "COUNT", table)
         rows = await executing_query_with_return(count_rows_query)
