@@ -103,7 +103,7 @@ strategies = [
     {
         "strategy": "futureSpreadLong",
         "status": "active",
-        "settlement_period": ["PERPETUAL", "weekly"],
+        "settlement_period": ["PERPETUAL", "week"],
         "contribute_to_hedging": False,
         "time_frame": 900,
         "side": "buy",
