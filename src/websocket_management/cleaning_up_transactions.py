@@ -224,6 +224,7 @@ async def count_and_delete_ohlc_rows():
               "ohlc30_eth_perp_json", 
               "ohlc60_eth_perp_json", 
               "supporting_items_json"]
+    
     database: str = "databases/trading.sqlite3"  
 
     for table in tables:
@@ -238,11 +239,13 @@ async def count_and_delete_ohlc_rows():
         count_rows_query = querying_arithmetic_operator(where_filter, "COUNT", table)
 
         rows = await executing_query_with_return(count_rows_query)
+        
         rows = rows[0]["COUNT (tick)"] if where_filter=="tick" else rows[0]["COUNT (id)"]
             
         if rows > rows_threshold:
                   
             first_tick_query = querying_arithmetic_operator(where_filter, "MIN", table)
+            
             first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
             
             if where_filter=="tick":
