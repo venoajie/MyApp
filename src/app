@@ -516,6 +516,7 @@ class StreamAccountData:
                                             size_from_position: int = (
                                                 0 if positions_all == [] else sum([o["size"] for o in positions_all if ["instrument_name"]==instrument_ticker])
                                             )
+                                            log.warning (f"size_from_position {size_from_position}")
                                             log.warning (f"A")
 
                                             size_is_consistent: bool = await is_size_consistent(
