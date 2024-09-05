@@ -122,12 +122,14 @@ def currency_inline_with_database_address (currency: str, database_address: str)
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
+        
+        instrument_name= trade["instrument_name"]
 
         if "combo_id" in trade:
             await get_additional_params_for_futureSpread_transactions(trade)
         
         # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
-        if "-FS-" not in trade["instrument_name"]:
+        if "-FS-" not in instrument_name:
                 
             label=trade["label"]
 
@@ -150,7 +152,7 @@ async def manage_trades (trades: dict) -> None:
                 await insert_tables("my_trades_all_json", trade)
                 
                 if "closed" in label:
-                    await clean_up_closed_transactions ()
+                    await clean_up_closed_transactions (instrument_name)
 
         
 async def manage_positions (positions: dict, currency: str) -> None:
@@ -549,7 +551,7 @@ class StreamAccountData:
                                                     trades_from_exchange, unrecorded_order_id
                                                     )
                                                 log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
-                                                await clean_up_closed_transactions()
+                                                await clean_up_closed_transactions(instrument_ticker)
                                                 log.critical (f"BALANCING-DONE")
                                                                                             
                                             else:                                                
