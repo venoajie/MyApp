@@ -198,9 +198,8 @@ async def run_every_5_seconds() -> None:
                 )
                 
                 #log.debug (f"size_is_consistent {size_is_consistent} size_from_my_trades {size_from_my_trades} size_from_position {size_from_position}")
-
                 
-                if size_is_consistent:
+                if not size_is_consistent:
                     await balancing_the_imbalance(
                 trades_from_exchange_instrument,
                 unrecorded_order_id,
@@ -210,7 +209,7 @@ async def run_every_5_seconds() -> None:
 
 
 
-            await clean_up_closed_transactions(instrument)
+                await clean_up_closed_transactions(instrument)
 
             transactions_all_summarized: list = await querying_label_and_size(
                 "my_trades_all_json"
