@@ -336,7 +336,8 @@ async def insert_tables(table_name, params):
                     if "json" in table_name:
 
                         insert_table_json = f"""INSERT INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
-                        log.error(f"insert_table_json {insert_table_json} {param}")
+                        log.error(f"insert_table_json {insert_table_json}")
+                        log.warning(f"{param}")
 
                         await db.execute(insert_table_json)
 
@@ -426,7 +427,7 @@ async def deleting_row(
     """ """
 
     query_table = f"DELETE  FROM {table} WHERE  {filter} {operator}?"
-    print(f"deleting_row {query_table}")
+    log.debug (f"deleting_row {query_table}")
 
     filter_val = (f"{filter_value}",)
 
