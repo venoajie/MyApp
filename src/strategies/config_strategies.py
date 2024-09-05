@@ -19,10 +19,12 @@ def preferred_spot_currencies() -> list:
 
     return ["BTC","ETH"]
 
-def max_transactions_downloaded_from_exchange() -> list:
+def paramaters_to_balancing_transactions() -> list:
     """ """
 
-    return 5
+    return dict(max_transactions_downloaded_from_exchange=5,
+                max_closed_transactions_downloaded_from_sqlite=20
+                )
 
 
 def max_rows(table) -> int:
