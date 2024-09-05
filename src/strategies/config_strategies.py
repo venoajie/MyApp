@@ -19,6 +19,11 @@ def preferred_spot_currencies() -> list:
 
     return ["BTC","ETH"]
 
+def max_transactions_downloaded_from_exchange() -> list:
+    """ """
+
+    return 5
+
 
 def max_rows(table) -> int:
     """ """
