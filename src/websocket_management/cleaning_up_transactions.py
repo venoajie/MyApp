@@ -107,9 +107,6 @@ async def reconciling_between_db_and_exchg_data(
         #print(f"trades_from_exchange {trades_from_exchange}")
         
         transaction_sum=0
-        print([ o["instrument_name"] for o in trades_from_exchange ])
-        print([ o["label"] for o in trades_from_exchange ])
-        print([ o["order_id"] for o in trades_from_exchange ])
         for order_id in unrecorded_order_id:
 
             transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
