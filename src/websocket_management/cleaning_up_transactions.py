@@ -216,7 +216,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
 
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
-                print (f"transactions_with_zero_sum {transaction["label"]}")
+                print (f"""transactions_with_zero_sum {transaction["label"]}""")
 
                 await insert_tables("my_trades_closed_json", transaction)
 
