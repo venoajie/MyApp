@@ -70,10 +70,10 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await telegram_bot_sendtext(bot_message, purpose)
 
-async def convert_status_has_closed_label_from_no_to_yes(label: str = "general_error") -> None:
+async def convert_status_has_closed_label_from_no_to_yes(instrument_name, label: str = "general_error") -> None:
 
     label_integer= parsing_label (label) ["int"]
-    transactions_all: list = await querying_label_and_size("my_trades_all_json")
+    transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
 
     has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, label_integer)
     
@@ -146,7 +146,7 @@ async def manage_trades (trades: dict) -> None:
                         await get_additional_params_for_open_label (trade, label)
 
                     if "closed" in label:
-                        await convert_status_has_closed_label_from_no_to_yes(label)
+                        await convert_status_has_closed_label_from_no_to_yes(instrument_name, label)
 
                 except:
                     log.critical(f"except trade {trade}")
@@ -402,10 +402,7 @@ class StreamAccountData:
 
                                 await resupply_sub_accountdb(currency)                               
 
-                            if (
-                                message_channel
-                                == f"user.changes.any.{currency.upper()}.raw"
-                            ):
+                            if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
                                 await update_user_changes(data_orders, currency)
 
