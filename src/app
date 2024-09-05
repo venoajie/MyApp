@@ -30,7 +30,6 @@ from db_management.sqlite_management import (
     update_status_closed_trades,
     replace_row,querying_table,
     querying_arithmetic_operator,
-    executing_closed_transactions,
     executing_general_query_with_single_filter,
     insert_tables)
 from websocket_management.ws_management import (
@@ -57,6 +56,7 @@ from deribit_get import telegram_bot_sendtext, get_server_time
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
+    clean_up_closed_transactions,
     get_unrecorded_order_id,
     check_if_transaction_has_closed_label_before
 )
@@ -148,6 +148,9 @@ async def manage_trades (trades: dict) -> None:
                     log.critical(f"except trade {trade}")
                     
                 await insert_tables("my_trades_all_json", trade)
+                
+                if "closed" in label:
+                    await clean_up_closed_transactions ()
 
         
 async def manage_positions (positions: dict, currency: str) -> None:
@@ -545,6 +548,8 @@ class StreamAccountData:
                                                 await reconciling_between_db_and_exchg_data(
                                                     trades_from_exchange, unrecorded_order_id
                                                     )
+                                                log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
+                                                await clean_up_closed_transactions()
                                                 log.critical (f"BALANCING-DONE")
                                                                                             
                                             else:                                                
