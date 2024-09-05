@@ -51,7 +51,7 @@ from strategies.basic_strategy import (
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
-from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,strategies
+from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,max_transactions_downloaded_from_exchange
 from deribit_get import telegram_bot_sendtext, get_server_time
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
@@ -531,7 +531,7 @@ class StreamAccountData:
                                                 log.critical (f"BALANCING-START")
                                                 await cancel_the_cancellables("open")
                                                 log.warning (f"A")
-                                                QTY=100
+                                                QTY=max_transactions_downloaded_from_exchange()
                                                 trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
                                                 log.warning (f"A")
                                                 trades_from_sqlite_closed = await executing_general_query_with_single_filter(
