@@ -688,11 +688,12 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
         
         if "closed" in table:
             
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause}"
+            #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} "
             
             if limit>0:
                 
-                tab= f"{tab} DESC LIMIT {limit}"
+                tab= f"{tab} LIMIT {limit}"
     return tab
 
 
