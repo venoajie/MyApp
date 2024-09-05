@@ -50,7 +50,7 @@ async def get_unrecorded_order_id(
 
     unrecorded_order_id = find_unique_elements(
         combined_closed_open, from_exchange_order_id
-    )q
+    )
 
     unrecorded_order_id = list(
         set(from_exchange_order_id).difference(combined_closed_open)
