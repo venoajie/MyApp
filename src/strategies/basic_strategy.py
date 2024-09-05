@@ -14,6 +14,7 @@ from db_management.sqlite_management import (
     querying_ohlc_price_vol,
     querying_additional_params,
     querying_table,
+    executing_general_query_with_single_filter
 )
 from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
 from loguru import logger as log
@@ -393,10 +394,10 @@ def combine_vars_to_get_future_spread_label(timestamp: int) -> str:
     return f"futureSpread-open-{timestamp}"
 
 
-async def is_order_has_sent_before(verifier: str = "label") -> bool:
+async def is_order_has_sent_before(instrument_name, verifier: str = "label") -> bool:
     """ """
-    data_from_db_open = await querying_label_and_size("my_trades_all_json")
-    data_from_db_closed = await querying_label_and_size("my_trades_closed_json")
+    data_from_db_open = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
+    data_from_db_closed = await executing_general_query_with_single_filter("my_trades_closed_json", instrument_name)
     result_from_db_open = get_order_label(data_from_db_open)
     result_from_db_closed = get_order_label(data_from_db_closed)
 
@@ -812,13 +813,15 @@ class BasicStrategy:
         ) and no_outstanding_order
 
         if order_allowed:
+            
+            instrument_name= get_transaction_instrument(transaction)
 
-            params.update({"instrument": get_transaction_instrument(transaction)})
+            params.update({"instrument": instrument_name})
             params.update({"size": size})
             log.info(f"params {params}")
             label = params["label"]
 
-            order_has_sent_before = await is_order_has_sent_before(label)
+            order_has_sent_before = await is_order_has_sent_before(instrument_name, label)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False

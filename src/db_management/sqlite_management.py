@@ -671,12 +671,12 @@ def querying_arithmetic_operator(
 
 
 def querying_label_and_size(table) -> str:
-    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table}"
+    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id, trade_id FROM {table}"
 
     if "trade" in table:
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table}"
+        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id, trade_seq, FROM {table}"
         if "closed" in table:
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table}"
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, , trade_id, trade_seq FROM {table}"
     return tab
 
 def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit: int= 0, order: str="id") -> str:
@@ -685,12 +685,12 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
 
     if "trade" in table:
         
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_seq FROM {table} {where_clause}"
+        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id, trade_seq FROM {table} {where_clause}"
         
         if "closed" in table:
             
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} "
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id, trade_seq FROM {table} {where_clause} "
             
             if limit>0:
                 
