@@ -182,6 +182,9 @@ async def run_every_5_seconds() -> None:
 
             for instrument in active_instruments_name:
                 log.warning (f"instrument {instrument}")
+                trades_from_sqlite_closed = await executing_general_query_with_single_filter(
+                                                    "my_trades_closed_json", instrument, max_closed_transactions_downloaded_from_sqlite, "id"
+                                                    )
                 
                 trades_from_exchange_instrument= ([ o for o in trades_from_sqlite_open if o["instrument_name"]==instrument])
                 size_from_position: int = (
@@ -315,7 +318,7 @@ if __name__ == "__main__":
 
         schedule.every(15).seconds.do(run_every_15_seconds)
         #schedule.every(3).seconds.do(run_every_3_seconds)
-        schedule.every(5).seconds.do(run_every_5_seconds)
+        #schedule.every(5).seconds.do(run_every_5_seconds)
         schedule.every(60).seconds.do(run_every_60_seconds)
 
         schedule.every().day.at("08:01").do(check_and_save_every_60_minutes)
