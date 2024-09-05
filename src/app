@@ -512,20 +512,16 @@ class StreamAccountData:
                                                                                 
                                             # fetch positions for all instruments
                                             positions_all: list = reading_from_database["positions_from_sub_account"]
-                                            log.warning (f"A")
+
                                             #log.info(f"positions_all-recurring {positions_all} ")
                                             size_from_position: int = (
                                                 0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_ticker])
                                             )
-                                            #log.warning (f"size_from_position {size_from_position}")
-                                            #log.debug (f"sum_my_trades_instrument {sum_my_trades_instrument}")
-                                            log.warning (f"A")
 
                                             size_is_consistent: bool = await is_size_consistent(
                                                 sum_my_trades_instrument, size_from_position
                                                 )
-                                            log.warning (f"A")
-                                            
+                                           
                                             if not size_is_consistent:
                                                 log.critical (f"BALANCING-START")
                                                 await cancel_the_cancellables("open")
@@ -550,44 +546,30 @@ class StreamAccountData:
                                                     trades_from_exchange, unrecorded_order_id
                                                     )
                                                 log.critical (f"BALANCING-DONE")
-                                                log.warning (f"A")
-
                                                                                             
-                                            else:
-                                                
+                                            else:                                                
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]
-                                                log.warning (f"A")
                                                 
                                                 ticker: list = reading_from_db("ticker", instrument_ticker)
-                                                log.warning (f"A")
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
-                                                    log.warning (f"A")
                                                 
                                                     tick_TA=  max([o["tick"] for o in TA_result_data])
-                                                    log.warning (f"A")
                                                     
                                                     server_time=     get_now_unix_time()  
-                                                    log.warning (f"A")
                                                     
                                                     delta_time= server_time-tick_TA
-                                                    log.warning (f"A")
                                                     
                                                     delta_time_seconds=delta_time/1000                                                
-                                                    log.warning (f"A")
                                                     
                                                     log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
-                                                    log.warning (f"A")
 
                                                     if delta_time_seconds < 120:#ensure freshness of ta
-                                                        log.warning (f"A")
                                                         
                                                         notional: float = compute_notional_value(index_price, equity)
-                                                        log.warning (f"A")
                                                             
                                                         best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
-                                                        log.warning (f"A")
                                                         
                                                         hedging = hedging_spot.HedgingSpot(strategy_label)
                                                         log.warning (f"A")
