@@ -200,8 +200,6 @@ async def clean_up_closed_transactions(instrument_name) -> None:
             transaction, transactions_all
         )
         
-        #print (f"transaction {transaction} {size_to_close}")
-
         if size_to_close == 0:
 
             label = get_transaction_label(transaction)
@@ -212,8 +210,6 @@ async def clean_up_closed_transactions(instrument_name) -> None:
             ]
             where_filter = f"order_id"
             
-            
-
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
                 print (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
