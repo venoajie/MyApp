@@ -464,7 +464,7 @@ async def querying_completed_transactions(
             combine_result.append(dict(zip(headers, i)))
 
     except Exception as error:
-        print(f"querying_table {error}")
+        log.error (f"querying_table {query_table} {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
@@ -495,7 +495,7 @@ async def querying_duplicated_transactions(
             combine_result.append(dict(zip(headers, i)))
 
     except Exception as error:
-        print(f"querying_table {error}")
+        log.error (f"querying_table {query_table} {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
@@ -524,7 +524,7 @@ async def deleting_row(
                 await db.execute(query_table, filter_val)
 
     except Exception as error:
-        print(f"deleting_row {error}")
+        print(f"deleting_row {query_table} {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
