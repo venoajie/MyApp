@@ -200,7 +200,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
             transaction, transactions_all
         )
         
-        print (f"transaction {transaction} {size_to_close}")
+        #print (f"transaction {transaction} {size_to_close}")
 
         if size_to_close == 0:
 
