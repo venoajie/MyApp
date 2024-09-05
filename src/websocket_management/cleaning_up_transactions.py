@@ -54,7 +54,35 @@ async def get_unrecorded_order_id(
 
     return unrecorded_order_id
 
-async def reconciling_between_db_and_exchg_data(
+
+async def get_unrecorded_trade_id(
+    from_sqlite_open, from_sqlite_closed, from_exchange
+) -> list:
+    """ """
+
+    from_sqlite_closed_order_id = [o["trade_id"] for o in from_sqlite_closed]
+
+    from_sqlite_open_order_id = [o["trade_id"] for o in from_sqlite_open]  
+
+    #exclude transactions without label
+    from_exchange= [o for o in from_exchange if "label" in o]
+    
+    from_exchange_order_id = [o["trade_id"] for o in from_exchange]
+    
+    combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
+
+    unrecorded_trade_id = find_unique_elements(
+        combined_closed_open, from_exchange_order_id
+    )
+
+    unrecorded_trade_id = list(
+        set(from_exchange_order_id).difference(combined_closed_open)
+    )
+
+    return unrecorded_trade_id
+
+
+async def reconciling_between_db_and_exchg_data(instrument_name,
     trades_from_exchange: list, unrecorded_order_id: str
 ) -> None:
     """ """
@@ -62,7 +90,7 @@ async def reconciling_between_db_and_exchg_data(
     
     if unrecorded_order_id == []:
 
-        trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
+        trades_from_sqlite_open = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
         trades_from_sqlite_closed = await executing_closed_transactions()
         unrecorded_order_id = await get_unrecorded_order_id(
             trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange

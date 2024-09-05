@@ -403,7 +403,7 @@ async def querying_table(
             combine_result.append(dict(zip(headers, i)))
 
     except Exception as error:
-        print(f"querying_table {error}")
+        log.error (f"querying_table  {table} {error}") 
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 

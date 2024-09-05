@@ -531,7 +531,7 @@ class StreamAccountData:
                                                     trades_from_exchange
                                                     )
                                                 #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
-                                                await reconciling_between_db_and_exchg_data(
+                                                await reconciling_between_db_and_exchg_data(instrument_ticker,
                                                     trades_from_exchange, unrecorded_order_id
                                                     )
                                                 log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
