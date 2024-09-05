@@ -98,7 +98,7 @@ async def reconciling_between_db_and_exchg_data(
                     )
     if unrecorded_order_id != None:
         unrecorded_order_id.sort(reverse=True)
-        print(f"unrecorded_order_id {unrecorded_order_id}")
+        #print(f"unrecorded_order_id {unrecorded_order_id}")
         #print(f"trades_from_exchange {trades_from_exchange}")
         
         transaction_sum=0
@@ -106,7 +106,7 @@ async def reconciling_between_db_and_exchg_data(
 
             transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
             
-            print(f"transaction {transaction} {order_id}")
+            #print(f"transaction {transaction} {order_id}")
             
             if transaction !=[]:
 
@@ -199,6 +199,8 @@ async def clean_up_closed_transactions(instrument_name) -> None:
         size_to_close = await summing_transactions_under_label_int(
             transaction, transactions_all
         )
+        
+        print (f"transaction {transaction} {size_to_close}")
 
         if size_to_close == 0:
 
@@ -209,6 +211,8 @@ async def clean_up_closed_transactions(instrument_name) -> None:
                 o for o in transactions_all if label_integer in o["label"]
             ]
             where_filter = f"order_id"
+            
+            print (f"transactions_with_zero_sum {transactions_with_zero_sum}")
 
             for transaction in transactions_with_zero_sum:
                 order_id = transaction["order_id"]
