@@ -141,6 +141,9 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
     if rising_price == False and falling_price == False:
         neutral_price = True
 
+    print(
+            f"is_neutral {neutral_price} is_bearish {falling_price} is_bullish {rising_price} strong_bullish {strong_rising_price} strong_bearish {strong_falling_price}"
+        )
     return dict(
         rising_price=rising_price,
         strong_rising_price=strong_rising_price,
@@ -221,10 +224,6 @@ class HedgingSpot(BasicStrategy):
         #print(
         #    f"my_trades_currency_strategy {my_trades_currency_strategy}"
         #)
-        
-        print(
-            f"is_neutral {neutral} is_bearish {bearish} is_bullish {bullish} strong_bullish {strong_bullish} strong_bearish {strong_bearish}"
-        )
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
 
@@ -304,6 +303,7 @@ class HedgingSpot(BasicStrategy):
 
         bullish = market_condition["rising_price"]
         strong_bullish = market_condition["strong_rising_price"]
+        neutral = market_condition["neutral_price"]
         # is_bearish = market_condition["falling_price"]
 
         # my_trades: dict = await self.get_basic_params().transaction_attributes(
