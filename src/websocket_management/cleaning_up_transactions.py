@@ -181,14 +181,14 @@ def check_if_transaction_has_closed_label_before(
     return False if transactions_all == [] else has_closed_label
 
 
-async def clean_up_closed_transactions() -> None:
+async def clean_up_closed_transactions(instrument_name) -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
     2. move them to table for closed transactions/my_trades_closed_json
     """
 
-    transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json")
+    transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
 
     transaction_with_closed_labels = get_transactions_with_closed_label(
         transactions_all
