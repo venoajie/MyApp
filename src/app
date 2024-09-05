@@ -500,21 +500,15 @@ class StreamAccountData:
                                             except:
                                                 index_price= None
                                                 
-                                            log.warning (f"A")
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
-                                            log.warning (f"A")
                                                                                 
                                             # get portfolio data
                                             portfolio: list = reading_from_database["portfolio"]
-                                            log.warning (f"A")
-                                            my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
 
-                                            log.warning (f"A")
+                                            my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
                                             
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
-                                            log.warning (f"A")
-                                                                                
                                             # fetch positions for all instruments
                                             positions_all: list = reading_from_database["positions_from_sub_account"]
 
