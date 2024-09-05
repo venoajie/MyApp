@@ -531,7 +531,7 @@ class StreamAccountData:
                                                 await cancel_the_cancellables("open")
                                                 log.warning (f"A")
                                                 QTY=100
-                                                balancing_trades = await get_my_trades_from_exchange(QTY, currency)
+                                                trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
                                                 log.warning (f"A")
                                                 trades_from_sqlite_closed = await executing_general_query_with_single_filter(
                                                     "my_trades_closed_json", instrument_ticker, 20, "id"
@@ -540,12 +540,14 @@ class StreamAccountData:
                                                 log.warning (f"A")
                                                 #log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
-                    my_trades_instrument, trades_from_sqlite_closed, balancing_trades
-                )
+                                                    my_trades_instrument, 
+                                                    trades_from_sqlite_closed, 
+                                                    trades_from_exchange
+                                                    )
                                                 log.warning (f"A")
                                                 #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
                                                 await reconciling_between_db_and_exchg_data(
-                                                    my_trades_instrument, unrecorded_order_id
+                                                    trades_from_exchange, unrecorded_order_id
                                                     )
                                                 log.critical (f"BALANCING-DONE")
                                                 log.warning (f"A")
