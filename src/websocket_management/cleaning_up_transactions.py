@@ -8,6 +8,7 @@ from loguru import logger as log
 
 from db_management.sqlite_management import (
     executing_closed_transactions,
+    executing_general_query_with_single_filter,
     querying_table,
     insert_tables,
     deleting_row,
@@ -180,15 +181,14 @@ def check_if_transaction_has_closed_label_before(
     return False if transactions_all == [] else has_closed_label
 
 
-async def clean_up_closed_transactions(transactions_all: list = None) -> None:
+async def clean_up_closed_transactions() -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
     2. move them to table for closed transactions/my_trades_closed_json
     """
 
-    if transactions_all == None:
-        transactions_all: list = await querying_label_and_size("my_trades_all_json")
+    transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json")
 
     transaction_with_closed_labels = get_transactions_with_closed_label(
         transactions_all
