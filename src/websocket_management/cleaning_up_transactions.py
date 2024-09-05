@@ -39,7 +39,9 @@ async def get_unrecorded_order_id(
     print(f"")
     from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]
     print(f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
+    
 
+    from_exchange= [o for o in from_exchange if "label" in o]
     from_exchange_order_id = [o["order_id"] for o in from_exchange]
     print(f"")
     print(f"from_exchange_order_id {from_exchange_order_id}")
@@ -58,11 +60,11 @@ async def get_unrecorded_order_id(
 
 
 async def reconciling_between_db_and_exchg_data(
-    trades_from_exchange_all: list, unrecorded_order_id: str
+    trades_from_exchange: list, unrecorded_order_id: str
 ) -> None:
     """ """
 
-    trades_from_exchange= [o for o in trades_from_exchange_all if "label" in o]
+    
     if unrecorded_order_id == []:
 
         trades_from_sqlite_open = await querying_label_and_size("my_trades_all_json")
