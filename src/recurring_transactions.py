@@ -210,7 +210,7 @@ async def run_every_5_seconds() -> None:
 
 
 
-            await clean_up_closed_transactions()
+            await clean_up_closed_transactions(instrument)
 
             transactions_all_summarized: list = await querying_label_and_size(
                 "my_trades_all_json"
