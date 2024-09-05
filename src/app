@@ -51,7 +51,7 @@ from strategies.basic_strategy import (
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
-from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,max_transactions_downloaded_from_exchange
+from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions
 from deribit_get import telegram_bot_sendtext, get_server_time
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
@@ -514,22 +514,20 @@ class StreamAccountData:
                                             if not size_is_consistent:
                                                 log.critical (f"BALANCING-START")
                                                 await cancel_the_cancellables("open")
-                                                log.warning (f"A")
-                                                QTY=max_transactions_downloaded_from_exchange()
-                                                trades_from_exchange = await get_my_trades_from_exchange(QTY, currency)
-                                                log.warning (f"A")
+                                                balancing_params=paramaters_to_balancing_transactions()
+                                                max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
+                                                max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]
+                                                trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
                                                 trades_from_sqlite_closed = await executing_general_query_with_single_filter(
-                                                    "my_trades_closed_json", instrument_ticker, 20, "id"
+                                                    "my_trades_closed_json", instrument_ticker, max_closed_transactions_downloaded_from_sqlite, "id"
                                                     )
 
-                                                log.warning (f"A")
                                                 #log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
                                                     my_trades_instrument, 
                                                     trades_from_sqlite_closed, 
                                                     trades_from_exchange
                                                     )
-                                                log.warning (f"A")
                                                 #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
                                                 await reconciling_between_db_and_exchg_data(
                                                     trades_from_exchange, unrecorded_order_id
