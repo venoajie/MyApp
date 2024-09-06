@@ -529,8 +529,9 @@ class StreamAccountData:
                                                 trades_from_sqlite_closed = await executing_general_query_with_single_filter(
                                                     "my_trades_closed_json", instrument_ticker, max_closed_transactions_downloaded_from_sqlite, "id"
                                                     )
-
-                                                #log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
+                                                from_sqlite_closed_order_id = [o["order_id"] for o in trades_from_sqlite_closed]
+                                                
+                                                log.info(f"from_sqlite_closed_order_id {instrument_ticker} {from_sqlite_closed_order_id}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
                                                     instrument_ticker,
                                                     my_trades_instrument, 
