@@ -29,8 +29,9 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-async def get_unrecorded_order_id(
-    from_sqlite_open, from_sqlite_closed, from_exchange
+async def get_unrecorded_order_id(instrument,
+                                  from_sqlite_open, from_sqlite_closed,
+                                  from_exchange
 ) -> list:
     """ """
 
@@ -38,9 +39,12 @@ async def get_unrecorded_order_id(
 
     from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]  
 
-    from_exchange= [o for o in from_exchange if "label" in o]
+    from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
-    from_exchange_order_id = [o["order_id"] for o in from_exchange]
+    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument])
+                                            )
+    
+    from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     
     combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
 
@@ -101,7 +105,8 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
 
             if duplicated_elements != 0:
                 print(
-                    f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
+                    f" duplicated_elements {duplicated_elements} duplicated_elements != [] {
+                        duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
                 )
                 duplicated_labels = [o["label"] for o in duplicated_elements]
 

@@ -526,6 +526,7 @@ class StreamAccountData:
 
                                                 #log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
                                                 unrecorded_order_id = await get_unrecorded_order_id(
+                                                    instrument_ticker,
                                                     my_trades_instrument, 
                                                     trades_from_sqlite_closed, 
                                                     trades_from_exchange
