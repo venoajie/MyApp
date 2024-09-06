@@ -36,8 +36,10 @@ async def get_unrecorded_order_id(instrument,
     """ """
 
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
+    log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
 
     from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]  
+    log.info (f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
 
     from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
@@ -46,6 +48,7 @@ async def get_unrecorded_order_id(instrument,
     
     log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
+    log.info (f"from_exchange_order_id {from_exchange_order_id}")
     
     combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
 
