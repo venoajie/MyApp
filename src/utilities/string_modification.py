@@ -79,7 +79,30 @@ def remove_redundant_elements(data: list) -> list:
     return result
 
 
-def find_unique_elements(data1: list, data2: list) -> list:
+def find_non_repeatable_elements(data1: list, data2: list) -> list:
+    """
+
+    Comparing two lists and picking non-repeatable items between them
+
+    Args:
+        data (list)  and its subset (list) for comparation
+
+    Returns:
+        list
+
+    Example:
+        data_original = [1, 2, 3, 4, 5] # all data
+        data_redundant = [2, 4] # subset of all data
+        data_cleaned =  [1, 3, 5]
+
+    Reference:
+        https://stackoverflow.com/questions/45098206/unique-values-between-2-lists
+
+    """
+    return [i for i in data1 if i not in data2]
+
+
+def get_unique_elements(data1: list, data2: list) -> list:
     """
 
     Comparing two lists and picking only unique items between them
@@ -99,7 +122,7 @@ def find_unique_elements(data1: list, data2: list) -> list:
         https://stackoverflow.com/questions/45098206/unique-values-between-2-lists
 
     """
-    return [i for i in data1 if i not in data2]
+    return (set(data1).difference(data2))
 
 
 def extract_currency_from_text(words: str) -> str:

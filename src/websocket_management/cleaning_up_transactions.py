@@ -18,7 +18,7 @@ from db_management.sqlite_management import (
 )
 
 # user defined formula
-from utilities.string_modification import find_unique_elements, get_duplicated_elements
+from utilities.string_modification import find_unique_elements, get_unique_elements
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -47,7 +47,7 @@ async def get_unrecorded_order_id(instrument,
     from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument])
                                             )
     
-    log.info (f"from_exchange_instrument {from_exchange_instrument}")
+    #log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     log.info (f"from_exchange_order_id {from_exchange_order_id}")
     
@@ -55,14 +55,8 @@ async def get_unrecorded_order_id(instrument,
 
     log.warning (f"combined_closed_open {combined_closed_open}")
 
-    unrecorded_order_id = find_unique_elements(
-        combined_closed_open, from_exchange_order_id
-    )
-    log.warning (f"unrecorded_order_id {unrecorded_order_id}")
-
-    unrecorded_order_id = list(
-        set(from_exchange_order_id).difference(combined_closed_open)
-    )
+    unrecorded_order_id = get_unique_elements(from_exchange_order_id, combined_closed_open)
+    
     log.debug (f"unrecorded_order_id final {unrecorded_order_id}")
 
     return unrecorded_order_id
@@ -84,14 +78,10 @@ async def get_unrecorded_trade_id(
     
     combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
 
-    unrecorded_trade_id = find_unique_elements(
-        combined_closed_open, from_exchange_order_id
+    unrecorded_trade_id = get_unique_elements(
+        from_exchange_order_id, combined_closed_open
     )
-
-    unrecorded_trade_id = list(
-        set(from_exchange_order_id).difference(combined_closed_open)
-    )
-
+    
     return unrecorded_trade_id
 
 
