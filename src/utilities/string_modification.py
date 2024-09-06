@@ -114,9 +114,9 @@ def get_unique_elements(data1: list, data2: list) -> list:
         list
 
     Example:
-        data_original = [1, 2, 3, 4, 5] # all data
-        data_redundant = [2, 4] # subset of all data
-        data_cleaned =  [1, 3, 5]
+        data1 = [4, 5, 6] # all data
+        data_redundant = [1, 2, 3, 4, 5] # subset of all data
+        data_cleaned =  [6]
 
     Reference:
         https://stackoverflow.com/questions/45098206/unique-values-between-2-lists

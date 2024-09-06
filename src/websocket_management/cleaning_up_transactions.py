@@ -18,7 +18,7 @@ from db_management.sqlite_management import (
 )
 
 # user defined formula
-from utilities.string_modification import find_unique_elements, get_unique_elements
+from utilities.string_modification import get_unique_elements
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -57,7 +57,7 @@ async def get_unrecorded_order_id(instrument,
 
     unrecorded_order_id = get_unique_elements(from_exchange_order_id, combined_closed_open)
     
-    log.debug (f"unrecorded_order_id final {unrecorded_order_id}")
+    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
 
     return unrecorded_order_id
 
