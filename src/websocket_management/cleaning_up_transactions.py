@@ -44,6 +44,7 @@ async def get_unrecorded_order_id(instrument,
     from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument])
                                             )
     
+    log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     
     combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
@@ -51,10 +52,12 @@ async def get_unrecorded_order_id(instrument,
     unrecorded_order_id = find_unique_elements(
         combined_closed_open, from_exchange_order_id
     )
+    log.warning (f"unrecorded_order_id {unrecorded_order_id}")
 
     unrecorded_order_id = list(
         set(from_exchange_order_id).difference(combined_closed_open)
     )
+    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
 
     return unrecorded_order_id
 
