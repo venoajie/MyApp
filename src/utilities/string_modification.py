@@ -122,7 +122,7 @@ def get_unique_elements(data1: list, data2: list) -> list:
         https://stackoverflow.com/questions/45098206/unique-values-between-2-lists
 
     """
-    return (set(data1).difference(data2))
+    return list(set(data1).difference(data2))
 
 
 def extract_currency_from_text(words: str) -> str:
