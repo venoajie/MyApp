@@ -31,9 +31,9 @@ from websocket_management.ws_management import (
 async def test():
     
     currencies = preferred_spot_currencies()
-    number=1
+    number=0
     for currency in currencies:
-        num+1 = number
+        number = number+1
         log.critical (f"number {number}")
         instrument_ticker=f"{currency}-PERPETUAL"
         currency_upper=f"{currency.upper()}"
