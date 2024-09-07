@@ -31,7 +31,10 @@ from websocket_management.ws_management import (
 async def test():
     
     currencies = preferred_spot_currencies()
+    number=1
     for currency in currencies:
+        num+1 = number
+        log.critical (f"number {number}")
         instrument_ticker=f"{currency}-PERPETUAL"
         currency_upper=f"{currency.upper()}"
         log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
