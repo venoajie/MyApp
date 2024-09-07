@@ -484,12 +484,15 @@ class StreamAccountData:
                                             TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
                                                                                                         
                                             strategy_label= hedging_spot_attributes()[0]["strategy"]
-                
+                                            
+                                            ticker: list = reading_from_db("ticker", instrument_ticker)    
+                                                     
                                             try:
                                                 index_price= data_orders["index_price"]
                                                 
                                             except:
-                                                index_price= None
+                                                index_price= ticker[0]["index_price"]
+                                                log.critical (f"index_price {index_price}")
                                                 
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
@@ -551,7 +554,7 @@ class StreamAccountData:
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]
                                                 
-                                                ticker: list = reading_from_db("ticker", instrument_ticker)
+                                                
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
