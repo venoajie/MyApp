@@ -179,9 +179,9 @@ async def test():
                         )
                         await if_order_is_true(send_closing_order, instrument_ticker)
 
-        log.critical (f"CLOSING HEDGING-DONE")
-        tes=1/0
-        log.error (tes)
+            log.critical (f"CLOSING HEDGING-DONE")
+            tes=1/0
+            log.error (tes)
                 
 
 if __name__ == "__main__":
