@@ -131,7 +131,7 @@ async def remove_duplicated_elements (instrument_name) -> None:
     """
 
     duplicated_elements = await querying_duplicated_transactions()
-    log.info (f"duplicated_elements {duplicated_elements}")
+    log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
 
     if duplicated_elements != 0:
         log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
