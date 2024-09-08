@@ -86,11 +86,11 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
                 unrecorded_trade_id=unrecorded_trade_id)
 
 
-def get_label_from_respected_id (trades_from_exchange, unrecorded_id) -> str:
+def get_label_from_respected_id (trades_from_exchange, unrecorded_id, marker) -> str:
     log.info (f"trades_from_exchange {trades_from_exchange}")
     log.info (f"unrecorded_id {unrecorded_id}")
     
-    return [o["label"] for o in trades_from_exchange if o[id] == unrecorded_id][0]
+    return [o["label"] for o in trades_from_exchange if o[marker] == unrecorded_id][0]
 
 async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, id_desc) -> None:
 
@@ -113,7 +113,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         
         if transaction !=[]:
 
-            label = get_label_from_respected_id (trades_from_exchange, tran_id)
+            label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction[0], label)
