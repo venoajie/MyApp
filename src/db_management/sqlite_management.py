@@ -473,12 +473,13 @@ async def querying_completed_transactions(
 
 async def querying_duplicated_transactions(
     label: str = "my_trades_all_json",
-    group_by: str = "label_main",
+    group_by: str = "trade_id",
     database: str = "databases/trading.sqlite3",
 ) -> list:
     """ """
 
-    query_table = f"""SELECT trade_id, id, COUNT (*)  qty FROM {label} GROUP BY {group_by} HAVING qty >1"""
+    query_table = f"""SELECT trade_id COUNT (*)  qty FROM {label} GROUP BY trade_id HAVING qty >1"""
+    #query_table = f"""SELECT trade_id, id, COUNT (*)  qty FROM {label} GROUP BY {group_by} HAVING qty >1"""
     combine_result = []
 
     try:

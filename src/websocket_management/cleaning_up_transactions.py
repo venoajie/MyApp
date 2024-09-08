@@ -138,24 +138,15 @@ async def remove_duplicated_elements (instrument_name) -> None:
         )
         duplicated_trade_id = [o["trade_id"] for o in duplicated_elements]
 
-        my_trades_open_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)     
-
         for trade_id in duplicated_trade_id:
-            id = max(
-                [
-                    o["id"]
-                    for o in my_trades_open_all
-                    if o["trade_id"] == trade_id
-                ]
-            )
             
-            where_filter = f"id"
+            where_filter = f"trade_id"
             await deleting_row(
                 "my_trades_all_json",
                 "databases/trading.sqlite3",
                 where_filter,
                 "=",
-                id,
+                trade_id,
             )
             
 
