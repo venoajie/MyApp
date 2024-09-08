@@ -140,6 +140,12 @@ async def remove_duplicated_elements (instrument_name) -> None:
         my_trades_open_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)     
 
         for trade_id in duplicated_trade_id:
+            
+            log.info ([
+                    o["id"]
+                    for o in my_trades_open_all
+                    if o["trade_id"] == trade_id
+                ])
             id = max(
                 [
                     o["id"]
