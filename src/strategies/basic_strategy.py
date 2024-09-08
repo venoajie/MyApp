@@ -503,9 +503,12 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
     params = await executing_query_with_return(additional_params)
 
     additional_params_label = [o for o in params if label in o["label"]][0]
-
-    trade.update({"take_profit": additional_params_label["take_profit"]})
-    trade.update({"has_closed_label": False})
+    
+    if "take_profit" not in trade:
+        trade.update({"take_profit": additional_params_label["take_profit"]})
+        
+    if "has_closed_label" not in trade:
+        trade.update({"has_closed_label": False})
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:

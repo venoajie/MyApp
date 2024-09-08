@@ -81,27 +81,12 @@ async def test():
             
             max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
             
-            max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]
-            
             trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
             
-            trades_from_sqlite_closed = await executing_general_query_with_single_filter(
-                "my_trades_closed_json", instrument_ticker, max_closed_transactions_downloaded_from_sqlite, "id"
-                )
-            from_sqlite_closed_order_id = [o["order_id"] for o in trades_from_sqlite_closed]
-            
-            log.warning(f"from_sqlite_closed_order_id {instrument_ticker} {from_sqlite_closed_order_id}")
-            log.info(f"trades_from_sqlite_closed {trades_from_sqlite_closed}")
-            unrecorded_order_id = await get_unrecorded_order_id(
-                instrument_ticker,
-                my_trades_instrument, 
-                trades_from_sqlite_closed, 
-                trades_from_exchange
-                )
             #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
             await reconciling_between_db_and_exchg_data(instrument_ticker,
-                trades_from_exchange, unrecorded_order_id
-                )
+                trades_from_exchange)
+            
             log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
             await clean_up_closed_transactions(instrument_ticker)
             log.critical (f"BALANCING-DONE")

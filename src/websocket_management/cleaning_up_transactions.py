@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
+"""_summary_
 
+Source data:
+    _type_: fresh data, rerun. why? 
+            1. rare event
+            2. reduce overhead for main program
+"""
 # built ins
 import asyncio
 
@@ -7,7 +13,6 @@ import asyncio
 from loguru import logger as log
 
 from db_management.sqlite_management import (
-    executing_closed_transactions,
     executing_general_query_with_single_filter,
     querying_table,
     insert_tables,
@@ -17,6 +22,7 @@ from db_management.sqlite_management import (
     querying_duplicated_transactions,
 )
 
+from strategies.config_strategies import paramaters_to_balancing_transactions
 # user defined formula
 from utilities.string_modification import get_unique_elements
 from strategies.basic_strategy import (
@@ -29,15 +35,27 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-async def get_unrecorded_order_id(instrument,
-                                  from_sqlite_open, from_sqlite_closed,
-                                  from_exchange
-) -> list:
+
+async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
+) -> dict:
     """ """
+    
+    log.critical (f"{instrument_name}")
+
+    balancing_params=paramaters_to_balancing_transactions()
+        
+    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+    
+    from_sqlite_open= await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)                                         
+
+    from_sqlite_closed = await executing_general_query_with_single_filter(
+        "my_trades_closed_json", instrument_name, max_closed_transactions_downloaded_from_sqlite, "id"
+        )
+    
+    log.warning(f"from_sqlite_closed_order_id  {from_sqlite_closed_order_id}")
 
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
-    log.critical (f"{instrument}")
     log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
     log.warning (f"from_sqlite_closed_trade_id {from_sqlite_closed_trade_id}")
 
@@ -67,98 +85,97 @@ async def get_unrecorded_order_id(instrument,
     log.debug (f"unrecorded_order_id {unrecorded_order_id}")
     log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
 
-    return unrecorded_order_id
+    return dict(unrecorded_order_id=unrecorded_order_id,
+                unrecorded_trade_id=unrecorded_trade_id)
 
 
-async def get_unrecorded_trade_id(
-    from_sqlite_open, from_sqlite_closed, from_exchange
-) -> list:
-    """ """
+def get_label_from_respected_id (trades_from_exchange, unrecorded_id) -> str:
+    return [o["label"] for o in trades_from_exchange if o[id] == unrecorded_id][0]
 
-    from_sqlite_closed_order_id = [o["trade_id"] for o in from_sqlite_closed]
+async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, id_desc) -> None:
 
-    from_sqlite_open_order_id = [o["trade_id"] for o in from_sqlite_open]  
-
-    #exclude transactions without label
-    from_exchange= [o for o in from_exchange if "label" in o]
+    unrecorded_id.sort(reverse=True)
+    #print(f"unrecorded_order_id {unrecorded_order_id}")
+    #print(f"trades_from_exchange {trades_from_exchange}")
     
-    from_exchange_order_id = [o["trade_id"] for o in from_exchange]
+    if id_desc== "trade_id":
+        id=f"trade_id"
     
-    combined_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
-
-    unrecorded_trade_id = get_unique_elements(
-        from_exchange_order_id, combined_closed_open
-    )
+    if id_desc== "order_id":
+        id=f"order_id"
     
-    log.debug (f"unrecorded_trade_id {unrecorded_trade_id}")
+    transaction_sum=0
+    for tran_id in unrecorded_id:
 
-    return unrecorded_trade_id
+        transaction = [o for o in trades_from_exchange if o[id] == tran_id]
+        
+        #print(f"transaction {transaction} {order_id}")
+        
+        if transaction !=[]:
 
+            label = get_label_from_respected_id (trades_from_exchange, tran_id)
+
+            if "open" in label:
+                await get_additional_params_for_open_label(transaction[0], label)
+
+            await insert_tables("my_trades_all_json", transaction)
+
+
+async def remove_duplicated_elements (instrument_name) -> None:
+    """ 
+    
+        # label/order id may be duplicated (consider an order id/label was 
+        # executed couple of times due to lack of liquidity)
+        # There is only one trade_id
+       
+    """
+
+    duplicated_elements = await querying_duplicated_transactions()
+
+    if duplicated_elements != 0:
+        log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
+        )
+        duplicated_trade_id = [o["trade_id"] for o in duplicated_elements]
+
+        my_trades_open_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)     
+
+        for trade_id in duplicated_trade_id:
+            id = max(
+                [
+                    o["id"]
+                    for o in my_trades_open_all
+                    if o["trade_id"] == trade_id
+                ]
+            )
+            
+            where_filter = f"id"
+            await deleting_row(
+                "my_trades_all_json",
+                "databases/trading.sqlite3",
+                where_filter,
+                "=",
+                id,
+            )
+            
 
 async def reconciling_between_db_and_exchg_data(instrument_name,
-    trades_from_exchange: list, unrecorded_order_id: str
-) -> None:
+    trades_from_exchange: list) -> None:
     """ """
-
+    
+    unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
+                                  trades_from_exchange)
+    
+    unrecorded_order_id= unrecorded_transactions["unrecorded_order_id"]
+    unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
     
     if unrecorded_order_id == []:
-
-        trades_from_sqlite_open = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
-        trades_from_sqlite_closed = await executing_closed_transactions()
-        unrecorded_order_id = await get_unrecorded_order_id(instrument_name,
-            trades_from_sqlite_open, trades_from_sqlite_closed, trades_from_exchange
-        )
-
-        if unrecorded_order_id == []:
-            duplicated_elements = await querying_duplicated_transactions()
-
-            if duplicated_elements != 0:
-                print(f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
-                )
-                duplicated_labels = [o["label"] for o in duplicated_elements]
-
-                my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-                my_trades_open_all: list = my_trades_open_sqlite["all"]
-
-                for label in duplicated_labels:
-                    id = max(
-                        [
-                            o["id"]
-                            for o in my_trades_open_all
-                            if o["label_main"] == label
-                        ]
-                    )
-                    where_filter = f"id"
-                    await deleting_row(
-                        "my_trades_all_json",
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        id,
-                    )
-    if unrecorded_order_id != None:
-        unrecorded_order_id.sort(reverse=True)
-        #print(f"unrecorded_order_id {unrecorded_order_id}")
-        #print(f"trades_from_exchange {trades_from_exchange}")
+        await remove_duplicated_elements (instrument_name)
         
-        transaction_sum=0
-        for order_id in unrecorded_order_id:
+    if unrecorded_order_id != None:
+        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_order_id, "order_id")
 
-            transaction = [o for o in trades_from_exchange if o["order_id"] == order_id]
-            
-            #print(f"transaction {transaction} {order_id}")
-            
-            if transaction !=[]:
-
-                label = [
-                    o["label"] for o in trades_from_exchange if o["order_id"] == order_id
-                ][0]
-
-                if "open" in label:
-                    await get_additional_params_for_open_label(transaction[0], label)
-
-                await insert_tables("my_trades_all_json", transaction)
-
+    if unrecorded_trade_id != None:
+        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_trade_id, "trade_id")
 
 def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
@@ -245,20 +262,20 @@ async def clean_up_closed_transactions(instrument_name) -> None:
             label = get_transaction_label(transaction)
 
             label_integer = get_label_integer(label)["int"]
+            
             transactions_with_zero_sum = [
                 o for o in transactions_all if label_integer in o["label"]
             ]
             where_filter = f"order_id"
+            log.error (f"""transactions_with_zero_sum {transactions_with_zero_sum}""")
             
             for transaction in transactions_with_zero_sum:
-                order_id = transaction["order_id"]
-                print (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
+                order_id = transaction[where_filter]
+                log.warning (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
                 log.debug ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
                 await insert_tables("my_trades_closed_json", transaction)
                 
-                log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
                 await deleting_row(
                     "my_trades_all_json",
                     "databases/trading.sqlite3",
