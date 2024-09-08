@@ -99,15 +99,15 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     #print(f"trades_from_exchange {trades_from_exchange}")
     
     if id_desc== "trade_id":
-        id=f"trade_id"
+        marker=f"trade_id"
     
     if id_desc== "order_id":
-        id=f"order_id"
+        marker=f"order_id"
     
     transaction_sum=0
     for tran_id in unrecorded_id:
 
-        transaction = [o for o in trades_from_exchange if o[id] == tran_id]
+        transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
         
         #print(f"transaction {transaction} {order_id}")
         
