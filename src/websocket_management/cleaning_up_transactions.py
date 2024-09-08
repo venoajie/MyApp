@@ -87,6 +87,9 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
 
 
 def get_label_from_respected_id (trades_from_exchange, unrecorded_id) -> str:
+    log.info (f"trades_from_exchange {trades_from_exchange}")
+    log.info (f"unrecorded_id {unrecorded_id}")
+    
     return [o["label"] for o in trades_from_exchange if o[id] == unrecorded_id][0]
 
 async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, id_desc) -> None:
