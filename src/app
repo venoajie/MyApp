@@ -24,7 +24,7 @@ from utilities.system_tools import (
     catch_error_message)
 from utilities.string_modification import (
     parsing_label,remove_double_brackets_in_list,
-    extract_currency_from_text, remove_redundant_elements)
+    extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
@@ -48,7 +48,6 @@ from websocket_management.allocating_ohlc import (
     last_tick_fr_sqlite)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
-    querying_label_and_size,
     is_order_has_sent_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
@@ -59,7 +58,6 @@ from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_transactions,
-    get_unrecorded_order_id,
     check_if_transaction_has_closed_label_before
 )
 

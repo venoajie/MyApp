@@ -10,7 +10,6 @@ from utilities.number_modification import get_closest_value
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_transactions,
-    get_unrecorded_order_id,
 )
 from db_management.sqlite_management import (
     querying_table,
