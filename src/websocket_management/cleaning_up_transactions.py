@@ -64,9 +64,8 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
 
     from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
-    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument])
+    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument_name])
                                             )
-    
     #log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     from_exchange_trade_id = [o["trade_id"] for o in from_exchange_instrument]
