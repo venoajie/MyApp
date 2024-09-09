@@ -109,7 +109,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
 
         transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
         
-        #print(f"transaction {transaction} {order_id}")
+        log.error (f"transaction {transaction} {tran_id}")
         
         if transaction !=[]:
 
