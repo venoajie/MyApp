@@ -94,6 +94,7 @@ async def get_sub_account(currency) -> list:
     private_data = await get_private_data(currency)
 
     result_sub_account: dict = await private_data.get_subaccounts()
+    log.error(f"result_sub_account {result_sub_account}")
 
     return result_sub_account["result"]
 
