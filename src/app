@@ -53,13 +53,16 @@ from strategies.basic_strategy import (
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
 from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions
-from deribit_get import telegram_bot_sendtext, get_server_time
+from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_transactions,
     check_if_transaction_has_closed_label_before
 )
+
+def deribit_url_main() -> str:
+    return "https://www.deribit.com/api/v2/"
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -119,6 +122,37 @@ def currency_inline_with_database_address (currency: str, database_address: str)
     return currency.lower()  in str(database_address)
 
 
+async def get_and_save_currencies()->None:
+    
+    connection_url: str = deribit_url_main()
+
+    try:
+
+        get_currencies_all = await get_currencies(connection_url)
+        
+        currencies = [o["currency"] for o in get_currencies_all["result"]]
+        
+        log.error (f"{currencies}")
+
+        for currency in currencies:
+
+            instruments = await get_instruments(connection_url, currency)
+
+            my_path_instruments = provide_path_for_file("instruments", currency)
+
+            replace_data(my_path_instruments, instruments)
+
+        my_path_cur = provide_path_for_file("currencies")
+
+        replace_data(my_path_cur, currencies)
+        # catch_error('update currencies and instruments')
+
+    except Exception as error:
+        catch_error_message(
+        error, 10, "app"
+        )
+        
+        
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
@@ -245,7 +279,7 @@ class StreamAccountData:
 
         # Instance Variables
         self.connection_url: str = (
-            "https://www.deribit.com/api/v2/"
+            deribit_url_main()
             if "test" not in self.ws_connection_url
             else "https://test.deribit.com/api/v2/"
         )
@@ -282,6 +316,8 @@ class StreamAccountData:
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
+                
+                await get_and_save_currencies()
                 
                 instruments_name=get_instruments_name()
                 
@@ -798,6 +834,7 @@ def main():
         
 if __name__ == "__main__":
     try:
+        
         main()
         #asyncio.run(main())
         
