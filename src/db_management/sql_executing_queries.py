@@ -116,7 +116,7 @@ async def create_tables_json_sqlite(table, type: str = None):
 
             await cur.execute(f"{create_table}")
 
-            if "trades"  in table and "orders" "trades"  in table:
+            if "trades"  in table or "orders"  in table:
 
                 create_table_alter_sum_pos = f""" 
                                                 ALTER 
@@ -177,7 +177,7 @@ async def create_tables_json_sqlite(table, type: str = None):
                         f"create virtual columns {create_table_alter_label_strategy_order}"
                     )
 
-                if "myTrades" in table or "my_trades" in table:
+                if  "my_trades" in table:
 
                     await cur.execute(f"{create_table_alter_trade_seq}")
                     print(f"create virtual columns {create_table_alter_trade_seq}")
