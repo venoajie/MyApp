@@ -88,7 +88,7 @@ async def current_server_time() -> float:
     return current_time["result"]
 
 
-def get_futures_for_active_currencies () -> list:
+async def get_futures_for_active_currencies () -> list:
     """_summary_
 
     Returns:
@@ -100,6 +100,14 @@ def get_futures_for_active_currencies () -> list:
     
     instruments_holder_place= []
     for currency in currencies:
+        
+        portfolio = await get_account_summary(currency)
+        
+        path_portfolio: str = provide_path_for_file("portfolio", currency)
+        
+        replace_data(path_portfolio, portfolio)
+
+        await resupply_sub_accountdb(currency)
         future_instruments= get_instruments_kind (currency,"future" )
         
         instruments_holder_place.append(future_instruments)    
@@ -115,7 +123,7 @@ def get_futures_for_active_currencies () -> list:
     return remove_double_brackets_in_list(instruments_holder_plc)
     
     
-def get_instruments_name () -> list:
+async def get_instruments_name () -> list:
 
     return [o["instrument_name"] for o in get_futures_for_active_currencies()]
     
@@ -320,7 +328,7 @@ class StreamAccountData:
                 
                 await get_and_save_currencies()
                 
-                instruments_name=get_instruments_name()
+                instruments_name=await get_instruments_name()
                 
                 #log.warning(f"instruments_name {instruments_name}")
                 
@@ -329,13 +337,6 @@ class StreamAccountData:
 
                     currency=extract_currency_from_text(instrument).upper()
                 
-                    portfolio = await get_account_summary(currency)
-                    
-                    path_portfolio: str = provide_path_for_file("portfolio", currency)
-                    
-                    replace_data(path_portfolio, portfolio)
-    
-                    await resupply_sub_accountdb(currency)
                     
                     self.loop.create_task(
                         self.ws_operation(
