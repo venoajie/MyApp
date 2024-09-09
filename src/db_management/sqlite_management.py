@@ -167,7 +167,6 @@ async def create_tables(type: str = None):
                                                 state TEXT, 
                                                 order_type TEXT,
                                                 timestamp INTEGER,
-                                                trade_seq INTEGER,
                                                 trade_id TEXT, 
                                                 tick_direction INTEGER, 
                                                 order_id TEXT, 
@@ -250,10 +249,6 @@ async def create_tables(type: str = None):
                         table, "order_id", "TEXT"
                     )
 
-                    create_table_alter_trade_seq = create_virtual_table(
-                        table, "trade_seq", "INTEGER"
-                    )
-
                     create_table_alter_timestamp = create_virtual_table(
                         table, "timestamp", "INTEGER"
                     )
@@ -269,28 +264,22 @@ async def create_tables(type: str = None):
                             f"create virtual columns {create_table_alter_label_strategy_order}"
                         )
 
-                    if "myTrades" in table or "my_trades" in table:
+                    if "my_trades" in table:
                         await cur.execute(f"{create_table_alter_timestamp}")
                         print(f"create virtual columns {create_table_alter_timestamp}")
 
                     print(f"create virtual columns {create_table_alter_order_id}")
                     await cur.execute(f"{create_table_alter_order_id}")
+
+                    create_index = f"""CREATE INDEX order_id ON  {table} (order_id);"""
+                    await cur.execute(f"{create_index}")
+
                     print(f"create virtual columns {create_table_alter_label_strategy}")
                     await cur.execute(f"{create_table_alter_label_strategy}")
                     print(f"create virtual columns {create_table_alter_sum_pos}")
                     await cur.execute(f"{create_table_alter_sum_pos}")
                     print(f"create virtual columns {create_table_alter_price}")
                     await cur.execute(f"{create_table_alter_price}")
-
-                    create_index = f"""CREATE INDEX order_id ON  {table} (order_id);"""
-
-                    if "myTrades" in table or "my_trades" in table:
-
-                        create_index = f"""CREATE INDEX id ON  {table} (trade_seq);"""
-                        print(f"create_index myTrades {create_index}")
-
-                    else:
-                        await cur.execute(f"{create_index}")
 
                 if "ohlc" in table:
 
@@ -672,10 +661,10 @@ def querying_label_and_size(table) -> str:
     tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table}"
 
     if "trade" in table:
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id, trade_seq, FROM {table}"
+        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table}"
         
         if "closed" in table:
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, , trade_id, trade_seq FROM {table}"
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id FROM {table}"
     
     return tab
 
@@ -687,12 +676,12 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
 
     if "trade" in table:
         
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id, trade_seq FROM {table} {where_clause}"
+        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
         
         if "closed" in table:
             
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id, trade_seq FROM {table} {where_clause} ORDER BY id DESC "
+            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
             
             if limit>0:
                 

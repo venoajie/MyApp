@@ -154,11 +154,11 @@ async def create_tables_json_sqlite(table, type: str = None):
                 )
                 
                 create_table_alter_has_closed_label = texting_virtual_table(
-                    table, "has_closed_label", "TEXT"
+                    table, "has_closed_label", "INTEGER"
                 )
 
                 create_table_alter_trade_id = texting_virtual_table(
-                    table, "trade_id", "INTEGER"
+                    table, "trade_id", "TEXT"
                 )
 
                 create_table_alter_timestamp = texting_virtual_table(
@@ -185,6 +185,7 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                     await cur.execute(f"{create_table_alter_trade_id}")
                     print(f"create virtual columns {create_table_alter_trade_id}")
+                    
                     await cur.execute(f"{create_table_alter_timestamp}")
                     print(f"create virtual columns {create_table_alter_timestamp}")
                     
@@ -206,7 +207,7 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 if "my_trades" in table:
 
-                    create_index = f"""CREATE INDEX id ON  {table} (trade_id);"""
+                    create_index = f"""CREATE INDEX trade_id ON  {table} (trade_id);"""
                     print(f"create_index trd_id {create_index}")
 
                 else:
