@@ -21,14 +21,13 @@ async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
     """ """
     try:
         last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
-        print(f"last_open_interest {last_open_interest}")
 
     except Exception as error:
         await raise_error_message(
             error,
             "Capture market data - failed to fetch last open_interest",
         )
-    return last_open_interest[0]["open_interest"]
+    return 0 if last_open_interest == 0 else last_open_interest[0]["open_interest"]
 
 
 async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
