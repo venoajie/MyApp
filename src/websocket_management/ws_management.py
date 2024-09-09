@@ -80,7 +80,6 @@ async def get_account_summary(currency) -> list:
 
     account_summary: dict = await private_data.get_account_summary()
 
-    log.error(f"account_summary {account_summary}")
     return account_summary["result"]
 
 

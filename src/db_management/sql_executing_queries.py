@@ -57,6 +57,14 @@ def texting_table_json(table) -> str:
                             {table} 
                             (id INTEGER PRIMARY KEY, data TEXT, open_interest REAL)
                         """
+
+    if "portfolio_json" in table or "account_summary_json" in table or "market_analytics_json" in table or "supporting_items_json" in table:
+        query = f"""
+                        CREATE 
+                        TABLE IF NOT EXISTS 
+                            {table} 
+                            (id INTEGER PRIMARY KEY, data TEXT, time_stamp as INTEGER)
+                        """
     return query
 
 
@@ -108,7 +116,7 @@ async def create_tables_json_sqlite(table, type: str = None):
 
             await cur.execute(f"{create_table}")
 
-            if "ohlc" not in table:
+            if "trades"  in table and "orders" "trades"  in table:
 
                 create_table_alter_sum_pos = f""" 
                                                 ALTER 
@@ -129,6 +137,10 @@ async def create_tables_json_sqlite(table, type: str = None):
                                                 VIRTUAL;
                                                 
                                                 """
+                create_table_alter_instrument_name_strategy = texting_virtual_table(
+                    table, "instrument_name", "TEXT"
+                )
+                
                 create_table_alter_label_strategy = texting_virtual_table(
                     table, "label_main", "TEXT"
                 )
@@ -151,6 +163,13 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 create_table_alter_price = texting_virtual_table(table, "price", "REAL")
 
+
+                print(f"create virtual columns {create_table_alter_instrument_name_strategy}")
+                await cur.execute(f"{create_table_alter_instrument_name_strategy}")
+                
+                print(f"create virtual columns {create_table_alter_label_strategy}")
+                await cur.execute(f"{create_table_alter_label_strategy}")
+                
                 if "orders_all" in table:
 
                     await cur.execute(f"{create_table_alter_label_strategy_order}")
@@ -167,10 +186,10 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 print(f"create virtual columns {create_table_alter_order_id}")
                 await cur.execute(f"{create_table_alter_order_id}")
-                print(f"create virtual columns {create_table_alter_label_strategy}")
-                await cur.execute(f"{create_table_alter_label_strategy}")
+                
                 print(f"create virtual columns {create_table_alter_sum_pos}")
                 await cur.execute(f"{create_table_alter_sum_pos}")
+                
                 print(f"create virtual columns {create_table_alter_price}")
                 await cur.execute(f"{create_table_alter_price}")
 

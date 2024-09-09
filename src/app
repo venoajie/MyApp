@@ -333,7 +333,6 @@ class StreamAccountData:
                     
                     path_portfolio: str = provide_path_for_file("portfolio", currency)
                     
-                    log.warning(f"portfolio {portfolio}")
                     replace_data(path_portfolio, portfolio)
     
                     await resupply_sub_accountdb(currency)

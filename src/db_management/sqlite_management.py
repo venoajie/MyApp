@@ -270,9 +270,6 @@ async def create_tables(type: str = None):
                         )
 
                     if "myTrades" in table or "my_trades" in table:
-
-                        await cur.execute(f"{create_table_alter_trade_seq}")
-                        print(f"create virtual columns {create_table_alter_trade_seq}")
                         await cur.execute(f"{create_table_alter_timestamp}")
                         print(f"create virtual columns {create_table_alter_timestamp}")
 
