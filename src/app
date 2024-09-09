@@ -44,7 +44,7 @@ from websocket_management.ws_management import (
     is_size_consistent
     )
 from websocket_management.allocating_ohlc import (
-    ohlc_result_per_time_frame,
+    ohlc_result_per_time_frame,get_account_summary,
     last_tick_fr_sqlite)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -322,6 +322,12 @@ class StreamAccountData:
                 instruments_name=get_instruments_name()
                 
                 #log.warning(f"instruments_name {instruments_name}")
+                
+                portfolio = await get_account_summary()
+                
+                path_portfolio: str = provide_path_for_file("portfolio", currency)
+                
+                replace_data(path_portfolio, portfolio)
 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
