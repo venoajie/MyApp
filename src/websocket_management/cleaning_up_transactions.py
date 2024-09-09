@@ -99,7 +99,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     unrecorded_id.sort(reverse=True)
     #print(f"unrecorded_order_id {unrecorded_order_id}")
     #print(f"trades_from_exchange {trades_from_exchange}")
-    
+    table= "my_trades_all_json"
     if id_desc== "trade_id":
         marker=f"trade_id"
     
@@ -110,20 +110,24 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     for tran_id in unrecorded_id:
 
         transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
+        instrument_name= transaction[0] ["instrument_name"]
+        from_sqlite_open= await executing_general_query_with_single_filter(table, instrument_name)      
+        id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
-        log.error (f"transaction {transaction} {tran_id}")
+        log.error (f"transaction {instrument_name} {transaction} {tran_id}")
+        log.warning (f"id_has_registered_before {id_has_registered_before} {id_has_registered_before==[]}")
         
-        if transaction !=[]:
+        if transaction !=[] and id_has_registered_before==[]:
 
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction[0], label)
 
-            await insert_tables("my_trades_all_json", transaction)
+            await insert_tables(table, transaction)
 
 
-async def remove_duplicated_elements (instrument_name) -> None:
+async def remove_duplicated_elements () -> None:
     """ 
     
         # label/order id may be duplicated (consider an order id/label was 
@@ -131,55 +135,29 @@ async def remove_duplicated_elements (instrument_name) -> None:
         # There is only one trade_id
        
     """
+    
+    label_checked=["my_trades_all_json", "my_trades_closed_json"]
+    
+    where_filter = f"trade_id"
+    
+    for label in label_checked:
+        duplicated_elements = await querying_duplicated_transactions(label,where_filter)
+        log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
 
-    duplicated_elements = await querying_duplicated_transactions()
-    log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
-
-    if duplicated_elements != 0:
-        log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
-        )
-        duplicated_trade_id = [o["trade_id"] for o in duplicated_elements]
-
-        for trade_id in duplicated_trade_id:
-            
-            where_filter = f"trade_id"
-            await deleting_row(
-                "my_trades_all_json",
-                "databases/trading.sqlite3",
-                where_filter,
-                "=",
-                trade_id,
+        if duplicated_elements != 0:
+            log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             )
-            
+            duplicated_trade_id = [o[where_filter] for o in duplicated_elements]
 
-async def reconciling_between_db_and_exchg_data(instrument_name,
-    trades_from_exchange: list) -> None:
-    """ """
-    
-    unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
-                                  trades_from_exchange)
-    
-    unrecorded_order_id= unrecorded_transactions["unrecorded_order_id"]
-    unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
-    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
-    log.warning (f"unrecorded_trade_id {unrecorded_trade_id}")
-    
-    if unrecorded_order_id == []:
-        await remove_duplicated_elements (instrument_name)
-        
-    if unrecorded_order_id != None:
-        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_order_id, "order_id")
-
-    if unrecorded_trade_id != None:
-        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_trade_id, "trade_id")
-
-def get_transactions_with_closed_label(transactions_all: list) -> list:
-    """ """
-
-    log.error (f"transactions_all {transactions_all}")
-    return [] if(transactions_all == None or transactions_all == []) \
-        else [o for o in transactions_all if "closed" in o["label"]]
-
+            for trade_id in duplicated_trade_id:
+                
+                await deleting_row(
+                    label,
+                    "databases/trading.sqlite3",
+                    where_filter,
+                    "=",
+                    trade_id,
+                )
 
 async def clean_up_duplicate_elements() -> None:
     """ """
@@ -196,7 +174,7 @@ async def clean_up_duplicate_elements() -> None:
         log.debug(f"label_from_db_open {label in label_from_db_closed}")
         if label in label_from_db_closed:
             log.critical(f"del duplicate order id {label}")
-            where_filter = f"label_main"
+            where_filter = f"trade_id"
             await deleting_row(
                 "my_trades_all_json",
                 "databases/trading.sqlite3",
@@ -205,6 +183,33 @@ async def clean_up_duplicate_elements() -> None:
                 label,
             )
 
+
+async def reconciling_between_db_and_exchg_data(instrument_name,
+    trades_from_exchange: list) -> None:
+    """ """
+    
+    unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
+                                  trades_from_exchange)
+    
+    unrecorded_order_id= unrecorded_transactions["unrecorded_order_id"]
+    unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
+    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
+    log.warning (f"unrecorded_trade_id {unrecorded_trade_id}")
+           
+    if unrecorded_order_id != None:
+        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_order_id, "order_id")
+
+    if unrecorded_trade_id != None:
+        await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_trade_id, "trade_id")
+    
+    await remove_duplicated_elements ()
+
+def get_transactions_with_closed_label(transactions_all: list) -> list:
+    """ """
+
+    log.error (f"transactions_all {transactions_all}")
+    return [] if(transactions_all == None or transactions_all == []) \
+        else [o for o in transactions_all if "closed" in o["label"]]
 
 def get_closed_open_transactions_under_same_label_int(
     transactions_all: list, label: str
@@ -250,6 +255,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
     )
 
     for transaction in transaction_with_closed_labels:
+        
 
         size_to_close = await summing_transactions_under_label_int(
             transaction, transactions_all
@@ -268,19 +274,27 @@ async def clean_up_closed_transactions(instrument_name) -> None:
             log.error (f"""transactions_with_zero_sum {transactions_with_zero_sum}""")
             
             for transaction in transactions_with_zero_sum:
+        
                 order_id = transaction[where_filter]
-                log.warning (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
-                log.debug ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-
-                await insert_tables("my_trades_closed_json", transaction)
                 
-                await deleting_row(
-                    "my_trades_all_json",
-                    "databases/trading.sqlite3",
-                    where_filter,
-                    "=",
-                    order_id,
-                )
+                closed_table="my_trades_closed_json"      
+                
+                from_sqlite_closed= await executing_general_query_with_single_filter(closed_table, instrument_name)      
+                id_has_registered_before= [o for o in from_sqlite_closed if o[where_filter] == order_id]      
+                
+                log.warning (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
+                log.warning (f"""id_has_registered_before {id_has_registered_before} {id_has_registered_before==[]}""")
+
+                if id_has_registered_before==[]:
+                    await insert_tables(closed_table, transaction)
+                    
+                    await deleting_row(
+                        "my_trades_all_json",
+                        "databases/trading.sqlite3",
+                        where_filter,
+                        "=",
+                        order_id,
+                    )
 
 
 async def count_and_delete_ohlc_rows():
