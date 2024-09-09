@@ -502,8 +502,7 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     params = await executing_query_with_return(additional_params)
 
-    log.error (f"params {params}")
-    if params !=0 or params !=[]:
+    if params !=0:
 
         additional_params_label = [o for o in params if label in o["label"]][0]    
         
