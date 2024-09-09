@@ -142,7 +142,7 @@ async def create_tables_json_sqlite(table, type: str = None):
                 )
                 
                 create_table_alter_label_strategy = texting_virtual_table(
-                    table, "label_main", "TEXT"
+                    table, "label", "TEXT"
                 )
 
                 create_table_alter_label_strategy_order = texting_virtual_table(

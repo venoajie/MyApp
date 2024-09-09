@@ -223,7 +223,7 @@ async def create_tables(type: str = None):
                                                     TABLE 
                                                         {table} 
                                                     ADD COLUMN 
-                                                        label_main TEXT  
+                                                        label TEXT  
                                                     GENERATED ALWAYS AS 
                                                     (
                                                     (JSON_EXTRACT (data, '$.label'))
@@ -432,7 +432,7 @@ async def querying_completed_transactions(
 ) -> list:
     """ """
 
-    query_table = f"""SELECT  * FROM (select REPLACE(REPLACE (label_main,'closed-',''), 'open-','') as label, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)"""
+    query_table = f"""SELECT  * FROM (select REPLACE(REPLACE (label,'closed-',''), 'open-','') as label, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)"""
 
     combine_result = []
 
@@ -587,7 +587,7 @@ def querying_last_open_interest(
 
 def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
 
-    return f"SELECT * from {table} where not (label_main LIKE '%value1%' or label_main LIKE '%value2%' or label_main LIKE'%value3%');"
+    return f"SELECT * from {table} where not (label LIKE '%value1%' or label LIKE '%value2%' or label LIKE'%value3%');"
 
 
 async def update_status_closed_trades(filter_value) -> str:
@@ -658,13 +658,13 @@ def querying_arithmetic_operator(
 
 
 def querying_label_and_size(table) -> str:
-    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table}"
+    tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table}"
 
     if "trade" in table:
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table}"
+        tab = f"SELECT instrument_name, label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table}"
         
         if "closed" in table:
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id FROM {table}"
+            tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table}"
     
     return tab
 
@@ -672,16 +672,16 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
     
     where_clause= f"WHERE (instrument_name LIKE '%{filter}%')"
     
-    tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
+    tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
 
     if "trade" in table:
         
-        tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
+        tab = f"SELECT instrument_name, label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
         
         if "closed" in table:
             
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
+            tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
             
             if limit>0:
                 
@@ -764,7 +764,7 @@ def querying_trade_table_basics(
     if filter is None:
         selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
     else:
-        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label_main')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
+        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
 
     return selected_data
 
