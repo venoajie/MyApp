@@ -124,8 +124,10 @@ async def get_futures_for_active_currencies () -> list:
     
     
 async def get_instruments_name () -> list:
+    
+    active_currencies=  await get_futures_for_active_currencies()
 
-    return [o["instrument_name"] for o in get_futures_for_active_currencies()]
+    return [o["instrument_name"] for o in active_currencies]
     
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
