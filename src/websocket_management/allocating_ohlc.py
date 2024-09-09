@@ -21,6 +21,7 @@ async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
     """ """
     try:
         last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
+        print(f"last_open_interest {last_open_interest}")
 
     except Exception as error:
         await raise_error_message(
