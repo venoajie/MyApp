@@ -504,6 +504,8 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params_label = [o for o in params if label in o["label"]][0]
     
+    log.error (f"additional_params_label {additional_params_label}")
+    
     if "take_profit" not in trade:
         trade.update({"take_profit": additional_params_label["take_profit"]})
         
