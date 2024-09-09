@@ -63,7 +63,7 @@ def texting_table_json(table) -> str:
                         CREATE 
                         TABLE IF NOT EXISTS 
                             {table} 
-                            (id INTEGER PRIMARY KEY, data TEXT, time_stamp as INTEGER)
+                            (id INTEGER PRIMARY KEY, data TEXT, time_stamp  INTEGER)
                         """
     return query
 
