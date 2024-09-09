@@ -73,10 +73,10 @@ async def get_private_data(currency: str = None) -> list:
     return GetPrivateData(connection_url, client_id, client_secret, currency)
 
 
-async def get_account_summary() -> list:
+async def get_account_summary(currency) -> list:
     """ """
 
-    private_data = await get_private_data()
+    private_data = await get_private_data(currency)
 
     account_summary: dict = await private_data.get_account_summary()
 
@@ -119,7 +119,7 @@ async def reading_from_pkl_database(currency) -> float:
 
     # log.debug (my_trades_open)
     if portfolio in NONE_DATA:
-        portfolio = await get_account_summary()
+        portfolio = await get_account_summary(currency)
         replace_data(path_portfolio, portfolio)
         portfolio = read_data(path_portfolio)
 
