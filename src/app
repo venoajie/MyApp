@@ -328,6 +328,8 @@ class StreamAccountData:
 
                     currency=extract_currency_from_text(instrument).upper()
                     
+                    await resupply_sub_accountdb(currency)
+                    
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
