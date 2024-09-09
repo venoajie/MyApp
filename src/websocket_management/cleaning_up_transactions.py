@@ -161,6 +161,8 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
     
     unrecorded_order_id= unrecorded_transactions["unrecorded_order_id"]
     unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
+    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
+    log.warning (f"unrecorded_trade_id {unrecorded_trade_id}")
     
     if unrecorded_order_id == []:
         await remove_duplicated_elements (instrument_name)
