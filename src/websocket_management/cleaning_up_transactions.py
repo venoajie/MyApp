@@ -172,7 +172,9 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
 def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
 
-    return [o for o in transactions_all if "closed" in o["label"]]
+    log.error (f"transactions_all {transactions_all}")
+    return [] if(transactions_all == None or transactions_all == []) \
+        else [o for o in transactions_all if "closed" in o["label"]]
 
 
 async def clean_up_duplicate_elements() -> None:
