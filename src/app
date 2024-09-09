@@ -324,18 +324,18 @@ class StreamAccountData:
                 
                 #log.warning(f"instruments_name {instruments_name}")
                 
-                portfolio = await get_account_summary()
-                
-                path_portfolio: str = provide_path_for_file("portfolio", currency)
-                
-                log.warning(f"portfolio {portfolio}")
-                replace_data(path_portfolio, portfolio)
-
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
 
                     currency=extract_currency_from_text(instrument).upper()
+                
+                    portfolio = await get_account_summary(currency)
                     
+                    path_portfolio: str = provide_path_for_file("portfolio", currency)
+                    
+                    log.warning(f"portfolio {portfolio}")
+                    replace_data(path_portfolio, portfolio)
+    
                     await resupply_sub_accountdb(currency)
                     
                     self.loop.create_task(
