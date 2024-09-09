@@ -152,9 +152,13 @@ async def create_tables_json_sqlite(table, type: str = None):
                 create_table_alter_order_id = texting_virtual_table(
                     table, "order_id", "TEXT"
                 )
+                
+                create_table_alter_has_closed_label = texting_virtual_table(
+                    table, "has_closed_label", "TEXT"
+                )
 
-                create_table_alter_trade_seq = texting_virtual_table(
-                    table, "trade_seq", "INTEGER"
+                create_table_alter_trade_id = texting_virtual_table(
+                    table, "trade_id", "INTEGER"
                 )
 
                 create_table_alter_timestamp = texting_virtual_table(
@@ -179,10 +183,15 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 if  "my_trades" in table:
 
-                    await cur.execute(f"{create_table_alter_trade_seq}")
-                    print(f"create virtual columns {create_table_alter_trade_seq}")
+                    await cur.execute(f"{create_table_alter_trade_id}")
+                    print(f"create virtual columns {create_table_alter_trade_id}")
                     await cur.execute(f"{create_table_alter_timestamp}")
                     print(f"create virtual columns {create_table_alter_timestamp}")
+                    
+                    if  "closed" not in table:
+                        await cur.execute(f"{create_table_alter_has_closed_label}")
+                        print(f"create virtual columns {create_table_alter_has_closed_label}")
+                    
 
                 print(f"create virtual columns {create_table_alter_order_id}")
                 await cur.execute(f"{create_table_alter_order_id}")
@@ -195,10 +204,10 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 create_index = f"""CREATE INDEX order_id ON  {table} (order_id);"""
 
-                if "myTrades" in table or "my_trades" in table:
+                if "my_trades" in table:
 
-                    create_index = f"""CREATE INDEX id ON  {table} (trade_seq);"""
-                    print(f"create_index myTrades {create_index}")
+                    create_index = f"""CREATE INDEX id ON  {table} (trade_id);"""
+                    print(f"create_index trd_id {create_index}")
 
                 else:
                     await cur.execute(f"{create_index}")
