@@ -41,10 +41,11 @@ from websocket_management.ws_management import (
     get_my_trades_from_exchange,
     reading_from_pkl_database,
     reading_from_db,
-    is_size_consistent
+    is_size_consistent,
+    get_account_summary
     )
 from websocket_management.allocating_ohlc import (
-    ohlc_result_per_time_frame,get_account_summary,
+    ohlc_result_per_time_frame,
     last_tick_fr_sqlite)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
