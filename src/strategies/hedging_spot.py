@@ -188,7 +188,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
-        #print (f"params {params}")
+        print (f"params {params}")
         hedging_attributes= hedging_spot_attributes()[0]
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -196,7 +196,7 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
-        #print(TA_result_data)
+        print(TA_result_data)
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -218,9 +218,9 @@ class HedgingSpot(BasicStrategy):
             "my_trades_all_json"
         )
 
-        #print(
-        #    f"my_trades {currency.upper() } {my_trades}  {self.strategy_label}"
-        #)
+        print(
+            f"my_trades {currency.upper() } {my_trades}  {self.strategy_label}"
+        )
         my_trades_currency_strategy= [o for o in my_trades["result_all"] if currency.upper() in o["instrument_name"] and self.strategy_label in o["label"]]
 
         #print(
