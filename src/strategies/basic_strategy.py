@@ -147,6 +147,7 @@ async def get_market_condition(
     delta_price_pct_ema_low_high = delta_pct(ema_low_9, ema_high_9)
 
     last_price = TA_result_data["last_price"]
+
     if last_price > ema_short and ema_short > ema_long:
         rising_price = True
 

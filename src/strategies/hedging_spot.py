@@ -123,6 +123,8 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
     fluctuation_exceed_threshold = TA_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
+    
+    print (f"index_price {index_price} open_60 {open_60} delta_price_pct {delta_price_pct} threshold {threshold}")
 
     if fluctuation_exceed_threshold or True:
 
