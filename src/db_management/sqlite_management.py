@@ -713,10 +713,10 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
             tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
             
-            if limit>0:
+            if limit > 0:
                 
                 tab= f"{tab} LIMIT {limit}"
-    log.error (f"table {tab}")
+    #log.error (f"table {tab}")
     return tab
 
 def querying_closed_transactions(

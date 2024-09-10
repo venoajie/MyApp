@@ -122,19 +122,15 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
     """ """
     neutral_price, rising_price, falling_price = False, False, False
     strong_rising_price, strong_falling_price = False, False
-    #print (f"TA_result_data {TA_result_data}")
     
     TA_data=[o for o in TA_result_data if o["tick"] == max([i["tick"] for i in TA_result_data])][0]
-    #print (f"TA_data {TA_data}")
 
     open_60 = TA_data["60_open"]
-    current_higher_open = TA_data["1m_current_higher_open"]
+
     fluctuation_exceed_threshold = TA_data["1m_fluctuation_exceed_threshold"]
 
     delta_price_pct = delta_pct(index_price, open_60)
     
-    print (f"index_price {index_price} open_60 {open_60} delta_price_pct {delta_price_pct} threshold {threshold}")
-
     if fluctuation_exceed_threshold or True:
 
         if index_price > open_60:
@@ -152,9 +148,6 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
     if rising_price == False and falling_price == False:
         neutral_price = True
 
-    print(
-            f"is_neutral {neutral_price} is_bearish {falling_price} is_bullish {rising_price} strong_bullish {strong_rising_price} strong_bearish {strong_falling_price}"
-        )
     return dict(
         rising_price=rising_price,
         strong_rising_price=strong_rising_price,
@@ -201,49 +194,35 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
-        #log.info (TA_result_data)
 
-        bullish = market_condition["rising_price"]
+        #bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
 
-        strong_bullish = market_condition["strong_rising_price"]
+        #strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
-        neutral = market_condition["neutral_price"]
+        #neutral = market_condition["neutral_price"]
         
         weighted_factor= hedging_attributes["weighted_factor"]
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
-        #log.info (f"waiting_minute_before_cancel {waiting_minute_before_cancel}")
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
-        #log.info (f"SIZE_FACTOR {SIZE_FACTOR}")
-        #log.info (f"notional {notional}")
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
-        #log.info (f"size {size}")
-
 
         open_orders_label_strategy=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label,"open")
         log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)
-        log.info (f"len_orders {len_orders}")
         
         my_trades_currency_strategy=  list=await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
 
-        #print(
-        #    f"my_trades_currency_strategy {my_trades_currency_strategy}"
-        #)
-
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
-
-        log.info (f"sum_my_trades {sum_my_trades} notional {notional}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
                 notional, sum_my_trades
             )
         )
-        log.warning(f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}")
 
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
@@ -260,7 +239,7 @@ class HedgingSpot(BasicStrategy):
                 and (bearish or strong_bearish)
                 and fluctuation_exceed_threshold
             )
-        print(f"order_allowed {order_allowed}")
+        #print(f"order_allowed {order_allowed}")
         
         if order_allowed:
             label_open: str = get_label("open", self.strategy_label)
@@ -277,8 +256,6 @@ class HedgingSpot(BasicStrategy):
                 
                 order_allowed=False
         
-        #print(f" params {params}")
-
         return dict(
             order_allowed=order_allowed,
             order_parameters=[] if order_allowed == False else params,
@@ -302,6 +279,7 @@ class HedgingSpot(BasicStrategy):
          'price': 2455.25, 'state': 'filled', 'timestamp': 1725198276199, 'label': 'hedgingSpot-open-1725198275948'}
         
         hedging_attributes= hedging_spot_attributes()[0]
+
         currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -312,18 +290,8 @@ class HedgingSpot(BasicStrategy):
 
         bullish = market_condition["rising_price"]
         strong_bullish = market_condition["strong_rising_price"]
-        neutral = market_condition["neutral_price"]
+        #neutral = market_condition["neutral_price"]
         # is_bearish = market_condition["falling_price"]
-
-        # my_trades: dict = await self.get_basic_params().transaction_attributes(
-        #    "my_trades_all_json"
-        # )
-
-        # sum_my_trades: int = my_trades["transactions_sum"]
-
-        # hedged_value_is_still_safe: bool = self.is_hedged_value_to_notional_exceed_threshold(
-        #    notional, sum_my_trades, MIN_HEDGING_RATIO
-        # )
 
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
             market_condition, ask_price, bid_price, selected_transaction
