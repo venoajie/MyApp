@@ -692,7 +692,7 @@ class StreamAccountData:
                                         "WebSocket connection - failed to process data"
                                     )
 
-                                    continue
+                                    #continue
                                     
                 else:
                 
