@@ -180,7 +180,10 @@ async def if_order_is_true(order, instrument: str = None) -> None:
     if order["order_allowed"]:
 
         # get parameter orders
-        params = order["order_parameters"]
+        try:
+            params = order["order_parameters"]
+        except:
+            params = order
 
         if instrument != None:
             # update param orders with instrument
