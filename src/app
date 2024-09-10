@@ -652,8 +652,8 @@ class StreamAccountData:
                                                     log.critical (f"CLOSING HEDGING-DONE")
                                                     
                                             
-                                        except error as e:
-                                            log.info(f" error {e}")
+                                        except Exception as error:
+                                            log.info(f" error {error}")
                                             continue
                                                                 
                                 except Exception as error:

@@ -745,7 +745,7 @@ async def executing_general_query_with_single_filter(table, filter, limit: int= 
     # execute query
     result = await executing_query_with_return(query)
     
-    log.critical (f"table {table} filter {filter}")
+    #log.critical (f"table {table} filter {filter}")
     #log.info (f"result {result}")
 
     # define none from queries result. If the result=None, return []
