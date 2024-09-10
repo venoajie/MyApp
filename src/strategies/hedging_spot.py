@@ -193,7 +193,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
-        log.info  (f"params {params}")
+        #log.info  (f"params {params}")
         hedging_attributes= hedging_spot_attributes()[0]
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -201,7 +201,7 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
-        log.info (TA_result_data)
+        #log.info (TA_result_data)
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -212,17 +212,17 @@ class HedgingSpot(BasicStrategy):
         
         weighted_factor= hedging_attributes["weighted_factor"]
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
-        log.info (f"waiting_minute_before_cancel {waiting_minute_before_cancel}")
+        #log.info (f"waiting_minute_before_cancel {waiting_minute_before_cancel}")
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
-        log.info (f"SIZE_FACTOR {SIZE_FACTOR}")
-        log.info (f"notional {notional}")
+        #log.info (f"SIZE_FACTOR {SIZE_FACTOR}")
+        #log.info (f"notional {notional}")
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
-        log.info (f"size {size}")
+        #log.info (f"size {size}")
 
 
-        open_orders_label_strategy=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label)
+        open_orders_label_strategy=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label,"open")
         log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)

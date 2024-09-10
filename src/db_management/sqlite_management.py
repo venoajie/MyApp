@@ -688,9 +688,19 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
     return tab
 
 
-def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_or_instrument, strategy, limit: int= 0, order: str="id") -> str:
+def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_or_instrument, strategy, status: str="all", limit: int= 0, order: str="id") -> str:
     
+    """_summary_
+    
+    status: all, open, closed
+
+    Returns:
+        _type_: _description_
+    """
     where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%')"
+    
+    if status != "all":
+        where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy} AND label LIKE '%{status}%')"
     
     tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
 
