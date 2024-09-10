@@ -168,6 +168,10 @@ async def manage_trades (trades: dict) -> None:
         
         instrument_name= trade["instrument_name"]
 
+        if "label" not in trade :
+            label=None
+            await get_additional_params_for_open_label (trade, label)
+            
         if "combo_id" in trade:
             await get_additional_params_for_futureSpread_transactions(trade)
         
@@ -438,7 +442,6 @@ class StreamAccountData:
                             )
                             currency_lower=currency
                             currency_upper=currency.upper()
-                            #! ########################################################################################################################
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 
@@ -574,15 +577,13 @@ class StreamAccountData:
                                                 await reconciling_between_db_and_exchg_data(instrument_ticker,
                                                     trades_from_exchange)
                                                 
-                                                log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
+                                                log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
                                                 await clean_up_closed_transactions(instrument_ticker)
                                                 log.critical (f"BALANCING-DONE")
                                                                                             
                                             else:                                                
                                                 # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]
-                                                
-                                                
+                                                equity: float = portfolio[0]["equity"]                                               
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
@@ -624,9 +625,7 @@ class StreamAccountData:
                                                             await if_order_is_true(send_order, instrument_ticker)
                                                             await if_cancel_is_true(send_order)
 
-                                                        log.critical (f"OPENING HEDGING-DONE")    
-                                                                                                
-                                                        
+                                                        log.critical (f"OPENING HEDGING-DONE")                                                                                                 
                                                         
                                                         my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
                                                             and "hedgingSpot" in (o["label"]) ]
