@@ -613,7 +613,7 @@ class StreamAccountData:
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]       
                                                 #log.info (f"equity {equity}")                                        
-                                                l#og.info (f"equity {portfolio}")                                        
+                                                #log.info (f"equity {portfolio}")                                        
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
