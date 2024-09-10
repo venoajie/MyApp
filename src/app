@@ -566,8 +566,8 @@ class StreamAccountData:
                                                 
                                             except:
                                                 index_price= ticker[0]["index_price"]
-                                                log.info (f"ticker {ticker}")
-                                                log.critical (f"index_price {index_price}")
+                                                #log.info (f"ticker {ticker}")
+                                                #log.critical (f"index_price {index_price}")
                                                 
                                             # gathering basic data
                                             reading_from_database: dict = await reading_from_pkl_database(currency)
@@ -625,7 +625,7 @@ class StreamAccountData:
                                                     
                                                     delta_time_seconds=delta_time/1000                                                
                                                     
-                                                    log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
+                                                    #log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
 
                                                     if delta_time_seconds < 120:#ensure freshness of ta
                                                         
