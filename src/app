@@ -30,6 +30,7 @@ from db_management.sqlite_management import (
     update_status_closed_trades,
     replace_row,querying_table,
     querying_arithmetic_operator,
+    executing_label_and_size_query,
     executing_general_query_with_single_filter,
     insert_tables)
 from websocket_management.ws_management import (
@@ -252,7 +253,17 @@ async def update_user_changes(data_orders, currency) -> None:
                 
                 order_id=order["order_id"]
                 
+                open_orders_sqlite = await executing_label_and_size_query(
+        "orders_all_json"
+    )
+                log.debug (f"open_orders_sqlite BEFORE {open_orders_sqlite}")
+                
                 await cancel_by_order_id (order_id)     
+                
+                open_orders_sqlite = await executing_label_and_size_query(
+        "orders_all_json"
+    )
+                log.error (f"open_orders_sqlite AFTER {open_orders_sqlite}")
                            
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
@@ -269,6 +280,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 await if_order_is_true(order, instrument_name)
 
             else:
+                
                 label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
                 
                 await manage_orders (order)            

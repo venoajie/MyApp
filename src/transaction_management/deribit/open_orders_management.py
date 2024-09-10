@@ -4,7 +4,7 @@
 from loguru import logger as log
 
 # user defined formula
-from db_management import sqlite_management
+from db_management.sqlite_management import executing_label_and_size_query,deleting_row, insert_tables
 
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -19,7 +19,7 @@ async def manage_orders(order: dict) -> None:
 
     #! ##############################################################################
 
-    open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+    open_orders_sqlite = await executing_label_and_size_query(
         "orders_all_json"
     )
 
@@ -70,7 +70,7 @@ async def manage_orders(order: dict) -> None:
         )
 
         # open_orders_sqlite =  await syn.querying_all('orders_all_json')
-        open_orders_sqlite = await sqlite_management.executing_label_and_size_query(
+        open_orders_sqlite = await executing_label_and_size_query(
             "orders_all_json"
         )
         # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
@@ -85,7 +85,7 @@ async def manage_orders(order: dict) -> None:
             where_filter = f"label"
 
         log.critical(f" deleting {order_id}")
-        await sqlite_management.deleting_row(
+        await deleting_row(
             "orders_all_json",
             "databases/trading.sqlite3",
             where_filter,
@@ -99,4 +99,4 @@ async def manage_orders(order: dict) -> None:
         or order_state == "triggered"
     ):
 
-        await sqlite_management.insert_tables("orders_all_json", order)
+        await insert_tables("orders_all_json", order)
