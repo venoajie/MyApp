@@ -16,7 +16,7 @@ from strategies.basic_strategy import (
 )
 from db_management.sqlite_management import (
     executing_general_query_with_single_filter,
-    querying_based_on_currency_or_instrument_and_strategy
+    executing_query_based_on_currency_or_instrument_and_strategy
     )
 from utilities.string_modification import (extract_currency_from_text)
 
@@ -222,7 +222,7 @@ class HedgingSpot(BasicStrategy):
         log.info (f"len_orders {len_orders}")
         
         my_trades: dict = await executing_general_query_with_single_filter("my_trades_all_json", currency.upper())
-        my_trades_test: list=await querying_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
+        my_trades_test: list=await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
                                             
 
         log.info (
