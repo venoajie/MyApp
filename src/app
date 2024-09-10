@@ -223,7 +223,7 @@ async def update_portfolio(data_orders, currency) -> None:
 async def update_user_changes(data_orders, currency) -> None:
     
     log.info(f"update_user_changes-START")
-    log.info (data_orders)
+    #log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -284,7 +284,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
     if positions:
-        log.debug (f"positions {positions}")
+        #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
     
     log.info(f"update_user_changes-END")
@@ -611,8 +611,8 @@ class StreamAccountData:
                                             else:                                                
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]       
-                                                log.info (f"equity {equity}")                                        
-                                                log.info (f"equity {portfolio}")                                        
+                                                #log.info (f"equity {equity}")                                        
+                                                l#og.info (f"equity {portfolio}")                                        
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 

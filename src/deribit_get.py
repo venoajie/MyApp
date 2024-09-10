@@ -457,9 +457,9 @@ class GetPrivateData:
 
         order_result = None
 
-        log.info(
-            f"""params {params}"""
-        )
+        #log.info(
+        #    f"""params {params}"""
+        #)
         if side != None:
             order_result = await self.send_order(
                 side,
@@ -473,9 +473,9 @@ class GetPrivateData:
         log.warning(f'order_result {order_result}')
         result_order = order_result["result"]["order"]
         # log.warning(f"""result {order_result["result"]}""")
-        log.info(
-            f"""{result_order["label"]} {result_order["direction"]} {result_order["amount"]} {result_order["order_id"]}"""
-        )
+        #log.info(
+        #    f"""{result_order["label"]} {result_order["direction"]} {result_order["amount"]} {result_order["order_id"]}"""
+        #)
 
         if order_result != None and "error" in order_result:
             await telegram_bot_sendtext("limit order failed")
