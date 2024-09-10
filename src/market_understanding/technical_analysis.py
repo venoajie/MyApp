@@ -220,7 +220,7 @@ async def get_market_condition(instrument,
             # print (f"result{ohlc_1_high_9}")
             result.update({"last_price": last_price})
 
-            vwap_period = 100
+            vwap_period = 10
 
             ohlc_all = await get_price_ohlc(f"close", table_1, vwap_period)
             log.error (f"ohlc_all {ohlc_all}")
