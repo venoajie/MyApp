@@ -309,7 +309,7 @@ def get_transactions_as_per_strategy(
             [
                 o
                 for o in my_trades_open_sqlite["all"]
-                if parsing_label(o["label_main"])[f"{detail}"]
+                if parsing_label(o["label"])[f"{detail}"]
                 == parsing_label(label)[f"{detail}"]
             ]
         )
@@ -326,7 +326,7 @@ def get_net_sum_strategy_super_main(my_trades_open_sqlite: list, label: str) -> 
             [
                 o["amount_dir"]
                 for o in my_trades_open_sqlite["all"]
-                if parsing_label(o["label_main"])["super_main"]
+                if parsing_label(o["label"])["super_main"]
                 == parsing_label(label)["super_main"]
             ]
         )
@@ -367,7 +367,7 @@ def get_net_sum_strategy_main(my_trades_open_sqlite: list, label: str) -> float:
             [
                 o["amount_dir"]
                 for o in my_trades_open_sqlite["all"]
-                if parsing_label(o["label_main"])["main"]
+                if parsing_label(o["label"])["main"]
                 == parsing_label(label)["main"]
             ]
         )
@@ -389,7 +389,7 @@ def my_trades_open_sqlite_detailing(
                 [
                     o
                     for o in transactions
-                    if parsing_label(o["label_main"])["main"]
+                    if parsing_label(o["label"])["main"]
                     == parsing_label(label)["main"]
                 ]
             )
@@ -403,7 +403,7 @@ def my_trades_open_sqlite_detailing(
                 [
                     o
                     for o in transactions
-                    if parsing_label(o["label_main"])["transaction_net"] == label
+                    if parsing_label(o["label"])["transaction_net"] == label
                 ]
             )
         )
@@ -427,7 +427,7 @@ def sum_my_trades_open_sqlite(transactions, label, detail_level: str = None) -> 
         detailing_parsed_amt_for_closed_trans = (
             0
             if detailing_parsed == []
-            else [o["amount_dir"] for o in detailing_parsed if "label_main" in o]
+            else [o["amount_dir"] for o in detailing_parsed if "label" in o]
         )
         detailing_parsed_amt_for_opened_trans = [
             (o["amount_dir"]) for o in detailing if o["amount_dir"] != None

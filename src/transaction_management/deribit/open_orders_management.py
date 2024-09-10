@@ -82,7 +82,7 @@ async def manage_orders(order: dict) -> None:
         where_filter = f"order_id"
         if is_order_id_in_active_orders == []:
             order_id = order["label"]
-            where_filter = f"label_main"
+            where_filter = f"label"
 
         log.critical(f" deleting {order_id}")
         await sqlite_management.deleting_row(
