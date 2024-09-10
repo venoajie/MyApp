@@ -31,7 +31,6 @@ from db_management.sqlite_management import (
     replace_row,querying_table,
     querying_arithmetic_operator,
     executing_general_query_with_single_filter,
-    querying_based_on_currency_or_instrument_and_strategy,
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -612,9 +611,7 @@ class StreamAccountData:
                                                                                             
                                             else:                                                
                                                 # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]       
-                                                log.info (f"equity {equity} index_price {index_price} ticker {ticker}")                                        
-                                                #log.info (f"equity {portfolio}")                                        
+                                                equity: float = portfolio[0]["equity"]                                   
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
