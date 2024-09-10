@@ -58,13 +58,6 @@ def texting_table_json(table) -> str:
                             (id INTEGER PRIMARY KEY, data TEXT, open_interest REAL)
                         """
 
-    if "portfolio_json" in table or "account_summary_json" in table or "market_analytics_json" in table or "supporting_items_json" in table:
-        query = f"""
-                        CREATE 
-                        TABLE IF NOT EXISTS 
-                            {table} 
-                            (id INTEGER PRIMARY KEY, data TEXT, time_stamp  INTEGER)
-                        """
     return query
 
 
@@ -213,7 +206,7 @@ async def create_tables_json_sqlite(table, type: str = None):
                 else:
                     await cur.execute(f"{create_index}")
 
-            if "ohlc" in table:
+            if "ohlc" in table or "market_analytics" in table:
 
                 create_table_alter_tick = texting_virtual_table(
                     table, "tick", "INTEGER"

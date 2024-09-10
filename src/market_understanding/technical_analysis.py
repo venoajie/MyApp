@@ -223,9 +223,12 @@ async def get_market_condition(instrument,
             vwap_period = 100
 
             ohlc_all = await get_price_ohlc(f"close", table_1, vwap_period)
+            log.error (f"ohlc_all {ohlc_all}")
 
             df_vwap = await get_vwap(ohlc_all, vwap_period)
+            log.error (f"df_vwap {df_vwap}")
             vwap = df_vwap.iloc[-1]
+            log.debug (f"vwap {vwap}")
             result.update({f"1m_vwap": vwap})
             log.error(f"TA {result}")
             return result
