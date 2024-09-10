@@ -209,7 +209,7 @@ async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
 
     result = await private_data.get_cancel_order_byOrderId(open_order_id)
-    log.info(f"CANCEL_by_order_id {result}")
+    log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
 
     return result
 

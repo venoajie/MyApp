@@ -237,7 +237,7 @@ async def update_user_changes(data_orders, currency) -> None:
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
         
-        log.warning (f"orders {orders}")
+        #log.warning (f"orders {orders}")
         
         for order in orders:
 
@@ -264,7 +264,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 side_label= "Short" if side== "sell" else "Long"
                 label_open: str = get_label("open", f"custom{side_label.title()}")
                 order.update({"label": label_open})
-                log.error (f"order {order}")
+                #log.error (f"order {order}")
                 
                 await if_order_is_true(order, instrument_name)
 
