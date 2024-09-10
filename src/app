@@ -237,7 +237,12 @@ async def update_user_changes(data_orders, currency) -> None:
         
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
-        
+    
+        open_orders_sqlite = await executing_label_and_size_query(
+"orders_all_json"
+)
+        log.debug (f"open_orders_sqlite BEFORE 1 {open_orders_sqlite}")
+            
         #log.warning (f"orders {orders}")
         
         for order in orders:
@@ -295,6 +300,12 @@ async def update_user_changes(data_orders, currency) -> None:
                 await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
+
+        open_orders_sqlite = await executing_label_and_size_query(
+"orders_all_json"
+)
+        log.debug (f"open_orders_sqlite AFTER 1 {open_orders_sqlite}")
+            
     if positions:
         #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
