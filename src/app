@@ -204,7 +204,6 @@ async def manage_trades (trades: dict) -> None:
                 
                 if "closed" in label:
                     await clean_up_closed_transactions (instrument_name)
-
         
 async def manage_positions (positions: dict, currency: str) -> None:
 
@@ -237,11 +236,6 @@ async def update_user_changes(data_orders, currency) -> None:
         
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
-    
-        open_orders_sqlite = await executing_label_and_size_query(
-"orders_all_json"
-)
-        log.debug (f"open_orders_sqlite BEFORE 1 {open_orders_sqlite}")
             
         #log.warning (f"orders {orders}")
         
@@ -258,18 +252,8 @@ async def update_user_changes(data_orders, currency) -> None:
                 
                 order_id=order["order_id"]
                 
-                open_orders_sqlite = await executing_label_and_size_query(
-        "orders_all_json"
-    )
-                log.debug (f"open_orders_sqlite BEFORE {open_orders_sqlite}")
-                
                 await cancel_by_order_id (order_id)     
                 
-                open_orders_sqlite = await executing_label_and_size_query(
-        "orders_all_json"
-    )
-                log.error (f"open_orders_sqlite AFTER {open_orders_sqlite}")
-                           
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
                 order.update({"order_allowed": True})
@@ -282,23 +266,9 @@ async def update_user_changes(data_orders, currency) -> None:
                 order.update({"label": label_open})
                 #log.error (f"order {order}")
                 
-                open_orders_sqlite = await executing_label_and_size_query(
-        "orders_all_json"
-    )
-                log.debug (f"open_orders_sqlite BEFORE XX {open_orders_sqlite}")
-                
                 await if_order_is_true(order, instrument_name)
 
-                open_orders_sqlite = await executing_label_and_size_query(
-        "orders_all_json"
-    )
-                log.debug (f"open_orders_sqlite AFTER XX {open_orders_sqlite}")
-                
             else:
-                open_orders_sqlite = await executing_label_and_size_query(
-"orders_all_json"
-)
-                log.debug (f"open_orders_sqlite BEFORE A {open_orders_sqlite}")
     
                 label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
                 
@@ -306,33 +276,14 @@ async def update_user_changes(data_orders, currency) -> None:
 
                 if label_has_exist_before:
                     await cancel_the_cancellables()
-
-                open_orders_sqlite = await executing_label_and_size_query(
-"orders_all_json"
-)
-                log.debug (f"open_orders_sqlite AFTEr A {open_orders_sqlite}")
     
             everything_consistent= is_everything_consistent(order)
             log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
             
             if  not everything_consistent:
-                
-                open_orders_sqlite = await executing_label_and_size_query(
-"orders_all_json"
-)
-                log.debug (f"open_orders_sqlite BEFORE X {open_orders_sqlite}")
-    
                 await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
-                log.debug (f"open_orders_sqlite AFTEr X {open_orders_sqlite}")
-    
-
-        open_orders_sqlite = await executing_label_and_size_query(
-"orders_all_json"
-)
-        log.debug (f"open_orders_sqlite AFTER 1 {open_orders_sqlite}")
-            
     if positions:
         #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
