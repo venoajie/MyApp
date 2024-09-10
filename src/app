@@ -683,7 +683,7 @@ class StreamAccountData:
                                             
                                         except Exception as error:
                                             log.info(f" error {error}")
-                                            continue
+                                            #continue
                                                                 
                                 except Exception as error:
                                     log.error(error)
