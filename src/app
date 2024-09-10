@@ -253,14 +253,15 @@ async def update_user_changes(data_orders, currency) -> None:
                 
                 await cancel_by_order_id (order_id)     
                            
+                side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
                 order.update({"order_allowed": True})
                 order.update({"price": order["price"]})
                 order.update({"size": order["amount"]})
                 order.update({"type": "limit"})
                 order.update({"side": side})
-                side= "Short" if order["side"]< "sell" else "Long"
-                label_open: str = get_label("open", f"custom{side.title()}")
+                side_label= "Short" if side== "sell" else "Long"
+                label_open: str = get_label("open", f"custom{side_label.title()}")
                 order.update({"label": label_open})
                 log.error (f"order {order}")
                 
