@@ -285,7 +285,11 @@ async def update_user_changes(data_orders, currency) -> None:
                 await if_order_is_true(order, instrument_name)
 
             else:
-                
+                open_orders_sqlite = await executing_label_and_size_query(
+"orders_all_json"
+)
+                log.debug (f"open_orders_sqlite BEFORE A {open_orders_sqlite}")
+    
                 label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
                 
                 await manage_orders (order)            
@@ -293,13 +297,26 @@ async def update_user_changes(data_orders, currency) -> None:
                 if label_has_exist_before:
                     await cancel_the_cancellables()
 
+                open_orders_sqlite = await executing_label_and_size_query(
+"orders_all_json"
+)
+                log.debug (f"open_orders_sqlite AFTEr B {open_orders_sqlite}")
+    
             everything_consistent= is_everything_consistent(order)
             log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
             
             if  not everything_consistent:
+                
+                open_orders_sqlite = await executing_label_and_size_query(
+"orders_all_json"
+)
+                log.debug (f"open_orders_sqlite BEFORE X {open_orders_sqlite}")
+    
                 await cancel_the_cancellables()
                 await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
+                log.debug (f"open_orders_sqlite AFTEr Y {open_orders_sqlite}")
+    
 
         open_orders_sqlite = await executing_label_and_size_query(
 "orders_all_json"
