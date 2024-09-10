@@ -211,10 +211,13 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
         log.info (f"SIZE_FACTOR {SIZE_FACTOR}")
+        log.info (f"notional {notional}")
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
+        log.info (f"size {size}")
 
         len_orders: int = open_orders_label_strategy["transactions_len"]
+        log.info (f"len_orders {len_orders}")
         
         my_trades: dict = await self.get_basic_params().transaction_attributes(
             "my_trades_all_json"
@@ -238,7 +241,7 @@ class HedgingSpot(BasicStrategy):
                 notional, sum_my_trades, len_orders
             )
         )
-        print(f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}")
+        log.warning(f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}")
 
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
