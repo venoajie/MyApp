@@ -547,7 +547,9 @@ class StreamAccountData:
                                             # get portfolio data
                                             portfolio: list = reading_from_database["portfolio"]
 
-                                            my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            my_trades_instrument_all: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            
+                                            my_trades_instrument: list= [o for o in my_trades_instrument_all if ("label") in o]
                                             
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
                                             
