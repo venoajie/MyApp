@@ -256,7 +256,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
                 order.update({"order_allowed": True})
-                order.update({"price": order["price"]})
+                order.update({"entry_price": order["price"]})
                 order.update({"size": order["amount"]})
                 order.update({"type": "limit"})
                 order.update({"side": side})
