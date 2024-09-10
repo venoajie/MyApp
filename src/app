@@ -52,6 +52,8 @@ from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     is_order_has_sent_before,
     is_everything_consistent,
+    get_transaction_side,
+    get_label,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
 from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions
@@ -236,9 +238,7 @@ async def update_user_changes(data_orders, currency) -> None:
         from transaction_management.deribit.open_orders_management import manage_orders
         
         log.warning (f"orders {orders}")
-
-        await manage_orders (orders)
-
+        
         for order in orders:
 
             label=order["label"]
@@ -248,7 +248,6 @@ async def update_user_changes(data_orders, currency) -> None:
             log.error (order["label"]=="" )
 
             if  order["label"]=="" :
-                from strategies.basic_strategy import get_transaction_side,get_label
                 
                 order_id=order["order_id"]
                 
@@ -269,10 +268,13 @@ async def update_user_changes(data_orders, currency) -> None:
 
                 await if_order_is_true(order, instrument_name)
 
-            label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
+            else:
+                label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
+                
+                await manage_orders (order)            
 
-            if label_has_exist_before:
-                await cancel_the_cancellables()
+                if label_has_exist_before:
+                    await cancel_the_cancellables()
 
             everything_consistent= is_everything_consistent(order)
             log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
