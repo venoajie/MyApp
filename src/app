@@ -245,6 +245,7 @@ async def update_user_changes(data_orders, currency) -> None:
                         
             instrument_name=order["instrument_name"]
             
+            log.debug (order)
             log.error (order["label"]=="" )
 
             if  order["label"]=="" :

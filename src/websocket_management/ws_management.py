@@ -220,16 +220,22 @@ async def cancel_the_cancellables(filter: str = None) -> None:
     cancellable_strategies: dict = [
         o["strategy"] for o in params if o["cancellable"] == True
     ]
+    
+    log.error (f"cancellable_strategies {cancellable_strategies}")
 
     open_orders_sqlite = await executing_label_and_size_query("orders_all_json")
 
     if open_orders_sqlite != []:
 
         for strategy in cancellable_strategies:
+            
+            log.error (f"strategy {strategy}")
 
             open_orders_cancellables = [
                 o for o in open_orders_sqlite if strategy in o["label"]
             ]
+
+            log.error (f"open_orders_cancellables {open_orders_cancellables}")
 
             if open_orders_cancellables != []:
 
