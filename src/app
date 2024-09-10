@@ -42,7 +42,8 @@ from websocket_management.ws_management import (
     reading_from_pkl_database,
     reading_from_db,
     is_size_consistent,
-    get_account_summary
+    get_account_summary,
+    cancel_by_order_id
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -239,11 +240,35 @@ async def update_user_changes(data_orders, currency) -> None:
         await manage_orders (orders)
 
         for order in orders:
-                    
+
             label=order["label"]
-            
+                        
             instrument_name=order["instrument_name"]
             
+            log.error (order["label"]=="" )
+
+            if  order["label"]=="" :
+                from strategies.basic_strategy import get_transaction_side,get_label
+                
+                order_id=order["order_id"]
+                
+                await cancel_by_order_id (order_id)     
+                           
+                side= get_transaction_side(order)
+                order.update({"everything_is_consistent": True})
+                order.update({"order_allowed": True})
+                order.update({"price": order["price"]})
+                order.update({"size": order["amount"]})
+                order.update({"type": "limit"})
+                order.update({"side": side})
+                label_open: str = get_label("open", f"custom{side.title()}")
+                order.update({"label": label_open})
+                log.error (f"order {order}")
+                
+                await get_additional_params_for_open_label (order, label)
+
+                await if_order_is_true(order, instrument_name)
+
             label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
 
             if label_has_exist_before:
@@ -547,9 +572,7 @@ class StreamAccountData:
                                             # get portfolio data
                                             portfolio: list = reading_from_database["portfolio"]
 
-                                            my_trades_instrument_all: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
-                                            
-                                            my_trades_instrument: list= [o for o in my_trades_instrument_all if ("label") in o]
+                                            my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
                                             
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
                                             
