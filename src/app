@@ -30,8 +30,8 @@ from db_management.sqlite_management import (
     update_status_closed_trades,
     replace_row,querying_table,
     querying_arithmetic_operator,
-    executing_label_and_size_query,
     executing_general_query_with_single_filter,
+    querying_based_on_currency_or_instrument_and_strategy,
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,

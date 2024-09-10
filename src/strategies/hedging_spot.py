@@ -14,7 +14,10 @@ from strategies.basic_strategy import (
     delta_pct,get_label,
     size_rounding,is_everything_consistent
 )
-
+from db_management.sqlite_management import (
+    executing_general_query_with_single_filter,
+    querying_based_on_currency_or_instrument_and_strategy
+    )
 from utilities.string_modification import (extract_currency_from_text)
 
 def are_size_and_order_appropriate_for_ordering(
@@ -176,12 +179,11 @@ class HedgingSpot(BasicStrategy):
         
         one_minute=60000
 
-        open_orders_label_strategy: (
-            dict
-        ) = await self.get_basic_params().transaction_attributes(
+        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
             "orders_all_json", "open"
         )
-        #print (f"TA_result_data {TA_result_data}")
+        executing_general_query_with_single_filter("my_trades_all_json", currency.upper())
+        log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
@@ -219,14 +221,18 @@ class HedgingSpot(BasicStrategy):
         len_orders: int = open_orders_label_strategy["transactions_len"]
         log.info (f"len_orders {len_orders}")
         
-        my_trades: dict = await self.get_basic_params().transaction_attributes(
-            "my_trades_all_json"
-        )
+        my_trades: dict = await executing_general_query_with_single_filter("my_trades_all_json", currency.upper())
+        my_trades_test: list=await querying_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
+                                            
 
         log.info (
-            f"my_trades {currency.upper() } {my_trades}  {self.strategy_label}"
+            f"my_trades{my_trades} "
         )
-        my_trades_currency_strategy= [o for o in my_trades["result_all"] if currency.upper() in o["instrument_name"] and self.strategy_label in o["label"]]
+
+        log.debug (
+            f"my_trades_test {my_trades_test}"
+        )
+        my_trades_currency_strategy= [o for o in my_trades["result_all"] if  self.strategy_label in o["label"]]
 
         #print(
         #    f"my_trades_currency_strategy {my_trades_currency_strategy}"

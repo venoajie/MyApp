@@ -688,6 +688,27 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
     return tab
 
 
+def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_or_instrument, strategy, limit: int= 0, order: str="id") -> str:
+    
+    where_clause= f"WHERE ({currency_or_instrument} LIKE '%{filter}%' AND label LIKE '%{strategy}%')"
+    
+    tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
+
+    if "trade" in table:
+        
+        tab = f"SELECT instrument_name, label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
+        
+        if "closed" in table:
+            
+            #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
+            tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
+            
+            if limit>0:
+                
+                tab= f"{tab} LIMIT {limit}"
+    log.error (f"table {tab}")
+    return tab
+
 def querying_closed_transactions(
     limit: int = 20, order: str = "id", table: str = "my_trades_closed_json"
 ) -> str:
