@@ -229,7 +229,7 @@ async def get_market_condition(instrument,
             log.error (f"df_vwap {df_vwap}")
             vwap = df_vwap.iloc[-1]
             log.debug (f"vwap {vwap}")
-            result.update({f"1m_vwap": vwap})
+            #result.update({f"1m_vwap": vwap})
             log.error(f"TA {result}")
             return result
 
