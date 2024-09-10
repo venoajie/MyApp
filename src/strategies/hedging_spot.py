@@ -2,7 +2,7 @@
 
 # built ins
 import asyncio
-
+from loguru import logger as log
 # installed
 from dataclassy import dataclass
 from strategies.config_strategies import hedging_spot_attributes
@@ -188,7 +188,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
-        print (f"params {params}")
+        log.info  (f"params {params}")
         hedging_attributes= hedging_spot_attributes()[0]
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -196,7 +196,7 @@ class HedgingSpot(BasicStrategy):
         market_condition = await get_market_condition_hedging(currency,
             TA_result_data, index_price, threshold_market_condition
         )
-        print(TA_result_data)
+        log.info (TA_result_data)
 
         bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -207,8 +207,10 @@ class HedgingSpot(BasicStrategy):
         
         weighted_factor= hedging_attributes["weighted_factor"]
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+        log.info (f"waiting_minute_before_cancel {waiting_minute_before_cancel}")
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
+        log.info (f"SIZE_FACTOR {SIZE_FACTOR}")
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
 
@@ -218,7 +220,7 @@ class HedgingSpot(BasicStrategy):
             "my_trades_all_json"
         )
 
-        print(
+        log.info (
             f"my_trades {currency.upper() } {my_trades}  {self.strategy_label}"
         )
         my_trades_currency_strategy= [o for o in my_trades["result_all"] if currency.upper() in o["instrument_name"] and self.strategy_label in o["label"]]
@@ -229,7 +231,7 @@ class HedgingSpot(BasicStrategy):
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
 
-        print(f"sum_my_trades {sum_my_trades} notional {notional}")
+        log.info (f"sum_my_trades {sum_my_trades} notional {notional}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
