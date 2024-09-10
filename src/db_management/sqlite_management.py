@@ -690,7 +690,7 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
 
 def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_or_instrument, strategy, limit: int= 0, order: str="id") -> str:
     
-    where_clause= f"WHERE ({currency_or_instrument} LIKE '%{filter}%' AND label LIKE '%{strategy}%')"
+    where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%')"
     
     tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
 
