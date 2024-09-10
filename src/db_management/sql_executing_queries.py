@@ -63,7 +63,7 @@ def texting_table_json(table) -> str:
 
 def texting_virtual_table(table: str, item: str, item_data_type: str) -> str:
     """ """
-    item2 = "last_update_timestamp" if item == "timestamp" else item
+    item2 = "last_update_timestamp" if  "order" in table else item
     query = f""" 
             ALTER 
             TABLE 

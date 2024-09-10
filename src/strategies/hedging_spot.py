@@ -10,8 +10,10 @@ from strategies.config_strategies import hedging_spot_attributes
 # user defined formula
 from strategies.basic_strategy import (
     BasicStrategy,
+    get_order_id_max_time_stamp,
     is_minimum_waiting_time_has_passed,
     delta_pct,get_label,
+    get_max_time_stamp,
     size_rounding,is_everything_consistent
 )
 from db_management.sqlite_management import (
@@ -21,10 +23,14 @@ from db_management.sqlite_management import (
 from utilities.string_modification import (extract_currency_from_text)
 
 def are_size_and_order_appropriate_for_ordering(
-    notional: float, current_size: float, current_outstanding_order_len: int
-) -> bool:
+    notional: float, current_size: float) -> bool:
     """ """
-    return abs(current_size) < notional and current_outstanding_order_len == 0
+    return abs(current_size) < notional 
+
+
+def get_transactions_len(result_strategy_label) -> int:
+    """ """
+    return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
 
 
 def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
@@ -101,8 +107,8 @@ def is_cancelling_order_allowed(
 
         time_interval = get_timing_factor(strong_bearish, bearish, threshold)
 
-        max_tstamp_orders: int = open_orders_label_strategy["max_time_stamp"]
-
+        max_tstamp_orders: int = get_max_time_stamp(open_orders_label_strategy)
+        
         minimum_waiting_time_has_passed: bool = is_minimum_waiting_time_has_passed (
             server_time, max_tstamp_orders, time_interval
         )
@@ -179,12 +185,9 @@ class HedgingSpot(BasicStrategy):
         
         one_minute=60000
 
-        open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
-            "orders_all_json", "open"
-        )
-        executing_general_query_with_single_filter("my_trades_all_json", currency.upper())
-        log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
-
+        #open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
+        #    "orders_all_json", "open"
+        #)
         fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
         params: dict = self.get_basic_params().get_basic_opening_parameters(
@@ -218,21 +221,14 @@ class HedgingSpot(BasicStrategy):
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
         log.info (f"size {size}")
 
-        len_orders: int = open_orders_label_strategy["transactions_len"]
+
+        open_orders_label_strategy=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label)
+        log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
+
+        len_orders: int = get_transactions_len(open_orders_label_strategy)
         log.info (f"len_orders {len_orders}")
         
-        my_trades: dict = await executing_general_query_with_single_filter("my_trades_all_json", currency.upper())
-        my_trades_test: list=await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
-                                            
-
-        log.info (
-            f"my_trades{my_trades} "
-        )
-
-        log.debug (
-            f"my_trades_test {my_trades_test}"
-        )
-        my_trades_currency_strategy= [o for o in my_trades["result_all"] if  self.strategy_label in o["label"]]
+        my_trades_currency_strategy=  list=await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
 
         #print(
         #    f"my_trades_currency_strategy {my_trades_currency_strategy}"
@@ -244,7 +240,7 @@ class HedgingSpot(BasicStrategy):
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
-                notional, sum_my_trades, len_orders
+                notional, sum_my_trades
             )
         )
         log.warning(f"size_and_order_appropriate_for_ordering {size_and_order_appropriate_for_ordering}")
@@ -287,7 +283,7 @@ class HedgingSpot(BasicStrategy):
             order_allowed=order_allowed,
             order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
-            cancel_id=open_orders_label_strategy["order_id_max_time_stamp"],
+            cancel_id=get_order_id_max_time_stamp(open_orders_label_strategy)
         )
 
     async def is_send_exit_order_allowed(
