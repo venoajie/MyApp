@@ -68,7 +68,7 @@ async def test():
         )
 
         size_is_consistent: bool = await is_size_consistent(
-            sum_my_trades_instrument, size_from_position
+            sum_my_trades_instrument, size_from_position,instrument_ticker
             )
 
         if not size_is_consistent:
