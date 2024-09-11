@@ -1,7 +1,7 @@
 import asyncio
 from configuration.label_numbering import get_now_unix_time
 from strategies import  hedging_spot
-
+import traceback
 from loguru import logger as log
 from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions
 
@@ -102,7 +102,12 @@ if __name__ == "__main__":
         loop = asyncio.get_event_loop()
 
         while True:
-            loop.run_until_complete(test())
+            try:
+                loop.run_until_complete(test())
 
-    except Exception as error:
-        print(error)
+            except ValueError:
+                import traceback
+                traceback.format_exc()
+    except ValueError:
+        
+        traceback.format_exc()
