@@ -14,7 +14,7 @@ from loguru import logger as log
 
 from db_management.sqlite_management import (
     executing_general_query_with_single_filter,
-    querying_table,
+    executing_query_based_on_currency_or_instrument_and_strategy,
     insert_tables,
     deleting_row,
     executing_query_with_return,
@@ -46,12 +46,14 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
         
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    from_sqlite_open= await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)                                         
+    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", instrument_name)                                       
 
-    from_sqlite_closed = await executing_general_query_with_single_filter(
-        "my_trades_closed_json", instrument_name, max_closed_transactions_downloaded_from_sqlite, "id"
-        )
-    
+    from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
+                                                                                            instrument_name, 
+                                                                                            "all", 
+                                                                                            "all", 
+                                                                                            max_closed_transactions_downloaded_from_sqlite, 
+                                                                                            "1d")    
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
     log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")

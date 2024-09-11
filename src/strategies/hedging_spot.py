@@ -176,7 +176,7 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """ """
         
-        one_minute=60000
+        #one_minute=60000
 
         #open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
         #    "orders_all_json", "open"
@@ -209,12 +209,12 @@ class HedgingSpot(BasicStrategy):
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
 
-        open_orders_label_strategy=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label,"open")
-        log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
+        open_orders_label_strategy: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", currency.upper(), self.strategy_label,"open")
+        #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
-        my_trades_currency_strategy=  list=await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
+        my_trades_currency_strategy: list= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
         

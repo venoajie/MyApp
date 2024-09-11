@@ -688,7 +688,13 @@ def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit
     return tab
 
 
-def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_or_instrument, strategy, status: str="all", limit: int= 0, order: str="id") -> str:
+def querying_based_on_currency_or_instrument_and_strategy (table: str, 
+                                                           currency_or_instrument, 
+                                                           strategy: str="all", 
+                                                           status: str="all",
+                                                           columns: list="standard", 
+                                                           limit: int= 0, 
+                                                           order: str="id") -> str:
     
     """_summary_
     
@@ -697,26 +703,35 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str, currency_
     Returns:
         _type_: _description_
     """
-    where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%')"
+    standard_columns= f"instrument_name, label, amount_dir as amount, price, timestamp, order_id"
+
+    if "trade" in table:
+        standard_columns= F"{standard_columns}, trade_id"
+        
+    if columns != "standard":
+        standard_columns= (','.join(str(i) for i in columns))
+        
+    where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%')"
+
+    if strategy != "all":
+        where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%')"
     
     if status != "all":
         where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%' AND label LIKE '%{status}%')"
     
-    tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
+    tab = f"SELECT {standard_columns} FROM {table} {where_clause}"
 
-    if "trade" in table:
-        
-        tab = f"SELECT instrument_name, label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
-        
-        if "closed" in table:
+    if "closed" in table:
             
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
-            
-            if limit > 0:
-                
-                tab= f"{tab} LIMIT {limit}"
-    #log.error (f"table {tab}")
+            tab = f"SELECT {standard_columns} FROM {table} {where_clause} ORDER BY {order} DESC "
+    
+    if limit > 0:
+        
+        tab= f"{tab} LIMIT {limit}"
+    
+    log.error (f"table {tab}")
+    
     return tab
 
 def querying_closed_transactions(

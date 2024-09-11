@@ -31,6 +31,7 @@ from db_management.sqlite_management import (
     replace_row,querying_table,
     querying_arithmetic_operator,
     executing_general_query_with_single_filter,
+    executing_query_based_on_currency_or_instrument_and_strategy,
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -575,7 +576,9 @@ class StreamAccountData:
                                             # get portfolio data
                                             portfolio: list = reading_from_database["portfolio"]
 
-                                            my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            #my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                            
+                                            my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", instrument_ticker)
                                             
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
                                             
@@ -632,7 +635,7 @@ class StreamAccountData:
                                                         best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
                                                         
                                                         hedging = hedging_spot.HedgingSpot(strategy_label)
-                                                        log.warning (f"A")
+                                                        #log.warning (f"A")
                                                         
                                                         send_order: dict = (
                                                         await hedging.is_send_and_cancel_open_order_allowed(
@@ -646,7 +649,7 @@ class StreamAccountData:
                                                         )
                                                     )
                                                         
-                                                        log.warning (f"A")
+                                                        #log.warning (f"A")
                                                         log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
                                                         
                                                         if send_order["order_allowed"]:
