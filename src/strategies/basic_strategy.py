@@ -765,7 +765,7 @@ class BasicStrategy:
             label = params["label"]
 
             max_transactions= 100
-            order_has_sent_before = await is_order_has_sent_before(instrument_name, label, max_transactions)
+            order_has_sent_before = await is_order_has_sent_before(instrument_name, "order_id", max_transactions)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
