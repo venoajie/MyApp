@@ -201,7 +201,7 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
     
     reading_from_database: dict = await reading_from_pkl_database(currency)
     
-    column_list: str= "instrument_name","label", "amount", "price"
+    column_list: str= "instrument_name","label", "amount", "price","trade_id"
     
     my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
