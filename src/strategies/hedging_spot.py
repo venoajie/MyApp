@@ -315,7 +315,7 @@ class HedgingSpot(BasicStrategy):
         bullish = market_condition["rising_price"]
         strong_bullish = market_condition["strong_rising_price"]
         #neutral = market_condition["neutral_price"]
-        # is_bearish = market_condition["falling_price"]
+        bearish = market_condition["falling_price"]
 
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
             market_condition, ask_price, bid_price, selected_transaction
@@ -324,10 +324,26 @@ class HedgingSpot(BasicStrategy):
         exit_allowed: bool = exit_params["order_allowed"] and (
             bullish or strong_bullish
         )
+        
+        cancel_allowed: bool = False
+        
+        open_orders_label_strategy: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                                              currency.upper(), 
+                                                                                                              self.strategy_label,
+                                                                                                              "closed")
+        
+        len_orders: int = get_transactions_len(open_orders_label_strategy)
+        
+        if len_orders != [] and len_orders > 0 and bearish:
+            cancel_allowed: bool = True
+            cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
+
 
         return dict(
             order_allowed=exit_allowed,
             order_parameters=(
                 [] if exit_allowed == False else exit_params["order_parameters"]
             ),
+            cancel_allowed=cancel_allowed,
+            cancel_id=cancel_id
         )

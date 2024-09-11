@@ -205,6 +205,7 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
     
     my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
+    
     sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
     
     positions_all: list = reading_from_database["positions_from_sub_account"]

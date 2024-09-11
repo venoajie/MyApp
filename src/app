@@ -686,6 +686,7 @@ class StreamAccountData:
                                                             )
                                                             
                                                             await if_order_is_true(send_closing_order, instrument_ticker)
+                                                            await if_cancel_is_true(send_closing_order)
 
                                                     log.critical (f"CLOSING HEDGING-DONE")
                                                     
