@@ -302,7 +302,7 @@ class HedgingSpot(BasicStrategy):
         
         hedging_attributes= hedging_spot_attributes()[0]
         
-        log.error (f"selected_transaction {selected_transaction}")
+        #log.error (f"selected_transaction {selected_transaction}")
 
         currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
