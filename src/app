@@ -654,7 +654,7 @@ class StreamAccountData:
                                                     )
                                                         
                                                         #log.warning (f"A")
-                                                        log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
+                                                        #log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
                                                         
                                                         if send_order["order_allowed"]:
                                                             await if_order_is_true(send_order, instrument_ticker)
@@ -686,7 +686,9 @@ class StreamAccountData:
                                                     log.critical (f"CLOSING HEDGING-DONE")
                                                     
                                             
-                                        except Exception as error:
+                                        except ValueError:
+                                            import traceback
+                                            traceback.format_exc()
                                             log.info(f" error {error}")
                                             #continue
                                                                 
