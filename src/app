@@ -578,7 +578,7 @@ class StreamAccountData:
 
                                             #my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
                                             
-                                            column_list: str= f"label, amount_dir as amount, price" 
+                                            column_list: str= "label", "amount_dir as amount", "price" 
                                             
                                             my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_ticker, "all", "all", column_list)
