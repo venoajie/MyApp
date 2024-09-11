@@ -60,9 +60,9 @@ def are_size_and_order_appropriate_for_ordering(
     """ """
     
     proforma  = proforma_size(current_size, current_orders, next_orders) 
-    log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} (proforma) < abs(notional)   {(proforma) < abs(notional) }")
+    log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} notional  {notional} (proforma) < abs(notional)   {abs(proforma) < (notional) }")
     
-    return (proforma) < abs(notional) 
+    return abs(proforma) < (notional) 
 
 def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> float:
     """

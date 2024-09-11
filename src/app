@@ -670,12 +670,12 @@ class StreamAccountData:
                                                             log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
                                                                         
                                                             best_bid_prc: float = ticker[0]["best_bid_price"]
+                                                            
                                                             get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
-                                                            log.debug (f"get_prices_in_label_transaction_main {get_prices_in_label_transaction_main}")
+
                                                             closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
-                                                            log.debug (f"closest_price {closest_price}")
+
                                                             nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
-                                                            log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                             
                                                             send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                                                                 TA_result_data,
@@ -684,6 +684,7 @@ class StreamAccountData:
                                                                 best_bid_prc,
                                                                 nearest_transaction_to_index,
                                                             )
+                                                            
                                                             await if_order_is_true(send_closing_order, instrument_ticker)
 
                                                     log.critical (f"CLOSING HEDGING-DONE")

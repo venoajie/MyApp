@@ -401,14 +401,16 @@ async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", 
     - one label could be processed couple of time (especially when closing the transactions)
     """
     
+    instrument_name_plus=instrument_name,
+    
     data_from_db_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
-                                                                                         instrument_name, 
+                                                                                         instrument_name_plus, 
                                                                                          "all", 
                                                                                          "all", 
                                                                                          verifier)     
     
     data_from_db_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
-                                                                                            instrument_name, 
+                                                                                            instrument_name_plus, 
                                                                                             "all", 
                                                                                             "all", 
                                                                                             verifier,
