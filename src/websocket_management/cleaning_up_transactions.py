@@ -108,11 +108,12 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     #print(f"trades_from_exchange {trades_from_exchange}")
     table= "my_trades_all_json"
     if id_desc== "trade_id":
-        marker="trade_id",
+        marker="trade_id"
     
     if id_desc== "order_id":
-        marker="order_id",
+        marker="order_id"
     
+    marker_plus=marker,
     transaction_sum=0
     for tran_id in unrecorded_id:
 
@@ -123,7 +124,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
-                                                                                         marker)
+                                                                                         marker_plus)
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
         #log.error (f"transaction {instrument_name} {transaction} {tran_id}")
