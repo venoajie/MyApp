@@ -401,7 +401,7 @@ async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", 
     - one label could be processed couple of time (especially when closing the transactions)
     """
     
-    verifier_plus= verifier,
+    verifier_plus= "label",verifier
     
     log.error(f"verifier_plus {verifier_plus}")
     log.error(f"instrument_name {instrument_name}")
@@ -442,13 +442,10 @@ async def summing_transactions_under_label_int(
 
     label_integer = get_label_integer(label)["int"]
     
-    column_list: str= "label", "amount"
-    
-    tabel= "my_trades_all_json"
-    
-    instrument_name= get_transaction_instrument(transaction)
-
     if transactions_all is None:
+        tabel= "my_trades_all_json"
+        column_list: str= "label", "amount"
+        instrument_name= get_transaction_instrument(transaction)
         transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
                                                                                          instrument_name, 
                                                                                          "all", 
