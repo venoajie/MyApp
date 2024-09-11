@@ -72,6 +72,7 @@ async def test():
             )
 
         if not size_is_consistent:
+
             log.critical (f"BALANCING-START")
             
             await cancel_the_cancellables("open")
@@ -81,89 +82,13 @@ async def test():
             max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
             
             trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
-            
-            #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
+
             await reconciling_between_db_and_exchg_data(instrument_ticker,
                 trades_from_exchange)
             
-            log.warning (f"CLEAN UP CLOSED TRANSACTIONS")
+            log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
             await clean_up_closed_transactions(instrument_ticker)
             log.critical (f"BALANCING-DONE")
-                                                        
-        else:                                                
-            # obtain spot equity
-            equity: float = portfolio[0]["equity"]
-            
-            ticker: list = reading_from_db("ticker", instrument_ticker)
-            
-            index_price: float = ticker[0]["index_price"]
-                                                
-            if ticker !=[] and index_price is not None and equity >0:
-            
-                tick_TA=  max([o["tick"] for o in TA_result_data])
-                
-                server_time=     get_now_unix_time()  
-                
-                delta_time= server_time-tick_TA
-                
-                delta_time_seconds=delta_time/1000                                                
-                
-                log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
-
-                if delta_time_seconds < 120:#ensure freshness of ta
-                    
-                    notional: float = compute_notional_value(index_price, equity)
-                        
-                    best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
-                    
-                    hedging = hedging_spot.HedgingSpot(strategy_label)
-                    log.warning (f"A")
-                    
-                    send_order: dict = (
-                    await hedging.is_send_and_cancel_open_order_allowed(
-                        currency,
-                        instrument_ticker,
-                        notional,
-                        index_price,
-                        best_ask_prc,
-                        server_time,
-                        TA_result_data
-                    )
-                )
-                    
-                    log.warning (f"A")
-                    log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
-                    
-                    if send_order["order_allowed"]:
-                        await if_order_is_true(send_order, instrument_ticker)
-                        await if_cancel_is_true(send_order)
-
-                    log.critical (f"OPENING HEDGING-DONE")    
-                                                            
-                    
-                    
-                    my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
-                        and "hedgingSpot" in (o["label"]) ]
-
-                    if my_trades_open_hedging !=[]:
-                    
-                        log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
-                                    
-                        best_bid_prc: float = ticker[0]["best_bid_price"]
-                        get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
-                        closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
-                        nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
-                        
-                        send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                            TA_result_data,
-                            index_price,
-                            best_ask_prc,
-                            best_bid_prc,
-                            nearest_transaction_to_index,
-                        )
-                        await if_order_is_true(send_closing_order, instrument_ticker)
-
-        log.critical (f"CLOSING HEDGING-DONE")
                 
 
 if __name__ == "__main__":
