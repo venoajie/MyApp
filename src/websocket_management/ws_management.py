@@ -139,7 +139,7 @@ async def is_size_consistent(
     """ """
     
 #!##################################################################
-    column_list: str= "amount"
+    column_list: str= "amount",
     tabel= "my_trades_all_json"
     transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
                                                                                         instrument_name, 
