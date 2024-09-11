@@ -730,7 +730,7 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
         tab= f"{tab} LIMIT {limit}"
     
-    log.error (f"table {tab}")
+    
     
     return tab
 
@@ -784,6 +784,9 @@ async def executing_query_based_on_currency_or_instrument_and_strategy(table: st
 
     # define none from queries result. If the result=None, return []
     NONE_DATA: None = [0, None, []]
+    
+    log.error (f"table {query}")
+    log.warning (f"result {result}")
 
     return [] if result in NONE_DATA else (result)
 
