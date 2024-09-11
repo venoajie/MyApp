@@ -147,7 +147,8 @@ async def is_size_consistent(
                                                                                         "all", 
                                                                                         column_list)
     
-    log.error (f"transactions_all_summarized {transactions_all_summarized} sum transactions_all_summarized {sum(transactions_all_summarized)}")
+    log.error (f"transactions_all_summarized {transactions_all_summarized}")
+    log.error (f"sum transactions_all_summarized {sum(transactions_all_summarized)}")
 
 #!##################################################################
     if sum_my_trades_sqlite == None:
