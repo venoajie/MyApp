@@ -741,7 +741,7 @@ class BasicStrategy:
 
             params.update({"entry_price": ask_price})
 
-        column_list= "amount"
+        column_list= "amount",
         status= "closed"
         orders: list = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
                                                                                     instrument_name, 
