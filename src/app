@@ -208,7 +208,7 @@ async def manage_trades (trades: dict) -> None:
 async def manage_positions (positions: dict, currency: str) -> None:
 
     my_path_position = provide_path_for_file("positions", currency)
-    log.error(f"{str(my_path_position)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_position)}")
+    #log.error(f"{str(my_path_position)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_position)}")
     
     if currency_inline_with_database_address(currency,my_path_position):
         replace_data(my_path_position, positions)
