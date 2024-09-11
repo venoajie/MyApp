@@ -403,8 +403,8 @@ async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", 
     
     verifier_plus= "label",verifier
     
-    log.error(f"verifier_plus {verifier_plus}")
-    log.error(f"instrument_name {instrument_name}")
+    #log.error(f"verifier_plus {verifier_plus}")
+    #log.error(f"instrument_name {instrument_name}")
     
     data_from_db_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
                                                                                          instrument_name, 
