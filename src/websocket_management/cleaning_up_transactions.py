@@ -60,7 +60,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
                                                                                             "all", 
                                                                                             column_list,
                                                                                             max_closed_transactions_downloaded_from_sqlite, 
-                                                                                            "1d")    
+                                                                                            "id")    
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
     log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
