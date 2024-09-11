@@ -241,7 +241,7 @@ async def update_user_changes(data_orders, currency) -> None:
         
         for order in orders:
 
-            label=order["label"]
+            #label=order["label"]
                         
             instrument_name=order["instrument_name"]
             
