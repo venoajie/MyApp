@@ -220,7 +220,7 @@ async def cancel_the_cancellables(filter: str = None) -> None:
         o["strategy"] for o in params if o["cancellable"] == True
     ]
     
-    log.error (f"cancellable_strategies {cancellable_strategies}")
+    log.error (f"cancellable_strategies {cancellable_strategies}  filter {filter}")
 
     open_orders_sqlite = await executing_label_and_size_query("orders_all_json")
 
@@ -251,6 +251,8 @@ async def cancel_the_cancellables(filter: str = None) -> None:
                 ]
 
                 if open_orders_cancellables_id != []:
+                    log.warning (f"open_orders_cancellables {open_orders_cancellables}")
+
                     for open_order_id in open_orders_cancellables_id:
 
                         await cancel_by_order_id(open_order_id)
