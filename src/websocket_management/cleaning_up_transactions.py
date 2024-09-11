@@ -123,7 +123,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
-                                                                                         f"{marker},")
+                                                                                         marker)
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
         #log.error (f"transaction {instrument_name} {transaction} {tran_id}")
