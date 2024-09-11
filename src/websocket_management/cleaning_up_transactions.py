@@ -243,6 +243,7 @@ async def recheck_result_after_cleaning  (instrument_name: str,
             log.error (f"difference {difference}")
             try:
                 where_filter = f"trade_id"
+                log.error (f"my_trades_instrument {my_trades_instrument}")
                 get_transactions_with_the_same_amount_of_difference= ([o[where_filter] for o in my_trades_instrument if \
                     abs(o["amount"])==difference and "hedgingSpot-open" in o["label"]]) #"hedgingSpot-open": ensure sign consistency
                 
