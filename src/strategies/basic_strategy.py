@@ -761,8 +761,8 @@ class BasicStrategy:
         if order_allowed:
             params.update({"instrument": instrument_name})
             params.update({"size": size})
-            log.info(f"params {params}")
-            label = params["label"]
+            #log.info(f"params {params}")
+            #label = params["label"]
 
             max_transactions= 100
             order_has_sent_before = await is_order_has_sent_before(instrument_name, "order_id", max_transactions)
