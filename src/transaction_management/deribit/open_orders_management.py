@@ -4,7 +4,10 @@
 from loguru import logger as log
 
 # user defined formula
-from db_management.sqlite_management import executing_label_and_size_query,deleting_row, insert_tables
+from db_management.sqlite_management import (
+    executing_query_based_on_currency_or_instrument_and_strategy,
+    deleting_row, 
+    insert_tables)
 
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -12,16 +15,10 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
-
 async def manage_orders(order: dict) -> None:
 
-    log.error(f"{order}")
-
-    #! ##############################################################################
-
-    open_orders_sqlite = await executing_label_and_size_query(
-        "orders_all_json"
-    )
+    columns= "order_id", "label"
+    instrument_name = order["instrument_name"]
 
     if "oto_order_ids" in order:
         # get the order state
@@ -70,10 +67,12 @@ async def manage_orders(order: dict) -> None:
         )
 
         # open_orders_sqlite =  await syn.querying_all('orders_all_json')
-        open_orders_sqlite = await executing_label_and_size_query(
-            "orders_all_json"
-        )
-        # open_orders_sqlite_list_data =  open_orders_sqlite['list_data_only']
+        
+        open_orders_sqlite = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                                instrument_name, 
+                                                                                                "all",
+                                                                                                "all",
+                                                                                                columns)
 
         is_order_id_in_active_orders = [
             o for o in open_orders_sqlite if o["order_id"] == order_id
@@ -84,7 +83,7 @@ async def manage_orders(order: dict) -> None:
             order_id = order["label"]
             where_filter = f"label"
 
-        log.critical(f" deleting {order_id}")
+        log.warning(f" deleting cancelled, filled, or triggered {order_id}")
         await deleting_row(
             "orders_all_json",
             "databases/trading.sqlite3",
@@ -100,3 +99,4 @@ async def manage_orders(order: dict) -> None:
     ):
 
         await insert_tables("orders_all_json", order)
+        log.warning(f" save order to db {order_id}")

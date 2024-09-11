@@ -8,28 +8,22 @@ from loguru import logger as log
 
 # user defined formula
 from utilities.pickling import replace_data, read_data
-from websocket_management.cleaning_up_transactions import (
-    reconciling_between_db_and_exchg_data,
-)
 from utilities.system_tools import (
     raise_error_message,
     provide_path_for_file,
     reading_from_db_pickle,
-    is_current_file_running,
 )
 
 from utilities.string_modification import (
-    get_net_sum_strategy_super_main,
     remove_redundant_elements,
     parsing_label,
     my_trades_open_sqlite_detailing,
     parsing_sqlite_json_output,
-    get_net_sum_strategy_super_main,
 )
 
 from db_management.sqlite_management import (
-    querying_label_and_size,
     executing_label_and_size_query,
+    executing_query_based_on_currency_or_instrument_and_strategy
 )
 
 from utilities.number_modification import get_closest_value
@@ -38,7 +32,6 @@ from utilities.number_modification import get_closest_value
 from db_management import sqlite_management
 from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (
-    querying_label_and_size,
     is_everything_consistent,
     get_strategy_config_all,
 )
@@ -141,14 +134,31 @@ def reading_from_db(end_point, instrument: str = None, status: str = None) -> fl
 
 
 async def is_size_consistent(
-    sum_my_trades_sqlite: int, size_from_position: int, currency: str = "ETH"
+    sum_my_trades_sqlite: int, size_from_position: int, instrument_name: str
 ) -> bool:
     """ """
+    
+#!##################################################################
+    column_list: str= "amount"
+    tabel= "my_trades_all_json"
+    transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
+                                                                                        instrument_name, 
+                                                                                        "all", 
+                                                                                        "all", 
+                                                                                        column_list)
+    
+    log.error (f"transactions_all_summarized {transactions_all_summarized} sum transactions_all_summarized {sum(transactions_all_summarized)}")
+
+#!##################################################################
     if sum_my_trades_sqlite == None:
-        transactions_all_summarized: list = await querying_label_and_size(
-            "my_trades_all_json"
-        )
-        sum_my_trades_sqlite = sum([o["amount"] for o in transactions_all_summarized])
+        column_list: str= "amount"
+        tabel= "my_trades_all_json"
+        transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
+                                                                                         instrument_name, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         column_list)
+        sum_my_trades_sqlite = 0 if  transactions_all_summarized == [] else sum(transactions_all_summarized)
 
     if size_from_position == None:
         # gathering basic data
@@ -354,129 +364,6 @@ def delta_price_constraint(
     return True if last_traded_price == 0 else is_reorder_ok
 
 
-async def opening_transactions(
-    currency,
-    instrument,
-    portfolio,
-    strategies,
-    my_trades_open_sqlite,
-    size_from_positions,
-    server_time,
-    TA_result_data,
-    take_profit_pct_daily,
-) -> None:
-    """ """
-
-    log.warning(f"OPENING TRANSACTIONS-START")
-
-    try:
-
-        transactions_all_summarized: list = await querying_label_and_size(
-            "my_trades_all_json"
-        )
-
-        ticker: list = reading_from_db("ticker", instrument)
-
-        if ticker != []:
-
-            # get bid and ask price
-            best_bid_prc: float = ticker[0]["best_bid_price"]
-            best_ask_prc: float = ticker[0]["best_ask_price"]
-
-            # index price
-            index_price: float = ticker[0]["index_price"]
-
-            # obtain spot equity
-            equity: float = portfolio[0]["equity"]
-
-            # compute notional value
-            notional: float = compute_notional_value(index_price, equity)
-
-            # execute each strategy
-            for strategy_attr in strategies:
-                strategy_label = strategy_attr["strategy"]
-
-                log.critical(f" {strategy_label}")
-
-                net_sum_strategy = get_net_sum_strategy_super_main(
-                    my_trades_open_sqlite, strategy_label
-                )
-
-                my_trades_open = [
-                    o for o in transactions_all_summarized if "open" in (o["label"])
-                ]
-
-                my_trades_open_strategy = [
-                    o for o in my_trades_open if strategy_label in (o["label"])
-                ]
-
-                last_price_all = get_last_price(my_trades_open_strategy)
-
-
-                if False and "hedgingSpot" in strategy_attr["strategy"]:
-
-                    last_price_traded = last_price_all["max_sell_traded_price"]
-
-                    if (
-                        last_price_traded == 0 or last_price_traded == []
-                    ):
-
-                        hedging = hedging_spot.HedgingSpot(strategy_label)
-
-                        send_order: dict = (
-                            await hedging.is_send_and_cancel_open_order_allowed(
-                                currency,
-                                instrument,
-                                notional,
-                                index_price,
-                                best_ask_prc,
-                                server_time,
-                                TA_result_data
-                            )
-                        )
-                    await if_order_is_true(send_order, instrument)
-                    await if_cancel_is_true(send_order)
-
-                if False and "marketMaker" in strategy_attr["strategy"]:
-
-                    market_maker = MM.MarketMaker(strategy_label)
-
-                    send_order: dict = (
-                        await market_maker.is_send_and_cancel_open_order_allowed(
-                            size_from_positions,
-                            notional,
-                            best_ask_prc,
-                            best_bid_prc,
-                            server_time,
-                            market_condition,
-                            take_profit_pct_daily,
-                        )
-                    )
-
-                    constraint = (
-                        False
-                        if send_order["order_allowed"] == False
-                        else delta_price_constraint(
-                            THRESHOLD_BEFORE_REORDER,
-                            last_price_all,
-                            index_price,
-                            net_sum_strategy,
-                            send_order["order_parameters"]["side"],
-                        )
-                    )
-
-                    if constraint:
-
-                        await if_order_is_true(send_order, instrument)
-                        await if_cancel_is_true(send_order)
-                        # log.info(send_order)
-
-    except Exception as error:
-        await raise_error(error)
-
-    log.warning(f"OPENING TRANSACTIONS-DONE")
-
-
 def get_label_transaction_main(label_transaction_net: list) -> list:
     """ """
 
@@ -507,28 +394,6 @@ def get_min_max_price_from_transaction_in_strategy(
             else min(get_prices_in_label_transaction_main)
         ),
     )
-
-
-async def balancing_the_imbalance(
-    trades_from_exchange,
-    unrecorded_order_id: str = None,
-    sum_my_trades_open_sqlite_all_strategy: int = None,
-    size_from_position: int = None,
-) -> None:
-    """ """
-    size_is_consistent: bool = await is_size_consistent(
-        sum_my_trades_open_sqlite_all_strategy, size_from_position
-    )
-
-    if not size_is_consistent:
-
-        # cancel open order only
-        await cancel_the_cancellables("open")
-
-        await reconciling_between_db_and_exchg_data(
-            trades_from_exchange, unrecorded_order_id
-        )
-
 
 async def closing_transactions(
     label_transaction_net,

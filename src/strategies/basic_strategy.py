@@ -8,13 +8,12 @@ from dataclassy import dataclass
 
 # user defined formula
 from db_management.sqlite_management import (
-    executing_label_and_size_query,
     querying_hlc_vol,
     executing_query_with_return,
     querying_ohlc_price_vol,
     querying_additional_params,
     querying_table,
-    executing_general_query_with_single_filter
+    executing_query_based_on_currency_or_instrument_and_strategy
 )
 from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
 from loguru import logger as log
@@ -22,13 +21,6 @@ from utilities.pickling import (
     read_data)
 from utilities.system_tools import (
     provide_path_for_file)
-
-
-async def querying_label_and_size(table) -> list:
-    """ """
-
-    # execute query
-    return await executing_label_and_size_query(table)
 
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
@@ -389,16 +381,39 @@ def get_order_label(data_from_db: list) -> list:
 
     return [o["label"] for o in data_from_db]
 
+def get_label_super_main(result: list, strategy_label) -> list:
+    """ """
+
+    return [o for o in result if parsing_label(strategy_label)["super_main"]
+                    == parsing_label(o["label"])["super_main"]
+                ]
+
 def combine_vars_to_get_future_spread_label(timestamp: int) -> str:
     """ """
 
     return f"futureSpread-open-{timestamp}"
 
 
-async def is_order_has_sent_before(instrument_name, verifier: str = "label") -> bool:
-    """ """
-    data_from_db_open = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
-    data_from_db_closed = await executing_general_query_with_single_filter("my_trades_closed_json", instrument_name)
+async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", max_transactions_for_closed_label: int= 100) -> bool:
+    """ 
+    verifier: order_id or label?
+    - order_id only one per order 
+    - one label could be processed couple of time (especially when closing the transactions)
+    """
+    
+    data_from_db_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
+                                                                                         instrument_name, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         verifier)     
+    
+    data_from_db_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
+                                                                                            instrument_name, 
+                                                                                            "all", 
+                                                                                            "all", 
+                                                                                            verifier,
+                                                                                            max_transactions_for_closed_label, 
+                                                                                            "id") 
     result_from_db_open = get_order_label(data_from_db_open)
     result_from_db_closed = get_order_label(data_from_db_closed)
 
@@ -569,23 +584,6 @@ def get_strategy_config_all() -> list:
 
     return config_strategies.strategies
 
-
-def positions_and_orders(net_current_trading_position: int, current_orders: int) -> int:
-    """ """
-
-    return net_current_trading_position + current_orders
-
-
-def proforma_size(
-    net_current_trading_position: int, current_orders: int, next_orders: int
-) -> int:
-    """ """
-
-    return (
-        positions_and_orders(net_current_trading_position, current_orders) + next_orders
-    )
-
-
 def is_everything_consistent(params) -> bool:
     """ """
     
@@ -683,99 +681,6 @@ class BasicStrategy:
      
         return params
 
-    async def transaction_per_label(self, table, label_filter: str = None) -> dict:
-        """ """
-
-        result: list = await querying_label_and_size(table)
-        # log.error(f"result {result}")
-
-        # clean up result with no label main
-        result_cleaned = [o for o in result if o["label"] != None]
-
-        result_strategy_label: list = [
-            o for o in result_cleaned if self.strategy_label in o["label"]
-        ]
-
-        if result != []:
-
-            if label_filter != None:
-                result_strategy_label: list = [
-                    o for o in result_strategy_label if label_filter in o["label"]
-                ]
-
-            if label_filter == "super_main":
-                result_strategy_label: list = [
-                    o
-                    for o in result
-                    if parsing_label(self.strategy_label)["super_main"]
-                    == parsing_label(o["label"])["super_main"]
-                ]
-
-        return dict(
-            result_strategy_label=result_strategy_label,
-            result_all=result_cleaned,
-        )
-
-    async def get_side_ratio(self) -> dict:
-        """ """
-        my_trades_attributes = await self.transaction_attributes(
-            "my_trades_all_json", "super_main"
-        )
-
-        result_strategy_label = my_trades_attributes["transactions_strategy_label"]
-
-        if result_strategy_label != []:
-            long_transactions: list = [
-                o["amount"] for o in result_strategy_label if "Long" in o["label"]
-            ]
-            short_transactions: list = [
-                o["amount"] for o in result_strategy_label if "Short" in o["label"]
-            ]
-            print(
-                f"basic str-long_transactions {long_transactions} short_transactions {short_transactions}"
-            )
-
-            sum_long_transactions: float = (
-                0 if long_transactions == [] else sum(long_transactions)
-            )
-            sum_short_transactions: float = (
-                0 if short_transactions == [] else sum(short_transactions)
-            )
-            print(
-                f"sum_long_transactions {sum_long_transactions} sum_short_transactions {sum_short_transactions}"
-            )
-
-            if sum_long_transactions == 0:
-                short_long: float = sum_short_transactions
-            else:
-                short_long: float = sum_short_transactions / sum_long_transactions
-
-            if sum_short_transactions == 0:
-                long_short: float = sum_long_transactions
-            else:
-                long_short: float = sum_long_transactions / sum_short_transactions
-
-        return dict(
-            long_short_ratio=0 if result_strategy_label == [] else abs(long_short),
-            short_long_ratio=0 if result_strategy_label == [] else abs(short_long),
-        )
-
-    async def transaction_attributes(self, table, label_filter: str = None) -> dict:
-        """ """
-
-        result: list = await self.transaction_per_label(table, label_filter)
-
-        result_strategy_label: list = result["result_strategy_label"]
-
-        return dict(
-            result_all=result["result_all"],
-            transactions_strategy_label=result_strategy_label,
-            max_time_stamp=get_max_time_stamp(result_strategy_label),
-            order_id_max_time_stamp=get_order_id_max_time_stamp(result_strategy_label),
-            transactions_sum=get_transactions_sum(result_strategy_label),
-            transactions_len=get_transactions_len(result_strategy_label),
-        )
-
     async def is_send_exit_order_allowed(
         self,
         market_condition: dict,
@@ -795,6 +700,8 @@ class BasicStrategy:
         strategy_config: list = self.get_strategy_config(
             get_transaction_label(transaction)
         )
+        
+        instrument_name= get_transaction_instrument(transaction)
 
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
@@ -834,9 +741,14 @@ class BasicStrategy:
 
             params.update({"entry_price": ask_price})
 
-        orders = await self.transaction_attributes("orders_all_json", "closed")
+        column_list= "amount"
+        status= "closed"
+        orders: list = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                    instrument_name, 
+                                                                                    self.strategy_label,
+                                                                                    status,column_list)
 
-        len_orders: int = orders["transactions_len"]
+        len_orders: int = get_transactions_len(orders)
 
         no_outstanding_order: bool = len_orders == 0
 
@@ -846,14 +758,15 @@ class BasicStrategy:
 
         if order_allowed:
             
-            instrument_name= get_transaction_instrument(transaction)
+            
 
             params.update({"instrument": instrument_name})
             params.update({"size": size})
             log.info(f"params {params}")
             label = params["label"]
 
-            order_has_sent_before = await is_order_has_sent_before(instrument_name, label)
+            max_transactions= 100
+            order_has_sent_before = await is_order_has_sent_before(instrument_name, label, max_transactions)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
