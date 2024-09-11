@@ -11,4 +11,4 @@ import aiohttp
 from loguru import logger as log
 
 text =  "instrument_name", "label", "amount_dir as amount"
-print(','.join(str(i) for i in text))
+print(','.join(str(f"""{i}{("_dir as amount") if i=="amount" else ""}""") for i in text))
