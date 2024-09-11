@@ -308,7 +308,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
     """
 
     where_filter = f"order_id"
-    column_list: str= "label", where_filter, "trade_id"
+    column_list: str= "instrument_name","label", where_filter, "trade_id"
     tabel= "my_trades_all_json"
     transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
                                                                                          instrument_name, 
