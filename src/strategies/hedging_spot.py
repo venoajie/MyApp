@@ -60,6 +60,7 @@ def are_size_and_order_appropriate_for_ordering(
     """ """
     
     proforma  = proforma_size(current_size, current_orders, next_orders) 
+    log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} (proforma) < abs(notional)   {(proforma) < abs(notional) }")
     
     return (proforma) < abs(notional) 
 
@@ -255,7 +256,6 @@ class HedgingSpot(BasicStrategy):
             server_time,
         )
 
-        
         order_allowed: bool = (
                 size_and_order_appropriate_for_ordering
                 and (bearish or strong_bearish)
@@ -301,6 +301,8 @@ class HedgingSpot(BasicStrategy):
          'price': 2455.25, 'state': 'filled', 'timestamp': 1725198276199, 'label': 'hedgingSpot-open-1725198275948'}
         
         hedging_attributes= hedging_spot_attributes()[0]
+        
+        log.error (f"selected_transaction {selected_transaction}")
 
         currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
