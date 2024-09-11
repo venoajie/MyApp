@@ -99,4 +99,4 @@ async def manage_orders(order: dict) -> None:
     ):
 
         await insert_tables("orders_all_json", order)
-        log.warning(f" save order to db {order_id}")
+        log.warning(f" save order to db {order}")
