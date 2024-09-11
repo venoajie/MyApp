@@ -23,7 +23,7 @@ from db_management.sqlite_management import (
 
 from strategies.config_strategies import paramaters_to_balancing_transactions
 # user defined formula
-from utilities.string_modification import get_unique_elements
+from utilities.string_modification import get_unique_elements,extract_currency_from_text
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -32,6 +32,9 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
+from websocket_management.ws_management import (
+    is_size_consistent,reading_from_pkl_database
+    )
 
 async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
 ) -> dict:
@@ -192,7 +195,66 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
         await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_trade_id, "trade_id")
     
     await remove_duplicated_elements ()
+    
+    await recheck_result_after_cleaning ()
+    
+    
+async def recheck_result_after_cleaning  (instrument_name: str,
+                                          trades_from_exchange: list,
+                                          sum_my_trades_instrument: float,
+                                          size_from_position: float) -> list:
+    """ """
+    
+    column_list: str= "instrument_name","label", "amount", "price"
+    
+    my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
+                                                "my_trades_all_json", instrument_name, "all", "all", column_list)
+    currency: str = extract_currency_from_text(instrument_name)
+    
+    reading_from_database: dict = await reading_from_pkl_database(currency)
+    
+    sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
+    
+    positions_all: list = reading_from_database["positions_from_sub_account"]
+    
+    size_from_position: int = (0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_name])
+                                            )
+    size_is_consistent: bool = await is_size_consistent(
+                                                sum_my_trades_instrument, size_from_position,
+                                                instrument_name
+                                                )
+    if not size_is_consistent:
 
+        unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
+                                    trades_from_exchange)
+        
+        unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
+        
+        log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
+        
+        if unrecorded_trade_id==[] and abs(sum_my_trades_instrument) > abs(size_from_position):
+            difference= abs(sum_my_trades_instrument) - abs(size_from_position)
+            log.error (f"difference {difference}")
+            try:
+                where_filter = f"trade_id"
+                get_transactions_with_the_same_amount_of_difference= ([o[where_filter] for o in my_trades_instrument if \
+                    abs(o["amount"])==difference and "hedgingSpot-open" in o["label"]]) #"hedgingSpot-open": ensure sign consistency
+                
+                log.error (f"get_transactions_with_the_same_difference {get_transactions_with_the_same_amount_of_difference}")
+                order_id= min(get_transactions_with_the_same_amount_of_difference)
+                log.error (f"order_id {order_id}")
+                
+                await deleting_row(
+                        "my_trades_all_json",
+                        "databases/trading.sqlite3",
+                        where_filter,
+                        "=",
+                        order_id,
+                    )
+            except:
+                log.critical ("need manual intervention")
+
+    
 def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
 
