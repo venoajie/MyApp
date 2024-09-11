@@ -761,15 +761,21 @@ async def executing_closed_transactions(
     return [] if result in NONE_DATA else (result)
 
 
-async def executing_query_based_on_currency_or_instrument_and_strategy(table: str, currency_or_instrument, strategy, limit: int= 0, order: str="id") -> dict:
+async def executing_query_based_on_currency_or_instrument_and_strategy(table: str, 
+                                                           currency_or_instrument, 
+                                                           strategy: str="all", 
+                                                           status: str="all",
+                                                           columns: list="standard", 
+                                                           limit: int= 0, 
+                                                           order: str="id") -> dict:
     """
     Provide execution template for querying summary of trading results from sqlite.
     Consist of transaction label, size, and price only.
     """
 
     # get query
-    query = querying_based_on_currency_or_instrument_and_strategy (table, currency_or_instrument, strategy, limit, order)
-
+    query = querying_based_on_currency_or_instrument_and_strategy (table, currency_or_instrument, strategy, status, columns, limit, order)
+    
     # execute query
     result = await executing_query_with_return(query)
     
