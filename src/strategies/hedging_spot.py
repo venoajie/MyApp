@@ -326,6 +326,7 @@ class HedgingSpot(BasicStrategy):
         )
         
         cancel_allowed: bool = False
+        cancel_id: str = None
         
         open_orders_label_strategy: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
                                                                                                               currency.upper(), 
