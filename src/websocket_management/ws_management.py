@@ -138,28 +138,16 @@ async def is_size_consistent(
 ) -> bool:
     """ """
     
-#!##################################################################
-    column_list: str= "amount",
-    tabel= "my_trades_all_json"
-    transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
-                                                                                        instrument_name, 
-                                                                                        "all", 
-                                                                                        "all", 
-                                                                                        column_list)
-    
-    log.error (f"transactions_all_summarized {transactions_all_summarized}")
-    log.error (f"sum transactions_all_summarized {sum(transactions_all_summarized)}")
-
-#!##################################################################
     if sum_my_trades_sqlite == None:
-        column_list: str= "amount"
+        column_list: str= "amount",
         tabel= "my_trades_all_json"
         transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
                                                                                          column_list)
-        sum_my_trades_sqlite = 0 if  transactions_all_summarized == [] else sum(transactions_all_summarized)
+        
+        sum_my_trades_sqlite = 0 if  transactions_all_summarized == [] else sum([o["amount"] for o in positions_all])
 
     if size_from_position == None:
         # gathering basic data
