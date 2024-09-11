@@ -336,6 +336,8 @@ class HedgingSpot(BasicStrategy):
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
         if len_orders != [] and len_orders > 0 and bearish:
+            log.error (f"order_parameters {exit_params}")
+            log.debug (f"cancel_allowed {cancel_allowed}")
             cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
 

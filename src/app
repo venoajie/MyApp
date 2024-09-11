@@ -184,7 +184,7 @@ async def manage_trades (trades: dict) -> None:
                 
             label=trade["label"]
 
-            label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
+            label_has_exist_before= await is_order_has_sent_before(instrument_name, "order_id", 100)
 
             log.info(f"trade {trade} order_has_sent_before {label_has_exist_before} not {not label_has_exist_before}")
 
@@ -270,7 +270,7 @@ async def update_user_changes(data_orders, currency) -> None:
 
             else:
     
-                label_has_exist_before= await is_order_has_sent_before(instrument_name, label)
+                label_has_exist_before= await is_order_has_sent_before(instrument_name,"order_id",100)
                 
                 await manage_orders (order)            
 

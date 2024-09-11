@@ -759,9 +759,6 @@ class BasicStrategy:
         ) and no_outstanding_order
 
         if order_allowed:
-            
-            
-
             params.update({"instrument": instrument_name})
             params.update({"size": size})
             log.info(f"params {params}")
