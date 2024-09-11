@@ -401,19 +401,19 @@ async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", 
     - one label could be processed couple of time (especially when closing the transactions)
     """
     
-    instrument_name_plus=instrument_name,
+    verifier_plus= verifier,
     
     data_from_db_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
-                                                                                         instrument_name_plus, 
+                                                                                         instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
-                                                                                         verifier)     
+                                                                                         verifier_plus)     
     
     data_from_db_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
-                                                                                            instrument_name_plus, 
+                                                                                            instrument_name, 
                                                                                             "all", 
                                                                                             "all", 
-                                                                                            verifier,
+                                                                                            verifier_plus,
                                                                                             max_transactions_for_closed_label, 
                                                                                             "id") 
     result_from_db_open = get_order_label(data_from_db_open)
