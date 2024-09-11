@@ -20,7 +20,7 @@ from utilities.string_modification import (
     my_trades_open_sqlite_detailing,
     parsing_sqlite_json_output,
 )
-
+from strategies.config_strategies import preferred_spot_currencies
 from db_management.sqlite_management import (
     executing_label_and_size_query,
     executing_query_based_on_currency_or_instrument_and_strategy
@@ -221,51 +221,57 @@ async def cancel_the_cancellables(filter: str = None) -> None:
     ]
     
     log.error (f"cancellable_strategies {cancellable_strategies}  filter {filter}")
+    currencies: list = preferred_spot_currencies()
+    
+    where_filter = f"order_id"
+    
+    column_list= "label", where_filter
+    
+    for currency in currencies:
+        open_orders_sqlite: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                                              currency.upper(), 
+                                                                                                              "all",
+                                                                                                              "all",
+                                                                                                              column_list)
 
-    open_orders_sqlite = await executing_label_and_size_query("orders_all_json")
+        if open_orders_sqlite != []:
 
-    if open_orders_sqlite != []:
-
-        for strategy in cancellable_strategies:
-            
-            log.error (f"strategy {strategy}")
-
-            open_orders_cancellables = [
-                o for o in open_orders_sqlite if strategy in o["label"]
-            ]
-
-            log.error (f"open_orders_cancellables {open_orders_cancellables}")
-
-            if open_orders_cancellables != []:
-
-                if filter != None and open_orders_cancellables != []:
-
-                    open_orders_cancellables = [
-                        o for o in open_orders_sqlite if filter in o["label"]
-                    ]
-
-            if open_orders_cancellables != []:
-
-                open_orders_cancellables_id = [
-                    o["order_id"] for o in open_orders_cancellables
+            for strategy in cancellable_strategies:
+                
+                open_orders_cancellables = [
+                    o for o in open_orders_sqlite if strategy in o["label"]
                 ]
 
-                if open_orders_cancellables_id != []:
-                    log.warning (f"open_orders_cancellables {open_orders_cancellables}")
 
-                    for open_order_id in open_orders_cancellables_id:
+                if open_orders_cancellables != []:
 
-                        await cancel_by_order_id(open_order_id)
+                    if filter != None and open_orders_cancellables != []:
 
-                        log.critical(f" deleting {open_order_id}")
-                        where_filter = f"order_id"
-                        await sqlite_management.deleting_row(
-                            "orders_all_json",
-                            "databases/trading.sqlite3",
-                            where_filter,
-                            "=",
-                            open_order_id,
-                        )
+                        open_orders_cancellables = [
+                            o for o in open_orders_cancellables if filter in o["label"]
+                        ]
+
+                if open_orders_cancellables != []:
+
+                    open_orders_cancellables_id = [
+                        o["order_id"] for o in open_orders_cancellables
+                    ]
+
+                    if open_orders_cancellables_id != []:
+
+                        for order_id in open_orders_cancellables_id:
+
+                            await cancel_by_order_id(order_id)
+
+                            log.critical(f" cancel_the_cancellable {order_id}")                           
+
+                            await sqlite_management.deleting_row(
+                                "orders_all_json",
+                                "databases/trading.sqlite3",
+                                where_filter,
+                                "=",
+                                order_id,
+                            )
 
 
 async def if_cancel_is_true(order) -> None:
