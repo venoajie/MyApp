@@ -196,29 +196,35 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
     
     await remove_duplicated_elements ()
     
-    await recheck_result_after_cleaning ()
+    #recheck_result_after_cleaning
+    currency: str = extract_currency_from_text(instrument_name)
     
-    
-async def recheck_result_after_cleaning  (instrument_name: str,
-                                          trades_from_exchange: list,
-                                          sum_my_trades_instrument: float,
-                                          size_from_position: float) -> list:
-    """ """
+    reading_from_database: dict = await reading_from_pkl_database(currency)
     
     column_list: str= "instrument_name","label", "amount", "price"
     
     my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
-    currency: str = extract_currency_from_text(instrument_name)
-    
-    reading_from_database: dict = await reading_from_pkl_database(currency)
-    
     sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
     
     positions_all: list = reading_from_database["positions_from_sub_account"]
     
     size_from_position: int = (0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_name])
                                             )
+    
+    await recheck_result_after_cleaning (instrument_name,
+                                         trades_from_exchange,
+                                         my_trades_instrument,
+                                         sum_my_trades_instrument,
+                                         size_from_position)
+    
+async def recheck_result_after_cleaning  (instrument_name: str,
+                                          trades_from_exchange: list,
+                                          my_trades_instrument: list,
+                                          sum_my_trades_instrument: float,
+                                          size_from_position: float) -> list:
+    """ """
+    
     size_is_consistent: bool = await is_size_consistent(
                                                 sum_my_trades_instrument, size_from_position,
                                                 instrument_name
