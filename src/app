@@ -583,7 +583,6 @@ class StreamAccountData:
                                             my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_ticker, "all", "all", column_list)
                                             
-                                            log.error(f"my_trades_instrument {my_trades_instrument}")
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
                                             
                                             # fetch positions for all instruments
@@ -608,7 +607,7 @@ class StreamAccountData:
                                                 max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
                                                 
                                                 trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
-                                                                                                #log.debug(f"unrecorded_order_id {unrecorded_order_id}")
+
                                                 await reconciling_between_db_and_exchg_data(instrument_ticker,
                                                     trades_from_exchange)
                                                 

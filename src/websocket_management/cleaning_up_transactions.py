@@ -46,12 +46,19 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
         
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", instrument_name)                                       
+    column_list: str="order_id", "trade_id"
+    
+    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
+                                                                                         instrument_name, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         column_list)                                       
 
     from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
                                                                                             instrument_name, 
                                                                                             "all", 
                                                                                             "all", 
+                                                                                            column_list,
                                                                                             max_closed_transactions_downloaded_from_sqlite, 
                                                                                             "1d")    
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
