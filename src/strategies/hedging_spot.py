@@ -52,7 +52,7 @@ def proforma_size(
     """ """
 
     return (
-        positions_and_orders(current_size, current_orders) + next_orders
+        positions_and_orders(current_size, current_orders) - next_orders #the sign is +
     )
 
 def are_size_and_order_appropriate_for_ordering(
