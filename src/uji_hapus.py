@@ -93,6 +93,9 @@ async def test():
                     
 
     except Exception as error:
+        import traceback
+        traceback.format_exc()
+        traceback.format_exc(error)
         log.error (error)
         
 if __name__ == "__main__":
