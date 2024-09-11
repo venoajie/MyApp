@@ -92,11 +92,9 @@ async def test():
                 log.critical (f"BALANCING-DONE")
                     
 
-    except Exception as error:
+    except ValueError:
         import traceback
         traceback.format_exc()
-        traceback.format_exc(error)
-        log.error (error)
         
 if __name__ == "__main__":
 
