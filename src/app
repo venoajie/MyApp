@@ -580,6 +580,7 @@ class StreamAccountData:
                                             
                                             my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", instrument_ticker)
                                             
+                                            log(f"my_trades_instrument {my_trades_instrument}")
                                             sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
                                             
                                             # fetch positions for all instruments
