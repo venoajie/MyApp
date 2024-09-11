@@ -417,13 +417,23 @@ async def summing_transactions_under_label_int(
     transaction: dict, transactions_all: list = None
 ) -> str:
     """ """
+    
     label = get_transaction_label(transaction)
 
     label_integer = get_label_integer(label)["int"]
+    
+    column_list: str= "label", "amount"
+    
+    tabel= "my_trades_all_json"
+    
+    instrument_name= get_transaction_instrument(transaction)
 
-    if transactions_all == None:
-        transactions_all: list = await querying_label_and_size("my_trades_all_json")
-
+    if transactions_all is None:
+        transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
+                                                                                         instrument_name, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         column_list)
     transactions_under_label_main = [
         o["amount"] for o in transactions_all if label_integer in o["label"]
     ]
