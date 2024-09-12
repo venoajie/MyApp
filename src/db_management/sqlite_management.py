@@ -464,7 +464,7 @@ async def querying_duplicated_transactions(
     """ """
 
     #query_table = f"""SELECT CAST(SUBSTR((label),-13)as integer) AS label_int, count (*)  FROM {label} GROUP BY label_int HAVING COUNT (*) >1"""
-    query_table = f"""SELECT {group_by} FROM {label} GROUP BY {group_by} HAVING qty >1"""
+    query_table = f"""SELECT {group_by} FROM {label} GROUP BY {group_by} HAVING count(*) >1"""
     combine_result = []
 
     try:
