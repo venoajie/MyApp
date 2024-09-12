@@ -167,7 +167,7 @@ async def remove_duplicated_elements () -> None:
         
         log.info (f"duplicated_elements {duplicated_elements}")
 
-        if duplicated_elements != 0 or duplicated_elements != []:
+        if duplicated_elements != 0:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             #)#
 
