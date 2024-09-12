@@ -692,7 +692,7 @@ class StreamAccountData:
                                                         
                                                             log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
                                                                         
-                                                            best_bid_prc: float = ticker[0]["best_bid_price"]
+                                                            best_bid_prc: float = ticker["best_bid_price"]
                                                             
                                                             get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
 
