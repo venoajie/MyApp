@@ -266,7 +266,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 order.update({"type": "limit"})
                 order.update({"side": side})
                 side_label= "Short" if side== "sell" else "Long"
-                last_update=order["last_update_timestamp"]
+                last_update=order["creation_timestamp"]
                 label_open: str = (f"custom{side_label.title()}-open-{last_update}")
                 order.update({"label": label_open})
                 log.info (f"order {order}")
