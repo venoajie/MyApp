@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import aioschedule as schedule
 import asyncio
 import json
-import os, sys
 # installed
 import websockets
 import orjson
@@ -21,6 +20,7 @@ from utilities.pickling import (
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
+    sleep_and_restart,
     catch_error_message)
 from utilities.string_modification import (
     parsing_label,remove_double_brackets_in_list,
@@ -281,11 +281,8 @@ async def update_user_changes(data_orders, currency) -> None:
                 
                 if not label_has_exist_before:
                     await if_order_is_true(order, instrument_name)
-                
                             
-                python = sys.executable
-                os.execl(python, python, *sys.argv)
-
+                await sleep_and_restart()
 
             else:
     
