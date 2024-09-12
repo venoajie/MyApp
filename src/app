@@ -587,8 +587,8 @@ class StreamAccountData:
                                                 index_price= data_orders["index_price"]
                                                 
                                             except:
+                                                log.info (f"ticker {ticker}")
                                                 index_price= ticker[0]["index_price"]
-                                                #log.info (f"ticker {ticker}")
                                                 #log.critical (f"index_price {index_price}")
                                                 
                                             # gathering basic data
