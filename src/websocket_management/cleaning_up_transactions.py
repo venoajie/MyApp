@@ -162,7 +162,9 @@ async def remove_duplicated_elements () -> None:
     
     for label in label_checked:
         duplicated_elements = await querying_duplicated_transactions(label,where_filter)
-        log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
+        duplicated_int_label = [o["label_int"] for o in duplicated_int_label]
+        
+        log.info (f"duplicated_elements {duplicated_elements} {duplicated_int_label}")
 
         if duplicated_elements != 0:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
@@ -324,6 +326,8 @@ async def clean_up_closed_transactions(instrument_name) -> None:
     transaction_with_closed_labels = get_transactions_with_closed_label(
         transactions_all
     )
+    
+    log.error (f"transaction_with_closed_labels {transaction_with_closed_labels}")
 
     for transaction in transaction_with_closed_labels:
         
@@ -331,7 +335,8 @@ async def clean_up_closed_transactions(instrument_name) -> None:
         size_to_close = await summing_transactions_under_label_int(
             transaction, transactions_all
         )
-        
+        log.error (f"size_to_close {size_to_close}")
+
         if size_to_close == 0:
 
             label = get_transaction_label(transaction)

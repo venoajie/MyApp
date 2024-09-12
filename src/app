@@ -379,10 +379,12 @@ class StreamAccountData:
                 
                 instruments_name=await get_instruments_name()
                 
-                await remove_duplicated_elements ()
+                
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
+                    
+                    await clean_up_closed_transactions (instrument)
 
                     currency=extract_currency_from_text(instrument).upper()
                 
