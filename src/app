@@ -530,15 +530,10 @@ class StreamAccountData:
                                 == f"incremental_ticker.{instrument_ticker}"
                             ):
                                 
-                                my_path_futures_analysis = provide_path_for_file(
-                                    "futures_analysis", currency
-                                )
-
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker
                                 )
-                                log.info (f"data_orders {data_orders}")
-                
+                                
                                 await self.distribute_ticker_result_as_per_data_type(
                                     my_path_ticker, data_orders, instrument_ticker
                                 )
@@ -751,10 +746,12 @@ class StreamAccountData:
             else:
                 ticker_change: list = read_data(my_path_ticker)
                 if ticker_change != []:
+                    log.info (f"data_orders {data_orders}")
                     # 
 
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
+                        log.info (f"ticker_change {ticker_change}")
                         replace_data(my_path_ticker, ticker_change)
 
         except Exception as error:
