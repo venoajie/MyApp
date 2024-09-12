@@ -881,8 +881,8 @@ async def executing_query_with_return(
 
     except ValueError:
         import traceback
+        log.error (f"querying_table {query_table}")
         traceback.format_exc()
-        #log.error (f"querying_table {query_table} {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
