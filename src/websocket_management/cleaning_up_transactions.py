@@ -162,13 +162,14 @@ async def remove_duplicated_elements () -> None:
     
     for label in label_checked:
         duplicated_elements = await querying_duplicated_transactions(label,where_filter)
-        #log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
+        log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements != 0}")
 
         if duplicated_elements != 0:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             #)#
             
             duplicated_trade_id = [o[where_filter] for o in duplicated_elements]
+            log.info (f"duplicated_trade_id {duplicated_trade_id}")
 
             for trade_id in duplicated_trade_id:
                 
