@@ -406,11 +406,11 @@ async def check_if_id_has_used_before(instrument_name: str,
     - one label could be processed couple of time (especially when closing the transactions)
     """
     if id_checked=="order_id":
-        column= f"order_id"
+        column= "order_id",
     if id_checked=="trade_id":
-        column= f"trade_id"
+        column= "trade_id",
     if id_checked=="label":
-        column= f"label"
+        column= "label",
     
     data_from_db_trade_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
                                                                                          instrument_name, 
