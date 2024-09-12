@@ -256,11 +256,7 @@ async def update_user_changes(data_orders, currency) -> None:
             order_id=order["order_id"]
             label=order["label"]
             
-            active_strategies= [ o["strategy"] for o in strategies]
-            
-            log.error (f"""label not in active_strategies {label not in active_strategies} {label} {label ==""}""")
-
-            if  label =="" or active_strategies  not in label:                
+            if  label =="" :                
                 
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
