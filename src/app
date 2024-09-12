@@ -187,8 +187,11 @@ async def manage_trades (trades: dict) -> None:
             label=trade["label"]
 
             trade_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "trade_id", trade_id, 100)
+            log.info(f"trade_id_has_exist_before {trade_id_has_exist_before}")
             order_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "order_id", order_id, 100)
+            log.info(f"order_id_has_exist_before {order_id_has_exist_before}")
             label_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "label", label, 100)
+            log.info(f"label_id_has_exist_before {label_id_has_exist_before}")
             label_has_exist_before= (sum(trade_id_has_exist_before+order_id_has_exist_before+label_id_has_exist_before)!=0)
 
 

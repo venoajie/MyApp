@@ -10,6 +10,9 @@ import time
 import aiohttp
 from loguru import logger as log
 
-transaction_order_id=1
-result_order_id=[4,5,6,7,8,1]
-print(False if transaction_order_id not in result_order_id  else True)
+from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions,strategies)
+
+active_strategies=''
+
+log.warning (not active_strategies.strip())
+log.warning (active_strategies=="")
