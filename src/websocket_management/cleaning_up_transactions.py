@@ -162,7 +162,7 @@ async def remove_duplicated_elements () -> None:
     
     for label in label_checked:
         duplicated_elements = await querying_duplicated_transactions(label,where_filter)
-        duplicated_int_label = [o["label_int"] for o in duplicated_int_label]
+        duplicated_int_label = [o["label_int"] for o in duplicated_elements]
         
         log.info (f"duplicated_elements {duplicated_elements} {duplicated_int_label}")
 

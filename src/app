@@ -214,6 +214,7 @@ async def manage_trades (trades: dict) -> None:
                 
                 if "closed" in label:
                     await clean_up_closed_transactions (instrument_name)
+                    
         
 async def manage_positions (positions: dict, currency: str) -> None:
 
@@ -303,6 +304,7 @@ async def update_user_changes(data_orders, currency) -> None:
     if positions:
         #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
+    
     
     await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
