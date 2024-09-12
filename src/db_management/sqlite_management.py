@@ -879,10 +879,10 @@ async def executing_query_with_return(
         for i in fetchall:
             combine_result.append(dict(zip(headers, i)))
 
-    except ValueError:
-        import traceback
-        log.error (f"querying_table {query_table}")
-        traceback.format_exc()
+    except Exception as error:
+        #import traceback
+        log.error (f"querying_table {query_table} {error}")
+        #traceback.format_exc()
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
