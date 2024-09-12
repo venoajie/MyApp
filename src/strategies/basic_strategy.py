@@ -435,8 +435,10 @@ async def check_if_id_has_used_before(instrument_name: str,
     result_from_db_closed = get_order_label(data_from_db_trade_closed)
 
     combined_result = result_from_db_open + result_from_db_closed + data_from_db_order_open
+    id=f"{id_checked}"
+    log.error (f"id {id}")
     
-    result_order_id= [o[f"{id_checked}"] for o in combined_result]
+    result_order_id= [o[id] for o in combined_result]
     
     log.error (f"result_from_db_open {result_from_db_open}")
     log.error (f"result_order_id {result_order_id} transaction_id {transaction_id}")
