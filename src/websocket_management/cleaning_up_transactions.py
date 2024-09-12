@@ -23,6 +23,9 @@ from db_management.sqlite_management import (
 
 from strategies.config_strategies import paramaters_to_balancing_transactions
 # user defined formula
+
+from utilities.system_tools import (
+    sleep_and_restart,)
 from utilities.string_modification import get_unique_elements,extract_currency_from_text
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -141,6 +144,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                 await get_additional_params_for_open_label(transaction[0], label)
 
             await insert_tables(table, transaction)
+            await sleep_and_restart()
 
 
 async def remove_duplicated_elements () -> None:
