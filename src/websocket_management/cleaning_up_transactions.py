@@ -147,7 +147,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await sleep_and_restart()
 
 
-async def remove_duplicated_elements (currency) -> None:
+async def remove_duplicated_elements () -> None:
     """ 
     
         # label/order id may be duplicated (consider an order id/label was 
@@ -163,7 +163,7 @@ async def remove_duplicated_elements (currency) -> None:
     for label in label_checked:
         duplicated_elements_all = await querying_duplicated_transactions(label,where_filter)
         log.info (f"duplicated_elements_all {duplicated_elements_all}")
-        duplicated_elements = [o[where_filter] for o in duplicated_elements_all]
+        duplicated_elements = 0 if duplicated_elements_all == 0 else [o[where_filter] for o in duplicated_elements_all]
         
         log.info (f"duplicated_elements {duplicated_elements}")
 
@@ -180,6 +180,7 @@ async def remove_duplicated_elements (currency) -> None:
                     "=",
                     trade_id,
                 )
+                await sleep_and_restart()
 
 async def reconciling_between_db_and_exchg_data(instrument_name,
                                                 trades_from_exchange: list) -> None:

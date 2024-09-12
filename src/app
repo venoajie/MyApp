@@ -306,7 +306,7 @@ async def update_user_changes(data_orders, currency) -> None:
         await manage_positions (positions, currency)
     
     
-    await remove_duplicated_elements(currency)
+    await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
 
 
