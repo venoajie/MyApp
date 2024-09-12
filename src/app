@@ -758,9 +758,7 @@ class StreamAccountData:
             else:
                 ticker_change: list = read_data(my_path_ticker)
                 if ticker_change != []:
-                    log.info (f"data_orders {data_orders}")
-                    # 
-
+                    
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
                         replace_data(my_path_ticker, ticker_change)
