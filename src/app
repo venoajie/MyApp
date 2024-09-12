@@ -256,9 +256,7 @@ async def update_user_changes(data_orders, currency) -> None:
             log.error (order["label"]=="" )
             order_id=order["order_id"]
 
-            if  order["label"]=="" :
-                
-                await cancel_by_order_id (order_id)     
+            if  order["label"]=="" :                
                 
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
@@ -273,6 +271,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 log.info (f"order {order}")
                 
                 await if_order_is_true(order, instrument_name)
+                await cancel_by_order_id (order_id)     
 
             else:
     
