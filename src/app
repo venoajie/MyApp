@@ -54,10 +54,9 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     is_everything_consistent,
     get_transaction_side,
-    get_label,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
-from strategies.config_strategies import hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions
+from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions,strategies)
 from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
@@ -255,6 +254,10 @@ async def update_user_changes(data_orders, currency) -> None:
             log.debug (order)
             log.error (order["label"]=="" )
             order_id=order["order_id"]
+            
+            active_strategies=strategies()
+            
+            log.error (f"active_strategies {active_strategies}")
 
             if  order["label"]=="" :                
                 
@@ -271,8 +274,13 @@ async def update_user_changes(data_orders, currency) -> None:
                 order.update({"label": label_open})
                 log.info (f"order {order}")
                 
-                await if_order_is_true(order, instrument_name)
-                await cancel_by_order_id (order_id)     
+                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"order_id",order_id, 100)
+                
+                await cancel_by_order_id (order_id)
+                
+                if not label_has_exist_before:
+                    await if_order_is_true(order, instrument_name)
+                         
 
             else:
     
