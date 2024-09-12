@@ -62,6 +62,7 @@ from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_transactions,
+    remove_duplicated_elements,
     check_if_transaction_has_closed_label_before
 )
 
@@ -303,6 +304,7 @@ async def update_user_changes(data_orders, currency) -> None:
         #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
     
+    await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
 
 
