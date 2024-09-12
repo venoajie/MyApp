@@ -255,11 +255,11 @@ async def update_user_changes(data_orders, currency) -> None:
             log.error (order["label"]=="" )
             order_id=order["order_id"]
             
-            active_strategies=strategies()
+            active_strategies= [ o["strategy"] for o in strategies]
             
             log.error (f"active_strategies {active_strategies}")
 
-            if  order["label"]=="" :                
+            if  order["label"]=="" or order["label"] not in active_strategies:                
                 
                 side= get_transaction_side(order)
                 order.update({"everything_is_consistent": True})
@@ -274,7 +274,7 @@ async def update_user_changes(data_orders, currency) -> None:
                 order.update({"label": label_open})
                 log.info (f"order {order}")
                 
-                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"order_id",order_id, 100)
+                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open, 100)
                 
                 await cancel_by_order_id (order_id)
                 
