@@ -401,33 +401,47 @@ async def is_order_has_sent_before(instrument_name, verifier: str = "order_id", 
     - one label could be processed couple of time (especially when closing the transactions)
     """
     
-    verifier_plus= "label",verifier
+    verifier_plus= "label","order_id"
     
     #log.error(f"verifier_plus {verifier_plus}")
     #log.error(f"instrument_name {instrument_name}")
     
-    data_from_db_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
+    data_from_db_trade_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
                                                                                          verifier_plus)     
     
-    data_from_db_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
+    data_from_db_order_open = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                         instrument_name, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         verifier_plus)     
+    
+    data_from_db_trade_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
                                                                                             instrument_name, 
                                                                                             "all", 
                                                                                             "all", 
                                                                                             verifier_plus,
                                                                                             max_transactions_for_closed_label, 
                                                                                             "id") 
-    result_from_db_open = get_order_label(data_from_db_open)
-    result_from_db_closed = get_order_label(data_from_db_closed)
+    result_from_db_open = get_order_label(data_from_db_trade_open)
+    result_from_db_closed = get_order_label(data_from_db_trade_closed)
 
-    combined_result = result_from_db_open + result_from_db_closed
+    combined_result = result_from_db_open + result_from_db_closed + data_from_db_order_open
 
     # assuming only 1
-    label_is_exist: list = (
-        False if combined_result == [] else verifier in combined_result
-    )
+    bool_check=[]
+    for verifier in verifier_plus:
+        bool_result: list = (
+        False if combined_result == [] else verifier in combined_result)
+        bool_check.append(bool_result)
+        
+        if bool_result==True and verifier == "label" and  "closed" in verifier:
+            pass
+    
+        
+    label_is_exist=    (sum(bool_check)!=0)
     # log.error(f"get_my_trades_attributes_closed {get_my_trades_attributes_closed}")
     print(f"trasaction was existed before {label_is_exist}")
     return label_is_exist
