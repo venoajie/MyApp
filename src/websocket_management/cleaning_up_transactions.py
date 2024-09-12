@@ -158,29 +158,18 @@ async def remove_duplicated_elements (currency) -> None:
     
     label_checked=["my_trades_all_json", "my_trades_closed_json"]
     
-    where_filter = f"trade_id"
+    where_filter = f"order_id"
     
     for label in label_checked:
         duplicated_elements = await querying_duplicated_transactions(label,where_filter)
-        duplicated_int_label = [o["label_int"] for o in duplicated_elements]
         
-        log.info (f"duplicated_elements {duplicated_elements} {duplicated_int_label}")
+        log.info (f"duplicated_elements {duplicated_elements} {duplicated_elements}")
 
-        if duplicated_elements != 0:
+        if False and duplicated_elements != 0 or duplicated_elements != []:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             #)#
-            column_list: str= "label", "amount", "trade_id"
-            tabel= "my_trades_all_json"
-            transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
-                                                                                         currency, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)                                       
 
-            duplicated_trade_id = [o[where_filter] for o in transactions_all if duplicated_int_label in o["label"] ]
-            log.info (f"duplicated_trade_id {duplicated_trade_id}")
-
-            for trade_id in duplicated_trade_id:
+            for trade_id in duplicated_elements:
                 
                 await deleting_row(
                     label,
