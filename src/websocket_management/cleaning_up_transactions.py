@@ -158,16 +158,16 @@ async def remove_duplicated_elements () -> None:
     
     label_checked=["my_trades_all_json", "my_trades_closed_json"]
     
-    where_filter = f"order_id"
+    where_filter = f"trade_id"
     
     for label in label_checked:
         duplicated_elements_all = await querying_duplicated_transactions(label,where_filter)
-        log.info (f"duplicated_elements_all {duplicated_elements_all}")
+
         duplicated_elements = 0 if duplicated_elements_all == 0 else [o[where_filter] for o in duplicated_elements_all]
         
         log.info (f"duplicated_elements {duplicated_elements}")
 
-        if False and duplicated_elements != 0 or duplicated_elements != []:
+        if duplicated_elements != 0 or duplicated_elements != []:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             #)#
 
