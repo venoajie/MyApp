@@ -14,7 +14,9 @@ from strategies.basic_strategy import (
     is_minimum_waiting_time_has_passed,
     delta_pct,get_label,
     get_max_time_stamp,
-    size_rounding,is_everything_consistent
+    check_if_id_has_used_before,
+    size_rounding,
+    is_everything_consistent
 )
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy
@@ -268,6 +270,7 @@ class HedgingSpot(BasicStrategy):
             params.update({"label": label_open})
             everything_is_consistent= is_everything_consistent(params)
             
+            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", params["label"], 100)
             if everything_is_consistent:
                 
                 params.update({"size": size})

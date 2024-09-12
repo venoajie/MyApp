@@ -10,5 +10,6 @@ import time
 import aiohttp
 from loguru import logger as log
 
-text =  [False, False]
-print(sum(text)!=0)
+transaction_order_id=1
+result_order_id=[4,5,6,7,8,1]
+print(False if transaction_order_id not in result_order_id  else True)

@@ -51,7 +51,7 @@ from websocket_management.allocating_ohlc import (
     last_tick_fr_sqlite)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
-    is_order_has_sent_before,
+    check_if_id_has_used_before,
     is_everything_consistent,
     get_transaction_side,
     get_label,
@@ -170,6 +170,9 @@ async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
         
+        order_id=trade["order_id"]
+        trade_id=trade["trade_id"]
+        
         instrument_name= trade["instrument_name"]
 
         if "label" not in trade :
@@ -184,7 +187,11 @@ async def manage_trades (trades: dict) -> None:
                 
             label=trade["label"]
 
-            label_has_exist_before= await is_order_has_sent_before(instrument_name, "order_id", 100)
+            trade_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "trade_id", trade_id, 100)
+            order_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "order_id", order_id, 100)
+            label_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "label", label, 100)
+            label_has_exist_before= (sum(trade_id_has_exist_before+order_id_has_exist_before+label_id_has_exist_before)!=0)
+
 
             log.info(f"trade {trade} order_has_sent_before {label_has_exist_before} not {not label_has_exist_before}")
 
@@ -247,10 +254,9 @@ async def update_user_changes(data_orders, currency) -> None:
             
             log.debug (order)
             log.error (order["label"]=="" )
+            order_id=order["order_id"]
 
             if  order["label"]=="" :
-                
-                order_id=order["order_id"]
                 
                 await cancel_by_order_id (order_id)     
                 
@@ -270,7 +276,7 @@ async def update_user_changes(data_orders, currency) -> None:
 
             else:
     
-                label_has_exist_before= await is_order_has_sent_before(instrument_name,"order_id",100)
+                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"order_id",order_id, 100)
                 
                 await manage_orders (order)            
 
