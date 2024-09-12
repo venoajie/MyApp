@@ -244,7 +244,7 @@ async def update_user_changes(data_orders, currency) -> None:
     if orders:
         from transaction_management.deribit.open_orders_management import manage_orders
             
-        #log.warning (f"orders {orders}")
+        log.error (f"orders {orders}")
         
         for order in orders:
 
