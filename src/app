@@ -582,9 +582,7 @@ class StreamAccountData:
                                                 ticker= ticker[0]
                                             except:
                                                 ticker= []
-                                                
-                                            log.error (f"ticker {ticker}")
-                                            
+                                                                                            
                                             if ticker !=[]:
                                                         
                                                 try:
