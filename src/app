@@ -752,6 +752,7 @@ class StreamAccountData:
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
                         log.info (f"ticker_change {ticker_change}")
+                        log.info (f"ticker_change {ticker_change [0][item]}")
                         replace_data(my_path_ticker, ticker_change)
 
         except Exception as error:
