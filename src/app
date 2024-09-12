@@ -577,14 +577,16 @@ class StreamAccountData:
                                             strategy_label= hedging_spot_attributes()[0]["strategy"]
                                             
                                             ticker: list = reading_from_db("ticker", instrument_ticker)    
+                                            log.debug (f"ticker {ticker}")
+                                            
+                                            ticker= ticker[0]
+                                            log.error (f"ticker {ticker}")
                                                      
                                             try:
                                                 index_price= data_orders["index_price"]
                                                 
                                             except:
                                                 
-                                                ticker= ticker[0]
-
                                                 index_price= ticker["index_price"]
                                                 
                                                 if index_price==[]:
@@ -657,7 +659,7 @@ class StreamAccountData:
                                                         
                                                         notional: float = compute_notional_value(index_price, equity)
                                                             
-                                                        best_ask_prc: float = ticker[0]["best_ask_price"]                                                    
+                                                        best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
                                                         hedging = hedging_spot.HedgingSpot(strategy_label)
                                                         #log.warning (f"A")
