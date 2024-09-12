@@ -22,7 +22,7 @@ def preferred_spot_currencies() -> list:
 def paramaters_to_balancing_transactions() -> list:
     """ """
 
-    return dict(max_transactions_downloaded_from_exchange=5,
+    return dict(max_transactions_downloaded_from_exchange=20,
                 max_closed_transactions_downloaded_from_sqlite=20
                 )
 
