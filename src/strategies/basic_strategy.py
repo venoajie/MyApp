@@ -431,16 +431,14 @@ async def check_if_id_has_used_before(instrument_name: str,
                                                                                             column,
                                                                                             max_transactions_for_closed_label, 
                                                                                             "id") 
-    result_from_db_open = get_order_label(data_from_db_trade_open)
-    result_from_db_closed = get_order_label(data_from_db_trade_closed)
-
-    combined_result = result_from_db_open + result_from_db_closed + data_from_db_order_open
+    
+    combined_result = data_from_db_trade_open + data_from_db_trade_closed + data_from_db_order_open
     id=f"{id_checked}"
     log.error (f"id {id}")
     
     result_order_id= [o[id] for o in combined_result]
     
-    log.error (f"result_from_db_open {result_from_db_open}")
+    log.error (f"result_order_id {result_order_id}")
     log.error (f"result_order_id {result_order_id} transaction_id {transaction_id}")
     
     label_is_exist: list = (False if transaction_id not in result_order_id  else True)
