@@ -147,7 +147,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await sleep_and_restart()
 
 
-async def remove_duplicated_elements () -> None:
+async def remove_duplicated_elements (currency) -> None:
     """ 
     
         # label/order id may be duplicated (consider an order id/label was 
@@ -169,8 +169,15 @@ async def remove_duplicated_elements () -> None:
         if duplicated_elements != 0:
             #log. warning (f" duplicated_elements {duplicated_elements} duplicated_elements != [] {duplicated_elements != []} duplicated_elements == 0 {duplicated_elements == 0}"
             #)#
-            
-            duplicated_trade_id = [o[where_filter] for o in duplicated_elements]
+            column_list: str= "label", "amount", "trade_id"
+            tabel= "my_trades_all_json"
+            transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
+                                                                                         currency, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         column_list)                                       
+
+            duplicated_trade_id = [o[where_filter] for o in transactions_all if duplicated_int_label in o["label"] ]
             log.info (f"duplicated_trade_id {duplicated_trade_id}")
 
             for trade_id in duplicated_trade_id:
