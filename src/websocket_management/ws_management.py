@@ -291,8 +291,8 @@ async def updated_open_orders_database(currency) -> None:
     # resupply sub account db
     sub_accounts = await get_sub_account(currency)
     
+    log.error(f"sub_accounts{sub_accounts}")
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
-    log.error(f"open_orders_from_sub_accounts{open_orders_from_sub_accounts}")
     open_orders_from_sub_accounts_order_id= [o["order_id"] for o in open_orders_from_sub_accounts]
     
     
