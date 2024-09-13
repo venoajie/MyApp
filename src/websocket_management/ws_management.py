@@ -306,7 +306,7 @@ async def updated_open_orders_database(currency) -> None:
     order_id_from_current_db= [o["order_id"] for o in from_sqlite_open]
     
     if order_id_from_current_db !=[]:
-        log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        
         if open_orders_from_sub_accounts==[]:
             for order in order_id_from_current_db:
                 await deleting_row(
@@ -318,6 +318,7 @@ async def updated_open_orders_database(currency) -> None:
         )
                 
         else:
+            log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             for order_id in order_id_from_current_db:
                 if order_id not in open_orders_from_sub_accounts_order_id:
                     await deleting_row(
@@ -353,7 +354,7 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-    log.info(f"{currency} {sub_accounts}")
+    #log.info(f"{currency} {sub_accounts}")
     #log.info(f"resupply sub account db-DONE")
 
 
