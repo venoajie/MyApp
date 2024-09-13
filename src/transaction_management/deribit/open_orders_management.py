@@ -102,5 +102,3 @@ async def manage_orders(order: dict) -> None:
 
         await insert_tables("orders_all_json", order)
         log.warning(f" save order to db {order}")
-    
-    await updated_open_orders_database(currency)
