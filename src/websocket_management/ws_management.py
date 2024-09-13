@@ -313,7 +313,7 @@ async def updated_open_orders_database(currency) -> None:
             "databases/trading.sqlite3",
             "order_id",
             "=",
-            order["order_id"],
+            order,
         )
                 
         else:
