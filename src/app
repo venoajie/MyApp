@@ -278,14 +278,11 @@ async def update_user_changes(data_orders, currency) -> None:
                 
                 label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open, 100)
                 
-                await manage_orders (order)   
-                
                 await cancel_by_order_id (order_id)
                 
                 if not label_has_exist_before:
                     await if_order_is_true(order, instrument_name)
-                            
-                await manage_orders (order)       
+                    await manage_orders (order)       
                 await sleep_and_restart()
 
             else:
