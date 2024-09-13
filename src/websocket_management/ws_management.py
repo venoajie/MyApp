@@ -318,8 +318,9 @@ async def updated_open_orders_database(currency) -> None:
         )
                 
         else:
-            log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+            
             for order_id in order_id_from_current_db:
+                log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 if order_id not in open_orders_from_sub_accounts_order_id:
                     await deleting_row(
             "orders_all_json",
@@ -330,6 +331,7 @@ async def updated_open_orders_database(currency) -> None:
         )
 
             for order in open_orders_from_sub_accounts:
+                log.warning (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 label=order["label"]
                 instrument_name=order["instrument_name"]
                     
