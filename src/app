@@ -604,11 +604,6 @@ class StreamAccountData:
                                                 
                                                 open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
                                                 len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
-                                                non_label_from_open_orders_from_sub_accounts= [o for o in open_orders_from_sub_accounts if o["label"]==""]
-                                                log.error (f"non_label_from_open_orders_from_sub_accounts { [o for o in open_orders_from_sub_accounts]}")
-                                                log.error (f"non_label_from_open_orders_from_sub_accounts {non_label_from_open_orders_from_sub_accounts}")
-                                                len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_open_orders_from_sub_accounts ==[] else len(non_label_from_open_orders_from_sub_accounts)
-                                                log.error (f"len_non_label_from_open_orders_from_sub_accounts {len_non_label_from_open_orders_from_sub_accounts}")
                                                 column_list: str="order_id", "label"
                                                 
                                                 from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
@@ -619,9 +614,16 @@ class StreamAccountData:
 
                                                 len_from_sqlite_open= len(from_sqlite_open)
                                                 
+                                                non_label_from_from_sqlite_open= [o for o in from_sqlite_open if o["label"]==""]
+                                                log.error (f"non_label_from_open_orders_from_sub_accounts { [o for o in open_orders_from_sub_accounts]}")
+                                                log.error (f"non_label_from_from_sqlite_open {non_label_from_from_sqlite_open}")
+                                                len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_from_sqlite_open ==[] else len(non_label_from_from_sqlite_open)
+                                                log.error (f"len_non_label_from_open_orders_from_sub_accounts {len_non_label_from_open_orders_from_sub_accounts}")
                                                 order_is_consistent= len_open_orders_from_sub_accounts == len_from_sqlite_open
                                                 
-                                                if not order_is_consistent or len_non_label_from_open_orders_from_sub_accounts>0:
+                                                if len_non_label_from_open_orders_from_sub_accounts>0:
+                                                    await updated_open_orders_database(open_orders_from_sub_accounts,from_sqlite_open)
+                                                if not order_is_consistent :
                                                     log.critical (f"BALANCING-ORDERS-START")
                                                     await resupply_sub_accountdb(currency)
                                                     await updated_open_orders_database(open_orders_from_sub_accounts,from_sqlite_open)
