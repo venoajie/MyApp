@@ -286,23 +286,10 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
-async def updated_open_orders_database(currency) -> None:
+async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlite_open) -> None:
 
-    # resupply sub account db
-    sub_accounts = await get_sub_account(currency)
-    
-    open_orders_from_sub_accounts= sub_accounts[0]["open_orders"]
     open_orders_from_sub_accounts_order_id= [o["order_id"] for o in open_orders_from_sub_accounts]
-    
-    
-    column_list: str="order_id", "label"
-    
-    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                         currency, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)                                       
-
+        
     order_id_from_current_db= [o["order_id"] for o in from_sqlite_open]
     
     if order_id_from_current_db !=[]:
@@ -332,11 +319,9 @@ async def updated_open_orders_database(currency) -> None:
         )
 
             for order in open_orders_from_sub_accounts:
-                log.warning (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-                log.info (f"open_orders_from_sub_accounts {open_orders_from_sub_accounts}")
+                
                 label=order["label"]
                 instrument_name=order["instrument_name"]
-                log.error (f"label {label}")
                     
                 if order["order_id"] not in order_id_from_current_db:
                     await insert_tables("orders_all_json", order)
@@ -345,7 +330,6 @@ async def updated_open_orders_database(currency) -> None:
                     await procedures_for_unlabelled_orders(order, instrument_name)
 
     else:
-        log.debug (f"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
         if open_orders_from_sub_accounts !=[]:
             for order in open_orders_from_sub_accounts:
                 await insert_tables("orders_all_json", order)
