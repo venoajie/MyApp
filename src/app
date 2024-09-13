@@ -234,7 +234,7 @@ async def update_portfolio(data_orders, currency) -> None:
 async def update_user_changes(data_orders, currency) -> None:
     
     log.info(f"update_user_changes-START")
-    log.info (data_orders)
+    #log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
