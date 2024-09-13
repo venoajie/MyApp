@@ -22,7 +22,8 @@ from utilities.string_modification import (
 )
 from strategies.config_strategies import preferred_spot_currencies
 from db_management.sqlite_management import (
-    executing_label_and_size_query,
+    insert_tables,
+    deleting_row,
     executing_query_based_on_currency_or_instrument_and_strategy
 )
 
@@ -282,6 +283,56 @@ async def if_cancel_is_true(order) -> None:
         # get parameter orders
         await cancel_by_order_id(order["cancel_id"])
 
+async def updated_open_orders_database(currency) -> None:
+
+    # resupply sub account db
+    sub_accounts = await get_sub_account(currency)
+    
+    open_orders_from_sub_accounts= sub_accounts["open_orders"]
+    open_orders_from_sub_accounts_order_id= [o["order_id"] for o in open_orders_from_sub_accounts]
+    
+    
+    column_list: str="order_id", "label"
+    
+    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                         currency, 
+                                                                                         "all", 
+                                                                                         "all", 
+                                                                                         column_list)                                       
+
+    order_id_from_current_db= [o["order_id"] for o in from_sqlite_open]
+    
+    if order_id_from_current_db !=[]:
+        if open_orders_from_sub_accounts==[]:
+            for order in order_id_from_current_db:
+                await deleting_row(
+            "orders_all_json",
+            "databases/trading.sqlite3",
+            "order_id",
+            "=",
+            order["order_id"],
+        )
+                
+        else:
+            for order_id in order_id_from_current_db:
+                if order_id not in open_orders_from_sub_accounts_order_id:
+                    await deleting_row(
+            "orders_all_json",
+            "databases/trading.sqlite3",
+            "order_id",
+            "=",
+            order_id,
+        )
+
+            for order in open_orders_from_sub_accounts:
+                if order["order_id"] not in open_orders_from_sub_accounts_order_id:
+                    await insert_tables("orders_all_json", order)
+
+    else:
+        if open_orders_from_sub_accounts !=[]:
+            for order in open_orders_from_sub_accounts:
+                await insert_tables("orders_all_json", order)
+            
 
 async def resupply_sub_accountdb(currency) -> None:
 

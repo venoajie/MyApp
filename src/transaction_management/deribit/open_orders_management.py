@@ -8,7 +8,8 @@ from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy,
     deleting_row, 
     insert_tables)
-
+from websocket_management.ws_management import updated_open_orders_database
+from utilities.string_modification import extract_currency_from_text
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
@@ -19,6 +20,7 @@ async def manage_orders(order: dict) -> None:
 
     columns= "order_id", "label"
     instrument_name = order["instrument_name"]
+    currency=extract_currency_from_text(instrument_name).upper()
 
     if "oto_order_ids" in order:
         # get the order state
@@ -100,3 +102,5 @@ async def manage_orders(order: dict) -> None:
 
         await insert_tables("orders_all_json", order)
         log.warning(f" save order to db {order}")
+    
+    await updated_open_orders_database(currency)

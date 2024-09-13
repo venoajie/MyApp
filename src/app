@@ -44,7 +44,8 @@ from websocket_management.ws_management import (
     reading_from_db,
     is_size_consistent,
     get_account_summary,
-    cancel_by_order_id
+    cancel_by_order_id,
+    updated_open_orders_database
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -56,7 +57,7 @@ from strategies.basic_strategy import (
     get_transaction_side,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
-from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions,strategies)
+from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions)
 from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
@@ -306,6 +307,7 @@ async def update_user_changes(data_orders, currency) -> None:
         await manage_positions (positions, currency)
     
     
+    await updated_open_orders_database(currency)
     await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
 
