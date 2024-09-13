@@ -338,7 +338,7 @@ async def updated_open_orders_database(currency) -> None:
                 instrument_name=order["instrument_name"]
                 log.error (f"label {label}")
                     
-                if order["order_id"] not in open_orders_from_sub_accounts_order_id:
+                if order["order_id"] not in order_id_from_current_db:
                     await insert_tables("orders_all_json", order)
 
                 if label=="":
