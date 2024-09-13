@@ -12,6 +12,7 @@ from utilities.system_tools import (
     raise_error_message,
     provide_path_for_file,
     reading_from_db_pickle,
+    sleep_and_restart
 )
 
 from utilities.string_modification import (
@@ -35,6 +36,8 @@ from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (
     is_everything_consistent,
     get_strategy_config_all,
+    get_transaction_side,
+    check_if_id_has_used_before
 )
 
 from deribit_get import GetPrivateData, telegram_bot_sendtext
@@ -325,6 +328,11 @@ async def updated_open_orders_database(currency) -> None:
         )
 
             for order in open_orders_from_sub_accounts:
+                label=order["label"]
+                instrument_name=label["instrument_name"]
+                if label=="":
+                    await procedures_for_unlabelled_orders(order, instrument_name)
+                    
                 if order["order_id"] not in open_orders_from_sub_accounts_order_id:
                     await insert_tables("orders_all_json", order)
 
@@ -380,7 +388,33 @@ def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
         if (last_traded_price == [] or last_traded_price == 0)
         else delta_price / last_traded_price
     )
+async def procedures_for_unlabelled_orders(order, instrument_name):
+    """_summary_
+    """
+    from transaction_management.deribit.open_orders_management import manage_orders
 
+    side= get_transaction_side(order)
+    order.update({"everything_is_consistent": True})
+    order.update({"order_allowed": True})
+    order.update({"entry_price": order["price"]})
+    order.update({"size": order["amount"]})
+    order.update({"type": "limit"})
+    order.update({"side": side})
+    side_label= "Short" if side== "sell" else "Long"
+    last_update=order["creation_timestamp"]
+    label_open: str = (f"custom{side_label.title()}-open-{last_update}")
+    order.update({"label": label_open})
+    log.info (f"order {order}")
+    
+    label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open, 100)
+    
+    order_id= order["order_id"]
+    await cancel_by_order_id (order_id)
+    
+    if not label_has_exist_before:
+        await if_order_is_true(order, instrument_name)
+        await manage_orders (order)       
+    await sleep_and_restart()
 
 def delta_price_constraint(
     threshold: float,

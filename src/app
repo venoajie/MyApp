@@ -44,7 +44,7 @@ from websocket_management.ws_management import (
     reading_from_db,
     is_size_consistent,
     get_account_summary,
-    cancel_by_order_id,
+    procedures_for_unlabelled_orders,
     updated_open_orders_database
     )
 from websocket_management.allocating_ohlc import (
@@ -264,27 +264,7 @@ async def update_user_changes(data_orders, currency) -> None:
             
             if  label =="" :                
                 
-                side= get_transaction_side(order)
-                order.update({"everything_is_consistent": True})
-                order.update({"order_allowed": True})
-                order.update({"entry_price": order["price"]})
-                order.update({"size": order["amount"]})
-                order.update({"type": "limit"})
-                order.update({"side": side})
-                side_label= "Short" if side== "sell" else "Long"
-                last_update=order["creation_timestamp"]
-                label_open: str = (f"custom{side_label.title()}-open-{last_update}")
-                order.update({"label": label_open})
-                log.info (f"order {order}")
-                
-                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open, 100)
-                
-                await cancel_by_order_id (order_id)
-                
-                if not label_has_exist_before:
-                    await if_order_is_true(order, instrument_name)
-                    await manage_orders (order)       
-                await sleep_and_restart()
+                await procedures_for_unlabelled_orders(order, instrument_name)
 
             else:
     
