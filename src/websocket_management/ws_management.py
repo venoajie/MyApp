@@ -329,7 +329,7 @@ async def updated_open_orders_database(currency) -> None:
 
             for order in open_orders_from_sub_accounts:
                 label=order["label"]
-                instrument_name=label["instrument_name"]
+                instrument_name=order["instrument_name"]
                 if label=="":
                     await procedures_for_unlabelled_orders(order, instrument_name)
                     
