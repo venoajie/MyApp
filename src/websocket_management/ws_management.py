@@ -330,11 +330,12 @@ async def updated_open_orders_database(currency) -> None:
             for order in open_orders_from_sub_accounts:
                 label=order["label"]
                 instrument_name=order["instrument_name"]
-                if label=="":
-                    await procedures_for_unlabelled_orders(order, instrument_name)
                     
                 if order["order_id"] not in open_orders_from_sub_accounts_order_id:
                     await insert_tables("orders_all_json", order)
+
+                if label=="":
+                    await procedures_for_unlabelled_orders(order, instrument_name)
 
     else:
         if open_orders_from_sub_accounts !=[]:
