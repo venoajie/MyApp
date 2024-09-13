@@ -627,6 +627,8 @@ class StreamAccountData:
                                                     equity: float = portfolio[0]["equity"]                                   
                                                                                         
                                                     if ticker !=[] and index_price is not None and equity >0:
+                                                        
+                                                        await updated_open_orders_database(currency)
                                                     
                                                         tick_TA=  max([o["tick"] for o in TA_result_data])
                                                         
