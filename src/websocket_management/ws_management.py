@@ -320,8 +320,9 @@ async def updated_open_orders_database(currency) -> None:
         else:
             
             for order_id in order_id_from_current_db:
-                log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                
                 if order_id not in open_orders_from_sub_accounts_order_id:
+                    log.critical (f"open_orders_from_sub_accounts_order_id {open_orders_from_sub_accounts_order_id}")
                     await deleting_row(
             "orders_all_json",
             "databases/trading.sqlite3",
@@ -332,8 +333,10 @@ async def updated_open_orders_database(currency) -> None:
 
             for order in open_orders_from_sub_accounts:
                 log.warning (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+                log.info (f"open_orders_from_sub_accounts {open_orders_from_sub_accounts}")
                 label=order["label"]
                 instrument_name=order["instrument_name"]
+                log.error (f"label {label}")
                     
                 if order["order_id"] not in open_orders_from_sub_accounts_order_id:
                     await insert_tables("orders_all_json", order)
