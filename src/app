@@ -234,7 +234,7 @@ async def update_portfolio(data_orders, currency) -> None:
 async def update_user_changes(data_orders, currency) -> None:
     
     log.info(f"update_user_changes-START")
-    #log.info (data_orders)
+    log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -380,8 +380,7 @@ class StreamAccountData:
                 await get_and_save_currencies()
                 
                 instruments_name=await get_instruments_name()
-                
-                
+                                
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
@@ -389,8 +388,7 @@ class StreamAccountData:
                     await clean_up_closed_transactions (instrument)
 
                     currency=extract_currency_from_text(instrument).upper()
-                
-                    
+                                    
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
