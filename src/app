@@ -615,10 +615,9 @@ class StreamAccountData:
                                                 len_from_sqlite_open= len(from_sqlite_open)
                                                 
                                                 non_label_from_from_sqlite_open= [o for o in from_sqlite_open if o["label"]==""]
-                                                log.error (f"non_label_from_open_orders_from_sub_accounts { [o for o in open_orders_from_sub_accounts]}")
-                                                log.error (f"non_label_from_from_sqlite_open {non_label_from_from_sqlite_open}")
+
                                                 len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_from_sqlite_open ==[] else len(non_label_from_from_sqlite_open)
-                                                log.error (f"len_non_label_from_open_orders_from_sub_accounts {len_non_label_from_open_orders_from_sub_accounts}")
+
                                                 order_is_consistent= len_open_orders_from_sub_accounts == len_from_sqlite_open
                                                 
                                                 if len_non_label_from_open_orders_from_sub_accounts>0:
