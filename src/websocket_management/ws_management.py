@@ -306,6 +306,7 @@ async def updated_open_orders_database(currency) -> None:
     order_id_from_current_db= [o["order_id"] for o in from_sqlite_open]
     
     if order_id_from_current_db !=[]:
+        log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         if open_orders_from_sub_accounts==[]:
             for order in order_id_from_current_db:
                 await deleting_row(
@@ -338,6 +339,7 @@ async def updated_open_orders_database(currency) -> None:
                     await procedures_for_unlabelled_orders(order, instrument_name)
 
     else:
+        log.debug (f"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
         if open_orders_from_sub_accounts !=[]:
             for order in open_orders_from_sub_accounts:
                 await insert_tables("orders_all_json", order)
