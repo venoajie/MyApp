@@ -343,9 +343,6 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-    #log.info(f"{currency} {sub_accounts}")
-    #log.info(f"resupply sub account db-DONE")
-
 
 async def inserting_additional_params(params: dict) -> None:
     """ """

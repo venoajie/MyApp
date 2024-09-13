@@ -294,7 +294,7 @@ async def on_restart() -> None:
     """
     """
 
-    log.warning("Cancelling all orders")
+    log.warning("Cancelling selected orders")
     await cancel_the_cancellables()
 
 class StreamAccountData:
@@ -616,7 +616,7 @@ class StreamAccountData:
                                                 
                                                 order_is_consistent= len_open_orders_from_sub_accounts == len_from_sqlite_open
                                                 
-                                                if  order_is_consistent:
+                                                if not order_is_consistent:
                                                     log.critical (f"BALANCING-ORDERS-START")
                                                     await resupply_sub_accountdb(currency)
                                                     await updated_open_orders_database(open_orders_from_sub_accounts,from_sqlite_open)
