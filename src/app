@@ -605,6 +605,7 @@ class StreamAccountData:
                                                 open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
                                                 len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
                                                 non_label_from_open_orders_from_sub_accounts= [o for o in open_orders_from_sub_accounts if o["label"]==""]
+                                                log.error (f"non_label_from_open_orders_from_sub_accounts { [o for o in open_orders_from_sub_accounts]}")
                                                 log.error (f"non_label_from_open_orders_from_sub_accounts {non_label_from_open_orders_from_sub_accounts}")
                                                 len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_open_orders_from_sub_accounts ==[] else len(non_label_from_open_orders_from_sub_accounts)
                                                 log.error (f"len_non_label_from_open_orders_from_sub_accounts {len_non_label_from_open_orders_from_sub_accounts}")
