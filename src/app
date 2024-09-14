@@ -590,33 +590,21 @@ class StreamAccountData:
                                                                                          "all", 
                                                                                          column_list)                                       
 
-                                                len_from_sqlite_open= len(order_from_sqlite_open)
-                                                
-                                                non_label_from_from_sqlite_open= [o for o in order_from_sqlite_open if o["label"]==""]
-
-                                                len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_from_sqlite_open ==[] else len(non_label_from_from_sqlite_open)
-
-                                                order_is_consistent= len_open_orders_from_sub_accounts == len_from_sqlite_open
-                                                
                                                 db_consistencies= check_db_consistencies (my_trades_instrument, positions_all,order_from_sqlite_open,open_orders_from_sub_accounts)
-                                                order_is_consistent_= db_consistencies["order_is_consistent"]
-                                                len_non_label_from_open_orders_from_sub_accounts_= db_consistencies["no_non_label_from_from_sqlite_open"]
-                                                size_is_consistent_= db_consistencies["trade_size_is_consistent"]
                                                 
                                                 log.debug (f"db_consistencies {db_consistencies}")
                                                 
-                                                if len_non_label_from_open_orders_from_sub_accounts>0:
+                                                if not db_consistencies["no_non_label_from_from_sqlite_open"]:
                                                     await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
                                                     
-                                                if not order_is_consistent :
+                                                if not db_consistencies["order_is_consistent"] :
                                                     log.critical (f"BALANCING-ORDERS-START")
                                                     await resupply_sub_accountdb(currency)
                                                     await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
                                                     log.critical (f"BALANCING-ORDERS-DONE")
                                                     await on_restart()
-                                                    
-                                            
-                                                if not size_is_consistent:
+                                                                                                
+                                                if not db_consistencies["trade_size_is_consistent"]:
                                                     log.critical (f"BALANCING-START")
                                                     
                                                     await cancel_the_cancellables("open")
