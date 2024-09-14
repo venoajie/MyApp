@@ -559,9 +559,6 @@ class StreamAccountData:
                                                         index_price = ticker ["estimated_delivery_price"]
                                                     #log.critical (f"index_price {index_price}")
                                                     
-                                                # gathering basic data
-                                                reading_from_database: dict = await reading_from_pkl_database(currency)
-                                                                                    
                                                 # get portfolio data                                                
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
@@ -570,16 +567,13 @@ class StreamAccountData:
                                                 my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                     "my_trades_all_json", instrument_ticker, "all", "all", column_list)
                                                 
-                                                sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
-                                                
                                                 # fetch positions for all instruments
-                                                positions_all: list = reading_from_database["positions_from_sub_account"]
-                                                log.info(f"positions_all aaaa {positions_all} ")
-                                                positions_all: list = reading_from_pkl_data("sub_accounts",currency)
+                                                sub_accounts: list = reading_from_pkl_data("sub_accounts",currency)
 
-                                                log.info(f"positions_all {positions_all} ")
+                                                log.info(f"sub_accounts {sub_accounts} ")
                                                 
-                                                open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
+                                                open_orders_from_sub_accounts= sub_accounts["open_orders"]
+                                                positions_from_sub_accounts= sub_accounts["positions"]
 
                                                 column_list: str="order_id", "label"
                                                 
@@ -591,7 +585,7 @@ class StreamAccountData:
 
                                                 db_consistencies= check_db_consistencies (instrument_ticker, 
                                                                                           my_trades_instrument, 
-                                                                                          positions_all,
+                                                                                          positions_from_sub_accounts,
                                                                                           order_from_sqlite_open,
                                                                                           open_orders_from_sub_accounts)
                                                 
