@@ -185,3 +185,38 @@ async def ohlc_result_per_time_frame(
 
             else:
                 await insert_tables(TABLE_OHLC1D, data_orders)
+
+
+def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
+    return currency.lower()  in str(database_address)
+
+
+async def inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_OHLC1, data_orders) -> None:
+    """ """
+    try:
+
+        if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
+        
+            open_interest = data_orders["open_interest"]
+                            
+            last_tick_query_ohlc1: str = querying_arithmetic_operator(
+                "tick", "MAX", TABLE_OHLC1
+            )
+
+            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
+                last_tick_query_ohlc1
+            )
+
+            await replace_row(
+                open_interest,
+                "open_interest",
+                TABLE_OHLC1,
+                DATABASE,
+                WHERE_FILTER_TICK,
+                "is",
+                last_tick1_fr_sqlite,
+            )
+
+
+    except Exception as error:
+        print (f"error allocating ohlc {error}")

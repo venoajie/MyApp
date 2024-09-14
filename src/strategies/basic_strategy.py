@@ -306,14 +306,6 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     
     return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
 
-def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
-    """ """
-    from utilities import pickling, system_tools
-
-    return pickling.read_data(
-        system_tools.provide_path_for_file(end_point, instrument, status)
-    )
-
 
 def get_transaction_side(transaction: dict) -> str:
     """ """
@@ -627,6 +619,59 @@ def get_take_profit_pct(transaction: dict, strategy_config: dict) -> float:
         tp_pct: float = strategy_config["take_profit_pct"]
 
     return tp_pct
+
+
+def reading_from_pkl_database(end_point, currency, status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, currency, status)
+    data = read_data(path)
+
+    return data [0]
+
+
+def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
+    """ """
+    from utilities import pickling, system_tools
+
+    return pickling.read_data(
+        system_tools.provide_path_for_file(end_point, instrument, status)
+    )
+
+def get_non_label_from_transaction(transactions) -> list:
+    """ """
+
+
+    return [] if transactions ==[] else [o for o in transactions if o["label"]==""]
+
+
+
+def check_db_consistencies (trades_from_sqlite: dict, 
+                            positions_all: str,
+                            order_from_sqlite_open, 
+                            open_orders_from_sub_accounts) -> bool:
+    """ """
+
+    no_non_label_from_from_sqlite_open= False if get_non_label_from_transaction(order_from_sqlite_open) != [] else True 
+    
+    len_from_sqlite_open= len(order_from_sqlite_open)
+    
+    len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
+    
+    sum_my_trades_sqlite = 0 if  trades_from_sqlite == [] else sum([o["amount"] for o in positions_all])
+
+    size_from_position: int = (0 if positions_all == [] else sum([o["size"] for o in positions_all]))
+
+    log.error(
+        f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
+    )
+    return dict(trade_size_is_consistent=sum_my_trades_sqlite == size_from_position,
+                
+                order_is_consistent= (len_open_orders_from_sub_accounts == len_from_sqlite_open \
+                    and no_non_label_from_from_sqlite_open),
+                
+                no_non_label_from_from_sqlite_open= False \
+                    if get_non_label_from_transaction(order_from_sqlite_open) != [] else True )
 
 
 @dataclass(unsafe_hash=True, slots=True)

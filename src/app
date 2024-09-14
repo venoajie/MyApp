@@ -20,7 +20,6 @@ from utilities.pickling import (
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
-    sleep_and_restart,
     catch_error_message)
 from utilities.string_modification import (
     parsing_label,remove_double_brackets_in_list,
@@ -28,8 +27,7 @@ from utilities.string_modification import (
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
-    replace_row,querying_table,
-    querying_arithmetic_operator,
+    querying_table,
     executing_general_query_with_single_filter,
     executing_query_based_on_currency_or_instrument_and_strategy,
     insert_tables)
@@ -49,12 +47,12 @@ from websocket_management.ws_management import (
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
-    last_tick_fr_sqlite)
+    inserting_open_interest)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     check_if_id_has_used_before,
     is_everything_consistent,
-    get_transaction_side,
+    check_db_consistencies,
     get_additional_params_for_futureSpread_transactions)
 from strategies import  hedging_spot
 from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies,paramaters_to_balancing_transactions)
@@ -520,27 +518,7 @@ class StreamAccountData:
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
-                                        if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
-                                       
-                                            open_interest = data_orders["open_interest"]
-                                                            
-                                            last_tick_query_ohlc1: str = querying_arithmetic_operator(
-                                                "tick", "MAX", TABLE_OHLC1
-                                            )
-
-                                            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
-                                                last_tick_query_ohlc1
-                                            )
-
-                                            await replace_row(
-                                                open_interest,
-                                                "open_interest",
-                                                TABLE_OHLC1,
-                                                DATABASE,
-                                                WHERE_FILTER_TICK,
-                                                "is",
-                                                last_tick1_fr_sqlite,
-                                            )
+                                        await inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_OHLC1, data_orders)
                                             
                                         try:                                          
                                                                                         
@@ -606,26 +584,34 @@ class StreamAccountData:
                                                 len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
                                                 column_list: str="order_id", "label"
                                                 
-                                                from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
                                                                                          currency, 
                                                                                          "all", 
                                                                                          "all", 
                                                                                          column_list)                                       
 
-                                                len_from_sqlite_open= len(from_sqlite_open)
+                                                len_from_sqlite_open= len(order_from_sqlite_open)
                                                 
-                                                non_label_from_from_sqlite_open= [o for o in from_sqlite_open if o["label"]==""]
+                                                non_label_from_from_sqlite_open= [o for o in order_from_sqlite_open if o["label"]==""]
 
                                                 len_non_label_from_open_orders_from_sub_accounts= 0 if non_label_from_from_sqlite_open ==[] else len(non_label_from_from_sqlite_open)
 
                                                 order_is_consistent= len_open_orders_from_sub_accounts == len_from_sqlite_open
                                                 
+                                                db_consistencies= check_db_consistencies (my_trades_instrument, positions_all,order_from_sqlite_open,open_orders_from_sub_accounts)
+                                                order_is_consistent_= db_consistencies["order_is_consistent"]
+                                                len_non_label_from_open_orders_from_sub_accounts_= db_consistencies["no_non_label_from_from_sqlite_open"]
+                                                size_is_consistent_= db_consistencies["trade_size_is_consistent"]
+                                                
+                                                log.debug (f"db_consistencies {db_consistencies}")
+                                                
                                                 if len_non_label_from_open_orders_from_sub_accounts>0:
-                                                    await updated_open_orders_database(open_orders_from_sub_accounts,from_sqlite_open)
+                                                    await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
+                                                    
                                                 if not order_is_consistent :
                                                     log.critical (f"BALANCING-ORDERS-START")
                                                     await resupply_sub_accountdb(currency)
-                                                    await updated_open_orders_database(open_orders_from_sub_accounts,from_sqlite_open)
+                                                    await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
                                                     log.critical (f"BALANCING-ORDERS-DONE")
                                                     await on_restart()
                                                     
