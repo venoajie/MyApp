@@ -574,11 +574,6 @@ class StreamAccountData:
                                                 size_from_position: int = (
                                                     0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_ticker])
                                                 )
-
-                                                size_is_consistent: bool = await is_size_consistent(
-                                                    sum_my_trades_instrument, size_from_position,
-                                                    instrument_ticker
-                                                    )
                                                 
                                                 open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
 
@@ -590,7 +585,7 @@ class StreamAccountData:
                                                                                          "all", 
                                                                                          column_list)                                       
 
-                                                db_consistencies= check_db_consistencies (my_trades_instrument, positions_all,order_from_sqlite_open,open_orders_from_sub_accounts)
+                                                db_consistencies= check_db_consistencies (instrument_ticker, my_trades_instrument, positions_all,order_from_sqlite_open,open_orders_from_sub_accounts)
                                                 
                                                 log.debug (f"db_consistencies {db_consistencies}")
                                                 order_is_consistent= db_consistencies["order_is_consistent"]
