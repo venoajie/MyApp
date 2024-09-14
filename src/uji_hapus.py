@@ -3,6 +3,16 @@ from loguru import logger as log
 
 import sqlite3
 
+def progress(status, remaining, total):
+    print(f'Copied {total-remaining} of {total} pages...')
+
+src = sqlite3.connect('"databases/trading.sqlite3"')
+dst = sqlite3.connect('"databases/trading3.sqlite3"')
+with dst:
+    src.backup(dst, pages=1, progress=progress)
+dst.close()
+src.close()
+
 def backup_database(source_db, dest_db):
     log.error ("start")
     source_conn = sqlite3.connect(source_db)
