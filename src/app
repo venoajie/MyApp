@@ -562,15 +562,8 @@ class StreamAccountData:
                                                 # gathering basic data
                                                 reading_from_database: dict = await reading_from_pkl_database(currency)
                                                                                     
-                                                # get portfolio data
-                                                #portfolio: list = reading_from_database["portfolio"]
-                                                
-                                                portfolio=  reading_from_database["portfolio"]
-                                                
-                                                log.debug (f"portfolio AAAAAA {portfolio}")
+                                                # get portfolio data                                                
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
-                                                
-                                                log.critical (f"portfolio {portfolio}")
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","has_closed_label"
                                                 
@@ -581,8 +574,10 @@ class StreamAccountData:
                                                 
                                                 # fetch positions for all instruments
                                                 positions_all: list = reading_from_database["positions_from_sub_account"]
+                                                log.info(f"positions_all aaaa {positions_all} ")
+                                                positions_all: list = reading_from_pkl_data("sub_accounts",currency)
 
-                                                #log.info(f"positions_all-recurring {positions_all} ")
+                                                log.info(f"positions_all {positions_all} ")
                                                 
                                                 open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
 
