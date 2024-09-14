@@ -590,13 +590,6 @@ class StreamAccountData:
                                                 order_is_consistent= db_consistencies["order_is_consistent"]
                                                 
                                                 size_is_consistent= db_consistencies["trade_size_is_consistent"]
-                                                
-                                                balancing_params=paramaters_to_balancing_transactions()
-                                                max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
-                                                    
-                                                trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
-                                                await reconciling_between_db_and_exchg_data(instrument_ticker,
-                                                        trades_from_exchange, positions_from_sub_accounts,order_from_sqlite_open,open_orders_from_sub_accounts)
                                                     
                                                 if not db_consistencies["no_non_label_from_from_sqlite_open"]:
                                                     await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
