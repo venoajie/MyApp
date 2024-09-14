@@ -647,7 +647,7 @@ def get_non_label_from_transaction(transactions) -> list:
 
 
 def check_db_consistencies (trades_from_sqlite: dict, 
-                            positions_all: str,
+                            positions_from_sub_account: str,
                             order_from_sqlite_open, 
                             open_orders_from_sub_accounts) -> bool:
     """ """
@@ -658,9 +658,11 @@ def check_db_consistencies (trades_from_sqlite: dict,
     
     len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
     
-    sum_my_trades_sqlite = 0 if  trades_from_sqlite == [] else sum([o["amount"] for o in positions_all])
+    log.info (f"positions_from_sub_account {positions_from_sub_account}")
+    
+    sum_my_trades_sqlite = 0 if  trades_from_sqlite == [] else sum([o["amount"] for o in trades_from_sqlite])
 
-    size_from_position: int = (0 if positions_all == [] else sum([o["size"] for o in positions_all]))
+    size_from_position: int = (0 if positions_from_sub_account == [] else sum([o["size"] for o in positions_from_sub_account]))
 
     log.error(
         f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
