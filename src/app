@@ -96,7 +96,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     path: str = provide_path_for_file(end_point, currency, status)
     data = read_data(path)
 
-    return data [0]
+    return data
 
 async def get_futures_for_active_currencies () -> list:
     """_summary_
