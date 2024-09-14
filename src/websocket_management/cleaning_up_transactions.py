@@ -26,7 +26,7 @@ from strategies.config_strategies import paramaters_to_balancing_transactions
 
 from utilities.system_tools import (
     sleep_and_restart,)
-from utilities.string_modification import get_unique_elements,extract_currency_from_text
+from utilities.string_modification import get_unique_elements
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -35,9 +35,7 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-from websocket_management.ws_management import (
-    is_size_consistent,reading_from_pkl_database
-    )
+from websocket_management.ws_management import (is_size_consistent)
 
 async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
 ) -> dict:
@@ -120,7 +118,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         marker="order_id"
     
     marker_plus=marker,"label"
-    transaction_sum=0
+
     for tran_id in unrecorded_id:
 
         transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
@@ -183,7 +181,7 @@ async def remove_duplicated_elements () -> None:
                 await sleep_and_restart()
 
 async def reconciling_between_db_and_exchg_data(instrument_name,
-                                                trades_from_exchange: list) -> None:
+                                                trades_from_exchange: list, positions_from_sub_accounts: list) -> None:
     """ """
     
     unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
@@ -201,22 +199,15 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
         await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_trade_id, "trade_id")
     
     await remove_duplicated_elements ()
-    
-    #recheck_result_after_cleaning
-    currency: str = extract_currency_from_text(instrument_name)
-    
-    reading_from_database: dict = await reading_from_pkl_database(currency)
-    
+        
     column_list: str= "instrument_name","label", "amount", "price","trade_id"
     
     my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
     
     sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
-    
-    positions_all: list = reading_from_database["positions_from_sub_account"]
-    
-    size_from_position: int = (0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_name])
+        
+    size_from_position: int = (0 if positions_from_sub_accounts == [] else sum([o["size"] for o in positions_from_sub_accounts if o["instrument_name"]==instrument_name])
                                             )
     
     await recheck_result_after_cleaning (instrument_name,

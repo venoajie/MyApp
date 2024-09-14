@@ -38,8 +38,6 @@ from websocket_management.ws_management import (
     if_cancel_is_true,
     compute_notional_value, 
     get_my_trades_from_exchange,
-    reading_from_pkl_database,
-    reading_from_db,
     get_account_summary,
     procedures_for_unlabelled_orders,
     updated_open_orders_database
@@ -615,7 +613,7 @@ class StreamAccountData:
                                                     trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
 
                                                     await reconciling_between_db_and_exchg_data(instrument_ticker,
-                                                        trades_from_exchange)
+                                                        trades_from_exchange, positions_from_sub_accounts)
                                                     
                                                     log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
                                                     await clean_up_closed_transactions(instrument_ticker)

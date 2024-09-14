@@ -621,15 +621,6 @@ def get_take_profit_pct(transaction: dict, strategy_config: dict) -> float:
     return tp_pct
 
 
-def reading_from_pkl_database(end_point, currency, status: str = None) -> dict:
-    """ """
-
-    path: str = provide_path_for_file(end_point, currency, status)
-    data = read_data(path)
-
-    return data [0]
-
-
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> list:
     """ """
     from utilities import pickling, system_tools
@@ -658,8 +649,6 @@ def check_db_consistencies (instrument_name: str,
     
     len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
     
-    log.error (f"positions_from_sub_account {positions_from_sub_account}")
-        
     sum_my_trades_sqlite = 0 if  trades_from_sqlite == [] else sum([o["amount"] for o in trades_from_sqlite])
 
     size_from_position: int = (0 if positions_from_sub_account == [] \

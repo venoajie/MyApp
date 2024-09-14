@@ -7,7 +7,6 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
-from utilities.pickling import replace_data, read_data
 from utilities.system_tools import (
     raise_error_message,
     provide_path_for_file,
@@ -95,38 +94,6 @@ async def get_sub_account(currency) -> list:
     return result_sub_account["result"]
 
 
-async def reading_from_pkl_database(currency) -> float:
-    """ """
-
-    path_sub_accounts: str = provide_path_for_file("sub_accounts", currency)
-
-    path_portfolio: str = provide_path_for_file("portfolio", currency)
-    path_positions: str = provide_path_for_file("positions", currency)
-    positions = read_data(path_positions)
-    sub_account = read_data(path_sub_accounts)
-    positions_from_sub_account = sub_account[0]["positions"]
-    open_orders_from_sub_account = sub_account[0]["open_orders"]
-    portfolio = read_data(path_portfolio)
-
-    # at start, usually position == None
-    if positions in NONE_DATA:
-        positions = positions_from_sub_account  # await self.get_positions ()
-        replace_data(path_positions, positions)
-
-    # log.debug (my_trades_open)
-    if portfolio in NONE_DATA:
-        portfolio = await get_account_summary(currency)
-        replace_data(path_portfolio, portfolio)
-        portfolio = read_data(path_portfolio)
-
-    return {
-        "positions": positions,
-        "positions_from_sub_account": positions_from_sub_account,
-        "open_orders_from_sub_account": open_orders_from_sub_account,
-        "portfolio": portfolio,
-    }
-
-
 def compute_notional_value(index_price: float, equity: float) -> float:
     """ """
     return index_price * equity
@@ -135,38 +102,6 @@ def compute_notional_value(index_price: float, equity: float) -> float:
 def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
     """ """
     return reading_from_db_pickle(end_point, instrument, status)
-
-
-async def is_size_consistent(
-    sum_my_trades_sqlite: int, size_from_position: int, instrument_name: str
-) -> bool:
-    """ """
-    
-    if sum_my_trades_sqlite == None:
-        column_list: str= "amount",
-        tabel= "my_trades_all_json"
-        transactions_all_summarized: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)
-        
-        sum_my_trades_sqlite = 0 if  transactions_all_summarized == [] else sum([o["amount"] for o in positions_all])
-
-    if size_from_position == None:
-        # gathering basic data
-        reading_from_database: dict = await reading_from_pkl_database(currency)
-        positions_all: list = reading_from_database["positions_from_sub_account"]
-        # print(f"positions_all-recurring {positions_all} ")
-        size_from_position: int = (
-            0 if positions_all == [] else sum([o["size"] for o in positions_all])
-        )
-
-    log.error(
-        f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
-    )
-
-    return sum_my_trades_sqlite == size_from_position
 
 
 async def send_limit_order(params) -> None:
