@@ -40,7 +40,6 @@ from websocket_management.ws_management import (
     get_my_trades_from_exchange,
     reading_from_pkl_database,
     reading_from_db,
-    is_size_consistent,
     get_account_summary,
     procedures_for_unlabelled_orders,
     updated_open_orders_database
@@ -91,7 +90,7 @@ async def current_server_time() -> float:
     return current_time["result"]
 
 
-def reading_from_pkl_database(end_point, currency, status: str = None) -> dict:
+def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     """ """
 
     path: str = provide_path_for_file(end_point, currency, status)
@@ -566,7 +565,7 @@ class StreamAccountData:
                                                 # get portfolio data
                                                 portfolio: list = reading_from_database["portfolio"]
                                                 
-                                                portfolio1= reading_from_pkl_database("portfolio",currency)
+                                                portfolio1= reading_from_pkl_data("portfolio",currency)
                                                 log.error (f"portfolio1 {portfolio1}")
                                                 log.debug (f"portfolio {portfolio}")
                                                 
