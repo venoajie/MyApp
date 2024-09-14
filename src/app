@@ -91,6 +91,14 @@ async def current_server_time() -> float:
     return current_time["result"]
 
 
+def reading_from_pkl_database(end_point, currency, status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, currency, status)
+    data = read_data(path)
+
+    return data [0]
+
 async def get_futures_for_active_currencies () -> list:
     """_summary_
 
@@ -557,8 +565,10 @@ class StreamAccountData:
                                                                                     
                                                 # get portfolio data
                                                 portfolio: list = reading_from_database["portfolio"]
-
-                                                #my_trades_instrument: list=await executing_general_query_with_single_filter("my_trades_all_json", instrument_ticker)
+                                                
+                                                portfolio1= reading_from_pkl_database("portfolio",currency)
+                                                log.error (f"portfolio1 {portfolio1}")
+                                                log.debug (f"portfolio {portfolio}")
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","has_closed_label"
                                                 
@@ -571,9 +581,6 @@ class StreamAccountData:
                                                 positions_all: list = reading_from_database["positions_from_sub_account"]
 
                                                 #log.info(f"positions_all-recurring {positions_all} ")
-                                                size_from_position: int = (
-                                                    0 if positions_all == [] else sum([o["size"] for o in positions_all if o["instrument_name"]==instrument_ticker])
-                                                )
                                                 
                                                 open_orders_from_sub_accounts= reading_from_database["open_orders_from_sub_account"]
 
@@ -585,7 +592,11 @@ class StreamAccountData:
                                                                                          "all", 
                                                                                          column_list)                                       
 
-                                                db_consistencies= check_db_consistencies (instrument_ticker, my_trades_instrument, positions_all,order_from_sqlite_open,open_orders_from_sub_accounts)
+                                                db_consistencies= check_db_consistencies (instrument_ticker, 
+                                                                                          my_trades_instrument, 
+                                                                                          positions_all,
+                                                                                          order_from_sqlite_open,
+                                                                                          open_orders_from_sub_accounts)
                                                 
                                                 log.debug (f"db_consistencies {db_consistencies}")
                                                 order_is_consistent= db_consistencies["order_is_consistent"]
