@@ -542,7 +542,7 @@ class StreamAccountData:
                                             log.warning (f"AAA")
                                             ticker: list = reading_from_db("ticker", instrument_ticker)    
                                             log.warning (f"ticker 1 {ticker}")
-                                            ticker= reading_from_pkl_data("ticker",currency)
+                                            ticker= reading_from_pkl_data("ticker",instrument_ticker)
                                             log.debug (f"ticker {ticker}")
                                             
                                             try:
