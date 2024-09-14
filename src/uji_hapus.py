@@ -19,7 +19,9 @@ def backup_database(source_db, dest_db):
     dest_conn = sqlite3.connect(dest_db)
 
     # Initialize the backup process
-    backup = sqlite3.backup(source_conn, dest_conn)
+    
+    with dst:
+        backup = sqlite3.backup(source_conn, dest_conn)
 
     # Perform the backup
     backup.step(-1)
