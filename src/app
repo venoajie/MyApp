@@ -613,7 +613,7 @@ class StreamAccountData:
                                                     trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
 
                                                     await reconciling_between_db_and_exchg_data(instrument_ticker,
-                                                        trades_from_exchange, positions_from_sub_accounts)
+                                                        trades_from_exchange, positions_from_sub_accounts,order_from_sqlite_open,open_orders_from_sub_accounts)
                                                     
                                                     log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
                                                     await clean_up_closed_transactions(instrument_ticker)

@@ -31,11 +31,10 @@ from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
     get_transaction_label,
+    check_db_consistencies,
     get_label_integer
 )
 from strategies.config_strategies import max_rows
-
-from websocket_management.ws_management import (is_size_consistent)
 
 async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
 ) -> dict:
@@ -181,7 +180,10 @@ async def remove_duplicated_elements () -> None:
                 await sleep_and_restart()
 
 async def reconciling_between_db_and_exchg_data(instrument_name,
-                                                trades_from_exchange: list, positions_from_sub_accounts: list) -> None:
+                                                trades_from_exchange: list, 
+                                                positions_from_sub_accounts: list,
+                                                order_from_sqlite_open,
+                                                open_orders_from_sub_accounts) -> None:
     """ """
     
     unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
@@ -206,27 +208,32 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
     
     sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
-        
-    size_from_position: int = (0 if positions_from_sub_accounts == [] else sum([o["size"] for o in positions_from_sub_accounts if o["instrument_name"]==instrument_name])
-                                            )
     
     await recheck_result_after_cleaning (instrument_name,
                                          trades_from_exchange,
                                          my_trades_instrument,
                                          sum_my_trades_instrument,
-                                         size_from_position)
+                                         positions_from_sub_accounts,
+                                         order_from_sqlite_open,
+                                         open_orders_from_sub_accounts)
     
 async def recheck_result_after_cleaning  (instrument_name: str,
                                           trades_from_exchange: list,
                                           my_trades_instrument: list,
                                           sum_my_trades_instrument: float,
-                                          size_from_position: float) -> list:
+                                          positions_from_sub_accounts: list,
+                                          order_from_sqlite_open: list,
+                                          open_orders_from_sub_accounts: list) -> list:
     """ """
     
-    size_is_consistent: bool = await is_size_consistent(
-                                                sum_my_trades_instrument, size_from_position,
-                                                instrument_name
-                                                )
+    db_consistencies= check_db_consistencies (instrument_name, 
+                                              my_trades_instrument, 
+                                              positions_from_sub_accounts,
+                                              order_from_sqlite_open,
+                                              open_orders_from_sub_accounts)
+     
+    size_is_consistent= db_consistencies["trade_size_is_consistent"]
+    
     if not size_is_consistent:
 
         unrecorded_transactions= await get_unrecorded_trade_and_order_id(instrument_name,
@@ -235,6 +242,9 @@ async def recheck_result_after_cleaning  (instrument_name: str,
         unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
         
         log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
+        
+        size_from_position: int = (0 if positions_from_sub_accounts == [] \
+        else sum([o["size"] for o in positions_from_sub_accounts if o["instrument_name"]==instrument_name]))
         
         if unrecorded_trade_id==[] and abs(sum_my_trades_instrument) > abs(size_from_position):
             difference= abs(sum_my_trades_instrument) - abs(size_from_position)
