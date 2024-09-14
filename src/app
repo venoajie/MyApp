@@ -539,11 +539,7 @@ class StreamAccountData:
                                                                                                         
                                             strategy_label= hedging_spot_attributes()[0]["strategy"]
                                             
-                                            log.warning (f"AAA")
-                                            ticker: list = reading_from_db("ticker", instrument_ticker)    
-                                            log.warning (f"ticker 1 {ticker}")
                                             ticker= reading_from_pkl_data("ticker",instrument_ticker)
-                                            log.debug (f"ticker {ticker}")
                                             
                                             try:
                                                 ticker= ticker[0]
@@ -570,6 +566,11 @@ class StreamAccountData:
                                                 #portfolio: list = reading_from_database["portfolio"]
                                                 
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
+                                                
+                                                log.debug (f"portfolio AAAAAA {portfolio}")
+                                                portfolio= reading_from_pkl_data("portfolio",currency)
+                                                
+                                                log.critical (f"portfolio {portfolio}")
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","has_closed_label"
                                                 
