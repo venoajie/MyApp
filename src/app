@@ -563,10 +563,10 @@ class StreamAccountData:
                                                 reading_from_database: dict = await reading_from_pkl_database(currency)
                                                                                     
                                                 # get portfolio data
-                                                portfolio: list = reading_from_database["portfolio"]
+                                                #portfolio: list = reading_from_database["portfolio"]
                                                 
-                                                portfolio1= reading_from_pkl_data("portfolio",currency)
-                                                log.error (f"portfolio1 {portfolio1}")
+                                                portfolio= reading_from_pkl_data("portfolio",currency)
+                                                #log.error (f"portfolio1 {portfolio1}")
                                                 log.debug (f"portfolio {portfolio}")
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","has_closed_label"

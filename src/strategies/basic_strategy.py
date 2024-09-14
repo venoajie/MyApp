@@ -647,7 +647,7 @@ def get_non_label_from_transaction(transactions) -> list:
 
 def check_db_consistencies (instrument_name: str,
                             trades_from_sqlite: list, 
-                            positions_from_sub_account: str,
+                            positions_from_sub_account: list,
                             order_from_sqlite_open: list, 
                             open_orders_from_sub_accounts: list) -> bool:
     """ """
