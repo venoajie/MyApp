@@ -155,7 +155,7 @@ async def run_every_15_seconds() -> None:
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
     
-    
+    await back_up_db()
     currencies=  preferred_spot_currencies()
     
     for currency in currencies:
