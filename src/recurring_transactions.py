@@ -72,7 +72,7 @@ async def back_up_db():
     import sqlite3
 
     src = sqlite3.connect("databases/trading.sqlite3")
-    dst = sqlite3.connect("databases/trading.bak")
+    dst = sqlite3.connect("databases/back_up/trading.bak")
     with dst:
         src.backup(dst)
     dst.close()

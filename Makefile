@@ -15,7 +15,7 @@ start: install
 
 install:
 	yes | sudo apt-get install inotify-tools python3-psutil sqlite3
-	pip3 install black coverage flake8 mypy pylint pytest pytest-asyncio tox python-dotenv
+	pip3 install black coverage flake8 mypy pylint pytest pytest-asyncio tox python-dotenv rclone-python
 	pip3 install --upgrade -r requirements.txt
 	pip3 install --upgrade requests
 	sudo apt-get autoremove --purge
