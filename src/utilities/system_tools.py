@@ -287,7 +287,9 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
         sys.exit(1)
 
     log.critical(f"{error}")
-    log.debug(traceback.format_exc())
+
+    if "back up" not in error:  # to respond 'def is_current_file_running'  result
+        log.debug(traceback.format_exc())
 
     telegram_app.telegram_bot_sendtext(info)
 

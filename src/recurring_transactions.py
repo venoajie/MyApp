@@ -68,6 +68,19 @@ async def get_currencies_from_deribit(connection_url) -> float:
     return result
 
 
+async def back_up_db():
+    import sqlite3
+
+    src = sqlite3.connect("databases/trading.sqlite3")
+    dst = sqlite3.connect("databases/trading.bak")
+    with dst:
+        src.backup(dst)
+    dst.close()
+    src.close()
+
+    catch_error_message(
+    "back up done")
+
 async def current_server_time() -> float:
     """ """
     current_time = await get_server_time()
@@ -131,6 +144,7 @@ async def run_every_60_seconds() -> None:
     from websocket_management.cleaning_up_transactions import count_and_delete_ohlc_rows
 
     await count_and_delete_ohlc_rows()
+    await back_up_db()
 
 
 async def run_every_15_seconds() -> None:

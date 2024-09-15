@@ -9,16 +9,17 @@ def progress(status, remaining, total):
     
 def back_up_db():
     src = sqlite3.connect("databases/trading.sqlite3")
-    dst = sqlite3.connect("databases/trading3.sqlite3")
+    dst = sqlite3.connect("databases/trading.bak")
     with dst:
         src.backup(dst)
     dst.close()
     src.close()
+
+    catch_error_message(
+    "back up done")
 
         
 if __name__ == "__main__":
     
     back_up_db()
     
-    catch_error_message(
-    "back up done")
