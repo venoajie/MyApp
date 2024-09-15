@@ -398,6 +398,7 @@ async def count_and_delete_ohlc_rows():
         else:
             where_filter = f"tick"
         
+        log. error(f"table {table} where_filter {where_filter}")
         count_rows_query = querying_arithmetic_operator(where_filter, "COUNT", table)
 
         rows = await executing_query_with_return(count_rows_query)
