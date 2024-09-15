@@ -648,7 +648,7 @@ def check_db_consistencies (instrument_name: str,
     len_from_sqlite_open= len(order_from_sqlite_open)
     
     len_open_orders_from_sub_accounts=len(open_orders_from_sub_accounts)
-    
+    #
     sum_my_trades_sqlite = 0 if  trades_from_sqlite == [] else sum([o["amount"] for o in trades_from_sqlite])
 
     size_from_position: int = (0 if positions_from_sub_account == [] \
