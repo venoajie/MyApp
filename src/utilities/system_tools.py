@@ -276,6 +276,10 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
     from loguru import logger as log
 
     info = f"{error} \n \n {traceback.format_exc()}"
+
+    if idle == None:
+        info = f"{error}"
+    
     log.info(f"{error}")
 
     if message != None:
