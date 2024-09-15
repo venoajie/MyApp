@@ -15,7 +15,7 @@ while true; do
 
         else
                 echo "sync_with_remote: file does not exist"
-                rclone sync  databases/exchanges/exchanges/databases/trd.bak b2:backup-trading-sqlite
+                rclone sync   databases/trd.bak b2:back-up-trading-sqlite
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
     fi
