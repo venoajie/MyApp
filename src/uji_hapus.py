@@ -11,7 +11,7 @@ def back_up_db():
     src = sqlite3.connect("databases/trading.sqlite3")
     dst = sqlite3.connect("databases/trading3.sqlite3")
     with dst:
-        src.backup(dst, pages=1, progress=progress)
+        src.backup(dst)
     dst.close()
     src.close()
 

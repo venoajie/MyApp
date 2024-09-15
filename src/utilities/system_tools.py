@@ -280,8 +280,6 @@ def catch_error_message(error: str, idle: float = None, message: str = None) -> 
     if idle == None:
         info = f"{error}"
     
-    log.info(f"{error}")
-
     if message != None:
         info = f"{message} \n \n {error} \n \n {traceback.format_exc()}"
 
