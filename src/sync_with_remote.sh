@@ -3,7 +3,7 @@
 
 while true; do
 
-    if test -f databases/exchanges/databases/trd.bak;
+    if test -f databases/trd.bak;
         then
                  echo "file exists"
                 echo "Moving local  files to remote..."
