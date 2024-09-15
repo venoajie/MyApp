@@ -21,5 +21,4 @@ if __name__ == "__main__":
     back_up_db()
     
     catch_error_message(
-    "back up done", None, "app"
-    )
+    "back up done")
