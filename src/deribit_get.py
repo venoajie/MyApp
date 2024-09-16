@@ -699,10 +699,10 @@ async def get_ohlc(
     from datetime import datetime
     from utilities import time_modification
 
-    if start_timestamp is None:
-        now_utc = datetime.now()
-        now_unix = time_modification.convert_time_to_unix(now_utc)
+    now_utc = datetime.now()
+    now_unix = time_modification.convert_time_to_unix(now_utc)
     
+    if start_timestamp is None:
         start_timestamp = now_unix - (60000 * qty_candles)
     
     params = {}
