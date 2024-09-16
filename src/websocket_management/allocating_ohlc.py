@@ -103,10 +103,12 @@ async def ohlc_result_per_time_frame(
 
             # new tick ohlc
             else:
-                ohlc= get_ohlc("https://www.deribit.com/api/v2",instrument_ticker,1,5)
-                log.debug (f"ohlc {ohlc}")
-            
-                log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
+                ohlc= await get_ohlc("https://www.deribit.com/api/v2",instrument_ticker,1,5)
+                
+                if "PERPETUAL" in instrument_ticker:
+                    log.debug (f"ohlc {ohlc}")
+                
+                    log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
                 
                 # prepare query
                 open_interest_last_value_query = querying_last_open_interest(
