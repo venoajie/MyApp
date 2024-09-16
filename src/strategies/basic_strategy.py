@@ -654,9 +654,9 @@ def check_db_consistencies (instrument_name: str,
     size_from_position: int = (0 if positions_from_sub_account == [] \
         else sum([o["size"] for o in positions_from_sub_account if o["instrument_name"]==instrument_name]))
 
-    log.error(
-        f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
-    )
+    #log.error(
+    #    f"size_is_consistent {sum_my_trades_sqlite == size_from_position} sum_my_trades_sqlite {sum_my_trades_sqlite} size_from_positions {size_from_position} "
+    #)
     return dict(trade_size_is_consistent=sum_my_trades_sqlite == size_from_position,                
                 order_is_consistent= (len_open_orders_from_sub_accounts == len_from_sqlite_open \
                     and no_non_label_from_from_sqlite_open),

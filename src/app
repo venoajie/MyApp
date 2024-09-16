@@ -529,7 +529,7 @@ class StreamAccountData:
                                             
                                         try:                                          
                                                                                         
-                                            log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
+                                            #log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
                                                                                       
                                             TA_result_data_all = await querying_table("market_analytics_json")
 
@@ -588,7 +588,7 @@ class StreamAccountData:
                                                                                           order_from_sqlite_open,
                                                                                           open_orders_from_sub_accounts)
                                                 
-                                                log.debug (f"db_consistencies {db_consistencies}")
+                                                #log.debug (f"db_consistencies {db_consistencies}")
                                                 order_is_consistent= db_consistencies["order_is_consistent"]
                                                 
                                                 size_is_consistent= db_consistencies["trade_size_is_consistent"]
@@ -665,14 +665,14 @@ class StreamAccountData:
                                                                 await if_order_is_true(send_order, instrument_ticker)
                                                                 await if_cancel_is_true(send_order)
 
-                                                            log.critical (f"OPENING HEDGING-DONE")                                                                                                 
+                                                            #log.critical (f"OPENING HEDGING-DONE")                                                                                                 
                                                             
                                                             my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
                                                                 and "hedgingSpot" in (o["label"]) ]
 
                                                             if my_trades_open_hedging !=[]:
                                                             
-                                                                log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
+                                                            #    log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
                                                                             
                                                                 best_bid_prc: float = ticker["best_bid_price"]
                                                                 
@@ -693,7 +693,7 @@ class StreamAccountData:
                                                                 await if_order_is_true(send_closing_order, instrument_ticker)
                                                                 await if_cancel_is_true(send_closing_order)
 
-                                                    log.critical (f"CLOSING HEDGING-DONE")
+                                                    #log.critical (f"CLOSING HEDGING-DONE")
                                                     
                                             
                                         except ValueError:
