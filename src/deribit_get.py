@@ -689,8 +689,6 @@ async def get_currencies(connection_url: str) -> list:
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
-https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=1726466114723&instrument_name=BTC-PERPETUAL&resolution=1&start_timestamp=1726465620000
-
 async def get_ohlc(
     connection_url: str,
     instrument_name,
