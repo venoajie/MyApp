@@ -110,10 +110,12 @@ async def ohlc_result_per_time_frame(
             # new tick ohlc
             else:
                 ohlc_endPoint= await get_ohlc("https://www.deribit.com/api/v2",instrument_ticker,1,5,last_tick1_fr_sqlite)
+                log.debug (f"ohlc {ohlc_endPoint}")
                 ohlc_request = requests.get(ohlc_endPoint).json()["result"]
+                log.debug (f"ohlc {ohlc_request}")
                 result = transform_nested_dict_to_list(ohlc_request)
-        
                 
+                log.debug (f"ohlc {result}")
                 if "PERPETUAL" in instrument_ticker:
                     log.debug (f"ohlc {result}")
                 
