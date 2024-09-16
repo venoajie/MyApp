@@ -689,19 +689,24 @@ async def get_currencies(connection_url: str) -> list:
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
+https://www.deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp=1726466114723&instrument_name=BTC-PERPETUAL&resolution=1&start_timestamp=1726465620000
 
 async def get_ohlc(
     connection_url: str,
     instrument_name,
     resolution,
     qty_candles,
+    start_timestamp: int =None
 ) -> list:
     from datetime import datetime
     from utilities import time_modification
 
-    now_utc = datetime.now()
-    now_unix = time_modification.convert_time_to_unix(now_utc)
-    start_timestamp = now_unix - 60000 * qty_candles
+    if start_timestamp is None:
+        now_utc = datetime.now()
+        now_unix = time_modification.convert_time_to_unix(now_utc)
+    
+        start_timestamp = now_unix - (60000 * qty_candles)
+    
     params = {}
 
     # Set endpoint
