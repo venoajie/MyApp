@@ -113,7 +113,6 @@ async def ohlc_result_per_time_frame(
                 ohlc_endPoint = f" https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={last_tick_fr_data_orders}&instrument_name={instrument_ticker}&resolution=1&start_timestamp={last_tick1_fr_sqlite}"
 
                 ohlc_request = requests.get(ohlc_endPoint).json()["result"]
-                log.debug (f"ohlc {ohlc_request}")
                 result = transform_nested_dict_to_list(ohlc_request)
                 
                 log.debug (f"ohlc {result}")
