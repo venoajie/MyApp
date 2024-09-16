@@ -86,6 +86,9 @@ async def ohlc_result_per_time_frame(
 
         if message_channel == f"chart.trades.{instrument_ticker}.1":
 
+            from loguru import logger as log
+            log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
+
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
 
@@ -101,9 +104,6 @@ async def ohlc_result_per_time_frame(
 
             # new tick ohlc
             else:
-                from loguru import logger as log
-                log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
-
                 # prepare query
                 open_interest_last_value_query = querying_last_open_interest(
                     last_tick1_fr_sqlite, TABLE_OHLC1
