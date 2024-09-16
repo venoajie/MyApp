@@ -4,6 +4,11 @@
 
 # built ins
 import asyncio
+
+from utilities.string_modification import (transform_nested_dict_to_list)
+
+import requests
+
 from deribit_get import get_ohlc
 from db_management.sqlite_management import (
     replace_row,
@@ -103,10 +108,13 @@ async def ohlc_result_per_time_frame(
 
             # new tick ohlc
             else:
-                ohlc= await get_ohlc("https://www.deribit.com/api/v2",instrument_ticker,1,5)
+                ohlc_endPoint= await get_ohlc("https://www.deribit.com/api/v2",instrument_ticker,1,5,last_tick1_fr_sqlite)
+                ohlc_request = requests.get(ohlc_endPoint).json()["result"]
+                result = transform_nested_dict_to_list(ohlc_request)
+        
                 
                 if "PERPETUAL" in instrument_ticker:
-                    log.debug (f"ohlc {ohlc}")
+                    log.debug (f"ohlc {result}")
                 
                     log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
                 
