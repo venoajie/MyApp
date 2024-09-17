@@ -245,7 +245,7 @@ async def update_user_changes(data_orders, currency) -> None:
     orders = data_orders["orders"]
     
     if trades:
-        #log.error (f"trades {trades}")
+        log.error (f"trades {trades}")
         
         await manage_trades (trades)
         

@@ -515,6 +515,9 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
      approach for now: ignore orders
      
      """
+    get_legs= trade["legs"]
+    
+    log.info (f"get_legs {get_legs}")
      
     side= trade["direction"]
     side_buy= side=="buy"
