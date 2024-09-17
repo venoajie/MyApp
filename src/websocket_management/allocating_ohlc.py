@@ -115,7 +115,7 @@ async def ohlc_result_per_time_frame(
                 ohlc_request = requests.get(ohlc_endPoint).json()["result"]
                 result = transform_nested_dict_to_list(ohlc_request)
                 
-                log.debug (f"ohlc {result}")
+                #log.debug (f"ohlc {result}")
                 if "PERPETUAL" in instrument_ticker:
                     log.debug (f"ohlc {result}")
                 
