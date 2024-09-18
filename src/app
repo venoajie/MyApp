@@ -692,7 +692,8 @@ class StreamAccountData:
                                                                     best_bid_prc,
                                                                     nearest_transaction_to_index,
                                                                 )
-                                                                
+                                                                log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
+                                                                log.error (f"send_closing_order {send_closing_order}")
                                                                 await if_order_is_true(send_closing_order, instrument_ticker)
                                                                 await if_cancel_is_true(send_closing_order)
 
