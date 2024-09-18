@@ -133,8 +133,8 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                                                                                          marker_plus)
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
-        #log.error (f"transaction {instrument_name} {transaction} {tran_id}")
-        #log.warning (f"id_has_registered_before {id_has_registered_before} {id_has_registered_before==[]}")
+        log.error (f"transaction {instrument_name} {transaction} {tran_id}")
+        log.warning (f""""combo_id" in transaction {"combo_id" in transaction}""")
         
         if transaction !=[] and id_has_registered_before==[]:
 
