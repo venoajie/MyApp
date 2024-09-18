@@ -573,7 +573,7 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     params.update({"size": transaction["amount"]})
 
     # determine side
-    side = get_transaction_size(transaction,"closed")
+    side = get_transaction_side(transaction,"closed")
     params.update({"side": side})
 
     label_closed: str = get_label("closed", transaction["label"])
