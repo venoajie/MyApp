@@ -313,15 +313,15 @@ def get_transaction_side(transaction: dict) -> str:
     log.error (f"transaction {transaction}")
     
     try:
-        side = transaction[0]["direction"]
+        side = transaction["direction"][0]
 
     except:
         try:
             
-            side = transaction[0]["side"]
+            side = transaction["side"][0]
 
         except:
-            side = "sell" if transaction[0]["amount"]< 0 else "buy"
+            side = "sell" if transaction["amount"][0]< 0 else "buy"
 
     return side
 
