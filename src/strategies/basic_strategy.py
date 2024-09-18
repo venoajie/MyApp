@@ -424,7 +424,8 @@ async def check_if_id_has_used_before(instrument_name: str,
     
     result_order_id= [o[id] for o in combined_result]
     
-    label_is_exist: list = (False if transaction_id not in result_order_id  else True)
+    label_is_exist: list = (False if result_order_id== []\
+        else False if transaction_id[0] not in result_order_id  else True)
 
     #log.debug (f"trasaction was existed before {label_is_exist}")
     return label_is_exist
@@ -515,6 +516,7 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
     #get label
     label= combine_vars_to_get_future_spread_label(timestamp)
     
+    #convert list to dict
     trade= trade[0]
 
     trade.update({"label":label})
@@ -528,6 +530,8 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params = querying_additional_params()
+    
+    #convert list to dict
     trade= trade[0]
     
     log.info (f"trade {trade}")
