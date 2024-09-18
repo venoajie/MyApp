@@ -549,26 +549,18 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     if params !=0:
 
-        try:
-                    
-            additional_params_label = [o for o in params if label in o["label"]]
-            
-            log.debug (f"additional_params_label {additional_params_label}")
-
-            if "take_profit" not in trade:
-                trade.update({"take_profit": additional_params_label["take_profit"]})
-                
-            if "has_closed_label" not in trade:
-                trade.update({"has_closed_label": False})
+        additional_params_label = [o for o in params if label in o["label"]]
         
-        except:
+        log.debug (f"additional_params_label {additional_params_label}")
+        
+        if params !=[]:
 
             if "take_profit" not in trade:
                 trade.update({"take_profit": additional_params_label["take_profit"]})
                 
             if "has_closed_label" not in trade:
                 trade.update({"has_closed_label": False})
-            
+                
     else:
 
         if "take_profit" not in trade:
