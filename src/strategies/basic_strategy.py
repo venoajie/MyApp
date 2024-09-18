@@ -515,19 +515,18 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
      approach for now: ignore orders
      
      """
-    get_legs= trade["legs"]
-    
-    log.info (f"get_legs {get_legs}")
-     
-    side= trade["direction"]
-    side_buy= side=="buy"
-    timestamp= trade["timestamp"] + 1 if side_buy else trade["timestamp"]-1
+    timestamp= trade["timestamp"]
     
     #get label
     label= combine_vars_to_get_future_spread_label(timestamp)
 
     trade.update({"label":label})
 
+    if "take_profit" not in trade:
+        trade.update({"take_profit": 0})
+        
+    if "has_closed_label" not in trade:
+        trade.update({"has_closed_label": False})
 
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
@@ -536,7 +535,7 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     params = await executing_query_with_return(additional_params)
     
-    log.error (f""""label" not in trade {"label" not in trade} label is None {label is None}""")
+    #log.error (f""""label" not in trade {"label" not in trade} label is None {label is None}""")
     
     if "label" not in trade or label is None:
         side= get_transaction_side(trade)
@@ -547,13 +546,24 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
     if params !=0:
 
         log.debug (f"params {params}")
-        additional_params_label = [o for o in params if label in o["label"]][0]    
-        log.debug (f"additional_params_label {additional_params_label}")
-        if "take_profit" not in trade:
-            trade.update({"take_profit": additional_params_label["take_profit"]})
-            
-        if "has_closed_label" not in trade:
-            trade.update({"has_closed_label": False})
+        
+        try:
+                    
+            additional_params_label = [o for o in params if label in o["label"]][0]    
+
+            if "take_profit" not in trade:
+                trade.update({"take_profit": additional_params_label["take_profit"]})
+                
+            if "has_closed_label" not in trade:
+                trade.update({"has_closed_label": False})
+        
+        except:
+
+            if "take_profit" not in trade:
+                trade.update({"take_profit": additional_params_label["take_profit"]})
+                
+            if "has_closed_label" not in trade:
+                trade.update({"has_closed_label": False})
             
     else:
 

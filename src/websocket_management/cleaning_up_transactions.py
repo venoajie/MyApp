@@ -30,6 +30,7 @@ from utilities.string_modification import get_unique_elements
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
+    get_additional_params_for_futureSpread_transactions,
     get_transaction_label,
     check_db_consistencies,
     get_label_integer
@@ -140,7 +141,11 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
 
             if "open" in label:
-                await get_additional_params_for_open_label(transaction[0], label)
+                await get_additional_params_for_open_label(transaction, label)
+                
+            if "combo_id" in transaction:
+                await get_additional_params_for_futureSpread_transactions(transaction)
+        
 
             await insert_tables(table, transaction)
             await sleep_and_restart()

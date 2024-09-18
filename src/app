@@ -178,6 +178,7 @@ async def manage_trades (trades: dict) -> None:
         trade_id=trade["trade_id"]
         
         instrument_name= trade["instrument_name"]
+        currency=extract_currency_from_text(instrument_name).upper()
 
         if "label" not in trade :
             label=None
@@ -187,7 +188,7 @@ async def manage_trades (trades: dict) -> None:
             await get_additional_params_for_futureSpread_transactions(trade)
         
         # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
-        if "-FS-" not in instrument_name:
+        if f"{currency.upper}-FS-" not in instrument_name:
                 
             label=trade["label"]
 
