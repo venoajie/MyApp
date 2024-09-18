@@ -353,13 +353,10 @@ def provide_side_to_close_transaction(transaction: dict) -> str:
     """ """
 
     # determine side
-    transaction_side = get_transaction_side(transaction)
-    if transaction_side == "sell":
-        side = "buy"
-    if transaction_side == "buy":
-        side = "sell"
+    log.warning (f"transaction {transaction}")
+    log.warning (f"""transaction {"buy" if transaction["amount"][0]< 0 else "sell"}""")
 
-    return side
+    return "buy" if transaction["amount"][0]< 0 else "sell"
 
 
 def get_transaction_size(transaction: dict) -> int:
