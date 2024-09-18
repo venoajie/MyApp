@@ -312,20 +312,21 @@ def get_transaction_side(transaction: dict, status) -> str:
     status: open/closed
     """
         
-    transaction = transaction["amount"]
+    log.error (f"transaction{transaction}")
+    transaction_amount = transaction["amount"]
     
     if status =="open":
         
-        if transaction < 0:
+        if transaction_amount < 0:
             side= "sell"
-        if transaction > 0:
+        if transaction_amount > 0:
             side= "buy"
     
     if status =="closed":
         
-        if transaction < 0:
+        if transaction_amount < 0:
             side= "buy"
-        if transaction > 0:
+        if transaction_amount > 0:
             side= "sell"
         
     return  side
@@ -741,7 +742,7 @@ class BasicStrategy:
         # get price
         last_transaction_price: float = get_transaction_price(transaction)
 
-        transaction_side: str = get_transaction_side(selected_transaction, "closed")
+        transaction_side: str = get_transaction_side(transaction, "closed")
 
         strategy_config: list = self.get_strategy_config(
             get_transaction_label(transaction)
