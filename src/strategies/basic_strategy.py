@@ -549,6 +549,7 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
     if params !=0:
 
         log.debug (f"params {params}")
+        log.debug (f"trade {trade}")
         
         try:
                     
