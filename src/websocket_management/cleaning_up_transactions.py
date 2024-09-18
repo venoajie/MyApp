@@ -137,16 +137,21 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         log.warning (f""""combo_id" in transaction {"combo_id" in transaction}""")
         
         if transaction !=[] and id_has_registered_before==[]:
-
+            
+            if "label" not in transaction or label is None or label ==[]:
+                
+                if "combo_id" in transaction:
+                    await get_additional_params_for_futureSpread_transactions(transaction)
+            
+                else:
+                    label=None
+                    await get_additional_params_for_open_label(transaction, label)
+            
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction, label)
                 
-            if "combo_id" in transaction:
-                await get_additional_params_for_futureSpread_transactions(transaction)
-        
-
             await insert_tables(table, transaction)
             await sleep_and_restart()
 

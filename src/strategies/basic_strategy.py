@@ -529,20 +529,19 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params = querying_additional_params()
     trade= trade[0]
-    #log.info (f"label {label}")
-    #log.debug (f"trade {trade}")
 
     params = await executing_query_with_return(additional_params)
     
     #log.error (f""""label" not in trade {"label" not in trade} label is None {label is None}""")
     
+    # provide label
     if "label" not in trade or label is None:
         side= get_transaction_side(trade, "open")
         label_open: str = get_label("open", f"custom{side.title()}")
         trade.update({"label": label_open})
         
-
     additional_params_label = []if params == [] else [o for o in params if label in o["label"]]
+    
     if additional_params_label !=[]:
         if "take_profit" not in trade:
             trade.update({"take_profit": additional_params_label["take_profit"]})
