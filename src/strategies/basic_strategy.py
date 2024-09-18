@@ -311,15 +311,15 @@ def get_transaction_side(transaction: dict) -> str:
     """ """
 
     try:
-        side = transaction["direction"]
+        side = transaction[0]["direction"]
 
     except:
         try:
             
-            side = transaction["side"]
+            side = transaction[0]["side"]
 
         except:
-            side = "sell" if transaction["amount"]< 0 else "buy"
+            side = "sell" if transaction[0]["amount"]< 0 else "buy"
 
     return side
 
