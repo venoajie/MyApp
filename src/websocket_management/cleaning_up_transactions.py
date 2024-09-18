@@ -135,11 +135,11 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         
         log.error (f"transaction {instrument_name} {transaction} {tran_id}")
         log.warning (f""""combo_id" in transaction {"combo_id" in transaction}""")
-        log.error (f""""label" not in trade {"label" not in transaction} """)
+        log.error (f""""label" not in trade {"label" not in transaction[0]} """)
         
         if transaction !=[] and id_has_registered_before==[]:
             
-            if "label" not in transaction[0] or label is None or label ==[]:
+            if "label" not in transaction[0]:
                 
                 if "combo_id" in transaction:
                     await get_additional_params_for_futureSpread_transactions(transaction)
