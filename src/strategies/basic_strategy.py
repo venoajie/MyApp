@@ -307,56 +307,28 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
 
 
-def get_transaction_side(transaction: dict) -> str:
-    """ """
-    
-    log.error (f"transaction {transaction}")
-    
-    if "side" not in transaction:
-
-        try:
-            side = transaction["direction"]
-
-        except:
-            try:
-                
-                side = transaction["side"]
-
-            except:
-                try:
-                    side = "sell" if transaction["amount"][0]< 0 else "buy"
-    
-                except:
-                    side = "sell" if transaction["amount"]< 0 else "buy"
-    
-    else:
+def get_transaction_side(transaction: dict, status) -> str:
+    """ 
+    status: open/closed
+    """
         
-
-        try:
-            side = "sell" if transaction["amount"][0]< 0 else "buy"
-
-        except:
-            side = "sell" if transaction["amount"]< 0 else "buy"
-
-    try:
+    transaction = transaction["amount"]
+    
+    if status =="open":
         
-        side= side[0]
-
-    except:
+        if transaction < 0:
+            side= "sell"
+        if transaction > 0:
+            side= "buy"
+    
+    if status =="closed":
         
-        side= side
+        if transaction < 0:
+            side= "buy"
+        if transaction > 0:
+            side= "sell"
         
-    return side
-
-
-def provide_side_to_close_transaction(transaction: dict) -> str:
-    """ """
-
-    # determine side
-    log.warning (f"transaction {transaction}")
-    log.warning (f"""transaction {"buy" if transaction["amount"]< 0 else "sell"}""")
-
-    return "buy" if transaction["amount"]< 0 else "sell"
+    return  side
 
 
 def get_transaction_size(transaction: dict) -> int:
@@ -564,7 +536,7 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
     #log.error (f""""label" not in trade {"label" not in trade} label is None {label is None}""")
     
     if "label" not in trade or label is None:
-        side= get_transaction_side(trade)
+        side= get_transaction_side(trade, "open")
         label_open: str = get_label("open", f"custom{side.title()}")
         trade.update({"label": label_open})
         
@@ -600,7 +572,7 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     params.update({"size": transaction["amount"]})
 
     # determine side
-    side = provide_side_to_close_transaction(transaction)
+    side = get_transaction_size(transaction,"closed")
     params.update({"side": side})
 
     label_closed: str = get_label("closed", transaction["label"])
@@ -624,12 +596,12 @@ def is_everything_consistent(params) -> bool:
     is_consistent = True if "closed" in label else False
     # log.warning(f"params {params}")
 
-    side = get_transaction_side(params)
-
     if "open" in label:
+        
+        side = get_transaction_side(params, "open")
 
         if side == "sell":
-            is_consistent = True if ("Short" in label or "hedging" in label) else False
+            is_consistent = True if ("Short" in label or "hedging" in label or "future" in label) else False
 
         if side == "buy":
             is_consistent = True if "Long" in label else False
@@ -769,7 +741,7 @@ class BasicStrategy:
         # get price
         last_transaction_price: float = get_transaction_price(transaction)
 
-        transaction_side: str = get_transaction_side(transaction)
+        transaction_side: str = get_transaction_side(selected_transaction, "closed")
 
         strategy_config: list = self.get_strategy_config(
             get_transaction_label(transaction)
