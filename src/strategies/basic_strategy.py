@@ -519,6 +519,8 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
     
     #get label
     label= combine_vars_to_get_future_spread_label(timestamp)
+    
+    trade= trade[0]
 
     trade.update({"label":label})
 
@@ -531,6 +533,7 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params = querying_additional_params()
+    trade= trade[0]
     log.debug (f"trade {trade}")
 
     params = await executing_query_with_return(additional_params)
