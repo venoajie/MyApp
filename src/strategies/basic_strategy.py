@@ -309,7 +309,9 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
 
 def get_transaction_side(transaction: dict) -> str:
     """ """
-
+    
+    log.error (f"transaction {transaction}")
+    
     try:
         side = transaction[0]["direction"]
 
