@@ -534,8 +534,8 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
     additional_params = querying_additional_params()
     trade= trade[0]
-    log.info (f"label {label}")
-    log.debug (f"trade {trade}")
+    #log.info (f"label {label}")
+    #log.debug (f"trade {trade}")
 
     params = await executing_query_with_return(additional_params)
     
@@ -547,19 +547,13 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
         trade.update({"label": label_open})
         
 
-    if params !=0:
-
-        additional_params_label = [o for o in params if label in o["label"]]
-        
-        log.debug (f"additional_params_label {additional_params_label}")
-        
-        if params !=[]:
-
-            if "take_profit" not in trade:
-                trade.update({"take_profit": additional_params_label["take_profit"]})
-                
-            if "has_closed_label" not in trade:
-                trade.update({"has_closed_label": False})
+    additional_params_label = []if params == [] else [o for o in params if label in o["label"]]
+    if additional_params_label !=[]:
+        if "take_profit" not in trade:
+            trade.update({"take_profit": additional_params_label["take_profit"]})
+            
+        if "has_closed_label" not in trade:
+            trade.update({"has_closed_label": False})
                 
     else:
 
