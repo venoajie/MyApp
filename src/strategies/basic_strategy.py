@@ -785,6 +785,8 @@ class BasicStrategy:
         tp_pct = get_take_profit_pct(transaction, strategy_config)
 
         size = await provide_size_to_close_transaction(transaction)
+        
+        log.error (f"transaction_side {transaction_side}")
 
         if transaction_side == "sell":
             try:
