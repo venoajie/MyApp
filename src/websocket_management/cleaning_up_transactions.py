@@ -164,6 +164,8 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         
         if transaction !=[] and id_has_registered_before==[]:
             
+            label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
+            
             if "closed" in label:
                 label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, label)
                 
@@ -180,7 +182,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                     label=None
                     await get_additional_params_for_open_label(transaction, label)
             
-            label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
+            
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction, label)
