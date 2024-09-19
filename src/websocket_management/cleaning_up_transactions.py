@@ -39,8 +39,7 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
-) -> dict:
+async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange) -> dict:
     """ """
     
     #log.critical (f"{instrument_name}")
