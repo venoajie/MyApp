@@ -98,7 +98,6 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
                 unrecorded_trade_id=unrecorded_trade_id)
 
 
-
 def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, label) -> bool:
     
     integer_label= extract_integers_from_text(label)
@@ -166,6 +165,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         if transaction !=[] and id_has_registered_before==[]:
             
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
+            log.warning (f""""label {label}""")
             
             if "closed" in label:
                 label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, label)
