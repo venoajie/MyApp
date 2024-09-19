@@ -511,6 +511,9 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
      approach for now: ignore orders
      
      """
+
+
+    log.debug (f"trade {trade}")
     timestamp= trade["timestamp"]
     
     #get label
