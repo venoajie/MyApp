@@ -540,13 +540,13 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
     additional_params = querying_additional_params()
     
     #convert list to dict
-    transaction= transaction[0]
+    transaction= transaction[0]#
     
-    log.info (f"trade {transaction}")
+    #log.info (f"trade {transaction}")
 
     params = await executing_query_with_return(additional_params)
     
-    log.error (f""""label" not in trade {"label" not in transaction} label is None {label is None}""")
+    #log.error (f""""label" not in trade {"label" not in transaction} label is None {label is None}""")
     
     # provide label
     if "label" not in transaction or label is None:
