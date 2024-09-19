@@ -162,7 +162,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
         log.error (f"transaction {instrument_name} {transaction} {tran_id}")
-        log.warning (f""""combo_id" in transaction {"combo_id" in transaction}""")
+        log.warning (f""""combo_id" in transaction {"combo_id" in transaction[0]}""")
         log.error (f""""label" not in trade {"label" not in transaction[0]} """)
         
         if transaction !=[] and id_has_registered_before==[]:
