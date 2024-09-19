@@ -105,7 +105,7 @@ def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, lab
     log.warning (f"from_sqlite_open {from_sqlite_open}")
     log.info (f"integer_label {integer_label}")
     
-    trades_from_sqlite_open= [o for o in from_sqlite_open if integer_label in o["label"] and "open" in o["label"] ]
+    trades_from_sqlite_open= [o for o in from_sqlite_open if integer_label == extract_integers_from_text(o["label"]) and "open" in o["label"]  ] 
     log.debug (f"trades_from_sqlite_open {trades_from_sqlite_open}")
     
     if trades_from_sqlite_open !=[]:
