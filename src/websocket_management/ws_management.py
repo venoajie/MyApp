@@ -275,8 +275,12 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
                 await insert_tables("orders_all_json", order)
     
 async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
+    
+    sub_accounts=sub_accounts[0]
 
-    active_instruments_from_positions = [o["instrument_name"] for o in sub_accounts]
+    positions= sub_accounts["position"]
+
+    active_instruments_from_positions = [o["instrument_name"] for o in positions]
                     
     column_list_order: str="order_id", "label"
 
@@ -285,8 +289,6 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
                                                 "all", 
                                                 "all", 
                                                 column_list_order)                         
-
-    sub_accounts=sub_accounts[0]
     
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
     
