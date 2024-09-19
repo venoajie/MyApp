@@ -526,7 +526,14 @@ class StreamAccountData:
                                     
                                     sub_accounts: list = reading_from_pkl_data("sub_accounts",currency)[0]
                                     
-                                    log.error (f"sub_accounts {sub_accounts}")
+                                    positions_from_sub_accounts= sub_accounts["positions"]
+                                    
+                                    active_instruments_from_positions = [o["instrument_name"] for o in positions_from_sub_accounts]
+                                    
+                                    log.error (f"active_instruments_from_positions {active_instruments_from_positions}")
+                                    
+                                    for instrument_name in active_instruments_from_positions:
+                                        log.warning (f"instrument_name {instrument_name}")
                                                 
 
                                     if "PERPETUAL" in data_orders["instrument_name"]:
@@ -577,7 +584,7 @@ class StreamAccountData:
                                                 
                                                 open_orders_from_sub_accounts= sub_accounts["open_orders"]
 
-                                                positions_from_sub_accounts= sub_accounts["positions"]
+                                                
 
                                                 column_list: str="order_id", "label"
                                                 
