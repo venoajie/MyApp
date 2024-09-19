@@ -111,12 +111,18 @@ def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, lab
     if trades_from_sqlite_open !=[]:
 
         # get sum of open label only
-        sum_from_open_label_only= [o["amount"] for o in trades_from_sqlite_open]
+        sum_from_open_label_only= sum([o["amount"] for o in trades_from_sqlite_open])
+        
+        log.debug (f"sum_from_open_label_only {sum_from_open_label_only}")
         
         # get net sum of label
-        sum_net_trades_from_open_and_closed= [o["amount"] for o in from_sqlite_open if integer_label in o["label"]]
+        sum_net_trades_from_open_and_closed= sum([o["amount"] for o in from_sqlite_open if extract_integers_from_text(o["label"])])
+
+        log.debug (f"sum_net_trades_from_open_and_closed {sum_net_trades_from_open_and_closed}")
         
         sum_label = sum_from_open_label_only >= sum_net_trades_from_open_and_closed
+
+        log.debug (f"sum_label {sum_label}")
         
     return False if trades_from_sqlite_open==[] else sum_label
 
