@@ -352,7 +352,7 @@ async def resupply_sub_accountdb(currency) -> None:
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
     
-    check_db_consistencies_and_clean_up_imbalances(sub_accounts)
+    await check_db_consistencies_and_clean_up_imbalances(sub_accounts)
 
 async def inserting_additional_params(params: dict) -> None:
     """ """
