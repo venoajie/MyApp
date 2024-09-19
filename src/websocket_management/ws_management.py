@@ -278,7 +278,7 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
     
     sub_accounts=sub_accounts[0]
 
-    positions= sub_accounts["position"]
+    positions= sub_accounts["positions"]
 
     active_instruments_from_positions = [o["instrument_name"] for o in positions]
                     
