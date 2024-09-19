@@ -179,7 +179,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                         
             if "label" not in transaction[0]:
                 
-                if "combo_id" in transaction:
+                if "combo_id" in transaction[0]:
                     await get_additional_params_for_futureSpread_transactions(transaction)
             
                 else:
