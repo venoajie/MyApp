@@ -532,6 +532,57 @@ class StreamAccountData:
                                     
                                     log.error (f"active_instruments_from_positions {active_instruments_from_positions}")
                                     
+
+                                    column_list: str="order_id", "label"
+                                    
+                                    order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                                                currency, 
+                                                                                "all", 
+                                                                                "all", 
+                                                                                column_list)                                       
+
+                                    db_consistencies= check_db_consistencies (instrument_ticker, 
+                                                                                my_trades_instrument, 
+                                                                                positions_from_sub_accounts,
+                                                                                order_from_sqlite_open,
+                                                                                open_orders_from_sub_accounts)
+                        
+                                    #log.debug (f"db_consistencies {db_consistencies}")
+                                    order_is_consistent= db_consistencies["order_is_consistent"]
+                                    
+                                    size_is_consistent= db_consistencies["trade_size_is_consistent"]
+                                        
+                                    if not db_consistencies["no_non_label_from_from_sqlite_open"]:
+                                        await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
+                                        
+                                    if not order_is_consistent:
+                                        log.critical (f"BALANCING-ORDERS-START")
+                                        await resupply_sub_accountdb(currency)
+                                        await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
+                                        log.critical (f"BALANCING-ORDERS-DONE")
+                                        await on_restart()
+                                                                                    
+                                    if not size_is_consistent:
+                                        log.critical (f"BALANCING-START")
+                                        
+                                        await cancel_the_cancellables("open")
+                                        
+                                        balancing_params=paramaters_to_balancing_transactions()
+                                        
+                                        max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
+                                        
+                                        trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
+                                        
+                                        trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency_upper}-FS" not in o["instrument_name"]]
+                                        
+                                        await reconciling_between_db_and_exchg_data(instrument_ticker,
+                                            trades_from_exchange_without_futures_combo, positions_from_sub_accounts,order_from_sqlite_open,open_orders_from_sub_accounts)
+                                        
+                                        log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
+                                        await clean_up_closed_transactions(instrument_ticker)
+                                        log.critical (f"BALANCING-DONE")
+                                        
+                                    
                                     for instrument_name in active_instruments_from_positions:
                                         log.warning (f"instrument_name {instrument_name}")
                                                 
@@ -584,57 +635,7 @@ class StreamAccountData:
                                                 
                                                 open_orders_from_sub_accounts= sub_accounts["open_orders"]
 
-                                                
-
-                                                column_list: str="order_id", "label"
-                                                
-                                                order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                         currency, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)                                       
-
-                                                db_consistencies= check_db_consistencies (instrument_ticker, 
-                                                                                          my_trades_instrument, 
-                                                                                          positions_from_sub_accounts,
-                                                                                          order_from_sqlite_open,
-                                                                                          open_orders_from_sub_accounts)
-                                                
-                                                #log.debug (f"db_consistencies {db_consistencies}")
-                                                order_is_consistent= db_consistencies["order_is_consistent"]
-                                                
-                                                size_is_consistent= db_consistencies["trade_size_is_consistent"]
-                                                    
-                                                if not db_consistencies["no_non_label_from_from_sqlite_open"]:
-                                                    await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
-                                                    
-                                                if not order_is_consistent:
-                                                    log.critical (f"BALANCING-ORDERS-START")
-                                                    await resupply_sub_accountdb(currency)
-                                                    await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
-                                                    log.critical (f"BALANCING-ORDERS-DONE")
-                                                    await on_restart()
-                                                                                                
-                                                if not size_is_consistent:
-                                                    log.critical (f"BALANCING-START")
-                                                    
-                                                    await cancel_the_cancellables("open")
-                                                    
-                                                    balancing_params=paramaters_to_balancing_transactions()
-                                                    
-                                                    max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
-                                                    
-                                                    trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
-                                                    
-                                                    trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency_upper}-FS" not in o["instrument_name"]]
-                                                    
-                                                    await reconciling_between_db_and_exchg_data(instrument_ticker,
-                                                        trades_from_exchange_without_futures_combo, positions_from_sub_accounts,order_from_sqlite_open,open_orders_from_sub_accounts)
-                                                    
-                                                    log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
-                                                    await clean_up_closed_transactions(instrument_ticker)
-                                                    log.critical (f"BALANCING-DONE")
-                                                                                                
+                                                                                            
                                                 if order_is_consistent and size_is_consistent:                                                
                                                     # obtain spot equity
                                                     equity: float = portfolio[0]["equity"]                                   
