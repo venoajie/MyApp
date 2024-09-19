@@ -475,7 +475,7 @@ async def provide_size_to_close_transaction(
     return abs(basic_size if (has_closed == 0) else (sum_transactions_under_label_main))
 
 
-async def get_additional_params_for_futureSpread_transactions(trade: list) -> None:
+async def get_additional_params_for_futureSpread_transactions(transaction: list) -> None:
     """ 
     send order:
     {'is_liquidation': False, 'risk_reducing': False, 'creation_timestamp': 1724306764758, 'order_type': 'market', 
@@ -513,66 +513,65 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
      """
 
 
-    log.debug (f"trade {trade}")
-    timestamp= trade["timestamp"]
+    log.debug (f"trade {transaction}")
+    
+    #convert list to dict
+    transaction= transaction[0]
+    timestamp= transaction["timestamp"]
     
     #get label
     label= combine_vars_to_get_future_spread_label(timestamp)
-    
-    #convert list to dict
-    trade= trade[0]
 
-    trade.update({"label":label})
+    transaction.update({"label":label})
 
-    if "take_profit" not in trade:
-        trade.update({"take_profit": 0})
+    if "take_profit" not in transaction:
+        transaction.update({"take_profit": 0})
         
-    if "has_closed_label" not in trade:
-        trade.update({"has_closed_label": False})
+    if "has_closed_label" not in transaction:
+        transaction.update({"has_closed_label": False})
 
-async def get_additional_params_for_open_label(trade: list, label: str) -> None:
+
+async def get_additional_params_for_open_label(transaction: list, label: str) -> None:
 
     #already have label, but not "futureSpreads"
-    if "combo_id" in trade[0]:
-        await get_additional_params_for_futureSpread_transactions(trade)
+    if "combo_id" in transaction[0]:
+        await get_additional_params_for_futureSpread_transactions(transaction)
 
     additional_params = querying_additional_params()
     
     #convert list to dict
-    trade= trade[0]
+    transaction= transaction[0]
     
-    log.info (f"trade {trade}")
+    log.info (f"trade {transaction}")
 
     params = await executing_query_with_return(additional_params)
     
-    log.error (f""""label" not in trade {"label" not in trade} label is None {label is None}""")
+    log.error (f""""label" not in trade {"label" not in transaction} label is None {label is None}""")
     
     # provide label
-    if "label" not in trade or label is None:
-        side= get_transaction_side(trade, "open")
+    if "label" not in transaction or label is None:
+        side= get_transaction_side(transaction, "open")
         label_open: str = get_label("open", f"custom{side.title()}")
-        trade.update({"label": label_open})
+        transaction.update({"label": label_open})
         
     additional_params_label = [] if params == [] else [o for o in params if label in o["label"]]
     
     if additional_params_label !=[]:
-        if "take_profit" not in trade:
-            trade.update({"take_profit": additional_params_label["take_profit"]})
+        if "take_profit" not in transaction:
+            transaction.update({"take_profit": additional_params_label["take_profit"]})
             
-        if "has_closed_label" not in trade:
-            trade.update({"has_closed_label": False})
+        if "has_closed_label" not in transaction:
+            transaction.update({"has_closed_label": False})
                 
     else:
 
-        if "take_profit" not in trade:
-            trade.update({"take_profit": 0})
+        if "take_profit" not in transaction:
+            transaction.update({"take_profit": 0})
             
-        if "has_closed_label" not in trade:
-            trade.update({"has_closed_label": False})
+        if "has_closed_label" not in transaction:
+            transaction.update({"has_closed_label": False})
             
     
-
-
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """ """
     transaction: dict = selected_transaction[0]
