@@ -529,6 +529,10 @@ async def get_additional_params_for_futureSpread_transactions(trade: list) -> No
 
 async def get_additional_params_for_open_label(trade: list, label: str) -> None:
 
+    #already have label, but not "futureSpreads"
+    if "combo_id" in trade:
+        await get_additional_params_for_futureSpread_transactions(trade)
+
     additional_params = querying_additional_params()
     
     #convert list to dict
@@ -564,10 +568,6 @@ async def get_additional_params_for_open_label(trade: list, label: str) -> None:
             trade.update({"has_closed_label": False})
             
     
-        #already have label, but not "futureSpreads"
-        if "combo_id" in trade:
-            await get_additional_params_for_futureSpread_transactions(trade)
-
 
 
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
