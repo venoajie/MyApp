@@ -121,7 +121,6 @@ def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, lab
     return False if trades_from_sqlite_open==[] else sum_label
 
 
-
 def get_label_from_respected_id (trades_from_exchange, unrecorded_id, marker) -> str:
     #log.info (f"trades_from_exchange {trades_from_exchange}")
     #log.info (f"unrecorded_id {unrecorded_id} marker {marker}")
