@@ -16,17 +16,21 @@ from utilities.system_tools import (
 from utilities.pickling import replace_data
 from utilities.string_modification import (
     remove_redundant_elements,
+    extract_currency_from_text,
     parsing_label,
     my_trades_open_sqlite_detailing,
     parsing_sqlite_json_output,
 )
-from strategies.config_strategies import preferred_spot_currencies
+from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
     executing_query_based_on_currency_or_instrument_and_strategy
 )
 
+from websocket_management.cleaning_up_transactions import (
+    reconciling_between_db_and_exchg_data, 
+    clean_up_closed_transactions)
 from utilities.number_modification import get_closest_value
 
 # from market_understanding import futures_analysis
@@ -36,6 +40,7 @@ from strategies.basic_strategy import (
     is_everything_consistent,
     get_strategy_config_all,
     get_transaction_side,
+    check_db_consistencies,
     check_if_id_has_used_before
 )
 
@@ -268,7 +273,75 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
         if open_orders_from_sub_accounts !=[]:
             for order in open_orders_from_sub_accounts:
                 await insert_tables("orders_all_json", order)
+    
+async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
+
+    active_instruments_from_positions = [o["instrument_name"] for o in sub_accounts]
+                    
+    column_list_order: str="order_id", "label"
+
+    order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                currency, 
+                                                "all", 
+                                                "all", 
+                                                column_list_order)                         
+
+    sub_accounts=sub_accounts[0]
+    
+    open_orders_from_sub_accounts= sub_accounts["open_orders"]
+    
+    positions_from_sub_accounts= sub_accounts["positions"]
+    
+    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label"
+    
+    for instrument_name in active_instruments_from_positions:
+        log.warning (f"instrument_name {instrument_name}")      
+        
+        my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
+            "my_trades_all_json", instrument_name, "all", "all", column_list_trade)
+                      
+        db_consistencies= check_db_consistencies (instrument_name, 
+                                                  my_trades_instrument, 
+                                                  positions_from_sub_accounts,
+                                                  order_from_sqlite_open,
+                                                  open_orders_from_sub_accounts)
+
+        #log.debug (f"db_consistencies {db_consistencies}")
+        order_is_consistent= db_consistencies["order_is_consistent"]
+        
+        size_is_consistent= db_consistencies["trade_size_is_consistent"]
             
+        if not db_consistencies["no_non_label_from_from_sqlite_open"]:
+            await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
+            
+        if not order_is_consistent:
+            log.critical (f"BALANCING-ORDERS-START")
+            await resupply_sub_accountdb(currency)
+            await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
+            log.critical (f"BALANCING-ORDERS-DONE")
+            await cancel_the_cancellables()
+                                                        
+        if not size_is_consistent:
+            log.critical (f"BALANCING-START")
+            
+            await cancel_the_cancellables("open")
+            
+            balancing_params=paramaters_to_balancing_transactions()
+            
+            max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
+            
+            trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
+            
+            currency=extract_currency_from_text(instrument_name)
+            
+            trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
+            
+            await reconciling_between_db_and_exchg_data(instrument_name,
+                trades_from_exchange_without_futures_combo, positions_from_sub_accounts,order_from_sqlite_open,open_orders_from_sub_accounts)
+            
+            log.warning (f"CLEAN UP CLOSED TRANSACTIONS-START")
+            await clean_up_closed_transactions(instrument_name)
+            log.critical (f"BALANCING-DONE")
 
 async def resupply_sub_accountdb(currency) -> None:
 
@@ -278,7 +351,8 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-    log.error (f"{sub_accounts}")
+    
+    check_db_consistencies_and_clean_up_imbalances(sub_accounts)
 
 async def inserting_additional_params(params: dict) -> None:
     """ """
