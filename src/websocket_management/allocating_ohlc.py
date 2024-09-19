@@ -116,10 +116,10 @@ async def ohlc_result_per_time_frame(
                 result = transform_nested_dict_to_list(ohlc_request)
                 
                 #log.debug (f"ohlc {result}")
-                if "PERPETUAL" in instrument_ticker:
-                    log.debug (f"ohlc {result}")
+                #if "PERPETUAL" in instrument_ticker:
+                    #log.debug (f"ohlc {result}")
                 
-                    log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
+                    #log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
                 
                 # prepare query
                 open_interest_last_value_query = querying_last_open_interest(

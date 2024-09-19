@@ -26,7 +26,9 @@ from strategies.config_strategies import paramaters_to_balancing_transactions
 
 from utilities.system_tools import (
     sleep_and_restart,)
-from utilities.string_modification import get_unique_elements
+from utilities.string_modification import (
+    get_unique_elements, 
+    extract_integers_from_text)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     summing_transactions_under_label_int,
@@ -96,6 +98,30 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange
                 unrecorded_trade_id=unrecorded_trade_id)
 
 
+
+def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, label) -> bool:
+    
+    integer_label= extract_integers_from_text(label)
+    
+    log.info (f"integer_label {integer_label}")
+    
+    trades_from_sqlite_open= [o for o in from_sqlite_open if integer_label in o["label"] and "open" in o["label"] ]
+    log.debug (f"trades_from_sqlite_open {trades_from_sqlite_open}")
+    
+    if trades_from_sqlite_open !=[]:
+
+        # get sum of open label only
+        sum_from_open_label_only= [o["amount"] for o in trades_from_sqlite_open]
+        
+        # get net sum of label
+        sum_net_trades_from_open_and_closed= [o["amount"] for o in from_sqlite_open if integer_label in o["label"]]
+        
+        sum_label = sum_from_open_label_only >= sum_net_trades_from_open_and_closed
+        
+    return False if trades_from_sqlite_open==[] else sum_label
+
+
+
 def get_label_from_respected_id (trades_from_exchange, unrecorded_id, marker) -> str:
     #log.info (f"trades_from_exchange {trades_from_exchange}")
     #log.info (f"unrecorded_id {unrecorded_id} marker {marker}")
@@ -117,7 +143,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     if id_desc== "order_id":
         marker="order_id"
     
-    marker_plus=marker,"label"
+    marker_plus=marker,"label","amount"
 
     for tran_id in unrecorded_id:
         
@@ -139,6 +165,13 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         
         if transaction !=[] and id_has_registered_before==[]:
             
+            if "closed" in label:
+                label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, label)
+                
+                if label_open_still_in_active_transaction ==False:
+                    log.critical ("need manual intervention")
+                    await sleep_and_restart()
+                        
             if "label" not in transaction[0]:
                 
                 if "combo_id" in transaction:
@@ -152,6 +185,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
 
             if "open" in label:
                 await get_additional_params_for_open_label(transaction, label)
+                
                 
             await insert_tables(table, transaction)
             await sleep_and_restart()
