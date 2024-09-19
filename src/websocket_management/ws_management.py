@@ -283,12 +283,6 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
     active_instruments_from_positions = [o["instrument_name"] for o in positions]
                     
     column_list_order: str="order_id", "label"
-
-    order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                currency, 
-                                                "all", 
-                                                "all", 
-                                                column_list_order)                         
     
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
     
@@ -298,7 +292,15 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
     
     for instrument_name in active_instruments_from_positions:
         log.warning (f"instrument_name {instrument_name}")      
-        
+            
+        currency=extract_currency_from_text(instrument_name)
+            
+        order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+                                                    currency, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_list_order)        
+                         
         my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
             "my_trades_all_json", instrument_name, "all", "all", column_list_trade)
                       
@@ -333,8 +335,6 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
             max_transactions_downloaded_from_exchange=balancing_params["max_transactions_downloaded_from_exchange"]
             
             trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
-            
-            currency=extract_currency_from_text(instrument_name)
             
             trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
             
