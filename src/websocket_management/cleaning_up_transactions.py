@@ -185,7 +185,9 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             if "combo_id" in transaction[0]:
                 combo_id = [o["combo_trade_id"] for o in trades_from_exchange if o[marker] == tran_id][0]
                 log.error (f"combo_id {combo_id}")
-                transactions = [o for o in trades_from_exchange if o["combo_trade_id"]  == combo_id]
+                trades_from_exchange_with_futures_combo= [ o for o in trades_from_exchange if "combo_id"  in o]
+                log.warning (f"trades_from_exchange_with_futures_combo {trades_from_exchange_with_futures_combo}")
+                transactions = [o for o in trades_from_exchange_with_futures_combo if o["combo_trade_id"]  == combo_id]
                 log.error (f"transactions {transactions}")
                 
                 for transaction in transactions:
