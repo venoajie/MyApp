@@ -516,7 +516,11 @@ async def get_additional_params_for_futureSpread_transactions(transaction: list)
     log.debug (f"trade {transaction}")
     
     #convert list to dict
-    transaction= transaction[0]
+    try:
+        transaction= transaction[0]
+    except:
+        transaction= transaction
+        
     timestamp= transaction["timestamp"]
     
     #get label
