@@ -39,11 +39,8 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange) -> dict:
-    """ """
-    
-    #log.critical (f"{instrument_name}")
-
+async def get_unrecorded_trade_and_order_id(instrument_name: str,from_exchange: list) -> dict:
+        
     balancing_params=paramaters_to_balancing_transactions()
         
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
@@ -97,14 +94,30 @@ async def get_unrecorded_trade_and_order_id(instrument_name,from_exchange) -> di
                 unrecorded_trade_id=unrecorded_trade_id)
 
 
-def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, label) -> bool:
+def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, instrument_name: str, label: str) -> bool:
+    """_summary_
     
+    concern: there are highly possibities of one label for multiple instruments for transactions under future spread. 
+    Hence, the testing should be specified for an instrument
+
+    Args:
+        from_sqlite_open (list): _description_
+        instrument_name (str): _description_
+        label (str): _description_
+
+    Returns:
+        bool: _description_
+    """
     integer_label= extract_integers_from_text(label)
     
     log.warning (f"from_sqlite_open {from_sqlite_open}")
     log.info (f"integer_label {integer_label}")
     
-    trades_from_sqlite_open=[o for o in from_sqlite_open if integer_label == extract_integers_from_text(o["label"]) and "open" in o["label"]  ] 
+    trades_from_sqlite_open = [o for o in from_sqlite_open \
+        if integer_label == extract_integers_from_text(o["label"]) \
+            and "open" in o["label"] \
+                and instrument_name == o["instrument_name"] ] 
+    
     log.debug (f"trades_from_sqlite_open {trades_from_sqlite_open}")
     
     if trades_from_sqlite_open !=[]:
@@ -114,7 +127,10 @@ def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, lab
         log.warning (f"sum_from_open_label_only {sum_from_open_label_only}")
         
         # get net sum of label
-        sum_net_trades_from_open_and_closed= sum([o["amount"] for o in from_sqlite_open if integer_label == extract_integers_from_text(o["label"]) ])
+        sum_net_trades_from_open_and_closed= sum([o["amount"] for o in from_sqlite_open\
+            if integer_label == extract_integers_from_text(o["label"]) \
+                and instrument_name == o["instrument_name"]])
+        
         log.warning (f"sum_net_trades_from_open_and_closed {sum_net_trades_from_open_and_closed}")
         
         sum_label = sum_from_open_label_only >= sum_net_trades_from_open_and_closed
@@ -170,7 +186,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             log.warning (f""""label {label}""")
             
             if "closed" in label:
-                label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, label)
+                label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, instrument_name, label)
                 
                 if label_open_still_in_active_transaction ==False:
                     log.critical ("need manual intervention")
