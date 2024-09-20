@@ -227,10 +227,14 @@ async def if_cancel_is_true(order) -> None:
         await cancel_by_order_id(order["cancel_id"])
 
 async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlite_open) -> None:
+    
+    log.error (f"open_orders_from_sub_accounts {open_orders_from_sub_accounts}")
 
     open_orders_from_sub_accounts_order_id= [o["order_id"] for o in open_orders_from_sub_accounts]
+    log.warning (f"open_orders_from_sub_accounts_order_id {open_orders_from_sub_accounts_order_id}")
         
     order_id_from_current_db= [o["order_id"] for o in from_sqlite_open]
+    log.error (f"order_id_from_current_db {order_id_from_current_db}")
     
     if order_id_from_current_db !=[]:
         
