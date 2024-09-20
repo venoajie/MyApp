@@ -152,9 +152,26 @@ async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
 
     result = await private_data.get_cancel_order_byOrderId(open_order_id)
-    log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
+    
+    try:
+        if (result["error"]["message"])=="not_open_order":
+            
+            where_filter = f"order_id"
+            
+            await sqlite_management.deleting_row(
+                                "orders_all_json",
+                                "databases/trading.sqlite3",
+                                where_filter,
+                                "=",
+                                open_order_id,
+                            )
+            log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
 
-    return result
+    except:
+
+        log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
+
+        return result
 
 
 async def cancel_the_cancellables(filter: str = None) -> None:
@@ -281,7 +298,7 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
 async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
     
     if sub_accounts== []:
-        sub_accounts = await get_sub_account(currency)
+        sub_accounts = await resupply_sub_accountdb(currency)
     
     sub_accounts=sub_accounts[0]
 
@@ -366,8 +383,6 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-    
-    await check_db_consistencies_and_clean_up_imbalances(sub_accounts)
 
 async def inserting_additional_params(params: dict) -> None:
     """ """
