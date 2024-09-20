@@ -70,9 +70,9 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange:
     #log.info (f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
     #log.warning (f"from_sqlite_open_trade_id {from_sqlite_open_trade_id}")
 
-    from_exchange_with_labels= [o for o in from_exchange if "label" in o]
+    #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
-    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels \
+    from_exchange_instrument: int = ([] if from_exchange == [] else ([o for o in from_exchange \
         if o["instrument_name"]==instrument_name])
                                             )
     #log.info (f"from_exchange_instrument {from_exchange_instrument}")
