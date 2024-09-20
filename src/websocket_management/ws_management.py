@@ -338,7 +338,7 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
             
             trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
             
-            if "eth" in instrument_name:
+            if "ETH" in instrument_name:
                 log.debug (f"trades_from_exchange_without_futures_combo {trades_from_exchange_without_futures_combo}")
             
             await reconciling_between_db_and_exchg_data(instrument_name,
