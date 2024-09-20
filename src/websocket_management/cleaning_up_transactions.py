@@ -72,7 +72,8 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange:
 
     from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
-    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels if o["instrument_name"]==instrument_name])
+    from_exchange_instrument: int = ([] if from_exchange_with_labels == [] else ([o for o in from_exchange_with_labels \
+        if o["instrument_name"]==instrument_name])
                                             )
     #log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
@@ -177,11 +178,23 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
         log.error (f"transaction {instrument_name} {transaction} {tran_id}")
-        #log.warning (f""""combo_id" in transaction {"combo_id" in transaction[0]}""")
-        #log.error (f""""label" not in trade {"label" not in transaction[0]} """)
         
         if transaction !=[] and id_has_registered_before==[]:
-            
+        
+            #combo get priority to avoid only one instrument is recorded
+            if "combo_id" in transaction[0]:
+                combo_id = [o["combo_trade_id"] for o in trades_from_exchange if o[marker] == tran_id][0]
+                log.error (f"combo_id {combo_id}")
+                transactions = [o for o in trades_from_exchange if o["combo_trade_id"]  == combo_id]
+                log.error (f"transactions {transactions}")
+                
+                for transaction in transactions:
+                    await get_additional_params_for_futureSpread_transactions(transaction)
+                    await insert_tables(table, transaction)
+                
+                await sleep_and_restart()
+
+        
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
             log.warning (f""""label {label}""")
             
