@@ -313,23 +313,29 @@ def get_transaction_side(transaction: dict, status) -> str:
     """
         
     log.error (f"transaction{transaction}")
-    transaction_amount = transaction["amount"]
+    try:
+        transaction_amount = transaction["amount"]
+        
+        if status =="open":
+            
+            if transaction_amount < 0:
+                side= "sell"
+            if transaction_amount > 0:
+                side= "buy"
+        
+        if status =="closed":
+            
+            if transaction_amount < 0:
+                side= "buy"
+            if transaction_amount > 0:
+                side= "sell"
+            
+        return  side
     
-    if status =="open":
+    except:
         
-        if transaction_amount < 0:
-            side= "sell"
-        if transaction_amount > 0:
-            side= "buy"
+        return transaction["side"]
     
-    if status =="closed":
-        
-        if transaction_amount < 0:
-            side= "buy"
-        if transaction_amount > 0:
-            side= "sell"
-        
-    return  side
 
 
 def get_transaction_size(transaction: dict) -> int:
