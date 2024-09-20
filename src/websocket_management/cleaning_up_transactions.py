@@ -39,7 +39,7 @@ from strategies.basic_strategy import (
 )
 from strategies.config_strategies import max_rows
 
-async def get_unrecorded_trade_and_order_id(instrument_name: str,from_exchange: list) -> dict:
+async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange: list) -> dict:
         
     balancing_params=paramaters_to_balancing_transactions()
         
