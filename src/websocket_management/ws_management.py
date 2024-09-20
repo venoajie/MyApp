@@ -278,7 +278,10 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
             for order in open_orders_from_sub_accounts:
                 await insert_tables("orders_all_json", order)
     
-async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
+async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
+    
+    if sub_accounts== []:
+        sub_accounts = await get_sub_account(currency)
     
     sub_accounts=sub_accounts[0]
 
@@ -324,7 +327,7 @@ async def check_db_consistencies_and_clean_up_imbalances(sub_accounts) -> None:
             
         if not order_is_consistent:
             log.critical (f"BALANCING-ORDERS-START")
-            await resupply_sub_accountdb(currency)
+            #await resupply_sub_accountdb(currency)
             await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
             log.critical (f"BALANCING-ORDERS-DONE")
             await cancel_the_cancellables()
