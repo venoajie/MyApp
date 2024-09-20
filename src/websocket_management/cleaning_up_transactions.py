@@ -78,13 +78,16 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange:
     #log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     from_exchange_trade_id = [o["trade_id"] for o in from_exchange_instrument]
-    #log.warning (f"from_exchange_order_id {from_exchange_order_id}")
-    #log.warning (f"from_exchange_trade_id {from_exchange_trade_id}")
     
     combined_order_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
     combined_trade_closed_open = from_sqlite_open_trade_id + from_sqlite_closed_trade_id
     #log.warning (f"combined_order_closed_open {combined_order_closed_open}")
 
+    if "ETH" in instrument_name:
+        log.warning (f"from_exchange_order_id {from_exchange_order_id}")
+        #log.warning (f"from_exchange_trade_id {from_exchange_trade_id}")
+        log.warning (f"combined_order_closed_open {combined_order_closed_open}")
+    
     unrecorded_order_id = get_unique_elements(from_exchange_order_id, combined_order_closed_open)
     unrecorded_trade_id = get_unique_elements(from_exchange_trade_id, combined_trade_closed_open)
     
