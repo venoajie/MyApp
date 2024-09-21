@@ -574,7 +574,11 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
     
     if additional_params_label !=[]:
         if "take_profit" not in transaction:
-            transaction.update({"take_profit": additional_params_label["take_profit"]})
+            try:
+                transaction.update({"take_profit": additional_params_label["take_profit"]})
+            
+            except:
+                transaction.update({"take_profit": 0})
             
         if "has_closed_label" not in transaction:
             transaction.update({"has_closed_label": False})
