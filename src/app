@@ -396,15 +396,20 @@ class StreamAccountData:
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                         log.error (f"transaction {modified_dict}")
                         type_log= modified_dict ["type"]
+                        
                         label_log= ""
+                        
+                        modified_dict.update({"label": label_log})
+                        
                         if "trade" in type_log:
                             tran_id_log= modified_dict ["trade_id"]
                             
-                            label_log= [o["label"] for o in combined if o["trade_id"]== tran_id_log][0]
+                            label_log= [o["label"] for o in combined if o["trade_id"]== tran_id_log]
                             
                             log.error (f"label_log {label_log}")
                             
-                            modified_dict.update({"label": label_log})
+                            if label_log !=[]:
+                                modified_dict.update({"label": label_log})
                         
                         await insert_tables("transaction_log_json", modified_dict)
                         
