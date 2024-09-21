@@ -281,6 +281,7 @@ class GetPrivateData:
         log.debug (f"start_timestamp {start_timestamp}")
         log.debug (f"now_unix {now_unix}")
         log.debug (f"count {count}")
+        log.debug (f"currency {self.currency}")
         log.debug (f"currency {self.currency.upper()}")
 
         # Set endpoint
