@@ -13,7 +13,8 @@ from utilities.system_tools import (
     reading_from_db_pickle,
     sleep_and_restart
 )
-from utilities.pickling import replace_data
+from loguru import logger as log
+from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
     remove_redundant_elements,
     extract_currency_from_text,
