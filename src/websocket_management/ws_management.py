@@ -322,8 +322,10 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     start_timestamp= 1624305005737
     transaction_log= await get_transaction_log (currency, start_timestamp, 10)
     
-    log.debug (f"transac tion_log{transaction_log}")
-    
+    for transaction in transaction_log:
+        log.error (f"transaction {transaction}")
+        
+    log.error (f"t {5/0}")
     if sub_accounts== [] or sub_accounts is None:
         sub_accounts = reading_from_pkl_data("sub_accounts",currency)
 
@@ -387,7 +389,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             
             trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
             
-            log.debug (f"trades_from_exchange {trades_from_exchange}")
+            #log.debug (f"trades_from_exchange {trades_from_exchange}")
             
             trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
             

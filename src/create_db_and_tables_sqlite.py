@@ -54,7 +54,9 @@ async def create_tbl_json_sqlite() -> list:
         "ohlc60_btc_perp_json",
         "ohlc4H_btc_perp_json",
         "ohlc1D_btc_perp_json",
+        "transaction_log_json",
     ]
+    
     for table in tables:
         await sql_executing_queries.create_tables_json_sqlite(table)
 
