@@ -394,13 +394,13 @@ class StreamAccountData:
                     log.info (f"from_sqlite_closed {from_sqlite_closed}")
                     log.info (f"combined {combined}")
                     for transaction in transaction_log:
+                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                         instrument_name_log= modified_dict ["instrument_name"]
                         
                         if instrument== instrument_name_log:
                             
                             log.debug (f"instrument {instrument} instrument_name_log {instrument_name_log}")
                             
-                            modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                             
                             type_log= modified_dict ["type"]
                             
