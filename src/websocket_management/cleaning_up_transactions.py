@@ -165,7 +165,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
     if id_desc== "order_id":
         marker="order_id"
     
-    marker_plus=marker,"label","amount"
+    marker_plus=marker,"label","amount","instrument_name"
 
     for tran_id in unrecorded_id:
         

@@ -534,14 +534,15 @@ async def get_additional_params_for_futureSpread_transactions(transaction: list)
     timestamp= transaction["timestamp"]
     
     #get label
-    label= combine_vars_to_get_future_spread_label(timestamp)
-
-    transaction.update({"label":label})
+    
+    if "futureSpread" not in transaction:
+        label= combine_vars_to_get_future_spread_label(timestamp)
+        transaction.update({"label":label})
 
     if "take_profit" not in transaction:
         transaction.update({"take_profit": 0})
         
-    if "has_closed_label" not in transaction:
+    if "open" in transaction and "has_closed_label" not in transaction:
         transaction.update({"has_closed_label": False})
 
 
