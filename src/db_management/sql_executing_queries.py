@@ -64,6 +64,10 @@ def texting_table_json(table) -> str:
 def texting_virtual_table(table: str, item: str, item_data_type: str) -> str:
     """ """
     item2 = "last_update_timestamp" if  "order" in table else item
+
+    if  "side" in item:
+        item2 = "direction"
+        
     query = f""" 
             ALTER 
             TABLE 
@@ -160,6 +164,7 @@ async def create_tables_json_sqlite(table, type: str = None):
 
                 create_table_alter_price = texting_virtual_table(table, "price", "REAL")
 
+                create_table_alter_side = texting_virtual_table(table, "side", "TEXT")
 
                 print(f"create virtual columns {create_table_alter_instrument_name_strategy}")
                 await cur.execute(f"{create_table_alter_instrument_name_strategy}")
@@ -186,7 +191,6 @@ async def create_tables_json_sqlite(table, type: str = None):
                         await cur.execute(f"{create_table_alter_has_closed_label}")
                         print(f"create virtual columns {create_table_alter_has_closed_label}")
                     
-
                 print(f"create virtual columns {create_table_alter_order_id}")
                 await cur.execute(f"{create_table_alter_order_id}")
                 
@@ -195,6 +199,9 @@ async def create_tables_json_sqlite(table, type: str = None):
                 
                 print(f"create virtual columns {create_table_alter_price}")
                 await cur.execute(f"{create_table_alter_price}")
+
+                print(f"create virtual columns {create_table_alter_side}")
+                await cur.execute(f"{create_table_alter_side}")
 
                 create_index = f"""CREATE INDEX order_id ON  {table} (order_id);"""
 

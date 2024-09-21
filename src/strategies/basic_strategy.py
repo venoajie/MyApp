@@ -13,7 +13,7 @@ from db_management.sqlite_management import (
     querying_ohlc_price_vol,
     querying_additional_params,
     querying_table,
-    executing_query_based_on_currency_or_instrument_and_strategy
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query
 )
 from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
 from loguru import logger as log
@@ -307,36 +307,21 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
 
 
-def get_transaction_side(transaction: dict, status) -> str:
+def get_transaction_side(transaction: dict) -> str:
     """ 
     status: open/closed
     """
         
     log.error (f"transaction{transaction}")
+    
     try:
-        transaction_amount = transaction["amount"]
-        
-        if status =="open":
-            
-            if transaction_amount < 0:
-                side= "sell"
-            if transaction_amount > 0:
-                side= "buy"
-        
-        if status =="closed":
-            
-            if transaction_amount < 0:
-                side= "buy"
-            if transaction_amount > 0:
-                side= "sell"
-            
-        return  side
+        #source: from exchange/transaction        
+        return  transaction["direction"] 
     
     except:
         
         return transaction["side"]
     
-
 
 def get_transaction_size(transaction: dict) -> int:
     """ """
@@ -405,25 +390,25 @@ async def check_if_id_has_used_before(instrument_name: str,
     if id_checked=="label":
         column= "label","order_id"
     
-    data_from_db_trade_open = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column)     
+    data_from_db_trade_open = await get_query("my_trades_all_json", 
+                                              instrument_name, 
+                                              "all", 
+                                              "all", 
+                                              column)     
     
-    data_from_db_order_open = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column)     
+    data_from_db_order_open = await get_query("orders_all_json", 
+                                              instrument_name, 
+                                              "all", 
+                                              "all", 
+                                              column)     
     
-    data_from_db_trade_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
-                                                                                            instrument_name, 
-                                                                                            "all", 
-                                                                                            "all", 
-                                                                                            column,
-                                                                                            max_transactions_for_closed_label, 
-                                                                                            "id") 
+    data_from_db_trade_closed = await get_query("my_trades_closed_json", 
+                                                instrument_name, 
+                                                "all", 
+                                                "all", 
+                                                column,
+                                                max_transactions_for_closed_label, 
+                                                "id") 
     
     combined_result = data_from_db_trade_open + data_from_db_trade_closed + data_from_db_order_open
     id=f"{id_checked}"
@@ -450,16 +435,31 @@ async def summing_transactions_under_label_int(
         tabel= "my_trades_all_json"
         column_list: str= "label", "amount"
         instrument_name= get_transaction_instrument(transaction)
-        transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)
+        transactions_all: list = await get_query(tabel, 
+                                                 instrument_name, 
+                                                 "all", 
+                                                 "all", 
+                                                 column_list)
     transactions_under_label_main = [
         o["amount"] for o in transactions_all if label_integer in o["label"]
     ]
 
     return sum(transactions_under_label_main)
+
+
+def provide_side_to_close_transaction(transaction: dict) -> str:
+    """ """
+
+    # determine side
+    transaction_side = get_transaction_side(transaction)
+    
+    if transaction_side == "sell":
+        side = "buy"
+        
+    if transaction_side == "buy":
+        side = "sell"
+
+    return side
 
 
 async def provide_size_to_close_transaction(
@@ -480,6 +480,13 @@ async def provide_size_to_close_transaction(
 
     return abs(basic_size if (has_closed == 0) else (sum_transactions_under_label_main))
 
+def convert_list_to_dict (transaction: list) -> dict:
+
+    #convert list to dict
+    try:
+        return transaction[0]
+    except:
+        return transaction
 
 async def get_additional_params_for_futureSpread_transactions(transaction: list) -> None:
     """ 
@@ -522,10 +529,7 @@ async def get_additional_params_for_futureSpread_transactions(transaction: list)
     log.debug (f"trade {transaction}")
     
     #convert list to dict
-    try:
-        transaction= transaction[0]
-    except:
-        transaction= transaction
+    transaction = convert_list_to_dict(transaction)
         
     timestamp= transaction["timestamp"]
     
@@ -543,14 +547,14 @@ async def get_additional_params_for_futureSpread_transactions(transaction: list)
 
 async def get_additional_params_for_open_label(transaction: list, label: str) -> None:
 
+    #convert list to dict
+    transaction= convert_list_to_dict(transaction)
+    
     #already have label, but not "futureSpreads"
-    if "combo_id" in transaction[0]:
+    if "combo_id" in transaction:
         await get_additional_params_for_futureSpread_transactions(transaction)
 
     additional_params = querying_additional_params()
-    
-    #convert list to dict
-    transaction= transaction[0]#
     
     #log.info (f"trade {transaction}")
 
@@ -560,7 +564,7 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
     
     # provide label
     if "label" not in transaction or label is None:
-        side= get_transaction_side(transaction, "open")
+        side= get_transaction_side(transaction)
         label_open: str = get_label("open", f"custom{side.title()}")
         transaction.update({"label": label_open})
         
@@ -584,8 +588,8 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
     
 def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """ """
-    transaction: dict = selected_transaction[0]
-
+    transaction: dict = convert_list_to_dict(selected_transaction)
+    
     # provide dict placeholder for params
     params = {}
 
@@ -596,7 +600,7 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     params.update({"size": transaction["amount"]})
 
     # determine side
-    side = get_transaction_side(transaction,"closed")
+    side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
 
     label_closed: str = get_label("closed", transaction["label"])
@@ -622,7 +626,7 @@ def is_everything_consistent(params) -> bool:
 
     if "open" in label:
         
-        side = get_transaction_side(params, "open")
+        side = get_transaction_side(params)
 
         if side == "sell":
             is_consistent = True if ("Short" in label or "hedging" in label or "future" in label) else False
@@ -760,12 +764,12 @@ class BasicStrategy:
     ) -> dict:
         """ """
         # transform to dict
-        transaction: dict = selected_transaction[0]
-
+        transaction: dict = convert_list_to_dict(selected_transaction)
+        
         # get price
         last_transaction_price: float = get_transaction_price(transaction)
 
-        transaction_side: str = get_transaction_side(transaction, "closed")
+        transaction_side: str = get_transaction_side(transaction)
 
         strategy_config: list = self.get_strategy_config(
             get_transaction_label(transaction)
@@ -815,10 +819,10 @@ class BasicStrategy:
 
         column_list= "amount",
         status= "closed"
-        orders: list = await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                    instrument_name, 
-                                                                                    self.strategy_label,
-                                                                                    status,column_list)
+        orders: list = await get_query("orders_all_json", 
+                                       instrument_name, 
+                                       self.strategy_label,
+                                       status,column_list)
 
         len_orders: int = get_transactions_len(orders)
 
