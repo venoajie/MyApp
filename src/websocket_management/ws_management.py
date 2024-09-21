@@ -100,6 +100,16 @@ async def get_sub_account(currency) -> list:
     return result_sub_account["result"]
 
 
+async def get_transaction_log(currency) -> list:
+    """ """
+
+    private_data = await get_private_data(currency)
+
+    result_sub_account: dict = await private_data.get_subaccounts()
+
+    return result_sub_account["result"]
+
+
 def compute_notional_value(index_price: float, equity: float) -> float:
     """ """
     return index_price * equity

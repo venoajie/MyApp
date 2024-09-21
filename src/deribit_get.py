@@ -263,6 +263,24 @@ class GetPrivateData:
 
         return await self.parse_main(endpoint=endpoint, params=params)
 
+    async def get_transaction_log(
+        self,
+        start_timestamp: int,
+        end_timestamp: int,
+        count: int = 1000,
+    ) -> list:
+
+        # Set endpoint
+        endpoint: str = f"private/get_transaction_log"
+        params = {
+            "count": count,
+            "currency": self.currency.upper(),
+            "end_timestamp": end_timestamp,
+            "start_timestamp": start_timestamp,
+        }
+
+        return await self.parse_main(endpoint=endpoint, params=params)
+
     async def get_user_trades_by_currency(self, count: int = 1000) -> list:
 
         # Set endpoint
