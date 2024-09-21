@@ -1,6 +1,7 @@
 # built ins
 import asyncio
 from typing import Dict
+from datetime import datetime
 
 # installed
 from dataclassy import dataclass  # import websockets
@@ -12,6 +13,7 @@ from loguru import logger as log
 
 # user defined formula
 from configuration import id_numbering, config
+from utilities import time_modification
 
 headers = {
     "accept": "application/json",
@@ -98,6 +100,12 @@ async def main_coinGlass() -> None:
 
     return response
 
+
+async def get_now_unix() -> None:
+
+    now_utc = datetime.now()
+    
+    return time_modification.convert_time_to_unix(now_utc)
 
 async def main(
     endpoint: str,
@@ -266,16 +274,17 @@ class GetPrivateData:
     async def get_transaction_log(
         self,
         start_timestamp: int,
-        end_timestamp: int,
         count: int = 1000,
     ) -> list:
+        
+        now_unix = get_now_unix()
 
         # Set endpoint
         endpoint: str = f"private/get_transaction_log"
         params = {
             "count": count,
             "currency": self.currency.upper(),
-            "end_timestamp": end_timestamp,
+            "end_timestamp": now_unix,
             "start_timestamp": start_timestamp,
         }
 
@@ -714,11 +723,9 @@ async def get_ohlc(
     qty_candles,
     start_timestamp: int =None
 ) -> list:
-    from datetime import datetime
-    from utilities import time_modification
-
-    now_utc = datetime.now()
-    now_unix = time_modification.convert_time_to_unix(now_utc)
+    
+    
+    now_unix = get_now_unix()
     
     if start_timestamp is None:
         start_timestamp = now_unix - (60000 * qty_candles)

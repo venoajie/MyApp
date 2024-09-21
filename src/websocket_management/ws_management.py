@@ -2,7 +2,7 @@
 
 # built ins
 import asyncio
-
+from datetime import datetime
 # installed
 from loguru import logger as log
 
@@ -99,15 +99,15 @@ async def get_sub_account(currency) -> list:
 
     return result_sub_account["result"]
 
-
-async def get_transaction_log(currency) -> list:
+        
+async def get_transaction_log(currency: str,start_timestamp: int,count: int= 1000) -> list:
     """ """
 
     private_data = await get_private_data(currency)
 
-    result_sub_account: dict = await private_data.get_subaccounts()
+    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp,count)
 
-    return result_sub_account["result"]
+    return result_transaction_log["result"]
 
 
 def compute_notional_value(index_price: float, equity: float) -> float:
@@ -315,6 +315,11 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     return data
     
 async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
+    
+    start_timestamp= 1624305005737
+    transaction_log= await get_transaction_log (start_timestamp,10)
+    
+    log.debug (f"transac tion_log{transaction_log}")
     
     if sub_accounts== [] or sub_accounts is None:
         sub_accounts = reading_from_pkl_data("sub_accounts",currency)
