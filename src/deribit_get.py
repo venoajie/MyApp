@@ -278,6 +278,10 @@ class GetPrivateData:
     ) -> list:
         
         now_unix = get_now_unix()
+        log.debug (f"start_timestamp {start_timestamp}")
+        log.debug (f"now_unix {now_unix}")
+        log.debug (f"count {count}")
+        log.debug (f"currency {self.currency.upper()}")
 
         # Set endpoint
         endpoint: str = f"private/get_transaction_log"
