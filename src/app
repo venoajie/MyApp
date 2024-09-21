@@ -396,10 +396,10 @@ class StreamAccountData:
                     for transaction in transaction_log:
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                         instrument_name_log= modified_dict ["instrument_name"]
-                        
+                        log.debug (f"instrument {instrument} instrument_name_log {instrument_name_log}")
                         if instrument== instrument_name_log:
                             
-                            log.debug (f"instrument {instrument} instrument_name_log {instrument_name_log}")
+                            
                             
                             
                             type_log= modified_dict ["type"]
