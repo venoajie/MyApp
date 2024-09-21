@@ -353,8 +353,9 @@ class StreamAccountData:
                 
                 await get_and_save_currencies()
                 
-                instruments_name=await get_instruments_name()
-                                
+                instruments_name=await get_instruments_name()                    
+                
+                from strategies.config_strategies import paramaters_to_balancing_transactions        
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
@@ -369,6 +370,10 @@ class StreamAccountData:
                     transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
                     r=0
                             
+                    balancing_params=paramaters_to_balancing_transactions()
+                        
+                    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+    
                     column_list: str="order_id", "trade_id", "label"
                     
                     from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
