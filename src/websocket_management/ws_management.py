@@ -300,7 +300,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     if sub_accounts== [] or sub_accounts is None:
         sub_accounts = await resupply_sub_accountdb(currency)
     
-    log.error (f"sub_accounts {sub_accounts} {sub_accounts== []}")
+    log.error (f"sub_accounts {sub_accounts} {sub_accounts== [] or sub_accounts is None}")
     sub_accounts=sub_accounts[0]
 
     positions= sub_accounts["positions"]
