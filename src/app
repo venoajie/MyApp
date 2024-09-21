@@ -474,6 +474,8 @@ class StreamAccountData:
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 
+                                log.debug (f'data_orders {data_orders}')
+                                
                                 await update_portfolio(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)    
