@@ -37,7 +37,7 @@ from websocket_management.ws_management import (
     if_order_is_true,
     if_cancel_is_true,
     compute_notional_value, 
-    get_account_summary,
+    get_transaction_log,
     check_db_consistencies_and_clean_up_imbalances,
     procedures_for_unlabelled_orders,
     )
@@ -105,7 +105,16 @@ async def get_futures_for_active_currencies () -> list:
     
     instruments_holder_place= []
     for currency in currencies:
-        
+            
+        start_timestamp= 1524305005737
+        transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
+        r=0
+        for transaction in transaction_log:
+            log.error (f"transaction {r+1} {transaction}")
+            await insert_tables("transaction_log_json", transaction)
+            
+        log.error (f"t {5/0}")
+
         future_instruments= get_instruments_kind (currency,"future" )
         
         instruments_holder_place.append(future_instruments)    

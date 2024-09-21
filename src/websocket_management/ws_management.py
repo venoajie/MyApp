@@ -406,14 +406,6 @@ async def resupply_sub_accountdb(currency) -> None:
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
-
-    start_timestamp= 1624305005737
-    transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
-    
-    for transaction in transaction_log:
-        log.error (f"transaction {transaction}")
-        
-    log.error (f"t {5/0}")
     
 async def inserting_additional_params(params: dict) -> None:
     """ """
