@@ -100,14 +100,17 @@ async def get_sub_account(currency) -> list:
     return result_sub_account["result"]
 
         
-async def get_transaction_log(currency: str,start_timestamp: int,count: int= 1000) -> list:
+async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
     """ """
 
     private_data = await get_private_data(currency)
 
-    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp,count)
+    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
+    result_transaction_log_to_result = result_transaction_log["result"]
+    result_transaction_log_to_result_logs = [] if result_transaction_log_to_result  == []\
+        else result_transaction_log_to_result["logs"]
 
-    return result_transaction_log["result"]
+    return result_transaction_log_to_result_logs
 
 
 def compute_notional_value(index_price: float, equity: float) -> float:
