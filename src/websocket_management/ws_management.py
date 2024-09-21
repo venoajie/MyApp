@@ -369,6 +369,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             
             trades_from_exchange = await get_my_trades_from_exchange(max_transactions_downloaded_from_exchange, currency)
             
+            log.debug (f"trades_from_exchange {trades_from_exchange}")
+            
             trades_from_exchange_without_futures_combo= [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
             
             #if "ETH" in instrument_name:
