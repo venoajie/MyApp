@@ -106,14 +106,6 @@ async def get_futures_for_active_currencies () -> list:
     instruments_holder_place= []
     for currency in currencies:
         
-        portfolio = await get_account_summary(currency)
-        
-        path_portfolio: str = provide_path_for_file("portfolio", currency)
-        
-        replace_data(path_portfolio, portfolio)
-
-        await resupply_sub_accountdb(currency)
-        
         future_instruments= get_instruments_kind (currency,"future" )
         
         instruments_holder_place.append(future_instruments)    
@@ -473,9 +465,7 @@ class StreamAccountData:
                             currency_upper=currency.upper()
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
-                                
-                                log.debug (f'data_orders {data_orders}')
-                                
+                                # also always performed at restart                                
                                 await update_portfolio(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)    
