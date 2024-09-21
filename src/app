@@ -391,6 +391,7 @@ class StreamAccountData:
                                                                                                             "id")    
 
                     combined= from_sqlite_open + from_sqlite_closed
+                    log.info (f"combined {combined}")
                     for transaction in transaction_log:
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
