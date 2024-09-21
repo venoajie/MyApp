@@ -113,6 +113,43 @@ async def create_tables_json_sqlite(table, type: str = None):
 
             await cur.execute(f"{create_table}")
 
+            create_table_alter_instrument_name_strategy = texting_virtual_table(
+                table, "instrument_name", "TEXT"
+            )
+            
+            create_table_alter_label_strategy = texting_virtual_table(
+                table, "label", "TEXT"
+            )
+
+            create_table_alter_label_strategy_order = texting_virtual_table(
+                table, "timestamp", "INTEGER"
+            )
+
+            create_table_alter_order_id = texting_virtual_table(
+                table, "order_id", "TEXT"
+            )
+            
+            create_table_alter_has_closed_label = texting_virtual_table(
+                table, "has_closed_label", "INTEGER"
+            )
+
+            create_table_alter_trade_id = texting_virtual_table(
+                table, "trade_id", "TEXT"
+            )
+
+            create_table_alter_timestamp = texting_virtual_table(
+                table, "timestamp", "INTEGER"
+            )
+
+            create_table_alter_price = texting_virtual_table(table, "price", "REAL")
+
+            create_table_alter_position = texting_virtual_table(table, "position", "integer")
+            create_table_alter_type = texting_virtual_table(table, "type", "TEXT")
+
+            create_table_alter_side = texting_virtual_table(table, "side", "TEXT")
+
+            create_table_alter_side = texting_virtual_table(table, "side", "TEXT")
+
             if "trades"  in table or "orders"  in table:
 
                 create_table_alter_sum_pos = f""" 
@@ -134,37 +171,6 @@ async def create_tables_json_sqlite(table, type: str = None):
                                                 VIRTUAL;
                                                 
                                                 """
-                create_table_alter_instrument_name_strategy = texting_virtual_table(
-                    table, "instrument_name", "TEXT"
-                )
-                
-                create_table_alter_label_strategy = texting_virtual_table(
-                    table, "label", "TEXT"
-                )
-
-                create_table_alter_label_strategy_order = texting_virtual_table(
-                    table, "timestamp", "INTEGER"
-                )
-
-                create_table_alter_order_id = texting_virtual_table(
-                    table, "order_id", "TEXT"
-                )
-                
-                create_table_alter_has_closed_label = texting_virtual_table(
-                    table, "has_closed_label", "INTEGER"
-                )
-
-                create_table_alter_trade_id = texting_virtual_table(
-                    table, "trade_id", "TEXT"
-                )
-
-                create_table_alter_timestamp = texting_virtual_table(
-                    table, "timestamp", "INTEGER"
-                )
-
-                create_table_alter_price = texting_virtual_table(table, "price", "REAL")
-
-                create_table_alter_side = texting_virtual_table(table, "side", "TEXT")
 
                 print(f"create virtual columns {create_table_alter_instrument_name_strategy}")
                 await cur.execute(f"{create_table_alter_instrument_name_strategy}")
@@ -191,6 +197,17 @@ async def create_tables_json_sqlite(table, type: str = None):
                         await cur.execute(f"{create_table_alter_has_closed_label}")
                         print(f"create virtual columns {create_table_alter_has_closed_label}")
                     
+                if "transaction_log_json" in table:
+
+                    await cur.execute(f"{create_table_alter_position}")
+                    print(
+                        f"create virtual columns {create_table_alter_position}"
+                    )
+
+                    await cur.execute(f"{create_table_alter_type}")
+                    print(
+                        f"create virtual columns {create_table_alter_type}"
+                    )
                 print(f"create virtual columns {create_table_alter_order_id}")
                 await cur.execute(f"{create_table_alter_order_id}")
                 

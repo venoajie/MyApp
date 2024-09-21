@@ -105,17 +105,6 @@ async def get_futures_for_active_currencies () -> list:
     
     instruments_holder_place= []
     for currency in currencies:
-            
-        start_timestamp= 1524305005737
-        transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
-        r=0
-        for transaction in transaction_log:
-            modified_dict= {i:transaction [i] for i in transaction if i!="info"}
-            log.error (f"transaction {+r +1 } {modified_dict}")
-            
-            await insert_tables("transaction_log_json", modified_dict)
-            
-        log.error (f"t {5/0}")
 
         future_instruments= get_instruments_kind (currency,"future" )
         
@@ -373,6 +362,52 @@ class StreamAccountData:
                     await clean_up_closed_transactions (instrument)
 
                     currency=extract_currency_from_text(instrument).upper()
+                    
+                    
+                                
+                    start_timestamp= 1524305005737
+                    transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
+                    r=0
+                            
+                    column_list: str="order_id", "trade_id", "label"
+                    
+                    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
+                                                                                                        instrument, 
+                                                                                                        "all", 
+                                                                                                        "all", 
+                                                                                                        column_list)                                       
+
+                    from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
+                                                                                                            instrument, 
+                                                                                                            "all", 
+                                                                                                            "all", 
+                                                                                                            column_list,
+                                                                                                            max_closed_transactions_downloaded_from_sqlite, 
+                                                                                                            "id")    
+
+                    combined= from_sqlite_open + from_sqlite_closed
+                    for transaction in transaction_log:
+                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
+                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
+                        log.error (f"transaction {modified_dict}")
+                        type_log= modified_dict ["type"]
+                        label_log= ""
+                        if "trade" in type_log:
+                            tran_id_log= modified_dict ["trade_id"]
+                            
+                            label_log= [o["label"] for o in combined if o["trade_id"]== tran_id_log][0]
+                            
+                            log.error (f"label_log {label_log}")
+                            
+                            modified_dict.update({"label": label_log})
+                        
+                        await insert_tables("transaction_log_json", modified_dict)
+                        
+                    log.error (f"t {5/0}")
+
+                    
+                    
+                    
                                     
                     self.loop.create_task(
                         self.ws_operation(
