@@ -358,12 +358,11 @@ class StreamAccountData:
                 from strategies.config_strategies import paramaters_to_balancing_transactions        
                 
                 for instrument in instruments_name:
-                    log.debug(f"instrument {instrument}")
+                    #log.debug(f"instrument {instrument}")
                     
                     await clean_up_closed_transactions (instrument)
 
-                    currency=extract_currency_from_text(instrument).upper()
-                    
+                    currency=extract_currency_from_text(instrument).upper()   
                     
                                 
                     start_timestamp= 1524305005737
@@ -395,27 +394,32 @@ class StreamAccountData:
                     log.info (f"from_sqlite_closed {from_sqlite_closed}")
                     log.info (f"combined {combined}")
                     for transaction in transaction_log:
-                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
-                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
+                        instrument_name_log= modified_dict ["instrument_name"]
                         
-                        type_log= modified_dict ["type"]
-                        
-                        label_log= ""
-                        
-                        modified_dict.update({"label": label_log})
-                        
-                        if "trade" in type_log:
-                            tran_id_log= modified_dict ["trade_id"]
+                        if instrument== instrument_name_log:
                             
-                            label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                            log.debug (f"instrument {instrument} instrument_name_log {instrument_name_log}")
                             
-                            log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
-                            log.error (f"transaction {modified_dict}")
+                            modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                             
-                            if label_log !=[]:
-                                modified_dict.update({"label": label_log})
-                        
-                        await insert_tables("transaction_log_json", modified_dict)
+                            type_log= modified_dict ["type"]
+                            
+                            label_log= ""
+                            
+                            modified_dict.update({"label": label_log})
+                            
+                            if "trade" in type_log:
+                                tran_id_log= modified_dict ["trade_id"]
+                                
+                                label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                                
+                                log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
+                                log.error (f"transaction {modified_dict}")
+                                
+                                if label_log !=[]:
+                                    modified_dict.update({"label": label_log})
+                            
+                            await insert_tables("transaction_log_json", modified_dict)
                         
                     log.error (f"t {5/0}")
 
