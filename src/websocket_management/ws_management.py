@@ -294,14 +294,21 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
         if open_orders_from_sub_accounts !=[]:
             for order in open_orders_from_sub_accounts:
                 await insert_tables("orders_all_json", order)
+
+def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, currency, status)
+    data = read_data(path)
+
+    return data
     
 async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
     
     if sub_accounts== [] or sub_accounts is None:
-        sub_accounts = await resupply_sub_accountdb(currency)
+        sub_accounts = reading_from_pkl_data("sub_accounts",currency)
         log.error (f"sub_accounts {sub_accounts}")
-    
-    log.error (f"sub_accounts {sub_accounts} {sub_accounts== [] or sub_accounts is None}")
+
     sub_accounts=sub_accounts[0]
 
     positions= sub_accounts["positions"]
