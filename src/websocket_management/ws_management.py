@@ -319,13 +319,6 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     
 async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
     
-    start_timestamp= 1624305005737
-    transaction_log= await get_transaction_log (currency, start_timestamp, 10)
-    
-    for transaction in transaction_log:
-        log.error (f"transaction {transaction}")
-        
-    log.error (f"t {5/0}")
     if sub_accounts== [] or sub_accounts is None:
         sub_accounts = reading_from_pkl_data("sub_accounts",currency)
 
@@ -415,6 +408,14 @@ async def resupply_sub_accountdb(currency) -> None:
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
 
+    start_timestamp= 1624305005737
+    transaction_log= await get_transaction_log (currency, start_timestamp, 10)
+    
+    for transaction in transaction_log:
+        log.error (f"transaction {transaction}")
+        
+    log.error (f"t {5/0}")
+    
 async def inserting_additional_params(params: dict) -> None:
     """ """
 
