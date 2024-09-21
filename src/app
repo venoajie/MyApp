@@ -113,7 +113,7 @@ async def get_futures_for_active_currencies () -> list:
             modified_dict= {i:transaction [i] for i in transaction if i!=0}
             log.error (f"transaction {+r=} {modified_dict}")
             
-            await insert_tables("transaction_log_json", transaction)
+            await insert_tables("transaction_log_json", modified_dict)
             
         log.error (f"t {5/0}")
 
