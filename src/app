@@ -387,14 +387,14 @@ class StreamAccountData:
                                                                                                             "all", 
                                                                                                             "all", 
                                                                                                             column_list,
-                                                                                                            max_closed_transactions_downloaded_from_sqlite, 
+                                                                                                            1000, 
                                                                                                             "id")    
 
                     combined= from_sqlite_open + from_sqlite_closed
                     for transaction in transaction_log:
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
-                        log.error (f"transaction {modified_dict}")
+                        
                         type_log= modified_dict ["type"]
                         
                         label_log= ""
@@ -404,9 +404,10 @@ class StreamAccountData:
                         if "trade" in type_log:
                             tran_id_log= modified_dict ["trade_id"]
                             
-                            label_log= [o["label"] for o in combined if o["trade_id"]== tran_id_log]
+                            label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
                             
-                            log.error (f"label_log {label_log}")
+                            log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
+                            log.error (f"transaction {modified_dict}")
                             
                             if label_log !=[]:
                                 modified_dict.update({"label": label_log})
