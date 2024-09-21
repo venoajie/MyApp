@@ -317,7 +317,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
 async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
     
     start_timestamp= 1624305005737
-    transaction_log= await get_transaction_log (start_timestamp,10)
+    transaction_log= await get_transaction_log (currency, start_timestamp, 10)
     
     log.debug (f"transac tion_log{transaction_log}")
     
