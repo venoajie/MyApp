@@ -556,7 +556,7 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
 
     additional_params = querying_additional_params()
     
-    #log.info (f"trade {transaction}")
+    log.info (f"trade {transaction}")
 
     params = await executing_query_with_return(additional_params)
     
@@ -569,6 +569,8 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
         transaction.update({"label": label_open})
         
     additional_params_label = [] if params == [] else [o for o in params if label in o["label"]]
+    
+    log.error (f"additional_params_label {additional_params_label}")
     
     if additional_params_label !=[]:
         if "take_profit" not in transaction:
