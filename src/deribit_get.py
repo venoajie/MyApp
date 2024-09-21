@@ -101,7 +101,7 @@ async def main_coinGlass() -> None:
     return response
 
 
-async def get_now_unix() -> None:
+def get_now_unix() -> int:
 
     now_utc = datetime.now()
     
