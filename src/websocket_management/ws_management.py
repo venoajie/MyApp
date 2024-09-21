@@ -179,8 +179,7 @@ async def cancel_by_order_id(open_order_id) -> None:
                                 "=",
                                 open_order_id,
                             )
-            log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
-
+            
     except:
 
         log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
@@ -409,7 +408,7 @@ async def resupply_sub_accountdb(currency) -> None:
     replace_data(my_path_sub_account, sub_accounts)
 
     start_timestamp= 1624305005737
-    transaction_log= await get_transaction_log (currency, start_timestamp, 10)
+    transaction_log= await get_transaction_log (currency, start_timestamp, 1000)
     
     for transaction in transaction_log:
         log.error (f"transaction {transaction}")
