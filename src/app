@@ -358,7 +358,7 @@ class StreamAccountData:
                 from strategies.config_strategies import paramaters_to_balancing_transactions        
                 
                 for instrument in instruments_name:
-                    #log.debug(f"instrument {instrument}")
+                    log.debug(f"instrument {instrument}")
                     
                     await clean_up_closed_transactions (instrument)
 
@@ -391,6 +391,8 @@ class StreamAccountData:
                                                                                                             "id")    
 
                     combined= from_sqlite_open + from_sqlite_closed
+                    log.info (f"from_sqlite_open {from_sqlite_open}")
+                    log.info (f"from_sqlite_closed {from_sqlite_closed}")
                     log.info (f"combined {combined}")
                     for transaction in transaction_log:
                         modified_dict= {i:transaction [i] for i in transaction if i!="info"}
