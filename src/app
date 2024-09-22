@@ -33,11 +33,11 @@ from db_management.sqlite_management import (
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
+    resupply_transaction_log,
     cancel_the_cancellables,
     if_order_is_true,
     if_cancel_is_true,
     compute_notional_value, 
-    get_transaction_log,
     check_db_consistencies_and_clean_up_imbalances,
     procedures_for_unlabelled_orders,
     )
@@ -475,6 +475,7 @@ class StreamAccountData:
                                 await update_user_changes(data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)
+                                await resupply_transaction_log(currency)
                                 await check_db_consistencies_and_clean_up_imbalances(currency)                           
                             
                             TABLE_OHLC1: str = f"ohlc1_{currency_lower}_perp_json"
