@@ -16,7 +16,8 @@ from utilities.system_tools import (
 from loguru import logger as log
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
-    remove_redundant_elements,remove_dict_elements,
+    remove_redundant_elements,
+    remove_dict_elements,
     extract_currency_from_text,
     parsing_label,
     my_trades_open_sqlite_detailing,
@@ -116,15 +117,13 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
 
 
         
-async def resupply_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
+async def resupply_transaction_log(currency: str) -> list:
     """ """
 
-    from utilities.string_modification import remove_redundant_elements              
-
+    log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
+    
     currencies = preferred_spot_currencies()
-    
-    column_list: str="order_id", "trade_id", "label"
-    
+        
     table= "transaction_log_json"
     
     where_filter= "timestampa"
@@ -132,39 +131,74 @@ async def resupply_transaction_log(currency: str, start_timestamp: int, count: i
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
     
     first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
+                    
+    balancing_params=paramaters_to_balancing_transactions()
+
+    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
     for currency in currencies:            
 
-        transaction_log= await get_transaction_log (currency, first_tick_fr_sqlite, 1000)
-                for transaction in transaction_log:
-                    modified_dict= remove_dict_elements{i:transaction [i] for i in transaction if i!="info"}
+        transaction_log= await get_transaction_log (currency, 
+                                                    first_tick_fr_sqlite-1, 
+                                                    max_closed_transactions_downloaded_from_sqlite)
+        
+        log.debug (f"transaction_log {transaction_log}")
+        
+        for transaction in transaction_log:
+                        
+            timestamp_log= modified_dict ["timestamp"]
+            
+            type_log= modified_dict ["type"]
+            
+            log.debug (f"timestamp_log > first_tick_fr_sqlite {timestamp_log > first_tick_fr_sqlite} {timestamp_log} {first_tick_fr_sqlite}")
+            
+            if timestamp_log > first_tick_fr_sqlite:
+                
+                modified_dict= remove_dict_elements(transaction,"info")
+                
+                custom_label= f"custom-{type_log.title()}-{timestamp_log}"
+                
+                if "trade" in type_log:
+                
+                    tran_id_log= modified_dict ["trade_id"]
+
                     instrument_name_log= modified_dict ["instrument_name"]
                     
-                    if instrument== instrument_name_log:
-                        timestamp_log= modified_dict ["timestamp"]
-                        type_log= modified_dict ["type"]
-                        custom_label= f"custom-{type_log.title()}-{timestamp_log}"
-                        if "trade" in type_log:
-                            tran_id_log= modified_dict ["trade_id"]
-                            
-                            label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
-                                                                    
-                            if label_log !=[]:
-                                modified_dict.update({"label": label_log[0]})
-                            
-                            else:
-                                modified_dict.update({"label": custom_label})
-                        
-                        else:
-                            modified_dict.update({"label": custom_label})
-                        
-                        await insert_tables("transaction_log_json", modified_dict)
-                
-        log.error (f"t {5/0}")
+                    column_list: str="label", "trade_id"
+                    
+                    from_sqlite_open= await get_query ("my_trades_all_json", 
+                                                       instrument_name_log, 
+                                                       "all", 
+                                                       "all", 
+                                                       column_list)                                       
 
-    
-    
+                    from_sqlite_closed = await get_query("my_trades_closed_json", 
+                                                         instrument_name_log, 
+                                                         "all", 
+                                                         "all", 
+                                                         column_list,
+                                                         max_closed_transactions_downloaded_from_sqlite, 
+                                                         "id")   
+                    
+                    combined= from_sqlite_open + from_sqlite_closed
+                    
+                    label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                                                            
+                    if label_log !=[]:
+                        modified_dict.update({"label": label_log[0]})
+                    
+                    else:
+                        modified_dict.update({"label": custom_label})
+                
+                else:
+                    modified_dict.update({"label": custom_label})
+                
+                log.debug (f"transaction_log_json {modified_dict}")
+                await insert_tables("transaction_log_json", modified_dict)
+
+    log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
         
+    
 def compute_notional_value(index_price: float, equity: float) -> float:
     """ """
     return index_price * equity
