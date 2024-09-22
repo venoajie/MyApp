@@ -16,7 +16,7 @@ from utilities.system_tools import (
 from loguru import logger as log
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
-    remove_redundant_elements,
+    remove_redundant_elements,remove_dict_elements,
     extract_currency_from_text,
     parsing_label,
     my_trades_open_sqlite_detailing,
@@ -26,7 +26,9 @@ from strategies.config_strategies import preferred_spot_currencies, paramaters_t
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
-    executing_query_based_on_currency_or_instrument_and_strategy
+    querying_arithmetic_operator,
+    executing_query_with_return,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query
 )
 
 from websocket_management.cleaning_up_transactions import (
@@ -113,6 +115,56 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     return result_transaction_log_to_result_logs
 
 
+        
+async def resupply_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
+    """ """
+
+    from utilities.string_modification import remove_redundant_elements              
+
+    currencies = preferred_spot_currencies()
+    
+    column_list: str="order_id", "trade_id", "label"
+    
+    table= "transaction_log_json"
+    
+    where_filter= "timestampa"
+    
+    first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
+    
+    first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
+    
+    for currency in currencies:            
+
+        transaction_log= await get_transaction_log (currency, first_tick_fr_sqlite, 1000)
+                for transaction in transaction_log:
+                    modified_dict= remove_dict_elements{i:transaction [i] for i in transaction if i!="info"}
+                    instrument_name_log= modified_dict ["instrument_name"]
+                    
+                    if instrument== instrument_name_log:
+                        timestamp_log= modified_dict ["timestamp"]
+                        type_log= modified_dict ["type"]
+                        custom_label= f"custom-{type_log.title()}-{timestamp_log}"
+                        if "trade" in type_log:
+                            tran_id_log= modified_dict ["trade_id"]
+                            
+                            label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                                                                    
+                            if label_log !=[]:
+                                modified_dict.update({"label": label_log[0]})
+                            
+                            else:
+                                modified_dict.update({"label": custom_label})
+                        
+                        else:
+                            modified_dict.update({"label": custom_label})
+                        
+                        await insert_tables("transaction_log_json", modified_dict)
+                
+        log.error (f"t {5/0}")
+
+    
+    
+        
 def compute_notional_value(index_price: float, equity: float) -> float:
     """ """
     return index_price * equity
@@ -202,11 +254,11 @@ async def cancel_the_cancellables(filter: str = None) -> None:
     column_list= "label", where_filter
     
     for currency in currencies:
-        open_orders_sqlite: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                                              currency.upper(), 
-                                                                                                              "all",
-                                                                                                              "all",
-                                                                                                              column_list)
+        open_orders_sqlite: list=  await get_query("orders_all_json", 
+                                                    currency.upper(), 
+                                                    "all",
+                                                    "all",
+                                                    column_list)
 
         if open_orders_sqlite != []:
 
@@ -340,14 +392,13 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             
         currency=extract_currency_from_text(instrument_name)
             
-        order_from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+        order_from_sqlite_open= await get_query("orders_all_json", 
                                                     currency, 
                                                     "all", 
                                                     "all", 
                                                     column_list_order)        
                          
-        my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
-            "my_trades_all_json", instrument_name, "all", "all", column_list_trade)
+        my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
                       
         db_consistencies= check_db_consistencies (instrument_name, 
                                                   my_trades_instrument, 

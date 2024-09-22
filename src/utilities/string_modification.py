@@ -136,6 +136,12 @@ def extract_currency_from_text(words: str) -> str:
         return "btc"
 
 
+def remove_dict_elements(original: dict, item_to_remove: str) -> str:
+    """
+    """
+
+    return {i:original [i] for i in original if i!= item_to_remove}
+
 def extract_integers_from_text(words: list) -> int:
     """
     Extracting integers from label text
