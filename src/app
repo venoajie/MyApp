@@ -355,7 +355,8 @@ class StreamAccountData:
                 
                 instruments_name=await get_instruments_name()                    
                 
-                from strategies.config_strategies import paramaters_to_balancing_transactions                   
+                from strategies.config_strategies import paramaters_to_balancing_transactions     
+                from utilities.string_modification import remove_redundant_elements              
 
                 currencies = preferred_spot_currencies()
                 
@@ -365,7 +366,7 @@ class StreamAccountData:
                     r=0
                     transaction_log_instrument_name= [ o["instrument_name"] for o in transaction_log]
                     
-                    transaction_log_instrument_name = remove_duplicated_elements(transaction_log_instrument_name)
+                    transaction_log_instrument_name = remove_redundant_elements(transaction_log_instrument_name)
                     
                     log.info (transaction_log_instrument_name)
                             
