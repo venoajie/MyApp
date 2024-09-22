@@ -369,56 +369,55 @@ class StreamAccountData:
                     transaction_log_instrument_name = remove_redundant_elements(transaction_log_instrument_name)
                     
                     log.info (transaction_log_instrument_name)
-                            
-                    balancing_params=paramaters_to_balancing_transactions()
-                        
-                    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-
-                    column_list: str="order_id", "trade_id", "label"
                     
-                    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
-                                                                                                        instrument, 
-                                                                                                        "all", 
-                                                                                                        "all", 
-                                                                                                        column_list)                                       
-
-                    from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
-                                                                                                            instrument, 
-                                                                                                            "all", 
-                                                                                                            "all", 
-                                                                                                            column_list,
-                                                                                                            1000, 
-                                                                                                            "id")    
-
-                    combined= from_sqlite_open + from_sqlite_closed
-                    log.info (f"from_sqlite_open {from_sqlite_open}")
-                    log.info (f"from_sqlite_closed {from_sqlite_closed}")
-                    log.info (f"combined {combined}")
-                    for transaction in transaction_log:
-                        modified_dict= {i:transaction [i] for i in transaction if i!="info"}
-                        instrument_name_log= modified_dict ["instrument_name"]
+                    for instrument_name in transaction_log_instrument_name:
+                        if instrument_name:
                         
-                        if instrument== instrument_name_log:
+                            column_list: str="order_id", "trade_id", "label"
                             
-                            type_log= modified_dict ["type"]
-                            
-                            label_log= ""
-                            
-                            modified_dict.update({"label": label_log})
-                            
-                            if "trade" in type_log:
-                                tran_id_log= modified_dict ["trade_id"]
+                            from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
+                                                                                                                instrument, 
+                                                                                                                "all", 
+                                                                                                                "all", 
+                                                                                                                column_list)                                       
+
+                            from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
+                                                                                                                    instrument, 
+                                                                                                                    "all", 
+                                                                                                                    "all", 
+                                                                                                                    column_list,
+                                                                                                                    1000, 
+                                                                                                                    "id")    
+
+                            combined= from_sqlite_open + from_sqlite_closed
+                            log.info (f"from_sqlite_open {from_sqlite_open}")
+                            log.info (f"from_sqlite_closed {from_sqlite_closed}")
+                            log.info (f"combined {combined}")
+                            for transaction in transaction_log:
+                                modified_dict= {i:transaction [i] for i in transaction if i!="info"}
+                                instrument_name_log= modified_dict ["instrument_name"]
                                 
-                                label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
-                                
-                                log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
-                                log.error (f"transaction {modified_dict}")
-                                
-                                if label_log !=[]:
+                                if instrument== instrument_name_log:
+                                    
+                                    type_log= modified_dict ["type"]
+                                    
+                                    label_log= ""
+                                    
                                     modified_dict.update({"label": label_log})
+                                    
+                                    if "trade" in type_log:
+                                        tran_id_log= modified_dict ["trade_id"]
+                                        
+                                        label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                                        
+                                        log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
+                                        log.error (f"transaction {modified_dict}")
+                                        
+                                        if label_log !=[]:
+                                            modified_dict.update({"label": label_log})
+                                    
+                                    await insert_tables("transaction_log_json", modified_dict)
                             
-                            await insert_tables("transaction_log_json", modified_dict)
-                        
                     log.error (f"t {5/0}")
 
                 
