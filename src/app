@@ -414,7 +414,7 @@ class StreamAccountData:
                                         log.error (f"transaction {modified_dict}")
                                         
                                         if label_log !=[]:
-                                            modified_dict.update({"label": label_log})
+                                            modified_dict.update({"label": label_log[0]})
                                     
                                     await insert_tables("transaction_log_json", modified_dict)
                             
