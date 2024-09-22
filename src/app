@@ -370,8 +370,8 @@ class StreamAccountData:
                     
                     log.info (transaction_log_instrument_name)
                     
-                    for instrument_name in transaction_log_instrument_name:
-                        if instrument_name:
+                    for instrument in transaction_log_instrument_name:
+                        if instrument:
                         
                             column_list: str="order_id", "trade_id", "label"
                             
