@@ -398,23 +398,22 @@ class StreamAccountData:
                                 instrument_name_log= modified_dict ["instrument_name"]
                                 
                                 if instrument== instrument_name_log:
-                                    
+                                    timestamp_log= modified_dict ["timestamp"]
                                     type_log= modified_dict ["type"]
-                                    
-                                    label_log= ""
-                                    
-                                    modified_dict.update({"label": label_log})
-                                    
+                                    custom_label= f"custom-{type_log.title()}-{timestamp_log}"
                                     if "trade" in type_log:
                                         tran_id_log= modified_dict ["trade_id"]
                                         
                                         label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
-                                        
-                                        log.debug (f"label_log {label_log} tran_id_log {tran_id_log}")
-                                        log.error (f"transaction {modified_dict}")
-                                        
+                                                                                
                                         if label_log !=[]:
                                             modified_dict.update({"label": label_log[0]})
+                                        
+                                        else:
+                                            modified_dict.update({"label": custom_label})
+                                    
+                                    else:
+                                        modified_dict.update({"label": custom_label})
                                     
                                     await insert_tables("transaction_log_json", modified_dict)
                             
