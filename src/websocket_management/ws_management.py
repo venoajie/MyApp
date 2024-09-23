@@ -489,11 +489,11 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                             
-                            await clean_up_closed_futures_because_has_delivered(instrument_name, delivered_transaction)
                             transactions_from_other_side= [ o for o in my_trades_currency if instrument_name not in o["instrument_name"]]
                             for transaction in transactions_from_other_side:
                                 log.error (f"transactions_from_other_side {transaction}")
                             
+                            await clean_up_closed_futures_because_has_delivered(instrument_name, delivered_transaction)
                         
             
             balancing_params=paramaters_to_balancing_transactions()
