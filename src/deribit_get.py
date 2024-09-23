@@ -173,6 +173,20 @@ async def main(
             return response
 
 
+async def get_tickers(connection_url: str, instrument_name: str) -> list:
+    # Set endpoint
+    endpoint: str = f"public/ticker?"
+
+    # Set endpoint
+    params = {
+        "jsonrpc": "2.0",
+        "method": "private/get_subaccounts_details",
+        "id": 9322,
+        "params": {"instrument_name": instrument_name}
+    }
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
+
 def get_subaccounts(currency):
     # Set endpoint
     params = {
@@ -707,14 +721,6 @@ async def get_instruments(connection_url: str, currency):
     params = {}
 
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
-
-async def get_tickers(connection_url: str, instrument_name: str) -> list:
-    # Set endpoint
-    endpoint: str = f"public/ticker?"
-    params = { "instrument_name" : instrument_name}
-
-    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
-
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
