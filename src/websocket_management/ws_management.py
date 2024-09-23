@@ -475,7 +475,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                                     instrument_name, 
                                                     "all", 
                                                     "all", 
-                                                    column_list_order)
+                                                    "standard")
                     log.critical (f"transaction_log_from_sqlite_open {transaction_log_from_sqlite_open}")
                     delivery_timestamp= [o["timestamp"] for o in transaction_log_from_sqlite_open if "delivery" in o["type"] ]
                     delivery_timestamp= [] if delivery_timestamp==[] else max(delivery_timestamp)
