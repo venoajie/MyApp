@@ -415,7 +415,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
     column_list_order: str="order_id", "label"
     
-    my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
+    my_trades_instrument: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
 
     all_outstanding_instruments = [o["instrument_name"] for o in my_trades_instrument]
                       
@@ -428,6 +428,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     for instrument_name in all_outstanding_instruments:
         log.warning (f"instrument_name {instrument_name}")      
         log.warning (f"instrument_name {instrument_name in active_instruments_from_positions}")      
+        
+        my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
         
         currency=extract_currency_from_text(instrument_name)
             
