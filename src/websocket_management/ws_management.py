@@ -14,6 +14,7 @@ from utilities.system_tools import (
     sleep_and_restart
 )
 from loguru import logger as log
+from utilities.number_modification import get_closest_value
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
     remove_redundant_elements,
@@ -36,7 +37,6 @@ from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_futures_because_has_delivered,
     clean_up_closed_transactions)
-from utilities.number_modification import get_closest_value
 
 # from market_understanding import futures_analysis
 from db_management import sqlite_management
@@ -489,11 +489,25 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                             
-                            transactions_from_other_side= [ o for o in my_trades_currency if instrument_name not in o["instrument_name"]]
-                            for transaction in transactions_from_other_side:
-                                log.error (f"transactions_from_other_side {transaction}")
+                        transactions_from_other_side= [ o for o in my_trades_currency \
+                            if instrument_name not in o["instrument_name"]]
+                                                
+                        column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
+                        
+                        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
+                        
+                        for transaction in my_trades_instrument_data:
                             
-                            await clean_up_closed_futures_because_has_delivered(instrument_name, delivered_transaction)
+                            label_int= parsing_label(transaction)["int"]
+                            
+                            transactions_from_other_side= [ o for o in my_trades_currency \
+                            if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
+                            
+                            log.error (f"my_trades_instrument_data {transaction}")
+                            log.error (f"transactions_from_other_side {transactions_from_other_side}")
+                        
+                            
+                            await clean_up_closed_futures_because_has_delivered(instrument_name, transaction, delivered_transaction)
                         
             
             balancing_params=paramaters_to_balancing_transactions()
