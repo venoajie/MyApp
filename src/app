@@ -355,9 +355,9 @@ class StreamAccountData:
                 # refresh databases
                 await get_and_save_currencies()
 
-                currencies = await get_futures_for_active_currencies()
+                currencies_default = preferred_spot_currencies()
                 
-                for currency in currencies:
+                for currency in currencies_default:
                     await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
                 
