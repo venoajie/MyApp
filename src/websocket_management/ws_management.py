@@ -415,14 +415,19 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
     column_list_order: str="order_id", "label"
     
+    my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
+
+    all_outstanding_instruments = [o["instrument_name"] for o in my_trades_instrument]
+                      
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
     
     positions_from_sub_accounts= sub_accounts["positions"]
     
     column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp"
     
-    for instrument_name in active_instruments_from_positions:
+    for instrument_name in all_outstanding_instruments:
         log.warning (f"instrument_name {instrument_name}")      
+        log.warning (f"instrument_name {instrument_name in active_instruments_from_positions}")      
         
         currency=extract_currency_from_text(instrument_name)
             
@@ -432,8 +437,6 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                                     "all", 
                                                     column_list_order)        
                          
-        my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
-                      
         db_consistencies= check_db_consistencies (instrument_name, 
                                                   my_trades_instrument, 
                                                   positions_from_sub_accounts,
@@ -456,7 +459,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             await cancel_the_cancellables()
                                                         
         if not size_is_consistent:
-            log.critical (f"BALANCING-START")
+            log.critical (f"BALANCING TRADE-START")
             
             await cancel_the_cancellables("open")
                 
