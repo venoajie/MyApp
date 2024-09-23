@@ -488,9 +488,9 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         column_data: str="trade_id","timestamp"
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
                         
-                        for transaction_data in my_trades_instrument_data:
-                            transaction= transaction_data["data"]
-                            log.error (f"transaction {transaction_data}")
+                        for transaction in my_trades_instrument_data:
+                            #transaction= transaction_data["data"]
+                            #log.error (f"transaction {transaction_data}")
                             log.error (f"transaction {transaction}")
                             has_closed_label= True
                             trade_id_sqlite= transaction["trade_id"]
