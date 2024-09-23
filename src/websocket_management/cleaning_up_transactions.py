@@ -232,7 +232,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await insert_tables(table, transaction)
             await sleep_and_restart()
 
-async def clean_up_closed_futures_because_has_delivered (instrument_name, price_from_transactin_log) -> None:
+async def clean_up_closed_futures_because_has_delivered (instrument_name, price_from_transactin_log, timestamp_from_transaction_log) -> None:
 
     column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
     my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
@@ -266,9 +266,10 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, price_
         closing_transaction= transaction
         closing_transaction.update({"label":closed_label})
         closing_transaction.update({"amount":(closing_transaction["amount"])*-1})
-        transaction.update({"price":price_from_transactin_log})
-        transaction.update({"trade_id":None})
-        transaction.update({"order_id":None})
+        closing_transaction.update({"price":price_from_transactin_log})
+        closing_transaction.update({"trade_id":None})
+        closing_transaction.update({"order_id":None})
+        closing_transaction.update({"timestamp":timestamp_from_transaction_log})
 
         #await insert_tables("my_trades_closed_json", closing_transaction)
 
