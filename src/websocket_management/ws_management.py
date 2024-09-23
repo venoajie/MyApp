@@ -84,12 +84,8 @@ async def get_private_data(currency: str = None) -> list:
 async def get_tickers_instrument(instrument_name: str) -> list:
     """
     """
-    connection_url: str = "https://www.deribit.com/api/v2/"
-    tickers=  get_tickers (instrument_name)
-    
-    log.info (tickers)
 
-    return tickers["result"]
+    return get_tickers (instrument_name)
 
 
 
