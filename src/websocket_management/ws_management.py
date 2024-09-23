@@ -29,6 +29,7 @@ from db_management.sqlite_management import (
     deleting_row,
     querying_arithmetic_operator,
     executing_query_with_return,
+    update_status_closed_trades,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query
 )
 
@@ -489,8 +490,9 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             transaction= transaction_data["data"]
                             log.error (f"transaction {transaction}")
                             has_closed_label= True
+                            trade_id_sqlite= transaction["trade_id"]
                             
-                            transaction.update({"has_closed_label":has_closed_label})
+                            await update_status_closed_trades(trade_id_sqlite)
                             #await insert_tables("my_trades_all_json", transaction_open)
 
                             timestamp= transaction["timestamp"]
