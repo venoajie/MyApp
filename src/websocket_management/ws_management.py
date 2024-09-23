@@ -485,7 +485,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                         
-                        column_data: str="trade_id", "data"
+                        column_data: str="trade_id"
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
                         
                         for transaction_data in my_trades_instrument_data:
