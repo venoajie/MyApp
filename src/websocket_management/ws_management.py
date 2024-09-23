@@ -418,7 +418,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
     column_list_order: str="order_id", "label"
     
-    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp","trade_id"
+    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp","trade_id","side"
 
     my_trades_currency: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
 
