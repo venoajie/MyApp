@@ -137,7 +137,9 @@ async def resupply_transaction_log(currency: str) -> list:
 
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    for currency in currencies:            
+    for currency in currencies:       
+           
+        log.debug (f"timestamp_log > first_tick_fr_sqlite {timestamp_log > first_tick_fr_sqlite} {timestamp_log} {first_tick_fr_sqlite}")  
 
         transaction_log= await get_transaction_log (currency, 
                                                     first_tick_fr_sqlite-1, 
@@ -151,7 +153,7 @@ async def resupply_transaction_log(currency: str) -> list:
             
             type_log= modified_dict ["type"]
             
-            log.debug (f"timestamp_log > first_tick_fr_sqlite {timestamp_log > first_tick_fr_sqlite} {timestamp_log} {first_tick_fr_sqlite}")
+            
             
             if timestamp_log > first_tick_fr_sqlite:
                 
