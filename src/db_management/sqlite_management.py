@@ -474,7 +474,9 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
     if "transaction_log" in table:
         standard_columns= F"{standard_columns}, trade_id, price, type"
-        table= f"transaction_log_{currency_or_instrument.lower}_json"
+        table= f"transaction_log_{currency_or_instrument.lower()}_json"
+        
+        log.error (f"table transaction_log {table}")
         
     if columns != "standard":
         
