@@ -359,6 +359,7 @@ class StreamAccountData:
                 currencies_default = preferred_spot_currencies()
                 
                 for currency in currencies_default:
+                    """
                     log.debug (f"currency {currency}")
                     first_tick_fr_sqlite= 1720107788642
                     transaction_log= await get_transaction_log (currency, 
@@ -403,13 +404,11 @@ class StreamAccountData:
                         table= f"transaction_log_{currency.lower()}_json"
                         
                         await insert_tables(table, transaction)
-                    #await resupply_transaction_log(currency)
-                    #await resupply_sub_accountdb(currency)
+                    """
+                    await resupply_transaction_log(currency)
+                    await resupply_sub_accountdb(currency)
                     
-                    #await check_db_consistencies_and_clean_up_imbalances(currency) 
-                
-                log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa")
-                await asyncio.sleep(100)   
+                    await check_db_consistencies_and_clean_up_imbalances(currency) 
                 
                 instruments_name=await get_instruments_name()                    
                 
