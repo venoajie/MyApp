@@ -351,7 +351,11 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                currencies = await get_and_save_currencies()
+                
+                # refresh databases
+                await get_and_save_currencies()
+
+                currencies = await get_futures_for_active_currencies()
                 
                 for currency in currencies:
                     await resupply_transaction_log(currency)
