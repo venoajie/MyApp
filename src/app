@@ -351,10 +351,13 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                await get_and_save_currencies()
+                currencies = await get_and_save_currencies()
+                
+                for currency in currencies:
+                    await resupply_transaction_log(currency)
+                    await resupply_sub_accountdb(currency)
                 
                 instruments_name=await get_instruments_name()                    
-                
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
@@ -474,8 +477,8 @@ class StreamAccountData:
                                 
                                 await update_user_changes(data_orders, currency)
 
-                                await resupply_sub_accountdb(currency)
                                 await resupply_transaction_log(currency)
+                                await resupply_sub_accountdb(currency)
                                 await check_db_consistencies_and_clean_up_imbalances(currency)                           
                             
                             TABLE_OHLC1: str = f"ohlc1_{currency_lower}_perp_json"
