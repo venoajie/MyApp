@@ -503,7 +503,10 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             closed_label=f"futureSpread-closed-{timestamp}"
                             transaction.update({"label":closed_label})
                             my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
-                            log.debug (f"my_trades_instrument_data {my_trades_instrument_data}")
+                            
+                            closing_transaction= transaction.update({"label":closed_label})
+                            log.debug (f"closing_transaction {closing_transaction}")
+                            log.debug (5/0)
                             
                             #await insert_tables("my_trades_all_json", transaction)
                 
