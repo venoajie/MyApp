@@ -201,7 +201,7 @@ def get_cancel_order_all():
 
 async def get_tickers(connection_url: str, instrument_name: str) -> list:
     # Set endpoint
-    endpoint: str = f"public/ticker?"
+    endpoint: str = f"public/ticker"
 
     # Set endpoint
     params = {
