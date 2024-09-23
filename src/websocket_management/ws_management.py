@@ -492,7 +492,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             #transaction= transaction_data["data"]
                             #log.error (f"transaction {transaction_data}")
                             log.error (f"transaction {transaction}")
-                            has_closed_label= True
+
                             trade_id_sqlite= transaction["trade_id"]
                             
                             await update_status_closed_trades(trade_id_sqlite)

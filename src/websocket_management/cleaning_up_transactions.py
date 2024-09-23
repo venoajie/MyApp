@@ -374,14 +374,14 @@ def get_closed_open_transactions_under_same_label_int(
 
 
 def check_if_transaction_has_closed_label_before(
-    transactions_all, label_integer
+    transactions_all, trade_id
 ) -> bool:
     """ """
     has_closed_label = (
         [
             o["has_closed_label"]
             for o in transactions_all
-            if label_integer in o["label"] and "open" in o["label"]
+            if trade_id in o["trade_id"] and "open" in o["label"]
         ]
     )[0]
 
