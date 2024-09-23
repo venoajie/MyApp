@@ -350,7 +350,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
 
     my_trades_currency: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
 
-    all_outstanding_instruments = [o["instrument_name"] for o in my_trades_currency]
+    all_outstanding_instruments = remove_redundant_elements([o["instrument_name"] for o in my_trades_currency])
                       
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
     
