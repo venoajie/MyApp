@@ -364,7 +364,7 @@ async def update_status_closed_trades(filter: str, filter_value: int) -> None:
 
     query = f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.{filter}')  LIKE '%{filter_value}';"""
 
-    log.error (f"query {query}")
+    #log.error (f"query {query}")
     try:
 
         async with aiosqlite.connect(

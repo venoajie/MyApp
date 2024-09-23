@@ -505,8 +505,6 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
                             log.debug (f"my_trades_instrument_data {my_trades_instrument_data}")
                             
-                            log.error (5/0)
-                            
                             #await insert_tables("my_trades_all_json", transaction)
                 
             
