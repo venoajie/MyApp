@@ -131,7 +131,9 @@ async def resupply_transaction_log(currency: str) -> list:
     
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
     
-    first_tick_fr_sqlite = await executing_query_with_return(first_tick_query)
+    first_tick_query_result = await executing_query_with_return(first_tick_query)
+    
+    first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
                     
     balancing_params=paramaters_to_balancing_transactions()
 
