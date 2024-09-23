@@ -22,14 +22,15 @@ from utilities.system_tools import (
     raise_error_message,
     catch_error_message)
 from utilities.string_modification import (
-    parsing_label,remove_double_brackets_in_list,
+    remove_double_brackets_in_list,
+    remove_dict_elements,
     extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_closed_trades,
     querying_table,
     executing_general_query_with_single_filter,
-    executing_query_based_on_currency_or_instrument_and_strategy,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -40,6 +41,7 @@ from websocket_management.ws_management import (
     compute_notional_value, 
     check_db_consistencies_and_clean_up_imbalances,
     procedures_for_unlabelled_orders,
+    get_transaction_log
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -358,9 +360,43 @@ class StreamAccountData:
                 
                 for currency in currencies_default:
                     log.debug (f"currency {currency}")
+                    first_tick_fr_sqlite= 1720107788642
+                    transaction_log= await get_transaction_log (currency, 
+                                                first_tick_fr_sqlite-1, 
+                                                1000)
+                    
+                    column_list: str= "trade_id","label"
+                    
+                    from_sqlite_open= await get_query("my_trades_all_json", 
+                                                    currency, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_list)                                       
 
-                    await resupply_transaction_log(currency)
-                    await resupply_sub_accountdb(currency)
+                    from_sqlite_closed = await get_query("my_trades_closed_json", 
+                                                        currency, 
+                                                        "all", 
+                                                        "all", 
+                                                        column_list,
+                                                        300, 
+                                                        "id")    
+                    
+                    combine=from_sqlite_closed + from_sqlite_open
+                    for transaction in transaction_log:
+                        remove_dict_elements(transaction,"info")
+                        trade_id= transaction["trade_id"]
+                        label= [ o for o in combine if o["trade_id"]==trade_id]
+                        if label !=[]:
+                            transaction.update ({"label":label[0]})
+
+                        else:
+                            type= transaction["type"]
+                            timestamp= transaction["timestamp"]
+                            label= f"custom-{type.title()-{timestamp}}"
+                            transaction.update ({"label":label})
+                        log.error (f"transaction {transaction}")
+                    #await resupply_transaction_log(currency)
+                    #await resupply_sub_accountdb(currency)
                     
                     await check_db_consistencies_and_clean_up_imbalances(currency) 
                 
@@ -572,8 +608,7 @@ class StreamAccountData:
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
                                                 
-                                                my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
-                                                    "my_trades_all_json", instrument_ticker, "all", "all", column_list)
+                                                my_trades_instrument: list= await get_query("my_trades_all_json", instrument_ticker, "all", "all", column_list)
 
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                   

@@ -121,14 +121,12 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
 
     result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
     
-    log.debug (f"result_transaction_log {result_transaction_log}")
-
     result_transaction_log_to_result = result_transaction_log["result"]
+    log.debug (f"""result_transaction_log {[] if result_transaction_log_to_result  == []\
+        else result_transaction_log_to_result["logs"]}""")
 
-    result_transaction_log_to_result_logs = [] if result_transaction_log_to_result  == []\
+    return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
-
-    return result_transaction_log_to_result_logs
     
 def compute_notional_value(index_price: float, equity: float) -> float:
     """ """
@@ -506,7 +504,7 @@ async def resupply_transaction_log(currency: str) -> list:
     balancing_params=paramaters_to_balancing_transactions()
 
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-    first_tick_fr_sqlite= 1724504839611
+    
     transaction_log= await get_transaction_log (currency, 
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)
