@@ -124,7 +124,7 @@ async def main(
         "params": params,
     }
     
-    log.error (f"payload {payload}")
+    #log.error (f"payload {payload}")
 
     if "open_interest_history" in endpoint:
 

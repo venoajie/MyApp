@@ -509,7 +509,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
                         
-                        tickers= await get_tickers_instrument(instrument_name)
+                        
                             
                         for transaction in my_trades_instrument_data:
                             
@@ -520,8 +520,11 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
                             
                             for transaction in transactions_from_other_side:
+                                
+                                
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
                                 basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
+                                tickers= await get_tickers_instrument(basic_closing_paramaters["instrument"])
                                 
                                 if basic_closing_paramaters["side"]=="sell":
                                     entry_price=tickers["best_ask_price"]
