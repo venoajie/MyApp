@@ -47,6 +47,7 @@ from strategies.basic_strategy import (
     get_transaction_side,
     check_db_consistencies,
     check_if_id_has_used_before,
+    get_basic_closing_paramaters
     
 )
 
@@ -504,8 +505,10 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             transactions_from_other_side= [ o for o in my_trades_currency \
                             if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
                             
+                            for transaction in transactions_from_other_side:
+                                basic_closing_paramaters= get_basic_closing_paramaters (transaction)    
+                                log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
                             log.error (f"my_trades_instrument_data {transaction}")
-                            log.error (f"transactions_from_other_side {transactions_from_other_side}")
                         
                             
                             await clean_up_closed_futures_because_has_delivered(instrument_name, transaction, delivered_transaction)
