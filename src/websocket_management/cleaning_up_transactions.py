@@ -275,6 +275,8 @@ async def clean_up_closed_futures_because_settlement (instrument_name, price_fro
         log.warning (f"transaction {transaction}")
         log.debug (f"closing_transaction {closing_transaction}")
         
+        print (5/0)
+        
 
 
 async def remove_duplicated_elements () -> None:
