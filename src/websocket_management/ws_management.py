@@ -109,6 +109,7 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     private_data = await get_private_data(currency)
 
     result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
+    log.error (f"result_transaction_log {result_transaction_log}")
     result_transaction_log_to_result = result_transaction_log["result"]
     result_transaction_log_to_result_logs = [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
@@ -126,7 +127,7 @@ async def resupply_transaction_log(currency: str) -> list:
         
     table= "transaction_log_json"
     
-    where_filter= "timestampa"
+    where_filter= "timestamp"
     
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
     
