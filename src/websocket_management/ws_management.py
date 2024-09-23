@@ -85,7 +85,7 @@ async def get_tickers(instrument_name: str) -> list:
     """
     """
     connection_url: str = "https://www.deribit.com/api/v2/"
-    get_ticker= get_tickers (connection_url, instrument_name)
+    get_ticker= await get_tickers (connection_url, instrument_name)
 
     return get_ticker["result"]
 
@@ -518,7 +518,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             for transaction in transactions_from_other_side:
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
                                 basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
-                                tickers= get_tickers(instrument_name)
+                                tickers= await get_tickers(instrument_name)
                                 if basic_closing_paramaters["side"]=="sell":
                                     entry_price=tickers["best_ask_price"]
 
