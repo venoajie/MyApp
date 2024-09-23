@@ -123,6 +123,8 @@ async def main(
         "method": f"{endpoint}",
         "params": params,
     }
+    
+    log.error (f"payload {payload}")
 
     if "open_interest_history" in endpoint:
 
