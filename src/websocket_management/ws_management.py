@@ -85,7 +85,7 @@ async def get_tickers_instrument(instrument_name: str) -> list:
     """
     """
     connection_url: str = "https://www.deribit.com/api/v2/"
-    tickers= await get_tickers (connection_url, instrument_name)
+    tickers=  get_tickers (instrument_name)
     
     log.info (tickers)
 

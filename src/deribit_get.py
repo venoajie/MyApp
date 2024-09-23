@@ -199,9 +199,9 @@ def get_cancel_order_all():
     }
 
 
-async def get_tickers(connection_url: str, instrument_name: str) -> list:
+def get_tickers(instrument_name: str) -> list:
     # Set endpoint
-    return await f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}"
+    return f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}"
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
