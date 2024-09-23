@@ -507,8 +507,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             
                             for transaction in transactions_from_other_side:
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
-                                transaction.update({"instrument":transaction["instrument_name"]})
-                                transaction.update({"entry_price":0})
+                                basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
+                                basic_closing_paramaters.update({"entry_price":0})
                                 #await send_limit_order(basic_closing_paramaters)  
                                 log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
                             log.error (f"my_trades_instrument_data {transaction}")
