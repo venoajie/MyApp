@@ -491,11 +491,13 @@ async def resupply_transaction_log(currency: str) -> list:
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
             
-    table= "transaction_log_json"
+    table= f"transaction_log_{currency.lower()}_json"
     
     where_filter= "timestamp"
     
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
+    
+    log.debug (f"first_tick_query {first_tick_query}")
     
     first_tick_query_result = await executing_query_with_return(first_tick_query)
     
@@ -509,6 +511,7 @@ async def resupply_transaction_log(currency: str) -> list:
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)
             
+    log.debug (f"transaction_log {transaction_log}")
     for transaction in transaction_log:
         
         modified_dict= remove_dict_elements(transaction,"info")
