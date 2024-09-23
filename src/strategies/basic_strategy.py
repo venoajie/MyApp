@@ -312,7 +312,7 @@ def get_transaction_side(transaction: dict) -> str:
     status: open/closed
     """
         
-    log.error (f"transaction{transaction}")
+    #log.error (f"transaction{transaction}")
     
     try:
         #source: from exchange/transaction        

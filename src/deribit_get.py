@@ -709,6 +709,13 @@ async def get_instruments(connection_url: str, currency):
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
 
+async def get_tickers(connection_url: str, instrument_name: str) -> list:
+    # Set endpoint
+    endpoint: str = f"public/get_ticker?"
+    params = { "instrument_name" : instrument_name}
+
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"

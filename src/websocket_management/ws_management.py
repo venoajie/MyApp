@@ -51,7 +51,7 @@ from strategies.basic_strategy import (
     
 )
 
-from deribit_get import GetPrivateData, telegram_bot_sendtext
+from deribit_get import GetPrivateData, telegram_bot_sendtext, get_tickers
 from configuration.config import main_dotenv
 
 ONE_MINUTE: int = 60000
@@ -79,6 +79,16 @@ async def get_private_data(currency: str = None) -> list:
     connection_url: str = "https://www.deribit.com/api/v2/"
 
     return GetPrivateData(connection_url, client_id, client_secret, currency)
+
+
+async def get_tickers(instrument_name: str) -> list:
+    """
+    """
+    connection_url: str = "https://www.deribit.com/api/v2/"
+    get_ticker= get_tickers (connection_url, instrument_name)
+
+    return get_ticker["result"]
+
 
 
 async def get_account_summary(currency) -> list:
@@ -500,7 +510,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         for transaction in my_trades_instrument_data:
                             
                             label_int= parsing_label(transaction["label"])["int"]
-                            log.error (f"label_int {label_int}")
+                            #log.error (f"label_int {label_int}")
                             
                             transactions_from_other_side= [ o for o in my_trades_currency \
                             if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
@@ -508,10 +518,16 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             for transaction in transactions_from_other_side:
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
                                 basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
-                                basic_closing_paramaters.update({"entry_price":0})
+                                tickers= get_tickers(instrument_name)
+                                if basic_closing_paramaters["side"]=="sell":
+                                    entry_price=tickers["best_ask_price"]
+
+                                if basic_closing_paramaters["side"]=="buy":
+                                    entry_price=tickers["best_bid_price"]
+                                basic_closing_paramaters.update({"entry_price":entry_price})
                                 #await send_limit_order(basic_closing_paramaters)  
                                 log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
-                            log.error (f"my_trades_instrument_data {transaction}")
+                            #log.error (f"my_trades_instrument_data {transaction}")
                         
                             
                             await clean_up_closed_futures_because_has_delivered(instrument_name, transaction, delivered_transaction)

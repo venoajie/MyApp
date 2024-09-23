@@ -248,7 +248,7 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, transa
     transaction.update({"trade_id":trade_id_sqlite})
     transaction.update({"order_id":transaction["order_id"]})
 
-    log.warning (f"transaction {transaction}")
+    #log.warning (f"transaction {transaction}")
     #await insert_tables("my_trades_closed_json", transaction)
     
     #await deleting_row("my_trades_all_json",
