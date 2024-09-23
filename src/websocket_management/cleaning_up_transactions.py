@@ -232,7 +232,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await insert_tables(table, transaction)
             await sleep_and_restart()
 
-async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction_log_from_sqlite_open):
+async def clean_up_closed_futures_because_has_delivered (instrument_name, delivered_transaction):
     
     column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
     
@@ -265,7 +265,7 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, transa
         #                trade_id_sqlite,
         #            )
 
-        delivered_transaction= [o for o in transaction_log_from_sqlite_open if instrument_name in o["instrument_name"]][0]
+        delivered_transaction= delivered_transaction[0]
         
         timestamp_from_transaction_log= delivered_transaction["timestamp"] 
 

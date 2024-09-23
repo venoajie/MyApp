@@ -419,9 +419,9 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     
     column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp"
 
-    my_trades_instrument: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
+    my_trades_currency: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
 
-    all_outstanding_instruments = [o["instrument_name"] for o in my_trades_instrument]
+    all_outstanding_instruments = [o["instrument_name"] for o in my_trades_currency]
                       
     open_orders_from_sub_accounts= sub_accounts["open_orders"]
     
@@ -472,21 +472,28 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                 time_stamp= [o["timestamp"] for o in my_trades_instrument]
                 
                 if time_stamp !=[]:
+                    
                     last_time_stamp_sqlite= max(time_stamp)
+                    
                     transaction_log_from_sqlite_open= await get_query("transaction_log_json", 
                                                     instrument_name, 
                                                     "all", 
                                                     "all", 
                                                     "standard")
-                    log.critical (f"transaction_log_from_sqlite_open {transaction_log_from_sqlite_open}")
-                    delivery_timestamp= [o["timestamp"] for o in transaction_log_from_sqlite_open if "delivery" in o["type"] ]
+                    #log.critical (f"transaction_log_from_sqlite_open {transaction_log_from_sqlite_open}")
+                    delivered_transaction= [o for o in transaction_log_from_sqlite_open if "delivery" in o["type"] ]
+                    delivery_timestamp= [o["timestamp"] for o in delivered_transaction ]
                     delivery_timestamp= [] if delivery_timestamp==[] else max(delivery_timestamp)
                     
-                    log.warning (f"delivery_timestamp {delivery_timestamp} last_time_stamp_sqlite {last_time_stamp_sqlite} last_time_stamp_sqlite < delivery_timestamp {last_time_stamp_sqlite < delivery_timestamp}")
+                    #log.warning (f"delivery_timestamp {delivery_timestamp} last_time_stamp_sqlite {last_time_stamp_sqlite} last_time_stamp_sqlite < delivery_timestamp {last_time_stamp_sqlite < delivery_timestamp}")
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                             
-                            await clean_up_closed_futures_because_has_delivered(instrument_name, transaction_log_from_sqlite_open)
+                            await clean_up_closed_futures_because_has_delivered(instrument_name, delivered_transaction)
+                            transactions_from_other_side= [ o for o in my_trades_currency if instrument_name not in o["instrument_name"]]
+                            for transaction in transactions_from_other_side:
+                                log.error (f"transactions_from_other_side {transaction}")
+                            
                         
             
             balancing_params=paramaters_to_balancing_transactions()
