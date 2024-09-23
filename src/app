@@ -360,6 +360,7 @@ class StreamAccountData:
                     await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
                     
+                    log.debug (f"currency {currency}")
                     await check_db_consistencies_and_clean_up_imbalances(currency)    
                 
                 instruments_name=await get_instruments_name()                    
@@ -481,6 +482,8 @@ class StreamAccountData:
                             if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
                                 await update_user_changes(data_orders, currency)
+                                
+                                log.error (f"data_orders {data_orders}")
 
                                 await resupply_transaction_log(currency)
                                 await resupply_sub_accountdb(currency)
