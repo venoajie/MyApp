@@ -69,14 +69,14 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await telegram_bot_sendtext(bot_message, purpose)
 
-async def convert_status_has_closed_label_from_no_to_yes(instrument_name, trade_id) -> None:
+async def convert_status_has_closed_label_from_no_to_yes(instrument_name, filter_trade, trade_id) -> None:
 
     transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
 
     has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
     
     if not has_closed_label or has_closed_label==0:
-        await update_status_closed_trades(trade_id)
+        await update_status_closed_trades(filter_trade, trade_id)
 
 async def current_server_time() -> float:
     """ """
@@ -162,9 +162,9 @@ async def get_and_save_currencies()->None:
 async def manage_trades (trades: dict) -> None:
 
     for trade in trades:
-        
+        filter_trade="trade_id"
         order_id=trade["order_id"]
-        trade_id=trade["trade_id"]
+        trade_id=trade[f"{filter_trade}"]
         
         instrument_name= trade["instrument_name"]
         currency=extract_currency_from_text(instrument_name).upper()
@@ -199,7 +199,7 @@ async def manage_trades (trades: dict) -> None:
                         await get_additional_params_for_open_label (trade, label)
 
                     if "closed" in label:
-                        await convert_status_has_closed_label_from_no_to_yes(instrument_name, trade_id)
+                        await convert_status_has_closed_label_from_no_to_yes(instrument_name, filter_trade, trade_id)
 
                 except:
                     log.critical(f"except trade {trade}")

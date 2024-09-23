@@ -495,7 +495,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
 
                             trade_id_sqlite= transaction["trade_id"]
                             
-                            await update_status_closed_trades(trade_id_sqlite)
+                            await update_status_closed_trades("trade_id", trade_id_sqlite)
                             #await insert_tables("my_trades_all_json", transaction_open)
 
                             timestamp= transaction["timestamp"]
