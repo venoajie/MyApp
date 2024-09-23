@@ -29,12 +29,12 @@ from db_management.sqlite_management import (
     deleting_row,
     querying_arithmetic_operator,
     executing_query_with_return,
-    update_status_closed_trades,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query
 )
 
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
+    clean_up_closed_futures_because_settlement,
     clean_up_closed_transactions)
 from utilities.number_modification import get_closest_value
 
@@ -47,7 +47,7 @@ from strategies.basic_strategy import (
     get_transaction_side,
     check_db_consistencies,
     check_if_id_has_used_before,
-    provide_side_to_close_transaction
+    
 )
 
 from deribit_get import GetPrivateData, telegram_bot_sendtext
@@ -486,37 +486,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                         
-                        column_data: str="trade_id","timestamp","amount","side"
-                        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
+                        await clean_up_closed_futures_because_settlement(instrument_name)
                         
-                        for transaction in my_trades_instrument_data:
-                            #transaction= transaction_data["data"]
-                            #log.error (f"transaction {transaction_data}")
-                            log.error (f"transaction {transaction}")
-
-                            trade_id_sqlite= int(transaction["trade_id"])-2
-                            column_data: str="trade_id","data"
-                            
-                            await update_status_closed_trades("trade_id", trade_id_sqlite)
-                            #await insert_tables("my_trades_all_json", transaction_open)
-
-                            timestamp= transaction["timestamp"]
-                            
-                            closed_label=f"futureSpread-closed-{timestamp}"
-                            transaction.update({"label":closed_label})
-                            my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
-                            
-                            closing_transaction= transaction
-                            closing_transaction.update({"label":closed_label})
-                            closing_transaction.update({"instrument_name":instrument_name})
-                            closing_transaction.update({"amount":closing_transaction["amount"]})
-                            closing_transaction.update({"state":"filled"})
-                            closing_transaction.update({"direction":provide_side_to_close_transaction(transaction)})
-                            log.debug (f"closing_transaction {closing_transaction}")
-                            log.debug (5/0)
-                            
-                            #await insert_tables("my_trades_all_json", transaction)
-                
             
             balancing_params=paramaters_to_balancing_transactions()
             

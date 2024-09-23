@@ -13,13 +13,13 @@ import asyncio
 from loguru import logger as log
 
 from db_management.sqlite_management import (
-    executing_query_based_on_currency_or_instrument_and_strategy,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,
     deleting_row,
     executing_query_with_return,
     querying_arithmetic_operator,
     querying_duplicated_transactions,
-)
+    update_status_closed_trades,)
 
 from strategies.config_strategies import paramaters_to_balancing_transactions
 # user defined formula
@@ -28,6 +28,7 @@ from utilities.system_tools import (
     sleep_and_restart,)
 from utilities.string_modification import (
     get_unique_elements, 
+    remove_dict_elements,
     extract_integers_from_text)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
@@ -35,7 +36,8 @@ from strategies.basic_strategy import (
     get_additional_params_for_futureSpread_transactions,
     get_transaction_label,
     check_db_consistencies,
-    get_label_integer
+    get_label_integer,
+    provide_side_to_close_transaction
 )
 from strategies.config_strategies import max_rows
 
@@ -47,19 +49,20 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange:
     
     column_list: str="order_id", "trade_id"
     
-    from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)                                       
+    from_sqlite_open= await get_query("my_trades_all_json", 
+                                      instrument_name, 
+                                      "all", 
+                                      "all", 
+                                      column_list)                                       
 
-    from_sqlite_closed = await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_closed_json", 
-                                                                                            instrument_name, 
-                                                                                            "all", 
-                                                                                            "all", 
-                                                                                            column_list,
-                                                                                            max_closed_transactions_downloaded_from_sqlite, 
-                                                                                            "id")    
+    from_sqlite_closed = await get_query("my_trades_closed_json", 
+                                         instrument_name, 
+                                         "all", 
+                                         "all", 
+                                         column_list,
+                                         max_closed_transactions_downloaded_from_sqlite, 
+                                         "id")    
+    
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
     #log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
@@ -174,11 +177,11 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
         transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
         instrument_name= transaction[0] ["instrument_name"]
         #column_list: str="order_id", "trade_id"
-        from_sqlite_open= await executing_query_based_on_currency_or_instrument_and_strategy(table, 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         marker_plus)
+        from_sqlite_open= await get_query(table, 
+                                          instrument_name, 
+                                          "all",
+                                          "all",
+                                          marker_plus)
         id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
         
         log.error (f"transaction {instrument_name} {transaction} {tran_id}")
@@ -228,6 +231,39 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                 
             await insert_tables(table, transaction)
             await sleep_and_restart()
+
+async def clean_up_closed_futures_because_settlement (instrument_name) -> None:
+
+    column_data: str="trade_id","timestamp","amount","side"
+    my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
+    
+    for transaction in my_trades_instrument_data:
+        #transaction= transaction_data["data"]
+        #log.error (f"transaction {transaction_data}")
+        log.error (f"transaction {transaction}")
+
+        trade_id_sqlite= int(transaction["trade_id"])-2
+        column_data: str="trade_id","data"
+        
+        await update_status_closed_trades("trade_id", trade_id_sqlite)
+        #await insert_tables("my_trades_all_json", transaction_open)
+
+        timestamp= transaction["timestamp"]
+        
+        closed_label=f"futureSpread-closed-{timestamp}"
+        transaction.update({"label":closed_label})
+        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
+        transaction_cleaned= remove_dict_elements(transaction,"side")
+        closing_transaction= transaction
+        closing_transaction.update({"label":closed_label})
+        closing_transaction.update({"instrument_name":instrument_name})
+        closing_transaction.update({"amount":abs(closing_transaction["amount"])})
+        closing_transaction.update({"state":"filled"})
+        closing_transaction.update({"direction":provide_side_to_close_transaction(transaction)})
+        log.debug (f"closing_transaction {closing_transaction}")
+        log.debug (5/0)
+        
+        #await insert_tables("my_trades_all_json", transaction)
 
 
 async def remove_duplicated_elements () -> None:
@@ -291,7 +327,7 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
         
     column_list: str= "instrument_name","label", "amount", "price","trade_id"
     
-    my_trades_instrument: list= await executing_query_based_on_currency_or_instrument_and_strategy(
+    my_trades_instrument: list= await get_query(
                                                 "my_trades_all_json", instrument_name, "all", "all", column_list)
     
     sum_my_trades_instrument = sum([o["amount"] for o in my_trades_instrument])
@@ -404,7 +440,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
     where_filter = f"order_id"
     column_list: str= "instrument_name","label", "amount", where_filter, "trade_id"
     tabel= "my_trades_all_json"
-    transactions_all: list = await executing_query_based_on_currency_or_instrument_and_strategy(tabel, 
+    transactions_all: list = await get_query(tabel, 
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
@@ -442,7 +478,7 @@ async def clean_up_closed_transactions(instrument_name) -> None:
                 
                 closed_table="my_trades_closed_json"      
                 
-                from_sqlite_closed= await executing_query_based_on_currency_or_instrument_and_strategy(closed_table, 
+                from_sqlite_closed= await get_query(closed_table, 
                                                                                          instrument_name, 
                                                                                          "all", 
                                                                                          "all", 
