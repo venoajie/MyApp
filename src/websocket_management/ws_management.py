@@ -81,13 +81,13 @@ async def get_private_data(currency: str = None) -> list:
     return GetPrivateData(connection_url, client_id, client_secret, currency)
 
 
-async def get_tickers(instrument_name: str) -> list:
+async def get_tickers_instrument(instrument_name: str) -> list:
     """
     """
     connection_url: str = "https://www.deribit.com/api/v2/"
-    get_ticker= await get_tickers (connection_url, instrument_name)
+    tickers= await get_tickers (connection_url, instrument_name)
 
-    return get_ticker["result"]
+    return tickers["result"]
 
 
 
@@ -507,7 +507,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
                         
-                        tickers= await get_tickers(instrument_name)
+                        tickers= await get_tickers_instrument(instrument_name)
                             
                         for transaction in my_trades_instrument_data:
                             
