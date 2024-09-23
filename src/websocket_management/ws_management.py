@@ -356,7 +356,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     
     positions_from_sub_accounts= sub_accounts["positions"]
     
-    
+    log.error (f"all_outstanding_instruments {all_outstanding_instruments}")
     for instrument_name in all_outstanding_instruments:
         log.warning (f"instrument_name {instrument_name}")      
         log.warning (f"instrument_name {instrument_name in active_instruments_from_positions}")      
