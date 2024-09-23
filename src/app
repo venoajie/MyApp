@@ -360,6 +360,8 @@ class StreamAccountData:
                 for currency in currencies_default:
                     await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
+                    
+                    await check_db_consistencies_and_clean_up_imbalances(currency)    
                 
                 instruments_name=await get_instruments_name()                    
                 
