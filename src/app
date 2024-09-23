@@ -383,7 +383,7 @@ class StreamAccountData:
                     
                     combine=from_sqlite_closed + from_sqlite_open
                     for transaction in transaction_log:
-                        remove_dict_elements(transaction,"info")
+                        transaction=remove_dict_elements(transaction,"info")
                         trade_id= transaction["trade_id"]
                         label= [ o for o in combine if o["trade_id"]==trade_id]
                         log.info (f"transaction {transaction}")
@@ -393,10 +393,10 @@ class StreamAccountData:
 
                         else:
                             type_trade= transaction["type"]
-                            log.error (f"type {type}")
+                            log.error (f"type {type_trade}")
                             timestamp= transaction["timestamp"]
                             log.error (f"timestamp {timestamp}")
-                            label= f"custom-{type_trade.title()}-{timestamp})"
+                            label= f"custom{type_trade.title()}-{timestamp})"
                             transaction.update ({"label":label})
                         log.error (f"transaction {transaction}")
                     #await resupply_transaction_log(currency)
