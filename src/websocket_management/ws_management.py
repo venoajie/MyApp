@@ -46,7 +46,8 @@ from strategies.basic_strategy import (
     get_strategy_config_all,
     get_transaction_side,
     check_db_consistencies,
-    check_if_id_has_used_before
+    check_if_id_has_used_before,
+    provide_side_to_close_transaction
 )
 
 from deribit_get import GetPrivateData, telegram_bot_sendtext
@@ -493,7 +494,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             #log.error (f"transaction {transaction_data}")
                             log.error (f"transaction {transaction}")
 
-                            trade_id_sqlite= transaction["trade_id"]
+                            trade_id_sqlite= int(transaction["trade_id"])-2
+                            column_data: str="trade_id","data"
                             
                             await update_status_closed_trades("trade_id", trade_id_sqlite)
                             #await insert_tables("my_trades_all_json", transaction_open)
@@ -506,6 +508,10 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             
                             closing_transaction= transaction
                             closing_transaction.update({"label":closed_label})
+                            closing_transaction.update({"instrument_name":instrument_name})
+                            closing_transaction.update({"amount":closing_transaction["amount"]})
+                            closing_transaction.update({"state":"filled"})
+                            closing_transaction.update({"direction":provide_side_to_close_transaction(transaction)})
                             log.debug (f"closing_transaction {closing_transaction}")
                             log.debug (5/0)
                             
