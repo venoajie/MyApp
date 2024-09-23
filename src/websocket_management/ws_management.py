@@ -357,8 +357,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     positions_from_sub_accounts= sub_accounts["positions"]
     
     for instrument_name in all_outstanding_instruments:
-        log.warning (f"instrument_name {instrument_name}")      
-        log.warning (f"instrument_name {instrument_name in active_instruments_from_positions}")      
+        log.warning (f"instrument_name {instrument_name} {instrument_name in active_instruments_from_positions}")      
         
         my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
         
@@ -376,7 +375,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                                   order_from_sqlite_open,
                                                   open_orders_from_sub_accounts)
 
-        log.debug (f"db_consistencies {db_consistencies}")
+        #log.debug (f"db_consistencies {db_consistencies}")
         order_is_consistent= db_consistencies["order_is_consistent"]
         
         size_is_consistent= db_consistencies["trade_size_is_consistent"]
