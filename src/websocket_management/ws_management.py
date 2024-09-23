@@ -356,7 +356,6 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     
     positions_from_sub_accounts= sub_accounts["positions"]
     
-    log.error (f"all_outstanding_instruments {all_outstanding_instruments}")
     for instrument_name in all_outstanding_instruments:
         log.warning (f"instrument_name {instrument_name}")      
         log.warning (f"instrument_name {instrument_name in active_instruments_from_positions}")      
@@ -494,9 +493,7 @@ async def resupply_transaction_log(currency: str) -> list:
     """ """
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
-    
-    currencies = preferred_spot_currencies()
-        
+            
     table= "transaction_log_json"
     
     where_filter= "timestamp"
@@ -511,61 +508,60 @@ async def resupply_transaction_log(currency: str) -> list:
 
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    for currency in currencies:   
+    
+    transaction_log= await get_transaction_log (currency, 
+                                                first_tick_fr_sqlite-1, 
+                                                max_closed_transactions_downloaded_from_sqlite)
+            
+    for transaction in transaction_log:
         
-        transaction_log= await get_transaction_log (currency, 
-                                                    first_tick_fr_sqlite-1, 
-                                                    max_closed_transactions_downloaded_from_sqlite)
-                
-        for transaction in transaction_log:
+        modified_dict= remove_dict_elements(transaction,"info")
+                    
+        timestamp_log= modified_dict ["timestamp"]
+        
+        type_log= modified_dict ["type"]
+                    
+        if timestamp_log > first_tick_fr_sqlite:
+
+            custom_label= f"custom-{type_log.title()}-{timestamp_log}"
             
-            modified_dict= remove_dict_elements(transaction,"info")
-                        
-            timestamp_log= modified_dict ["timestamp"]
+            if "trade" in type_log:
             
-            type_log= modified_dict ["type"]
-                        
-            if timestamp_log > first_tick_fr_sqlite:
+                tran_id_log= modified_dict ["trade_id"]
 
-                custom_label= f"custom-{type_log.title()}-{timestamp_log}"
+                instrument_name_log= modified_dict ["instrument_name"]
                 
-                if "trade" in type_log:
+                column_list: str="label", "trade_id"
                 
-                    tran_id_log= modified_dict ["trade_id"]
+                from_sqlite_open= await get_query ("my_trades_all_json", 
+                                                    instrument_name_log, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_list)                                       
 
-                    instrument_name_log= modified_dict ["instrument_name"]
-                    
-                    column_list: str="label", "trade_id"
-                    
-                    from_sqlite_open= await get_query ("my_trades_all_json", 
-                                                       instrument_name_log, 
-                                                       "all", 
-                                                       "all", 
-                                                       column_list)                                       
-
-                    from_sqlite_closed = await get_query("my_trades_closed_json", 
-                                                         instrument_name_log, 
-                                                         "all", 
-                                                         "all", 
-                                                         column_list,
-                                                         max_closed_transactions_downloaded_from_sqlite, 
-                                                         "id")   
-                    
-                    combined= from_sqlite_open + from_sqlite_closed
-                    
-                    label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
-                                                            
-                    if label_log !=[]:
-                        modified_dict.update({"label": label_log[0]})
-                    
-                    else:
-                        modified_dict.update({"label": custom_label})
+                from_sqlite_closed = await get_query("my_trades_closed_json", 
+                                                        instrument_name_log, 
+                                                        "all", 
+                                                        "all", 
+                                                        column_list,
+                                                        max_closed_transactions_downloaded_from_sqlite, 
+                                                        "id")   
+                
+                combined= from_sqlite_open + from_sqlite_closed
+                
+                label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
+                                                        
+                if label_log !=[]:
+                    modified_dict.update({"label": label_log[0]})
                 
                 else:
                     modified_dict.update({"label": custom_label})
-                
-                #log.debug (f"transaction_log_json {modified_dict}")
-                await insert_tables("transaction_log_json", modified_dict)
+            
+            else:
+                modified_dict.update({"label": custom_label})
+            
+            #log.debug (f"transaction_log_json {modified_dict}")
+            await insert_tables("transaction_log_json", modified_dict)
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
         
