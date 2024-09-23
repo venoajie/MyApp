@@ -399,10 +399,14 @@ class StreamAccountData:
                             label= f"custom{type_trade.title()}-{timestamp})"
                             transaction.update ({"label":label})
                         log.error (f"transaction {transaction}")
+                        
+                        table= f"transaction_log_{currency.lower()}_json"
+                        
+                        await insert_tables(table, transaction)
                     #await resupply_transaction_log(currency)
                     #await resupply_sub_accountdb(currency)
                     
-                    await check_db_consistencies_and_clean_up_imbalances(currency) 
+                    #await check_db_consistencies_and_clean_up_imbalances(currency) 
                 
                 log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa")
                 await asyncio.sleep(100)   
