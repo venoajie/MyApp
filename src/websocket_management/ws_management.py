@@ -34,7 +34,7 @@ from db_management.sqlite_management import (
 
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
-    clean_up_closed_futures_because_settlement,
+    clean_up_closed_futures_because_has_delivered,
     clean_up_closed_transactions)
 from utilities.number_modification import get_closest_value
 
@@ -486,13 +486,15 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                         
-                        try:
-                            price_from_transactin_log= transaction_log_from_sqlite_open["price"] 
-                        
-                        except:
-                            price_from_transactin_log= transaction_log_from_sqlite_open["index_price"] 
-                        
-                        await clean_up_closed_futures_because_settlement(instrument_name, price_from_transactin_log)
+                        for delivered_transaction in transaction_log_from_sqlite_open:
+                            
+                            try:
+                                price_from_transaction_log= delivered_transaction["price"] 
+                            
+                            except:
+                                price_from_transaction_log= delivered_transaction["index_price"] 
+                            
+                            await clean_up_closed_futures_because_has_delivered(instrument_name, price_from_transaction_log)
                         
             
             balancing_params=paramaters_to_balancing_transactions()
