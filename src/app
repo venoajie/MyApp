@@ -392,11 +392,11 @@ class StreamAccountData:
                             transaction.update ({"label":label[0]})
 
                         else:
-                            type= transaction["type"]
+                            type_trade= transaction["type"]
                             log.error (f"type {type}")
                             timestamp= transaction["timestamp"]
                             log.error (f"timestamp {timestamp}")
-                            label= f"custom-{type.title()-{timestamp}}"
+                            label= f"custom-{type_trade.title()}-{timestamp})"
                             transaction.update ({"label":label})
                         log.error (f"transaction {transaction}")
                     #await resupply_transaction_log(currency)
