@@ -484,10 +484,11 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     log.warning (f"delivery_timestamp {delivery_timestamp} last_time_stamp_sqlite {last_time_stamp_sqlite} last_time_stamp_sqlite < delivery_timestamp {last_time_stamp_sqlite < delivery_timestamp}")
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
-                        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
+                        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", ["trade_id", "data"])
                         
                         for transaction_data in my_trades_instrument_data:
                             transaction= transaction_data["data"]
+                            log.error (f"transaction {transaction_data}")
                             log.error (f"transaction {transaction}")
                             has_closed_label= True
                             trade_id_sqlite= transaction["trade_id"]
