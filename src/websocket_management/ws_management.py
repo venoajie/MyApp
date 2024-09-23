@@ -506,8 +506,7 @@ async def resupply_transaction_log(currency: str) -> list:
     balancing_params=paramaters_to_balancing_transactions()
 
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-    
-    
+    first_tick_fr_sqlite= 1724504839611
     transaction_log= await get_transaction_log (currency, 
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)

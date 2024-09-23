@@ -359,11 +359,13 @@ class StreamAccountData:
                 for currency in currencies_default:
                     log.debug (f"currency {currency}")
 
-                    await resupply_transaction_log("ETH")
+                    await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
                     
                     await check_db_consistencies_and_clean_up_imbalances(currency) 
-                    await asyncio.sleep(1)   
+                
+                log.critical (f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaa")
+                await asyncio.sleep(100)   
                 
                 instruments_name=await get_instruments_name()                    
                 
