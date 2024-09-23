@@ -199,15 +199,15 @@ def get_cancel_order_all():
 
 async def get_tickers(connection_url: str, instrument_name: str) -> list:
     # Set endpoint
+    endpoint: str = f"public/ticker?"
 
     # Set endpoint
     params = {
         "jsonrpc": "2.0",
-        "method": "public/ticker",
         "id": 9342,
         "params": {"instrument_name": instrument_name}
     }
-    return await main(params=params, connection_url=connection_url)
+    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
