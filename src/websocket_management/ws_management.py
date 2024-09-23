@@ -109,8 +109,9 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     private_data = await get_private_data(currency)
 
     result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
-    log.error (f"result_transaction_log {result_transaction_log}")
+
     result_transaction_log_to_result = result_transaction_log["result"]
+
     result_transaction_log_to_result_logs = [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
 
@@ -150,6 +151,8 @@ async def resupply_transaction_log(currency: str) -> list:
         log.debug (f"transaction_log {transaction_log}")
         
         for transaction in transaction_log:
+            
+            modified_dict= remove_dict_elements(transaction,"info")
                         
             timestamp_log= modified_dict ["timestamp"]
             
@@ -158,8 +161,8 @@ async def resupply_transaction_log(currency: str) -> list:
             log.debug (f"timestamp_log > first_tick_fr_sqlite {timestamp_log > first_tick_fr_sqlite} {timestamp_log} {first_tick_fr_sqlite}")
             
             if timestamp_log > first_tick_fr_sqlite:
+
                 
-                modified_dict= remove_dict_elements(transaction,"info")
                 
                 custom_label= f"custom-{type_log.title()}-{timestamp_log}"
                 
