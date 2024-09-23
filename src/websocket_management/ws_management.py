@@ -407,7 +407,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                                     "all", 
                                                     "all", 
                                                     "standard")
-                    #log.critical (f"transaction_log_from_sqlite_open {transaction_log_from_sqlite_open}")
+                    log.critical (f"transaction_log_from_sqlite_open {transaction_log_from_sqlite_open}")
                     delivered_transaction= [o for o in transaction_log_from_sqlite_open if "delivery" in o["type"] ]
                     delivery_timestamp= [o["timestamp"] for o in delivered_transaction ]
                     delivery_timestamp= [] if delivery_timestamp==[] else max(delivery_timestamp)
@@ -559,7 +559,8 @@ async def resupply_transaction_log(currency: str) -> list:
                 modified_dict.update({"label": custom_label})
             
             #log.debug (f"transaction_log_json {modified_dict}")
-            await insert_tables("transaction_log_json", modified_dict)
+            table= f"transaction_log_{currency.lower()}_json"
+            await insert_tables(table, modified_dict)
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
         
