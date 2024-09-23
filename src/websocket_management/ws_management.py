@@ -498,7 +498,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         
                         for transaction in my_trades_instrument_data:
                             
-                            label_int= parsing_label(transaction)["int"]
+                            label_int= parsing_label(transaction["label"])["int"]
+                            log.error (f"label_int {label_int}")
                             
                             transactions_from_other_side= [ o for o in my_trades_currency \
                             if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
