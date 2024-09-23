@@ -122,8 +122,7 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
     
     result_transaction_log_to_result = result_transaction_log["result"]
-    log.debug (f"""result_transaction_log {[] if result_transaction_log_to_result  == []\
-        else result_transaction_log_to_result["logs"]}""")
+    log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
 
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
