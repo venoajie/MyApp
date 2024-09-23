@@ -142,14 +142,10 @@ async def resupply_transaction_log(currency: str) -> list:
     
     for currency in currencies:   
         
-        log.debug (f"first_tick_fr_sqlite {first_tick_fr_sqlite}")         
-
         transaction_log= await get_transaction_log (currency, 
                                                     first_tick_fr_sqlite-1, 
                                                     max_closed_transactions_downloaded_from_sqlite)
-        
-        log.debug (f"transaction_log {transaction_log}")
-        
+                
         for transaction in transaction_log:
             
             modified_dict= remove_dict_elements(transaction,"info")
@@ -157,13 +153,9 @@ async def resupply_transaction_log(currency: str) -> list:
             timestamp_log= modified_dict ["timestamp"]
             
             type_log= modified_dict ["type"]
-            
-            log.debug (f"timestamp_log > first_tick_fr_sqlite {timestamp_log > first_tick_fr_sqlite} {timestamp_log} {first_tick_fr_sqlite}")
-            
+                        
             if timestamp_log > first_tick_fr_sqlite:
 
-                
-                
                 custom_label= f"custom-{type_log.title()}-{timestamp_log}"
                 
                 if "trade" in type_log:
@@ -201,7 +193,7 @@ async def resupply_transaction_log(currency: str) -> list:
                 else:
                     modified_dict.update({"label": custom_label})
                 
-                log.debug (f"transaction_log_json {modified_dict}")
+                #log.debug (f"transaction_log_json {modified_dict}")
                 await insert_tables("transaction_log_json", modified_dict)
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
