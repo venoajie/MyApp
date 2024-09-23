@@ -486,7 +486,13 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                         
-                        await clean_up_closed_futures_because_settlement(instrument_name)
+                        try:
+                            price_from_transactin_log= transaction_log_from_sqlite_open["price"] 
+                        
+                        except:
+                            price_from_transactin_log= transaction_log_from_sqlite_open["index_price"] 
+                        
+                        await clean_up_closed_futures_because_settlement(instrument_name, price_from_transactin_log)
                         
             
             balancing_params=paramaters_to_balancing_transactions()

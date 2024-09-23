@@ -232,38 +232,49 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await insert_tables(table, transaction)
             await sleep_and_restart()
 
-async def clean_up_closed_futures_because_settlement (instrument_name) -> None:
+async def clean_up_closed_futures_because_settlement (instrument_name, price_from_transactin_log) -> None:
 
-    column_data: str="trade_id","timestamp","amount","side"
+    column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
     my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
     
     for transaction in my_trades_instrument_data:
-        #transaction= transaction_data["data"]
-        #log.error (f"transaction {transaction_data}")
-        log.error (f"transaction {transaction}")
-
-        trade_id_sqlite= int(transaction["trade_id"])-2
+        
+        trade_id_sqlite= int(transaction["trade_id"])
         column_data: str="trade_id","data"
         
-        await update_status_closed_trades("trade_id", trade_id_sqlite)
-        #await insert_tables("my_trades_all_json", transaction_open)
-
         timestamp= transaction["timestamp"]
         
         closed_label=f"futureSpread-closed-{timestamp}"
-        transaction.update({"label":closed_label})
-        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
-        transaction_cleaned= remove_dict_elements(transaction,"side")
+        
+        transaction.update({"instrument_name":instrument_name})
+        transaction.update({"timestamp":timestamp})
+        transaction.update({"price":transaction["price"]})
+        transaction.update({"amount":transaction["amount"]})
+        transaction.update({"label":transaction["label"]})
+        transaction.update({"trade_id":trade_id_sqlite})
+        transaction.update({"order_id":transaction["order_id"]})
+
+        #await insert_tables("my_trades_closed_json", transaction)
+        
+        #await deleting_row("my_trades_all_json",
+        #                "databases/trading.sqlite3",
+        #                "trade_id",
+        #                "=",
+        #                trade_id_sqlite,
+        #            )
+
         closing_transaction= transaction
         closing_transaction.update({"label":closed_label})
-        closing_transaction.update({"instrument_name":instrument_name})
-        closing_transaction.update({"amount":abs(closing_transaction["amount"])})
-        closing_transaction.update({"state":"filled"})
-        closing_transaction.update({"direction":provide_side_to_close_transaction(transaction)})
+        closing_transaction.update({"amount":(closing_transaction["amount"])*-1})
+        transaction.update({"price":price_from_transactin_log})
+        transaction.update({"trade_id":None})
+        transaction.update({"order_id":None})
+
+        #await insert_tables("my_trades_closed_json", closing_transaction)
+
+        log.warning (f"transaction {transaction}")
         log.debug (f"closing_transaction {closing_transaction}")
-        log.debug (5/0)
         
-        #await insert_tables("my_trades_all_json", transaction)
 
 
 async def remove_duplicated_elements () -> None:
