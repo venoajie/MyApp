@@ -490,7 +490,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             log.error (f"transaction {transaction}")
                             has_closed_label= True
                             
-                            transaction_open= transaction.update({"has_closed_label":has_closed_label})
+                            transaction.update({"has_closed_label":has_closed_label})
                             #await insert_tables("my_trades_all_json", transaction_open)
 
                             timestamp= transaction["timestamp"]
