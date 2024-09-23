@@ -504,7 +504,8 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             transaction.update({"label":closed_label})
                             my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
                             
-                            closing_transaction= transaction.update({"label":closed_label})
+                            closing_transaction= transaction
+                            closing_transaction.update({"label":closed_label})
                             log.debug (f"closing_transaction {closing_transaction}")
                             log.debug (5/0)
                             

@@ -5,7 +5,8 @@ transaction= {"liquidity":"M","risk_reducing":False,"order_type":"limit","combo_
               "direction":"sell","amount":10.0,"price":60163.5,"state":"filled","timestamp":1726583974512,
               "label":"futureSpread-open-1726583974512","take_profit":0,"has_closed_label":False}
 
-has_closed_label= True
+has_closed_label= False
+closing_transaction= transaction 
+closing_transaction.update({"label":has_closed_label})
 
-transaction.update({"has_closed_label":has_closed_label})
-print (transaction)
+print (closing_transaction)
