@@ -423,6 +423,9 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     
     for instrument_name in active_instruments_from_positions:
         log.warning (f"instrument_name {instrument_name}")      
+        
+        if "PERPETUAL" not in instrument_name:
+            pass
             
         currency=extract_currency_from_text(instrument_name)
             
