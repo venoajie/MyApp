@@ -475,7 +475,12 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         standard_columns= F"{standard_columns}, trade_id, type"
         
     if columns != "standard":
-        standard_columns= (','.join(str(f"""{i}{("_dir as amount") if i=="amount" else ""}""") for i in columns))
+        
+        if "data" in columns:
+            standard_columns= f"data"
+            
+        else:
+            standard_columns= (','.join(str(f"""{i}{("_dir as amount") if i=="amount" else ""}""") for i in columns))
         
     where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%')"
 
