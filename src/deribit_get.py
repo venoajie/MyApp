@@ -201,7 +201,8 @@ def get_cancel_order_all():
 
 def get_tickers(instrument_name: str) -> list:
     # Set endpoint
-    return f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}"
+    import requests, json
+    return requests.get(f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}").json()["result"] 
 
 @dataclass(unsafe_hash=True, slots=True)
 class GetPrivateData:
