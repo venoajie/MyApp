@@ -232,11 +232,12 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
             await insert_tables(table, transaction)
             await sleep_and_restart()
 
-async def clean_up_closed_futures_because_has_delivered (instrument_name, price_from_transactin_log, timestamp_from_transaction_log) -> None:
-
-    column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
-    my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
+async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction_log_from_sqlite_open):
     
+    column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
+    
+    my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
+
     for transaction in my_trades_instrument_data:
         
         trade_id_sqlite= int(transaction["trade_id"])
@@ -264,10 +265,20 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, price_
         #                trade_id_sqlite,
         #            )
 
+        delivered_transaction= [o for o in transaction_log_from_sqlite_open if instrument_name in o["instrument_name"]][0]
+        
+        timestamp_from_transaction_log= delivered_transaction["timestamp"] 
+
+        try:
+            price_from_transaction_log= delivered_transaction["price"] 
+        
+        except:
+            price_from_transaction_log= delivered_transaction["index_price"] 
+            
         closing_transaction= transaction
         closing_transaction.update({"label":closed_label})
         closing_transaction.update({"amount":(closing_transaction["amount"])*-1})
-        closing_transaction.update({"price":price_from_transactin_log})
+        closing_transaction.update({"price":price_from_transaction_log})
         closing_transaction.update({"trade_id":None})
         closing_transaction.update({"order_id":None})
         closing_transaction.update({"timestamp":timestamp_from_transaction_log})
@@ -277,7 +288,6 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, price_
         log.debug (f"closing_transaction {closing_transaction}")
         
         print (5/0)
-        
 
 
 async def remove_duplicated_elements () -> None:
