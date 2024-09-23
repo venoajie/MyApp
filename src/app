@@ -386,12 +386,16 @@ class StreamAccountData:
                         remove_dict_elements(transaction,"info")
                         trade_id= transaction["trade_id"]
                         label= [ o for o in combine if o["trade_id"]==trade_id]
+                        log.info (f"transaction {transaction}")
+                        log.error (f"label {label}")
                         if label !=[]:
                             transaction.update ({"label":label[0]})
 
                         else:
                             type= transaction["type"]
+                            log.error (f"type {type}")
                             timestamp= transaction["timestamp"]
+                            log.error (f"timestamp {timestamp}")
                             label= f"custom-{type.title()-{timestamp}}"
                             transaction.update ({"label":label})
                         log.error (f"transaction {transaction}")
