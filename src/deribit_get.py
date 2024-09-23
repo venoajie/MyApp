@@ -203,8 +203,6 @@ async def get_tickers(connection_url: str, instrument_name: str) -> list:
 
     # Set endpoint
     params = {
-        "jsonrpc": "2.0",
-        "id": 9342,
         "instrument_name": instrument_name
     }
     return await main(endpoint=endpoint, params=params, connection_url=connection_url)
