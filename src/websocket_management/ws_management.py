@@ -433,6 +433,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             
                             for transaction in transactions_from_other_side:
                                 
+                                log.debug (f"transaction {transaction}")                
                                 
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
                                 basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})

@@ -232,7 +232,13 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
 
 async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction, delivered_transaction):
     
-    trade_id_sqlite= int(transaction["trade_id"])
+    log.warning (f"instrument_name {instrument_name}")
+    log.warning (f"transaction {transaction}")
+    try:
+        trade_id_sqlite= int(transaction["trade_id"])
+    
+    except:
+        trade_id_sqlite= (transaction["trade_id"])
     
     timestamp= transaction["timestamp"]
     
