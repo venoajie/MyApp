@@ -223,8 +223,6 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                     label=None
                     await get_additional_params_for_open_label(transaction, label)
             
-            
-
             if "open" in label:
                 await get_additional_params_for_open_label(transaction, label)
                 
@@ -249,14 +247,14 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, transa
     transaction.update({"order_id":transaction["order_id"]})
 
     #log.warning (f"transaction {transaction}")
-    #await insert_tables("my_trades_closed_json", transaction)
+    await insert_tables("my_trades_closed_json", transaction)
     
-    #await deleting_row("my_trades_all_json",
-    #                "databases/trading.sqlite3",
-    #                "trade_id",
-    #                "=",
-    #                trade_id_sqlite,
-    #            )
+    await deleting_row("my_trades_all_json",
+                    "databases/trading.sqlite3",
+                    "trade_id",
+                    "=",
+                    trade_id_sqlite,
+                )
 
     delivered_transaction= delivered_transaction[0]
     
@@ -276,11 +274,7 @@ async def clean_up_closed_futures_because_has_delivered (instrument_name, transa
     closing_transaction.update({"order_id":None})
     closing_transaction.update({"timestamp":timestamp_from_transaction_log})
 
-    #await insert_tables("my_trades_closed_json", closing_transaction)
-
-    log.debug (f"closing_transaction {closing_transaction}")
-    
-    print (5/0)
+    await insert_tables("my_trades_closed_json", closing_transaction)
 
 
 async def remove_duplicated_elements () -> None:

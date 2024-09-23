@@ -528,7 +528,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                 if basic_closing_paramaters["side"]=="buy":
                                     entry_price=tickers["best_bid_price"]
                                 basic_closing_paramaters.update({"entry_price":entry_price})
-                                #await send_limit_order(basic_closing_paramaters)  
+                                await send_limit_order(basic_closing_paramaters)  
                                 log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
                             #log.error (f"my_trades_instrument_data {transaction}")
                         
