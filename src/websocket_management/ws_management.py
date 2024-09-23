@@ -485,14 +485,14 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
                         
-                        for transaction in my_trades_instrument_data:
+                        for transaction_data in my_trades_instrument_data:
+                            transaction= transaction_data["data"]
                             log.error (f"transaction {transaction}")
                             has_closed_label= True
                             
                             transaction_open= transaction.update({"has_closed_label":has_closed_label})
                             #await insert_tables("my_trades_all_json", transaction_open)
 
-                            timestamp= transaction["timestamp"]
                             timestamp= transaction["timestamp"]
                             
                             closed_label=f"futureSpread-closed-{timestamp}"
