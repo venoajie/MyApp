@@ -419,14 +419,11 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     
     positions_from_sub_accounts= sub_accounts["positions"]
     
-    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label"
+    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp"
     
     for instrument_name in active_instruments_from_positions:
         log.warning (f"instrument_name {instrument_name}")      
         
-        if "PERPETUAL" not in instrument_name:
-            pass
-            
         currency=extract_currency_from_text(instrument_name)
             
         order_from_sqlite_open= await get_query("orders_all_json", 
@@ -462,6 +459,41 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             log.critical (f"BALANCING-START")
             
             await cancel_the_cancellables("open")
+                
+            if "PERPETUAL" not in instrument_name:
+                time_stamp= [o["timestamp"] for o in my_trades_instrument]
+                
+                if time_stamp !=[]:
+                    last_time_stamp_sqlite= max(time_stamp)
+                    transaction_log_from_sqlite_open= await get_query("transaction_log_json", 
+                                                    instrument_name, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_list_order)
+                    delivery_timestamp= [o["timestamp"] for o in transaction_log_from_sqlite_open if o["type"] == "delivery"]
+                    delivery_timestamp= [] if delivery_timestamp==[] else max(delivery_timestamp)
+                    
+                    log.warning (f"delivery_timestamp {delivery_timestamp} last_time_stamp_sqlite {last_time_stamp_sqlite} last_time_stamp_sqlite < delivery_timestamp {last_time_stamp_sqlite < delivery_timestamp}")
+                    
+                    if delivery_timestamp !=[] and last_time_stamp_sqlite < delivery_timestamp:
+                        my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", "data")
+                        
+                        for transaction in my_trades_instrument_data:
+                            log.error (f"transaction {transaction}")
+                            has_closed_label= True
+                            
+                            transaction_open= transaction.update({"has_closed_label":has_closed_label})
+                            #await insert_tables("my_trades_all_json", transaction_open)
+
+                            timestamp= transaction["timestamp"]
+                            timestamp= transaction["timestamp"]
+                            
+                            closed_label=f"futureSpread-closed-{timestamp}"
+                            transaction.update({"label":closed_label})
+                            log.debug (f"transaction {transaction}")
+                            
+                            #await insert_tables("my_trades_all_json", transaction)
+                
             
             balancing_params=paramaters_to_balancing_transactions()
             
