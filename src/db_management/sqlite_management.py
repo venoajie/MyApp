@@ -6,7 +6,7 @@ import asyncio
 import aiosqlite
 from loguru import logger as log
 import json
-
+from utilities.string_modification import extract_currency_from_text
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -478,7 +478,7 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
         if "transaction_log_json" in table:
         
-            table= f"transaction_log_{currency_or_instrument.lower()}_json"
+            table= f"transaction_log_{extract_currency_from_text(currency_or_instrument)}_json"
         
         log.error (f"table transaction_log {table}")
         
