@@ -48,7 +48,7 @@ from strategies.basic_strategy import (
     check_db_consistencies,
     check_if_id_has_used_before,
     get_basic_closing_paramaters,
-    are_size_and_order_appropriate_for_ordering
+    are_size_and_order_appropriate_to_reduce_position
     
 )
 
@@ -343,7 +343,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
 
     active_instruments_from_positions = [o["instrument_name"] for o in positions]
                     
-    column_list_order: str="order_id", "label"
+    column_list_order: str="order_id", "label","amount"
     
     column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp","trade_id","side","order_id"
 
@@ -421,8 +421,6 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                         column_data: str="trade_id","timestamp","amount","price","label","amount","order_id"
                         
                         my_trades_instrument_data: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_data)
-                        
-                        
                             
                         for transaction in my_trades_instrument_data:
                             
@@ -431,6 +429,13 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                             
                             transactions_from_other_side= [ o for o in my_trades_currency \
                             if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
+                            
+                            orders_from_other_side= [ o["amount"] for o in order_from_sqlite_open \
+                            if instrument_name not in o["instrument_name"] and label_int in o["label"] ]
+                            
+                            orders_from_other_side= 0 if orders_from_other_side == [] else sum(orders_from_other_side)
+                            
+                            sum_transactions_from_other_side= sum([o["amount"] for o in transactions_from_other_side])
                             
                             for transaction in transactions_from_other_side:
                                 
@@ -450,8 +455,17 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                 basic_closing_paramaters.update({"size":abs(basic_closing_paramaters["size"])})
                                 
                                 log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
-                                size_and_order_appropriate = are_size_and_order_appropriate_for_ordering
-                                await send_limit_order(basic_closing_paramaters)  
+                                log.error (f"sum_transactions_from_other_side {sum_transactions_from_other_side}")
+                                log.error (f"orders_from_other_side {orders_from_other_side}")
+                                log.error (basic_closing_paramaters["size"])
+                                size_and_order_appropriate = are_size_and_order_appropriate_to_reduce_position(sum_transactions_from_other_side,
+                                                                                                               orders_from_other_side,
+                                                                                                               basic_closing_paramaters["size"])
+                                
+                                
+                                log.error (f"size_and_order_appropriate {size_and_order_appropriate}")
+                                if False and  size_and_order_appropriate:
+                                    await send_limit_order(basic_closing_paramaters)  
                                 
                             #log.error (f"my_trades_instrument_data {transaction}")
                         

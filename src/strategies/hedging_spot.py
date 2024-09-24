@@ -17,7 +17,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     size_rounding,
     is_everything_consistent,
-    are_size_and_order_appropriate_for_ordering
+    are_size_and_order_appropriate_to_add_position
 )
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy
@@ -222,7 +222,7 @@ class HedgingSpot(BasicStrategy):
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
         
         size_and_order_appropriate_for_ordering: bool = (
-            are_size_and_order_appropriate_for_ordering(
+            are_size_and_order_appropriate_to_add_position(
                 sum_my_trades, sum_orders, size, notional
             )
         )
