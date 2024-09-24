@@ -95,6 +95,32 @@ async def get_vwap(ohlc_all, vwap_period) -> dict:
     )
 
 
+def positions_and_orders(current_size: int, current_orders: int) -> int:
+    """ """
+
+    return current_size + current_orders
+
+def proforma_size(
+    current_size: int, current_orders: int, next_orders: int
+) -> int:
+    """ """
+
+    return (
+        positions_and_orders(current_size, current_orders) - next_orders #the sign is +
+    )
+
+def are_size_and_order_appropriate_for_ordering(
+    current_size_or_open_position: float, current_orders: int, next_orders: int, 
+    notional: float= None) -> bool:
+    """ """
+    
+    proforma  = proforma_size(current_size_or_open_position, current_orders, next_orders) 
+    #log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} notional  {notional} (proforma) < abs(notional)   {abs(proforma) < (notional) }")
+    
+    if notional  not None:abs(proforma) < (notional) 
+    return abs(proforma) < (notional) 
+
+
 def size_rounding(instrument_name: str, proposed_size: float) -> int:
     """ """
 

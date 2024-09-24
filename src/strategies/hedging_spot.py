@@ -16,7 +16,8 @@ from strategies.basic_strategy import (
     get_max_time_stamp,
     check_if_id_has_used_before,
     size_rounding,
-    is_everything_consistent
+    is_everything_consistent,
+    are_size_and_order_appropriate_for_ordering
 )
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy
@@ -42,29 +43,6 @@ def determine_size(instrument_name: str, notional: float, factor: float) -> int:
     proposed_size= max(1, int(notional * factor))
     
     return size_rounding(instrument_name, proposed_size)
-
-def positions_and_orders(current_size: int, current_orders: int) -> int:
-    """ """
-
-    return current_size + current_orders
-
-def proforma_size(
-    current_size: int, current_orders: int, next_orders: int
-) -> int:
-    """ """
-
-    return (
-        positions_and_orders(current_size, current_orders) - next_orders #the sign is +
-    )
-
-def are_size_and_order_appropriate_for_ordering(
-    notional: float, current_size: float, current_orders: int, next_orders: int) -> bool:
-    """ """
-    
-    proforma  = proforma_size(current_size, current_orders, next_orders) 
-    #log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} notional  {notional} (proforma) < abs(notional)   {abs(proforma) < (notional) }")
-    
-    return abs(proforma) < (notional) 
 
 def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> float:
     """
@@ -245,7 +223,7 @@ class HedgingSpot(BasicStrategy):
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_for_ordering(
-                notional, sum_my_trades, sum_orders, size
+                sum_my_trades, sum_orders, size, notional
             )
         )
 

@@ -47,7 +47,8 @@ from strategies.basic_strategy import (
     get_transaction_side,
     check_db_consistencies,
     check_if_id_has_used_before,
-    get_basic_closing_paramaters
+    get_basic_closing_paramaters,
+    are_size_and_order_appropriate_for_ordering
     
 )
 
@@ -449,6 +450,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                 basic_closing_paramaters.update({"size":abs(basic_closing_paramaters["size"])})
                                 
                                 log.error (f"basic_closing_paramaters {basic_closing_paramaters}")
+                                size_and_order_appropriate = are_size_and_order_appropriate_for_ordering
                                 await send_limit_order(basic_closing_paramaters)  
                                 
                             #log.error (f"my_trades_instrument_data {transaction}")
