@@ -83,10 +83,9 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     try:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
-                
-                if "toml" in config_path:
-                    read= tomli.load(handle)
-                    return read ["tradeable"]
+                read= tomli.load(handle)
+                log.error (f"{read}")
+                return read ["tradeable"]
     except:
         return []
 
