@@ -352,8 +352,6 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     my_path_instruments = provide_path_for_file(
         "instruments", currency
     )
-    
-    log.error (f"my_path_instruments {my_path_instruments}")
 
     instruments_raw = read_data(my_path_instruments)
     instruments = instruments_raw[0]["result"]

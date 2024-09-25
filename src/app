@@ -81,8 +81,6 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     """ """
     config_path = provide_path_for_file (file_name)
     
-    log.error (f"config_path {config_path}")
-
     try:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
@@ -627,7 +625,6 @@ class StreamAccountData:
                                                     #log.critical (f"index_price {index_price}")
                                                     
                                                 # get portfolio data  
-                                                log.error (f"currency {currency}")                                              
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
