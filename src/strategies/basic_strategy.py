@@ -362,7 +362,7 @@ def get_instruments_kind(currency: str, kind: str= "all") -> list:
     """ 
     
     my_path_instruments = provide_path_for_file(
-        f"{currency}-instruments.pkl", currency
+        f"{currency.lower()}-instruments.pkl", currency
     )
     
     log.error (f"my_path_instruments {my_path_instruments}")
