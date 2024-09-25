@@ -425,7 +425,7 @@ class StreamAccountData:
                     await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
                     
-                    await check_db_consistencies_and_clean_up_imbalances(currency) 
+                    #await check_db_consistencies_and_clean_up_imbalances(currency) 
                 
                 
                 for instrument in instruments_name:
