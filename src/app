@@ -379,6 +379,8 @@ class StreamAccountData:
                 await get_and_save_currencies()
 
                 currencies_default = preferred_spot_currencies()
+
+                instruments_name=await get_instruments_name()                    
                 
                 for currency in currencies_default:
                     """
@@ -432,7 +434,6 @@ class StreamAccountData:
                     
                     await check_db_consistencies_and_clean_up_imbalances(currency) 
                 
-                instruments_name=await get_instruments_name()                    
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
