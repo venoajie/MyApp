@@ -374,7 +374,8 @@ class StreamAccountData:
                 currencies_default = get_trading_config() ["spot"]
 
                 instruments_name=await get_instruments_name()                    
-                
+            
+                strategy_label= hedging_spot_attributes()[0]["strategy"]        
                 for currency in currencies_default:
                     """
                     log.debug (f"currency {currency}")
@@ -604,8 +605,7 @@ class StreamAccountData:
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
                                             
                                             TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
-                                                                                                        
-                                            strategy_label= hedging_spot_attributes()[0]["strategy"]
+                                                                                                    
                                             
                                             ticker= reading_from_pkl_data("ticker",instrument_ticker)
                                             
