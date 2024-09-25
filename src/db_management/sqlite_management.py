@@ -352,17 +352,17 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
     return f"SELECT * from {table} where not (label LIKE '%value1%' or label LIKE '%value2%' or label LIKE'%value3%');"
 
 
-async def update_status_closed_trades(filter: str, filter_value: int) -> None:
+async def update_status_data(table: str, data_column: str, filter: str, filter_value: int, new_value) -> None:
     """
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
     https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
     """
-    table: str = "my_trades_all_json"
+    #table: str = "my_trades_all_json"
     column_name = "data"
-    new_value = True
+    #new_value = True
 
-    query = f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.has_closed_label', {new_value}) WHERE json_extract(data,'$.{filter}')  LIKE '%{filter_value}';"""
+    query = f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.{data_column}', {new_value}) WHERE json_extract(data,'$.{filter}')  LIKE '%{filter_value}';"""
 
     #log.error (f"query {query}")
     try:

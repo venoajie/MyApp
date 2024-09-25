@@ -28,7 +28,7 @@ from utilities.string_modification import (
     extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
-    update_status_closed_trades,
+    update_status_data,
     querying_table,
     executing_general_query_with_single_filter,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
@@ -101,7 +101,11 @@ async def convert_status_has_closed_label_from_no_to_yes(instrument_name, filter
     has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
     
     if not has_closed_label or has_closed_label==0:
-        await update_status_closed_trades(filter_trade, trade_id)
+        
+        new_value=True
+        data_column= "has_closed_label"
+        table= "my_trades_all_json"
+        await update_status_data(table, data_column, filter_trade, trade_id, new_value)
 
 async def current_server_time() -> float:
     """ """
@@ -218,7 +222,7 @@ async def manage_trades (trades: dict) -> None:
                         await get_additional_params_for_open_label (trade, label)
 
                     if "closed" in label:
-                        await convert_status_has_closed_label_from_no_to_yes(instrument_name, filter_trade, trade_id)
+                        await convert_status_has_closed_label_from_no_to_yes(instrument_name,  filter_trade, trade_id)
 
                 except:
                     log.critical(f"except trade {trade}")
@@ -436,7 +440,7 @@ class StreamAccountData:
                     
                     await clean_up_closed_transactions (instrument)
 
-                    currency=extract_currency_from_text(instrument).upper()   
+                    currency = extract_currency_from_text(instrument).upper()   
                                     
                     self.loop.create_task(
                         self.ws_operation(

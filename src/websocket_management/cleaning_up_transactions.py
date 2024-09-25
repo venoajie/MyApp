@@ -18,8 +18,7 @@ from db_management.sqlite_management import (
     deleting_row,
     executing_query_with_return,
     querying_arithmetic_operator,
-    querying_duplicated_transactions,
-    update_status_closed_trades,)
+    querying_duplicated_transactions)
 
 from strategies.config_strategies import paramaters_to_balancing_transactions
 # user defined formula
