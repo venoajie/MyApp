@@ -67,6 +67,14 @@ def deribit_url_main() -> str:
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
+def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, currency, status)
+    data = read_data(path)
+
+    return data
+
 
 def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     """ """
@@ -75,8 +83,10 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     try:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
-                read= tomli.load(handle)
-                return read ["tradeable"]
+                
+                if "toml" in config_path:
+                    read= tomli.load(handle)
+                    return read ["tradeable"]
     except:
         return []
 
@@ -99,14 +109,6 @@ async def current_server_time() -> float:
     current_time = await get_server_time()
     return current_time["result"]
 
-
-def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
-    """ """
-
-    path: str = provide_path_for_file(end_point, currency, status)
-    data = read_data(path)
-
-    return data
 
 async def get_futures_for_active_currencies () -> list:
     """_summary_
@@ -376,8 +378,6 @@ class StreamAccountData:
                 instruments_name=await get_instruments_name()                    
             
                 strategy_label= hedging_spot_attributes()[0]["strategy"]       
-                
-                hedging = hedging_spot.HedgingSpot(strategy_label)
                  
                 for currency in currencies_default:
                     """
@@ -563,11 +563,14 @@ class StreamAccountData:
                             TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
+                            
+                            log.info (f"""""chart.trades" in message_channel {"chart.trades" in message_channel}""")
+                            log.info (f"{message_channel}")
                                                         
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                 
-                                #log.info (f"data_orders {data_orders}")
+                                log.info (f"data_orders {data_orders}")
                                 
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                  instrument_ticker,
@@ -658,7 +661,7 @@ class StreamAccountData:
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
-                                                        
+                                                        hedging = hedging_spot.HedgingSpot(strategy_label)
                                                         #log.warning (f"A")
                                                         
                                                         send_order: dict = (
