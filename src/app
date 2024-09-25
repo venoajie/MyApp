@@ -51,8 +51,8 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
-from strategies import  hedging_spot,config_strategies
-from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies)
+from strategies import  hedging_spot
+from strategies.config_strategies import (hedging_spot_attributes)
 from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (

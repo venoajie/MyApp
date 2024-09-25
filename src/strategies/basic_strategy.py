@@ -35,18 +35,6 @@ async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> li
 
     return ohlc_all
 
-
-def read_data(file_name_pkl: str) -> []:
-    """ """
-
-    try:
-        if os.path.exists(file_name_pkl):
-            with open(file_name_pkl, "rb") as handle:
-                read_pickle = tomli.load(handle)
-                return read_pickle
-    except:
-        return []
-
 async def get_price_ohlc(
     price: str = "close", window: int = 100, table: str = "ohlc1_eth_perp_json"
 ) -> list:
