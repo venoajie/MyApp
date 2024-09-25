@@ -135,11 +135,9 @@ def extract_currency_from_text(words: str) -> str:
 
     if "."in words:
           filter1= (words.partition('.')[2]).lower()
-          print(filter1)
           
           if "."in filter1:
             filter1= (filter1.partition('.')[2]).lower()
-            print(filter1)
       
     else:
           filter1= (words.partition('.')[0]).lower()
