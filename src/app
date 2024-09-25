@@ -76,7 +76,7 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
                 read= tomli.load(handle)
-                return read
+                return read ["tradeable"]
     except:
         return []
 
@@ -116,16 +116,9 @@ async def get_futures_for_active_currencies () -> list:
     """
     from strategies.basic_strategy import get_instruments_kind
 
-    trading_config= get_trading_config()["tradeable"]
-    log.info(trading_config)
+    trading_config= get_trading_config()
     
     currencies = trading_config["spot"]
-
-    log.warning (f" currencies {currencies}")
-
-    currencies = preferred_spot_currencies()
-    
-    log.error (f" currencies {currencies}")
     
     instruments_holder_place= []
     for currency in currencies:
