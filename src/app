@@ -71,6 +71,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     """ """
 
     path: str = provide_path_for_file(end_point, currency, status)
+    log.info (f"path {path} end_point {end_point}")
     data = read_data(path)
 
     return data
@@ -84,8 +85,7 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
                 read= tomli.load(handle)
-                log.error (f"{read}")
-                return read ["tradeable"]
+                return read ["tradable"]
     except:
         return []
 
