@@ -118,7 +118,7 @@ async def get_futures_for_active_currencies () -> list:
     
     currencies = get_trading_config() ["spot"]
     
-    log.error (f"currencies {currencies}")
+    #log.error (f"currencies {currencies}")
     
     instruments_holder_place= []
     for currency in currencies:
@@ -371,7 +371,7 @@ class StreamAccountData:
                 # refresh databases
                 await get_and_save_currencies()
 
-                currencies_default = preferred_spot_currencies()
+                currencies_default = get_trading_config() ["spot"]
 
                 instruments_name=await get_instruments_name()                    
                 
