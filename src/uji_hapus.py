@@ -9,7 +9,7 @@ with open(provide_path_for_file("config_strategies.toml"),"rb") as toml:
 
 def get_trading_config(file_name: str) -> list:
     """ """
-    config_path=provide_path_for_file (file_name)
+    config_path = provide_path_for_file (file_name)
 
     try:
         if os.path.exists(config_path):

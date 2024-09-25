@@ -68,15 +68,18 @@ def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
 
-def get_trading_config(file_name: str) -> list:
+def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     """ """
+    config_path = provide_path_for_file (file_name)
 
     try:
-        if os.path.exists(file_name):
-            with open(file_name, "rb") as handle:
-                return tomli.load(handle)
+        if os.path.exists(config_path):
+            with open(config_path, "rb") as handle:
+                read= tomli.load(handle)
+                return read
     except:
         return []
+
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
@@ -113,9 +116,15 @@ async def get_futures_for_active_currencies () -> list:
     """
     from strategies.basic_strategy import get_instruments_kind
 
+    trading_config= get_trading_config()
+    
+    currencies = [o["spot"] for o in trading_config]
+
+    log.warning (f" currencies {currencies}")
+
     currencies = preferred_spot_currencies()
     
-    currencies= config_strategies
+    log.error (f" currencies {currencies}")
     
     instruments_holder_place= []
     for currency in currencies:
