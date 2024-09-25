@@ -56,6 +56,8 @@ def max_rows(table) -> int:
   
 def hedging_spot_attributes() -> list:
     """ """
+    
+    print ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
     hedging= [{
         "strategy": "hedgingSpot",
         "status": "active",

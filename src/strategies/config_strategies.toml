@@ -6,7 +6,7 @@ spot= [
     #"XRP",
     #"SOL",     
        ]
-labels= [#represert strategy
+strategy_labels= [#represert strategy
     "hedgingSpot",
     "futureSpread",
     "customLong",
