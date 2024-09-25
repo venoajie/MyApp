@@ -129,7 +129,14 @@ def extract_currency_from_text(words: str) -> str:
     """
     Extracting currency from channel message
     """
-    return (words.partition('-')[0]).lower()
+    
+    if "."in words:
+          filter1= (words.partition('.')[2]).lower()
+    
+    else:
+          filter1= (words.partition('.')[0]).lower()
+        
+    return (filter1.partition('-')[0]).lower()
 
 
 def remove_dict_elements(original: dict, item_to_remove: str) -> str:
