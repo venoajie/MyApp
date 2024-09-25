@@ -120,6 +120,8 @@ async def get_futures_for_active_currencies () -> list:
     
     currencies = trading_config["spot"]
     
+    log.error (f"currencies {currencies}")
+    
     instruments_holder_place= []
     for currency in currencies:
 
