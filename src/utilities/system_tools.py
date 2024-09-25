@@ -127,11 +127,12 @@ def provide_path_for_file(
         sub_folder = "src/configuration"
         end_point = ".env"
 
-    not_config_file= ".env" not in file_name or ".toml" not in file_name
+    config_file= ".env"  in file_name or ".toml" in file_name
     
-    file_name = (f"{file_name}.pkl") if not_config_file else (f"{end_point}")
+    #file_name = (f"{file_name}.pkl") if not_config_file else (f"{end_point}")
+    file_name =  (f"{end_point}") if config_file else (f"{file_name}.pkl") 
     
-    print (f"file_name {file_name} sub_folder {sub_folder} not_config_file {not_config_file}")
+    print (f"file_name {file_name} sub_folder {sub_folder} not_config_file {config_file}")
     print ("config_strategies.toml" in end_point)
 
     # Combine root + folders
