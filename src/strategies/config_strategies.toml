@@ -1,0 +1,16 @@
+# -*- coding: utf-8 -*-
+[tradeable]
+spot= [
+    "BTC",
+    "ETH",
+    #"XRP",
+    #"SOL",     
+       ]
+labels= [#represert strategy
+    "hedgingSpot",
+    "futureSpread",
+    "customLong",
+    "customShort",
+    #"marketMakerShort",
+    #"marketMakerLong",
+       ]
