@@ -128,7 +128,8 @@ def provide_path_for_file(
         sub_folder = "src/configuration"
         end_point = ".env"
 
-    file_name = (f"{file_name}.pkl") if ( ".env" not in file_name or ".toml" not in file_name) else (f"{end_point}")
+    file_name = (f"{file_name}.pkl") if ( ".env" not in file_name) else (f"{end_point}")
+    print (f"file_name {file_name}")
     #file_name = (f"{file_name}.pkl")
     
     #if ".env" not in file_name or ".toml" not in file_name:
