@@ -470,11 +470,15 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
     standard_columns= f"instrument_name, label, amount_dir as amount, timestamp, order_id"
 
     if "trade" in table or "order" in table:
-        standard_columns= F"{standard_columns}, price, trade_id"
+        standard_columns= f"{standard_columns}, price"
+        
+        if "trade" in table:
+        
+            standard_columns= f"{standard_columns}, trade_id"
         
     if "transaction_log" in table:
         
-        standard_columns= F"{standard_columns}, trade_id, price, type"
+        standard_columns= f"{standard_columns}, trade_id, price, type"
         
         if "transaction_log_json" in table:
         
