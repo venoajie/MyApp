@@ -375,7 +375,10 @@ class StreamAccountData:
 
                 instruments_name=await get_instruments_name()                    
             
-                strategy_label= hedging_spot_attributes()[0]["strategy"]        
+                strategy_label= hedging_spot_attributes()[0]["strategy"]       
+                
+                hedging = hedging_spot.HedgingSpot(strategy_label)
+                 
                 for currency in currencies_default:
                     """
                     log.debug (f"currency {currency}")
@@ -655,7 +658,7 @@ class StreamAccountData:
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
-                                                        hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                        
                                                         #log.warning (f"A")
                                                         
                                                         send_order: dict = (
