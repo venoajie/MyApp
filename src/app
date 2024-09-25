@@ -67,10 +67,6 @@ def deribit_url_main() -> str:
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
-    #if ".toml" in end_point:
-    #    if "strategies" in end_point:
-    #        sub_folder = "strategies"
-
 def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     """ """
 
@@ -86,6 +82,8 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
 def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     """ """
     config_path = provide_path_for_file (file_name)
+    
+    log.error (f"config_path {config_path}")
 
     try:
         if os.path.exists(config_path):
