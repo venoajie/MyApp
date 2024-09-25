@@ -565,7 +565,6 @@ class StreamAccountData:
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
                             
-                            log.info (f"""""chart.trades" in message_channel {"chart.trades" in message_channel}""")
                             log.info (f"{message_channel}")
                                                         
                             if "chart.trades" in message_channel:
@@ -634,7 +633,8 @@ class StreamAccountData:
                                                         index_price = ticker ["estimated_delivery_price"]
                                                     #log.critical (f"index_price {index_price}")
                                                     
-                                                # get portfolio data                                                
+                                                # get portfolio data  
+                                                log.error (f"currency {currency}")                                              
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
