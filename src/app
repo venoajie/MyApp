@@ -73,6 +73,8 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     path: str = provide_path_for_file(end_point, currency, status)
     log.info (f"path {path} end_point {end_point}")
     data = read_data(path)
+    
+    log.info (data)
 
     return data
 
