@@ -132,8 +132,8 @@ def provide_path_for_file(
     print (f"file_name {file_name}")
     #file_name = (f"{file_name}.pkl")
     
-    #if ".env" not in file_name or ".toml" not in file_name:
-    #    file_name = (f"{end_point}")
+    if  ".toml"  in file_name:
+        file_name = (f"{end_point}")
 
     # Combine root + folders
     my_path_linux: str = (
