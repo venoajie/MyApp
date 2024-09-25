@@ -116,9 +116,10 @@ async def get_futures_for_active_currencies () -> list:
     """
     from strategies.basic_strategy import get_instruments_kind
 
-    trading_config= get_trading_config()
+    trading_config= get_trading_config()["tradeable"]
+    log.info(trading_config)
     
-    currencies = [o["spot"] for o in trading_config]
+    currencies = trading_config["spot"]
 
     log.warning (f" currencies {currencies}")
 

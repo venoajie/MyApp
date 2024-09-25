@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-[[tradeable]]
+[tradeable]
 spot= [
     "BTC",
     "ETH",
