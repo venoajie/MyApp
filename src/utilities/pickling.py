@@ -5,7 +5,7 @@ import pickle
 import os
 
 
-def read_data(file_name_pkl: str) -> None:
+def read_data(file_name_pkl: str) -> list:
     """ """
 
     try:

@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import aioschedule as schedule
 import asyncio
 import json
+import os
+import tomli
 # installed
 import websockets
 import orjson
@@ -23,7 +25,6 @@ from utilities.system_tools import (
     catch_error_message)
 from utilities.string_modification import (
     remove_double_brackets_in_list,
-    remove_dict_elements,
     extract_currency_from_text)
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
@@ -41,7 +42,6 @@ from websocket_management.ws_management import (
     compute_notional_value, 
     check_db_consistencies_and_clean_up_imbalances,
     procedures_for_unlabelled_orders,
-    get_transaction_log
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -51,7 +51,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     is_everything_consistent,
     get_additional_params_for_futureSpread_transactions)
-from strategies import  hedging_spot
+from strategies import  hedging_spot,config_strategies
 from strategies.config_strategies import (hedging_spot_attributes,preferred_spot_currencies)
 from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
 from configuration.label_numbering import get_now_unix_time
@@ -66,6 +66,17 @@ def deribit_url_main() -> str:
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
+
+
+def get_trading_config(file_name: str) -> list:
+    """ """
+
+    try:
+        if os.path.exists(file_name):
+            with open(file_name, "rb") as handle:
+                return tomli.load(handle)
+    except:
+        return []
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
@@ -103,6 +114,8 @@ async def get_futures_for_active_currencies () -> list:
     from strategies.basic_strategy import get_instruments_kind
 
     currencies = preferred_spot_currencies()
+    
+    currencies= config_strategies
     
     instruments_holder_place= []
     for currency in currencies:
