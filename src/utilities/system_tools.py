@@ -119,6 +119,9 @@ def provide_path_for_file(
     if ".env" in end_point:
         sub_folder = "configuration"
 
+    if "config_strategies.toml" in end_point:
+        sub_folder = "strategies"
+
     # to accomodate pytest env
     if "test.env" in end_point:
         sub_folder = "src/configuration"
