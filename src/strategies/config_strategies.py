@@ -13,7 +13,24 @@ TAKE_PROFIT_PCT_GRID = 1 / 100 / 4
 TAKE_PROFIT_PCT_MM = (1 / 100) / 2
 TAKE_PROFIT_PCT_DAILY = 0.03
 
-
+class AllowedCurrencies:
+    """
+    config_strategies.py
+    https://stackoverflow.com/questions/6198372/most-pythonic-way-to-provide-global-configuration-variables-in-config-py
+    https://github.com/kdart/pycopia/blob/master/core/pycopia/basicconfig.py
+    
+    from strategies.config_strategies import AllowedCurrencies
+    
+    print (AllowedCurrencies.SPOT)
+    
+    """
+    
+    spot: list = ["BTC",
+                  "ETH",
+                  #"XRP",
+                  #"SOL",
+                  ]
+    
 def preferred_spot_currencies() -> list:
     """ """
 

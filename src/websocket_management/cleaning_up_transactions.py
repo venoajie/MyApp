@@ -330,9 +330,6 @@ async def reconciling_between_db_and_exchg_data(instrument_name,
     
     unrecorded_order_id= unrecorded_transactions["unrecorded_order_id"]
     unrecorded_trade_id= unrecorded_transactions["unrecorded_trade_id"]
-    if "ETH" in instrument_name:
-        log.debug (f"unrecorded_order_id {unrecorded_order_id}")
-        log.warning (f"unrecorded_trade_id {unrecorded_trade_id}")
            
     if unrecorded_order_id != None:
         await update_db_with_unrecorded_data (trades_from_exchange, unrecorded_order_id, "order_id")
