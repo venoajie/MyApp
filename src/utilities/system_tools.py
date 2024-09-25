@@ -116,10 +116,6 @@ def provide_path_for_file(
     else:
         file_name = f"{end_point}"
 
-    if ".toml" in end_point:
-        if "strategies" in end_point:
-            sub_folder = "strategies"
-
     if ".env" in end_point:
         sub_folder = "configuration"
 
@@ -128,14 +124,7 @@ def provide_path_for_file(
         sub_folder = "src/configuration"
         end_point = ".env"
 
-    file_name = (f"{file_name}.pkl") if ( ".env" not in file_name) else (f"{end_point}")
-    print (f"file_name {file_name} {end_point}")
-    #file_name = (f"{file_name}.pkl")
-    
-    if  ".toml"  in file_name:
-        file_name = (f"{end_point}")
-
-    #print (f"file_name {file_name} {end_point}")
+    file_name = (f"{file_name}.pkl") if ".env" not in file_name else (f"{end_point}")
 
     # Combine root + folders
     my_path_linux: str = (
@@ -164,6 +153,7 @@ def provide_path_for_file(
         if get_platform() == "linux"
         else (my_path_win / file_name)
     )
+
 
 
 def is_current_file_running(script: str) -> bool:
