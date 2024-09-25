@@ -189,36 +189,6 @@ async def deleting_row(
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
 
-async def querying_completed_transactions(
-    database: str = "databases/trading.sqlite3",
-) -> list:
-    """ """
-
-    query_table = f"""SELECT  * FROM (select REPLACE(REPLACE (label,'closed-',''), 'open-','') as label, sum(amount_dir) as amount_net FROM my_trades_all_json group by result)"""
-
-    combine_result = []
-
-    try:
-        async with aiosqlite.connect(database, isolation_level=None) as db:
-            db = db.execute(query_table)
-
-            async with db as cur:
-                fetchall = await cur.fetchall()
-
-                head = map(lambda attr: attr[0], cur.description)
-                headers = list(head)
-
-        for i in fetchall:
-            combine_result.append(dict(zip(headers, i)))
-
-    except Exception as error:
-        log.error (f"querying_table {query_table} {error}")
-        await telegram_bot_sendtext("sqlite operation", "failed_order")
-        await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
-
-    return 0 if (combine_result == [] or combine_result == None) else (combine_result)
-
-
 async def querying_duplicated_transactions(
     label: str = "my_trades_all_json",
     group_by: str = "trade_id",
@@ -305,36 +275,6 @@ async def add_additional_column(
         return None
 
 
-async def replace_row(
-    new_value: dict,
-    column_name: str = "data",
-    table: str = "ohlc1_eth_perp_json",
-    database: str = "databases/trading.sqlite3",
-    filter: str = None,
-    operator=None,
-    filter_value=None,
-) -> list:
-    """ """
-
-    try:
-
-        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} 
-        
-        {filter_value};"""
-
-        if column_name == "open_interest":
-
-            query_table = f"""UPDATE {table} SET {column_name} = ({new_value})  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
-            #print (f'query_table {query_table}')
-
-        async with aiosqlite.connect(database, isolation_level=None) as db:
-            await db.execute(query_table)
-    # CREATE INDEX tick_index ON  ohlc1_eth_perp_json (tick);
-    except Exception as error:
-        print(f"replace_row {error}")
-        await telegram_bot_sendtext("sqlite failed replace_row", "failed_order")
-
-
 def querying_additional_params(table: str = "supporting_items_json") -> str:
 
     return f"""SELECT JSON_EXTRACT (data, '$.label') AS label, JSON_EXTRACT (data, '$.take_profit')  AS take_profit FROM {table}"""
@@ -352,17 +292,26 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
     return f"SELECT * from {table} where not (label LIKE '%value1%' or label LIKE '%value2%' or label LIKE'%value3%');"
 
 
-async def update_status_data(table: str, data_column: str, filter: str, filter_value: int, new_value) -> None:
+async def update_status_data(table: str, data_column: str, filter: str, filter_value: int, new_value, operator=None) -> None:
     """
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
     https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
     https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
     """
     #table: str = "my_trades_all_json"
-    column_name = "data"
+    #column_name = "data"
     #new_value = True
+    if operator==None:
+        where_clause= f"WHERE JSON_EXTRACT(data,'$.{filter}')  LIKE '%{filter_value}'"
+     
+    else:
+        where_clause= f"WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value}"
 
-    query = f"""UPDATE {table} SET {column_name} = JSON_REPLACE ({column_name}, '$.{data_column}', {new_value}) WHERE json_extract(data,'$.{filter}')  LIKE '%{filter_value}';"""
+    query = f"""UPDATE {table} SET data = JSON_REPLACE (data, '$.{data_column}', {new_value}) {where_clause};"""
+
+    if data_column == "open_interest":
+
+        query = f"""UPDATE {table} SET {data_column} = ({new_value})  {where_clause};"""
 
     #log.error (f"query {query}")
     try:
@@ -429,26 +378,6 @@ def querying_label_and_size(table) -> str:
         if "closed" in table:
             tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table}"
     
-    return tab
-
-def querying_selected_columns_filtered_with_a_variable(table: str, filter, limit: int= 0, order: str="id") -> str:
-    
-    where_clause= f"WHERE (instrument_name LIKE '%{filter}%')"
-    
-    tab = f"SELECT instrument_name, label, amount_dir as amount, price, timestamp, order_id FROM {table} {where_clause}"
-
-    if "trade" in table:
-        
-        tab = f"SELECT instrument_name, label, amount_dir as amount, price, has_closed_label, timestamp, order_id, trade_id FROM {table} {where_clause}"
-        
-        if "closed" in table:
-            
-            #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT instrument_name, label, amount_dir as amount, order_id, trade_id FROM {table} {where_clause} ORDER BY id DESC "
-            
-            if limit>0:
-                
-                tab= f"{tab} LIMIT {limit}"
     return tab
 
 
@@ -572,60 +501,6 @@ async def executing_query_based_on_currency_or_instrument_and_strategy(table: st
     #log.warning (f"result {result}")
 
     return [] if result in NONE_DATA else (result)
-
-
-async def executing_label_and_size_query(table) -> dict:
-    """
-    Provide execution template for querying summary of trading results from sqlite.
-    Consist of transaction label, size, and price only.
-    """
-
-    # get query
-    query = querying_label_and_size(table)
-
-    # execute query
-    result = await executing_query_with_return(query)
-
-    # define none from queries result. If the result=None, return []
-    NONE_DATA: None = [0, None, []]
-
-    return [] if result in NONE_DATA else (result)
-
-async def executing_general_query_with_single_filter(table, filter, limit: int= 0, order: str="id") -> dict:
-    """
-    Provide execution template for querying summary of trading results from sqlite.
-    Consist of transaction label, size, and price only.
-    """
-
-    # get query
-    query = querying_selected_columns_filtered_with_a_variable(table, filter, limit, order)
-
-    # execute query
-    result = await executing_query_with_return(query)
-    
-    #log.critical (f"table {table} filter {filter}")
-    #log.info (f"result {result}")
-
-    # define none from queries result. If the result=None, return []
-    NONE_DATA: None = [0, None, []]
-
-    return [] if result in NONE_DATA else (result)
-
-
-def querying_trade_table_basics(
-    table: str = "my_trades_all_json",
-    filter: str = None,
-    operator: str = None,
-    filter_value: str = None,
-) -> str:
-
-    if filter is None:
-        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table}; """
-    else:
-        selected_data = f"""SELECT  JSON_EXTRACT (data, '$.instrument_name')  AS instrument_name, (data, '$.label')  AS label, JSON_EXTRACT (data, '$.amount_dir')  AS amount, JSON_EXTRACT (data, '$.price')  AS price, JSON_EXTRACT (data, '$.has_closed_label')  AS has_closed_label, FROM {table} WHERE  JSON_EXTRACT (data, '$.{filter}') LIKE '%{filter_value}'; """
-
-    return selected_data
-
 
 async def executing_query_with_return(
     query_table,

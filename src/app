@@ -30,7 +30,6 @@ from configuration import id_numbering, config
 from db_management.sqlite_management import (
     update_status_data,
     querying_table,
-    executing_general_query_with_single_filter,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables)
 from websocket_management.ws_management import (
@@ -96,8 +95,10 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
 async def convert_status_has_closed_label_from_no_to_yes(instrument_name, filter_trade, trade_id) -> None:
 
-    transactions_all: list = await executing_general_query_with_single_filter("my_trades_all_json", instrument_name)
-
+    column_list= "trade_id","has_closed_label"
+    
+    transactions_all: list = await get_query("my_trades_all_json", instrument_name, "all", "all", column_list)
+    
     has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
     
     if not has_closed_label or has_closed_label==0:

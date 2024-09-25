@@ -10,9 +10,8 @@ from utilities.string_modification import (transform_nested_dict_to_list)
 
 import requests
 
-from deribit_get import get_ohlc
 from db_management.sqlite_management import (
-    replace_row,
+    update_status_data,
     querying_last_open_interest,
     deleting_row,
     querying_arithmetic_operator,
@@ -96,16 +95,7 @@ async def ohlc_result_per_time_frame(
             
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
-
-                await replace_row(
-                    data_orders,
-                    "data",
-                    TABLE_OHLC1,
-                    DATABASE,
-                    WHERE_FILTER_TICK,
-                    "is",
-                    last_tick1_fr_sqlite,
-                )
+                await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
 
             # new tick ohlc
             else:
@@ -137,17 +127,12 @@ async def ohlc_result_per_time_frame(
                 # update last tick
                 last_tick1_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
-                # insert open interest in previous tick to the new tick
-                await replace_row(
-                    open_interest_last_value,
-                    "open_interest",
-                    TABLE_OHLC1,
-                    DATABASE,
-                    WHERE_FILTER_TICK,
-                    "is",
-                    last_tick1_fr_sqlite,
-                )
 
+                # insert open interest in previous tick to the new tick
+                
+                await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, open_interest_last_value, "is")
+                
+                
         if message_channel == f"chart.trades.{instrument_ticker}.30":
 
             last_tick30_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc30)
@@ -225,17 +210,8 @@ async def inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_O
             last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
                 last_tick_query_ohlc1
             )
-
-            await replace_row(
-                open_interest,
-                "open_interest",
-                TABLE_OHLC1,
-                DATABASE,
-                WHERE_FILTER_TICK,
-                "is",
-                last_tick1_fr_sqlite,
-            )
-
+            
+            await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
 
     except Exception as error:
         print (f"error allocating ohlc {error}")
