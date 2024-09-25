@@ -71,10 +71,8 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     """ """
 
     path: str = provide_path_for_file(end_point, currency, status)
-    log.info (f"path {path} end_point {end_point}")
+
     data = read_data(path)
-    
-    log.info (data)
 
     return data
 
@@ -535,13 +533,11 @@ class StreamAccountData:
                             message_channel = message["params"]["channel"]
 
                             data_orders: list = message["params"]["data"]       
-                            #log.warning (f"message_channel {message_channel}")       
-                            log.warning (f"data_orders {data_orders}")       
+                            
                             currency: str = extract_currency_from_text(
                                 message_channel
                             )
-                            log.error (f"currency {currency}")
-                            log.warning (f"message_channel {message_channel}")
+                            
                             currency_lower=currency
                             currency_upper=currency.upper()
 
@@ -553,7 +549,6 @@ class StreamAccountData:
 
                             if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
-                                log.error (f"data_orders {data_orders}")
                                 await update_user_changes(data_orders, currency)
                                 
                                 await resupply_transaction_log(currency)
@@ -566,14 +561,10 @@ class StreamAccountData:
                             TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
-                            
-                            log.info (f"{message_channel}")
                                                         
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
-                                
-                                log.info (f"data_orders {data_orders}")
-                                
+                                                                
                                 await ohlc_result_per_time_frame(message_channel, 
                                                                  instrument_ticker,
                                                                 data_orders,
