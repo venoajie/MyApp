@@ -546,7 +546,7 @@ def convert_list_to_dict (transaction: list) -> dict:
     except:
         return transaction
 
-async def get_additional_params_for_futureSpread_transactions(transaction: list) -> None:
+def get_additional_params_for_futureSpread_transactions(transaction: list) -> None:
     """ 
     send order:
     {'is_liquidation': False, 'risk_reducing': False, 'creation_timestamp': 1724306764758, 'order_type': 'market', 
@@ -611,7 +611,7 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
     
     #already have label, but not "futureSpreads"
     if "combo_id" in transaction:
-        await get_additional_params_for_futureSpread_transactions(transaction)
+        get_additional_params_for_futureSpread_transactions(transaction)
 
     additional_params = querying_additional_params()
     

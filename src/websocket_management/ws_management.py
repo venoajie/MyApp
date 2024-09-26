@@ -317,7 +317,7 @@ async def updated_open_orders_database(open_orders_from_sub_accounts, from_sqlit
                     await insert_tables("orders_all_json", order)
 
                 if label=="":
-                    await procedures_for_unlabelled_orders(order, instrument_name)
+                    await labelling_the_unlabelled_and_resend_it(order, instrument_name)
 
     else:
         if open_orders_from_sub_accounts !=[]:
@@ -532,7 +532,7 @@ async def resupply_transaction_log(currency: str) -> list:
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)
             
-    log.debug (f"transaction_log {transaction_log}")
+    #log.debug (f"transaction_log {transaction_log}")
     for transaction in transaction_log:
         
         modified_dict= remove_dict_elements(transaction,"info")
@@ -621,32 +621,22 @@ def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
         if (last_traded_price == [] or last_traded_price == 0)
         else delta_price / last_traded_price
     )
-async def procedures_for_unlabelled_orders(order, instrument_name):
+async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
     """_summary_
     """
-    from transaction_management.deribit.open_orders_management import manage_orders
-
-    side= get_transaction_side(order)
-    order.update({"everything_is_consistent": True})
-    order.update({"order_allowed": True})
-    order.update({"entry_price": order["price"]})
-    order.update({"size": order["amount"]})
-    order.update({"type": "limit"})
-    order.update({"side": side})
-    side_label= "Short" if side== "sell" else "Long"
-    last_update=order["creation_timestamp"]
-    label_open: str = (f"custom{side_label.title()}-open-{last_update}")
-    order.update({"label": label_open})
-    log.info (f"order {order}")
+    from transaction_management.deribit.open_orders_management import labelling_unlabelled_order
     
+    labelling_order= labelling_unlabelled_order (order)
+    labelled_order= labelling_order["order"]
+    label_open= labelling_order["label_open"]
+
     label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open, 100)
     
     order_id= order["order_id"]
     await cancel_by_order_id (order_id)
     
     if not label_has_exist_before:
-        await if_order_is_true(order, instrument_name)
-        await manage_orders (order)       
+        await if_order_is_true(labelled_order, instrument_name)
     await sleep_and_restart()
 
 def delta_price_constraint(

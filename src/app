@@ -14,7 +14,7 @@ import orjson
 from loguru import logger as log
 
 # user defined formula
-
+from transaction_management.deribit.open_orders_management import manage_orders
 from utilities.number_modification import get_closest_value
 from utilities.pickling import (
     replace_data,
@@ -40,7 +40,6 @@ from websocket_management.ws_management import (
     if_cancel_is_true,
     compute_notional_value, 
     check_db_consistencies_and_clean_up_imbalances,
-    procedures_for_unlabelled_orders,
     )
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -198,7 +197,7 @@ async def manage_trades (trades: dict) -> None:
             await get_additional_params_for_open_label (trade, label)
             
         if "combo_id" in trade:
-            await get_additional_params_for_futureSpread_transactions(trade)
+            get_additional_params_for_futureSpread_transactions(trade)
         
         # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
         if f"{currency.upper}-FS-" not in instrument_name:
@@ -264,41 +263,9 @@ async def update_user_changes(data_orders, currency) -> None:
         await manage_trades (trades)
         
     if orders:
-        from transaction_management.deribit.open_orders_management import manage_orders
-            
-        log.error (f"orders {orders}")
         
-        for order in orders:
-
-            #label=order["label"]
-                        
-            instrument_name=order["instrument_name"]
+        manage_orders
             
-            log.debug (order)
-            log.error (order["label"]=="" )
-            order_id=order["order_id"]
-            label=order["label"]
-            
-            if  label =="" :                
-                
-                await procedures_for_unlabelled_orders(order, instrument_name)
-
-            else:
-    
-                label_has_exist_before= await check_if_id_has_used_before (instrument_name,"order_id",order_id, 100)
-                
-                await manage_orders (order)            
-
-                if label_has_exist_before:
-                    await cancel_the_cancellables()
-    
-            everything_consistent= is_everything_consistent(order)
-            log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
-            
-            if  not everything_consistent:
-                await cancel_the_cancellables()
-                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-
     if positions:
         #log.debug (f"positions {positions}")
         await manage_positions (positions, currency)
