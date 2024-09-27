@@ -26,6 +26,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     get_basic_closing_paramaters,
     are_size_and_order_appropriate_to_reduce_position)
+from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from utilities.system_tools import (
     raise_error_message,
     provide_path_for_file,
@@ -508,8 +509,6 @@ async def resupply_transaction_log(currency: str) -> list:
     
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
     
-    log.debug (f"first_tick_query {first_tick_query}")
-    
     first_tick_query_result = await executing_query_with_return(first_tick_query)
     
     first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
@@ -522,57 +521,10 @@ async def resupply_transaction_log(currency: str) -> list:
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)
             
-    #log.debug (f"transaction_log {transaction_log}")
-    for transaction in transaction_log:
-        
-        modified_dict= remove_dict_elements(transaction,"info")
-                    
-        timestamp_log= modified_dict ["timestamp"]
-        
-        type_log= modified_dict ["type"]
-                    
-        if timestamp_log > first_tick_fr_sqlite:
-
-            custom_label= f"custom-{type_log.title()}-{timestamp_log}"
-            
-            if "trade" in type_log:
-            
-                tran_id_log= modified_dict ["trade_id"]
-
-                instrument_name_log= modified_dict ["instrument_name"]
-                
-                column_list: str="label", "trade_id"
-                
-                from_sqlite_open= await get_query ("my_trades_all_json", 
-                                                    instrument_name_log, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_list)                                       
-
-                from_sqlite_closed = await get_query("my_trades_closed_json", 
-                                                        instrument_name_log, 
-                                                        "all", 
-                                                        "all", 
-                                                        column_list,
-                                                        max_closed_transactions_downloaded_from_sqlite, 
-                                                        "id")   
-                
-                combined= from_sqlite_open + from_sqlite_closed
-                
-                label_log= [o["label"] for o in combined if tran_id_log in o["trade_id"]]
-                                                        
-                if label_log !=[]:
-                    modified_dict.update({"label": label_log[0]})
-                
-                else:
-                    modified_dict.update({"label": custom_label})
-            
-            else:
-                modified_dict.update({"label": custom_label})
-            
-            #log.debug (f"transaction_log_json {modified_dict}")
-            table= f"transaction_log_{currency.lower()}_json"
-            await insert_tables(table, modified_dict)
+    await saving_transaction_log (currency, 
+                                  transaction_log, 
+                                  first_tick_fr_sqlite, 
+                                  )
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
         
