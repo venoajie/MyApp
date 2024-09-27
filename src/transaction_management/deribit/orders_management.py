@@ -7,6 +7,7 @@ from dataclassy import dataclass
 # user defined formula
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    update_status_data,
     insert_tables)
 from strategies.basic_strategy import (
     get_transaction_side,        
@@ -17,6 +18,8 @@ from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     check_if_transaction_has_closed_label_before)
 
+from utilities.string_modification import (
+    extract_currency_from_text)
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
@@ -81,6 +84,7 @@ class OrderManagement:
         
     """
 
+    instrument_name: str
     order_db_table: str
     trade_db_table: str
     archive_db_table: str
@@ -92,30 +96,43 @@ class OrderManagement:
             trades (_type_): _description_
             orders (_type_): _description_
         """
+        instrument_name= self.instrument_name
         
-        for trade in trades:
+        currency=extract_currency_from_text(instrument_name)
+        
+        for trade in trades:    
             
-            instrument_name= trade["instrument_name"]
             trade_id= trade["trade_id"]
             
             try:
                 label= trade["label"]
             except:
                 label= get_custom_label(trade)
+                trade.update({"label": label})
+            
+            if "combo_id" in trade:
+                get_additional_params_for_futureSpread_transactions(trade)
                 
-            #check duplicated id
-            label_has_exist_before= await check_if_id_has_used_before (instrument_name,
-                                                                       "trade_id",
-                                                                       trade_id,)
+            label=trade["label"]
+            
+            column_trade= "trade_id","label"
+            
+            data_from_db_trade_open = await get_query(f"my_trades_all_{currency}_json", 
+                                                instrument_name, 
+                                                "all", 
+                                                "all", 
+                                                column_trade)
 
+            trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, "trade_id", trade_id, 100)
+            
             #processing clean result
-            if not label_has_exist_before:
+            if not trade_id_has_exist_before:
                     
                 #get table names
                 order_table = self.order_db_table
                 trade_table = self.trade_db_table
                 archived_table =self.archive_db_table
-                            
+            
                 # check if transaction has additional attributes. If no, provide it with them
                 if "open" in label:
                     await get_additional_params_for_open_label (trade, label)

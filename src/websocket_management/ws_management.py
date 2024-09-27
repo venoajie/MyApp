@@ -36,7 +36,6 @@ from utilities.number_modification import get_closest_value
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
     remove_redundant_elements,
-    remove_dict_elements,
     extract_currency_from_text,
     parsing_label,
     my_trades_open_sqlite_detailing,

@@ -188,57 +188,6 @@ async def get_and_save_currencies()->None:
         )
         
         
-async def manage_trades (trades: dict) -> None:
-
-    for trade in trades:
-        filter_trade="trade_id"
-        order_id=trade["order_id"]
-        trade_id=trade[f"{filter_trade}"]
-        
-        instrument_name= trade["instrument_name"]
-        currency=extract_currency_from_text(instrument_name).upper()
-
-        if "label" not in trade :
-            label=None
-            await get_additional_params_for_open_label (trade, label)
-            
-        if "combo_id" in trade:
-            get_additional_params_for_futureSpread_transactions(trade)
-        
-        # FS: 'instrument_name': 'ETH-FS-23AUG24_PERP' (ticker for future spread instrument)
-        if f"{currency.upper}-FS-" not in instrument_name:
-                
-            label=trade["label"]
-
-            trade_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "trade_id", trade_id, 100)
-            log.info(f"trade_id_has_exist_before {trade_id_has_exist_before}")
-            order_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "order_id", order_id, 100)
-            log.info(f"order_id_has_exist_before {order_id_has_exist_before}")
-            label_id_has_exist_before= await check_if_id_has_used_before (instrument_name, "label", label, 100)
-            log.info(f"label_id_has_exist_before {label_id_has_exist_before}")
-            label_has_exist_before= (sum(trade_id_has_exist_before+order_id_has_exist_before+label_id_has_exist_before)!=0)
-
-
-            log.info(f"trade {trade} order_has_sent_before {label_has_exist_before} not {not label_has_exist_before}")
-
-            if not label_has_exist_before:
-                try:
-                        
-                    if "open" in label:
-                        await get_additional_params_for_open_label (trade, label)
-
-                    if "closed" in label:
-                        await convert_status_has_closed_label_from_no_to_yes(instrument_name,  filter_trade, trade_id)
-
-                except:
-                    log.critical(f"except trade {trade}")
-                    
-                await insert_tables("my_trades_all_json", trade)
-                
-                if "closed" in label:
-                    await clean_up_closed_transactions (instrument_name)
-                    
-        
 async def manage_positions (positions: dict, currency: str) -> None:
 
     my_path_position = provide_path_for_file("positions", currency)
@@ -261,15 +210,19 @@ async def update_user_changes(data_orders,
                               archive_db_table) -> None:
     
     log.warning (f"update_user_changes-START")
-    log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
     
+    instrument_name = data_orders["instrument_name"]
+
+    log.info (f"{instrument_name} {data_orders}")
+        
     if orders:
         
-        order_management= OrderManagement(order_db_table, 
+        order_management= OrderManagement(instrument_name,
+                                          order_db_table, 
                                           trade_db_table, 
                                           archive_db_table)
         
@@ -280,7 +233,6 @@ async def update_user_changes(data_orders,
             for order in orders:
                 
                 label= order["label"]
-                instrument_name= order["instrument_name"]
                 
                 everything_consistent= is_label_and_side_consistent(order)
                 log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
