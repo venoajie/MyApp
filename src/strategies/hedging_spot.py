@@ -20,7 +20,7 @@ from strategies.basic_strategy import (
     are_size_and_order_appropriate_to_add_position
 )
 from db_management.sqlite_management import (
-    executing_query_based_on_currency_or_instrument_and_strategy
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query
     )
 from utilities.string_modification import (extract_currency_from_text)
 
@@ -208,16 +208,16 @@ class HedgingSpot(BasicStrategy):
 
         size = determine_size(instrument_name, notional, SIZE_FACTOR)
 
-        open_orders_label_strategy: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
-                                                                                                              currency.upper(), 
-                                                                                                              self.strategy_label,
-                                                                                                              "open")
+        open_orders_label_strategy: list=  await get_query("orders_all_json", 
+                                                           currency.upper(), 
+                                                           self.strategy_label,
+                                                           "open")
         #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         sum_orders: int = get_transactions_sum(open_orders_label_strategy)
         
-        my_trades_currency_strategy: list= await executing_query_based_on_currency_or_instrument_and_strategy("my_trades_all_json", currency.upper(), self.strategy_label)
+        my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
         
@@ -328,7 +328,7 @@ class HedgingSpot(BasicStrategy):
         cancel_allowed: bool = False
         cancel_id: str = None
         
-        open_orders_label_strategy: list=  await executing_query_based_on_currency_or_instrument_and_strategy("orders_all_json", 
+        open_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                                                                               currency.upper(), 
                                                                                                               self.strategy_label,
                                                                                                               "closed")
