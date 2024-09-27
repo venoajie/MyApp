@@ -24,7 +24,8 @@ from utilities.pickling import (
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
-    catch_error_message)
+    sleep_and_restart,
+    catch_error_message,)
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     extract_currency_from_text)
@@ -41,6 +42,7 @@ from websocket_management.ws_management import (
     if_order_is_true,
     if_cancel_is_true,
     compute_notional_value, 
+    cancel_by_order_id,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -278,9 +280,22 @@ async def update_user_changes(data_orders,
             for order in orders:
                 
                 label= order["label"]
+                instrument_name= order["instrument_name"]
                 
                 if not label:
-                    labelling_unlabelled_transaction(label)
+                    new_order = labelling_unlabelled_transaction(label)
+                    
+                    order_id= order["order_id"]
+
+                    label_has_exist_before= await check_if_id_has_used_before (instrument_name,
+                                                                               "order_id",
+                                                                               order_id,)
+                    await insert_tables(order_db_table, order)
+                    await cancel_by_order_id (order_id)
+                    
+                    if not label_has_exist_before:
+                        await if_order_is_true(new_order, instrument_name)
+                    #await sleep_and_restart()
                     #cancelling previous transaction
                     #resend
                 

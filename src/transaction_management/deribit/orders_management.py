@@ -63,7 +63,7 @@ def labelling_unlabelled_transaction(order) -> None:
     else:        
         label_open: str = labelling_unlabelled_trade(order)
         order.update({"label": label_open})
-    log.info (f"order {order}")
+    log.info (f"labelling_unlabelled_transaction {order}")
     
     return dict(order=order,
                 label_open=label_open)
