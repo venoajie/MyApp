@@ -281,6 +281,8 @@ async def update_user_changes(data_orders,
                 
                 if not label:
                     labelling_unlabelled_transaction(label)
+                    #cancelling previous transaction
+                    #resend
                 
                 # check if transaction has label. Provide one if not any
             
