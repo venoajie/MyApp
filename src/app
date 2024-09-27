@@ -455,7 +455,7 @@ class StreamAccountData:
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
                     
-                    await clean_up_closed_transactions (instrument)
+                    await clean_up_closed_transactions (instrument, trade_db_table)
 
                     currency = extract_currency_from_text(instrument).upper()   
                                     
