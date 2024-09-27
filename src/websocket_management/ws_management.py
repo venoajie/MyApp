@@ -114,7 +114,7 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     
     result_transaction_log_to_result = result_transaction_log["result"]
     
-    log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
+    #log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
 
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
@@ -491,7 +491,7 @@ async def resupply_sub_accountdb(currency) -> None:
     # resupply sub account db
     log.info(f"resupply {currency.upper()} sub account db-START")
     sub_accounts = await get_sub_account(currency)
-    log.info(f"sub_accounts {sub_accounts}")
+    #log.info(f"sub_accounts {sub_accounts}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
