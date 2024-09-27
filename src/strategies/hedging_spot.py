@@ -247,8 +247,28 @@ class HedgingSpot(BasicStrategy):
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
+                    
+            column_trade= "trade_id","label"
+            column_order= "label","order_id"
             
-            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", params["label"])
+            currency = extract_currency_from_text (instrument_name)
+            data_from_db_trade_open = await get_query(f"my_trades_all_{currency}_json", 
+                                                    instrument_name, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_trade)     
+            
+            data_from_db_order_open = await get_query("orders_all_json", 
+                                                    instrument_name, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_order)     
+            
+            combined_result = data_from_db_trade_open + data_from_db_order_open
+            
+            
+            order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
+            
             if label_and_side_consistent and not order_has_sent_before:
                 
                 params.update({"size": size})
