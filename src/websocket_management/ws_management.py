@@ -20,7 +20,7 @@ from db_management.sqlite_management import (
 from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
 from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (
-    is_everything_consistent,
+    is_label_and_side_consistent,
     get_strategy_config_all,
     check_db_consistencies,
     check_if_id_has_used_before,
@@ -152,7 +152,7 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        everything_consistent = is_everything_consistent(params)
+        everything_consistent = is_label_and_side_consistent(params)
 
         if  everything_consistent:
             await inserting_additional_params(params)
