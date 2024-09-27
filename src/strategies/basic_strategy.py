@@ -672,7 +672,7 @@ def get_strategy_config_all() -> list:
 
     return config_strategies.strategies
 
-def is_everything_consistent(params) -> bool:
+def is_label_and_side_consistent(params) -> bool:
     """ """
     
     #log.error (f"params {params}")

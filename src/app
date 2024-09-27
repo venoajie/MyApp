@@ -14,6 +14,25 @@ import orjson
 from loguru import logger as log
 
 # user defined formula
+from configuration import id_numbering, config
+from configuration.label_numbering import get_now_unix_time
+from db_management.sqlite_management import (
+    update_status_data,
+    querying_table,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    insert_tables)
+from deribit_get import (
+    telegram_bot_sendtext,
+    get_server_time,
+    get_currencies,
+    get_instruments)
+from strategies.basic_strategy import (
+    get_additional_params_for_open_label,
+    check_if_id_has_used_before,
+    get_additional_params_for_futureSpread_transactions,
+    is_label_and_side_consistent,)
+from strategies import  hedging_spot
+from strategies.config_strategies import (hedging_spot_attributes)
 from transaction_management.deribit.orders_management import (
     labelling_unlabelled_transaction,
     OrderManagement,)
@@ -29,12 +48,6 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     extract_currency_from_text)
-from configuration import id_numbering, config
-from db_management.sqlite_management import (
-    update_status_data,
-    querying_table,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
-    insert_tables)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
     resupply_transaction_log,
@@ -47,23 +60,10 @@ from websocket_management.ws_management import (
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     inserting_open_interest)
-from strategies.basic_strategy import (
-    get_additional_params_for_open_label,
-    check_if_id_has_used_before,
-    get_additional_params_for_futureSpread_transactions,)
-from strategies import  hedging_spot
-from strategies.config_strategies import (hedging_spot_attributes)
-from deribit_get import (
-    telegram_bot_sendtext,
-    get_server_time,
-    get_currencies,
-    get_instruments)
-from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     remove_duplicated_elements,
-    check_if_transaction_has_closed_label_before
-)
+    check_if_transaction_has_closed_label_before)
 
 def deribit_url_main() -> str:
     return "https://www.deribit.com/api/v2/"
@@ -274,7 +274,7 @@ async def update_user_changes(data_orders,
                                           archive_db_table)
         
         if trades:
-            await order_management.saving_filled_orders (trades, orders)
+            await order_management.saving_traded_orders (trades, orders)
             
         else:
             for order in orders:
@@ -282,6 +282,13 @@ async def update_user_changes(data_orders,
                 label= order["label"]
                 instrument_name= order["instrument_name"]
                 
+                everything_consistent= is_label_and_side_consistent(order)
+                log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+                
+                if  not everything_consistent:
+                    await cancel_the_cancellables()
+                    await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
                 if not label:
                     new_order = labelling_unlabelled_transaction(label)
                     
@@ -299,6 +306,9 @@ async def update_user_changes(data_orders,
                     #cancelling previous transaction
                     #resend
                 
+                else:
+                    
+                    await order_management.saving_orders (order)
                 # check if transaction has label. Provide one if not any
             
     #log.debug (f"positions {positions}")

@@ -7,13 +7,30 @@ from datetime import datetime
 from loguru import logger as log
 
 # user defined formula
+
+from configuration.config import main_dotenv
+from deribit_get import GetPrivateData, telegram_bot_sendtext, get_tickers
+from db_management import sqlite_management
+from db_management.sqlite_management import (
+    insert_tables,
+    deleting_row,
+    querying_arithmetic_operator,
+    executing_query_with_return,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query)
+from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
+from strategies import hedging_spot, market_maker as MM
+from strategies.basic_strategy import (
+    is_everything_consistent,
+    get_strategy_config_all,
+    check_db_consistencies,
+    check_if_id_has_used_before,
+    get_basic_closing_paramaters,
+    are_size_and_order_appropriate_to_reduce_position)
 from utilities.system_tools import (
     raise_error_message,
     provide_path_for_file,
     reading_from_db_pickle,
-    sleep_and_restart
-)
-from loguru import logger as log
+    sleep_and_restart)
 from utilities.number_modification import get_closest_value
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
@@ -22,38 +39,11 @@ from utilities.string_modification import (
     extract_currency_from_text,
     parsing_label,
     my_trades_open_sqlite_detailing,
-    parsing_sqlite_json_output,
-)
-from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
-from db_management.sqlite_management import (
-    insert_tables,
-    deleting_row,
-    querying_arithmetic_operator,
-    executing_query_with_return,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query
-)
-
+    parsing_sqlite_json_output,)
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_futures_because_has_delivered,
     clean_up_closed_transactions)
-
-# from market_understanding import futures_analysis
-from db_management import sqlite_management
-from strategies import hedging_spot, market_maker as MM
-from strategies.basic_strategy import (
-    is_everything_consistent,
-    get_strategy_config_all,
-    get_transaction_side,
-    check_db_consistencies,
-    check_if_id_has_used_before,
-    get_basic_closing_paramaters,
-    are_size_and_order_appropriate_to_reduce_position
-    
-)
-
-from deribit_get import GetPrivateData, telegram_bot_sendtext, get_tickers
-from configuration.config import main_dotenv
 
 ONE_MINUTE: int = 60000
 ONE_PCT: float = 1 / 100
@@ -144,7 +134,7 @@ async def send_limit_order(params) -> None:
     private_data = await get_private_data()
 
     #await private_data.get_cancel_order_all()
-    await private_data.send_limit_order(params)
+    #await private_data.send_limit_order(params)
 
 
 async def if_order_is_true(order, instrument: str = None) -> None:
