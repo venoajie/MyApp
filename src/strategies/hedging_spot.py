@@ -246,13 +246,13 @@ class HedgingSpot(BasicStrategy):
         if order_allowed:
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
-            is_label_and_side_consistent= is_label_and_side_consistent(params)
+            label_and_side_consistent= is_label_and_side_consistent(params)
             
             order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", params["label"])
-            if is_label_and_side_consistent and not order_has_sent_before:
+            if label_and_side_consistent and not order_has_sent_before:
                 
                 params.update({"size": size})
-                params.update({"is_label_and_side_consistent": is_label_and_side_consistent})
+                params.update({"is_label_and_side_consistent": label_and_side_consistent})
                            
             else:
                 
