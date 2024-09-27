@@ -16,7 +16,6 @@ from strategies.basic_strategy import (
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     check_if_transaction_has_closed_label_before)
-from websocket_management.ws_management import update_status_data
 
 
 def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
