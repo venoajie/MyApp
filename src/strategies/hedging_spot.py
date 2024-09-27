@@ -248,7 +248,7 @@ class HedgingSpot(BasicStrategy):
             params.update({"label": label_open})
             everything_is_consistent= is_everything_consistent(params)
             
-            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", params["label"], 100)
+            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", params["label"])
             if everything_is_consistent and not order_has_sent_before:
                 
                 params.update({"size": size})

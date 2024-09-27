@@ -15,3 +15,6 @@ strategy_labels= [#represert strategy
     #"marketMakerShort",
     #"marketMakerLong",
        ]
+
+[paths]
+root_dir = "/home/florian"

@@ -31,7 +31,6 @@ from utilities.string_modification import (
     extract_integers_from_text)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
-    summing_transactions_under_label_int,
     get_additional_params_for_futureSpread_transactions,
     get_transaction_label,
     check_db_consistencies,
@@ -410,8 +409,16 @@ def get_transactions_with_closed_label(transactions_all: list) -> list:
     """ """
 
     #log.error (f"transactions_all {transactions_all}")
-    return [] if(transactions_all == None or transactions_all == []) \
+    return [] if(transactions_all is None or transactions_all == []) \
         else [o for o in transactions_all if "closed" in o["label"]]
+
+def transactions_under_label_int(label_integer: int, transactions_all: list) -> str:
+    """ """
+    
+    transactions = [o for o in transactions_all if label_integer in o["label"]]
+    
+    return dict(closed_transactions= transactions,
+                summing_closed_transaction= sum([ o["amount"] for o in transactions]))
 
 def get_closed_open_transactions_under_same_label_int(
     transactions_all: list, label: str
@@ -443,74 +450,56 @@ def check_if_transaction_has_closed_label_before(
     return False if transactions_all == [] else has_closed_label
 
 
-async def clean_up_closed_transactions(instrument_name) -> None:
+async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
-    2. move them to table for closed transactions/my_trades_closed_json
+    2. delete them from active trade db
     """
 
-    where_filter = f"order_id"
-    column_list: str= "instrument_name","label", "amount", where_filter, "trade_id"
-    tabel= "my_trades_all_json"
-    transactions_all: list = await get_query(tabel, 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)                                       
-
-    transaction_with_closed_labels = get_transactions_with_closed_label(
-        transactions_all
-    )
+    #prepare basic parameters for table query
+    where_filter = f"trade_id"
+    column_list: str= "instrument_name","label", "amount", where_filter
     
-    log.error (f"transaction_with_closed_labels {transaction_with_closed_labels}")
+    #querying tables
+    transactions_all: list = await get_query(trade_table, 
+                                             instrument_name, 
+                                             "all",     
+                                             "all", 
+                                             column_list,)                                       
+
+    # filtered transactions with closing labels
+    transaction_with_closed_labels = get_transactions_with_closed_label (transactions_all)
+    
+    log.error (f"closing transactions {transaction_with_closed_labels}")
 
     for transaction in transaction_with_closed_labels:
         
+        label = get_transaction_label(transaction)
 
-        size_to_close = await summing_transactions_under_label_int(
-            transaction, transactions_all
-        )
-        log.error (f"size_to_close {size_to_close}")
+        label_integer = get_label_integer(label)["int"]
+        
+        closed_transactions_all= transactions_under_label_int (label_integer, transactions_all)
+
+        size_to_close = closed_transactions_all["summing_closed_transaction"]
+
+        log.error (f"closed_transactions_all {closed_transactions_all}")
 
         if size_to_close == 0:
-
-            label = get_transaction_label(transaction)
-
-            label_integer = get_label_integer(label)["int"]
             
-            transactions_with_zero_sum = [
-                o for o in transactions_all if label_integer in o["label"]
-            ]
-            
-            log.error (f"""transactions_with_zero_sum {transactions_with_zero_sum}""")
-            
+            transactions_with_zero_sum = closed_transactions_all["closed_transactions"]
+                        
             for transaction in transactions_with_zero_sum:
         
-                order_id = transaction[where_filter]
-                
-                closed_table="my_trades_closed_json"      
-                
-                from_sqlite_closed= await get_query(closed_table, 
-                                                                                         instrument_name, 
-                                                                                         "all", 
-                                                                                         "all", 
-                                                                                         column_list)   
-                id_has_registered_before= [o for o in from_sqlite_closed if o[where_filter] == order_id]      
-                
-                log.warning (f"""transactions_with_zero_sum {transaction["label"]} {order_id}""")
-                log.warning (f"""id_has_registered_before {id_has_registered_before} {id_has_registered_before==[]}""")
+                trade_id = transaction[where_filter]
 
-                if id_has_registered_before==[]:
-                    await insert_tables(closed_table, transaction)
-                    
-                    await deleting_row(
-                        tabel,
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        order_id,
-                    )
+                await deleting_row(
+                    trade_table,
+                    "databases/trading.sqlite3",
+                    where_filter,
+                    "=",
+                    trade_id,
+                )
 
 
 async def count_and_delete_ohlc_rows():

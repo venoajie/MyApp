@@ -19,7 +19,7 @@ from loguru import logger as log
 
 # user defined formula
 import deribit_get
-from transaction_management.deribit import open_orders_management
+from transaction_management.deribit import orders_management
 from utilities import pickling, system_tools, string_modification as str_mod
 from risk_management import position_sizing
 from configuration import config
@@ -81,7 +81,7 @@ class ApplyHedgingSpot:
             open_orders=result_open_orders["result"],
             account_summary=result_account_summary["result"],
             get_positions=result_get_positions["result"],
-            open_orders_instance=open_orders_management.MyOrders(
+            open_orders_instance=orders_management.MyOrders(
                 result_open_orders["result"]
             ),
         )

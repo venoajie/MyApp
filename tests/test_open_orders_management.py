@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from src.transaction_management.deribit import open_orders_management
+from transaction_management.deribit import orders_management
 
 # from portfolio.deribit import open_orders_management
 
@@ -178,8 +178,8 @@ my_orders_with_manual = [
 my_orders_none = []
 
 
-open_orders = open_orders_management.MyOrders(my_orders_all)
-open_orders_blank = open_orders_management.MyOrders(my_orders_none)
+open_orders = orders_management.MyOrders(my_orders_all)
+open_orders_blank = orders_management.MyOrders(my_orders_none)
 
 
 def test_my_orders_api():
@@ -879,7 +879,7 @@ def test_trade_based_on_strategy_label():
         }
     ]
 
-    open_orders = open_orders_management.MyOrders(open_orders_source)
+    open_orders = orders_management.MyOrders(open_orders_source)
 
     strategy = "supplyDemandLong60B"
     assert (
@@ -1451,8 +1451,8 @@ def tst_is_open_trade_has_exit_order():
     ]
 
     open_orders_alt = []
-    open_orders2 = open_orders_management.MyOrders(open_orders_alt)
-    open_orders = open_orders_management.MyOrders(open_orders_source)
+    open_orders2 = orders_management.MyOrders(open_orders_alt)
+    open_orders = orders_management.MyOrders(open_orders_source)
     exclude = ["test", "hedgingSpot"]
     strategies = string_modification.remove_redundant_elements(
         [

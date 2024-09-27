@@ -1954,7 +1954,7 @@ def test_extracting_unique_label_id():
 
 
 def test_closed_open_order_label_in_my_trades_open():
-    from src.transaction_management.deribit import open_orders_management
+    from transaction_management.deribit import orders_management
 
     my_trades_open = [
         {
@@ -2496,7 +2496,7 @@ def test_closed_open_order_label_in_my_trades_open():
         },
     ]
 
-    open_orders = open_orders_management.MyOrders(my_orders)
+    open_orders = orders_management.MyOrders(my_orders)
     open_orderLabelCLosed = open_orders.open_orderLabelCLosed(my_orders)
     for label_closed in open_orderLabelCLosed:
         if label_closed == 1677059533:

@@ -14,7 +14,9 @@ import orjson
 from loguru import logger as log
 
 # user defined formula
-from transaction_management.deribit.open_orders_management import manage_orders
+from transaction_management.deribit.orders_management import (
+    labelling_unlabelled_transaction,
+    OrderManagement,)
 from utilities.number_modification import get_closest_value
 from utilities.pickling import (
     replace_data,
@@ -39,19 +41,21 @@ from websocket_management.ws_management import (
     if_order_is_true,
     if_cancel_is_true,
     compute_notional_value, 
-    check_db_consistencies_and_clean_up_imbalances,
-    )
+    check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     inserting_open_interest)
 from strategies.basic_strategy import (
     get_additional_params_for_open_label,
     check_if_id_has_used_before,
-    is_everything_consistent,
-    get_additional_params_for_futureSpread_transactions)
+    get_additional_params_for_futureSpread_transactions,)
 from strategies import  hedging_spot
 from strategies.config_strategies import (hedging_spot_attributes)
-from deribit_get import telegram_bot_sendtext, get_server_time,get_currencies,get_instruments
+from deribit_get import (
+    telegram_bot_sendtext,
+    get_server_time,
+    get_currencies,
+    get_instruments)
 from configuration.label_numbering import get_now_unix_time
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
@@ -248,27 +252,41 @@ async def update_portfolio(data_orders, currency) -> None:
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
 
-async def update_user_changes(data_orders, currency) -> None:
+async def update_user_changes(data_orders, 
+                              currency, 
+                              order_db_table,
+                              trade_db_table, 
+                              archive_db_table) -> None:
     
-    log.info(f"update_user_changes-START")
-    #log.info (data_orders)
+    log.warning (f"update_user_changes-START")
+    log.info (data_orders)
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
     
-    if trades:
-        log.error (f"trades {trades}")
-        
-        await manage_trades (trades)
-        
     if orders:
         
-        manage_orders
+        order_management= OrderManagement(order_db_table, 
+                                          trade_db_table, 
+                                          archive_db_table)
+        
+        if trades:
+            await order_management.saving_filled_orders (trades, orders)
             
-    if positions:
-        #log.debug (f"positions {positions}")
-        await manage_positions (positions, currency)
+        else:
+            for order in orders:
+                
+                label= order["label"]
+                
+                if not label:
+                    labelling_unlabelled_transaction(label)
+                
+                # check if transaction has label. Provide one if not any
+            
+    #log.debug (f"positions {positions}")
+    await manage_positions (positions, currency)
+        
         
     await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
@@ -349,7 +367,11 @@ class StreamAccountData:
                 instruments_name=await get_instruments_name()                    
             
                 strategy_label= hedging_spot_attributes()[0]["strategy"]       
-                 
+                
+                trade_db_table= "my_trades_all_json"
+                order_db_table= "orders_all_json"
+                archive_db_table: f"my_trades_all_{currency}_json"
+         
                 for currency in currencies_default:
                     """
                     log.debug (f"currency {currency}")
@@ -519,7 +541,11 @@ class StreamAccountData:
 
                             if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
-                                await update_user_changes(data_orders, currency)
+                                await update_user_changes(data_orders, 
+                                                          currency, 
+                                                          order_db_table,
+                                                          trade_db_table, 
+                                                          archive_db_table)
                                 
                                 await resupply_transaction_log(currency)
                                 await resupply_sub_accountdb(currency)

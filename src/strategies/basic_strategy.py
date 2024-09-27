@@ -432,8 +432,7 @@ def combine_vars_to_get_future_spread_label(timestamp: int) -> str:
 
 async def check_if_id_has_used_before(instrument_name: str,
                                       id_checked: str,
-                                      transaction_id: str, 
-                                      max_transactions_for_closed_label: int= 100) -> bool:
+                                      transaction_id: str) -> bool:
     """ 
     id_checked: order_id, trade_id, label
     
@@ -448,7 +447,8 @@ async def check_if_id_has_used_before(instrument_name: str,
     if id_checked=="label":
         column= "label","order_id"
     
-    data_from_db_trade_open = await get_query("my_trades_all_json", 
+    currency = extract_currency_from_text (instrument_name)
+    data_from_db_trade_open = await get_query(f"my_trades_all_{currency}_json", 
                                               instrument_name, 
                                               "all", 
                                               "all", 
@@ -460,15 +460,7 @@ async def check_if_id_has_used_before(instrument_name: str,
                                               "all", 
                                               column)     
     
-    data_from_db_trade_closed = await get_query("my_trades_closed_json", 
-                                                instrument_name, 
-                                                "all", 
-                                                "all", 
-                                                column,
-                                                max_transactions_for_closed_label, 
-                                                "id") 
-    
-    combined_result = data_from_db_trade_open + data_from_db_trade_closed + data_from_db_order_open
+    combined_result = data_from_db_trade_open + data_from_db_order_open
     id=f"{id_checked}"
     
     result_order_id= [o[id] for o in combined_result]
@@ -902,10 +894,8 @@ class BasicStrategy:
             params.update({"size": size})
             #log.info(f"params {params}")
             label = params["label"]
-
-            max_transactions= 100
             
-            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", label, max_transactions)
+            order_has_sent_before = await check_if_id_has_used_before (instrument_name, "label", label)
 
             if order_has_sent_before or size == 0:
                 order_allowed = False
