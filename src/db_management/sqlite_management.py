@@ -311,7 +311,7 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
 
     if data_column == "open_interest":
 
-        query = f"""UPDATE {table} SET {data_column} = ({new_value})  {where_clause};"""
+        query = f"""UPDATE {table} SET (data, '$.{data_column}' = ({new_value})  {where_clause};"""
 
     log.warning (f"query {query}")
     try:
