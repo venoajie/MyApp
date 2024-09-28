@@ -91,8 +91,6 @@ async def ohlc_result_per_time_frame(
 
         if message_channel == f"chart.trades.{instrument_ticker}.1":
 
-            
-            
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
                 await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
@@ -130,11 +128,11 @@ async def ohlc_result_per_time_frame(
 
                 # insert open interest in previous tick to the new tick
                 
-                log.error (f"data_orders {data_orders}")
+                log.error (f"result {result}")
                 log.error (f"open_interest_last_value {open_interest_last_value}")
                 log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
                 
-                await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, open_interest_last_value, "is")
+                await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
                 
                 
         if message_channel == f"chart.trades.{instrument_ticker}.30":
