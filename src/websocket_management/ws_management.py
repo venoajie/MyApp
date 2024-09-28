@@ -496,7 +496,31 @@ async def resupply_sub_accountdb(currency) -> None:
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
  
+   
         
+async def comparing_last_trade_id_in_transaction_log_vs_my_trades_all(trade_db_table: str,
+                                                                      transaction_log_trading: str,) -> bool:
+    """
+    
+    """
+    
+    where_filter= "timestamp"
+    
+    last_tick_from_transaction_log_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
+    last_tick_from_my_trades_query= querying_arithmetic_operator(where_filter, "MAX", trade_db_table)
+    
+    last_tick_from_transaction_log_result = await executing_query_with_return(last_tick_from_transaction_log_query)
+    last_tick_from_my_trades_query_result = await executing_query_with_return(last_tick_from_my_trades_query)
+
+    last_tick_from_transaction_log = last_tick_from_transaction_log_result [0]["MAX (timestamp)"] 
+    last_tick_from_my_trades = last_tick_from_my_trades_query_result [0]["MAX (timestamp)"] 
+
+    return {
+        "last_tick_is_eqv": last_tick_from_transaction_log == last_tick_from_my_trades,
+        "last_tick_from_transaction_log": last_tick_from_transaction_log,
+        "last_tick_from_my_trades": last_tick_from_my_trades,
+    }
+
 async def resupply_transaction_log(currency: str) -> list:
     """ """
 

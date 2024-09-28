@@ -27,9 +27,7 @@ from deribit_get import (
     get_currencies,
     get_instruments)
 from strategies.basic_strategy import (
-    get_additional_params_for_open_label,
     check_if_id_has_used_before,
-    get_additional_params_for_futureSpread_transactions,
     is_label_and_side_consistent,)
 from strategies import  hedging_spot
 from strategies.config_strategies import (hedging_spot_attributes)
@@ -348,56 +346,9 @@ class StreamAccountData:
                 strategy_label= hedging_spot_attributes()[0]["strategy"]       
                 
                 trade_db_table= "my_trades_all_json"
-                order_db_table= "orders_all_json"
-                
+                order_db_table= "orders_all_json"                
          
                 for currency in currencies_default:
-                    """
-                    log.debug (f"currency {currency}")
-                    first_tick_fr_sqlite= 1720107788642
-                    transaction_log= await get_transaction_log (currency, 
-                                                first_tick_fr_sqlite-1, 
-                                                1000)
-                    
-                    column_list: str= "trade_id","label"
-                    
-                    from_sqlite_open= await get_query("my_trades_all_json", 
-                                                    currency, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_list)                                       
-
-                    from_sqlite_closed = await get_query("my_trades_closed_json", 
-                                                        currency, 
-                                                        "all", 
-                                                        "all", 
-                                                        column_list,
-                                                        300, 
-                                                        "id")    
-                    
-                    combine=from_sqlite_closed + from_sqlite_open
-                    for transaction in transaction_log:
-                        transaction=remove_dict_elements(transaction,"info")
-                        trade_id= transaction["trade_id"]
-                        label= [ o for o in combine if o["trade_id"]==trade_id]
-                        log.info (f"transaction {transaction}")
-                        log.error (f"label {label}")
-                        if label !=[]:
-                            transaction.update ({"label":label[0]})
-
-                        else:
-                            type_trade= transaction["type"]
-                            log.error (f"type {type_trade}")
-                            timestamp= transaction["timestamp"]
-                            log.error (f"timestamp {timestamp}")
-                            label= f"custom{type_trade.title()}-{timestamp})"
-                            transaction.update ({"label":label})
-                        log.error (f"transaction {transaction}")
-                        
-                        table= f"transaction_log_{currency.lower()}_json"
-                        
-                        await insert_tables(table, transaction)
-                    """
                     
                     await resupply_transaction_log(currency)
                     await resupply_sub_accountdb(currency)
@@ -513,6 +464,7 @@ class StreamAccountData:
                             currency_upper=currency.upper()
                             
                             archive_db_table= f"my_trades_all_{currency_lower}_json"
+                            
                             transaction_log_trading= f"transaction_log_{currency_lower}_json"
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
@@ -572,6 +524,12 @@ class StreamAccountData:
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
                                         await inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_OHLC1, data_orders)
+                                        
+                                        #! is_transactionlog_vs_sub_accounts_ok
+                                        #is_transactionlog_vs_my_trd_curr_ok
+                                        #is_transactionlog_vs_my_trd_all_ok
+                                        #is_my_orders_all_vs_sub_accounts_ok
+                                        
                                             
                                         try:                                          
                                                                                         
