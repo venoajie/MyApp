@@ -318,7 +318,7 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
 
             query = f"""UPDATE {table} SET {data_column} = ({new_value})  {where_clause};"""
 
-    log.warning (f"query {query}")
+    #log.warning (f"query {query}")
     try:
 
         async with aiosqlite.connect(

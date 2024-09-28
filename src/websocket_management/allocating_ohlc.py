@@ -76,7 +76,7 @@ async def ohlc_result_per_time_frame(
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
                 
-                log.debug (f"data_orders {data_orders}")
+                #log.debug (f"data_orders {data_orders}")
                 await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
                 
             # new tick ohlc
@@ -108,9 +108,9 @@ async def ohlc_result_per_time_frame(
 
                 # insert open interest in previous tick to the new tick
                 
-                log.error (f"result {result}")
-                log.error (f"open_interest_last_value {open_interest_last_value}")
-                log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
+                #log.error (f"result {result}")
+                #log.error (f"open_interest_last_value {open_interest_last_value}")
+                #log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
                 
                 await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
                 
