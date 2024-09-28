@@ -122,7 +122,8 @@ def are_size_and_order_appropriate_to_reduce_position(
     
     return ordering_is_ok
 
-def positions_and_orders_add(current_size: int, current_orders_size: int) -> int:
+def positions_and_orders_add(current_size: int, 
+                             current_orders_size: int) -> int:
     """ """
 
     return current_size + current_orders_size
@@ -137,7 +138,9 @@ def proforma_size_add(
     )
 
 def are_size_and_order_appropriate_to_add_position(
-    current_size_or_open_position: float, current_orders_size: int, next_orders_size: int, 
+    current_size_or_open_position: float, 
+    current_orders_size: int, 
+    next_orders_size: int, 
     notional: float= None) -> bool:
     """ """
     

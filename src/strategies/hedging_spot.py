@@ -223,7 +223,10 @@ class HedgingSpot(BasicStrategy):
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_to_add_position(
-                sum_my_trades, sum_orders, size, notional
+                sum_my_trades, 
+                sum_orders, 
+                size, 
+                notional
             )
         )
 
