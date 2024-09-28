@@ -13,7 +13,6 @@ import requests
 from db_management.sqlite_management import (
     update_status_data,
     querying_last_open_interest,
-    deleting_row,
     querying_arithmetic_operator,
     executing_query_with_return,
     insert_tables,
@@ -64,16 +63,6 @@ async def ohlc_result_per_time_frame(
         WHERE_FILTER_TICK, "MAX", TABLE_OHLC1
     )
 
-    last_tick_query_ohlc30: str = querying_arithmetic_operator(
-        WHERE_FILTER_TICK, "MAX", TABLE_OHLC30
-    )
-    last_tick_query_ohlc60: str = querying_arithmetic_operator(
-        WHERE_FILTER_TICK, "MAX", TABLE_OHLC60
-    )
-
-    last_tick_query_ohlc1D: str = querying_arithmetic_operator(
-        WHERE_FILTER_TICK, "MAX", TABLE_OHLC1D
-    )
 
     last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
@@ -134,65 +123,6 @@ async def ohlc_result_per_time_frame(
                 
                 await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
                 
-                
-        if message_channel == f"chart.trades.{instrument_ticker}.30":
-
-            last_tick30_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc30)
-
-            if last_tick30_fr_sqlite == last_tick_fr_data_orders:
-
-                await deleting_row(
-                    TABLE_OHLC30,
-                    DATABASE,
-                    WHERE_FILTER_TICK,
-                    "=",
-                    last_tick30_fr_sqlite,
-                )
-
-                await insert_tables(TABLE_OHLC30, data_orders)
-
-            else:
-                await insert_tables(TABLE_OHLC30, data_orders)
-
-        if message_channel == f"chart.trades.{instrument_ticker}.60":
-
-            last_tick60_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc60)
-
-            if last_tick60_fr_sqlite == last_tick_fr_data_orders:
-
-                await deleting_row(
-                    TABLE_OHLC60,
-                    DATABASE,
-                    WHERE_FILTER_TICK,
-                    "=",
-                    last_tick60_fr_sqlite,
-                )
-
-                await insert_tables(TABLE_OHLC60, data_orders)
-
-            else:
-                await insert_tables(TABLE_OHLC60, data_orders)
-
-        if message_channel == f"chart.trades.{instrument_ticker}.1D":
-
-            last_tick1D_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc1D)
-
-            if last_tick1D_fr_sqlite == last_tick_fr_data_orders:
-
-                await deleting_row(
-                    TABLE_OHLC1D,
-                    DATABASE,
-                    WHERE_FILTER_TICK,
-                    "=",
-                    last_tick1D_fr_sqlite,
-                )
-
-                await insert_tables(TABLE_OHLC1D, data_orders)
-
-            else:
-                await insert_tables(TABLE_OHLC1D, data_orders)
-
-
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
 

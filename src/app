@@ -392,24 +392,6 @@ class StreamAccountData:
                                 ws_channel=f"chart.trades.{instrument}.1",
                             )
                         )
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"chart.trades.{instrument}.30",
-                            )
-                        )
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"chart.trades.{instrument}.60",
-                            )
-                        )
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"chart.trades.{instrument}.1D",
-                            )
-                        )
                         
                 while self.websocket_client.open:
                     # Receive WebSocket messages
@@ -486,9 +468,6 @@ class StreamAccountData:
                                 await check_db_consistencies_and_clean_up_imbalances(currency)                           
                             
                             TABLE_OHLC1: str = f"ohlc1_{currency_lower}_perp_json"
-                            TABLE_OHLC30: str = f"ohlc30_{currency_lower}_perp_json"
-                            TABLE_OHLC60: str = f"ohlc60_{currency_lower}_perp_json"
-                            TABLE_OHLC1D: str = f"ohlc1D_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
                                                         
@@ -501,13 +480,12 @@ class StreamAccountData:
                                                                  instrument_ticker,
                                                                 data_orders,
                                                                 TABLE_OHLC1,
-                                                                TABLE_OHLC30,
-                                                                TABLE_OHLC60,
-                                                                TABLE_OHLC1D,
                                                                 WHERE_FILTER_TICK,
                                                                 DATABASE
                                                                 )
+                                
                             instrument_ticker = (message_channel)[19:]                  
+                            
                             if (
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"
