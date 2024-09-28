@@ -41,6 +41,7 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
 def determine_size(instrument_name: str, side: str, notional: float, factor: float) -> int:
     """ """
     sign = ensure_sign_consistency(side)
+    log.error  (f"side {side} sign {sign}")
     proposed_size= max(1, int(notional * factor)) * sign
     
     return size_rounding(instrument_name, proposed_size)
