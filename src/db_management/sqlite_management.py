@@ -280,7 +280,7 @@ def querying_additional_params(table: str = "supporting_items_json") -> str:
     return f"""SELECT JSON_EXTRACT (data, '$.label') AS label, JSON_EXTRACT (data, '$.take_profit')  AS take_profit FROM {table}"""
 
 
-def querying_last_open_interest(
+def querying_last_open_interest_tick(
     last_tick: int, table: str = "ohlc1_eth_perp_json"
 ) -> str:
 

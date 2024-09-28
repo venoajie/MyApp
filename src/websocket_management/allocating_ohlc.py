@@ -12,7 +12,7 @@ import requests
 
 from db_management.sqlite_management import (
     update_status_data,
-    querying_last_open_interest,
+    querying_last_open_interest_tick,
     querying_arithmetic_operator,
     executing_query_with_return,
     insert_tables,
@@ -21,7 +21,7 @@ from db_management.sqlite_management import (
 from utilities.system_tools import raise_error_message
 
 
-async def last_open_interest_fr_sqlite(last_tick_query_ohlc1) -> float:
+async def last_open_interest_tick_fr_sqlite(last_tick_query_ohlc1) -> float:
     """ """
     try:
         last_open_interest = await executing_query_with_return(last_tick_query_ohlc1)
@@ -75,6 +75,8 @@ async def ohlc_result_per_time_frame(
 
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
+                
+                log.debug (f"data_orders {data_orders}")
                 await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
                 
             # new tick ohlc
@@ -92,14 +94,10 @@ async def ohlc_result_per_time_frame(
                     #log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
                 
                 # prepare query
-                open_interest_last_value_query = querying_last_open_interest(
-                    last_tick1_fr_sqlite, TABLE_OHLC1
-                )
+                open_interest_last_value_query = querying_last_open_interest_tick (last_tick1_fr_sqlite, TABLE_OHLC1)
 
                 # get current oi
-                open_interest_last_value = await last_open_interest_fr_sqlite(
-                    open_interest_last_value_query
-                )
+                open_interest_last_value = await last_open_interest_tick_fr_sqlite (open_interest_last_value_query)
 
                 # insert new ohlc data
                 await insert_tables(TABLE_OHLC1, data_orders)
