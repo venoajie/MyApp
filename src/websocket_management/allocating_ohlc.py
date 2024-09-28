@@ -7,7 +7,7 @@ import asyncio
 
 import json
 from utilities.string_modification import (transform_nested_dict_to_list)
-
+from loguru import logger as log
 import requests
 
 from db_management.sqlite_management import (
@@ -91,7 +91,7 @@ async def ohlc_result_per_time_frame(
 
         if message_channel == f"chart.trades.{instrument_ticker}.1":
 
-            from loguru import logger as log
+            
             
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
@@ -214,6 +214,9 @@ async def inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_O
                 last_tick_query_ohlc1
             )
             
+            log.debug (f"open_interest_last_value {open_interest_last_value}")
+            log.debug (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
+                
             await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
 
     except Exception as error:
