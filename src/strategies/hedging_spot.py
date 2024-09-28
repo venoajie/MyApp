@@ -185,7 +185,6 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional
         )
-        #log.info  (f"params {params}")
         hedging_attributes= hedging_spot_attributes()[0]
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -220,6 +219,9 @@ class HedgingSpot(BasicStrategy):
         my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
+        
+        log.info  (f"sum_my_trades {sum_my_trades} size {size} notional {notional}")
+        log.info  (f"params {params}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate_to_add_position(

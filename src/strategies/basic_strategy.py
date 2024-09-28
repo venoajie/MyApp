@@ -129,7 +129,8 @@ def positions_and_orders_add(current_size: int,
     return current_size + current_orders_size
 
 def proforma_size_add(
-    current_size: int, current_orders_size: int, next_orders_size: int
+    current_size: int, current_orders_size: int, 
+    next_orders_size: int
 ) -> int:
     """ """
 
