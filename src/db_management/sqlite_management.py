@@ -301,6 +301,11 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
     #table: str = "my_trades_all_json"
     #column_name = "data"
     #new_value = True
+    
+    query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} 
+        
+        {filter_value};"""
+
     if operator==None:
         where_clause= f"WHERE JSON_EXTRACT(data,'$.{filter}')  LIKE '%{filter_value}'"
      
@@ -309,9 +314,13 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
 
     query = f"""UPDATE {table} SET data = JSON_REPLACE (data, '$.{data_column}', {new_value}) {where_clause};"""
 
-    if data_column == "open_interest":
+    if "ohlc" in table:
 
-        query = f"""UPDATE {table} SET {data_column} = ({new_value})  {where_clause};"""
+        query = f"""UPDATE {table} SET {data_column} = JSON_REPLACE ('{json.dumps(new_value)}')   {where_clause};"""
+
+        if data_column == "open_interest":
+
+            query = f"""UPDATE {table} SET {data_column} = ({new_value})  {where_clause};"""
 
     log.warning (f"query {query}")
     try:
