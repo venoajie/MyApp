@@ -130,6 +130,7 @@ async def ohlc_result_per_time_frame(
 
                 # insert open interest in previous tick to the new tick
                 
+                log.error (f"data_orders {data_orders}")
                 log.error (f"open_interest_last_value {open_interest_last_value}")
                 log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
                 
