@@ -302,10 +302,6 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
     #column_name = "data"
     #new_value = True
     
-    query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} 
-        
-        {filter_value};"""
-
     if operator==None:
         where_clause= f"WHERE JSON_EXTRACT(data,'$.{filter}')  LIKE '%{filter_value}'"
      
