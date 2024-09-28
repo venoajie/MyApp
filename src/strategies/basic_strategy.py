@@ -790,7 +790,7 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
         
         if "hedgingSpot" not in self.strategy_label:
-            params.update({"everything_is_consistent": is_everything_consistent(params)})
+            params.update({"everything_is_consistent": are_size_and_order_appropriate_to_add_position(params)})
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
      

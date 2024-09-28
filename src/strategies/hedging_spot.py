@@ -38,9 +38,10 @@ def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
     return abs(hedged_value / notional)
 
 
-def determine_size(instrument_name: str, notional: float, factor: float) -> int:
+def determine_size(instrument_name: str, side: str, notional: float, factor: float) -> int:
     """ """
-    proposed_size= max(1, int(notional * factor))
+    sign = ensure_sign_consistency(side)
+    proposed_size= max(1, int(notional * factor)) * sign
     
     return size_rounding(instrument_name, proposed_size)
 
@@ -58,6 +59,10 @@ def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> 
 
     return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
 
+
+def ensure_sign_consistency(side) -> float:
+    """ """
+    return -1 if side == "sell" else 1
 
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
@@ -205,7 +210,7 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
 
-        size = determine_size(instrument_name, notional, SIZE_FACTOR)
+        size = determine_size(instrument_name, params["side"], notional, SIZE_FACTOR)
 
         open_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                            currency.upper(), 
@@ -276,7 +281,7 @@ class HedgingSpot(BasicStrategy):
             
             if label_and_side_consistent and not order_has_sent_before:
                 
-                params.update({"size": size})
+                params.update({"size": abs(size)})
                 params.update({"is_label_and_side_consistent": label_and_side_consistent})
                            
             else:
