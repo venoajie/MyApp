@@ -307,7 +307,7 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
     else:
         where_clause= f"WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value}"
 
-    query = f"""UPDATE {table} SET data = JSON_REPLACE (data, {new_value}) {where_clause};"""
+    query = f"""UPDATE {table} SET data = JSON_REPLACE (data, '$.{data_column}', {new_value}) {where_clause};"""
 
     if data_column == "open_interest":
 
