@@ -215,7 +215,7 @@ async def inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_O
                 last_tick_query_ohlc1
             )
             
-            log.debug (f"open_interest_last_value {open_interest_last_value}")
+            log.debug (f"open_interest_last_value {data_orders}")
             log.debug (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
                 
             await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
