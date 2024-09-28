@@ -4,7 +4,7 @@
 
 # built ins
 import asyncio
-
+from loguru import logger as log
 from db_management.sqlite_management import (
     replace_row,
     querying_last_open_interest,
@@ -84,6 +84,9 @@ async def ohlc_result_per_time_frame(
 
             # refilling current ohlc table with updated data
             if last_tick1_fr_sqlite == last_tick_fr_data_orders:
+                
+                log.error (f"data_orders {data_orders}")
+                
 
                 await replace_row(
                     data_orders,
