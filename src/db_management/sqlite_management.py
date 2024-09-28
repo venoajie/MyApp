@@ -292,35 +292,6 @@ def querying_hedged_strategy(table: str = "my_trades_all_json") -> str:
     return f"SELECT * from {table} where not (label LIKE '%value1%' or label LIKE '%value2%' or label LIKE'%value3%');"
 
 
-async def replace_row(
-    new_value: dict,
-    column_name: str = "data",
-    table: str = "ohlc1_eth_perp_json",
-    database: str = "databases/trading.sqlite3",
-    filter: str = None,
-    operator=None,
-    filter_value=None,
-) -> list:
-    """ """
-
-    try:
-
-        query_table = f"""UPDATE {table} SET {column_name} = json_replace('{json.dumps(new_value)}')  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} 
-        
-        {filter_value};"""
-
-        if column_name == "open_interest":
-
-            query_table = f"""UPDATE {table} SET {column_name} = ({new_value})  WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value};"""
-            # print (f'query_table {query_table}')
-
-        async with aiosqlite.connect(database, isolation_level=None) as db:
-            await db.execute(query_table)
-    # CREATE INDEX tick_index ON  ohlc1_eth_perp_json (tick);
-    except Exception as error:
-        print(f"replace_row {error}")
-        await telegram_bot_sendtext("sqlite failed replace_row", "failed_order")
-
 async def update_status_data(table: str, data_column: str, filter: str, filter_value: int, new_value, operator=None) -> None:
     """
     https://www.beekeeperstudio.io/blog/sqlite-json-with-text
@@ -336,7 +307,7 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
     else:
         where_clause= f"WHERE  JSON_EXTRACT (data, '$.{filter}') {operator} {filter_value}"
 
-    query = f"""UPDATE {table} SET data = JSON_REPLACE (data, '$.{data_column}', {new_value}) {where_clause};"""
+    query = f"""UPDATE {table} SET data = JSON_REPLACE (data, {new_value}) {where_clause};"""
 
     if data_column == "open_interest":
 
