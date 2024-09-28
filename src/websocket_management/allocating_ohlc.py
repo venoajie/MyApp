@@ -52,9 +52,6 @@ async def ohlc_result_per_time_frame(
     instrument_ticker,
     data_orders,
     TABLE_OHLC1: str,
-    TABLE_OHLC30: str,
-    TABLE_OHLC60: str,
-    TABLE_OHLC1D: str,
     WHERE_FILTER_TICK: str = "tick",
     DATABASE: str = "databases/trading.sqlite3",
 ) -> None:
@@ -68,11 +65,7 @@ async def ohlc_result_per_time_frame(
 
     last_tick_fr_data_orders: int = data_orders["tick"]
 
-    if (
-        TABLE_OHLC30 != None
-        or TABLE_OHLC1 != None
-        or TABLE_OHLC60 != None
-        or TABLE_OHLC1 != None
+    if (TABLE_OHLC1 != None
     ):
         #print(f"allocating ohlc message_channel {message_channel} instrument_ticker {instrument_ticker}")
         #print(f"last_tick_fr_data_orders {last_tick_fr_data_orders} last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
