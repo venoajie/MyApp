@@ -150,10 +150,10 @@ async def run_every_15_seconds() -> None:
             
             
             if resolution == "1D":
-                delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
+                delta= (end_timestamp - start_timestamp)/(one_minute * 60 * 24)
         
             elif resolution == "4H":
-                delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
+                delta= (end_timestamp - start_timestamp)/(one_minute *  60 * 4)
         
             else:
                 delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
