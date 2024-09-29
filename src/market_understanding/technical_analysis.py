@@ -26,13 +26,6 @@ from utilities.string_modification import (
 # from loguru import logger as log
 
 
-async def querying_label_and_size(table) -> list:
-    """ """
-
-    # execute query
-    return await executing_label_and_size_query(table)
-
-
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
 
