@@ -116,7 +116,9 @@ def are_size_and_order_appropriate(
     current_orders_size: int, 
     next_orders_size: int, 
     max_position: float= None) -> bool:
-    """ """
+    """ 
+    purpose: add_position/reduce_position
+    """
     
     proforma  = proforma_size(current_size_or_open_position, current_orders_size, next_orders_size) 
     #log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} notional  {notional} (proforma) < abs(notional)   {abs(proforma) < (notional) }")
@@ -774,7 +776,7 @@ class BasicStrategy:
             params.update({"entry_price": bid_price})
         
         if "hedgingSpot" not in self.strategy_label:
-            params.update({"everything_is_consistent": are_size_and_order_appropriate_to_add_position(params)})
+            params.update({"everything_is_consistent": are_size_and_order_appropriate (params)})
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
      

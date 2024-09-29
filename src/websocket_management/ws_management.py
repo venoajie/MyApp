@@ -25,7 +25,7 @@ from strategies.basic_strategy import (
     check_db_consistencies,
     check_if_id_has_used_before,
     get_basic_closing_paramaters,
-    are_size_and_order_appropriate_to_reduce_position)
+    are_size_and_order_appropriate)
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from utilities.system_tools import (
     raise_error_message,
@@ -448,9 +448,10 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                 log.error (f"sum_transactions_from_other_side {sum_transactions_from_other_side}")
                                 log.error (f"orders_from_other_side {orders_from_other_side}")
                                 log.error (basic_closing_paramaters["size"])
-                                size_and_order_appropriate = are_size_and_order_appropriate_to_reduce_position(sum_transactions_from_other_side,
-                                                                                                               orders_from_other_side,
-                                                                                                               basic_closing_paramaters["size"])
+                                size_and_order_appropriate = are_size_and_order_appropriate("reduce_position",
+                                                                                            sum_transactions_from_other_side,
+                                                                                            orders_from_other_side,
+                                                                                            basic_closing_paramaters["size"])
                                 
                                 
                                 log.error (f"size_and_order_appropriate {size_and_order_appropriate}")
