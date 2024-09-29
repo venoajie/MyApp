@@ -500,14 +500,9 @@ class StreamAccountData:
                                     
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
-                                        
-                                        
-
                                         if "open_interest" in data_orders:
-                                            log.debug(data_orders)
+                                            await inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_OHLC1, data_orders)
 
-                                        
-                                        
                                         #! is_transactionlog_vs_sub_accounts_ok
                                         #is_transactionlog_vs_my_trd_curr_ok
                                         #is_transactionlog_vs_my_trd_all_ok
