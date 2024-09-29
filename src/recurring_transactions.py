@@ -125,7 +125,7 @@ async def run_every_15_seconds() -> None:
 
         await insert_market_condition_result(instrument_name, WINDOW, RATIO)
         
-        time_frame= [3,5,15,60,30,"1D", "4H"]
+        time_frame= [3,5,15,60,30,"1D"]
             
         ONE_SECOND = 1000
         
@@ -149,9 +149,6 @@ async def run_every_15_seconds() -> None:
             
             if resolution == "1D":
                 delta= (end_timestamp - start_timestamp)/(one_minute * 60 * 24)
-        
-            elif resolution == "4H":
-                delta= (end_timestamp - start_timestamp)/(one_minute *  60 * 4)
         
             else:
                 delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
