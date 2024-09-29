@@ -324,8 +324,8 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
             await db.execute(query)
 
     except Exception as error:
-        log.error (f"update column {error}")
-        log.info (f"query {query}")
+        log.error (f" ERROR {error}")
+        log.info (f"query update status data{query}")
 
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         # await telegram_bot_sendtext(f"sqlite operation","failed_order")
