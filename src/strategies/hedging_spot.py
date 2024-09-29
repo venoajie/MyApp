@@ -334,9 +334,12 @@ class HedgingSpot(BasicStrategy):
         bearish = market_condition["falling_price"]
 
         exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
-            market_condition, ask_price, bid_price, selected_transaction
+            market_condition, 
+            ask_price, 
+            bid_price, 
+            selected_transaction,
         )
-        
+        log.error (f"exit_params {exit_params}")
         my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
         sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
