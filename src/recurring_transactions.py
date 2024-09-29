@@ -135,12 +135,6 @@ async def run_every_15_seconds() -> None:
         
         for resolution in time_frame:
             
-            if resolution == "1D":
-                resolution = 60 * 24
-        
-            if resolution == "4H":
-                resolution = 60 * 4
-        
             table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json" 
             
             log.debug (f"table_ohlc {table_ohlc}")         
@@ -154,6 +148,12 @@ async def run_every_15_seconds() -> None:
             #log.error (f"start_timestamp {start_timestamp}")         
             
             delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
+            
+            if resolution == "1D":
+                delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
+        
+            if resolution == "4H":
+                delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
             
             #log.error (f"delta {delta}")         
             
