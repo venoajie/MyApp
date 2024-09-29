@@ -474,8 +474,7 @@ class StreamAccountData:
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                                                 
-                                await ohlc_result_per_time_frame(message_channel, 
-                                                                 instrument_ticker,
+                                await ohlc_result_per_time_frame(instrument_ticker,
                                                                 data_orders,
                                                                 TABLE_OHLC1,
                                                                 WHERE_FILTER_TICK,

@@ -72,7 +72,6 @@ async def replace_previous_ohlc_using_fix_data(instrument_ticker,
         )
 
 async def ohlc_result_per_time_frame(
-    message_channel,
     instrument_ticker,
     data_orders,
     TABLE_OHLC1: str,
@@ -86,14 +85,15 @@ async def ohlc_result_per_time_frame(
 
     last_tick_fr_data_orders: int = data_orders ["tick"]
     log.debug (f"data_orders {instrument_ticker} {data_orders}")
-    log.warning (f"message_channel {message_channel}")
 
     # refilling current ohlc table with updated data
+    open_interest_is_exist = "PERPETUAL" in instrument_ticker
     refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
     insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
     log.warning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
     log.debug (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} ")
     log.error (f"insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
+    log.info (f"open_interest_is_exist {open_interest_is_exist}")
     
     if refilling_current_ohlc_table_with_updated_streaming_data:
     
@@ -109,7 +109,7 @@ async def ohlc_result_per_time_frame(
                                                     last_tick_fr_data_orders,
                                                     WHERE_FILTER_TICK)
 
-    if "PERPETUAL" in instrument_ticker:
+    if open_interest_is_exist:
         
         currency: str = extract_currency_from_text(instrument_ticker)
         
