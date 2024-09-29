@@ -18,13 +18,11 @@ from loguru import logger as log
 from configuration import id_numbering, config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
-    update_status_data,
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables)
 from deribit_get import (
     telegram_bot_sendtext,
-    get_server_time,
     get_currencies,
     get_instruments)
 from strategies.basic_strategy import (
@@ -61,7 +59,7 @@ from websocket_management.allocating_ohlc import (
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     remove_duplicated_elements,
-    check_if_transaction_has_closed_label_before)
+    )
 
 def deribit_url_main() -> str:
     return "https://www.deribit.com/api/v2/"
@@ -79,6 +77,13 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     return data
 
 
+async def update_db_pkl(path, data_orders, currency) -> None:
+
+    my_path_portfolio = provide_path_for_file(path, currency)
+    
+    if currency_inline_with_database_address(currency,my_path_portfolio):
+        replace_data(my_path_portfolio, data_orders)
+        
 def get_trading_config(file_name: str = "config_strategies.toml") -> list:
     """ """
     config_path = provide_path_for_file (file_name)
@@ -165,22 +170,6 @@ async def get_and_save_currencies()->None:
         error, 10, "app"
         )
         
-        
-async def manage_positions (positions: dict, currency: str) -> None:
-
-    my_path_position = provide_path_for_file("positions", currency)
-    #log.error(f"{str(my_path_position)} {currency.lower()} {currency_inline_with_database_address(currency,my_path_position)}")
-    
-    if currency_inline_with_database_address(currency,my_path_position):
-        replace_data(my_path_position, positions)
-        
-async def update_portfolio(data_orders, currency) -> None:
-
-    my_path_portfolio = provide_path_for_file("portfolio", currency)
-    
-    if currency_inline_with_database_address(currency,my_path_portfolio):
-        replace_data(my_path_portfolio, data_orders)
-
 async def update_user_changes(data_orders, 
                               currency, 
                               order_db_table,
@@ -212,10 +201,10 @@ async def update_user_changes(data_orders,
                 
                 label= order["label"]
                 
-                everything_consistent= is_label_and_side_consistent(order)
-                log.critical (f' ORDERS everything_consistent {everything_consistent} everything_NOT_consistent {not everything_consistent}')
+                label_and_side_consistent= is_label_and_side_consistent(order)
+                log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} everything_NOT_consistent {not label_and_side_consistent}')
                 
-                if  not everything_consistent:
+                if  not label_and_side_consistent:
                     await cancel_the_cancellables()
                     await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
@@ -242,7 +231,7 @@ async def update_user_changes(data_orders,
                 # check if transaction has label. Provide one if not any
             
     #log.debug (f"positions {positions}")
-    await manage_positions (positions, currency)
+    await update_db_pkl("positions", data_orders, currency)
         
     await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
@@ -264,6 +253,8 @@ async def on_restart() -> None:
         
         await resupply_transaction_log(currency)
         await resupply_sub_accountdb(currency)
+        await check_db_consistencies_and_clean_up_imbalances(currency)                           
+                            
     
     #msg= deribit_get.get_cancel_order_all()
     #await self.websocket_client.send(json.dumps(msg))
@@ -427,7 +418,7 @@ class StreamAccountData:
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 # also always performed at restart                                
-                                await update_portfolio(data_orders, currency)
+                                await update_db_pkl("portfolio", data_orders, currency)
 
                                 await resupply_sub_accountdb(currency)    
 
@@ -733,10 +724,7 @@ class StreamAccountData:
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
-        log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        #await asyncio.sleep(5)
-        log.error ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
-
+        
         id = id_numbering.id(operation, ws_channel)
 
         msg: dict = {

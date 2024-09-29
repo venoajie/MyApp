@@ -72,14 +72,6 @@ async def get_private_data(currency: str = None) -> list:
     return GetPrivateData(connection_url, client_id, client_secret, currency)
 
 
-async def get_tickers_instrument(instrument_name: str) -> list:
-    """
-    """
-
-    return get_tickers (instrument_name)
-
-
-
 async def get_account_summary(currency) -> list:
     """ """
 
@@ -200,7 +192,6 @@ async def cancel_the_cancellables(filter: str = None) -> None:
         o["strategy"] for o in params if o["cancellable"] == True
     ]
     
-    log.error (f"cancellable_strategies {cancellable_strategies}  filter {filter}")
     currencies: list = preferred_spot_currencies()
     
     where_filter = f"order_id"
@@ -335,7 +326,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                     
     column_list_order: str="order_id", "label","amount"
     
-    column_list_trade: str= "instrument_name","label", "amount", "price","has_closed_label", "timestamp","trade_id","side","order_id"
+    column_list_trade: str= column_list_order, "instrument_name","price","has_closed_label", "timestamp","trade_id","side"
 
     my_trades_currency: list= await get_query("my_trades_all_json", currency, "all", "all", column_list_trade)
 
@@ -348,9 +339,9 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
     for instrument_name in all_outstanding_instruments:
         log.warning (f"instrument_name {instrument_name} {instrument_name in active_instruments_from_positions}")      
         
-        my_trades_instrument: list= await get_query("my_trades_all_json", instrument_name, "all", "all", column_list_trade)
+        my_trades_instrument: list= [o for o in my_trades_currency if instrument_name in o["instrument_name"]]
         
-        currency=extract_currency_from_text(instrument_name)
+        currency: str = extract_currency_from_text(instrument_name)
             
         order_from_sqlite_open= await get_query("orders_all_json", 
                                                     currency, 
@@ -433,7 +424,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
                                 
                                 basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
                                 basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
-                                tickers= await get_tickers_instrument(basic_closing_paramaters["instrument"])
+                                tickers= await get_tickers (basic_closing_paramaters["instrument"])
                                 
                                 if basic_closing_paramaters["side"]=="sell":
                                     entry_price=tickers["best_ask_price"]
@@ -560,25 +551,6 @@ async def inserting_additional_params(params: dict) -> None:
         await sqlite_management.insert_tables("supporting_items_json", params)
 
 
-def get_last_price(my_trades_open_strategy: list) -> float:
-    """ """
-    my_trades_open_strategy_buy = [
-        o for o in my_trades_open_strategy if o["amount"] > 0
-    ]
-    my_trades_open_strategy_sell = [
-        o for o in my_trades_open_strategy if o["amount"] < 0
-    ]
-    buy_traded_price = [o["price"] for o in my_trades_open_strategy_buy]
-    sell_traded_price = [o["price"] for o in my_trades_open_strategy_sell]
-
-    return {
-        "min_buy_traded_price": 0 if buy_traded_price == [] else min(buy_traded_price),
-        "max_sell_traded_price": (
-            0 if sell_traded_price == [] else max(sell_traded_price)
-        ),
-    }
-
-
 def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
     """ """
     delta_price = abs(abs(last_traded_price) - market_price)
@@ -605,205 +577,4 @@ async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
         await if_order_is_true(labelled_order, instrument_name)
     await sleep_and_restart()
 
-def delta_price_constraint(
-    threshold: float,
-    last_price_all: dict,
-    market_price: float,
-    net_sum_strategy: int,
-    side: str,
-) -> bool:
-    """ """
-    is_reorder_ok = False
-    last_traded_price = None
 
-    if side == "buy":
-        last_traded_price = last_price_all["min_buy_traded_price"]
-        delta_price_exceed_threhold = (
-            delta_price_pct(last_traded_price, market_price) > threshold
-            and market_price < last_traded_price
-        )
-        is_reorder_ok = delta_price_exceed_threhold or net_sum_strategy <= 0
-
-    if side == "sell":
-        last_traded_price = last_price_all["max_sell_traded_price"]
-        delta_price_exceed_threhold = (
-            delta_price_pct(last_traded_price, market_price) > threshold
-            and market_price > last_traded_price
-        )
-        is_reorder_ok = delta_price_exceed_threhold or net_sum_strategy >= 0
-
-    return True if last_traded_price == 0 else is_reorder_ok
-
-
-def get_label_transaction_main(label_transaction_net: list) -> list:
-    """ """
-
-    return remove_redundant_elements(
-        [(parsing_label(o))["main"] for o in label_transaction_net]
-    )
-
-
-def get_trades_within_respective_strategy(my_trades_open: list, label: str) -> list:
-    """ """
-
-    return [o for o in my_trades_open if parsing_label(o["label"])["main"] == label]
-
-
-def get_min_max_price_from_transaction_in_strategy(
-    get_prices_in_label_transaction_main: list,
-) -> list:
-    """ """
-    return dict(
-        max_price=(
-            0
-            if get_prices_in_label_transaction_main == []
-            else max(get_prices_in_label_transaction_main)
-        ),
-        min_price=(
-            0
-            if get_prices_in_label_transaction_main == []
-            else min(get_prices_in_label_transaction_main)
-        ),
-    )
-
-async def closing_transactions(
-    label_transaction_net,
-    strategies,
-    my_trades_open_sqlite,
-    my_trades_open,
-    market_condition,
-) -> float:
-    """ """
-
-    log.critical(f"CLOSING TRANSACTIONS-START")
-
-    my_trades_open_all: list = my_trades_open_sqlite["all"]
-
-    my_trades_open: list = my_trades_open_sqlite["list_data_only"]
-    # log.error(f"my_trades_open {my_trades_open}")
-    # log.error(f"transactions_all_summarized {transactions_all_summarized}")
-
-    label_transaction_main = get_label_transaction_main(label_transaction_net)
-
-    # log.error(f"label_transaction_main {label_transaction_main}")
-
-    for label in label_transaction_main:
-        log.debug(f"label {label}")
-        
-        if label != None:
-
-            my_trades_open_strategy = get_trades_within_respective_strategy(
-                my_trades_open, label
-            )
-
-            get_prices_in_label_transaction_main = [
-                o["price"] for o in my_trades_open_strategy
-            ]
-            max_price = get_min_max_price_from_transaction_in_strategy(
-                get_prices_in_label_transaction_main
-            )["max_price"]
-
-            min_price = get_min_max_price_from_transaction_in_strategy(
-                get_prices_in_label_transaction_main
-            )["min_price"]
-
-            if "Short" in label or "hedging" in label:
-                transaction = [
-                    o for o in my_trades_open_strategy if o["price"] == max_price
-                ]
-            if "Long" in label:
-                transaction = [
-                    o for o in my_trades_open_strategy if o["price"] == min_price
-                ]
-
-            if "futureSpread" not in label:
-                    
-                label = [parsing_label(o["label"])["transaction_net"] for o in transaction][0]
-
-                # result example: 'hedgingSpot'/'supplyDemandShort60'
-                label_main = parsing_label(label)["main"]
-
-                # get startegy details
-                strategy_attr = [o for o in strategies if o["strategy"] == label_main][0]
-
-                my_trades_open_sqlite_transaction_net_strategy: list = (
-                    my_trades_open_sqlite_detailing(
-                        my_trades_open_all, label, "transaction_net"
-                    )
-                )
-
-                open_trade_strategy_label = parsing_sqlite_json_output(
-                    [o["data"] for o in my_trades_open_sqlite_transaction_net_strategy]
-                )
-
-                instrument: list = [o["instrument_name"] for o in open_trade_strategy_label][0]
-
-                ticker: list = reading_from_db("ticker", instrument)
-
-                if ticker != []:
-
-                    # get instrument_attributes
-                    # instrument_attributes_all: list = reading_from_db("instruments", currency)[
-                    #    0
-                    # ]["result"]
-                    # instrument_attributes: list = [
-                    ##    o
-                    #    for o in instrument_attributes_all
-                    #    if o["instrument_name"] == instrument
-                    # ]
-                    # tick_size: float = instrument_attributes[0]["tick_size"]
-                    # taker_commission: float = instrument_attributes[0]["taker_commission"]
-                    # min_trade_amount: float = instrument_attributes[0]["min_trade_amount"]
-                    # contract_size: float = instrument_attributes[0]["contract_size"]
-
-                    index_price: float = ticker[0]["index_price"]
-
-                    # get bid and ask price
-                    best_bid_prc: float = ticker[0]["best_bid_price"]
-                    best_ask_prc: float = ticker[0]["best_ask_price"]
-
-                    if False and "hedgingSpot" in strategy_attr["strategy"]:
-
-                        closest_price = get_closest_value(
-                            get_prices_in_label_transaction_main, best_bid_prc
-                        )
-
-                        if "hedging" in label:
-                            nearest_transaction_to_index = [
-                                o
-                                for o in my_trades_open_strategy
-                                if o["price"] == closest_price
-                            ]
-
-                        log.debug(
-                            f" {label_main} closest_price {closest_price} best_bid_prc {best_bid_prc} pct diff {abs(closest_price-best_bid_prc)/closest_price}"
-                        )
-
-                        hedging = hedging_spot.HedgingSpot(label_main)
-
-                        send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                            market_condition,
-                            index_price,
-                            best_ask_prc,
-                            best_bid_prc,
-                            nearest_transaction_to_index,
-                        )
-
-                        await if_order_is_true(send_closing_order, instrument)
-
-                    if "marketMaker" in strategy_attr["strategy"] and False:
-
-                        market_maker = MM.MarketMaker(label_main)
-
-                        send_closing_order: dict = (
-                            await market_maker.is_send_exit_order_allowed(
-                                market_condition,
-                                best_ask_prc,
-                                best_bid_prc,
-                                open_trade_strategy_label,
-                            )
-                        )
-                        log.critical(f" send_closing_order {send_closing_order}")
-                        # await if_order_is_true(send_closing_order, instrument)
-
-    log.critical(f"CLOSING TRANSACTIONS-DONE")
