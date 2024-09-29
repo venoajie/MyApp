@@ -46,7 +46,12 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
         )
     return last_tick1_fr_sqlite[0]["MAX (tick)"]
 
-async def replace_previous_ohlc_using_fix_data(TABLE_OHLC1, last_tick_query_ohlc1, last_tick1_fr_sqlite, WHERE_FILTER_TICK) -> int:
+async def replace_previous_ohlc_using_fix_data(instrument_ticker,
+                                               TABLE_OHLC1, 
+                                               last_tick_query_ohlc1, 
+                                               last_tick1_fr_sqlite, 
+                                               last_tick_fr_data_orders, 
+                                               WHERE_FILTER_TICK) -> int:
     """ """
     try:
 
@@ -54,9 +59,8 @@ async def replace_previous_ohlc_using_fix_data(TABLE_OHLC1, last_tick_query_ohlc
 
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
         result = transform_nested_dict_to_list(ohlc_request)
-
-        # update last tick
-        last_tick1_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc1)
+        
+        log.info(f"result {result}")
 
         await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
         
