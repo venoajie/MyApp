@@ -339,28 +339,6 @@ class HedgingSpot(BasicStrategy):
             bid_price, 
             selected_transaction,
         )
-        log.error (f"exit_params {exit_params}")
-        my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-
-        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-        
-        size = exit_params["size"] * ensure_sign_consistency (exit_params["side"])           
-        
-        sum_orders: int = get_transactions_sum(open_orders_label_strategy)
-        
-        size_and_order_appropriate_for_ordering: bool = (
-            are_size_and_order_appropriate (
-                "reduce_position",
-                sum_my_trades, 
-                sum_orders, 
-                size, 
-            )
-        )
-        
-        exit_allowed: bool = size_and_order_appropriate_for_ordering \
-            and exit_params["order_allowed"] and (
-            bullish or strong_bullish
-        )
         
         cancel_allowed: bool = False
         cancel_id: str = None
@@ -372,31 +350,54 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
-        my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-                        
-        hedging_attributes= hedging_spot_attributes()[0]
-        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
-
-        cancel_allowed: bool = is_cancelling_order_allowed(
-            strong_bullish,
-            bearish,
-            waiting_minute_before_cancel,
-            len_orders,
-            open_orders_label_strategy,
-            server_time,
-        )
-        
-        if len_orders != [] and len_orders > 0 and bearish:
-            
-            #convert size to positive sign
-            exit_params.update({"size": abs (size)})
+        if len_orders != [] and len_orders > 0:
             
             log.error (f"order_parameters {exit_params}")
             log.debug (f"cancel_allowed {cancel_allowed}")
             
             #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
+            
+            log.error (f"exit_params {exit_params}")
+    
+            hedging_attributes= hedging_spot_attributes()[0]
+            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
+            cancel_allowed: bool = is_cancelling_order_allowed(
+                strong_bullish,
+                bearish,
+                waiting_minute_before_cancel,
+                len_orders,
+                open_orders_label_strategy,
+                server_time,
+            )
+            
+        order_allowed = exit_params["order_allowed"]
+        
+        if order_allowed:
+        
+            my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
+
+            sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+            
+            size = exit_params["size"] * ensure_sign_consistency (exit_params["side"])           
+            
+            sum_orders: int = get_transactions_sum(open_orders_label_strategy)
+            
+            size_and_order_appropriate_for_ordering: bool = (
+                are_size_and_order_appropriate (
+                    "reduce_position",
+                    sum_my_trades, 
+                    sum_orders, 
+                    size, 
+                )
+            )
+                
+            #convert size to positive sign
+            exit_params.update({"size": abs (size)})
+            
+            exit_allowed: bool = size_and_order_appropriate_for_ordering \
+                 and (bullish or strong_bullish)
 
         return dict(
             order_allowed=exit_allowed,
