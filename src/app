@@ -734,8 +734,8 @@ class StreamAccountData:
         to DBT's API for the specific WebSocket Channel.
         """
         log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        await asyncio.sleep(5)
-        log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+        #await asyncio.sleep(5)
+        log.error ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
 
         id = id_numbering.id(operation, ws_channel)
 
