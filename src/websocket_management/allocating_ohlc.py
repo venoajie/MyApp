@@ -48,7 +48,6 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
 async def replace_previous_ohlc_using_fix_data(instrument_ticker,
                                                TABLE_OHLC1, 
-                                               last_tick_query_ohlc1, 
                                                last_tick1_fr_sqlite, 
                                                last_tick_fr_data_orders, 
                                                WHERE_FILTER_TICK) -> int:
@@ -106,7 +105,11 @@ async def ohlc_result_per_time_frame(
             # new tick ohlc
             else:
                 log.warning (f"data_orders {data_orders}")
-                await replace_previous_ohlc_using_fix_data (TABLE_OHLC1, last_tick_query_ohlc1, last_tick1_fr_sqlite, WHERE_FILTER_TICK)
+                await replace_previous_ohlc_using_fix_data (instrument_ticker,
+                                                            TABLE_OHLC1, 
+                                                            last_tick1_fr_sqlite, 
+                                                            last_tick_fr_data_orders,
+                                                            WHERE_FILTER_TICK)
                 
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
