@@ -374,6 +374,8 @@ class HedgingSpot(BasicStrategy):
             
         order_allowed = exit_params["order_allowed"]
         
+        exit_allowed = False
+        
         if order_allowed:
         
             my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
