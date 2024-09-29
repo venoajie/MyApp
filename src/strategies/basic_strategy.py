@@ -94,66 +94,50 @@ async def get_vwap(ohlc_all, vwap_period) -> dict:
     )
 
 
-def positions_and_orders_reduce(current_size: int, current_orders_size: int) -> int:
-    """ """
-
-    return abs(current_size) - abs(current_orders_size)
-
-
-def proforma_size_reduce(
-    current_size: int, current_orders_size: int, next_orders_size: int
-) -> int:
-    """ """
-
-    return (
-        positions_and_orders_add(current_size, current_orders_size) - abs(next_orders_size) #the sign is +
-    )
-    
-    
-def are_size_and_order_appropriate_to_reduce_position(
-    open_position: float, current_orders_size: int, next_orders_size: int) -> bool:
-    """ 
-    avoid over order when closing position (especially for ordering through loop)
-    """
-    
-    proforma  = proforma_size_add(open_position, current_orders_size, next_orders_size) 
-    
-    ordering_is_ok= abs(proforma) >= 0
-    
-    return ordering_is_ok
-
-def positions_and_orders_add(current_size: int, 
+def positions_and_orders(current_size: int, 
                              current_orders_size: int) -> int:
     """ """
 
     return current_size + current_orders_size
 
-def proforma_size_add(
+def proforma_size(
     current_size: int, current_orders_size: int, 
     next_orders_size: int
 ) -> int:
     """ """
 
     return (
-        positions_and_orders_add(current_size, current_orders_size) - next_orders_size #the sign is +
+        positions_and_orders(current_size, current_orders_size) + next_orders_size #the sign is +
     )
 
-def are_size_and_order_appropriate_to_add_position(
+def are_size_and_order_appropriate(
+    purpose: str,
     current_size_or_open_position: float, 
     current_orders_size: int, 
     next_orders_size: int, 
-    notional: float= None) -> bool:
+    max_position: float= None) -> bool:
     """ """
     
-    proforma  = proforma_size_add(current_size_or_open_position, current_orders_size, next_orders_size) 
+    proforma  = proforma_size(current_size_or_open_position, current_orders_size, next_orders_size) 
     #log.debug (f"proforma  {proforma} current_size  {current_size} current_orders  {current_orders} next_orders  {next_orders} notional  {notional} (proforma) < abs(notional)   {abs(proforma) < (notional) }")
+    ordering_is_ok= False
+        
+    if purpose=="add_position":
     
-    if notional  is not None:
-        ordering_is_ok= abs(proforma) < (notional) 
+        if max_position < 0:
+            ordering_is_ok= (proforma) > (max_position)
+        
+        if max_position > 0:
+            ordering_is_ok= (proforma) < (max_position) 
+        
+    if purpose=="reduce_position":
     
-    else:
-        ordering_is_ok= abs(proforma) <= (current_size_or_open_position) 
-    
+        if current_size_or_open_position < 0:
+            ordering_is_ok= current_size_or_open_position + (proforma) <= 0
+        
+        if current_size_or_open_position > 0:
+            ordering_is_ok= current_size_or_open_position + (proforma) >= 0
+        
     return ordering_is_ok
 
 

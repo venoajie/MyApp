@@ -17,7 +17,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     size_rounding,
     is_label_and_side_consistent,
-    are_size_and_order_appropriate_to_add_position
+    are_size_and_order_appropriate
 )
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query
@@ -33,33 +33,34 @@ def get_transactions_sum(result_strategy_label) -> int:
     return 0 if result_strategy_label == [] else sum([o["amount"] for o in result_strategy_label])
 
 
-def hedged_value_to_notional(notional: float, hedged_value: float) -> float:
+def hedged_value_to_notional(notional: float, 
+                             hedged_value: float) -> float:
     """ """
     return abs(hedged_value / notional)
 
 
-def determine_size(instrument_name: str, side: str, notional: float, factor: float) -> int:
+def determine_opening_size(instrument_name: str, 
+                           side: str, notional: float, 
+                           factor: float) -> int:
     """ """
     sign = ensure_sign_consistency(side)
+    
     proposed_size= max(1, int(notional * factor)) 
     
-    log.error  (f"side {side} sign {sign} proposed_size {proposed_size} {size_rounding(instrument_name, proposed_size)* sign}")
-
     return size_rounding(instrument_name, proposed_size) * sign
 
-def get_bearish_factor(weighted_factor, strong_bearish: bool, bearish: bool) -> float:
+def get_waiting_time_factor(weighted_factor, 
+                            strong_fluctuation: bool, 
+                            some_fluctuation: bool,) -> float:
     """
-    Determine factor for size determination.
-    strong bearish : 10% of total amount
-    bearish        : 5% of total amount
-    neutral        : 1% of total amount
+    Provide factor for size determination.
     """
 
     ONE_PCT = 1 / 100
     
-    BEARISH_FACTOR = weighted_factor["extreme"] * ONE_PCT if strong_bearish else weighted_factor["medium"]  * ONE_PCT
+    BEARISH_FACTOR = weighted_factor["extreme"] * ONE_PCT if strong_fluctuation else weighted_factor["medium"]  * ONE_PCT
 
-    return BEARISH_FACTOR if (strong_bearish or bearish) else ONE_PCT
+    return BEARISH_FACTOR if (strong_fluctuation or some_fluctuation) else ONE_PCT
 
 
 def ensure_sign_consistency(side) -> float:
@@ -88,7 +89,7 @@ def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> 
         (threshold * ONE_PCT * 30) if strong_bearish else (threshold * ONE_PCT * 60)
     )
     
-    print (f"bearish_interval_threshold {bearish_interval_threshold} {ONE_MINUTE * bearish_interval_threshold if (strong_bearish or bearish) else ONE_MINUTE *  threshold}")
+    #print (f"bearish_interval_threshold {bearish_interval_threshold} {ONE_MINUTE * bearish_interval_threshold if (strong_bearish or bearish) else ONE_MINUTE *  threshold}")
 
     return (
         ONE_MINUTE * bearish_interval_threshold
@@ -210,9 +211,9 @@ class HedgingSpot(BasicStrategy):
         weighted_factor= hedging_attributes["weighted_factor"]
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
         
-        SIZE_FACTOR = get_bearish_factor(weighted_factor, strong_bearish, bearish)
+        SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
 
-        size = determine_size(instrument_name, params["side"], notional, SIZE_FACTOR)
+        size = determine_opening_size(instrument_name, params["side"], notional, SIZE_FACTOR)
 
         open_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                            currency.upper(), 
@@ -225,17 +226,19 @@ class HedgingSpot(BasicStrategy):
         
         my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
-        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])        
+        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])     
+           
+        max_position: int = notional * ensure_sign_consistency (params["side"])    
         
-        log.info  (f"sum_my_trades {sum_my_trades} size {size} notional {notional}")
-        log.info  (f"params {params}")
+        log.info  (f"params {params} max_position {max_position}")
         
         size_and_order_appropriate_for_ordering: bool = (
-            are_size_and_order_appropriate_to_add_position(
+            are_size_and_order_appropriate (
+                "add_position",
                 sum_my_trades, 
                 sum_orders, 
                 size, 
-                notional
+                max_position
             )
         )
 
@@ -304,6 +307,7 @@ class HedgingSpot(BasicStrategy):
         ask_price: float,
         bid_price: float,
         selected_transaction: list,
+        server_time: int
     ) -> dict:
         """ """
         {'liquidity': 'M', 'risk_reducing': False, 'order_type': 'limit', 'trade_id': 'ETH-216360019', 'fee_currency': 'ETH', 
@@ -333,7 +337,24 @@ class HedgingSpot(BasicStrategy):
             market_condition, ask_price, bid_price, selected_transaction
         )
 
-        exit_allowed: bool = exit_params["order_allowed"] and (
+
+        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+        
+        size = exit_params["size"] * ensure_sign_consistency (exit_params["side"])           
+        
+        sum_orders: int = get_transactions_sum(open_orders_label_strategy)
+        
+        size_and_order_appropriate_for_ordering: bool = (
+            are_size_and_order_appropriate (
+                "reduce_position",
+                sum_my_trades, 
+                sum_orders, 
+                size, 
+            )
+        )
+        
+        exit_allowed: bool = size_and_order_appropriate_for_ordering \
+            and exit_params["order_allowed"] and (
             bullish or strong_bullish
         )
         
@@ -341,16 +362,35 @@ class HedgingSpot(BasicStrategy):
         cancel_id: str = None
         
         open_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                                                                              currency.upper(), 
-                                                                                                              self.strategy_label,
-                                                                                                              "closed")
+                                                           currency.upper(), 
+                                                           self.strategy_label,
+                                                           "closed")
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
+        my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
+                        
+        hedging_attributes= hedging_spot_attributes()[0]
+        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+
+        cancel_allowed: bool = is_cancelling_order_allowed(
+            strong_bullish,
+            bearish,
+            waiting_minute_before_cancel,
+            len_orders,
+            open_orders_label_strategy,
+            server_time,
+        )
+        
         if len_orders != [] and len_orders > 0 and bearish:
+            
+            #convert size to positive sign
+            exit_params.update({"size": abs (size)})
+            
             log.error (f"order_parameters {exit_params}")
             log.debug (f"cancel_allowed {cancel_allowed}")
-            cancel_allowed: bool = True
+            
+            #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
 
 
