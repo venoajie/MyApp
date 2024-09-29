@@ -336,7 +336,6 @@ class StreamAccountData:
                 instruments_name=await get_futures_instruments_name()                    
                 
                 for instrument in instruments_name:
-                    #log.debug(f"instrument {instrument}")
                     
                     await clean_up_closed_transactions (instrument, trade_db_table)
 
@@ -377,7 +376,7 @@ class StreamAccountData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    #log.warning (message)
+                    log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
@@ -636,9 +635,7 @@ class StreamAccountData:
         """ """
 
         try:
-            
-            log.info (f"data_orders {data_orders}")
-            
+                        
             if data_orders["type"] == "snapshot":
                 replace_data(my_path_ticker, data_orders)
 
