@@ -51,7 +51,7 @@ async def insert_ohlc(currency,
         
         result = transform_nested_dict_to_list(ohlc_request)
         
-        table=f"ohlc{resolution}_{currency}_perp_json"
+        table=f"ohlc{resolution}_{currency.lower()}_perp_json"
 
         for data in result:
             log.debug (f"insert tables {table}")
