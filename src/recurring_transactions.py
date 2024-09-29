@@ -125,7 +125,7 @@ async def run_every_15_seconds() -> None:
 
         await insert_market_condition_result(instrument_name, WINDOW, RATIO)
         
-        time_frame= [3,5,15,60,]
+        time_frame= [1,3,5,15,60,]
             
         ONE_SECOND = 1000
         
@@ -135,13 +135,21 @@ async def run_every_15_seconds() -> None:
         
         for resolution in time_frame:
         
-            table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json"          
+            table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json" 
+            
+            log.error (f"table_ohlc {table_ohlc}")         
             
             last_tick_query_ohlc1: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
 
+            log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc1}")         
+            
             start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
 
+            log.error (f"start_timestamp {start_timestamp}")         
+            
             delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
+            
+            log.error (f"delta {delta}")         
             
             if delta > 1:
                 end_point= ohlc_end_point(instrument_name,
