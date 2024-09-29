@@ -96,7 +96,9 @@ async def ohlc_result_per_time_frame(
             # refilling current ohlc table with updated data
             refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
             insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
-            log.error (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
+            log.warning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
+            log.debug (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} ")
+            log.error (f"insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
             
             if refilling_current_ohlc_table_with_updated_streaming_data:
             
