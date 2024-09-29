@@ -68,8 +68,6 @@ async def replace_previous_ohlc_using_fix_data(instrument_ticker,
             error,
             "Capture market data - failed to fetch last_tick_fr_sqlite",
         )
-    return last_tick1_fr_sqlite[0]["MAX (tick)"]
-
 
 async def ohlc_result_per_time_frame(
     message_channel,
