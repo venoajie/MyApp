@@ -378,6 +378,8 @@ class StreamAccountData:
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
+                            log.warning (message)
+                            
                             if self.refresh_token is None:
 
                                 log.info("Successfully authenticated WebSocket Connection")
