@@ -147,13 +147,16 @@ async def run_every_15_seconds() -> None:
 
             #log.error (f"start_timestamp {start_timestamp}")         
             
-            delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
+            
             
             if resolution == "1D":
                 delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
         
-            if resolution == "4H":
+            elif resolution == "4H":
                 delta= (end_timestamp - start_timestamp)/(one_minute * resolution * 60 * 4)
+        
+            else:
+                delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
             
             #log.error (f"delta {delta}")         
             
