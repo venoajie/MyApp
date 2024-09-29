@@ -80,15 +80,13 @@ async def ohlc_result_per_time_frame(
     DATABASE: str = "databases/trading.sqlite3",
 ) -> None:
 
-    last_tick_query_ohlc1: str = querying_arithmetic_operator(
-        WHERE_FILTER_TICK, "MAX", TABLE_OHLC1
-    )
+    last_tick_query_ohlc1: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", TABLE_OHLC1)
 
+    last_tick1_fr_sqlite: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
 
-    last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
-
-    last_tick_fr_data_orders: int = data_orders["tick"]
+    last_tick_fr_data_orders: int = data_orders ["tick"]
     log.debug (f"data_orders {instrument_ticker} {data_orders}")
+    log.warning (f"message_channel {message_channel}")
 
     # refilling current ohlc table with updated data
     refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
