@@ -87,7 +87,7 @@ async def ohlc_result_per_time_frame(
     log.debug (f"data_orders {instrument_ticker} {data_orders}")
 
     # refilling current ohlc table with updated data
-    open_interest_is_exist = "PERPETUAL" in instrument_ticker
+    open_interest_is_exist = "open_interest" in instrument_ticker
     refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
     insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
     log.warning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
