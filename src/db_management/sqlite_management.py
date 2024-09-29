@@ -99,7 +99,7 @@ async def insert_tables(table_name, params):
                     await db.execute(insert_table_json)
 
     except Exception as error:
-        print(f"insert_tables {table_name} {error}")
+        log.error (f"insert_tables {table_name} {error}")
 
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         # await telegram_bot_sendtext(f"sqlite operation","failed_order")
@@ -184,7 +184,7 @@ async def deleting_row(
             await db.execute(query_table, filter_val)
 
     except Exception as error:
-        print(f"deleting_row {error}")
+        log.error (f"deleting_row {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
@@ -243,7 +243,7 @@ async def deleting_row(
                 await db.execute(query_table, filter_val)
 
     except Exception as error:
-        print(f"deleting_row {query_table} {error}")
+        log.error (f"deleting_row {query_table} {error}")
         await telegram_bot_sendtext("sqlite operation", "failed_order")
         await telegram_bot_sendtext(f"sqlite operation-{query_table}", "failed_order")
 
@@ -327,7 +327,7 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
             await db.execute(query)
 
     except Exception as error:
-        print(f"update column {query} {error}")
+        log.error (f"update column {query} {error}")
 
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         # await telegram_bot_sendtext(f"sqlite operation","failed_order")
