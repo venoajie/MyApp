@@ -4,25 +4,19 @@
 import asyncio
 
 # installed
-from dataclassy import dataclass
 from loguru import logger as log
 
 # user defined formula
 from db_management.sqlite_management import (
-    executing_label_and_size_query,
     querying_hlc_vol,
     executing_query_with_return,
     querying_table,
     querying_ohlc_price_vol,
-    insert_tables,
-)
-from utilities.system_tools import (
-    raise_error_message,
-)
-
+    insert_tables,)
 from utilities.string_modification import (
     extract_currency_from_text)
-
+from utilities.system_tools import (
+    raise_error_message,)
 # from loguru import logger as log
 
 
