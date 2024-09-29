@@ -6,16 +6,18 @@
 import asyncio
 
 import json
-from utilities.string_modification import (transform_nested_dict_to_list)
+from utilities.string_modification import (
+    extract_currency_from_text,
+    transform_nested_dict_to_list,
+    )
 from loguru import logger as log
 import requests
 
 from db_management.sqlite_management import (
-    update_status_data,
+    executing_query_with_return,
+    insert_tables,update_status_data,
     querying_last_open_interest_tick,
     querying_arithmetic_operator,
-    executing_query_with_return,
-    insert_tables,
 )
 
 from utilities.system_tools import raise_error_message
@@ -86,34 +88,35 @@ async def ohlc_result_per_time_frame(
     last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
     last_tick_fr_data_orders: int = data_orders["tick"]
+    log.debug (f"data_orders {instrument_ticker} {data_orders}")
 
-    if (TABLE_OHLC1 != None
-    ):
+    # refilling current ohlc table with updated data
+    refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
+    insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
+    log.warning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
+    log.debug (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} ")
+    log.error (f"insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
+    
+    if refilling_current_ohlc_table_with_updated_streaming_data:
+    
+        await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
+    
+    if insert_new_ohlc_and_replace_previous_ohlc_using_fix_data:
+        
+        await insert_tables(TABLE_OHLC1, data_orders)
+        
+        await replace_previous_ohlc_using_fix_data (instrument_ticker,
+                                                    TABLE_OHLC1, 
+                                                    last_tick1_fr_sqlite, 
+                                                    last_tick_fr_data_orders,
+                                                    WHERE_FILTER_TICK)
 
-        if message_channel == f"chart.trades.{instrument_ticker}.1":
-            log.debug (f"data_orders {data_orders}")
-
-            # refilling current ohlc table with updated data
-            refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
-            insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
-            log.warning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
-            log.debug (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} ")
-            log.error (f"insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
-            
-            if refilling_current_ohlc_table_with_updated_streaming_data:
-            
-                await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, data_orders, "is")
-            
-            if insert_new_ohlc_and_replace_previous_ohlc_using_fix_data:
-                
-                await insert_tables(TABLE_OHLC1, data_orders)
-                
-                await replace_previous_ohlc_using_fix_data (instrument_ticker,
-                                                            TABLE_OHLC1, 
-                                                            last_tick1_fr_sqlite, 
-                                                            last_tick_fr_data_orders,
-                                                            WHERE_FILTER_TICK)
-                
+    if "PERPETUAL" in instrument_ticker:
+        
+        currency: str = extract_currency_from_text(instrument_ticker)
+        
+        await inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_OHLC1, data_orders)
+                                                        
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
 
@@ -122,7 +125,7 @@ async def inserting_open_interest(currency, DATABASE, WHERE_FILTER_TICK, TABLE_O
     """ """
     try:
 
-        if currency_inline_with_database_address(currency,TABLE_OHLC1) and "open_interest" in data_orders:
+        if currency_inline_with_database_address(currency, TABLE_OHLC1) and "open_interest" in data_orders:
         
             open_interest = data_orders["open_interest"]
                             
