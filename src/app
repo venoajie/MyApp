@@ -8,6 +8,7 @@ import asyncio
 import json
 import os
 import tomli
+
 # installed
 import websockets
 import orjson
@@ -41,7 +42,6 @@ from utilities.pickling import (
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
-    sleep_and_restart,
     catch_error_message,)
 from utilities.string_modification import (
     remove_double_brackets_in_list,
@@ -96,26 +96,6 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await telegram_bot_sendtext(bot_message, purpose)
 
-async def convert_status_has_closed_label_from_no_to_yes(instrument_name, filter_trade, trade_id) -> None:
-
-    column_list= "trade_id","has_closed_label"
-    
-    transactions_all: list = await get_query("my_trades_all_json", instrument_name, "all", "all", column_list)
-    
-    has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
-    
-    if not has_closed_label or has_closed_label==0:
-        
-        new_value=True
-        data_column= "has_closed_label"
-        table= "my_trades_all_json"
-        await update_status_data(table, data_column, filter_trade, trade_id, new_value)
-
-async def current_server_time() -> float:
-    """ """
-    current_time = await get_server_time()
-    return current_time["result"]
-
 
 async def get_futures_for_active_currencies () -> list:
     """_summary_
@@ -147,10 +127,10 @@ async def get_futures_for_active_currencies () -> list:
     return remove_double_brackets_in_list(instruments_holder_plc)
     
     
-async def get_instruments_name () -> list:
+async def get_futures_instruments_name () -> list:
     
     active_currencies=  await get_futures_for_active_currencies()
-
+    
     return [o["instrument_name"] for o in active_currencies]
     
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
@@ -264,7 +244,6 @@ async def update_user_changes(data_orders,
     #log.debug (f"positions {positions}")
     await manage_positions (positions, currency)
         
-        
     await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
 
@@ -275,6 +254,20 @@ async def on_restart() -> None:
 
     log.warning("Cancelling selected orders")
     await cancel_the_cancellables()
+    
+    # refresh databases
+    await get_and_save_currencies()                
+
+    currencies_default = get_trading_config() ["spot"]
+    
+    for currency in currencies_default:
+        
+        await resupply_transaction_log(currency)
+        await resupply_sub_accountdb(currency)
+    
+    #msg= deribit_get.get_cancel_order_all()
+    #await self.websocket_client.send(json.dumps(msg))
+    
 
 class StreamAccountData:
 
@@ -327,34 +320,20 @@ class StreamAccountData:
                 await self.ws_auth()
 
                 # Establish restart procedure
-                #
-                # await self.on_restart()
+                await on_restart()
                 
                 # Establish Heartbeat
                 await self.establish_heartbeat()
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
-                
-                # refresh databases
-                await get_and_save_currencies()
-
-                currencies_default = get_trading_config() ["spot"]
-
-                instruments_name=await get_instruments_name()                    
-            
+                            
                 strategy_label= hedging_spot_attributes()[0]["strategy"]       
                 
                 trade_db_table= "my_trades_all_json"
                 order_db_table= "orders_all_json"                
-         
-                for currency in currencies_default:
-                    
-                    await resupply_transaction_log(currency)
-                    await resupply_sub_accountdb(currency)
-                    
-                    #await check_db_consistencies_and_clean_up_imbalances(currency) 
-                
+             
+                instruments_name=await get_futures_instruments_name()                    
                 
                 for instrument in instruments_name:
                     #log.debug(f"instrument {instrument}")
@@ -674,16 +653,7 @@ class StreamAccountData:
                 error,
                 "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
             )
-
-    async def on_restart_(self) -> None:
-        """
-        """
-
-        log.warning("Cancelling all orders")
-        await cancel_the_cancellables()
-        #msg= deribit_get.get_cancel_order_all()
-        #await self.websocket_client.send(json.dumps(msg))
-        
+            
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to

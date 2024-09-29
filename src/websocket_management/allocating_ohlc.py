@@ -7,18 +7,14 @@ import asyncio
 
 import json
 from utilities.string_modification import (
-    extract_currency_from_text,
-    transform_nested_dict_to_list,
-    )
+    transform_nested_dict_to_list,)
 from loguru import logger as log
 import requests
 
 from db_management.sqlite_management import (
     executing_query_with_return,
     insert_tables,update_status_data,
-    querying_last_open_interest_tick,
-    querying_arithmetic_operator,
-)
+    querying_arithmetic_operator,)
 
 from utilities.system_tools import raise_error_message
 
@@ -61,8 +57,6 @@ async def replace_previous_ohlc_using_fix_data(instrument_ticker,
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
         result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]== last_tick1_fr_sqlite][0]
         
-        log.info(f"result {result}")
-
         await update_status_data(TABLE_OHLC1, "data", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
         
     except Exception as error:
@@ -83,15 +77,10 @@ async def ohlc_result_per_time_frame(
     last_tick1_fr_sqlite: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
 
     last_tick_fr_data_orders: int = data_orders ["tick"]
-    #log.debug (f"data_orders {instrument_ticker} {data_orders}")
 
     # refilling current ohlc table with updated data
-
     refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
     insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
-    #ning (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders}")
-    #log.debug (f"refilling_current_ohlc_table_with_updated_streaming_data {refilling_current_ohlc_table_with_updated_streaming_data} ")
-    #log.error (f"insert_new_ohlc_and_replace_previous_ohlc_using_fix_data {insert_new_ohlc_and_replace_previous_ohlc_using_fix_data}")
     
     if refilling_current_ohlc_table_with_updated_streaming_data:
     
@@ -122,16 +111,9 @@ async def inserting_open_interest(currency,
         
             open_interest = data_orders["open_interest"]
                             
-            last_tick_query_ohlc1: str = querying_arithmetic_operator(
-                "tick", "MAX", TABLE_OHLC1
-            )
+            last_tick_query_ohlc1: str = querying_arithmetic_operator("tick", "MAX", TABLE_OHLC1)
 
-            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(
-                last_tick_query_ohlc1
-            )
-            
-            #log.debug (f"open_interest_last_value {data_orders}")
-            #log.debug (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
+            last_tick1_fr_sqlite: int = await last_tick_fr_sqlite(last_tick_query_ohlc1)
                 
             await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, open_interest, "is")
 
