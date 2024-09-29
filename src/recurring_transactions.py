@@ -3,39 +3,35 @@
 
 # built ins
 import asyncio
-
-# import datetime
+import requests
 
 # installed
 import aioschedule as schedule
 import time
-import aiohttp
 from loguru import logger as log
 
 # user defined formula
-from strategies.config_strategies import (strategies, preferred_spot_currencies) 
-from utilities.pickling import replace_data
-
-from utilities.string_modification import (remove_redundant_elements, 
-                                           parsing_label,
-                                           )
-from utilities.system_tools import (catch_error_message, 
-                                    provide_path_for_file)
-from deribit_get import (get_instruments, 
-                         get_currencies, 
-                         get_server_time)
+from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
-    querying_table,
-)
+    insert_tables, querying_arithmetic_operator,)
+from deribit_get import (
+    get_instruments,
+    get_currencies, 
+    get_server_time)
 from market_understanding.technical_analysis import (
-    insert_market_condition_result,
-)
-from websocket_management.ws_management import (
-    closing_transactions
-)
-
-# stop_time = datetime.datetime.now() + datetime.timedelta(hours=1/60)
-
+    insert_market_condition_result,)
+from strategies.config_strategies import (preferred_spot_currencies) 
+from utilities.pickling import replace_data
+from utilities.string_modification import (
+    remove_redundant_elements, 
+    transform_nested_dict_to_list,
+    parsing_label,)
+from utilities.system_tools import (
+    catch_error_message, 
+    provide_path_for_file,)
+from websocket_management.allocating_ohlc import (
+    ohlc_end_point, 
+    last_tick_fr_sqlite,)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -96,40 +92,7 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
             ]
         )
     )
-
-
-async def run_every_3_seconds() -> None:
-    """ """
-
-    await future_spreads("ETH")
     
-    market_condition_all = await querying_table("market_analytics_json-last")
-
-    market_condition = market_condition_all["list_data_only"][0]
-    my_trades_open_sqlite: dict = await querying_table("my_trades_all_json")
-
-    my_trades_open_list_data_only: list = my_trades_open_sqlite["list_data_only"]
-
-    # remove transactions without label
-    my_trades_open = [o for o in my_trades_open_list_data_only if "label" in o]
-    my_trades_open_remove_closed_labels = (
-        []
-        if my_trades_open == []
-        else [o for o in my_trades_open if "closed" not in o["label"]]
-    )
-
-    label_transaction_net = get_label_transaction_net(
-        my_trades_open_remove_closed_labels
-    )
-    await closing_transactions(
-        label_transaction_net,
-        strategies,
-        my_trades_open_sqlite,
-        my_trades_open,
-        market_condition,
-    )
-
-
 async def run_every_5_seconds() -> None:
     """ """
     pass
@@ -154,10 +117,47 @@ async def run_every_15_seconds() -> None:
     
     currencies=  preferred_spot_currencies()
     
+    end_timestamp=     get_now_unix_time()  
+    
     for currency in currencies:
+        
+        instrument_name= f"{currency}-PERPETUAL"
 
-        await insert_market_condition_result(f"{currency}-PERPETUAL", WINDOW, RATIO)
+        await insert_market_condition_result(instrument_name, WINDOW, RATIO)
+        
+        time_frame= [3,5,15,60,]
+            
+        ONE_SECOND = 1000
+        
+        one_minute = ONE_SECOND * 60
+        
+        WHERE_FILTER_TICK: str = "tick"
+        
+        for resolution in time_frame:
+        
+            table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json"          
+            
+            last_tick_query_ohlc1: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
 
+            start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
+
+            delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
+            
+            if delta > 1:
+                end_point= ohlc_end_point(instrument_name,
+                                resolution,
+                                start_timestamp,
+                                end_timestamp,
+                                )
+
+                ohlc_request = requests.get(end_point).json()["result"]
+                
+                result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]> start_timestamp][0]
+                
+                log.info (f"result {result}")
+                
+                await insert_tables(table_ohlc, result)
+        
 
 async def check_and_save_every_60_minutes():
     connection_url: str = "https://www.deribit.com/api/v2/"
@@ -184,21 +184,6 @@ async def check_and_save_every_60_minutes():
 
     except Exception as error:
         catch_error(error)
-
-
-async def get_open_interest_history() -> None:
-    headers = {
-        "accept": "application/json",
-        "coinglassSecret": "877ad9af931048aab7e468bda134942e",
-    }
-    session = aiohttp.ClientSession()
-    time_frame = "m5"
-    symbol = "BTC"
-    currency = "USD"
-    url = f"https://open-api.coinglass.com/public/v2/?symbol={symbol}&time_type=all&currency={currency}"
-
-    async with session.get(url, headers=headers) as resp:
-        print(await resp.text())
 
 
 if __name__ == "__main__":

@@ -17,7 +17,6 @@ from strategies.basic_strategy import (
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     check_if_transaction_has_closed_label_before)
-
 from utilities.string_modification import (
     extract_currency_from_text)
 

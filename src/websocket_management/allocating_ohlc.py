@@ -6,8 +6,6 @@
 import asyncio
 
 import json
-from utilities.string_modification import (
-    transform_nested_dict_to_list,)
 from loguru import logger as log
 import requests
 
@@ -15,8 +13,52 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     insert_tables,update_status_data,
     querying_arithmetic_operator,)
-
+from utilities.string_modification import (
+    transform_nested_dict_to_list,)
 from utilities.system_tools import raise_error_message
+
+def ohlc_end_point(instrument_ticker: str,
+                   resolution: int,
+                   start_timestamp: int,
+                   end_timestamp: int,):
+    
+    url=f"https://deribit.com/api/v2/public/get_tradingview_chart_data?"
+    
+    return  f"{url}end_timestamp={end_timestamp}&instrument_name={instrument_ticker}&resolution={resolution}&start_timestamp={start_timestamp}"
+
+async def recording_multiple_time_frames(instrument_ticker: str,
+                                         table_ohlc: str,
+                                         resolution: int,
+                                         start_timestamp: int, 
+                                         end_timestamp: int, 
+                                         ) -> float:
+    """ """
+    ONE_SECOND = 1000
+    one_minute = ONE_SECOND * 60
+    
+    try:
+        delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
+        
+        if delta > 1:
+            end_point= ohlc_end_point(instrument_ticker,
+                              resolution,
+                              start_timestamp,
+                              end_timestamp,
+                              )
+
+            ohlc_request = requests.get(end_point).json()["result"]
+            result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]> start_timestamp][0]
+            
+            await insert_tables(table_ohlc, result)
+        
+    
+
+    except Exception as error:
+        await raise_error_message(
+            error,
+            "Capture market data - failed to fetch last open_interest",
+        )
+    
 
 
 async def last_open_interest_tick_fr_sqlite(last_tick_query_ohlc1) -> float:
