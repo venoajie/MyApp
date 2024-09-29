@@ -405,8 +405,6 @@ class StreamAccountData:
 
                     elif "method" in list(message):
 
-                        log.warning (message)
-                        
                         # Respond to Heartbeat Message
                         if message["method"] == "heartbeat":
                             await self.heartbeat_response()
@@ -735,7 +733,9 @@ class StreamAccountData:
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
+        log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
         await asyncio.sleep(5)
+        log.error ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
         id = id_numbering.id(operation, ws_channel)
 
