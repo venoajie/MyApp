@@ -57,7 +57,7 @@ async def replace_previous_ohlc_using_fix_data(instrument_ticker,
         ohlc_endPoint = f" https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={last_tick_fr_data_orders}&instrument_name={instrument_ticker}&resolution=1&start_timestamp={last_tick1_fr_sqlite}"
 
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
-        result = transform_nested_dict_to_list(ohlc_request)
+        result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]== last_tick1_fr_sqlite]
         
         log.info(f"result {result}")
 
