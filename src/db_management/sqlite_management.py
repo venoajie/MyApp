@@ -298,9 +298,6 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
     https://www.sqlitetutorial.net/sqlite-json-functions/sqlite-json_replace-function/
     https://stackoverflow.com/questions/75320010/update-json-data-in-sqlite3
     """
-    #table: str = "my_trades_all_json"
-    #column_name = "data"
-    #new_value = True
     
     if operator==None:
         where_clause= f"WHERE JSON_EXTRACT(data,'$.{filter}')  LIKE '%{filter_value}'"
@@ -327,7 +324,8 @@ async def update_status_data(table: str, data_column: str, filter: str, filter_v
             await db.execute(query)
 
     except Exception as error:
-        log.error (f"update column {query} {error}")
+        log.error (f"update column {error}")
+        log.info (f"query {query}")
 
         await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
         # await telegram_bot_sendtext(f"sqlite operation","failed_order")

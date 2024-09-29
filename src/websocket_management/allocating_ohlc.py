@@ -87,11 +87,6 @@ async def ohlc_result_per_time_frame(
                 ohlc_request = requests.get(ohlc_endPoint).json()["result"]
                 result = transform_nested_dict_to_list(ohlc_request)
                 
-                #log.debug (f"ohlc {result}")
-                #if "PERPETUAL" in instrument_ticker:
-                    #log.debug (f"ohlc {result}")
-                
-                    #log.error (f"{instrument_ticker} last_tick1_fr_sqlite {last_tick1_fr_sqlite} last_tick_fr_data_orders {last_tick_fr_data_orders} {last_tick1_fr_sqlite == last_tick_fr_data_orders}")
                 
                 # prepare query
                 open_interest_last_value_query = querying_last_open_interest_tick (last_tick1_fr_sqlite, TABLE_OHLC1)
@@ -105,13 +100,6 @@ async def ohlc_result_per_time_frame(
                 # update last tick
                 last_tick1_fr_sqlite = await last_tick_fr_sqlite(last_tick_query_ohlc1)
 
-
-                # insert open interest in previous tick to the new tick
-                
-                #log.error (f"result {result}")
-                #log.error (f"open_interest_last_value {open_interest_last_value}")
-                #log.error (f"last_tick1_fr_sqlite {last_tick1_fr_sqlite}")
-                
                 await update_status_data(TABLE_OHLC1, "open_interest", last_tick1_fr_sqlite, WHERE_FILTER_TICK, result, "is")
                 
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
