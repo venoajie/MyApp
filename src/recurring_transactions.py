@@ -134,6 +134,12 @@ async def run_every_15_seconds() -> None:
         WHERE_FILTER_TICK: str = "tick"
         
         for resolution in time_frame:
+            
+            if resolution == "1D":
+                resolution = 60 * 24
+        
+            if resolution == "4H":
+                resolution = 60 * 4
         
             table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json" 
             
