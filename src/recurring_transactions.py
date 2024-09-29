@@ -141,13 +141,11 @@ async def run_every_15_seconds() -> None:
             
             last_tick_query_ohlc1: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
 
-            #log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc1}")         
+            log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc1}")         
             
             start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
 
-            #log.error (f"start_timestamp {start_timestamp}")         
-            
-            
+            log.error (f"start_timestamp {start_timestamp}")         
             
             if resolution == "1D":
                 delta= (end_timestamp - start_timestamp)/(one_minute * 60 * 24)
