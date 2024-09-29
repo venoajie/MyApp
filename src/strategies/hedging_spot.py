@@ -230,7 +230,7 @@ class HedgingSpot(BasicStrategy):
            
         max_position: int = notional * ensure_sign_consistency (params["side"])    
         
-        log.info  (f"params {params} max_position {max_position}")
+        #log.info  (f"params {params} max_position {max_position}")
         
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate (
