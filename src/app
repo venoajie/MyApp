@@ -637,6 +637,8 @@ class StreamAccountData:
 
         try:
             
+            log.info (f"data_orders {data_orders}")
+            
             if data_orders["type"] == "snapshot":
                 replace_data(my_path_ticker, data_orders)
 
@@ -763,22 +765,6 @@ def main():
     try:
 
         StreamAccountData(client_id=client_id, client_secret=client_secret)
-        
-        #async with websockets.connect(
-        #    "wss://test.deribit.com/ws/api/v2",
-        #    ping_interval=None,
-        #    compression=None,
-        #    close_timeout=60,
-        #) as websocket_client:
-        
-        #    await stream.ws_auth()
-                
-        #task_list = []
-        #for currency in currencies:
-        #    task_list.append(asyncio.create_task(stream.ws_manager(instruments_name)))
-        #    log.critical(f"currency {currency}")
-
-        #await asyncio.gather(*task_list)
 
     except Exception as error:
         asyncio.run(cancel_the_cancellables())
@@ -790,7 +776,6 @@ if __name__ == "__main__":
     try:
         
         main()
-        #asyncio.run(main())
         
         while True:
             loop.run_until_complete(schedule.run_pending())
