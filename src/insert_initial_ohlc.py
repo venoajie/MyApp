@@ -77,7 +77,7 @@ async def main():
             
             log.critical (f"instrument_name {instrument_name} currency {currency}")
             
-            resolutions = [60, 30,5,15,1,"1D",3]
+            resolutions = ["4H",240]# [60, 30,5,15,1,"1D",3]
             
             qty_candles = 6000
             
