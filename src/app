@@ -301,7 +301,9 @@ class StreamAccountData:
             
             strategy_atributes = config_app["strategies"]
                         
-            strategy_label= hedging_spot_attributes()[0]["strategy"]     
+            strategy_label= hedging_spot_attributes()[0]["strategy"]   
+            
+            log.error (f"strategy_atributes {strategy_atributes}")  
             
             active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
             cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
