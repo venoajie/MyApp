@@ -16,7 +16,6 @@ from db_management.sqlite_management import (
     deleting_row,)
 from strategies.basic_strategy import (
     BasicStrategy, 
-    get_instruments_kind, 
     get_basic_closing_paramaters,
     are_size_and_order_appropriate)
 
