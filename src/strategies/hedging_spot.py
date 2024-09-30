@@ -173,6 +173,7 @@ class HedgingSpot(BasicStrategy):
         self,
         currency,
         instrument_name: str,
+        combined_result: list,
         notional: float,
         index_price,
         ask_price: float,
@@ -189,15 +190,14 @@ class HedgingSpot(BasicStrategy):
         fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
         params: dict = self.get_basic_params().get_basic_opening_parameters(
-            ask_price, None, notional
-        )
+            ask_price, None, notional)
+        
         hedging_attributes= hedging_spot_attributes()[0]
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(currency,
-            TA_result_data, index_price, threshold_market_condition
-        )
+            TA_result_data, index_price, threshold_market_condition)
 
         #bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -261,25 +261,6 @@ class HedgingSpot(BasicStrategy):
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
                     
-            column_trade= "trade_id","label"
-            column_order= "label","order_id"
-            
-            currency = extract_currency_from_text (instrument_name)
-            data_from_db_trade_open = await get_query(f"my_trades_all_{currency}_json", 
-                                                    instrument_name, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_trade)     
-            
-            data_from_db_order_open = await get_query("orders_all_json", 
-                                                    instrument_name, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_order)     
-            
-            combined_result = data_from_db_trade_open + data_from_db_order_open
-            
-            
             order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
             
             if label_and_side_consistent and not order_has_sent_before:

@@ -512,7 +512,6 @@ class StreamAccountData:
                                                                                             column_list)
                                                 
                                                 my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
-
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                   
                                                                                     
@@ -532,7 +531,29 @@ class StreamAccountData:
                                                         
                                                         notional: float = compute_notional_value(index_price, equity)
                                                             
-                                                        best_ask_prc: float = ticker["best_ask_price"]                                                    
+                                                        best_ask_prc: float = ticker["best_ask_price"] 
+                                                        
+                                                        column_trade= "trade_id","label"
+                                                        
+                                                        column_order= "label","order_id"
+                                                        
+                                                        currency = extract_currency_from_text (instrument_ticker)
+                                                        
+                                                        data_from_db_trade_open = await get_query(archive_db_table, 
+                                                                                                instrument_ticker, 
+                                                                                                "all", 
+                                                                                                "all", 
+                                                                                                column_trade)     
+                                                        
+                                                        data_from_db_order_open = await get_query(order_db_table, 
+                                                                                                instrument_ticker, 
+                                                                                                "all", 
+                                                                                                "all", 
+                                                                                                column_order)     
+                                                        
+                                                        combined_result = data_from_db_trade_open + data_from_db_order_open
+                                                        
+                                                   
                                                         
                                                         for strategy in active_strategies:
                                                         
@@ -552,6 +573,7 @@ class StreamAccountData:
                                                                 await hedging.is_send_and_cancel_open_order_allowed(
                                                                     currency,
                                                                     instrument_ticker,
+                                                                    combined_result,
                                                                     notional,
                                                                     index_price,
                                                                     best_ask_prc,
@@ -586,7 +608,7 @@ class StreamAccountData:
                                                                     await if_cancel_is_true(send_closing_order)
 
                                                     # check for delivered instrument
-        
+
                                                             if "futureSpread" in strategy:
                                                                 
                                                                 log.error (f"strategy {strategy}")
