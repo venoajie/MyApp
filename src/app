@@ -302,7 +302,7 @@ class StreamAccountData:
                         
             strategy_label= hedging_spot_attributes()[0]["strategy"]     
             
-            active_strategies =   [o["label"] for o in strategy_atributes if o["is_active"]==True]
+            active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
             
             trade_db_table= "my_trades_all_json"
             order_db_table= "orders_all_json"                
@@ -554,7 +554,10 @@ class StreamAccountData:
                                                             
                                                             if "hedgingSpot" in strategy:
                                                                 
-                                                                hedging = HedgingSpot(strategy_label)
+                                                                strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]
+                                                                
+                                                                hedging = HedgingSpot(strategy_label,
+                                                                                      strategy_params)
                                                                 
                                                                 send_order: dict = (
                                                                 await hedging.is_send_and_cancel_open_order_allowed(

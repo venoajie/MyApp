@@ -17,22 +17,22 @@ strategy_labels= [#represert strategy
        ]
        
 [[strategies]]
-label = "hedgingSpot"
+strategy_label = "hedgingSpot"
 is_active = true
 contribute_to_hedging = true
 
 [[strategies]]
-label = "futureSpread"
+strategy_label = "futureSpread"
 is_active = true
 contribute_to_hedging = true
 
 [[strategies]]
-label = "customLong"
+strategy_label = "customLong"
 is_active = true
 contribute_to_hedging = true
 
 [[strategies]]
-label = "customShort"
+strategy_label = "customShort"
 is_active = true
 contribute_to_hedging = true
 

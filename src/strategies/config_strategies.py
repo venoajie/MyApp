@@ -31,11 +31,6 @@ class AllowedCurrencies:
                   #"SOL",
                   ]
     
-def preferred_spot_currencies() -> list:
-    """ """
-
-    return ["BTC","ETH"]
-
 def paramaters_to_balancing_transactions() -> list:
     """ """
 

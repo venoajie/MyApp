@@ -13,8 +13,7 @@ from db_management.sqlite_management import (
     querying_ohlc_price_vol,
     querying_additional_params,
     querying_table,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query
-)
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
 from loguru import logger as log
 from utilities.pickling import (
@@ -365,14 +364,10 @@ def get_transaction_side(transaction: dict) -> str:
     status: open/closed
     """
         
-    #log.error (f"transaction{transaction}")
-    
     try:
-        #source: from exchange/transaction        
         return  transaction["direction"] 
     
-    except:
-        
+    except:        
         return transaction["side"]
     
 
@@ -641,13 +636,6 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
 
     return params
 
-
-def get_strategy_config_all() -> list:
-    """ """
-    from strategies import config_strategies
-
-    return config_strategies.strategies
-
 def is_label_and_side_consistent(params) -> bool:
     """ """
     
@@ -729,24 +717,28 @@ class BasicStrategy:
     """ """
 
     strategy_label: str
+    strategy_parameters: list
 
     def get_strategy_config(self, strategy_label: str = None) -> dict:
         """ """
 
-        params: list = get_strategy_config_all()
+        params: list = self. strategy_parameters
+        
+        log.debug (f"get_strategy_config {params}")
 
         if strategy_label != None:
             str_config: dict = [
-                o for o in params if self.strategy_label in o["strategy"]
+                o for o in params if self.strategy_label in o["strategy_label"]
             ][0]
 
         else:
             str_config: dict = [
                 o
                 for o in params
-                if parsing_label(self.strategy_label)["main"] in o["strategy"]
+                if parsing_label(self.strategy_label)["main"] in o["strategy_label"]
             ][0]
 
+        log.debug (f"str_config {str_config}")
         return str_config
 
     def get_basic_opening_parameters(
