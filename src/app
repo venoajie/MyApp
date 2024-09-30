@@ -137,6 +137,7 @@ async def get_futures_instruments_name () -> list:
     active_currencies=  await get_futures_for_active_currencies()
     
     log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")   
+    log.debug (active_currencies)   
     
     return [o(["instrument_name"],["creation_timestamp"],["settlement_period"]) for o in active_currencies]
     
