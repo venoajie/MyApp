@@ -119,7 +119,7 @@ async def get_futures_for_active_currencies () -> list:
     file_toml = "config_strategies.toml"
     table = "tradable"
     
-    currencies = get_config(file_toml, table) ["spot"]
+    currencies = get_config(file_toml) ["spot"]
     
     #log.error (f"currencies {currencies}")
     
@@ -266,7 +266,7 @@ async def on_restart() -> None:
     file_toml = "config_strategies.toml"
     table = "tradable"
     
-    currencies_default = get_config(file_toml, table) ["spot"]
+    currencies_default = get_config(file_toml) ["spot"]
     
     
     for currency in currencies_default:
