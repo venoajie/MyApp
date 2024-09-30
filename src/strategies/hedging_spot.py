@@ -166,7 +166,8 @@ class HedgingSpot(BasicStrategy):
 
     def get_basic_params(self) -> dict:
         """ """
-        return BasicStrategy(self.strategy_label)
+        return BasicStrategy(self.strategy_label, 
+                             self.strategy_parameters)
 
     async def is_send_and_cancel_open_order_allowed(
         self,
