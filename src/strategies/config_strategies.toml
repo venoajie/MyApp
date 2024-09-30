@@ -15,25 +15,23 @@ strategy_labels= [#represert strategy
     #"marketMakerShort",
     #"marketMakerLong",
        ]
-
+       
 [[strategies]]
-
-[strategies] 
 label = "hedgingSpot"
 is_active = true
 contribute_to_hedging = true
 
-[strategies] 
+[[strategies]]
 label = "futureSpread"
 is_active = true
 contribute_to_hedging = true
 
-[strategies]
+[[strategies]]
 label = "customLong"
 is_active = true
 contribute_to_hedging = true
 
-[strategies]
+[[strategies]]
 label = "customShort"
 is_active = true
 contribute_to_hedging = true

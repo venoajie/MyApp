@@ -315,7 +315,10 @@ class StreamAccountData:
                 
             config_app = get_config(file_toml)
 
+            log.error (f"config_app {config_app}")
+
             tradable_config_app = config_app["tradable"]
+
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
             
@@ -324,7 +327,6 @@ class StreamAccountData:
             strategy_label= hedging_spot_attributes()[0]["strategy"]     
             
             log.error (f"strategy_atributes {strategy_atributes}")
-            log.error (f"config_app {config_app}")
             log.error (f"strategy_label {strategy_label}")
             
             get_active_strategies =   [o["label"] for o in tradable_config_app if o["is_active"]==True]

@@ -29,4 +29,4 @@ def get_config(file_name: str) -> list:
 file_toml = "config_strategies.toml"
 table = "strategies"
 
-print (get_config(file_toml)["strategies"])
+print (get_config(file_toml))
