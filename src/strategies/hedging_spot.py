@@ -338,7 +338,7 @@ class HedgingSpot(BasicStrategy):
             #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
             
-            log.error (f"exit_params {exit_params}")
+            
     
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
@@ -360,7 +360,7 @@ class HedgingSpot(BasicStrategy):
             my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
             sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-            
+            log.error (f"exit_params {exit_params}")
             size = exit_params["size"]           
             
             sum_orders: int = get_transactions_sum(open_orders_label_strategy)
