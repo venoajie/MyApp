@@ -27,6 +27,7 @@ from deribit_get import (
     get_instruments)
 from strategies.basic_strategy import (
     check_if_id_has_used_before,
+    get_instruments_kind,
     is_label_and_side_consistent,)
 from strategies.hedging_spot import HedgingSpot  
 from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
@@ -108,23 +109,15 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
     return await telegram_bot_sendtext(bot_message, purpose)
 
 
-async def get_futures_for_active_currencies () -> list:
+async def get_futures_for_active_currencies (active_currencies) -> list:
     """_summary_
 
     Returns:
         list: _description_
     """
-    from strategies.basic_strategy import get_instruments_kind
-    
-    file_toml = "config_strategies.toml"
-    table = "tradable"
-    
-    currencies = get_config(file_toml) ["spot"]
-    
-    #log.error (f"currencies {currencies}")
     
     instruments_holder_place= []
-    for currency in currencies:
+    for currency in active_currencies:
 
         future_instruments= get_instruments_kind (currency,"future" )
         
@@ -141,7 +134,7 @@ async def get_futures_for_active_currencies () -> list:
     return remove_double_brackets_in_list(instruments_holder_plc)
     
     
-async def get_futures_instruments () -> list:
+async def get_futures_instruments (active_currencies) -> list:
     
     active_currencies=  await get_futures_for_active_currencies()
     
@@ -253,7 +246,7 @@ async def update_user_changes(data_orders,
     log.info(f"update_user_changes-END")
 
 
-async def on_restart() -> None:
+async def on_restart(currencies_default) -> None:
     """
     """
 
@@ -262,14 +255,6 @@ async def on_restart() -> None:
     
     # refresh databases
     await get_and_save_currencies()                
-
-    file_toml = "config_strategies.toml"
-    table = "tradable"
-    
-    currencies_default = get_config(file_toml)
-    
-    log.debug (f"currencies_default {currencies_default}")
-    
     
     for currency in currencies_default:
         
@@ -332,6 +317,8 @@ class StreamAccountData:
             config_app = get_config(file_toml)
             log.error (f"config_app {config_app}")
             
+            currencies= config_app["spot"]
+            
             strategy_atributes = config_app["strategies"]
                         
             strategy_label= hedging_spot_attributes()[0]["strategy"]       
@@ -343,7 +330,7 @@ class StreamAccountData:
             order_db_table= "orders_all_json"                
              
             # Establish restart procedure
-            await on_restart()
+            await on_restart(currencies)
                             
             while True:
                 
@@ -356,7 +343,7 @@ class StreamAccountData:
                 self.loop.create_task(self.ws_refresh_auth())
                 
               
-                futures_instruments=await get_futures_instruments()  
+                futures_instruments=await get_futures_instruments(currencies)  
                 
                 log.error (f"test_instruments_name {futures_instruments}")                  
 
@@ -693,8 +680,7 @@ class StreamAccountData:
                         "WebSocket connection EXCHANGE has broken",
                     )
         
-                    # Establish restart procedure
-                    await on_restart()
+                    #! Establish restart procedure
                 
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
