@@ -359,18 +359,16 @@ class StreamAccountData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    log.warning (message)
+                    #log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
                             if self.refresh_token is None:
 
-                                log.info("Successfully authenticated WebSocket Connection")
+                                log.info ("Successfully authenticated WebSocket Connection")
 
                             else:
-                                log.info(
-                                    "Successfully refreshed the authentication of the WebSocket Connection"
-                                )
+                                log.info ("Successfully refreshed the authentication of the WebSocket Connection")
 
                             self.refresh_token = message["result"]["refresh_token"]
 
@@ -537,7 +535,6 @@ class StreamAccountData:
                                                         best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
                                                         for strategy in active_strategies:
-                                                            log.error (f"strategy {strategy}")
                                                         
                                                             my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
                                                                 and strategy in (o["label"]) ]
@@ -545,6 +542,8 @@ class StreamAccountData:
                                                             strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]                                                                
         
                                                             if "hedgingSpot" in strategy:
+                                                                
+                                                                log.error (f"strategy {strategy}")
                                                                 
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params)
@@ -589,7 +588,8 @@ class StreamAccountData:
                                                     # check for delivered instrument
         
                                                             if "FutureSpreads" in strategy:
-                                                        
+                                                                
+                                                                log.error (f"strategy {strategy}")
                                                                 future_spreads = FutureSpreads(strategy,
                                                                                             strategy_params)
 
