@@ -30,8 +30,7 @@ from strategies.basic_strategy import (
 from strategies.hedging_spot import HedgingSpot  
 from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
 from strategies.config_strategies import (
-    hedging_spot_attributes,
-    preferred_spot_currencies)
+    hedging_spot_attributes,)
 from transaction_management.deribit.orders_management import (
     labelling_unlabelled_transaction,
     OrderManagement,)
@@ -616,8 +615,6 @@ class StreamAccountData:
                                                         
                                                         future_spreads = FutureSpreads(strategy_label)
                                                         # check any oustanding instrument that has deliverd
-                                                                                                            
-                                                        currencies=  preferred_spot_currencies()
                                                         
                                                         for currency in currencies:
                                                             
