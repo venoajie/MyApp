@@ -344,29 +344,22 @@ class StreamAccountData:
                             ws_channel=f"incremental_ticker.{instrument}",
                         )
                     )
-
-                
-                    if "PERPETUAL" in instrument:
-
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe", ws_channel=f"user.portfolio.{currency}"
-                            )
-                        )
-
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"user.changes.any.{currency.upper()}.raw",
-                            )
-                        )
                     
-                        self.loop.create_task(
-                            self.ws_operation(
-                                operation="subscribe",
-                                ws_channel=f"chart.trades.{instrument}.1",
+                    resolution=1
+                    
+                    ws_channel=[f"user.portfolio.{currency}",
+                                f"user.changes.any.{currency.upper()}.raw",
+                                f"chart.trades.{instrument}.{resolution}"]
+                                               
+                    if "PERPETUAL" in instrument:
+                        
+                        for ws in ws_channel:
+
+                            self.loop.create_task(
+                                self.ws_operation(
+                                    operation="subscribe", ws_channel=ws
+                                )
                             )
-                        )
                         
                 while self.websocket_client.open:
                     # Receive WebSocket messages
@@ -444,7 +437,7 @@ class StreamAccountData:
                                 await check_db_consistencies_and_clean_up_imbalances(currency,
                                                                                      cancellable_strategies)                           
                             
-                            resolution=1
+                            
                             TABLE_OHLC1: str = f"ohlc{resolution}_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
@@ -463,16 +456,13 @@ class StreamAccountData:
                             
                             if (
                                 message_channel
-                                == f"incremental_ticker.{instrument_ticker}"
-                            ):
+                                == f"incremental_ticker.{instrument_ticker}"):
                                 
                                 my_path_ticker = provide_path_for_file(
-                                    "ticker", instrument_ticker
-                                )
+                                    "ticker", instrument_ticker)
                                 
                                 await self.distribute_ticker_result_as_per_data_type(
-                                    my_path_ticker, data_orders, instrument_ticker
-                                )
+                                    my_path_ticker, data_orders, instrument_ticker)
                                             
                                 try:
                                     
@@ -498,8 +488,7 @@ class StreamAccountData:
 
                                             TA_result_data_only=  TA_result_data_all["list_data_only"]
                                             
-                                            TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]
-                                                                                                    
+                                            TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]                                                                                                    
                                             
                                             ticker= reading_from_pkl_data("ticker",instrument_ticker)
                                             
@@ -519,30 +508,19 @@ class StreamAccountData:
                                                     
                                                     if index_price==[]:
                                                         index_price = ticker ["estimated_delivery_price"]
-                                                    #log.critical (f"index_price {index_price}")
                                                     
                                                 # get portfolio data  
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
                                     
-                                                log.debug (f"my_trades_currency")
                                                 my_trades_currency: list= await get_query(trade_db_table, 
                                                                                             currency, 
                                                                                             "all", 
                                                                                             "all", 
                                                                                             column_list)
                                                 
-                                                log.debug (f"my_trades_currency")
                                                 my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
-                                                log.info (f"my_trades_instrument")
-                                                
-                                                my_trades_instrument: list= await get_query(trade_db_table, 
-                                                                                            instrument_ticker, 
-                                                                                            "all", 
-                                                                                            "all", 
-                                                                                            column_list)
-                                                log.warning (f"my_trades_instrument")
 
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                   
@@ -557,6 +535,8 @@ class StreamAccountData:
                                                     
                                                     delta_time_seconds = delta_time/1000                                                
                                                     
+                                                    delta_time_expiration = min_expiration_timestamp - server_time  
+                                                                                                        
                                                     if delta_time_seconds < 120:#ensure freshness of ta
                                                         
                                                         notional: float = compute_notional_value(index_price, equity)
@@ -613,11 +593,8 @@ class StreamAccountData:
                                                                     await if_order_is_true(send_closing_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_closing_order)
 
-                                                    delta_time = min_expiration_timestamp - server_time  
-                                                    log.error (f" delta_time {delta_time} {delta_time < 0} ")
-                                                    
                                                     # check for delivered instrument
-                                                    if delta_time < 0:
+                                                    if delta_time_expiration < 0:
                                                         
                                                         instruments_name_with_min_expiration_timestamp = futures_instruments [
                                                             "instruments_name_with_min_expiration_timestamp"]     
