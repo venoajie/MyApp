@@ -193,6 +193,8 @@ class HedgingSpot(BasicStrategy):
             ask_price, None, notional)
         
         hedging_attributes= self.strategy_parameters
+        
+        log.warning (f"hedging_attributes {hedging_attributes}")
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         

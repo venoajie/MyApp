@@ -370,10 +370,6 @@ class StreamAccountData:
                 
                 instruments_name = futures_instruments["instruments_name"]   
                 
-                log.error (f"settlement_periods {settlement_periods}")                    
-                log.warning (f"futures_instruments {futures_instruments}")                    
-                log.error (f"instruments_name {instruments_name}")                    
-                
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
                 
                 resolution = 1                
