@@ -88,7 +88,7 @@ async def update_db_pkl(path, data_orders, currency) -> None:
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
         
-def get_config(file_name: str, table) -> list:
+def get_config(file_name: str) -> list:
     """ """
     config_path = provide_path_for_file (file_name)
     
@@ -98,7 +98,7 @@ def get_config(file_name: str, table) -> list:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
                 read= tomli.load(handle)
-                return read [f"{table}"]
+                return read
     except:
         return []
 
@@ -339,9 +339,10 @@ class StreamAccountData:
                 
                             
                 file_toml = "config_strategies.toml"
-                table = "tradable"
+                #table_strategy = "tradable"
                 
-                config_app = get_config(file_toml, table)
+                config_app = get_config(file_toml)
+                log.error (f"config_app {config_app}")
                 
                 strategy_atributes = config_app["strategies"]
                             
