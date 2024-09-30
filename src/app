@@ -93,8 +93,6 @@ def get_config(file_name: str) -> list:
     """ """
     config_path = provide_path_for_file (file_name)
     
-    log.info ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-    
     try:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
@@ -261,10 +259,6 @@ async def on_restart(currencies_default) -> None:
         await resupply_transaction_log(currency)
         await resupply_sub_accountdb(currency)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
-                            
-    
-    #msg= deribit_get.get_cancel_order_all()
-    #await self.websocket_client.send(json.dumps(msg))
     
 
 class StreamAccountData:
@@ -315,10 +309,7 @@ class StreamAccountData:
                 
             config_app = get_config(file_toml)
 
-            log.error (f"config_app {config_app}")
-
             tradable_config_app = config_app["tradable"]
-
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
             
@@ -326,11 +317,7 @@ class StreamAccountData:
                         
             strategy_label= hedging_spot_attributes()[0]["strategy"]     
             
-            log.error (f"strategy_atributes {strategy_atributes}")
-            log.error (f"strategy_label {strategy_label}")
-            
-            get_active_strategies =   [o["label"] for o in strategy_atributes if o["is_active"]==True]
-            log.error (f"get_active_strategies {get_active_strategies}")
+            active_strategies =   [o["label"] for o in strategy_atributes if o["is_active"]==True]
             
             trade_db_table= "my_trades_all_json"
             order_db_table= "orders_all_json"                
@@ -576,6 +563,9 @@ class StreamAccountData:
                                                         
                                                         hedging = HedgingSpot(strategy_label)
                                                         #log.warning (f"A")
+                                                        
+                                                        for strategy in active_strategies:
+                                                            log.error (f"strategy {strategy} strategy_label {strategy_label}")
                                                         
                                                         send_order: dict = (
                                                         await hedging.is_send_and_cancel_open_order_allowed(
