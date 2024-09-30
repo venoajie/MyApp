@@ -736,7 +736,6 @@ class BasicStrategy:
                 if parsing_label(self.strategy_label)["main"] in o["strategy_label"]
             ][0]
 
-        log.debug (f"str_config {str_config}")
         return str_config
 
     def get_basic_opening_parameters(
