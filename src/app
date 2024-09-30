@@ -39,12 +39,12 @@ from transaction_management.deribit.orders_management import (
 from utilities.number_modification import get_closest_value
 from utilities.pickling import (
     replace_data,
-    read_data,
-    sleep_and_restart,)
+    read_data,)
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
-    catch_error_message,)
+    catch_error_message,
+    sleep_and_restart,)
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     extract_currency_from_text)
