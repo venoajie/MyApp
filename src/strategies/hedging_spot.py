@@ -297,7 +297,7 @@ class HedgingSpot(BasicStrategy):
          'trade_seq': 157460588, 'instrument_name': 'ETH-PERPETUAL', 'profit_loss': 0.0, 'index_price': 2456.25, 'direction': 'sell', 
          'price': 2455.25, 'state': 'filled', 'timestamp': 1725198276199, 'label': 'hedgingSpot-open-1725198275948'}
         
-        hedging_attributes= hedging_spot_attributes()[0]
+        hedging_attributes= self.strategy_parameters[0]
         
         #log.error (f"selected_transaction {selected_transaction}")
 
