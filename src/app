@@ -300,9 +300,7 @@ class StreamAccountData:
             currencies= [o["spot"] for o in tradable_config_app] [0]
             
             strategy_atributes = config_app["strategies"]
-                        
-            strategy_label= hedging_spot_attributes()[0]["strategy"]   
-            
+                                    
             active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
             
             cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
@@ -329,9 +327,10 @@ class StreamAccountData:
                 
                 instruments_name = futures_instruments["instruments_name"]                    
                 
-                min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]                    
-                               
+                min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
                 
+                resolution = 1                
+                                            
                 for instrument in instruments_name:
                     
                     await clean_up_closed_transactions (instrument, trade_db_table)
@@ -341,11 +340,7 @@ class StreamAccountData:
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
-                            ws_channel=f"incremental_ticker.{instrument}",
-                        )
-                    )
-                    
-                    resolution=1
+                            ws_channel=f"incremental_ticker.{instrument}",))
                     
                     ws_channel=[f"user.portfolio.{currency}",
                                 f"user.changes.any.{currency.upper()}.raw",
@@ -357,9 +352,7 @@ class StreamAccountData:
 
                             self.loop.create_task(
                                 self.ws_operation(
-                                    operation="subscribe", ws_channel=ws
-                                )
-                            )
+                                    operation="subscribe", ws_channel=ws))
                         
                 while self.websocket_client.open:
                     # Receive WebSocket messages
@@ -553,7 +546,7 @@ class StreamAccountData:
         
                                                             if "hedgingSpot" in strategy:
                                                                 
-                                                                hedging = HedgingSpot(strategy_label,
+                                                                hedging = HedgingSpot(strategy,
                                                                                       strategy_params)
                                                                 
                                                                 send_order: dict = (
@@ -594,12 +587,17 @@ class StreamAccountData:
                                                                     await if_cancel_is_true(send_closing_order)
 
                                                     # check for delivered instrument
+        
+                                                            if "FutureSpreads" in strategy:
+                                                        
+                                                                future_spreads = FutureSpreads(strategy,
+                                                                                            strategy_params)
+
+
                                                     if delta_time_expiration < 0:
                                                         
                                                         instruments_name_with_min_expiration_timestamp = futures_instruments [
                                                             "instruments_name_with_min_expiration_timestamp"]     
-                                                        
-                                                        future_spreads = FutureSpreads(strategy_label)
                                                         
                                                         # check any oustanding instrument that has deliverd
                                                         
@@ -617,9 +615,6 @@ class StreamAccountData:
                                                         # updating instrument
                                                         await sleep_and_restart ()
                                 
-                                                        
-                                                    #log.critical (f"CLOSING HEDGING-DONE")
-                                                    
                                             
                                         except ValueError:
                                             import traceback
