@@ -3,6 +3,9 @@
 # built ins
 import asyncio
 from datetime import datetime
+import os
+import tomli
+
 # installed
 from loguru import logger as log
 
@@ -17,7 +20,7 @@ from db_management.sqlite_management import (
     querying_arithmetic_operator,
     executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
-from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
+from strategies.config_strategies import paramaters_to_balancing_transactions
 from strategies.basic_strategy import (
     is_label_and_side_consistent,
     get_strategy_config_all,
@@ -54,6 +57,19 @@ def parse_dotenv(sub_account) -> dict:
 async def raise_error(error, idle: int = None) -> None:
     """ """
     await raise_error_message(error, idle)
+
+
+def get_config(file_name: str) -> list:
+    """ """
+    config_path = provide_path_for_file (file_name)
+    
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, "rb") as handle:
+                read= tomli.load(handle)
+                return read
+    except:
+        return []
 
 
 async def get_private_data(currency: str = None) -> list:
@@ -188,8 +204,14 @@ async def cancel_the_cancellables(filter: str = None) -> None:
     cancellable_strategies: dict = [
         o["strategy"] for o in params if o["cancellable"] == True
     ]
+
+    file_toml = "config_strategies.toml"
+        
+    config_app = get_config(file_toml)
+
+    tradable_config_app = config_app["tradable"]
     
-    currencies: list = preferred_spot_currencies()
+    currencies= [o["spot"] for o in tradable_config_app] [0]
     
     where_filter = f"order_id"
     

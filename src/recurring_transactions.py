@@ -36,23 +36,12 @@ from websocket_management.allocating_ohlc import (
     ohlc_end_point, 
     ohlc_result_per_time_frame,
     last_tick_fr_sqlite,)
+from websocket_management.ws_management import (
+    get_config,)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
     catch_error_message(error, idle)
-
-
-def get_config(file_name: str) -> list:
-    """ """
-    config_path = provide_path_for_file (file_name)
-    
-    try:
-        if os.path.exists(config_path):
-            with open(config_path, "rb") as handle:
-                read= tomli.load(handle)
-                return read
-    except:
-        return []
     
 async def get_instruments_from_deribit(connection_url, currency) -> float:
     """ """
@@ -158,27 +147,19 @@ async def run_every_15_seconds() -> None:
         for resolution in time_frame:
             
             table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json" 
-            
-            #log.debug (f"table_ohlc {table_ohlc}")         
-            
+                        
             last_tick_query_ohlc_resolution: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
 
             #data_from_ohlc1_start_from_ohlc_resolution_tick: str = 
-
-            #log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc_resolution}")         
             
             start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc_resolution)
-
-            #log.error (f"start_timestamp {start_timestamp}")    
             
             if resolution == "1D":
                 delta= (end_timestamp - start_timestamp)/(one_minute * 60 * 24)
         
             else:
                 delta= (end_timestamp - start_timestamp)/(one_minute * resolution)
-            
-            #log.error (f"delta {delta}")         
-            
+                        
             if delta > 1:
                 end_point= ohlc_end_point(instrument_name,
                                 resolution,

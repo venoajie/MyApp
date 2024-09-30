@@ -6,8 +6,6 @@ from datetime import datetime, timedelta
 import aioschedule as schedule
 import asyncio
 import json
-import os
-import tomli
 
 # installed
 import websockets
@@ -57,6 +55,7 @@ from websocket_management.ws_management import (
     if_cancel_is_true,
     compute_notional_value, 
     cancel_by_order_id,
+    get_config,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -89,19 +88,6 @@ async def update_db_pkl(path, data_orders, currency) -> None:
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
         
-def get_config(file_name: str) -> list:
-    """ """
-    config_path = provide_path_for_file (file_name)
-    
-    try:
-        if os.path.exists(config_path):
-            with open(config_path, "rb") as handle:
-                read= tomli.load(handle)
-                return read
-    except:
-        return []
-
-
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return await telegram_bot_sendtext(bot_message, purpose)
