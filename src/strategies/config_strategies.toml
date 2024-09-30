@@ -18,19 +18,23 @@ strategy_labels= [#represert strategy
 
 [[strategies]]
 
-[strategies.hedgingSpot] 
+[strategies] 
+label = "hedgingSpot"
 is_active = true
 contribute_to_hedging = true
 
-[strategies.futureSpread]  # nested array of tables
+[strategies] 
+label = "futureSpread"
 is_active = true
 contribute_to_hedging = true
 
-[strategies.customLong]
+[strategies]
+label = "customLong"
 is_active = true
 contribute_to_hedging = true
 
-[strategies.customShort]
+[strategies]
+label = "customShort"
 is_active = true
 contribute_to_hedging = true
 
