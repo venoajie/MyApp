@@ -330,7 +330,7 @@ class StreamAccountData:
                 
                 log.error (f"test_instruments_name {futures_instruments}")                  
 
-                instruments_name=await futures_instruments["instruments_name"]                    
+                instruments_name= futures_instruments["instruments_name"]                    
                 min_expiration_timestamp=await futures_instruments["min_expiration_timestamp"]                    
                 
                 for instrument in instruments_name:
