@@ -368,7 +368,11 @@ class StreamAccountData:
                 futures_instruments=await get_futures_instruments(currencies,
                                                                   settlement_periods)  
                 
-                instruments_name = futures_instruments["instruments_name"]                    
+                instruments_name = futures_instruments["instruments_name"]   
+                
+                log.error (f"settlement_periods {settlement_periods}")                    
+                log.warning (f"futures_instruments {futures_instruments}")                    
+                log.error (f"instruments_name {instruments_name}")                    
                 
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
                 
@@ -402,7 +406,7 @@ class StreamAccountData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    log.warning (message)
+                    #log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
@@ -558,7 +562,7 @@ class StreamAccountData:
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]          
                                                 
-                                                log.error (f"equity {equity}")                         
+                                                                      
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
