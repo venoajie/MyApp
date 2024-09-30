@@ -724,8 +724,6 @@ class BasicStrategy:
 
         params: list = self. strategy_parameters
         
-        log.debug (f"get_strategy_config {params}")
-
         if strategy_label != None:
             str_config: dict = [
                 o for o in params if self.strategy_label in o["strategy_label"]
