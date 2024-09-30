@@ -5,7 +5,7 @@ import asyncio
 from loguru import logger as log
 # installed
 from dataclassy import dataclass
-from strategies.config_strategies import hedging_spot_attributes
+#from strategies.config_strategies import hedging_spot_attributes
 
 # user defined formula
 from strategies.basic_strategy import (
@@ -192,7 +192,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional)
         
-        hedging_attributes= hedging_spot_attributes()[0]
+        hedging_attributes= self.strategy_parameters
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
