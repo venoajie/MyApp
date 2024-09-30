@@ -25,16 +25,19 @@ contribute_to_hedging = true
 strategy_label = "futureSpread"
 is_active = true
 contribute_to_hedging = true
+cancellable = false
 
 [[strategies]]
 strategy_label = "customLong"
 is_active = true
 contribute_to_hedging = true
+cancellable = false
 
 [[strategies]]
 strategy_label = "customShort"
 is_active = true
 contribute_to_hedging = true
+cancellable = false
 
 
 [paths]

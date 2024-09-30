@@ -165,7 +165,8 @@ async def update_user_changes(data_orders,
                               currency, 
                               order_db_table,
                               trade_db_table, 
-                              archive_db_table) -> None:
+                              archive_db_table,
+                              cancellable_strategies) -> None:
     
     log.warning (f"update_user_changes-START")
 
@@ -196,7 +197,7 @@ async def update_user_changes(data_orders,
                 log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} everything_NOT_consistent {not label_and_side_consistent}')
                 
                 if  not label_and_side_consistent:
-                    await cancel_the_cancellables()
+                    await cancel_the_cancellables(cancellable_strategies)
                     await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
                 if not label:
@@ -228,12 +229,13 @@ async def update_user_changes(data_orders,
     log.info(f"update_user_changes-END")
 
 
-async def on_restart(currencies_default) -> None:
+async def on_restart(currencies_default,
+                     cancellable_strategies) -> None:
     """
     """
 
     log.warning("Cancelling selected orders")
-    await cancel_the_cancellables()
+    await cancel_the_cancellables(cancellable_strategies)
     
     # refresh databases
     await get_and_save_currencies()                
@@ -302,12 +304,14 @@ class StreamAccountData:
             strategy_label= hedging_spot_attributes()[0]["strategy"]     
             
             active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
+            cancellable_strategies =   [o["cancellable"] for o in strategy_atributes if o["cancellable"]==True]
             
             trade_db_table= "my_trades_all_json"
             order_db_table= "orders_all_json"                
              
             # Establish restart procedure
-            await on_restart(currencies)
+            await on_restart(currencies,
+                             cancellable_strategies)
                             
             while True:
                 
@@ -430,11 +434,13 @@ class StreamAccountData:
                                                           currency, 
                                                           order_db_table,
                                                           trade_db_table, 
-                                                          archive_db_table)
+                                                          archive_db_table,
+                                                          cancellable_strategies)
                                 
                                 await resupply_transaction_log(currency)
                                 await resupply_sub_accountdb(currency)
-                                await check_db_consistencies_and_clean_up_imbalances(currency)                           
+                                await check_db_consistencies_and_clean_up_imbalances(currency,
+                                                                                     cancellable_strategies)                           
                             
                             resolution=1
                             TABLE_OHLC1: str = f"ohlc{resolution}_{currency_lower}_perp_json"
@@ -799,9 +805,8 @@ def main():
         StreamAccountData(client_id=client_id, client_secret=client_secret)
 
     except Exception as error:
-        asyncio.run(cancel_the_cancellables())
         catch_error_message(
-            error, 10, "app"
+            error, 1, "app"
         )
         
 if __name__ == "__main__":

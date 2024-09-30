@@ -23,7 +23,6 @@ from db_management.sqlite_management import (
 from strategies.config_strategies import paramaters_to_balancing_transactions
 from strategies.basic_strategy import (
     is_label_and_side_consistent,
-    get_strategy_config_all,
     check_db_consistencies,
     check_if_id_has_used_before,
     get_basic_closing_paramaters,
@@ -198,12 +197,7 @@ async def cancel_by_order_id(open_order_id) -> None:
         return result
 
 
-async def cancel_the_cancellables(filter: str = None) -> None:
-
-    params: list = get_strategy_config_all()
-    cancellable_strategies: dict = [
-        o["strategy"] for o in params if o["cancellable"] == True
-    ]
+async def cancel_the_cancellables(cancellable_strategies, filter: str = None) -> None:
 
     file_toml = "config_strategies.toml"
         
@@ -332,7 +326,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
 
     return data
     
-async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_accounts: list =[]) -> None:
+async def check_db_consistencies_and_clean_up_imbalances(currency: str, cancellable_strategies, sub_accounts: list =[]) -> None:
     
     if sub_accounts== [] or sub_accounts is None:
         sub_accounts = reading_from_pkl_data("sub_accounts",currency)
@@ -387,7 +381,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, sub_acco
             #await resupply_sub_accountdb(currency)
             await updated_open_orders_database(open_orders_from_sub_accounts,order_from_sqlite_open)
             log.critical (f"BALANCING-ORDERS-DONE")
-            await cancel_the_cancellables()
+            await cancel_the_cancellables(cancellable_strategies)
                                                         
         if not size_is_consistent:
             log.critical (f"BALANCING TRADE-START")
