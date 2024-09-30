@@ -165,7 +165,7 @@ async def run_every_15_seconds() -> None:
 
             #data_from_ohlc1_start_from_ohlc_resolution_tick: str = 
 
-            log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc_resolution}")         
+            #log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc_resolution}")         
             
             start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc_resolution)
 
