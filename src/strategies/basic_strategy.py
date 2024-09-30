@@ -151,7 +151,9 @@ def are_size_and_order_appropriate(
     return ordering_is_ok
 
 
-def size_rounding(instrument_name: str, futures_instruments, proposed_size: float) -> int:
+def size_rounding(instrument_name: str, 
+                  futures_instruments, 
+                  proposed_size: float) -> int:
     """ """
 
     min_trade_amount=  [o["min_trade_amount"] for o in futures_instruments if o["instrument_name"]== instrument_name][0]    
@@ -766,7 +768,7 @@ class BasicStrategy:
 
         size = await provide_size_to_close_transaction(transaction)
         
-        #log.error (f"transaction_side {transaction_side}")
+        log.error (f"size {size}")
 
         if transaction_side == "sell":
             try:

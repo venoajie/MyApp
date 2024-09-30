@@ -301,7 +301,7 @@ class HedgingSpot(BasicStrategy):
         
         hedging_attributes= self.strategy_parameters[0]
         
-        #log.error (f"selected_transaction {selected_transaction}")
+        log.error (f"selected_transaction {selected_transaction}")
 
         currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
@@ -335,15 +335,11 @@ class HedgingSpot(BasicStrategy):
         
         if len_orders != [] and len_orders > 0:
             
-            log.error (f"order_parameters {exit_params}")
-            log.debug (f"cancel_allowed {cancel_allowed}")
-            
             #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
             
             log.error (f"exit_params {exit_params}")
     
-            hedging_attributes= hedging_spot_attributes()[0]
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
             cancel_allowed: bool = is_cancelling_order_allowed(
@@ -365,7 +361,7 @@ class HedgingSpot(BasicStrategy):
 
             sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
             
-            size = exit_params["size"] * ensure_sign_consistency (exit_params["side"])           
+            size = exit_params["size"]           
             
             sum_orders: int = get_transactions_sum(open_orders_label_strategy)
             
