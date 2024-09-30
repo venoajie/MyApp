@@ -23,7 +23,7 @@ contribute_to_hedging = true
 cancellable = true
 side = "sell"
 take_profit_pct = 0
-settlement_period = ["PERPETUAL"]
+settlement_period = ["perpetual"]
 weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
@@ -38,7 +38,7 @@ contribute_to_hedging = true
 cancellable = false
 side = "sell"
 take_profit_pct = 0
-settlement_period =  ["PERPETUAL", "week"]
+settlement_period =  ["perpetual", "week"]
 weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
@@ -52,7 +52,7 @@ contribute_to_hedging = true
 cancellable = false
 side = "sell"
 take_profit_pct = 0
-settlement_period = ["PERPETUAL"]
+settlement_period = ["perpetual"]
 weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
@@ -66,7 +66,7 @@ contribute_to_hedging = true
 cancellable = false
 side = "sell"
 take_profit_pct = 0
-settlement_period = ["PERPETUAL"]
+settlement_period = ["perpetual"]
 weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
