@@ -22,6 +22,7 @@ is_active = true
 contribute_to_hedging = true
 cancellable = true
 side = "sell"
+take_profit_pct = 0
 
 [[strategies]]
 strategy_label = "futureSpread"
@@ -29,6 +30,7 @@ is_active = true
 contribute_to_hedging = true
 cancellable = false
 side = "sell"
+take_profit_pct = 0
 
 [[strategies]]
 strategy_label = "customLong"
@@ -36,6 +38,7 @@ is_active = true
 contribute_to_hedging = true
 cancellable = false
 side = "sell"
+take_profit_pct = 0
 
 [[strategies]]
 strategy_label = "customShort"
@@ -43,6 +46,7 @@ is_active = true
 contribute_to_hedging = true
 cancellable = false
 side = "sell"
+take_profit_pct = 0
 
 
 [paths]
