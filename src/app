@@ -329,7 +329,7 @@ class StreamAccountData:
             log.error (f"strategy_atributes {strategy_atributes}")
             log.error (f"strategy_label {strategy_label}")
             
-            get_active_strategies =   [o["label"] for o in tradable_config_app if o["is_active"]==True]
+            get_active_strategies =   [o["label"] for o in strategy_atributes if o["is_active"]==True]
             log.error (f"get_active_strategies {get_active_strategies}")
             
             trade_db_table= "my_trades_all_json"
