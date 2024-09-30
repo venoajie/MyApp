@@ -556,7 +556,9 @@ class StreamAccountData:
                                                 
                                                 my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
                                                 # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]                                   
+                                                equity: float = portfolio[0]["equity"]          
+                                                
+                                                log.error (f"equity {equity}")                         
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
@@ -570,7 +572,7 @@ class StreamAccountData:
                                                     
                                                     delta_time_expiration = min_expiration_timestamp - server_time  
                                                     
-                                                    log.error (f"delta_time_expiration {delta_time_expiration}")
+                                                    
                                                                                                         
                                                     if delta_time_seconds < 120:#ensure freshness of ta
                                                         
