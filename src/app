@@ -316,8 +316,11 @@ class StreamAccountData:
                 
             config_app = get_config(file_toml)
             log.error (f"config_app {config_app}")
+            tradable_config_app = config_app["tradable"]
+            log.error (f"tradable_config_app {tradable_config_app}")
             
-            currencies= config_app["spot"]
+            currencies= tradable_config_app["spot"]
+            log.error (f"currencies {currencies}")
             
             strategy_atributes = config_app["strategies"]
                         
