@@ -325,12 +325,12 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-              
                 futures_instruments=await get_futures_instruments(currencies)  
                 
                 instruments_name = futures_instruments["instruments_name"]                    
+                
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]                    
-                instruments_name_with_min_expiration_timestamp = futures_instruments["instruments_name_with_min_expiration_timestamp"]                    
+                               
                 
                 for instrument in instruments_name:
                     
@@ -525,12 +525,24 @@ class StreamAccountData:
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
+                                    
+                                                log.debug (f"my_trades_currency")
+                                                my_trades_currency: list= await get_query(trade_db_table, 
+                                                                                            currency, 
+                                                                                            "all", 
+                                                                                            "all", 
+                                                                                            column_list)
+                                                
+                                                log.debug (f"my_trades_currency")
+                                                my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
+                                                log.info (f"my_trades_instrument")
                                                 
                                                 my_trades_instrument: list= await get_query(trade_db_table, 
                                                                                             instrument_ticker, 
                                                                                             "all", 
                                                                                             "all", 
                                                                                             column_list)
+                                                log.warning (f"my_trades_instrument")
 
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                   
@@ -539,29 +551,27 @@ class StreamAccountData:
                                                 
                                                     tick_TA=  max([o["tick"] for o in TA_result_data])
                                                     
-                                                    server_time=     get_now_unix_time()  
+                                                    server_time = get_now_unix_time()  
                                                     
-                                                    delta_time= server_time-tick_TA
+                                                    delta_time = server_time-tick_TA
                                                     
-                                                    delta_time_seconds=delta_time/1000                                                
+                                                    delta_time_seconds = delta_time/1000                                                
                                                     
-                                                    #log.debug (f" delta_time_seconds {delta_time_seconds} tick_TA {tick_TA} server_time {server_time} {delta_time_seconds<120}")
-
                                                     if delta_time_seconds < 120:#ensure freshness of ta
                                                         
                                                         notional: float = compute_notional_value(index_price, equity)
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
-                                                        
-                                                        #log.warning (f"A")
-                                                        
                                                         for strategy in active_strategies:
                                                             log.error (f"strategy {strategy}")
-                                                            
+                                                        
+                                                            my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
+                                                                and strategy in (o["label"]) ]
+
+                                                            strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]                                                                
+        
                                                             if "hedgingSpot" in strategy:
-                                                                
-                                                                strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]
                                                                 
                                                                 hedging = HedgingSpot(strategy_label,
                                                                                       strategy_params)
@@ -574,33 +584,21 @@ class StreamAccountData:
                                                                     index_price,
                                                                     best_ask_prc,
                                                                     server_time,
-                                                                    TA_result_data
-                                                                )
-                                                            )
-                                                                
-                                                                #log.warning (f"A")
-                                                                #log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
+                                                                    TA_result_data))
                                                                 
                                                                 if send_order["order_allowed"]:
                                                                     await if_order_is_true(send_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_order)
 
-                                                                #log.critical (f"OPENING HEDGING-DONE")                                                                                                 
-                                                                
-                                                                my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
-                                                                    and "hedgingSpot" in (o["label"]) ]
-
-                                                                if my_trades_open_hedging !=[]:
-                                                                
-                                                                #    log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
-                                                                                
+                                                                if my_trades_strategy_open !=[]:
+                                                                                                                                               
                                                                     best_bid_prc: float = ticker["best_bid_price"]
                                                                     
-                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
+                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_strategy_open]
 
                                                                     closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
 
-                                                                    nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
+                                                                    nearest_transaction_to_index = [o for o in my_trades_strategy_open if o["price"] == closest_price]
                                                                     #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                                     
                                                                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
@@ -621,16 +619,14 @@ class StreamAccountData:
                                                     # check for delivered instrument
                                                     if delta_time < 0:
                                                         
+                                                        instruments_name_with_min_expiration_timestamp = futures_instruments [
+                                                            "instruments_name_with_min_expiration_timestamp"]     
+                                                        
                                                         future_spreads = FutureSpreads(strategy_label)
+                                                        
                                                         # check any oustanding instrument that has deliverd
                                                         
                                                         for currency in currencies:
-                                                            
-                                                            my_trades_currency: list= await get_query(trade_db_table, 
-                                                                                                      currency, 
-                                                                                                      "all", 
-                                                                                                      "all", 
-                                                                                                      column_list)
                                                             
                                                             delivered_transactions = [o for o in my_trades_currency \
                                                                 if instruments_name_with_min_expiration_timestamp in o["instrument_name"]]
