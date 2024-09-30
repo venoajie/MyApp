@@ -91,7 +91,6 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
     return await telegram_bot_sendtext(bot_message, purpose)
 
 def get_settlement_period (strategy_atributes) -> list:
-    from strategies.config_strategies import hedging_spot_attributes, strategies
     
     return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_atributes])))
 
