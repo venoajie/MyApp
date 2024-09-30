@@ -151,21 +151,10 @@ def are_size_and_order_appropriate(
     return ordering_is_ok
 
 
-def size_rounding(instrument_name: str, proposed_size: float) -> int:
+def size_rounding(instrument_name: str, futures_instruments, proposed_size: float) -> int:
     """ """
 
-    currency=extract_currency_from_text(instrument_name).upper()
-    
-    my_path_instruments = provide_path_for_file(
-        "instruments", currency
-    )
-    instruments_raw = read_data(my_path_instruments)
-    #log.warning (f"instruments_raw {instruments_raw}")
-    instruments = instruments_raw[0]["result"]
-    
-    #log.warning (f"instruments {instruments}")
-
-    min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]    
+    min_trade_amount=  [o["min_trade_amount"] for o in futures_instruments if o["instrument_name"]== instrument_name][0]    
     
     rounded_size= round(proposed_size/min_trade_amount)*min_trade_amount
     

@@ -41,6 +41,7 @@ def hedged_value_to_notional(notional: float,
 
 
 def determine_opening_size(instrument_name: str, 
+                           futures_instruments,
                            side: str, notional: float, 
                            factor: float) -> int:
     """ """
@@ -48,7 +49,7 @@ def determine_opening_size(instrument_name: str,
     
     proposed_size= max(1, int(notional * factor)) 
     
-    return size_rounding(instrument_name, proposed_size) * sign
+    return size_rounding(instrument_name, futures_instruments, proposed_size) * sign
 
 def get_waiting_time_factor(weighted_factor, 
                             strong_fluctuation: bool, 
@@ -173,6 +174,7 @@ class HedgingSpot(BasicStrategy):
         self,
         currency,
         instrument_name: str,
+        futures_instruments,
         combined_result: list,
         notional: float,
         index_price,
@@ -213,7 +215,7 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
 
-        size = determine_opening_size(instrument_name, params["side"], notional, SIZE_FACTOR)
+        size = determine_opening_size(instrument_name, futures_instruments, params["side"], notional, SIZE_FACTOR)
 
         open_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                            currency.upper(), 
