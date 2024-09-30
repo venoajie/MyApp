@@ -330,8 +330,8 @@ class StreamAccountData:
                 
                 log.error (f"test_instruments_name {futures_instruments}")                  
 
-                instruments_name= futures_instruments["instruments_name"]                    
-                min_expiration_timestamp=await futures_instruments["min_expiration_timestamp"]                    
+                instruments_name = futures_instruments["instruments_name"]                    
+                min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]                    
                 
                 for instrument in instruments_name:
                     
@@ -448,8 +448,6 @@ class StreamAccountData:
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
                             
-                            log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA {test_instruments_name}")    
-                                                        
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                                                 
@@ -602,6 +600,12 @@ class StreamAccountData:
                                                             await if_order_is_true(send_closing_order, instrument_ticker)
                                                             await if_cancel_is_true(send_closing_order)
 
+                                                    delta_time = min_expiration_timestamp - server_time  
+                                                    log.error (f" delta_time {delta_time} {delta_time < 0} ")
+                                                    if delta_time < 0:
+                                                        pass
+                                
+                                                        
                                                     #log.critical (f"CLOSING HEDGING-DONE")
                                                     
                                             
