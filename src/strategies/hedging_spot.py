@@ -301,8 +301,6 @@ class HedgingSpot(BasicStrategy):
         
         hedging_attributes= self.strategy_parameters[0]
         
-        log.error (f"selected_transaction {selected_transaction}")
-
         currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
@@ -336,9 +334,7 @@ class HedgingSpot(BasicStrategy):
         if len_orders != [] and len_orders > 0:
             
             #cancel_allowed: bool = True
-            cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
-            
-            
+            cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])    
     
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
@@ -348,8 +344,7 @@ class HedgingSpot(BasicStrategy):
                 waiting_minute_before_cancel,
                 len_orders,
                 open_orders_label_strategy,
-                server_time,
-            )
+                server_time,)
             
         order_allowed = exit_params["order_allowed"]
         
@@ -379,7 +374,7 @@ class HedgingSpot(BasicStrategy):
             
             exit_allowed: bool = size_and_order_appropriate_for_ordering \
                  and (bullish or strong_bullish)
-            log.error (f"exit_parameters {exit_parameters}")
+            #log.error (f"exit_parameters {exit_parameters}")
 
         return dict(
             order_allowed=exit_allowed,
