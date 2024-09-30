@@ -25,7 +25,6 @@ from deribit_get import (
     get_instruments)
 from strategies.basic_strategy import (
     check_if_id_has_used_before,
-    get_instruments_kind,
     is_label_and_side_consistent,)
 from strategies.hedging_spot import HedgingSpot  
 from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
@@ -156,7 +155,8 @@ async def get_futures_for_active_currencies (active_currencies,
     return remove_double_brackets_in_list(instruments_holder_plc)
     
     
-async def get_futures_instruments (active_currencies) -> list:
+async def get_futures_instruments (active_currencies, 
+                                   settlement_periods) -> list:
     
     active_futures=  await get_futures_for_active_currencies(active_currencies,
                                                              settlement_periods)

@@ -155,8 +155,16 @@ def size_rounding(instrument_name: str, proposed_size: float) -> int:
     """ """
 
     currency=extract_currency_from_text(instrument_name).upper()
-
-    instruments= get_instruments_kind(currency, "all")
+    
+    
+    my_path_instruments = provide_path_for_file(
+        "instruments", currency
+    )
+    instruments_raw = read_data(my_path_instruments)
+    log.warning (f"instruments_raw {instruments_raw}")
+    instruments = instruments_raw[0]["result"]
+    
+    log.warning (f"instruments {instruments}")
 
     min_trade_amount=  [o["min_trade_amount"] for o in instruments if o["instrument_name"]== instrument_name][0]    
     
@@ -320,48 +328,6 @@ def get_transactions_sum(result_strategy_label) -> int:
         if result_strategy_label == []
         else sum([o["amount"] for o in result_strategy_label])
     )
-
-
-def get_settlement_period () -> list:
-    from strategies.config_strategies import hedging_spot_attributes, strategies
-    
-    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in (strategies+hedging_spot_attributes())])))
-
-
-def get_instruments_kind(currency: str, kind: str= "all") -> list:
-    """_summary_
-
-    Args:
-        currency (str): _description_
-        kind (str): "future_combo",  "future"
-        Instance:  [
-                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1,'counter_currency': 'USD', 
-                    'settlement_period': 'month', 'settlement_currency': 'ETH', 'creation_timestamp': 1719564006000, 
-                    'instrument_id': 342036, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
-                    'expiration_timestamp': 1725004800000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
-                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_30AUG24', 'kind': 'future_combo', 
-                    'rfq': False, 'price_index': 'eth_usd'}, ]
-     Returns:
-        list: _description_
-        
-        
-    """ 
-    
-    my_path_instruments = provide_path_for_file(
-        "instruments", currency
-    )
-
-    instruments_raw = read_data(my_path_instruments)
-    instruments = instruments_raw[0]["result"]
-    non_spot_instruments=  [
-        o for o in instruments if o["kind"] != "spot"]
-    instruments_kind= non_spot_instruments if kind =="all" else  [
-        o for o in instruments if o["kind"] == kind]
-    
-    settlement_periods= get_settlement_period()
-    
-    return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
-
 
 def get_transaction_side(transaction: dict) -> str:
     """ 
