@@ -43,6 +43,7 @@ from utilities.system_tools import (
     sleep_and_restart,)
 from utilities.string_modification import (
     remove_double_brackets_in_list,
+    remove_redundant_elements,
     extract_currency_from_text)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -89,8 +90,47 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await telegram_bot_sendtext(bot_message, purpose)
 
+def get_settlement_period (strategy_atributes) -> list:
+    from strategies.config_strategies import hedging_spot_attributes, strategies
+    
+    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_atributes])))
 
-async def get_futures_for_active_currencies (active_currencies) -> list:
+
+def get_instruments_kind(currency: str, settlement_periods, kind: str= "all") -> list:
+    """_summary_
+
+    Args:
+        currency (str): _description_
+        kind (str): "future_combo",  "future"
+        Instance:  [
+                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1,'counter_currency': 'USD', 
+                    'settlement_period': 'month', 'settlement_currency': 'ETH', 'creation_timestamp': 1719564006000, 
+                    'instrument_id': 342036, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
+                    'expiration_timestamp': 1725004800000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
+                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_30AUG24', 'kind': 'future_combo', 
+                    'rfq': False, 'price_index': 'eth_usd'}, ]
+     Returns:
+        list: _description_
+        
+        
+    """ 
+    
+    my_path_instruments = provide_path_for_file(
+        "instruments", currency
+    )
+
+    instruments_raw = read_data(my_path_instruments)
+    instruments = instruments_raw[0]["result"]
+    non_spot_instruments=  [
+        o for o in instruments if o["kind"] != "spot"]
+    instruments_kind= non_spot_instruments if kind =="all" else  [
+        o for o in instruments if o["kind"] == kind]
+    
+    return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
+
+
+async def get_futures_for_active_currencies (active_currencies,
+                                             settlement_periods) -> list:
     """_summary_
 
     Returns:
@@ -100,7 +140,9 @@ async def get_futures_for_active_currencies (active_currencies) -> list:
     instruments_holder_place= []
     for currency in active_currencies:
 
-        future_instruments= get_instruments_kind (currency,"future" )
+        future_instruments= get_instruments_kind (currency,
+                                                  settlement_periods,
+                                                  "future" )
         
         instruments_holder_place.append(future_instruments)    
     
@@ -117,7 +159,8 @@ async def get_futures_for_active_currencies (active_currencies) -> list:
     
 async def get_futures_instruments (active_currencies) -> list:
     
-    active_futures=  await get_futures_for_active_currencies(active_currencies)
+    active_futures=  await get_futures_for_active_currencies(active_currencies,
+                                                             settlement_periods)
       
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
@@ -321,7 +364,12 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                futures_instruments=await get_futures_instruments(currencies)  
+                settlement_periods= get_settlement_period (strategy_atributes)
+                
+                log.error (f"settlement_periods {settlement_periods}")
+                
+                futures_instruments=await get_futures_instruments(currencies,
+                                                                  settlement_periods)  
                 
                 instruments_name = futures_instruments["instruments_name"]                    
                 

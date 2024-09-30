@@ -14,7 +14,11 @@ from db_management.sqlite_management import (
     querying_additional_params,
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
-from utilities.string_modification import parsing_label,extract_currency_from_text,remove_redundant_elements,remove_double_brackets_in_list
+from utilities.string_modification import (
+    parsing_label,
+    extract_currency_from_text,
+    remove_redundant_elements,
+    remove_double_brackets_in_list)
 from loguru import logger as log
 from utilities.pickling import (
     read_data)
