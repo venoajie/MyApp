@@ -149,7 +149,6 @@ async def get_futures_for_active_currencies (active_currencies,
     # 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 
     # 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
     
-    log.error(instruments_holder_place)
     instruments_holder_plc= []
     for instr in instruments_holder_place:
         instruments_holder_plc.append(instr)
@@ -169,6 +168,7 @@ async def get_futures_instruments (active_currencies,
     
     return dict(instruments_name = [o["instrument_name"] for o in active_futures],
                 min_expiration_timestamp = min_expiration_timestamp,
+                active_futures = active_futures,
                 instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_futures \
                     if o["expiration_timestamp"] == min_expiration_timestamp][0]
                 )
@@ -372,6 +372,8 @@ class StreamAccountData:
                 futures_instruments=await get_futures_instruments(currencies,
                                                                   settlement_periods)  
                 
+                active_futures = futures_instruments["active_futures"]   
+
                 instruments_name = futures_instruments["instruments_name"]   
                 
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
@@ -624,7 +626,7 @@ class StreamAccountData:
                                                                 await hedging.is_send_and_cancel_open_order_allowed(
                                                                     currency,
                                                                     instrument_ticker,
-                                                                    futures_instruments,
+                                                                    active_futures,
                                                                     combined_result,
                                                                     notional,
                                                                     index_price,
