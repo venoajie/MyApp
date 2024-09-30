@@ -565,59 +565,60 @@ class StreamAccountData:
                                                         #log.warning (f"A")
                                                         
                                                         for strategy in active_strategies:
-                                                            log.error (f"strategy {strategy} strategy_label {strategy_label}")
+                                                            log.error (f"strategy {strategy}")
+                                                            
                                                             if "hedgingSpot" in strategy:
                                                                 
                                                                 hedging = HedgingSpot(strategy_label)
-                                                            
-                                                            send_order: dict = (
-                                                            await hedging.is_send_and_cancel_open_order_allowed(
-                                                                currency,
-                                                                instrument_ticker,
-                                                                notional,
-                                                                index_price,
-                                                                best_ask_prc,
-                                                                server_time,
-                                                                TA_result_data
-                                                            )
-                                                        )
-                                                            
-                                                            #log.warning (f"A")
-                                                            #log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
-                                                            
-                                                            if send_order["order_allowed"]:
-                                                                await if_order_is_true(send_order, instrument_ticker)
-                                                                await if_cancel_is_true(send_order)
-
-                                                            #log.critical (f"OPENING HEDGING-DONE")                                                                                                 
-                                                            
-                                                            my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
-                                                                and "hedgingSpot" in (o["label"]) ]
-
-                                                            if my_trades_open_hedging !=[]:
-                                                            
-                                                            #    log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
-                                                                            
-                                                                best_bid_prc: float = ticker["best_bid_price"]
                                                                 
-                                                                get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
-
-                                                                closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
-
-                                                                nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
-                                                                #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
-                                                                
-                                                                send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                                                                    TA_result_data,
+                                                                send_order: dict = (
+                                                                await hedging.is_send_and_cancel_open_order_allowed(
+                                                                    currency,
+                                                                    instrument_ticker,
+                                                                    notional,
                                                                     index_price,
                                                                     best_ask_prc,
-                                                                    best_bid_prc,
-                                                                    nearest_transaction_to_index,
                                                                     server_time,
+                                                                    TA_result_data
                                                                 )
-                                                                #log.error (f"send_closing_order {send_closing_order}")
-                                                                await if_order_is_true(send_closing_order, instrument_ticker)
-                                                                await if_cancel_is_true(send_closing_order)
+                                                            )
+                                                                
+                                                                #log.warning (f"A")
+                                                                #log.debug(f"if_order_is_true {send_order} {instrument_ticker} ")
+                                                                
+                                                                if send_order["order_allowed"]:
+                                                                    await if_order_is_true(send_order, instrument_ticker)
+                                                                    await if_cancel_is_true(send_order)
+
+                                                                #log.critical (f"OPENING HEDGING-DONE")                                                                                                 
+                                                                
+                                                                my_trades_open_hedging = [o for o in my_trades_instrument if "open" in (o["label"])\
+                                                                    and "hedgingSpot" in (o["label"]) ]
+
+                                                                if my_trades_open_hedging !=[]:
+                                                                
+                                                                #    log.critical (f"CLOSING HEDGING-START {instrument_ticker}")
+                                                                                
+                                                                    best_bid_prc: float = ticker["best_bid_price"]
+                                                                    
+                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_open_hedging]
+
+                                                                    closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
+
+                                                                    nearest_transaction_to_index = [o for o in my_trades_open_hedging if o["price"] == closest_price]
+                                                                    #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
+                                                                    
+                                                                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                                                                        TA_result_data,
+                                                                        index_price,
+                                                                        best_ask_prc,
+                                                                        best_bid_prc,
+                                                                        nearest_transaction_to_index,
+                                                                        server_time,
+                                                                    )
+                                                                    #log.error (f"send_closing_order {send_closing_order}")
+                                                                    await if_order_is_true(send_closing_order, instrument_ticker)
+                                                                    await if_cancel_is_true(send_closing_order)
 
                                                     delta_time = min_expiration_timestamp - server_time  
                                                     log.error (f" delta_time {delta_time} {delta_time < 0} ")
