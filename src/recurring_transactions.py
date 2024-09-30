@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # built ins
+
 import asyncio
+import os
 import requests
+import tomli
 
 # installed
 import aioschedule as schedule
@@ -39,6 +42,18 @@ def catch_error(error, idle: int = None) -> list:
     catch_error_message(error, idle)
 
 
+def get_config(file_name: str) -> list:
+    """ """
+    config_path = provide_path_for_file (file_name)
+    
+    try:
+        if os.path.exists(config_path):
+            with open(config_path, "rb") as handle:
+                read= tomli.load(handle)
+                return read
+    except:
+        return []
+    
 async def get_instruments_from_deribit(connection_url, currency) -> float:
     """ """
 
@@ -115,8 +130,14 @@ async def run_every_15_seconds() -> None:
     WINDOW = 9
     RATIO = 0.9
     THRESHOLD = 0.01 * ONE_PCT
+       
+    file_toml = "config_strategies.toml"
+        
+    config_app = get_config(file_toml)
+
+    tradable_config_app = config_app["tradable"]
     
-    currencies=  preferred_spot_currencies()
+    currencies= [o["spot"] for o in tradable_config_app] [0]
     
     end_timestamp=     get_now_unix_time()  
     

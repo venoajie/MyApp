@@ -135,8 +135,7 @@ async def get_futures_for_active_currencies (active_currencies) -> list:
 async def get_futures_instruments (active_currencies) -> list:
     
     active_futures=  await get_futures_for_active_currencies(active_currencies)
-    
-    log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")  
+      
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
     return dict(instruments_name = [o["instrument_name"] for o in active_futures],
