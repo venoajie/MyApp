@@ -28,15 +28,19 @@ from deribit_get import (
 from strategies.basic_strategy import (
     check_if_id_has_used_before,
     is_label_and_side_consistent,)
-from strategies import  hedging_spot
-from strategies.config_strategies import (hedging_spot_attributes)
+from strategies.hedging_spot import HedgingSpot  
+from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
+from strategies.config_strategies import (
+    hedging_spot_attributes,
+    preferred_spot_currencies)
 from transaction_management.deribit.orders_management import (
     labelling_unlabelled_transaction,
     OrderManagement,)
 from utilities.number_modification import get_closest_value
 from utilities.pickling import (
     replace_data,
-    read_data)
+    read_data,
+    sleep_and_restart,)
 from utilities.system_tools import (
     provide_path_for_file,
     raise_error_message,
@@ -84,7 +88,7 @@ async def update_db_pkl(path, data_orders, currency) -> None:
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
         
-def get_trading_config(file_name: str = "config_strategies.toml") -> list:
+def get_config(file_name: str, table) -> list:
     """ """
     config_path = provide_path_for_file (file_name)
     
@@ -92,7 +96,7 @@ def get_trading_config(file_name: str = "config_strategies.toml") -> list:
         if os.path.exists(config_path):
             with open(config_path, "rb") as handle:
                 read= tomli.load(handle)
-                return read ["tradable"]
+                return read [f"{table}"]
     except:
         return []
 
@@ -110,7 +114,10 @@ async def get_futures_for_active_currencies () -> list:
     """
     from strategies.basic_strategy import get_instruments_kind
     
-    currencies = get_trading_config() ["spot"]
+    file_toml = "config_strategies.toml"
+    table = "tradable"
+    
+    currencies = get_config(file_toml, table) ["spot"]
     
     #log.error (f"currencies {currencies}")
     
@@ -136,10 +143,13 @@ async def get_futures_instruments () -> list:
     
     active_currencies=  await get_futures_for_active_currencies()
     
-    log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")   
+    log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")  
+    min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_currencies]) 
     
     return dict(instruments_name = [o["instrument_name"] for o in active_currencies],
-                min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_currencies])
+                min_expiration_timestamp = min_expiration_timestamp,
+                instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_currencies \
+                    if o["expiration_timestamp"] == min_expiration_timestamp][0]
                 )
     
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
@@ -251,7 +261,11 @@ async def on_restart() -> None:
     # refresh databases
     await get_and_save_currencies()                
 
-    currencies_default = get_trading_config() ["spot"]
+    file_toml = "config_strategies.toml"
+    table = "tradable"
+    
+    currencies_default = get_config(file_toml, table) ["spot"]
+    
     
     for currency in currencies_default:
         
@@ -320,8 +334,19 @@ class StreamAccountData:
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
+                
+                            
+                file_toml = "config_strategies.toml"
+                table = "tradable"
+                
+                config_app = get_config(file_toml, table)
+                
+                strategy_atributes = config_app["strategies"]
                             
                 strategy_label= hedging_spot_attributes()[0]["strategy"]       
+                
+                log.error (f"strategy_atributes {strategy_atributes}")
+                log.error (f"strategy_label {strategy_label}")
                 
                 trade_db_table= "my_trades_all_json"
                 order_db_table= "orders_all_json"                
@@ -332,6 +357,7 @@ class StreamAccountData:
 
                 instruments_name = futures_instruments["instruments_name"]                    
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]                    
+                instruments_name_with_min_expiration_timestamp = futures_instruments["instruments_name_with_min_expiration_timestamp"]                    
                 
                 for instrument in instruments_name:
                     
@@ -525,7 +551,11 @@ class StreamAccountData:
                                                 
                                                 column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
                                                 
-                                                my_trades_instrument: list= await get_query("my_trades_all_json", instrument_ticker, "all", "all", column_list)
+                                                my_trades_instrument: list= await get_query(trade_db_table, 
+                                                                                            instrument_ticker, 
+                                                                                            "all", 
+                                                                                            "all", 
+                                                                                            column_list)
 
                                                 # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                   
@@ -548,7 +578,7 @@ class StreamAccountData:
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"]                                                    
                                                         
-                                                        hedging = hedging_spot.HedgingSpot(strategy_label)
+                                                        hedging = HedgingSpot(strategy_label)
                                                         #log.warning (f"A")
                                                         
                                                         send_order: dict = (
@@ -602,8 +632,34 @@ class StreamAccountData:
 
                                                     delta_time = min_expiration_timestamp - server_time  
                                                     log.error (f" delta_time {delta_time} {delta_time < 0} ")
+                                                    
+                                                    # check for delivered instrument
                                                     if delta_time < 0:
-                                                        pass
+                                                        
+                                                        future_spreads = FutureSpreads(strategy_label)
+                                                        # check any oustanding instrument that has deliverd
+                                                                                                            
+                                                        currencies=  preferred_spot_currencies()
+                                                        
+                                                        for currency in currencies:
+                                                            
+                                                            my_trades_currency: list= await get_query(trade_db_table, 
+                                                                                                      currency, 
+                                                                                                      "all", 
+                                                                                                      "all", 
+                                                                                                      column_list)
+                                                            
+                                                            delivered_transactions = [o for o in my_trades_currency \
+                                                                if instruments_name_with_min_expiration_timestamp in o["instrument_name"]]
+                                                            
+                                                            if delivered_transactions:
+                                                                
+                                                                for transaction in delivered_transactions:
+                                                                    delete_respective_closed_futures_from_trade_db (transaction, trade_db_table)
+
+                                                        
+                                                        # updating instrument
+                                                        await sleep_and_restart ()
                                 
                                                         
                                                     #log.critical (f"CLOSING HEDGING-DONE")
