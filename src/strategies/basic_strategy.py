@@ -100,6 +100,11 @@ def positions_and_orders(current_size: int,
 
     return current_size + current_orders_size
 
+
+def ensure_sign_consistency(side) -> float:
+    """ """
+    return -1 if side == "sell" else 1
+
 def proforma_size(
     current_size: int, current_orders_size: int, 
     next_orders_size: int
@@ -488,6 +493,7 @@ async def provide_size_to_close_transaction(
     """ """
     basic_size = get_transaction_size(transaction)
     label = get_transaction_label(transaction)
+    side = get_transaction_side(transaction)
     has_closed = 0
     # print(f"transaction {transaction}")
 
@@ -498,7 +504,7 @@ async def provide_size_to_close_transaction(
         transaction, transactions_all
     )
 
-    return abs(basic_size if (has_closed == 0) else (sum_transactions_under_label_main))
+    return (basic_size if (has_closed == 0) else (sum_transactions_under_label_main)) * ensure_sign_consistency(side)
 
 def convert_list_to_dict (transaction: list) -> dict:
 
@@ -623,12 +629,12 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     # default type: limit
     params.update({"type": "limit"})
 
-    # size=exactly amount of transaction size
-    params.update({"size": transaction["amount"]})
-
     # determine side
     side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
+
+    # size=exactly amount of transaction size
+    params.update({"size": transaction["amount"] * ensure_sign_consistency(side)})
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})

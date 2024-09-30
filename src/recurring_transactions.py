@@ -31,6 +31,7 @@ from utilities.system_tools import (
     provide_path_for_file,)
 from websocket_management.allocating_ohlc import (
     ohlc_end_point, 
+    ohlc_result_per_time_frame,
     last_tick_fr_sqlite,)
 
 def catch_error(error, idle: int = None) -> list:
@@ -139,13 +140,15 @@ async def run_every_15_seconds() -> None:
             
             #log.debug (f"table_ohlc {table_ohlc}")         
             
-            last_tick_query_ohlc1: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
+            last_tick_query_ohlc_resolution: str = querying_arithmetic_operator (WHERE_FILTER_TICK, "MAX", table_ohlc)
+
+            #data_from_ohlc1_start_from_ohlc_resolution_tick: str = 
 
             #log.error (f"last_tick_query_ohlc1 {last_tick_query_ohlc1}")         
             
-            start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc1)
+            start_timestamp: int = await last_tick_fr_sqlite (last_tick_query_ohlc_resolution)
 
-            #log.error (f"start_timestamp {start_timestamp}")         
+            #log.error (f"start_timestamp {start_timestamp}")    
             
             if resolution == "1D":
                 delta= (end_timestamp - start_timestamp)/(one_minute * 60 * 24)
@@ -167,6 +170,14 @@ async def run_every_15_seconds() -> None:
                 result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]> start_timestamp][0]
                 
                 log.info (f"result {result}")
+                
+                
+                await ohlc_result_per_time_frame (instrument_name,
+                                                resolution,
+                                                result,
+                                                table_ohlc,
+                                                WHERE_FILTER_TICK, )
+            
                 
                 await insert_tables(table_ohlc, result)
         

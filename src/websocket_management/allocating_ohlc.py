@@ -88,13 +88,19 @@ async def last_tick_fr_sqlite(last_tick_query_ohlc1) -> int:
 
 async def replace_previous_ohlc_using_fix_data(instrument_ticker,
                                                TABLE_OHLC1, 
+                                               resolution,
                                                last_tick1_fr_sqlite, 
                                                last_tick_fr_data_orders, 
                                                WHERE_FILTER_TICK) -> int:
     """ """
     try:
 
-        ohlc_endPoint = f" https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={last_tick_fr_data_orders}&instrument_name={instrument_ticker}&resolution=1&start_timestamp={last_tick1_fr_sqlite}"
+        ohlc_endPoint = ohlc_end_point(instrument_ticker, 
+                                       resolution, 
+                                       last_tick1_fr_sqlite, 
+                                       last_tick_fr_data_orders,)
+
+        f" https://deribit.com/api/v2/public/get_tradingview_chart_data?end_timestamp={last_tick_fr_data_orders}&instrument_name={instrument_ticker}&resolution=1&start_timestamp={last_tick1_fr_sqlite}"
 
         ohlc_request = requests.get(ohlc_endPoint).json()["result"]
         result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]== last_tick1_fr_sqlite][0]
@@ -109,6 +115,7 @@ async def replace_previous_ohlc_using_fix_data(instrument_ticker,
 
 async def ohlc_result_per_time_frame(
     instrument_ticker,
+    resolution,
     data_orders,
     TABLE_OHLC1: str,
     WHERE_FILTER_TICK: str = "tick",
@@ -122,6 +129,7 @@ async def ohlc_result_per_time_frame(
 
     # refilling current ohlc table with updated data
     refilling_current_ohlc_table_with_updated_streaming_data = last_tick1_fr_sqlite == last_tick_fr_data_orders
+    
     insert_new_ohlc_and_replace_previous_ohlc_using_fix_data = last_tick_fr_data_orders > last_tick1_fr_sqlite
     
     if refilling_current_ohlc_table_with_updated_streaming_data:
@@ -134,6 +142,7 @@ async def ohlc_result_per_time_frame(
         
         await replace_previous_ohlc_using_fix_data (instrument_ticker,
                                                     TABLE_OHLC1, 
+                                                    resolution,
                                                     last_tick1_fr_sqlite, 
                                                     last_tick_fr_data_orders,
                                                     WHERE_FILTER_TICK)

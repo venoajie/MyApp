@@ -18,7 +18,6 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from strategies.config_strategies import preferred_spot_currencies, paramaters_to_balancing_transactions
-from strategies import hedging_spot, market_maker as MM
 from strategies.basic_strategy import (
     is_label_and_side_consistent,
     get_strategy_config_all,
@@ -37,9 +36,7 @@ from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
     remove_redundant_elements,
     extract_currency_from_text,
-    parsing_label,
-    my_trades_open_sqlite_detailing,
-    parsing_sqlite_json_output,)
+    parsing_label,)
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
     clean_up_closed_futures_because_has_delivered,

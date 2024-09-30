@@ -136,6 +136,8 @@ async def get_futures_instruments_name () -> list:
     
     active_currencies=  await get_futures_for_active_currencies()
     
+    log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")   
+    
     return [o["instrument_name"] for o in active_currencies]
     
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
@@ -322,6 +324,10 @@ class StreamAccountData:
                 trade_db_table= "my_trades_all_json"
                 order_db_table= "orders_all_json"                
              
+                test_instruments_name=await get_futures_instruments_name()  
+                
+                log.error (f"test_instruments_name {test_instruments_name}")                  
+
                 instruments_name=await get_futures_instruments_name()                    
                 
                 for instrument in instruments_name:
@@ -434,14 +440,18 @@ class StreamAccountData:
                                 await resupply_sub_accountdb(currency)
                                 await check_db_consistencies_and_clean_up_imbalances(currency)                           
                             
-                            TABLE_OHLC1: str = f"ohlc1_{currency_lower}_perp_json"
+                            resolution=1
+                            TABLE_OHLC1: str = f"ohlc{resolution}_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
                             DATABASE: str = "databases/trading.sqlite3"
+                            
+                            log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA {test_instruments_name}")    
                                                         
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
                                                                 
                                 await ohlc_result_per_time_frame(instrument_ticker,
+                                                                 resolution,
                                                                 data_orders,
                                                                 TABLE_OHLC1,
                                                                 WHERE_FILTER_TICK,

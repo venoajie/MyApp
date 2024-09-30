@@ -17,6 +17,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     size_rounding,
     is_label_and_side_consistent,
+    ensure_sign_consistency,
     are_size_and_order_appropriate
 )
 from db_management.sqlite_management import (
@@ -62,10 +63,6 @@ def get_waiting_time_factor(weighted_factor,
 
     return BEARISH_FACTOR if (strong_fluctuation or some_fluctuation) else ONE_PCT
 
-
-def ensure_sign_consistency(side) -> float:
-    """ """
-    return -1 if side == "sell" else 1
 
 def is_hedged_value_to_notional_exceed_threshold(
     notional: float, hedged_value: float, threshold: float
