@@ -132,14 +132,15 @@ async def get_futures_for_active_currencies () -> list:
     return remove_double_brackets_in_list(instruments_holder_plc)
     
     
-async def get_futures_instruments_name () -> list:
+async def get_futures_instruments () -> list:
     
     active_currencies=  await get_futures_for_active_currencies()
     
     log.debug (f"test_instruments_name AAAAAAAAAAAAAAAAAAAAAAAA")   
-    log.debug (active_currencies)   
     
-    return [o(["instrument_name"],["creation_timestamp"],["settlement_period"]) for o in active_currencies]
+    return dict(instruments_name = [o["instrument_name"] for o in active_currencies],
+                min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_currencies])
+                )
     
 def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
     return currency.lower()  in str(database_address)
@@ -325,11 +326,12 @@ class StreamAccountData:
                 trade_db_table= "my_trades_all_json"
                 order_db_table= "orders_all_json"                
              
-                test_instruments_name=await get_futures_instruments_name()  
+                futures_instruments=await get_futures_instruments()  
                 
-                log.error (f"test_instruments_name {test_instruments_name}")                  
+                log.error (f"test_instruments_name {futures_instruments}")                  
 
-                instruments_name=await get_futures_instruments_name()                    
+                instruments_name=await futures_instruments["instruments_name"]                    
+                min_expiration_timestamp=await futures_instruments["min_expiration_timestamp"]                    
                 
                 for instrument in instruments_name:
                     
