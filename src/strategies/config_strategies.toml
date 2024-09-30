@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-[tradable]
+[[tradable]]
 spot= [
     "BTC",
     "ETH",
@@ -22,15 +22,15 @@ strategy_labels= [#represert strategy
 is_active = true
 contribute_to_hedging = true
 
-[[strategies.futureSpread]]  # nested array of tables
+[strategies.futureSpread]  # nested array of tables
 is_active = true
 contribute_to_hedging = true
 
-[[strategies.customLong]]
+[strategies.customLong]
 is_active = true
 contribute_to_hedging = true
 
-[[strategies.customShort]]
+[strategies.customShort]
 is_active = true
 contribute_to_hedging = true
 

@@ -325,7 +325,23 @@ class StreamAccountData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-
+              
+            file_toml = "config_strategies.toml"
+                #table_strategy = "tradable"
+                
+            config_app = get_config(file_toml)
+            log.error (f"config_app {config_app}")
+            
+            strategy_atributes = config_app["strategies"]
+                        
+            strategy_label= hedging_spot_attributes()[0]["strategy"]       
+            
+            log.error (f"strategy_atributes {strategy_atributes}")
+            log.error (f"strategy_label {strategy_label}")
+            
+            trade_db_table= "my_trades_all_json"
+            order_db_table= "orders_all_json"                
+             
             # Establish restart procedure
             await on_restart()
                             
@@ -339,23 +355,7 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
                 
-                            
-                file_toml = "config_strategies.toml"
-                #table_strategy = "tradable"
-                
-                config_app = get_config(file_toml)
-                log.error (f"config_app {config_app}")
-                
-                strategy_atributes = config_app["strategies"]
-                            
-                strategy_label= hedging_spot_attributes()[0]["strategy"]       
-                
-                log.error (f"strategy_atributes {strategy_atributes}")
-                log.error (f"strategy_label {strategy_label}")
-                
-                trade_db_table= "my_trades_all_json"
-                order_db_table= "orders_all_json"                
-             
+              
                 futures_instruments=await get_futures_instruments()  
                 
                 log.error (f"test_instruments_name {futures_instruments}")                  
