@@ -148,6 +148,8 @@ async def get_futures_for_active_currencies (active_currencies,
     # typical result: [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 
     # 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 
     # 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
+    
+    log.error(instruments_holder_place)
     instruments_holder_plc= []
     for instr in instruments_holder_place:
         instruments_holder_plc.append(instr)
