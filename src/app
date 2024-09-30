@@ -607,7 +607,7 @@ class StreamAccountData:
                                                             my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
                                                                 and strategy in (o["label"]) ]
 
-                                                            strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy] [0]                                                               
+                                                            strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]                                                                
         
                                                             if "hedgingSpot" in strategy:
                                                                 

@@ -192,7 +192,7 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(
             ask_price, None, notional)
         
-        hedging_attributes= self.strategy_parameters
+        hedging_attributes= self.strategy_parameters[0]
         
         log.warning (f"hedging_attributes {hedging_attributes}")
 
