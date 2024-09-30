@@ -29,8 +29,6 @@ from strategies.basic_strategy import (
     is_label_and_side_consistent,)
 from strategies.hedging_spot import HedgingSpot  
 from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
-from strategies.config_strategies import (
-    hedging_spot_attributes,)
 from transaction_management.deribit.orders_management import (
     labelling_unlabelled_transaction,
     OrderManagement,)
