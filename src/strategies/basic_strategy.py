@@ -447,19 +447,21 @@ async def provide_size_to_close_transaction(
 ) -> str:
     """ """
     basic_size = get_transaction_size(transaction)
+
     label = get_transaction_label(transaction)
-    side = get_transaction_side(transaction)
+
     has_closed = 0
     # print(f"transaction {transaction}")
 
     if "open" in label:
         has_closed = has_closed_label(transaction)
 
-    sum_transactions_under_label_main = await summing_transactions_under_label_int(
-        transaction, transactions_all
-    )
+    if has_closed != 0:
+        sum_transactions_under_label_main = await summing_transactions_under_label_int (
+            transaction, 
+            transactions_all)
 
-    return (basic_size if (has_closed == 0) else (sum_transactions_under_label_main)) * ensure_sign_consistency(side)
+    return (basic_size if (has_closed == 0) else (sum_transactions_under_label_main)) 
 
 def convert_list_to_dict (transaction: list) -> dict:
 
