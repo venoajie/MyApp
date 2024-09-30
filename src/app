@@ -319,7 +319,7 @@ class StreamAccountData:
             tradable_config_app = config_app["tradable"]
             log.error (f"tradable_config_app {tradable_config_app}")
             
-            currencies= tradable_config_app["spot"]
+            currencies= [o["spot"] for o in tradable_config_app] [0]
             log.error (f"currencies {currencies}")
             
             strategy_atributes = config_app["strategies"]
