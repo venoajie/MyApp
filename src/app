@@ -266,7 +266,9 @@ async def on_restart() -> None:
     file_toml = "config_strategies.toml"
     table = "tradable"
     
-    currencies_default = get_config(file_toml) ["spot"]
+    currencies_default = get_config(file_toml)
+    
+    log.debug (f"currencies_default {currencies_default}")
     
     
     for currency in currencies_default:
