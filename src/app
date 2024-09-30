@@ -364,9 +364,7 @@ class StreamAccountData:
                 self.loop.create_task(self.ws_refresh_auth())
                 
                 settlement_periods= get_settlement_period (strategy_atributes)
-                
-                log.error (f"settlement_periods {settlement_periods}")
-                
+                                
                 futures_instruments=await get_futures_instruments(currencies,
                                                                   settlement_periods)  
                 
@@ -404,7 +402,7 @@ class StreamAccountData:
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    #log.warning (message)
+                    log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
