@@ -23,7 +23,6 @@ from deribit_get import (
     get_server_time)
 from market_understanding.technical_analysis import (
     insert_market_condition_result,)
-from strategies.config_strategies import (preferred_spot_currencies) 
 from utilities.pickling import replace_data
 from utilities.string_modification import (
     remove_redundant_elements, 
