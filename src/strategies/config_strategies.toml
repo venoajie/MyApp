@@ -21,24 +21,28 @@ strategy_label = "hedgingSpot"
 is_active = true
 contribute_to_hedging = true
 cancellable = true
+side = "sell"
 
 [[strategies]]
 strategy_label = "futureSpread"
 is_active = true
 contribute_to_hedging = true
 cancellable = false
+side = "sell"
 
 [[strategies]]
 strategy_label = "customLong"
 is_active = true
 contribute_to_hedging = true
 cancellable = false
+side = "sell"
 
 [[strategies]]
 strategy_label = "customShort"
 is_active = true
 contribute_to_hedging = true
 cancellable = false
+side = "sell"
 
 
 [paths]
