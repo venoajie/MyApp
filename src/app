@@ -587,7 +587,7 @@ class StreamAccountData:
 
                                                     # check for delivered instrument
         
-                                                            if "FutureSpread" in strategy:
+                                                            if "futureSpread" in strategy:
                                                                 
                                                                 log.error (f"strategy {strategy}")
                                                                 future_spreads = FutureSpreads(strategy,
