@@ -20,6 +20,7 @@ strategy_labels= [#represert strategy
 strategy_label = "hedgingSpot"
 is_active = true
 contribute_to_hedging = true
+cancellable = true
 
 [[strategies]]
 strategy_label = "futureSpread"

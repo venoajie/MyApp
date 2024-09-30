@@ -303,12 +303,12 @@ class StreamAccountData:
                         
             strategy_label= hedging_spot_attributes()[0]["strategy"]   
             
-            log.error (f"strategy_atributes {strategy_atributes}")  
-            
             active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
+            
             cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
             
             trade_db_table= "my_trades_all_json"
+            
             order_db_table= "orders_all_json"                
              
             # Establish restart procedure
