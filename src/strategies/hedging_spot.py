@@ -293,11 +293,6 @@ class HedgingSpot(BasicStrategy):
         server_time: int
     ) -> dict:
         """ """
-        {'liquidity': 'M', 'risk_reducing': False, 'order_type': 'limit', 'trade_id': 'ETH-216360019', 'fee_currency': 'ETH', 
-         'contracts': 4.0, 'reduce_only': False, 'self_trade': False, 'post_only': True, 'mmp': False, 'tick_direction': 3, 
-         'matching_id': None, 'order_id': 'ETH-48539980959', 'fee': 0.0, 'mark_price': 2455.62, 'amount': 4.0, 'api': True, 
-         'trade_seq': 157460588, 'instrument_name': 'ETH-PERPETUAL', 'profit_loss': 0.0, 'index_price': 2456.25, 'direction': 'sell', 
-         'price': 2455.25, 'state': 'filled', 'timestamp': 1725198276199, 'label': 'hedgingSpot-open-1725198275948'}
         
         hedging_attributes= self.strategy_parameters[0]
         

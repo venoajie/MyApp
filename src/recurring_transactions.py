@@ -12,7 +12,7 @@ import tomli
 import aioschedule as schedule
 import time
 from loguru import logger as log
-
+import aiohttp
 # user defined formula
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
@@ -168,7 +168,8 @@ async def run_every_15_seconds() -> None:
 
                 ohlc_request = requests.get(end_point).json()["result"]
                 
-                result = [o for o in transform_nested_dict_to_list(ohlc_request) if o["tick"]> start_timestamp][0]
+                result = [o for o in transform_nested_dict_to_list(ohlc_request) \
+                    if o["tick"] > start_timestamp][0]
                 
                 log.info (f"result {result}")
                 
