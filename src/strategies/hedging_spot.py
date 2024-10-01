@@ -365,12 +365,11 @@ class HedgingSpot(BasicStrategy):
             my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
             sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-            exit_parameters = exit_params["order_parameters"]
-            size = exit_parameters["size"]           
+            size = exit_params["size"]           
             
             sum_orders: int = get_transactions_sum(open_orders_label_strategy)
             
-            exit_parameters.update({"entry_price": bid_price})
+            exit_params.update({"entry_price": bid_price})
             
             size_and_order_appropriate_for_ordering: bool = (
                 are_size_and_order_appropriate (
@@ -382,7 +381,7 @@ class HedgingSpot(BasicStrategy):
             )
                 
             #convert size to positive sign
-            exit_parameters.update({"size": abs (size)})
+            exit_params.update({"size": abs (size)})
             
             exit_allowed: bool = size_and_order_appropriate_for_ordering 
             #log.error (f"exit_parameters {exit_parameters}")
@@ -390,7 +389,7 @@ class HedgingSpot(BasicStrategy):
         return dict(
             order_allowed=exit_allowed,
             order_parameters=(
-                [] if exit_allowed == False else exit_parameters
+                [] if exit_allowed == False else exit_params
             ),
             cancel_allowed=cancel_allowed,
             cancel_id=cancel_id
