@@ -584,7 +584,7 @@ class StreamAccountData:
                                                         
                                                         column_trade= "trade_id","label"
                                                         
-                                                        column_order= "label","order_id"
+                                                        column_order= "label","order_id","amount"
                                                         
                                                         currency = extract_currency_from_text (instrument_ticker)
                                                         
@@ -594,11 +594,14 @@ class StreamAccountData:
                                                                                                 "all", 
                                                                                                 column_trade)     
                                                         
-                                                        data_from_db_order_open = await get_query(order_db_table, 
-                                                                                                instrument_ticker, 
+                                                        data_from_db_order_open_currency = await get_query(order_db_table, 
+                                                                                                currency, 
                                                                                                 "all", 
                                                                                                 "all", 
-                                                                                                column_order)     
+                                                                                                column_order)    
+                                                         
+                                                        data_from_db_order_open = [o for o in data_from_db_order_open_currency \
+                                                            if instrument_ticker in o["instrument_name"]]
                                                         
                                                         combined_result = data_from_db_trade_open + data_from_db_order_open
                                                        
@@ -660,8 +663,23 @@ class StreamAccountData:
                                                     # check for delivered instrument
 
                                                             if "futureSpread" in strategy:
-                                                                
                                                                 log.error (f"strategy {strategy}-START")
+
+                                                                db_order_open_strategy = [o for o in data_from_db_order_open_currency \
+                                                                    if strategy in o["label"]]
+                                                                
+                                                                db_trade_open_strategy = [o for o in my_trades_currency \
+                                                                    if strategy in o["label"]]
+                                                                
+                                                                amount_order_strategy = 0 if db_order_open_strategy == [] \
+                                                                    else sum([o["amount"] for o in db_order_open_strategy])
+                                                        
+                                                                amount_trade_strategy = 0 if db_trade_open_strategy == [] \
+                                                                    else sum([o["amount"] for o in db_trade_open_strategy])
+                                                        
+                                                                
+                                                                net_positions = amount_order_strategy + amount_trade_strategy
+                                                                log.error (f"net_positions {net_positions}  amount_strategy {amount_order_strategy} amount_trade_strategy {amount_trade_strategy}")
                                                                 future_spreads = FutureSpreads(strategy,
                                                                                             strategy_params)
 
