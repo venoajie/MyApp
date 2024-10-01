@@ -314,7 +314,7 @@ class HedgingSpot(BasicStrategy):
                                                                index_price, 
                                                                threshold_market_condition)
 
-        bullish, strong_bullish = market_condition["rising_price"], strong_bullish = market_condition["strong_rising_price"]
+        bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
         
         if bullish or strong_bullish:
 
