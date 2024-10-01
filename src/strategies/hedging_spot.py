@@ -378,6 +378,8 @@ class HedgingSpot(BasicStrategy):
                 closed_orders_label_strategy,
                 server_time,)
             
+        log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
+        log.warning (f"bullish or transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
         order_allowed = bullish or strong_bullish \
             and transaction_open_size >= proforma_order
             
