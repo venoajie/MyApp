@@ -14,6 +14,7 @@ from strategies.basic_strategy import (
     check_if_id_has_used_before,
     delta_pct,
     ensure_sign_consistency,
+    get_basic_closing_paramaters,
     get_label,
     get_max_time_stamp,
     get_order_id_max_time_stamp,
@@ -318,7 +319,7 @@ class HedgingSpot(BasicStrategy):
         #neutral = market_condition["neutral_price"]
         bearish = market_condition["falling_price"]
 
-        exit_params: dict = await self.get_basic_params().get_basic_closing_paramaters (selected_transaction,)
+        exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
         
         cancel_allowed: bool = False
         cancel_id: str = None
