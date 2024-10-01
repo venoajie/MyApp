@@ -7,6 +7,7 @@ from dataclassy import dataclass
 # user defined formula
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    deleting_row,
     update_status_data,
     insert_tables)
 from strategies.basic_strategy import (
@@ -25,7 +26,10 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
-async def convert_status_has_closed_label_from_no_to_yes (instrument_name, trade_table, filter_trade, trade_id) -> None:
+async def convert_status_has_closed_label_from_no_to_yes (instrument_name, 
+                                                          trade_table, 
+                                                          filter_trade, 
+                                                          trade_id) -> None:
 
     column_list= "trade_id","has_closed_label"
     
@@ -38,7 +42,11 @@ async def convert_status_has_closed_label_from_no_to_yes (instrument_name, trade
         new_value=True
         data_column= "has_closed_label"
         table= trade_table
-        await update_status_data(table, data_column, filter_trade, trade_id, new_value)
+        await update_status_data(table, 
+                                 data_column, 
+                                 filter_trade, 
+                                 trade_id, 
+                                 new_value)
 
     
 def get_custom_label(transaction: list) -> str:
@@ -83,23 +91,23 @@ class OrderManagement:
         
     """
 
-    instrument_name: str
     order_db_table: str
     trade_db_table: str
     archive_db_table: str
 
-    async def saving_traded_orders (self, trades) -> None:
+    async def saving_traded_orders (self, 
+                                    trades) -> None:
         """_summary_
 
         Args:
             trades (_type_): _description_
             orders (_type_): _description_
         """
-        instrument_name= self.instrument_name
-        
-        currency=extract_currency_from_text(instrument_name)
         
         for trade in trades:    
+            instrument_name= trade ["instrument_name"]
+            
+            currency=extract_currency_from_text(instrument_name)
             
             trade_id= trade["trade_id"]
             
@@ -122,7 +130,10 @@ class OrderManagement:
                                                 "all", 
                                                 column_trade)
 
-            trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, "trade_id", trade_id, 100)
+            trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, 
+                                                                     "trade_id", 
+                                                                     trade_id, 
+                                                                     100)
             
             #processing clean result
             if not trade_id_has_exist_before:
@@ -141,8 +152,14 @@ class OrderManagement:
                     
                     filter_trade="trade_id"
                     
-                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, trade_table, filter_trade, trade_id)
-                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, archived_table, filter_trade, trade_id)
+                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, 
+                                                                          trade_table, 
+                                                                          filter_trade,
+                                                                          trade_id)
+                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, 
+                                                                          archived_table, 
+                                                                          filter_trade, 
+                                                                          trade_id)
 
                 # insert clean trading transaction
                 await insert_tables(order_table, trade)
@@ -152,3 +169,36 @@ class OrderManagement:
                 # remove closed transaction from active db
                 if "closed" in label:
                     await clean_up_closed_transactions (instrument_name, trade_table)
+
+
+    async def saving_orders (self, 
+                             order_table,
+                             order,
+                             order_state) -> None:
+        """_summary_
+
+        Args:
+            trades (_type_): _description_
+            orders (_type_): _description_
+        """
+
+        filter_trade="order_id"
+
+        order_id = order["order_id"]
+        
+        if order_state == "cancelled":
+
+            await deleting_row ("orders_all_json",
+                                "databases/trading.sqlite3",
+                                filter_trade,
+                                "=",
+                                order_id,
+                            )
+            #await update_status_data(order_table, 
+            #                     "order_state", 
+            #                     filter_trade, 
+            #                     order_id, 
+            #                     "cancelled")
+
+        if order_state == "open":
+            await insert_tables(order_table, order)

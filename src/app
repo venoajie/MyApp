@@ -43,20 +43,21 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     remove_redundant_elements,
-    extract_currency_from_text)
+    extract_currency_from_text,)
 from websocket_management.ws_management import (
-    resupply_sub_accountdb,
-    resupply_transaction_log,
-    cancel_the_cancellables,
-    if_order_is_true,
-    if_cancel_is_true,
+    cancel_the_cancellables,    
     compute_notional_value, 
     cancel_by_order_id,
     get_config,
+    get_my_trades_from_exchange,
+    if_cancel_is_true,
+    if_order_is_true,
+    resupply_sub_accountdb,
+    resupply_transaction_log,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
-    inserting_open_interest)
+    inserting_open_interest,)
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     remove_duplicated_elements,
@@ -232,48 +233,55 @@ async def update_user_changes(data_orders,
         
     if orders:
         
-        order_management= OrderManagement(instrument_name,
-                                          order_db_table, 
+        order_management= OrderManagement(order_db_table, 
                                           trade_db_table, 
                                           archive_db_table)
         
         if trades:
-            await order_management.saving_traded_orders (trades, orders)
+            await order_management.saving_traded_orders (trades)
             
         else:
             for order in orders:
                 
                 label= order["label"]
                 
+                order_id= order["order_id"]
+
+                order_state= order["order_state"]
+                
                 label_and_side_consistent= is_label_and_side_consistent(order)
+                
                 log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} everything_NOT_consistent {not label_and_side_consistent}')
                 
+                if label_and_side_consistent and label:
+                    
+                    await order_management.saving_orders (order_db_table,
+                                                          order,
+                                                          order_state)
+                    
+                # check if transaction has label. Provide one if not any
                 if  not label_and_side_consistent:
-                    await cancel_the_cancellables(cancellable_strategies)
+                
+                    await insert_tables(order_db_table, order)
+
+                    await cancel_by_order_id (order_id)                    
+                
                     await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
 
                 if not label:
-                    new_order = labelling_unlabelled_transaction(label)
                     
-                    order_id= order["order_id"]
-
+                    new_order = labelling_unlabelled_transaction(label)
+                
                     label_has_exist_before= await check_if_id_has_used_before (instrument_name,
                                                                                "order_id",
                                                                                order_id,)
                     await insert_tables(order_db_table, order)
+                    
                     await cancel_by_order_id (order_id)
                     
                     if not label_has_exist_before:
                         await if_order_is_true(new_order, instrument_name)
-                    #await sleep_and_restart()
-                    #cancelling previous transaction
-                    #resend
-                
-                else:
                     
-                    await order_management.saving_orders (order)
-                # check if transaction has label. Provide one if not any
-            
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
         
@@ -281,8 +289,33 @@ async def update_user_changes(data_orders,
     log.info(f"update_user_changes-END")
 
 
-async def on_restart(currencies_default,
-                     cancellable_strategies) -> None:
+
+async def synchronising_my_trade_db_vs_exchange (currency: str,
+                                                order_db_table: str, 
+                                                trade_db_table: str, 
+                                                archive_db_table: str) -> None:
+    """
+    """
+    
+    trades_from_exchange = await get_my_trades_from_exchange (10, currency)
+    
+    if trades_from_exchange:
+        trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
+
+        if trades_from_exchange_without_futures_combo:
+            
+            order_management= OrderManagement(order_db_table, 
+                                        trade_db_table, 
+                                        archive_db_table)
+            
+            await order_management.saving_traded_orders (trades_from_exchange_without_futures_combo)
+        
+    
+async def on_restart(currencies_default: str,
+                     cancellable_strategies: list,
+                     order_db_table: str, 
+                     trade_db_table: str,
+                     archive_db_table: str) -> None:
     """
     """
 
@@ -293,9 +326,12 @@ async def on_restart(currencies_default,
     await get_and_save_currencies()                
     
     for currency in currencies_default:
-        
         await resupply_transaction_log(currency)
         await resupply_sub_accountdb(currency)
+        await synchronising_my_trade_db_vs_exchange (currency,
+                                               order_db_table, 
+                                               trade_db_table,
+                                               archive_db_table)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
     
 
@@ -363,7 +399,10 @@ class StreamAccountData:
              
             # Establish restart procedure
             await on_restart(currencies,
-                             cancellable_strategies)
+                             cancellable_strategies,
+                             order_db_table, 
+                             trade_db_table,
+                             archive_db_table)
                             
             while True:
                 
@@ -486,6 +525,10 @@ class StreamAccountData:
                                 
                                 await resupply_transaction_log(currency)
                                 await resupply_sub_accountdb(currency)
+                                await synchronising_my_trade_db_vs_exchange (currency,
+                                                                       order_db_table, 
+                                                                       trade_db_table,
+                                                                       archive_db_table)
                                 #await check_db_consistencies_and_clean_up_imbalances(currency,
                                 #                                                     cancellable_strategies)                           
                             

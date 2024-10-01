@@ -13,7 +13,6 @@ from loguru import logger as log
 
 from configuration.config import main_dotenv
 from deribit_get import GetPrivateData, telegram_bot_sendtext, get_tickers
-from db_management import sqlite_management
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
@@ -33,7 +32,6 @@ from utilities.system_tools import (
     provide_path_for_file,
     reading_from_db_pickle,
     sleep_and_restart)
-from utilities.number_modification import get_closest_value
 from utilities.pickling import replace_data, read_data
 from utilities.string_modification import (
     remove_redundant_elements,
@@ -44,14 +42,9 @@ from websocket_management.cleaning_up_transactions import (
     clean_up_closed_futures_because_has_delivered,
     clean_up_closed_transactions)
 
-ONE_MINUTE: int = 60000
-ONE_PCT: float = 1 / 100
-NONE_DATA: None = [0, None, []]
-
 
 def parse_dotenv(sub_account) -> dict:
     return main_dotenv(sub_account)
-
 
 async def raise_error(error, idle: int = None) -> None:
     """ """
@@ -123,12 +116,15 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
     
-def compute_notional_value(index_price: float, equity: float) -> float:
+def compute_notional_value(index_price: float, 
+                           equity: float) -> float:
     """ """
     return index_price * equity
 
 
-def reading_from_db(end_point, instrument: str = None, status: str = None) -> float:
+def reading_from_db(end_point, 
+                    instrument: str = None, 
+                    status: str = None) -> float:
     """ """
     return reading_from_db_pickle(end_point, instrument, status)
 
@@ -156,9 +152,9 @@ async def if_order_is_true(order, instrument: str = None) -> None:
             # update param orders with instrument
             params.update({"instrument": instrument})
 
-        everything_consistent = is_label_and_side_consistent(params)
+        label_and_side_consistent = is_label_and_side_consistent(params)
 
-        if  everything_consistent:
+        if  label_and_side_consistent:
             await inserting_additional_params(params)
             await send_limit_order(params)
             #await asyncio.sleep(10)
@@ -182,7 +178,7 @@ async def cancel_by_order_id(open_order_id) -> None:
             
             where_filter = f"order_id"
             
-            await sqlite_management.deleting_row(
+            await deleting_row(
                                 "orders_all_json",
                                 "databases/trading.sqlite3",
                                 where_filter,
@@ -249,7 +245,7 @@ async def cancel_the_cancellables(cancellable_strategies, filter: str = None) ->
 
                             log.critical(f" cancel_the_cancellable {order_id}")                           
 
-                            await sqlite_management.deleting_row(
+                            await deleting_row(
                                 "orders_all_json",
                                 "databases/trading.sqlite3",
                                 where_filter,
@@ -561,7 +557,7 @@ async def inserting_additional_params(params: dict) -> None:
     """ """
 
     if "open" in params["label"]:
-        await sqlite_management.insert_tables("supporting_items_json", params)
+        await insert_tables("supporting_items_json", params)
 
 
 def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
