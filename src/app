@@ -686,14 +686,14 @@ class StreamAccountData:
                                                             if "futureSpread" in strategy:
                                                                 log.error (f"strategy {strategy} {currency}-START")
                                                                 
-                                                                for combo in active_combo:
+                                                                for combo in active_combo_perp:
                                                                     instrumen_ticker = combo["instrument_name"]
-                                                                    order_book_request = requests.get(order_book_end_point(instrumen_ticker,20)).json()["result"]
-                                                                    log.info (f"order_book_request {order_book_request}")
-                                                                    result = [o for o in transform_nested_dict_to_list(order_book_request) ]
+                                                                    #order_book_request = requests.get(order_book_end_point(instrumen_ticker,20)).json()["result"]
+                                                                    #log.info (f"order_book_request {order_book_request}")
+                                                                    #result = [o for o in transform_nested_dict_to_list(order_book_request) ]
 
                                                                     log.info (f"instrumen_id {instrumen_ticker}")
-                                                                    log.info (f"result {result}")
+                                                                    #log.info (f"result {result}")
 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
