@@ -477,7 +477,7 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
         
         label = get_transaction_label(transaction)
 
-        label_integer = get_label_integer(label)["int"]
+        label_integer = get_label_integer(label)
         
         closed_transactions_all= transactions_under_label_int (label_integer, transactions_all)
 
