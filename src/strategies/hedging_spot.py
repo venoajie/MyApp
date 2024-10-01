@@ -391,7 +391,7 @@ class HedgingSpot(BasicStrategy):
             
             exit_params.update({"entry_price": bid_price})
             
-            size_and_order_appropriate_for_ordering: bool = (
+            order_allowed: bool = (
                 are_size_and_order_appropriate (
                     "reduce_position",
                     sum_my_trades, 
@@ -403,13 +403,10 @@ class HedgingSpot(BasicStrategy):
             #convert size to positive sign
             exit_params.update({"size": abs (size)})
             
-            exit_allowed: bool = size_and_order_appropriate_for_ordering 
-            #log.error (f"exit_parameters {exit_parameters}")
-
         return dict(
-            order_allowed=exit_allowed,
+            order_allowed= order_allowed,
             order_parameters=(
-                [] if exit_allowed == False else exit_params
+                [] if order_allowed == False else exit_params
             ),
             cancel_allowed=cancel_allowed,
             cancel_id=cancel_id
