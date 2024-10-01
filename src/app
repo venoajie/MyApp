@@ -141,7 +141,12 @@ async def get_futures_for_active_currencies (active_currencies,
         future_instruments= get_instruments_kind (currency,
                                                   settlement_periods,
                                                   "future" )
+
+        future_combo_instruments= get_instruments_kind (currency,
+                                                  settlement_periods,
+                                                  "future_combo" )
         
+        combined_instruments = future_instruments + future_combo_instruments
         instruments_holder_place.append(future_instruments)    
     
     #removing inner list 
@@ -162,6 +167,7 @@ async def get_futures_instruments (active_currencies,
     active_futures=  await get_futures_for_active_currencies(active_currencies,
                                                              settlement_periods)
           
+    log.info (f"active_futures {active_futures}")
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
     return dict(instruments_name = [o["instrument_name"] for o in active_futures],
