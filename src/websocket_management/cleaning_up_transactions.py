@@ -424,7 +424,7 @@ def get_closed_open_transactions_under_same_label_int(
     transactions_all: list, label: str
 ) -> list:
     """ """
-    label_integer = get_label_integer(label)["int"]
+    label_integer = get_label_integer(label)
 
     return [o for o in transactions_all if label_integer in o["label"]]
 
