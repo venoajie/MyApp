@@ -106,8 +106,8 @@ def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> 
 
 
 def is_cancelling_order_allowed(
-    strong_bearish: bool,
-    bearish: bool,
+    strong_bullish: bool,
+    bullish: bool,
     threshold: float,
     len_orders: int,
     open_orders_label_strategy: dict,
@@ -119,7 +119,7 @@ def is_cancelling_order_allowed(
 
     if len_orders != [] and len_orders > 0:
 
-        time_interval = get_timing_factor(strong_bearish, bearish, threshold)
+        time_interval = get_timing_factor(strong_bullish, bullish, threshold)
 
         max_tstamp_orders: int = get_max_time_stamp(open_orders_label_strategy)
         
@@ -309,61 +309,58 @@ class HedgingSpot(BasicStrategy):
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
-        market_condition = await get_market_condition_hedging(currency,
-            TA_result_data, index_price, threshold_market_condition
-        )
+        market_condition = await get_market_condition_hedging (currency,
+                                                               TA_result_data, 
+                                                               index_price, 
+                                                               threshold_market_condition)
 
-        bullish = market_condition["rising_price"]
-
-        strong_bullish = market_condition["strong_rising_price"]
-        #neutral = market_condition["neutral_price"]
-        bearish = market_condition["falling_price"]
-
-        exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
+        bullish, strong_bullish = market_condition["rising_price"], strong_bullish = market_condition["strong_rising_price"]
         
-        cancel_allowed: bool = False
-        cancel_id: str = None
-        
-        closed_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                           currency.upper(), 
-                                                           self.strategy_label,
-                                                           "closed")
-        # there were outstanding closed orders
-        
-        order_has_exit_before = False
+        if bullish or strong_bullish:
 
-        label_integer_open = get_label_integer(selected_transaction[0]["label"])
-
-        label_integer_exit_params = get_label_integer(exit_params ["label"])
-        
-        transaction_open_size = abs(selected_transaction[0]["amount"])
-
-        proforma_order =  exit_params ["size"]
-        
-        log.error (f"market_condition {market_condition}")
-
-        if closed_orders_label_strategy:
+            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
             
-            order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
+            cancel_allowed: bool = False
+            cancel_id: str = None
             
-            sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
-                else sum([o["amount"] for o in order_under_closed_label_int])
+            closed_orders_label_strategy: list=  await get_query("orders_all_json", 
+                                                            currency.upper(), 
+                                                            self.strategy_label,
+                                                            "closed")
+            # there were outstanding closed orders
             
-            proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
+            order_has_exit_before = False
+
+            label_integer_open = get_label_integer(selected_transaction[0]["label"])
+
+            label_integer_exit_params = get_label_integer(exit_params ["label"])
             
-            order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
-                        
-            if order_has_exit_before and transaction_open_size >= proforma_order:
+            transaction_open_size = abs(selected_transaction[0]["amount"])
+
+            proforma_order =  exit_params ["size"]
+            
+            log.error (f"market_condition {market_condition}")
+
+            if closed_orders_label_strategy:
                 
-                resize = transaction_open_size - sum_order_under_closed_label_int
+                order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
                 
-                exit_params.update({"size": resize})
+                sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
+                    else sum([o["amount"] for o in order_under_closed_label_int])
                 
-                proforma_order = sum_order_under_closed_label_int + resize
+                proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
+                
+                order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
+                            
+                if order_has_exit_before and transaction_open_size >= proforma_order:
+                    
+                    resize = transaction_open_size - sum_order_under_closed_label_int
+                    
+                    exit_params.update({"size": resize})
+                    
+                    proforma_order = sum_order_under_closed_label_int + resize
 
-        len_orders: int = get_transactions_len(closed_orders_label_strategy)
-        
-        if len_orders > 0:
+            len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
             #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])    
@@ -372,41 +369,39 @@ class HedgingSpot(BasicStrategy):
 
             cancel_allowed: bool = is_cancelling_order_allowed(
                 strong_bullish,
-                bearish,
+                bullish,
                 waiting_minute_before_cancel,
                 len_orders,
                 closed_orders_label_strategy,
                 server_time,)
-            
-        log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
-        log.warning (f"bullish or transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
-        order_allowed = bullish or strong_bullish \
-            and transaction_open_size >= proforma_order
-            
-        if order_allowed:
-        
-            my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-
-            sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-            
-            size = exit_params["size"]           
-            
-            sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
-            
-            exit_params.update({"entry_price": bid_price})
-            
-            order_allowed: bool = (
-                are_size_and_order_appropriate (
-                    "reduce_position",
-                    sum_my_trades, 
-                    sum_orders, 
-                    size, 
-                )
-            )
                 
-            #convert size to positive sign
-            exit_params.update({"size": abs (size)})
+            log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
+            log.warning (f"transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
+                
+            if transaction_open_size >= proforma_order:
             
+                my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
+
+                sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+                
+                size = exit_params["size"]           
+                
+                sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+                
+                exit_params.update({"entry_price": bid_price})
+                
+                order_allowed: bool = (
+                    are_size_and_order_appropriate (
+                        "reduce_position",
+                        sum_my_trades, 
+                        sum_orders, 
+                        size, 
+                    )
+                )
+                    
+                #convert size to positive sign
+                exit_params.update({"size": abs (size)})
+                
         log.error (f"order_allowed {order_allowed}")
         return dict(
             order_allowed= order_allowed,
