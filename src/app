@@ -296,6 +296,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
                                                 archive_db_table: str) -> None:
     """
     """
+    log.warning("Synchronising my_trade_db vs exchange")
     
     trades_from_exchange = await get_my_trades_from_exchange (10, currency)
     
