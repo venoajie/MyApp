@@ -180,7 +180,7 @@ async def get_futures_instruments (active_currencies,
     
     active_combo_perp = [o for o in active_combo if "_PERP" in o["instrument_name"]]
     
-    log.info(f"active_combo_perp {active_combo_perp}")
+    log.info([o["instrument_name"] for o in (active_futures+active_combo_perp)])
           
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
