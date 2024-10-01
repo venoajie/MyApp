@@ -460,8 +460,6 @@ class StreamAccountData:
                                 # also always performed at restart                                
                                 await update_db_pkl("portfolio", data_orders, currency)
                                 
-                                log.warning (f"portfolio {data_orders}")
-
                                 await resupply_sub_accountdb(currency)    
 
                             if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
