@@ -179,8 +179,6 @@ async def get_futures_instruments (active_currencies,
                                                              settlement_periods)
     
     active_combo = [o for o in active_futures if "future_combo" in o["kind"]]
-    
-    log.info(active_combo)
           
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
@@ -520,6 +518,8 @@ class StreamAccountData:
                             if (
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"):
+                                if "FS" in message_channel:
+                                    log.debug (f"instrument_ticker {instrument_ticker}")
                                 
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker)
