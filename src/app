@@ -147,7 +147,7 @@ async def get_futures_for_active_currencies (active_currencies,
                                                   "future_combo" )
         
         combined_instruments = future_instruments + future_combo_instruments
-        instruments_holder_place.append(future_instruments)    
+        instruments_holder_place.append(combined_instruments)    
     
     #removing inner list 
     # typical result: [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 
