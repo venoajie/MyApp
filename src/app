@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import aioschedule as schedule
 import asyncio
 import json
+import requests
 
 # installed
 import websockets
@@ -43,6 +44,7 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     remove_redundant_elements,
+    transform_nested_dict_to_list,
     extract_currency_from_text)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -64,6 +66,13 @@ from websocket_management.cleaning_up_transactions import (
 
 def deribit_url_main() -> str:
     return "https://www.deribit.com/api/v2/"
+
+def order_book_end_point(instrument_ticker: str,
+                         depth: int,):
+    
+    url=f"https://deribit.com/api/v2/public/get_order_book?"
+    
+    return  f"{url}depth={depth}&instrument_name={instrument_ticker}"
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -674,8 +683,12 @@ class StreamAccountData:
                                                                 log.error (f"strategy {strategy} {currency}-START")
                                                                 
                                                                 for combo in active_combo:
-                                                                    instrumen_id = combo["instrument_id"]
-                                                                    log.info (f"instrumen_id {instrumen_id}")
+                                                                    instrumen_ticker = combo["instrument_name"]
+                                                                    ohlc_request = requests.get(order_book_end_point(instrumen_ticker,20)).json()["result"]
+                                                                    result = [o for o in transform_nested_dict_to_list(ohlc_request) ]
+
+                                                                    log.info (f"instrumen_id {instrumen_ticker}")
+                                                                    log.info (f"result {result}")
 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
