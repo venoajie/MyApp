@@ -770,8 +770,6 @@ class BasicStrategy:
 
         size = await provide_size_to_close_transaction(transaction)
         
-        log.error (f"size {size}")
-
         if transaction_side == "sell":
             try:
                 tp_price_reached = bid_price < transaction["take_profit"]
