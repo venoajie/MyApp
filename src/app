@@ -175,13 +175,17 @@ async def get_futures_instruments (active_currencies,
     
     active_futures=  await get_futures_for_active_currencies(active_currencies,
                                                              settlement_periods)
+    
+    active_combo = [o for o in active_futures if "future_combo" in o["kind"]]
+    
+    active_combo_perp = [o for o in active_combo if "PERP" in o["instrument_name"]]
           
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
-    return dict(instruments_name = [o["instrument_name"] for o in active_futures],
+    return dict(instruments_name = [o["instrument_name"] for o in (active_futures+active_combo_perp)],
                 min_expiration_timestamp = min_expiration_timestamp,
                 active_futures = [o for o in active_futures if "future" in o["kind"]],
-                active_futures_combo =  [o for o in active_futures if "future_combo" in o["kind"]],
+                active_combo_perp =  active_combo_perp,
                 instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_futures \
                     if o["expiration_timestamp"] == min_expiration_timestamp][0]
                 )
@@ -387,7 +391,7 @@ class StreamAccountData:
                 
                 active_futures = futures_instruments["active_futures"]   
 
-                active_combo = futures_instruments["active_futures_combo"]   
+                active_combo_perp = futures_instruments["active_combo_perp"]  
 
                 instruments_name = futures_instruments["instruments_name"]   
                 
