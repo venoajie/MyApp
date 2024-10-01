@@ -324,25 +324,47 @@ class HedgingSpot(BasicStrategy):
         cancel_allowed: bool = False
         cancel_id: str = None
         
-        open_orders_label_strategy: list=  await get_query("orders_all_json", 
+        closed_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                            currency.upper(), 
                                                            self.strategy_label,
                                                            "closed")
+        # there were outstanding closed orders
         
+        order_has_exit_before = False
+
         label_integer_open = get_label_integer(selected_transaction[0]["label"])
-        label_integer_exit_paramas = get_label_integer(exit_params ["label"])
 
-        sum_order_under_label = sum([o["amount"] for o in open_orders_label_strategy if label_integer_open in o["label"]])
-        order_has_exit_before = [o for o in open_orders_label_strategy if label_integer_exit_paramas in o["label"]]
-        proforma_order = sum_order_under_label + exit_params ["size"]
-        transaction_open_size = selected_transaction[0]["amount"]
+        label_integer_exit_params = get_label_integer(exit_params ["label"])
+        
+        transaction_open_size = abs(selected_transaction[0]["amount"])
 
-        len_orders: int = get_transactions_len(open_orders_label_strategy)
+        proforma_order =  exit_params ["size"]
+
+        if closed_orders_label_strategy:
+            
+            order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
+            
+            sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
+                else sum([o["amount"] for o in order_under_closed_label_int])
+            
+            proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
+            
+            order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
+                        
+            if order_has_exit_before and transaction_open_size >= proforma_order:
+                
+                resize = transaction_open_size - sum_order_under_closed_label_int
+                
+                exit_params.update({"size": resize})
+                
+                proforma_order = sum_order_under_closed_label_int + resize
+
+        len_orders: int = get_transactions_len(closed_orders_label_strategy)
         
         if len_orders > 0:
             
             #cancel_allowed: bool = True
-            cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])    
+            cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])    
     
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
@@ -351,23 +373,21 @@ class HedgingSpot(BasicStrategy):
                 bearish,
                 waiting_minute_before_cancel,
                 len_orders,
-                open_orders_label_strategy,
+                closed_orders_label_strategy,
                 server_time,)
             
         order_allowed = bullish or strong_bullish \
             and transaction_open_size >= proforma_order
-        
-        if order_has_exit_before and transaction_open_size >= proforma_order:
-            order_allowed = True
             
         if order_allowed:
         
             my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
             sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+            
             size = exit_params["size"]           
             
-            sum_orders: int = get_transactions_sum(open_orders_label_strategy)
+            sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
             
             exit_params.update({"entry_price": bid_price})
             
