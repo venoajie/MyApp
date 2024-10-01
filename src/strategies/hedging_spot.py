@@ -405,6 +405,7 @@ class HedgingSpot(BasicStrategy):
             #convert size to positive sign
             exit_params.update({"size": abs (size)})
             
+        log.error (f"order_allowed {order_allowed}")
         return dict(
             order_allowed= order_allowed,
             order_parameters=(
