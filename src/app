@@ -674,7 +674,7 @@ class StreamAccountData:
                                                                 log.error (f"strategy {strategy} {currency}-START")
                                                                 
                                                                 for combo in active_combo:
-                                                                    instrumen_id = combo["instrument_d"]
+                                                                    instrumen_id = combo["instrument_id"]
                                                                     log.info (f"instrumen_id {instrumen_id}")
 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
