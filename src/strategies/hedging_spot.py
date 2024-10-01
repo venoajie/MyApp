@@ -340,7 +340,7 @@ class HedgingSpot(BasicStrategy):
 
         proforma_order =  exit_params ["size"]
         
-        log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
+        log.error (f"market_condition {market_condition}")
 
         if closed_orders_label_strategy:
             
