@@ -155,7 +155,9 @@ async def get_futures_for_active_currencies (active_currencies,
                                                   settlement_periods,
                                                   "future_combo" )
         
-        combined_instruments = future_instruments + future_combo_instruments
+        active_combo_perp = [o for o in future_combo_instruments if "_PERP" in o["instrument_name"]]
+        
+        combined_instruments = future_instruments + active_combo_perp
         instruments_holder_place.append(combined_instruments)    
     
     #removing inner list 
@@ -178,16 +180,14 @@ async def get_futures_instruments (active_currencies,
     
     active_combo = [o for o in active_futures if "future_combo" in o["kind"]]
     
-    active_combo_perp = [o for o in active_combo if "_PERP" in o["instrument_name"]]
-    
-    log.info([o["instrument_name"] for o in (active_futures+active_combo_perp)])
+    log.info(active_combo)
           
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
-    return dict(instruments_name = [o["instrument_name"] for o in (active_futures+active_combo_perp)],
+    return dict(instruments_name = [o["instrument_name"] for o in (active_futures)],
                 min_expiration_timestamp = min_expiration_timestamp,
                 active_futures = [o for o in active_futures if "future" in o["kind"]],
-                active_combo_perp =  active_combo_perp,
+                active_combo_perp =  active_combo,
                 instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_futures \
                     if o["expiration_timestamp"] == min_expiration_timestamp][0]
                 )
