@@ -506,10 +506,17 @@ async def count_and_delete_ohlc_rows():
 
     log.info("count_and_delete_ohlc_rows-START")
     tables = ["market_analytics_json", 
+              "supporting_items_json",
               "ohlc1_eth_perp_json", 
               "ohlc1_btc_perp_json", 
+              "ohlc15_eth_perp_json", 
+              "ohlc15_btc_perp_json", 
               "ohlc30_eth_perp_json", 
-              "ohlc60_eth_perp_json", 
+              "ohlc60_eth_perp_json",
+              "ohlc3_eth_perp_json", 
+              "ohlc3_btc_perp_json", 
+              "ohlc5_eth_perp_json", 
+              "ohlc5_btc_perp_json",  
               "supporting_items_json"]
     
     database: str = "databases/trading.sqlite3"  
