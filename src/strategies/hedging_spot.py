@@ -301,7 +301,7 @@ class HedgingSpot(BasicStrategy):
         server_time: int
     ) -> dict:
         """ """
-        order_allowed, order_allowed = False, False
+        order_allowed, cancel_allowed = False, False
         
         hedging_attributes= self.strategy_parameters[0]
         
