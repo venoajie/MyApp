@@ -339,6 +339,8 @@ class HedgingSpot(BasicStrategy):
         transaction_open_size = abs(selected_transaction[0]["amount"])
 
         proforma_order =  exit_params ["size"]
+        
+        log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
 
         if closed_orders_label_strategy:
             
