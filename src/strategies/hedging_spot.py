@@ -359,9 +359,6 @@ class HedgingSpot(BasicStrategy):
 
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
-            #cancel_allowed: bool = True
-            cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])    
-    
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
 
             cancel_allowed: bool = is_cancelling_order_allowed(
@@ -371,6 +368,9 @@ class HedgingSpot(BasicStrategy):
                 len_orders,
                 closed_orders_label_strategy,
                 server_time,)
+                
+            if cancel_allowed:
+                cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
             log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
             log.warning (f"transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
