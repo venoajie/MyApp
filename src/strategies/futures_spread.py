@@ -19,32 +19,6 @@ from strategies.basic_strategy import (
     get_basic_closing_paramaters,
     are_size_and_order_appropriate)
 
-async def get_futures_combo_instruments(currency: str) -> list:
-    """_summary_
-
-    Args:
-        currency (str): _description_
-        Instance:  [
-                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1,'counter_currency': 'USD', 
-                    'settlement_period': 'month', 'settlement_currency': 'ETH', 'creation_timestamp': 1719564006000, 
-                    'instrument_id': 342036, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
-                    'expiration_timestamp': 1725004800000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
-                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_30AUG24', 'kind': 'future_combo', 
-                    'rfq': False, 'price_index': 'eth_usd'}, 
-                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1, 'counter_currency': 'USD', 
-                    'settlement_period': 'week', 'settlement_currency': 'ETH', 'creation_timestamp': 1724402396000, 
-                    'instrument_id': 362593, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
-                    'expiration_timestamp': 1725609600000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
-                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_6SEP24', 'kind': 'future_combo', 
-                    'rfq': False, 'price_index': 'eth_usd'}]
-
-    Returns:
-        list: _description_
-    """
-    
-    return get_instruments_kind (currency,"future_combo" )
-
-
 
 async def closing_unclosed_transactions_for_delivered_futures(instrument_name: str, 
                                                               trade_db_table,

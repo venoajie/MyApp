@@ -167,12 +167,12 @@ async def get_futures_instruments (active_currencies,
     active_futures=  await get_futures_for_active_currencies(active_currencies,
                                                              settlement_periods)
           
-    log.info (f"active_futures {active_futures}")
     min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
     
     return dict(instruments_name = [o["instrument_name"] for o in active_futures],
                 min_expiration_timestamp = min_expiration_timestamp,
-                active_futures = active_futures,
+                active_futures = [o for o in active_futures if "future" in o["kind"]],
+                active_futures_combo =  [o for o in active_futures if "future_combo" in o["kind"]],
                 instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_futures \
                     if o["expiration_timestamp"] == min_expiration_timestamp][0]
                 )
@@ -377,6 +377,8 @@ class StreamAccountData:
                                                                   settlement_periods)  
                 
                 active_futures = futures_instruments["active_futures"]   
+
+                active_combo = futures_instruments["active_futures_combo"]   
 
                 instruments_name = futures_instruments["instruments_name"]   
                 
@@ -670,6 +672,10 @@ class StreamAccountData:
 
                                                             if "futureSpread" in strategy:
                                                                 log.error (f"strategy {strategy} {currency}-START")
+                                                                
+                                                                for combo in active_combo:
+                                                                    instrumen_id = combo["instrument_d"]
+                                                                    log.info (f"instrumen_id {instrumen_id}")
 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
