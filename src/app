@@ -663,7 +663,7 @@ class StreamAccountData:
                                                     # check for delivered instrument
 
                                                             if "futureSpread" in strategy:
-                                                                log.error (f"strategy {strategy}-START")
+                                                                log.error (f"strategy {strategy} {currency}-START")
 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
@@ -671,6 +671,7 @@ class StreamAccountData:
                                                                 db_trade_open_strategy = [o for o in my_trades_currency \
                                                                     if strategy in o["label"]]
                                                                 
+                                                                log.error (f"db_trade_open_strategy {db_trade_open_strategy}")
                                                                 amount_order_strategy = 0 if db_order_open_strategy == [] \
                                                                     else sum([o["amount"] for o in db_order_open_strategy])
                                                         
