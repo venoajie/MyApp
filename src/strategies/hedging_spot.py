@@ -81,6 +81,19 @@ def is_hedged_value_to_notional_exceed_threshold(
     return hedged_value_to_notional(notional, hedged_value) > threshold
 
 
+def max_order_stack_has_not_exceeded(
+    len_orders: float, 
+    strong_market: float) -> bool:
+    """ """
+    if strong_market:
+        max_order = True
+        
+    else:
+        max_order = True if len_orders == 0 else False
+    
+    return max_order
+
+
 def get_timing_factor(strong_bearish: bool, bearish: bool, threshold: float) -> bool:
     """
     Determine order outstanding timing for size determination.
@@ -395,8 +408,10 @@ class HedgingSpot(BasicStrategy):
                 
             log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
             log.warning (f"transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
+            
+            max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                 
-            if transaction_open_size >= proforma_order:
+            if transaction_open_size >= proforma_order:# and max_order:
             
                 my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 

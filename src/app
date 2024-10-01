@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import aioschedule as schedule
 import asyncio
 import json
-import requests
 
 # installed
 import websockets
@@ -44,7 +43,6 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     remove_double_brackets_in_list,
     remove_redundant_elements,
-    transform_nested_dict_to_list,
     extract_currency_from_text)
 from websocket_management.ws_management import (
     resupply_sub_accountdb,
@@ -66,13 +64,6 @@ from websocket_management.cleaning_up_transactions import (
 
 def deribit_url_main() -> str:
     return "https://www.deribit.com/api/v2/"
-
-def order_book_end_point(instrument_ticker: str,
-                         depth: int,):
-    
-    url=f"https://deribit.com/api/v2/public/get_order_book?"
-    
-    return  f"{url}depth={depth}&instrument_name={instrument_ticker}"
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
