@@ -300,16 +300,35 @@ class HedgingSpot(BasicStrategy):
         selected_transaction: list,
         server_time: int
     ) -> dict:
-        """ """
+        """
         
-        log.info (f"selected_transaction {selected_transaction}")
+
+        Args:
+            TA_result_data (_type_): _description_
+            index_price (float): _description_
+            bid_price (float): _description_
+            selected_transaction (list): example [  
+                                                {'instrument_name': 'BTC-PERPETUAL', 
+                                                'label': 'hedgingSpot-open-1726878876878', 
+                                                'amount': -10.0, 
+                                                'price': 63218.0, 
+                                                'side': 'sell', 
+                                                'has_closed_label': 0}
+                                                    ]
+            server_time (int): _description_
+
+        Returns:
+            dict: _description_
+        """
+        transaction = selected_transaction[0]
+
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
-        hedging_attributes= self.strategy_parameters[0]
+        hedging_attributes = self.strategy_parameters[0]
         
-        currency=extract_currency_from_text(selected_transaction[0]["instrument_name"]).lower()
+        currency = extract_currency_from_text(transaction ["instrument_name"]).lower()
 
-        threshold_market_condition= hedging_attributes ["delta_price_pct"]
+        threshold_market_condition = hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging (currency,
                                                                TA_result_data, 
@@ -318,7 +337,7 @@ class HedgingSpot(BasicStrategy):
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
         
-        if (bullish or strong_bullish) and bid_price < selected_transaction [0] ["price"]:
+        if (bullish or strong_bullish) and bid_price < transaction ["price"]:
 
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
             
@@ -330,11 +349,11 @@ class HedgingSpot(BasicStrategy):
             
             order_has_exit_before = False
 
-            label_integer_open = get_label_integer(selected_transaction[0]["label"])
+            label_integer_open = get_label_integer(transaction ["label"])
 
             label_integer_exit_params = get_label_integer(exit_params ["label"])
             
-            transaction_open_size = abs(selected_transaction[0]["amount"])
+            transaction_open_size = abs(transaction ["amount"])
 
             proforma_order =  exit_params ["size"]
             
