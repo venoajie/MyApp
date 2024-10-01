@@ -29,6 +29,7 @@ waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 1
 delta_price_pct= 0.005
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
 
 
 [[strategies]]
@@ -44,6 +45,7 @@ waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 1
 delta_price_pct= 0.005
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
 
 [[strategies]]
 strategy_label = "customLong"
@@ -58,6 +60,7 @@ waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 1
 delta_price_pct= 0.005
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
 
 [[strategies]]
 strategy_label = "customShort"
@@ -72,6 +75,11 @@ waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 1
 delta_price_pct= 0.005
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
+
+[[strategies.general]]
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
+
 
 [paths]
 root_dir = "/home/florian"

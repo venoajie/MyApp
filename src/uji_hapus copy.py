@@ -26,6 +26,5 @@ def get_config(file_name: str) -> list:
         return []
 
 
-file_toml =  [{'strategy_label': 'hedgingSpot', 'is_active': True, 'contribute_to_hedging': True, 'cancellable': True, 'side': 'sell', 'take_profit_pct': 0, 'settlement_period': ['perpetual'], 'weighted_factor': {'minimum': 1, 'medium': 5, 'extreme': 10, 'flash_crash': 20}, 'waiting_minute_before_cancel': 3, 'halt_minute_before_reorder': 240, 'max_leverage': 1, 'delta_price_pct': 0.005}]
-
-print ((file_toml[0]))
+file_toml =  "config_strategies.toml"
+print (get_config(file_toml))
