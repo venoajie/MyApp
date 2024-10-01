@@ -519,7 +519,7 @@ class StreamAccountData:
                                 message_channel
                                 == f"incremental_ticker.{instrument_ticker}"):
                                 if "FS" in message_channel:
-                                    log.debug (f"instrument_ticker {instrument_ticker}")
+                                    log.critical (f"instrument_ticker {data_orders}")
                                 
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker)
