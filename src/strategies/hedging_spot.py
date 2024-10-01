@@ -301,6 +301,8 @@ class HedgingSpot(BasicStrategy):
         server_time: int
     ) -> dict:
         """ """
+        
+        log.info (f"selected_transaction {selected_transaction}")
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
         hedging_attributes= self.strategy_parameters[0]
@@ -316,7 +318,7 @@ class HedgingSpot(BasicStrategy):
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
         
-        if bullish or strong_bullish:
+        if (bullish or strong_bullish) and bid_price < selected_transaction [0] ["price"]:
 
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
             
