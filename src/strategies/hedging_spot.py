@@ -301,7 +301,7 @@ class HedgingSpot(BasicStrategy):
         server_time: int
     ) -> dict:
         """ """
-        order_allowed, cancel_allowed = False, False
+        order_allowed, cancel_allowed, cancel_id = False, False, None
         
         hedging_attributes= self.strategy_parameters[0]
         
@@ -319,9 +319,6 @@ class HedgingSpot(BasicStrategy):
         if bullish or strong_bullish:
 
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
-            
-            cancel_allowed: bool = False
-            cancel_id: str = None
             
             closed_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                             currency.upper(), 
