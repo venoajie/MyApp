@@ -562,9 +562,7 @@ class StreamAccountData:
                                                 
                                                 my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
                                                 # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]          
-                                                
-                                                                      
+                                                equity: float = portfolio[0]["equity"]                                       
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
                                                 
@@ -577,8 +575,6 @@ class StreamAccountData:
                                                     delta_time_seconds = delta_time/1000                                                
                                                     
                                                     delta_time_expiration = min_expiration_timestamp - server_time  
-                                                    
-                                                    
                                                                                                         
                                                     if delta_time_seconds < 120:#ensure freshness of ta
                                                         
@@ -605,9 +601,7 @@ class StreamAccountData:
                                                                                                 column_order)     
                                                         
                                                         combined_result = data_from_db_trade_open + data_from_db_order_open
-                                                        
-                                                   
-                                                        
+                                                       
                                                         for strategy in active_strategies:
                                                         
                                                             my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
@@ -617,7 +611,7 @@ class StreamAccountData:
         
                                                             if "hedgingSpot" in strategy:
                                                                 
-                                                                log.error (f"strategy {strategy}")
+                                                                log.debug (f"strategy {strategy}-START")
                                                                 
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params)
@@ -661,14 +655,17 @@ class StreamAccountData:
                                                                     await if_order_is_true(send_closing_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_closing_order)
 
+                                                                log.debug (f"strategy {strategy}-DONE")
+
                                                     # check for delivered instrument
 
                                                             if "futureSpread" in strategy:
                                                                 
-                                                                log.error (f"strategy {strategy}")
+                                                                log.error (f"strategy {strategy}-START")
                                                                 future_spreads = FutureSpreads(strategy,
                                                                                             strategy_params)
 
+                                                                log.error (f"strategy {strategy}-DONE")
 
                                                     if delta_time_expiration < 0:
                                                         
