@@ -15,15 +15,8 @@ from db_management.sqlite_management import (
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from utilities.string_modification import (
-    parsing_label,
-    extract_currency_from_text,
-    remove_redundant_elements,
-    remove_double_brackets_in_list)
+    parsing_label,)
 from loguru import logger as log
-from utilities.pickling import (
-    read_data)
-from utilities.system_tools import (
-    provide_path_for_file)
 
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
@@ -359,7 +352,7 @@ def has_closed_label(transaction: dict) -> bool:
 def get_label_integer(label: dict) -> bool:
     """ """
 
-    return parsing_label(label)
+    return parsing_label(label)["int"]
 
 
 def get_order_label(data_from_db: list) -> list:
@@ -409,7 +402,7 @@ async def summing_transactions_under_label_int(
     
     label = get_transaction_label(transaction)
 
-    label_integer = get_label_integer(label)["int"]
+    label_integer = get_label_integer(label)
     
     if transactions_all is None:
         tabel= "my_trades_all_json"
@@ -576,7 +569,7 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
             transaction.update({"has_closed_label": False})
             
     
-def get_basic_closing_paramaters(selected_transaction: list) -> dict:
+async def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     """ """
     transaction: dict = convert_list_to_dict(selected_transaction)
     
@@ -590,12 +583,17 @@ def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
 
+
+    size = await provide_size_to_close_transaction(transaction)
     # size=exactly amount of transaction size
-    params.update({"size": transaction["amount"] * ensure_sign_consistency(side)})
+    params.update({"size": size})
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})
-
+    
+    params.update({"instrument": transaction ["instrument_name"]})
+    #log.info(f"params {params}")
+        
     return params
 
 def is_label_and_side_consistent(params) -> bool:
@@ -741,7 +739,6 @@ class BasicStrategy:
 
     async def is_send_exit_order_allowed(
         self,
-        market_condition: dict,
         ask_price: float,
         bid_price: float,
         selected_transaction: list,
@@ -749,9 +746,6 @@ class BasicStrategy:
         """ """
         # transform to dict
         transaction: dict = convert_list_to_dict(selected_transaction)
-        
-        # get price
-        last_transaction_price: float = get_transaction_price(transaction)
 
         transaction_side: str = get_transaction_side(transaction)
 
@@ -764,89 +758,19 @@ class BasicStrategy:
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
-        supported_by_market: bool = False
-
-        tp_pct = get_take_profit_pct(transaction, strategy_config)
-
         size = await provide_size_to_close_transaction(transaction)
         
         if transaction_side == "sell":
-            try:
-                tp_price_reached = bid_price < transaction["take_profit"]
-
-            except:
-                tp_price_reached: bool = is_transaction_price_minus_below_threshold(
-                    last_transaction_price, bid_price, tp_pct
-                )
-
-            supported_by_market: bool = (
-                market_condition["falling_price"] and bid_price < last_transaction_price
-            )
-
             params.update({"entry_price": bid_price})
 
         if transaction_side == "buy":
-            try:
-                tp_price_reached = ask_price > transaction["take_profit"]
-
-            except:
-                tp_price_reached: bool = is_transaction_price_plus_above_threshold(
-                    last_transaction_price, ask_price, tp_pct
-                )
-            supported_by_market: bool = (
-                market_condition["rising_price"] and ask_price > last_transaction_price
-            )
-
             params.update({"entry_price": ask_price})
 
-        column_list= "amount",
-        status= "closed"
-        orders: list = await get_query("orders_all_json", 
-                                       instrument_name, 
-                                       self.strategy_label,
-                                       status,column_list)
-
-        len_orders: int = get_transactions_len(orders)
-
-        no_outstanding_order: bool = len_orders == 0
-
-        order_allowed: bool = (
-            tp_price_reached or supported_by_market
-        ) and no_outstanding_order
-
-        if order_allowed:
-            params.update({"instrument": instrument_name})
-            params.update({"size": size})
-            #log.info(f"params {params}")
-            label = params["label"]
+        params.update({"instrument": instrument_name})
+        params.update({"size": size})
+        #log.info(f"params {params}")
+        label = params["label"]
             
-                    
-            column_trade= "trade_id","label"
-            column_order= "label","order_id"
-            
-            currency = extract_currency_from_text (instrument_name)
-            data_from_db_trade_open = await get_query(f"my_trades_all_{currency}_json", 
-                                                    instrument_name, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_trade)     
-            
-            data_from_db_order_open = await get_query("orders_all_json", 
-                                                    instrument_name, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_order)     
-            
-            combined_result = data_from_db_trade_open + data_from_db_order_open
-            
-            
-            order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", label)
-
-            if order_has_sent_before or size == 0:
-                order_allowed = False
-            # log.critical(
-            #    f"order_allowed {order_allowed} size {size} order_has_sent_before {order_has_sent_before}  {order_has_sent_before or size==0}"
-            # )
 
         return dict(
             order_allowed=order_allowed,

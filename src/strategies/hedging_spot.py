@@ -10,20 +10,22 @@ from dataclassy import dataclass
 # user defined formula
 from strategies.basic_strategy import (
     BasicStrategy,
-    get_order_id_max_time_stamp,
-    is_minimum_waiting_time_has_passed,
-    delta_pct,get_label,
-    get_max_time_stamp,
+    are_size_and_order_appropriate,
     check_if_id_has_used_before,
-    size_rounding,
-    is_label_and_side_consistent,
+    delta_pct,
     ensure_sign_consistency,
-    are_size_and_order_appropriate
-)
+    get_label,
+    get_max_time_stamp,
+    get_order_id_max_time_stamp,
+    is_label_and_side_consistent,
+    is_minimum_waiting_time_has_passed,
+    size_rounding,)
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query
     )
-from utilities.string_modification import (extract_currency_from_text)
+from utilities.string_modification import (
+    extract_currency_from_text,
+    parsing_label)
 
 def get_transactions_len(result_strategy_label) -> int:
     """ """
@@ -32,6 +34,12 @@ def get_transactions_len(result_strategy_label) -> int:
 def get_transactions_sum(result_strategy_label) -> int:
     """ """
     return 0 if result_strategy_label == [] else sum([o["amount"] for o in result_strategy_label])
+
+
+def get_label_integer(label: dict) -> bool:
+    """ """
+
+    return parsing_label(label)["int"]
 
 
 def hedged_value_to_notional(notional: float, 
@@ -287,12 +295,12 @@ class HedgingSpot(BasicStrategy):
         self,
         TA_result_data,
         index_price: float,
-        ask_price: float,
         bid_price: float,
         selected_transaction: list,
         server_time: int
     ) -> dict:
         """ """
+        order_allowed = False
         
         hedging_attributes= self.strategy_parameters[0]
         
@@ -305,16 +313,12 @@ class HedgingSpot(BasicStrategy):
         )
 
         bullish = market_condition["rising_price"]
+
         strong_bullish = market_condition["strong_rising_price"]
         #neutral = market_condition["neutral_price"]
         bearish = market_condition["falling_price"]
 
-        exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
-            market_condition, 
-            ask_price, 
-            bid_price, 
-            selected_transaction,
-        )
+        exit_params: dict = await self.get_basic_params().get_basic_closing_paramaters (selected_transaction,)
         
         cancel_allowed: bool = False
         cancel_id: str = None
@@ -324,9 +328,17 @@ class HedgingSpot(BasicStrategy):
                                                            self.strategy_label,
                                                            "closed")
         
+        label_integer_open = get_label_integer(selected_transaction[0]["label"])
+        label_integer_exit_paramas = get_label_integer(exit_params ["label"])
+
+        sum_order_under_label = sum([o["amount"] for o in open_orders_label_strategy if label_integer_open in o["label"]])
+        order_has_exit_before = [o for o in open_orders_label_strategy if label_integer_exit_paramas in o["label"]]
+        proforma_order = sum_order_under_label + exit_params ["size"]
+        transaction_open_size = selected_transaction[0]["amount"]
+
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
-        if len_orders != [] and len_orders > 0:
+        if len_orders > 0:
             
             #cancel_allowed: bool = True
             cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])    
@@ -341,10 +353,12 @@ class HedgingSpot(BasicStrategy):
                 open_orders_label_strategy,
                 server_time,)
             
-        order_allowed = exit_params["order_allowed"]
+        order_allowed = bullish or strong_bullish \
+            and transaction_open_size >= proforma_order
         
-        exit_allowed = False
-        
+        if order_has_exit_before and transaction_open_size >= proforma_order:
+            order_allowed = True
+            
         if order_allowed:
         
             my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
@@ -354,6 +368,8 @@ class HedgingSpot(BasicStrategy):
             size = exit_parameters["size"]           
             
             sum_orders: int = get_transactions_sum(open_orders_label_strategy)
+            
+            exit_parameters.update({"entry_price": bid_price})
             
             size_and_order_appropriate_for_ordering: bool = (
                 are_size_and_order_appropriate (
@@ -367,8 +383,7 @@ class HedgingSpot(BasicStrategy):
             #convert size to positive sign
             exit_parameters.update({"size": abs (size)})
             
-            exit_allowed: bool = size_and_order_appropriate_for_ordering \
-                 and (bullish or strong_bullish)
+            exit_allowed: bool = size_and_order_appropriate_for_ordering 
             #log.error (f"exit_parameters {exit_parameters}")
 
         return dict(

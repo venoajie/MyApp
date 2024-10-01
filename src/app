@@ -670,7 +670,6 @@ class StreamAccountData:
                                                                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                                                                         TA_result_data,
                                                                         index_price,
-                                                                        best_ask_prc,
                                                                         best_bid_prc,
                                                                         nearest_transaction_to_index,
                                                                         server_time,
