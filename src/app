@@ -314,8 +314,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
 async def on_restart(currencies_default: str,
                      cancellable_strategies: list,
                      order_db_table: str, 
-                     trade_db_table: str,
-                     archive_db_table: str) -> None:
+                     trade_db_table: str,) -> None:
     """
     """
 
