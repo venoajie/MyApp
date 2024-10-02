@@ -15,7 +15,6 @@ from db_management.sqlite_management import (
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from utilities.string_modification import (
-    extract_currency_from_text,
     parsing_label)
 from loguru import logger as log
 
@@ -390,31 +389,6 @@ def check_if_id_has_used_before(combined_result: str,
     return label_is_exist
 
 
-async def summing_transactions_under_label_int(
-    transaction: dict, transactions_all: list = None
-) -> str:
-    """ """
-    
-    label = get_transaction_label(transaction)
-
-    label_integer = get_label_integer(label)
-    
-    if transactions_all is None:
-        tabel= "my_trades_all_json"
-        column_list: str= "label", "amount"
-        instrument_name= get_transaction_instrument(transaction)
-        transactions_all: list = await get_query(tabel, 
-                                                 instrument_name, 
-                                                 "all", 
-                                                 "all", 
-                                                 column_list)
-    transactions_under_label_main = [
-        o["amount"] for o in transactions_all if label_integer in o["label"]
-    ]
-
-    return sum(transactions_under_label_main)
-
-
 def provide_side_to_close_transaction(transaction: dict) -> str:
     """ """
 
@@ -442,12 +416,18 @@ def sum_order_under_closed_label_int (closed_orders_label_strategy: list,
         or order_under_closed_label_int == []) \
             else sum([o["amount"] for o in order_under_closed_label_int])
                 
-def check_if_closing_size_will_exceed_the_original (combined_size: int,
-                                                    basic_size: int,
+def check_if_closing_size_will_exceed_the_original (basic_size: int,
+                                                    combined_size: int,
                                                     sum_order_under_closed_label: int) -> bool:
     """ """
+    if basic_size > 0:
+        summing_ok = (basic_size) + (combined_size) <  (basic_size)
+    if basic_size < 0:
+        summing_ok = (basic_size) + (combined_size) > (basic_size)
     
-    return  abs(combined_size) < abs (basic_size) and abs (sum_order_under_closed_label) < abs (basic_size)
+    return  abs(combined_size) < abs (basic_size) \
+        and abs (sum_order_under_closed_label) < abs (basic_size) \
+            and summing_ok
     
 def provide_size_to_close_transaction (transaction: dict,
                                        closed_orders_label_strategy: list) -> int:
@@ -462,9 +442,9 @@ def provide_size_to_close_transaction (transaction: dict,
                                        
     combined_size = (basic_size + sum_order_under_closed_label)
     
-    closing_size_not_ok = check_if_closing_size_will_exceed_the_original (combined_size,
-                                                                      basic_size,
-                                                                      sum_order_under_closed_label)
+    closing_size_not_ok = check_if_closing_size_will_exceed_the_original (basic_size,
+                                                                          combined_size,
+                                                                          sum_order_under_closed_label)
                                 
     return 0 if closing_size_not_ok else (min (basic_size, combined_size))
 

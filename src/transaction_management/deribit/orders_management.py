@@ -8,7 +8,6 @@ from dataclassy import dataclass
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     deleting_row,
-    update_status_data,
     insert_tables)
 from strategies.basic_strategy import (
     get_transaction_side,        

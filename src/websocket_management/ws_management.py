@@ -39,7 +39,6 @@ from utilities.string_modification import (
     parsing_label,)
 from websocket_management.cleaning_up_transactions import (
     reconciling_between_db_and_exchg_data, 
-    clean_up_closed_futures_because_has_delivered,
     clean_up_closed_transactions)
 
 

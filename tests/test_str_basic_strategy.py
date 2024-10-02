@@ -3,9 +3,31 @@ import pytest
 
 
 from strategies.basic_strategy import (
+    check_if_closing_size_will_exceed_the_original,
     positions_and_orders,
     proforma_size,
     are_size_and_order_appropriate)
+
+
+@pytest.mark.parametrize("basic_size, combined_size, sum_order_under_closed_label, expected", [
+    ( -10, 6, 4, True),
+    ( -10, 6, 11, False),
+    ( -10, 6, -1, True),
+    ( -10, -6, -1, False),
+    ( 10, 6, 1, False),
+    ( -10, 11, 1, False),
+    ( 10, -11,- 1, False),
+    ])
+def test_check_if_closing_size_will_exceed_the_original(basic_size, 
+                                                        combined_size,
+                                                        sum_order_under_closed_label,
+                                                        expected):
+
+    result = check_if_closing_size_will_exceed_the_original(basic_size, 
+                                                            combined_size,
+                                                            sum_order_under_closed_label,)
+
+    assert result == expected
 
 
 @pytest.mark.parametrize("current_size_or_open_position, current_orders_size, expected", [
