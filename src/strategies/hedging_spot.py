@@ -349,6 +349,8 @@ class HedgingSpot(BasicStrategy):
                                                                threshold_market_condition)
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
+
+        log.error (f"bid_price < transaction ["price"] {bid_price < transaction ["price"]}")
         
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
 
@@ -372,7 +374,6 @@ class HedgingSpot(BasicStrategy):
             
             log.error (f"market_condition {market_condition}")
 
-
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
@@ -388,6 +389,8 @@ class HedgingSpot(BasicStrategy):
             if cancel_allowed:
                 cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
+
+            log.error (f"market_condition {market_condition}")
 
             if closed_orders_label_strategy:
                 
