@@ -648,7 +648,7 @@ class StreamAccountData:
                                                         
                                                         column_trade= "trade_id","label"
                                                         
-                                                        column_order= "label","order_id","amount"
+                                                        column_order= "instrument_name","label","order_id","amount"
                                                         
                                                         currency = extract_currency_from_text (instrument_ticker)
                                                         
