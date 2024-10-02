@@ -366,30 +366,12 @@ class HedgingSpot(BasicStrategy):
 
             label_integer_exit_params = get_label_integer(exit_params ["label"])
             
-            transaction_open_size = abs(transaction ["amount"])
+            transaction_open_size = (transaction ["amount"])
 
             proforma_order =  exit_params ["size"]
             
             log.error (f"market_condition {market_condition}")
 
-            if closed_orders_label_strategy:
-                
-                order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
-                
-                sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
-                    else sum([o["amount"] for o in order_under_closed_label_int])
-                
-                proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
-                
-                order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
-                            
-                if order_has_exit_before and transaction_open_size >= proforma_order:
-                    
-                    resize = transaction_open_size - sum_order_under_closed_label_int
-                    
-                    exit_params.update({"size": resize})
-                    
-                    proforma_order = sum_order_under_closed_label_int + resize
 
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
@@ -406,36 +388,67 @@ class HedgingSpot(BasicStrategy):
             if cancel_allowed:
                 cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
-            log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
-            log.warning (f" transaction_open_size {transaction_open_size} proforma_order {proforma_order}")
-            log.warning (f"transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
-            
-            max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
-                
-            if transaction_open_size >= proforma_order:# and max_order:
-            
-                my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
-                sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+            if closed_orders_label_strategy:
                 
-                size = exit_params["size"]           
+                order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
                 
-                sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+                sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
+                    else sum([o["amount"] for o in order_under_closed_label_int])
                 
-                exit_params.update({"entry_price": bid_price})
+                proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
                 
-                order_allowed: bool = (
-                    are_size_and_order_appropriate (
-                        "reduce_position",
-                        sum_my_trades, 
-                        sum_orders, 
-                        size, 
-                    )
-                )
+                order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
+                
+                net_transaction = transaction_open_size + proforma_order
+                            
+                if order_has_exit_before:
                     
-                #convert size to positive sign
-                exit_params.update({"size": abs (size)})
+                    if net_transaction < 0 :
+                    
+                        resize = transaction_open_size + sum_order_under_closed_label_int
+                        
+                        exit_params.update({"size": resize})
+                        
+                        proforma_order = sum_order_under_closed_label_int + resize
+                        
+                        net_transaction = transaction_open_size + proforma_order
+                        
+
+                    else :
+                    
+                        order_allowed = False
+
+                log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
+                log.warning (f" transaction_open_size {transaction_open_size} proforma_order {proforma_order}")
+                log.warning (f"net_transaction == 0 {net_transaction == 0}")
                 
+                max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
+                    
+                if net_transaction == 0:# and max_order:
+                
+                    my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
+
+                    sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+                    
+                    size = exit_params["size"]           
+                    
+                    sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+                    
+                    exit_params.update({"entry_price": bid_price})
+                    
+                    order_allowed: bool = (
+                        are_size_and_order_appropriate (
+                            "reduce_position",
+                            sum_my_trades, 
+                            sum_orders, 
+                            size, 
+                        )
+                    )
+                        
+                    #convert size to positive sign
+                    exit_params.update({"size": abs (size)})
+                    
         log.error (f"order_allowed {order_allowed}")
         return dict(
             order_allowed= order_allowed,
