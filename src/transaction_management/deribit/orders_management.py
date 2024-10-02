@@ -35,20 +35,24 @@ async def convert_status_has_closed_label_from_no_to_yes (instrument_name,
     
     transactions_all: list = await get_query(trade_table, instrument_name, "all", "all", column_list)
     
-    has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
+    log.error (f"transactions_all {transactions_all}")
     
-    log.error (f"has_closed_label {has_closed_label}")
-    
-    if not has_closed_label or has_closed_label==0:
+    if transactions_all:
         
-        new_value=True
-        data_column= "has_closed_label"
-        table= trade_table
-        await update_status_data(table, 
-                                 data_column, 
-                                 filter_trade, 
-                                 trade_id, 
-                                 new_value)
+        has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
+        
+        log.error (f"has_closed_label {has_closed_label}")
+        
+        if not has_closed_label or has_closed_label==0:
+            
+            new_value=True
+            data_column= "has_closed_label"
+            table= trade_table
+            await update_status_data(table, 
+                                    data_column, 
+                                    filter_trade, 
+                                    trade_id, 
+                                    new_value)
 
     
 def get_custom_label(transaction: list) -> str:
@@ -133,6 +137,7 @@ class OrderManagement:
                                                 column_trade)
             
             log.error (f"data_from_db_trade_open {data_from_db_trade_open}")
+            log.error (f"trade {trade}")
                     
             #get table names
             order_table = self.order_db_table
