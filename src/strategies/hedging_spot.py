@@ -396,11 +396,13 @@ class HedgingSpot(BasicStrategy):
 
 
             order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
+            log.info (f"order_under_closed_label_int {order_under_closed_label_int}")
             
             sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
                 else sum([o["amount"] for o in order_under_closed_label_int])
             
             proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
+            log.debug (f"sum_order_under_closed_label_int {sum_order_under_closed_label_int}")
                             
             net_transaction = transaction_open_size + proforma_order
                             # check possibility of dobel_order
