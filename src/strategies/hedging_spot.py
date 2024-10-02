@@ -407,6 +407,7 @@ class HedgingSpot(BasicStrategy):
                 cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
             log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
+            log.warning (f" transaction_open_size {transaction_open_size} proforma_order {proforma_order}")
             log.warning (f"transaction_open_size >= proforma_order {transaction_open_size >= proforma_order}")
             
             max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
