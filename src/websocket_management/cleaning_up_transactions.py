@@ -433,6 +433,13 @@ def check_if_transaction_has_closed_label_before(
     transactions_all, trade_id
 ) -> bool:
     """ """
+    log.critical ((
+        [
+            o["has_closed_label"]
+            for o in transactions_all
+            if trade_id in o["trade_id"] and "open" in o["label"]
+        ]
+    ))
     has_closed_label = (
         [
             o["has_closed_label"]

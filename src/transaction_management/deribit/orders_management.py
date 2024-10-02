@@ -31,11 +31,12 @@ async def convert_status_has_closed_label_from_no_to_yes (instrument_name,
                                                           filter_trade, 
                                                           trade_id) -> None:
 
-    column_list= "trade_id","has_closed_label"
+    column_list= "trade_id","has_closed_label", "label"
     
     transactions_all: list = await get_query(trade_table, instrument_name, "all", "all", column_list)
     
     log.error (f"transactions_all {transactions_all}")
+
     
     if transactions_all:
         
