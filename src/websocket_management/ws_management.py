@@ -133,8 +133,8 @@ async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
 
-    #await private_data.get_cancel_order_all()
-    #await private_data.send_limit_order(params)
+    await private_data.get_cancel_order_all()
+    await private_data.send_limit_order(params)
 
 
 async def if_order_is_true(order, instrument: str = None) -> None:
@@ -461,7 +461,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, cancella
                             #log.error (f"my_trades_instrument_data {transaction}")
                         
                             
-                            await clean_up_closed_futures_because_has_delivered(instrument_name, transaction, delivered_transaction)
+                            #await clean_up_closed_futures_because_has_delivered(instrument_name, transaction, delivered_transaction)
                         
             
             balancing_params=paramaters_to_balancing_transactions()
@@ -497,7 +497,6 @@ async def resupply_sub_accountdb(currency) -> None:
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
  
-   
         
 async def comparing_last_trade_id_in_transaction_log_vs_my_trades_all(trade_db_table: str,
                                                                       transaction_log_trading: str,) -> bool:
@@ -522,7 +521,9 @@ async def comparing_last_trade_id_in_transaction_log_vs_my_trades_all(trade_db_t
         "last_tick_from_my_trades": last_tick_from_my_trades,
     }
 
-async def resupply_transaction_log(currency: str) -> list:
+async def resupply_transaction_log(currency: str,
+                                   transaction_log_trading,
+                                   archive_db_table: str) -> list:
     """ """
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
@@ -545,7 +546,9 @@ async def resupply_transaction_log(currency: str) -> list:
                                                 first_tick_fr_sqlite-1, 
                                                 max_closed_transactions_downloaded_from_sqlite)
             
-    await saving_transaction_log (currency, 
+    await saving_transaction_log (transaction_log_trading,
+                                  currency, 
+                                  archive_db_table,
                                   transaction_log, 
                                   first_tick_fr_sqlite, 
                                   )

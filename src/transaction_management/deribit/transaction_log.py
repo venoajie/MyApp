@@ -17,7 +17,8 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
 
-async def saving_transaction_log (currency, 
+async def saving_transaction_log (transaction_log_trading, 
+                                  archive_db_table,
                                   transaction_log,
                                   first_tick_fr_sqlite, 
                                   ) -> None:
@@ -40,7 +41,7 @@ async def saving_transaction_log (currency,
                     
         if timestamp_log > first_tick_fr_sqlite:
 
-            custom_label= f"custom-{type_log.title()}-{timestamp_log}"
+            custom_label= f"custom-{type_log.lower()}-{timestamp_log}"
             
             if "trade" in type_log or "delivery" in type_log:
             
@@ -52,7 +53,7 @@ async def saving_transaction_log (currency,
                     
                     column_list: str="label", "trade_id"
                     
-                    from_sqlite_open= await get_query ("my_trades_all_json", 
+                    from_sqlite_open= await get_query (archive_db_table, 
                                                         instrument_name_log, 
                                                         "all", 
                                                         "all", 
@@ -70,8 +71,7 @@ async def saving_transaction_log (currency,
                     modified_dict.update({"label": custom_label})
                     
                 #log.debug (f"transaction_log_json {modified_dict}")
-                table= f"transaction_log_{currency.lower()}_json"
-                await insert_tables(table, modified_dict)
+                await insert_tables(transaction_log_trading, modified_dict)
             
             else:
                 modified_dict.update({"label": custom_label})
