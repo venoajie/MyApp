@@ -392,7 +392,7 @@ class HedgingSpot(BasicStrategy):
                 cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
 
-            log.error (f"market_condition {market_condition}")
+            log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
 
             if closed_orders_label_strategy:
                 
