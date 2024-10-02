@@ -352,6 +352,8 @@ class HedgingSpot(BasicStrategy):
 
         log.error (f"""bid_price < transaction {bid_price < transaction ["price"]}""")
         
+        log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
+        
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
 
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
@@ -424,7 +426,6 @@ class HedgingSpot(BasicStrategy):
 
 
                 log.debug (f"order_has_exit_before {order_has_exit_before}")
-                log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
                 log.warning (f" transaction_open_size {transaction_open_size} proforma_order {proforma_order}")
                 log.warning (f"net_transaction == 0 {net_transaction == 0}")
                 
