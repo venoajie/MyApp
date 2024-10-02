@@ -265,6 +265,8 @@ class HedgingSpot(BasicStrategy):
                 max_position
             )
         )
+        
+        log.info (f"strong_bearish {strong_bearish} bearish {bearish} waiting_minute_before_cancel {waiting_minute_before_cancel} len_orders {len_orders} open_orders_label_strategy {open_orders_label_strategy} server_time {server_time}")
 
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
