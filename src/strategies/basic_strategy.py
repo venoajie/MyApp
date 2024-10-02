@@ -385,7 +385,7 @@ def check_if_id_has_used_before(combined_result: str,
     log.debug (f"result_order_id {result_order_id}")
     log.debug (f"transaction_id[0] not in result_order_id {transaction_id[0] not in result_order_id}")
     label_is_exist: list = (False if (combined_result == [] or result_order_id== [])\
-        else False if transaction_id[0] not in result_order_id  else True)
+        else False if transaction_id not in result_order_id  else True)
 
     #log.debug (f"trasaction was existed before {label_is_exist}")
     return label_is_exist
