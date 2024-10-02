@@ -306,8 +306,8 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
         if trades_from_exchange_without_futures_combo:
             
             order_management= OrderManagement(order_db_table, 
-                                        trade_db_table, 
-                                        archive_db_table)
+                                              trade_db_table, 
+                                              archive_db_table)
             
             await order_management.saving_traded_orders (trades_from_exchange_without_futures_combo)
         

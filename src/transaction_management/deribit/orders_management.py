@@ -82,7 +82,27 @@ class OrderManagement:
         
         for trade in trades:    
             instrument_name= trade ["instrument_name"]
+            order_id= trade ["order_id"]
+            amount= trade ["amount"]
             
+            order_table = self.order_db_table
+            order_trade= "order_id","id"
+            data_from_db_order = await get_query(order_table, 
+                                                instrument_name, 
+                                                "all", 
+                                                "all", 
+                                                order_trade)
+            order_id_has_exist_before=  [o["id"] for o in data_from_db_order if o["order_id"]== order_id \
+                and ["amount"] == amount]
+            
+            if order_id_has_exist_before:
+                id = order_id_has_exist_before[0]
+                await deleting_row ("orders_all_json",
+                                "databases/trading.sqlite3",
+                                "id",
+                                "=",
+                                id,
+                            )
             currency=extract_currency_from_text(instrument_name)
             
             trade_id= trade["trade_id"]
@@ -110,7 +130,6 @@ class OrderManagement:
             log.error (f"trade {trade}")
                     
             #get table names
-            order_table = self.order_db_table
             trade_table = self.trade_db_table
             archived_table =self.archive_db_table
             
@@ -132,7 +151,6 @@ class OrderManagement:
                     await get_additional_params_for_open_label (trade, label)
 
                 # insert clean trading transaction
-                await insert_tables(order_table, trade)
                 await insert_tables(trade_table, trade)
                 await insert_tables(archived_table, trade)
                 
