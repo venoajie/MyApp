@@ -547,7 +547,6 @@ async def resupply_transaction_log(currency: str,
                                                 max_closed_transactions_downloaded_from_sqlite)
             
     await saving_transaction_log (transaction_log_trading,
-                                  currency, 
                                   archive_db_table,
                                   transaction_log, 
                                   first_tick_fr_sqlite, 
