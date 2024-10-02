@@ -132,9 +132,7 @@ class OrderManagement:
 
             trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, 
                                                                      "trade_id", 
-                                                                     trade_id, 
-                                                                     100)
-            
+                                                                     trade_id)
             #processing clean result
             if not trade_id_has_exist_before:
                     
