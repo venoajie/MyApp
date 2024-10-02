@@ -16,8 +16,7 @@ from strategies.basic_strategy import (
     get_additional_params_for_futureSpread_transactions,
     check_if_id_has_used_before)
 from websocket_management.cleaning_up_transactions import (
-    clean_up_closed_transactions,
-    check_if_transaction_has_closed_label_before)
+    clean_up_closed_transactions,)
 from utilities.string_modification import (
     extract_currency_from_text)
 
@@ -25,36 +24,7 @@ def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
     from utilities import telegram_app
 
     return telegram_app.telegram_bot_sendtext(bot_message, purpose)
-
-async def convert_status_has_closed_label_from_no_to_yes (instrument_name, 
-                                                          trade_table, 
-                                                          filter_trade, 
-                                                          trade_id) -> None:
-
-    column_list= "trade_id","has_closed_label", "label"
     
-    transactions_all: list = await get_query(trade_table, instrument_name, "all", "all", column_list)
-    
-    log.error (f"transactions_all {transactions_all}")
-
-    
-    if transactions_all:
-        
-        has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
-        
-        log.error (f"has_closed_label {has_closed_label}")
-        
-        if not has_closed_label or has_closed_label==0:
-            
-            new_value=True
-            data_column= "has_closed_label"
-            table= trade_table
-            await update_status_data(table, 
-                                    data_column, 
-                                    filter_trade, 
-                                    trade_id, 
-                                    new_value)
-
     
 def get_custom_label(transaction: list) -> str:
 
@@ -161,20 +131,6 @@ class OrderManagement:
                 # check if transaction has additional attributes. If no, provide it with them
                 if "open" in label:
                     await get_additional_params_for_open_label (trade, label)
-
-                # convert status parameter so transaction colud be further closed
-                if "closed" in label:
-                    
-                    filter_trade="trade_id"
-                    
-                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, 
-                                                                          trade_table, 
-                                                                          filter_trade,
-                                                                          trade_id)
-                    await convert_status_has_closed_label_from_no_to_yes (instrument_name, 
-                                                                          archived_table, 
-                                                                          filter_trade, 
-                                                                          trade_id)
 
                 # insert clean trading transaction
                 await insert_tables(order_table, trade)

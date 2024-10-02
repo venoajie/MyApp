@@ -355,24 +355,14 @@ class HedgingSpot(BasicStrategy):
         log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
         
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
-
-            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,)
             
             closed_orders_label_strategy: list=  await get_query("orders_all_json", 
                                                             currency.upper(), 
                                                             self.strategy_label,
                                                             "closed")
-            # there were outstanding closed orders
             
-            order_has_exit_before = False
-
-            label_integer_open = get_label_integer(transaction ["label"])
-
-            label_integer_exit_params = get_label_integer(exit_params ["label"])
-            
-            transaction_open_size = (transaction ["amount"])
-
-            proforma_order =  exit_params ["size"]
+            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
+                                                                    closed_orders_label_strategy,)
             
             log.error (f"market_condition {market_condition}")
 
@@ -391,56 +381,17 @@ class HedgingSpot(BasicStrategy):
             if cancel_allowed:
                 cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
                 
-
             log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
 
-
-            order_under_closed_label_int = ([o for o in closed_orders_label_strategy if label_integer_open in o["label"]])
-            log.info (f"order_under_closed_label_int {order_under_closed_label_int}")
-            
-            sum_order_under_closed_label_int = 0 if order_under_closed_label_int == [] \
-                else sum([o["amount"] for o in order_under_closed_label_int])
-            
-            proforma_order = sum_order_under_closed_label_int + exit_params ["size"]
-            log.debug (f"sum_order_under_closed_label_int {sum_order_under_closed_label_int}")
-                            
-            net_transaction = transaction_open_size + proforma_order
-                            # check possibility of dobel_order
-            if closed_orders_label_strategy:
-                
-                order_has_exit_before = [o for o in closed_orders_label_strategy if label_integer_exit_params in o["label"]]
-            
-                if order_has_exit_before:
-                    
-                    if net_transaction < 0 :
-                    
-                        resize = transaction_open_size + sum_order_under_closed_label_int
-                        
-                        exit_params.update({"size": resize})
-                        
-                        proforma_order = sum_order_under_closed_label_int + resize
-                        
-                        net_transaction = transaction_open_size + proforma_order
-                        
-
-                    else :
-                    
-                        order_allowed = False
-
-
-            log.debug (f"order_has_exit_before {order_has_exit_before}")
-            log.warning (f" transaction_open_size {transaction_open_size} proforma_order {proforma_order}")
-            log.warning (f"net_transaction == 0 {net_transaction == 0}")
-            
             max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                 
-            if net_transaction == 0:# and max_order:
+            size = exit_params["size"]           
+            
+            if (False if size == 0 else True) and max_order:# and max_order:
             
                 my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
                 sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-                
-                size = exit_params["size"]           
                 
                 sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
                 

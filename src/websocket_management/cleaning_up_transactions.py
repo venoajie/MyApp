@@ -428,35 +428,6 @@ def get_closed_open_transactions_under_same_label_int(
 
     return [o for o in transactions_all if label_integer in o["label"]]
 
-
-def check_if_transaction_has_closed_label_before(
-    transactions_all, trade_id
-) -> bool:
-    """ """
-    log.critical ((
-        [
-            o["has_closed_label"]
-            for o in transactions_all
-            if trade_id in o["trade_id"] and "open" in o["label"]
-        ]
-    ))
-    has_closed_label = (
-        [
-            o["has_closed_label"]
-            for o in transactions_all
-            if trade_id in o["trade_id"] and "open" in o["label"]
-        ]
-    )[0]
-
-    if has_closed_label == 0:
-        has_closed_label = False
-
-    if has_closed_label == 1:
-        has_closed_label = True
-
-    return False if transactions_all == [] else has_closed_label
-
-
 async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:

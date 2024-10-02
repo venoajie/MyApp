@@ -616,7 +616,7 @@ class StreamAccountData:
                                                 # get portfolio data  
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
                                                 
-                                                column_list: str= "instrument_name","label", "amount", "price","side","has_closed_label"
+                                                column_list: str= "instrument_name","label", "amount", "price","side"
                                     
                                                 my_trades_currency: list= await get_query(trade_db_table, 
                                                                                             currency, 

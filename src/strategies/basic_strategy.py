@@ -15,7 +15,8 @@ from db_management.sqlite_management import (
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from utilities.string_modification import (
-    parsing_label,)
+    extract_currency_from_text,
+    parsing_label)
 from loguru import logger as log
 
 
@@ -343,12 +344,6 @@ def get_transaction_price(transaction: dict) -> float:
     """ """
     return transaction["price"]
 
-
-def has_closed_label(transaction: dict) -> bool:
-    """ """
-    return transaction["has_closed_label"]
-
-
 def get_label_integer(label: dict) -> bool:
     """ """
 
@@ -435,26 +430,43 @@ def provide_side_to_close_transaction(transaction: dict) -> str:
     return side
 
 
-async def provide_size_to_close_transaction(
-    transaction: dict, transactions_all: list = None
-) -> str:
+def sum_order_under_closed_label_int (closed_orders_label_strategy: list,
+                                       label_integer_open: int) -> int:
+    """ """
+    
+    if closed_orders_label_strategy:
+        order_under_closed_label_int = ([o for o in closed_orders_label_strategy \
+        if label_integer_open in o["label"]])
+                
+    return 0 if (closed_orders_label_strategy ==[] \
+        or order_under_closed_label_int == []) \
+            else sum([o["amount"] for o in order_under_closed_label_int])
+                
+def check_if_closing_size_will_exceed_the_original (combined_size: int,
+                                                    basic_size: int,
+                                                    sum_order_under_closed_label: int) -> bool:
+    """ """
+    
+    return  abs(combined_size) < abs (basic_size) and abs (sum_order_under_closed_label) < abs (basic_size)
+    
+def provide_size_to_close_transaction (transaction: dict,
+                                       closed_orders_label_strategy: list) -> int:
     """ """
     basic_size = get_transaction_size(transaction)
-
-    label = get_transaction_label(transaction)
-
-    has_closed = 0
-    # print(f"transaction {transaction}")
-
-    if "open" in label:
-        has_closed = has_closed_label(transaction)
-
-    if has_closed != 0:
-        sum_transactions_under_label_main = await summing_transactions_under_label_int (
-            transaction, 
-            transactions_all)
-
-    return abs (basic_size if (has_closed == 0) else (sum_transactions_under_label_main)) 
+    
+    label_integer_open = get_label_integer(transaction ["label"])
+    
+    sum_order_under_closed_label = sum_order_under_closed_label_int (
+        closed_orders_label_strategy,
+        label_integer_open)
+                                       
+    combined_size = (basic_size + sum_order_under_closed_label)
+    
+    closing_size_not_ok = check_if_closing_size_will_exceed_the_original (combined_size,
+                                                                      basic_size,
+                                                                      sum_order_under_closed_label)
+                                
+    return 0 if closing_size_not_ok else (min (basic_size, combined_size))
 
 def convert_list_to_dict (transaction: list) -> dict:
 
@@ -518,9 +530,6 @@ def get_additional_params_for_futureSpread_transactions(transaction: list) -> No
     if "take_profit" not in transaction:
         transaction.update({"take_profit": 0})
         
-    if "open" in transaction and "has_closed_label" not in transaction:
-        transaction.update({"has_closed_label": False})
-
 
 async def get_additional_params_for_open_label(transaction: list, label: str) -> None:
 
@@ -556,20 +565,14 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
             
             except:
                 transaction.update({"take_profit": 0})
-            
-        if "has_closed_label" not in transaction:
-            transaction.update({"has_closed_label": False})
-                
     else:
 
         if "take_profit" not in transaction:
             transaction.update({"take_profit": 0})
             
-        if "has_closed_label" not in transaction:
-            transaction.update({"has_closed_label": False})
-            
     
-async def get_basic_closing_paramaters(selected_transaction: list) -> dict:
+async def get_basic_closing_paramaters(selected_transaction: list,
+                                       closed_orders_label_strategy: list) -> dict:
     """ """
     transaction: dict = convert_list_to_dict(selected_transaction)
     
@@ -584,7 +587,9 @@ async def get_basic_closing_paramaters(selected_transaction: list) -> dict:
     side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
 
-    size_abs = await provide_size_to_close_transaction(transaction)
+    size_abs = provide_size_to_close_transaction(transaction,
+                                                 closed_orders_label_strategy)
+    
     size = size_abs * ensure_sign_consistency(side)
     # size=exactly amount of transaction size
     params.update({"size": size })
@@ -723,7 +728,6 @@ class BasicStrategy:
        
         # get transaction label and update the respective parameters
         params.update({"cancellable": cancellable})
-        params.update({"has_closed_label": False})
 
         if side == "sell":
             params.update({"entry_price": ask_price})
@@ -743,6 +747,7 @@ class BasicStrategy:
         ask_price: float,
         bid_price: float,
         selected_transaction: list,
+        closed_orders_label_strategy
     ) -> dict:
         """ """
         # transform to dict
@@ -759,7 +764,8 @@ class BasicStrategy:
         # get transaction parameters
         params: list = get_basic_closing_paramaters(selected_transaction)
 
-        size_abs = await provide_size_to_close_transaction(transaction)
+        size_abs =  provide_size_to_close_transaction(transaction,
+                                                      closed_orders_label_strategy)
         size = size_abs * ensure_sign_consistency(transaction_side)
         
         if transaction_side == "sell":
