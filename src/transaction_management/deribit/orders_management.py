@@ -128,6 +128,8 @@ class OrderManagement:
             
             log.error (f"data_from_db_trade_open {data_from_db_trade_open}")
             log.error (f"trade {trade}")
+            log.error (f"not data_from_db_trade_open {not data_from_db_trade_open}")
+            log.error (f" data_from_db_trade_open { data_from_db_trade_open}")
                     
             #get table names
             trade_table = self.trade_db_table
