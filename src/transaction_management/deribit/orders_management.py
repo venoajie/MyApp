@@ -105,7 +105,7 @@ class OrderManagement:
                             )
             currency=extract_currency_from_text(instrument_name)
             
-            trade_id= trade["trade_id"]
+            trade_id= str(trade["trade_id"])
             
             try:
                 label= trade["label"]
