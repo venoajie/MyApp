@@ -37,6 +37,8 @@ async def convert_status_has_closed_label_from_no_to_yes (instrument_name,
     
     has_closed_label = check_if_transaction_has_closed_label_before (transactions_all, trade_id)
     
+    log.error (f"has_closed_label {has_closed_label}")
+    
     if not has_closed_label or has_closed_label==0:
         
         new_value=True
