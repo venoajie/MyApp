@@ -910,6 +910,7 @@ class StreamAccountData:
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
+        await asyncio.sleep(5)
         
         id = id_numbering.id(operation, ws_channel)
 
