@@ -350,7 +350,7 @@ class HedgingSpot(BasicStrategy):
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
 
-        log.error (f"bid_price < transaction ["price"] {bid_price < transaction ["price"]}")
+        log.error (f"""bid_price < transaction {bid_price < transaction ["price"]}""")
         
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
 
