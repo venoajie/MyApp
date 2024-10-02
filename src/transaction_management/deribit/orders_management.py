@@ -131,10 +131,13 @@ class OrderManagement:
                                                 "all", 
                                                 "all", 
                                                 column_trade)
-
+            
+            log.error (f"data_from_db_trade_open {data_from_db_trade_open}")
+    
             trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, 
                                                                      "trade_id", 
                                                                      trade_id)
+            log.error (f"trade_id_has_exist_before {trade_id_has_exist_before}")
             #processing clean result
             if not trade_id_has_exist_before:
                     
