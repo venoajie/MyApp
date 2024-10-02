@@ -133,19 +133,25 @@ class OrderManagement:
                                                 column_trade)
             
             log.error (f"data_from_db_trade_open {data_from_db_trade_open}")
-    
-            trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, 
-                                                                     "trade_id", 
-                                                                     trade_id)
+                    
+            #get table names
+            order_table = self.order_db_table
+            trade_table = self.trade_db_table
+            archived_table =self.archive_db_table
+            
+            if not data_from_db_trade_open:
+                
+                trade_id_has_exist_before = False
+                
+            if  data_from_db_trade_open:
+
+                trade_id_has_exist_before=  check_if_id_has_used_before (data_from_db_trade_open, 
+                                                                        "trade_id", 
+                                                                        trade_id)
+            
             log.error (f"trade_id_has_exist_before {trade_id_has_exist_before}")
             #processing clean result
             if not trade_id_has_exist_before:
-                    
-                #get table names
-                order_table = self.order_db_table
-                trade_table = self.trade_db_table
-                archived_table =self.archive_db_table
-            
                 # check if transaction has additional attributes. If no, provide it with them
                 if "open" in label:
                     await get_additional_params_for_open_label (trade, label)
