@@ -301,7 +301,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
     """
     log.warning("Synchronising my_trade_db vs exchange")
         
-    column_list= "instrument_name", "position"
+    column_list= "instrument_name", "position", "timestamp"
     
     from_transaction_log = await get_query (transaction_log_trading, 
                                                 currency, 
