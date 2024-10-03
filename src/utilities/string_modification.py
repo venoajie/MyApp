@@ -135,30 +135,22 @@ def extract_currency_from_text(words: str) -> str:
 
     if "."in words:
           filter1= (words.partition('.')[2]).lower()
-          print (f"filter1 RRR {filter1}")
           
           if "."in filter1:
             filter1= (filter1.partition('.')[2]).lower()
-            print (f"filter1 XXXXX {filter1}")
 
             if "chart.trades"in words:
                 filter1= (words.partition('.')[2]).lower()
-                print (f"filter1 SSS {filter1}")
                 
             if "."in filter1:
                 filter1= (filter1.partition('.')[2]).lower()
-                print (f"filter1 ddd {filter1}")
         
                 if "."in filter1:
                     filter1= (filter1.partition('.')[0]).lower()
-                    print (f"filter1 vvv {filter1}")
         
     else:
           filter1= (words.partition('.')[0]).lower()
-          
-          print (f"filter1 BBBB {filter1}")
-        
-    print (f"filter1 AAAA {filter1}")
+                  
     return (filter1.partition('-')[0]).lower()
 
 
