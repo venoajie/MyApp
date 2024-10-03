@@ -100,7 +100,7 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 async def run_every_5_seconds() -> None:
     """ """
 
-    await insert_tables("my_trades_all_json", {'liquidity': 'M', 'risk_reducing': False, 'order_type': 'limit', 'trade_id': '319649748', 'fee_currency': 'BTC', 'contracts': 1.0, 'self_trade': False, 'reduce_only': False, 'post_only': True, 'mmp': False, 'tick_direction': 3, 'fee': 0.0, 'matching_id': None, 'order_id': '78476150306', 'mark_price': 60877.55, 'api': True, 'trade_seq': 218687974, 'instrument_name': 'BTC-PERPETUAL', 'profit_loss': 0.0, 'index_price': 60870.31, 'direction': 'sell', 'amount': 10.0, 'price': 60870.0, 'state': 'filled', 'timestamp': 1727893254039, 'label': 'hedgingSpot-open-1727893253856'})
+    await insert_tables("my_trades_all_json", {'liquidity': 'A', 'risk_reducing': False, 'order_type': 'limit', 'trade_id': '319649748', 'fee_currency': 'BTC', 'contracts': 1.0, 'self_trade': False, 'reduce_only': False, 'post_only': True, 'mmp': False, 'tick_direction': 3, 'fee': 0.0, 'matching_id': None, 'order_id': '78476150306', 'mark_price': 60877.55, 'api': True, 'trade_seq': 218687974, 'instrument_name': 'BTC-PERPETUAL', 'profit_loss': 0.0, 'index_price': 60870.31, 'direction': 'sell', 'amount': 10.0, 'price': 60870.0, 'state': 'filled', 'timestamp': 1727893254039, 'label': 'hedgingSpot-open-1727893253856'})
 
 
 async def run_every_60_seconds() -> None:
