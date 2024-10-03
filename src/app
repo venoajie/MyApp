@@ -87,10 +87,11 @@ async def update_db_pkl(path, data_orders, currency) -> None:
     
     if currency_inline_with_database_address(currency,my_path_portfolio):
         replace_data(my_path_portfolio, data_orders)
-        
-async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
-    return await telegram_bot_sendtext(bot_message, purpose)
+async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
+    import deribit_get
+
+    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
 def get_settlement_period (strategy_atributes) -> list:
     
@@ -402,7 +403,7 @@ class StreamAccountData:
 
         # Instance Variables
         self.connection_url: str = (
-            deribit_url_main()
+            "https://www.deribit.com/api/v2/"
             if "test" not in self.ws_connection_url
             else "https://test.deribit.com/api/v2/"
         )
@@ -411,19 +412,19 @@ class StreamAccountData:
         self.websocket_client: websockets.WebSocketClientProtocol = None
         self.refresh_token: str = None
         self.refresh_token_expiry_time: int = None
-    
+            
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
 
+    # @lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
-        
         async with websockets.connect(
             self.ws_connection_url,
             ping_interval=None,
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-              
+            
             file_toml = "config_strategies.toml"
                 
             config_app = get_config(file_toml)
@@ -452,12 +453,16 @@ class StreamAccountData:
                 
                 # Authenticate WebSocket Connection
                 await self.ws_auth()
+
+                # Establish restart procedure
+                await self.on_restart()
+                
                 # Establish Heartbeat
                 await self.establish_heartbeat()
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
-                
+
                 settlement_periods= get_settlement_period (strategy_atributes)
                                 
                 futures_instruments=await get_futures_instruments(currencies,
@@ -472,9 +477,9 @@ class StreamAccountData:
                 min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
                 
                 resolution = 1                
-                                            
+                
                 for instrument in instruments_name:
-                    
+
                     await clean_up_closed_transactions (instrument, trade_db_table)
 
                     currency = extract_currency_from_text(instrument).upper()   
@@ -482,11 +487,11 @@ class StreamAccountData:
                     self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
-                            ws_channel=f"incremental_ticker.{instrument}",))
-                                               
-                    if "PERPETUAL" in instrument:
-                        
+                            ws_channel=f"incremental_ticker.{instrument}",
+                        )
+                    )
 
+                    if "PERPETUAL" in instrument:
                         self.loop.create_task(
                             self.ws_operation(
                                 operation="subscribe",
@@ -505,24 +510,24 @@ class StreamAccountData:
                         operation="subscribe",
                         ws_channel=f"user.changes.any.{currency.upper()}.raw",
                     )
-                )                        
-                
+                )
                 while self.websocket_client.open:
                     # Receive WebSocket messages
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    
+                    # log.warning (message)
                     if "id" in list(message):
-                        log.warning (message)
                         if message["id"] == 9929:
                             
                             if self.refresh_token is None:
-
-                                log.info ("Successfully authenticated WebSocket Connection")
+                                # await syn.get_sub_accounts()
+                                log.info("Successfully authenticated WebSocket Connection")
 
                             else:
-                                log.info ("Successfully refreshed the authentication of the WebSocket Connection")
+                                log.info(
+                                    "Successfully refreshed the authentication of the WebSocket Connection"
+                                )
 
                             self.refresh_token = message["result"]["refresh_token"]
 
@@ -541,7 +546,6 @@ class StreamAccountData:
                             continue
 
                     elif "method" in list(message):
-
                         # Respond to Heartbeat Message
                         if message["method"] == "heartbeat":
                             await self.heartbeat_response()
@@ -549,7 +553,9 @@ class StreamAccountData:
                     if "params" in list(message):
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
-                            
+
+                            data_orders: list = message["params"]["data"]
+   
                             log.info (message_channel)
 
                             data_orders: list = message["params"]["data"]       
@@ -846,8 +852,8 @@ class StreamAccountData:
                                         "WebSocket connection - failed to process data"
                                     )
 
-                                    #continue
-                                    
+                                    continue
+
                 else:
                 
                     log.info("WebSocket connection has broken.")
@@ -857,7 +863,8 @@ class StreamAccountData:
                         "WebSocket connection EXCHANGE has broken",
                     )
         
-                    #! Establish restart procedure
+                    # Establish restart procedure
+                    await self.on_restart()
                 
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
@@ -865,14 +872,18 @@ class StreamAccountData:
         """ """
 
         try:
-                        
+            # ticker: list = pickling.read_data(my_path_ticker)
+
             if data_orders["type"] == "snapshot":
                 replace_data(my_path_ticker, data_orders)
+
+                # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
 
             else:
                 ticker_change: list = read_data(my_path_ticker)
                 if ticker_change != []:
-                    
+                    # log.debug (ticker_change)
+
                     for item in data_orders:
                         ticker_change[0][item] = data_orders[item]
                         replace_data(my_path_ticker, ticker_change)
@@ -882,7 +893,16 @@ class StreamAccountData:
                 error,
                 "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
             )
-            
+
+    async def on_restart(self) -> None:
+        """
+        """
+
+        log.warning("Cancelling all orders")
+        await cancel_the_cancellables()
+        #msg= deribit_get.get_cancel_order_all()
+        #await self.websocket_client.send(json.dumps(msg))
+        
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
@@ -933,7 +953,7 @@ class StreamAccountData:
                 "client_secret": self.client_secret,
             },
         }
-        
+
         await self.websocket_client.send(json.dumps(msg))
 
     async def ws_refresh_auth(self) -> None:
@@ -966,7 +986,7 @@ class StreamAccountData:
         to DBT's API for the specific WebSocket Channel.
         """
         await asyncio.sleep(5)
-        
+
         id = id_numbering.id(operation, ws_channel)
 
         msg: dict = {
@@ -976,42 +996,38 @@ class StreamAccountData:
             "params": {"channels": [ws_channel]},
         }
 
+        #log.info(ws_channel)
         await self.websocket_client.send(json.dumps(msg))
 
 
 def main():
-    """
-    https://stackoverflow.com/questions/70880668/is-it-possible-to-iterate-a-list-calling-async-function
-    https://stackoverflow.com/questions/56161595/how-to-use-async-for-in-python
-    """
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
     client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]   
+    client_secret: str = parse_dotenv(sub_account)["client_secret"]
 
     try:
-
         StreamAccountData(client_id=client_id, client_secret=client_secret)
+        log.error("test")
 
     except Exception as error:
         catch_error_message(
-            error, 1, "app"
+            error, 10, "app"
         )
         
 if __name__ == "__main__":
     try:
-        
         main()
         
         while True:
             loop.run_until_complete(schedule.run_pending())
 
-    except (KeyboardInterrupt, SystemExit):
 
+    except (KeyboardInterrupt, SystemExit):
         asyncio.get_event_loop().run_until_complete(main().stop_ws())
         
+
     except Exception as error:
-                
         catch_error_message(
         error, 10, "app"
         )
