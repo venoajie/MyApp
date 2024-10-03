@@ -323,16 +323,18 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
             
             log.error (f"last_timestamp_from_transaction_log {last_timestamp_from_transaction_log} last_time_stamp_from_my_trades {last_time_stamp_from_my_trades}")
 
-            if last_time_stamp_from_my_trades:
-                filter_transaction_exceeding_latest_time_stamp = min(last_timestamp_from_transaction_log,
-                                                                     last_time_stamp_from_my_trades)
-            
-            else:
-                filter_transaction_exceeding_latest_time_stamp = last_timestamp_from_transaction_log
-            
-            log.error (f"filter_transaction_exceeding_latest_time_stamp {filter_transaction_exceeding_latest_time_stamp}")
           
             if last_timestamp_from_transaction_log: #because transaction log is the truth of data
+        
+                if last_time_stamp_from_my_trades:
+                    filter_transaction_exceeding_latest_time_stamp = min(last_timestamp_from_transaction_log,
+                                                                        last_time_stamp_from_my_trades)
+                
+                else:
+                    filter_transaction_exceeding_latest_time_stamp = last_timestamp_from_transaction_log
+                
+                log.error (f"filter_transaction_exceeding_latest_time_stamp {filter_transaction_exceeding_latest_time_stamp}")
+            
                 order_management= OrderManagement(order_db_table, 
                                               trade_db_table, 
                                               archive_db_table)
