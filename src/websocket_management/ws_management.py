@@ -556,11 +556,13 @@ async def resupply_transaction_log(currency: str,
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
     first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
+    log.warning(f"first_tick_fr_sqlite {first_tick_fr_sqlite} {not first_tick_fr_sqlite}")
     
     if not first_tick_fr_sqlite:
                 
-        first_tick_fr_sqlite
-    log.warning(f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
+        first_tick_fr_sqlite = first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite=)
+    
+    log.debug(f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
     
     transaction_log= await get_transaction_log (currency, 
                                                 first_tick_fr_sqlite-1, 
