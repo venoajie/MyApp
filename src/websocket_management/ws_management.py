@@ -560,7 +560,7 @@ async def resupply_transaction_log(currency: str,
     
     if not first_tick_fr_sqlite:
                 
-        first_tick_fr_sqlite = first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite=)
+        first_tick_fr_sqlite = first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite)
     
     log.debug(f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
     
