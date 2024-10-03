@@ -224,7 +224,7 @@ async def update_user_changes(data_orders,
                               archive_db_table,
                               cancellable_strategies) -> None:
     
-    log.warning (f"update_user_changes-START")
+    log.critical (f"update_user_changes-START")
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
@@ -426,30 +426,6 @@ class StreamAccountData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
-            
-            file_toml = "config_strategies.toml"
-                
-            config_app = get_config(file_toml)
-
-            tradable_config_app = config_app["tradable"]
-            
-            currencies= [o["spot"] for o in tradable_config_app] [0]
-            
-            strategy_atributes = config_app["strategies"]
-                                    
-            active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
-            
-            cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
-            
-            trade_db_table= "my_trades_all_json"
-            
-            order_db_table= "orders_all_json"                
-             
-            # Establish restart procedure
-            await on_restart(currencies,
-                             cancellable_strategies,
-                             order_db_table, 
-                             trade_db_table,)
                             
             while True:
                 
@@ -462,6 +438,31 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
 
+                
+                file_toml = "config_strategies.toml"
+                    
+                config_app = get_config(file_toml)
+
+                tradable_config_app = config_app["tradable"]
+                
+                currencies= [o["spot"] for o in tradable_config_app] [0]
+                
+                strategy_atributes = config_app["strategies"]
+                                        
+                active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
+                
+                cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
+                
+                trade_db_table= "my_trades_all_json"
+                
+                order_db_table= "orders_all_json"                
+                
+                # Establish restart procedure
+                await on_restart(currencies,
+                                cancellable_strategies,
+                                order_db_table, 
+                                trade_db_table,)
+                
                 settlement_periods= get_settlement_period (strategy_atributes)
                                 
                 futures_instruments=await get_futures_instruments(currencies,
