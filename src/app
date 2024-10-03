@@ -696,8 +696,6 @@ class StreamAccountData:
                                                     
                                                     server_time = get_now_unix_time()  
                                                     
-                                                    log.debug (f"server_time {server_time}")
-                                                    
                                                     delta_time = server_time-tick_TA
                                                     
                                                     delta_time_seconds = delta_time/1000                                                

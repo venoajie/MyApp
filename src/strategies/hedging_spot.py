@@ -284,7 +284,7 @@ class HedgingSpot(BasicStrategy):
             )
         #print(f"order_allowed {order_allowed}")
         
-        if order_allowed:
+        if order_allowed and len_orders == 0:
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
@@ -354,10 +354,6 @@ class HedgingSpot(BasicStrategy):
                                                                threshold_market_condition)
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
-
-        log.error (f"""bid_price < transaction {bid_price < transaction ["price"]}""")
-        
-        log.debug (f"bullish or strong_bullish {bullish or strong_bullish}")
         
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
             
@@ -369,8 +365,6 @@ class HedgingSpot(BasicStrategy):
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
                                                                     closed_orders_label_strategy,)
             
-            log.error (f"market_condition {market_condition}")
-
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
             waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
@@ -392,7 +386,7 @@ class HedgingSpot(BasicStrategy):
                 
             size = exit_params["size"]           
             
-            if (False if size == 0 else True) and max_order:# and max_order:
+            if (False if size == 0 else True) and len_orders == 0:# and max_order:
             
                 my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
