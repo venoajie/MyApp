@@ -125,11 +125,6 @@ class OrderManagement:
                                                 "all", 
                                                 "all", 
                                                 column_trade)
-            
-            log.error (f"data_from_db_trade_open {data_from_db_trade_open}")
-            log.error (f"trade {trade}")
-            log.error (f"not data_from_db_trade_open {not data_from_db_trade_open}")
-            log.error (f" data_from_db_trade_open { data_from_db_trade_open}")
                     
             #get table names
             trade_table = self.trade_db_table
@@ -145,7 +140,6 @@ class OrderManagement:
                                                                         "trade_id", 
                                                                         trade_id)
             
-            log.error (f"trade_id_has_exist_before {trade_id_has_exist_before}")
             #processing clean result
             if not trade_id_has_exist_before:
                 # check if transaction has additional attributes. If no, provide it with them

@@ -300,12 +300,15 @@ class HedgingSpot(BasicStrategy):
                 
                 order_allowed=False
         
+        log.debug (f"params {params} ")
+    
         return dict(
             order_allowed=order_allowed,
             order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
             cancel_id=get_order_id_max_time_stamp(open_orders_label_strategy)
         )
+
 
     async def is_send_exit_order_allowed(
         self,
