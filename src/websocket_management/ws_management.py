@@ -520,6 +520,24 @@ async def comparing_last_trade_id_in_transaction_log_vs_my_trades_all(trade_db_t
         "last_tick_from_my_trades": last_tick_from_my_trades,
     }
 
+
+        
+async def first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite: int) -> int:
+    """
+    
+    """
+    
+    from configuration.label_numbering import get_now_unix_time
+    
+    server_time = get_now_unix_time()  
+    
+    some_day_ago = 3600000 * max_closed_transactions_downloaded_from_sqlite
+    
+    delta_some_day_ago = server_time - some_day_ago
+    
+    return delta_some_day_ago
+                                                    
+                      
 async def resupply_transaction_log(currency: str,
                                    transaction_log_trading,
                                    archive_db_table: str) -> list:
@@ -532,12 +550,16 @@ async def resupply_transaction_log(currency: str,
     first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
     
     first_tick_query_result = await executing_query_with_return(first_tick_query)
-    
-    first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
-                    
+        
     balancing_params=paramaters_to_balancing_transactions()
 
     max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+    
+    if first_tick_query_result:
+        first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
+                    
+    else:
+        first_tick_query_result= first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite)
     
     transaction_log= await get_transaction_log (currency, 
                                                 first_tick_fr_sqlite-1, 

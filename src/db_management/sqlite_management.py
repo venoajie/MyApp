@@ -98,7 +98,7 @@ async def insert_tables(table_name, params):
 
                     await db.execute(insert_table_json)
 
-        log.error (f"insert_tables {insert_table_json} ")
+        #log.error (f"insert_tables {insert_table_json} ")
     except Exception as error:
         log.error (f"insert_tables {table_name} {error}")
 
