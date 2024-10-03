@@ -415,7 +415,7 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
         table= f"transaction_log_{extract_currency_from_text(currency_or_instrument).lower()}_json"
         
-        log.error (f"table transaction_log {table}")
+        #log.error (f"table transaction_log {table}")
         
     if columns != "standard":
         
