@@ -17,10 +17,8 @@ from configuration import id_numbering, config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     querying_table,
-    executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
-    querying_arithmetic_operator,
-    insert_tables)
+    insert_tables,)
 from deribit_get import (
     telegram_bot_sendtext,
     get_currencies,
@@ -62,7 +60,6 @@ from websocket_management.allocating_ohlc import (
     inserting_open_interest,)
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
-    remove_duplicated_elements,
     )
 
 def deribit_url_main() -> str:
@@ -288,7 +285,6 @@ async def update_user_changes(data_orders,
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
         
-    await remove_duplicated_elements()
     log.info(f"update_user_changes-END")
 
 
