@@ -83,7 +83,7 @@ async def insert_tables(table_name, params):
 
                     if "json" in table_name:
 
-                        insert_table_json = f"""INSERT  OR REPLACE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
+                        insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
                         #log.error(f"insert_table_json {insert_table_json}")
                         #log.warning(f"{param}")
 
@@ -94,7 +94,7 @@ async def insert_tables(table_name, params):
 
                 if "json" in table_name:
 
-                    insert_table_json = f"""INSERT OR REPLACE INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
+                    insert_table_json = f"""INSERT OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
 
                     await db.execute(insert_table_json)
 
