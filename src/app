@@ -293,7 +293,6 @@ async def update_user_changes(data_orders,
 
 
 async def synchronising_my_trade_db_vs_exchange (currency: str,
-                                                 trades_from_exchange,
                                                 order_db_table: str, 
                                                 trade_db_table: str, 
                                                 archive_db_table: str,
