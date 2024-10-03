@@ -526,12 +526,10 @@ async def resupply_transaction_log(currency: str,
     """ """
 
     log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
-            
-    table= f"transaction_log_{currency.lower()}_json"
-    
+                
     where_filter= "timestamp"
     
-    first_tick_query= querying_arithmetic_operator(where_filter, "MAX", table)
+    first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
     
     first_tick_query_result = await executing_query_with_return(first_tick_query)
     

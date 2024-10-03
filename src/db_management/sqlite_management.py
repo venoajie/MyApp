@@ -412,9 +412,7 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
         standard_columns= f"{standard_columns}, trade_id, price, type"
         
-        if "transaction_log_json" in table:
-        
-            table= f"transaction_log_{extract_currency_from_text(currency_or_instrument)}_json"
+        table= f"transaction_log_{extract_currency_from_text(currency_or_instrument).lower()}_json"
         
         log.error (f"table transaction_log {table}")
         
@@ -444,8 +442,6 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
     if limit > 0:
         
         tab= f"{tab} LIMIT {limit}"
-    
-    
     
     return tab
 
