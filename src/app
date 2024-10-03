@@ -332,17 +332,18 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
             
             log.error (f"filter_transaction_exceeding_latest_time_stamp {filter_transaction_exceeding_latest_time_stamp}")
           
-            order_management= OrderManagement(order_db_table, 
+            if last_timestamp_from_transaction_log: #because transaction log is the truth of data
+                order_management= OrderManagement(order_db_table, 
                                               trade_db_table, 
                                               archive_db_table)
-            
-            selected_trades_from_exchange = [o for o in trades_from_exchange_without_futures_combo
-                                             if o["timestamp"] >= filter_transaction_exceeding_latest_time_stamp]
-            
-            
-            log.error (f"selected_trades_from_exchange {selected_trades_from_exchange}")
-            
-            await order_management.saving_traded_orders (selected_trades_from_exchange)
+                
+                selected_trades_from_exchange = [o for o in trades_from_exchange_without_futures_combo
+                                                if o["timestamp"] >= filter_transaction_exceeding_latest_time_stamp]
+                
+                
+                log.error (f"selected_trades_from_exchange {selected_trades_from_exchange}")
+                
+                await order_management.saving_traded_orders (selected_trades_from_exchange)
         
     
 async def on_restart(currencies_default: str,
