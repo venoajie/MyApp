@@ -456,9 +456,6 @@ class StreamAccountData:
                 # Authenticate WebSocket Connection
                 await self.ws_auth()
 
-                # Establish restart procedure
-                await self.on_restart()
-                
                 # Establish Heartbeat
                 await self.establish_heartbeat()
 
@@ -865,9 +862,6 @@ class StreamAccountData:
                         "WebSocket connection EXCHANGE has broken",
                     )
         
-                    # Establish restart procedure
-                    await self.on_restart()
-                
     async def distribute_ticker_result_as_per_data_type(
         self, my_path_ticker, data_orders, instrument
     ) -> None:
@@ -896,15 +890,6 @@ class StreamAccountData:
                 "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
             )
 
-    async def on_restart(self) -> None:
-        """
-        """
-
-        log.warning("Cancelling all orders")
-        await cancel_the_cancellables()
-        #msg= deribit_get.get_cancel_order_all()
-        #await self.websocket_client.send(json.dumps(msg))
-        
     async def establish_heartbeat(self) -> None:
         """
         Requests DBT's `public/set_heartbeat` to
