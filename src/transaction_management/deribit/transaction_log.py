@@ -2,7 +2,6 @@
 
 # installed
 from loguru import logger as log
-from dataclassy import dataclass
 
 # user defined formula
 from db_management.sqlite_management import (
