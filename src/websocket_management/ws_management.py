@@ -522,7 +522,7 @@ async def comparing_last_trade_id_in_transaction_log_vs_my_trades_all(trade_db_t
 
 
         
-async def first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite: int) -> int:
+def first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite: int) -> int:
     """
     
     """
