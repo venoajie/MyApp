@@ -17,7 +17,9 @@ from configuration import id_numbering, config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     querying_table,
+    executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    querying_arithmetic_operator,
     insert_tables)
 from deribit_get import (
     telegram_bot_sendtext,
@@ -291,25 +293,56 @@ async def update_user_changes(data_orders,
 
 
 async def synchronising_my_trade_db_vs_exchange (currency: str,
+                                                 trades_from_exchange,
                                                 order_db_table: str, 
                                                 trade_db_table: str, 
-                                                archive_db_table: str) -> None:
+                                                archive_db_table: str,
+                                                transaction_log_trading) -> None:
     """
     """
     log.warning("Synchronising my_trade_db vs exchange")
-    
-    trades_from_exchange = await get_my_trades_from_exchange (10, currency)
-    
+        
     if trades_from_exchange:
+        
         trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
 
         if trades_from_exchange_without_futures_combo:
             
+            where_filter= "timestamp"
+            
+            first_tick_query_log = querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
+            first_tick_query_trading = querying_arithmetic_operator(where_filter, "MAX", archive_db_table)
+            
+            first_tick_query_result_log = await executing_query_with_return(first_tick_query_log)
+            first_tick_query_result_trading = await executing_query_with_return(first_tick_query_trading)
+    
+            
+            last_timestamp_from_transaction_log = first_tick_query_result_log [0]["MAX (timestamp)"] 
+            
+            last_time_stamp_from_my_trades = first_tick_query_result_trading [0]["MAX (timestamp)"] 
+            
+            log.error (f"last_timestamp_from_transaction_log {last_timestamp_from_transaction_log} last_time_stamp_from_my_trades {last_time_stamp_from_my_trades}")
+
+            if last_time_stamp_from_my_trades:
+                filter_transaction_exceeding_latest_time_stamp = min(last_timestamp_from_transaction_log,
+                                                                     last_time_stamp_from_my_trades)
+            
+            else:
+                filter_transaction_exceeding_latest_time_stamp = last_timestamp_from_transaction_log
+            
+            log.error (f"filter_transaction_exceeding_latest_time_stamp {filter_transaction_exceeding_latest_time_stamp}")
+          
             order_management= OrderManagement(order_db_table, 
                                               trade_db_table, 
                                               archive_db_table)
             
-            await order_management.saving_traded_orders (trades_from_exchange_without_futures_combo)
+            selected_trades_from_exchange = [o for o in trades_from_exchange_without_futures_combo
+                                             if o["timestamp"] >= filter_transaction_exceeding_latest_time_stamp]
+            
+            
+            log.error (f"selected_trades_from_exchange {selected_trades_from_exchange}")
+            
+            await order_management.saving_traded_orders (selected_trades_from_exchange)
         
     
 async def on_restart(currencies_default: str,
@@ -334,10 +367,15 @@ async def on_restart(currencies_default: str,
                                        transaction_log_trading,
                                        archive_db_table)
         await resupply_sub_accountdb(currency)
+        
+        trades_from_exchange = await get_my_trades_from_exchange (100, currency)
+        
         await synchronising_my_trade_db_vs_exchange (currency,
+                                                     trades_from_exchange,
                                                     order_db_table, 
                                                     trade_db_table,
-                                                    archive_db_table)
+                                                    archive_db_table,
+                                                    transaction_log_trading)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
     
 
@@ -534,10 +572,13 @@ class StreamAccountData:
                                                                transaction_log_trading,
                                                                archive_db_table)
                                 await resupply_sub_accountdb(currency)
+                                trades_from_exchange = await get_my_trades_from_exchange (100, currency)
                                 await synchronising_my_trade_db_vs_exchange (currency,
-                                                                       order_db_table, 
-                                                                       trade_db_table,
-                                                                       archive_db_table)
+                                                                             trades_from_exchange,
+                                                                             order_db_table, 
+                                                                             trade_db_table,
+                                                                             archive_db_table,
+                                                                             transaction_log_trading)
                                 #await check_db_consistencies_and_clean_up_imbalances(currency,
                                 #                                                     cancellable_strategies)                           
                             
