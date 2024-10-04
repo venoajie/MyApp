@@ -444,7 +444,7 @@ def provide_size_to_close_transaction (transaction: dict,
         label_integer_open)
                                        
     combined_size = (basic_size + sum_order_under_closed_label)
-    
+    log.error (f"combined_size {combined_size} sum_order_under_closed_label {sum_order_under_closed_label} label_integer_open {label_integer_open} ")
     closing_size_not_ok = check_if_closing_size_will_exceed_the_original (basic_size,
                                                                           combined_size,
                                                                           sum_order_under_closed_label)
