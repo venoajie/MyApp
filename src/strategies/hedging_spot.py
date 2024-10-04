@@ -362,6 +362,18 @@ class HedgingSpot(BasicStrategy):
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
         
+        size = exit_params["size"]      
+        
+        sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+        
+        order_allowed: bool = (
+            are_size_and_order_appropriate (
+                "reduce_position",
+                transaction_size, 
+                sum_orders, 
+                size, 
+            )
+        )
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
             
             closed_orders_label_strategy: list=  await get_query("orders_all_json", 
@@ -394,18 +406,6 @@ class HedgingSpot(BasicStrategy):
 
             #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                 
-            size = exit_params["size"]      
-            
-            sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
-            
-            order_allowed: bool = (
-                are_size_and_order_appropriate (
-                    "reduce_position",
-                    transaction_size, 
-                    sum_orders, 
-                    size, 
-                )
-            )
         
             if (False if size == 0 else True) and len_orders == 0:# and max_order:
                 
