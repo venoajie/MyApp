@@ -391,34 +391,32 @@ class HedgingSpot(BasicStrategy):
                 
             log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
 
-            max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
+            #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                 
             size = exit_params["size"]           
+        
+            if (False if size == 0 else True) and len_orders == 0:# and max_order:
             
-            if order_allowed:
-                
-                if (False if size == 0 else True) and len_orders == 0:# and max_order:
-                
-                    my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
+                my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
 
-                    sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
-                    
-                    sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
-                    
-                    exit_params.update({"entry_price": bid_price})
-                    
-                    order_allowed: bool = (
-                        are_size_and_order_appropriate (
-                            "reduce_position",
-                            sum_my_trades, 
-                            sum_orders, 
-                            size, 
-                        )
-                    )
-                        
-                    #convert size to positive sign
-                    exit_params.update({"size": abs (size)})
+                sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
                 
+                sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+                
+                exit_params.update({"entry_price": bid_price})
+                
+                order_allowed: bool = (
+                    are_size_and_order_appropriate (
+                        "reduce_position",
+                        sum_my_trades, 
+                        sum_orders, 
+                        size, 
+                    )
+                )
+                    
+                #convert size to positive sign
+                exit_params.update({"size": abs (size)})
+            
         log.error (f"order_allowed {order_allowed}")
         log.info (f"cancel_allowed {cancel_allowed} ")
         return dict(
