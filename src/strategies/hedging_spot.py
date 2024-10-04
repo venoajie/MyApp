@@ -288,7 +288,7 @@ class HedgingSpot(BasicStrategy):
             )
         #print(f"order_allowed {order_allowed}")
         
-        if order_allowed:
+        if order_allowed and len_orders == 0:
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
@@ -304,7 +304,7 @@ class HedgingSpot(BasicStrategy):
                 
                 order_allowed=False
         
-        log.debug (f"params {params} ")
+        #log.debug (f"params {params} ")
         log.debug (f"order_allowed {order_allowed} ")
         log.info (f"cancel_allowed {cancel_allowed} ")
     

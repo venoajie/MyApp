@@ -254,7 +254,7 @@ async def cancel_the_cancellables(cancellable_strategies, filter: str = None) ->
 
 async def if_cancel_is_true(order) -> None:
     """ """
-    log.warning (order)
+    #log.warning (order)
     if order["cancel_allowed"]:
 
         # get parameter orders
