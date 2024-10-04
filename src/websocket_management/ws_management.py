@@ -363,7 +363,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, cancella
                                                   order_from_sqlite_open,
                                                   open_orders_from_sub_accounts)
 
-        #log.debug (f"db_consistencies {db_consistencies}")
+        log.debug (f"db_consistencies {db_consistencies}")
         order_is_consistent= db_consistencies["order_is_consistent"]
         
         size_is_consistent= db_consistencies["trade_size_is_consistent"]
