@@ -394,22 +394,23 @@ class HedgingSpot(BasicStrategy):
 
             #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                 
-            size = exit_params["size"]           
+            size = exit_params["size"]      
+            
+            sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+            
+            order_allowed: bool = (
+                are_size_and_order_appropriate (
+                    "reduce_position",
+                    transaction_size, 
+                    sum_orders, 
+                    size, 
+                )
+            )
         
             if (False if size == 0 else True) and len_orders == 0:# and max_order:
                 
-                sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
                 
                 exit_params.update({"entry_price": bid_price})
-                
-                order_allowed: bool = (
-                    are_size_and_order_appropriate (
-                        "reduce_position",
-                        transaction_size, 
-                        sum_orders, 
-                        size, 
-                    )
-                )
                     
                 #convert size to positive sign
                 exit_params.update({"size": abs (size)})
