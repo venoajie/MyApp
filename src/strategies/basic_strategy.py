@@ -119,6 +119,8 @@ def are_size_and_order_appropriate(
     max_position: float= None) -> bool:
     """ 
     purpose: add_position/reduce_position
+    for reduce: open position/individual trade
+    for add: current position
     """
     
     proforma  = proforma_size(current_size_or_open_position, current_orders_size, next_orders_size) 
@@ -135,10 +137,10 @@ def are_size_and_order_appropriate(
     if purpose=="reduce_position":
     
         if current_size_or_open_position < 0:
-            ordering_is_ok= current_size_or_open_position + (proforma) <= 0
+            ordering_is_ok = proforma > current_size_or_open_position
         
         if current_size_or_open_position > 0:
-            ordering_is_ok= current_size_or_open_position + (proforma) >= 0
+            ordering_is_ok = proforma < current_size_or_open_position
     log.debug (f"ordering_is_ok  {ordering_is_ok} current_size_or_open_position  {current_size_or_open_position} proforma  {proforma} max_position  {max_position} current_orders_size  {current_orders_size} next_orders_size  {next_orders_size} ")
         
     return ordering_is_ok
@@ -425,6 +427,7 @@ def check_if_closing_size_will_exceed_the_original (basic_size: int,
     if basic_size < 0:
         summing_ok = (basic_size) + (combined_size) > (basic_size)
     
+    log.error (f" summing_ok {summing_ok} combined_size {basic_size} basic_size {basic_size}")
     return  abs(combined_size) < abs (basic_size) \
         and abs (sum_order_under_closed_label) < abs (basic_size) \
             and summing_ok

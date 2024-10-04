@@ -345,6 +345,7 @@ class HedgingSpot(BasicStrategy):
             dict: _description_
         """
         transaction = selected_transaction[0]
+        transaction_size = transaction["amount"]
 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
@@ -396,10 +397,6 @@ class HedgingSpot(BasicStrategy):
             size = exit_params["size"]           
         
             if (False if size == 0 else True) and len_orders == 0:# and max_order:
-            
-                my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-
-                sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
                 
                 sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
                 
@@ -408,7 +405,7 @@ class HedgingSpot(BasicStrategy):
                 order_allowed: bool = (
                     are_size_and_order_appropriate (
                         "reduce_position",
-                        sum_my_trades, 
+                        transaction_size, 
                         sum_orders, 
                         size, 
                     )

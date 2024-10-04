@@ -10,6 +10,7 @@ from strategies.basic_strategy import (
 
 
 @pytest.mark.parametrize("basic_size, combined_size, sum_order_under_closed_label, expected", [
+    ( -10, 0, 4, False),
     ( -10, 6, 4, True),
     ( -10, 6, 11, False),
     ( -10, 6, -1, True),
@@ -63,6 +64,8 @@ def test_proforma_size_add(current_size_or_open_position,
     ("add_position",0, 0, -10, -100, True),
     ("reduce_position",0, -10, 10, 100, False),
     ("reduce_position",0, -10, 10, -100, False),
+    ("reduce_position",-50, 0, -10, None, False),
+    ("reduce_position",-50, 0, 10, None, True),
     ("reduce_position",-100, 0, 10, 100, True),])
 def test_are_size_and_order_appropriate(purpose,
                                         current_size_or_open_position, 
