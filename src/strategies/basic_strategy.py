@@ -168,29 +168,13 @@ def check_if_next_closing_size_will_not_exceed_the_original (basic_size: int,
         and basic_size_higher_than_net_size\
            and basic_size_sign_diff_than_next_size# and net_size_exceeding_the_basic_size
     
-def provide_size_to_close_transaction (transaction: dict,
-                                       closed_orders_label_strategy: list) -> int:
+def provide_size_to_close_transaction (basic_size: int,
+                                       net_size: int) -> int:
     """ """
-    basic_size = get_transaction_size(transaction)
     
-    label_integer_open = get_label_integer(transaction ["label"])
-    
-    sum_order_under_closed_label = sum_order_under_closed_label_int (
-        closed_orders_label_strategy,
-        label_integer_open)
-    
-                                       
-    net_size = (basic_size + sum_order_under_closed_label)
-
     next_size =  (min (basic_size, net_size))
-
-    closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
-                                                                          net_size,
-                                                                          next_size)
-                                
-    log.error (f"next_size {next_size if closing_size_ok else 0} closing_size_ok {closing_size_ok} basic_size {basic_size} net_size {net_size} next_size {next_size} ")
-
-    return next_size if closing_size_ok else 0
+    
+    return next_size 
 
 def size_rounding(instrument_name: str, 
                   futures_instruments, 
@@ -582,14 +566,29 @@ async def get_basic_closing_paramaters(selected_transaction: list,
     
     side = provide_side_to_close_transaction(transaction)
     params.update({"side": side})
+    basic_size = get_transaction_size(transaction)
 
-    size_abs = provide_size_to_close_transaction(transaction,
-                                                 closed_orders_label_strategy)
+    label_integer_open = get_label_integer(transaction ["label"])
+    
+    sum_order_under_closed_label = sum_order_under_closed_label_int (
+        closed_orders_label_strategy,
+        label_integer_open)
+    
+                                       
+    net_size = (basic_size + sum_order_under_closed_label)
+
+    size_abs = provide_size_to_close_transaction(basic_size,
+                                                 net_size)
     log.debug (f"size_abs {size_abs}")
     log.debug (f"side {side}")
-    size = size_abs * ensure_sign_consistency(side)
+    size = size_abs * ensure_sign_consistency(side)   
+    
+    closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
+                                                                          net_size,
+                                                                          size)
+
     # size=exactly amount of transaction size
-    params.update({"size": size })
+    params.update({"size": closing_size_ok })
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})
