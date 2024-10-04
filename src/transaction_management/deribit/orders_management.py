@@ -147,6 +147,8 @@ class OrderManagement:
                     await get_additional_params_for_open_label (trade, label)
 
                 # insert clean trading transaction
+                log.info (f"label {label}")
+                log.info (f"trade {trade}")
                 await insert_tables(trade_table, trade)
                 await insert_tables(archived_table, trade)
                 
