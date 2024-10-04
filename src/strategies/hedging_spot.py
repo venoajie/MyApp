@@ -361,7 +361,11 @@ class HedgingSpot(BasicStrategy):
                                                                threshold_market_condition)
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
-        
+    
+        closed_orders_label_strategy: list=  await get_query("orders_all_json", 
+                                                            currency.upper(), 
+                                                            self.strategy_label,
+                                                            "closed")
         exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
                                                                 closed_orders_label_strategy,)
             
@@ -379,10 +383,6 @@ class HedgingSpot(BasicStrategy):
         )
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
             
-            closed_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                            currency.upper(), 
-                                                            self.strategy_label,
-                                                            "closed")
             
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
