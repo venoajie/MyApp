@@ -579,7 +579,6 @@ async def get_basic_closing_paramaters(selected_transaction: list,
 
     size_abs = provide_size_to_close_transaction(basic_size,
                                                  net_size)
-    log.debug (f"size_abs {size_abs}")
     log.debug (f"side {side}")
     size = size_abs * ensure_sign_consistency(side)   
     
@@ -587,6 +586,7 @@ async def get_basic_closing_paramaters(selected_transaction: list,
                                                                           net_size,
                                                                           size)
 
+    log.debug (f"closing_size_ok {closing_size_ok}")
     # size=exactly amount of transaction size
     params.update({"size": closing_size_ok })
 
@@ -758,11 +758,8 @@ class BasicStrategy:
         instrument_name= get_transaction_instrument(transaction)
 
         # get transaction parameters
-        params: list = get_basic_closing_paramaters(selected_transaction)
-
-        size_abs =  provide_size_to_close_transaction(transaction,
-                                                      closed_orders_label_strategy)
-        size = size_abs * ensure_sign_consistency(transaction_side)
+        params: list = get_basic_closing_paramaters(selected_transaction,
+                                                    closed_orders_label_strategy)
         
         if transaction_side == "sell":
             params.update({"entry_price": bid_price})
@@ -771,7 +768,6 @@ class BasicStrategy:
             params.update({"entry_price": ask_price})
 
         params.update({"instrument": instrument_name})
-        params.update({"size": size})
         #log.info(f"params {params}")
         label = params["label"]
             

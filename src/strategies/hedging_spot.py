@@ -286,9 +286,9 @@ class HedgingSpot(BasicStrategy):
                 and (bearish or strong_bearish)
                 and fluctuation_exceed_threshold
             )
-        #print(f"order_allowed {order_allowed}")
+        print(f"order_allowed {order_allowed}")
         
-        if order_allowed and len_orders == 0:
+        if order_allowed :
             label_open: str = get_label("open", self.strategy_label)
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
@@ -305,11 +305,8 @@ class HedgingSpot(BasicStrategy):
                 order_allowed=False
         
         #log.debug (f"params {params} ")
-        log.debug (f"order_allowed {order_allowed} ")
-        log.info (f"cancel_allowed {cancel_allowed} ")
-    
         return dict(
-            order_allowed=order_allowed,
+            order_allowed=order_allowed and len_orders == 0,
             order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
             cancel_id=get_order_id_max_time_stamp(open_orders_label_strategy)
@@ -345,7 +342,6 @@ class HedgingSpot(BasicStrategy):
             dict: _description_
         """
         transaction = selected_transaction[0]
-        transaction_size = transaction["amount"]
 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
@@ -370,10 +366,12 @@ class HedgingSpot(BasicStrategy):
                                                                 closed_orders_label_strategy,)
             
         size = exit_params["size"]      
-        
+        log.info (f"exit_params {exit_params}")
         order_allowed: bool = True if size != 0 else False
         
-        if (bullish or strong_bullish) and bid_price < transaction ["price"]:
+        if order_allowed\
+            and (bullish or strong_bullish) \
+                and bid_price < transaction ["price"]:
             
             
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
