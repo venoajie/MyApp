@@ -3,29 +3,29 @@ import pytest
 
 
 from strategies.basic_strategy import (
-    check_if_next_closing_size_will_exceed_the_original,
+    check_if_next_closing_size_will_not_exceed_the_original,
     positions_and_orders,
     proforma_size,
     are_size_and_order_appropriate)
 
 
 @pytest.mark.parametrize("basic_size, net_size, next_size, expected", [
-    ( -10, 0, 10, False),
-    ( 10, 0, -10, False),
-    ( -10, 6, 4, False),
-    ( -10, 4, 6, False),
+    ( -10, 0, 10, True),
+    ( 10, 0, -10, True),
+    ( -10, 6, 4, True),
+    ( -10, 4, 6, True),
     ( -10, 6, -1, False),
     ( -10, -6, -16, False),
     ( 10, 6, 16, False),
     ( -10, 11, 1, False),
     ( 10, -11,- 1, False),
     ])
-def test_check_if_closing_size_will_exceed_the_original(basic_size, 
+def test_check_if_closing_size_will_not_exceed_the_original(basic_size, 
                                                         net_size,
                                                         next_size,
                                                         expected):
 
-    result = check_if_next_closing_size_will_exceed_the_original(basic_size, 
+    result = check_if_next_closing_size_will_not_exceed_the_original(basic_size, 
                                                             net_size,
                                                             next_size,)
 

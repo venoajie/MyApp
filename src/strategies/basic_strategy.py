@@ -418,27 +418,27 @@ def sum_order_under_closed_label_int (closed_orders_label_strategy: list,
         or order_under_closed_label_int == []) \
             else sum([o["amount"] for o in order_under_closed_label_int])
                 
-def check_if_next_closing_size_will_exceed_the_original (basic_size: int,
+def check_if_next_closing_size_will_not_exceed_the_original (basic_size: int,
                                                     net_size: int,
                                                     next_size: int) -> bool:
     """ """
     
-    next_closing_size_higher_than_basic_size = abs (next_size) > abs (basic_size)
-    net_size_higher_than_basic_size = abs (net_size) > abs (basic_size)
-    basic_size_plus_next_size =  (net_size) + (basic_size)
+    basic_size_higher_than_next_closing_size = abs (basic_size) >= abs (next_size) 
+    basic_size_higher_than_net_size = abs (basic_size) >= abs (net_size) 
+    basic_size_plus_next_size =  (next_size) + (basic_size)
     
     if abs(net_size) != abs (basic_size):
         pass
     if basic_size > 0:
-        basic_size_sign_same_as_next_size =  basic_size_plus_next_size > basic_size
+        basic_size_sign_diff_than_next_size =  basic_size_plus_next_size < basic_size
         
     if basic_size < 0:
-        basic_size_sign_same_as_next_size = basic_size_plus_next_size < basic_size 
+        basic_size_sign_diff_than_next_size = basic_size_plus_next_size > basic_size 
     
     #log.error (f" net_size_exceeding_the_basic_size {net_size_exceeding_the_basic_size} next_closing_size_higher_than_basic_size  {next_closing_size_higher_than_basic_size } combined_size {basic_size} basic_size {basic_size}")
-    return  next_closing_size_higher_than_basic_size  \
-        and net_size_higher_than_basic_size\
-           and basic_size_sign_same_as_next_size# and net_size_exceeding_the_basic_size
+    return  basic_size_higher_than_next_closing_size  \
+        and basic_size_higher_than_net_size\
+           and basic_size_sign_diff_than_next_size# and net_size_exceeding_the_basic_size
     
 def provide_size_to_close_transaction (transaction: dict,
                                        closed_orders_label_strategy: list) -> int:
@@ -457,11 +457,11 @@ def provide_size_to_close_transaction (transaction: dict,
     next_size =  (min (basic_size, net_size))
 
     log.error (f"combined_size {net_size} sum_order_under_closed_label {sum_order_under_closed_label} label_integer_open {label_integer_open} ")
-    closing_size_not_ok = check_if_next_closing_size_will_exceed_the_original (basic_size,
+    closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
                                                                           net_size,
                                                                           next_size)
                                 
-    return 0 if closing_size_not_ok else next_size
+    return next_size if closing_size_ok else 0
 
 def convert_list_to_dict (transaction: list) -> dict:
 
