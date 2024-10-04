@@ -233,7 +233,11 @@ class HedgingSpot(BasicStrategy):
         #neutral = market_condition["neutral_price"]
         
         weighted_factor= hedging_attributes["weighted_factor"]
-        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+
+        ONE_SECOND = 1000
+        ONE_MINUTE = ONE_SECOND * 60
+        
+        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
 
@@ -367,7 +371,10 @@ class HedgingSpot(BasicStrategy):
             
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
-            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+            ONE_SECOND = 1000
+            ONE_MINUTE = ONE_SECOND * 60
+            
+            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
 
             cancel_allowed: bool = is_cancelling_order_allowed(
                 strong_bullish,
