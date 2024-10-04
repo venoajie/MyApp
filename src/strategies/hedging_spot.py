@@ -305,6 +305,7 @@ class HedgingSpot(BasicStrategy):
                 order_allowed=False
         
         log.debug (f"params {params} ")
+        log.info (f"cancel_allowed {cancel_allowed} ")
     
         return dict(
             order_allowed=order_allowed,
@@ -416,6 +417,7 @@ class HedgingSpot(BasicStrategy):
                 exit_params.update({"size": abs (size)})
                 
         log.error (f"order_allowed {order_allowed}")
+        log.info (f"cancel_allowed {cancel_allowed} ")
         return dict(
             order_allowed= order_allowed,
             order_parameters=(
