@@ -748,6 +748,8 @@ class StreamAccountData:
                                                                     TA_result_data))
                                                                 
                                                                 if send_order["order_allowed"]:
+                                                                    
+                                                                    log.error  (f"send_order {send_order}")
                                                                     await if_order_is_true(send_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_order)
 
@@ -769,7 +771,7 @@ class StreamAccountData:
                                                                         nearest_transaction_to_index,
                                                                         server_time,
                                                                     )
-                                                                    #log.error (f"send_closing_order {send_closing_order}")
+                                                                    log.error (f"send_closing_order {send_closing_order}")
                                                                     await if_order_is_true(send_closing_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_closing_order)
 
