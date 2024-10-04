@@ -569,7 +569,8 @@ async def get_basic_closing_paramaters(selected_transaction: list,
 
     size_abs = provide_size_to_close_transaction(transaction,
                                                  closed_orders_label_strategy)
-    
+    log.debug (f"size_abs {size_abs}")
+    log.debug (f"side {side}")
     size = size_abs * ensure_sign_consistency(side)
     # size=exactly amount of transaction size
     params.update({"size": size })
