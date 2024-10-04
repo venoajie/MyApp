@@ -362,6 +362,9 @@ class HedgingSpot(BasicStrategy):
 
         bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
         
+        exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
+                                                                closed_orders_label_strategy,)
+            
         size = exit_params["size"]      
         
         sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
@@ -380,9 +383,6 @@ class HedgingSpot(BasicStrategy):
                                                             currency.upper(), 
                                                             self.strategy_label,
                                                             "closed")
-            
-            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
-                                                                    closed_orders_label_strategy,)
             
             len_orders: int = get_transactions_len(closed_orders_label_strategy)
             
