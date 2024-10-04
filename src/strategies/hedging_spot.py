@@ -371,16 +371,8 @@ class HedgingSpot(BasicStrategy):
             
         size = exit_params["size"]      
         
-        sum_orders: int = get_transactions_sum(closed_orders_label_strategy)
+        order_allowed: bool = True if size != 0 else False
         
-        order_allowed: bool = (
-            are_size_and_order_appropriate (
-                "reduce_position",
-                transaction_size, 
-                sum_orders, 
-                size, 
-            )
-        )
         if (bullish or strong_bullish) and bid_price < transaction ["price"]:
             
             

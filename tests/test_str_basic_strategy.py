@@ -10,6 +10,7 @@ from strategies.basic_strategy import (
 
 
 @pytest.mark.parametrize("basic_size, net_size, next_size, expected", [
+    ( -1, -1, 1, True),
     ( -10, 0, 10, True),
     ( 10, 0, -10, True),
     ( -10, 6, 4, True),
