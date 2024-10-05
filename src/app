@@ -167,7 +167,7 @@ async def update_user_changes(data_orders,
                     new_order = labelling_unlabelled_transaction(order)
                     
 
-                    column_trade= "trade_id","label"
+                    column_trade= "order_id", "trade_id","label"
                     
                     column_order= "instrument_name","label","order_id","amount"
                     
