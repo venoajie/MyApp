@@ -55,6 +55,7 @@ from websocket_management.ws_management import (
     resupply_sub_accountdb,
     resupply_transaction_log,
     synchronising_my_trade_db_vs_exchange,
+    send_limit_order,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -198,7 +199,7 @@ async def update_user_changes(data_orders,
                     await cancel_by_order_id (order_id)
                     
                     if not label_has_exist_before:
-                        await if_order_is_true(new_order, instrument_name)
+                        await send_limit_order(order)
                     
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
