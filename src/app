@@ -165,8 +165,32 @@ async def update_user_changes(data_orders,
                 if not label:
                     
                     new_order = labelling_unlabelled_transaction(order)
-                
-                    label_has_exist_before= await check_if_id_has_used_before (instrument_name,
+                    
+
+                    column_trade= "trade_id","label"
+                    
+                    column_order= "instrument_name","label","order_id","amount"
+                    
+                    currency = extract_currency_from_text (instrument_name)
+                    
+                    data_from_db_trade_open = await get_query(archive_db_table, 
+                                                            instrument_name, 
+                                                            "all", 
+                                                            "all", 
+                                                            column_trade)     
+                    
+                    data_from_db_order_open_currency = await get_query(order_db_table, 
+                                                            currency, 
+                                                            "all", 
+                                                            "all", 
+                                                            column_order)    
+                        
+                    data_from_db_order_open = [o for o in data_from_db_order_open_currency \
+                        if instrument_name in o["instrument_name"]]
+                    
+                    combined_result = data_from_db_trade_open + data_from_db_order_open
+
+                    label_has_exist_before= await check_if_id_has_used_before (combined_result,
                                                                                "order_id",
                                                                                order_id,)
                     await insert_tables(order_db_table, order)
