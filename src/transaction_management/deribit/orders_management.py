@@ -5,7 +5,6 @@ from loguru import logger as log
 
 # user defined formula
 from db_management.sqlite_management import (
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     deleting_row,
     insert_tables)
 from strategies.basic_strategy import (
@@ -58,7 +57,8 @@ def labelling_unlabelled_transaction(order: dict) -> None:
 
 
 async def saving_traded_orders (trades,
-                                table) -> None:
+                                table,
+                                order_table,) -> None:
     """_summary_
 
     Args:
@@ -68,6 +68,23 @@ async def saving_traded_orders (trades,
     
     for trade in trades:    
         instrument_name = trade["instrument_name"]
+                            
+        filter_trade="order_id"
+        
+        order_id = trade[f"{filter_trade}"]
+        
+        try:
+            
+            await deleting_row (order_table,
+                            "databases/trading.sqlite3",
+                            filter_trade,
+                            "=",
+                            order_id,
+                        )
+        
+        except:
+            continue
+        
         try:
             label= trade["label"]
         except:
@@ -86,8 +103,7 @@ async def saving_traded_orders (trades,
 
 
 async def saving_orders (order_table,
-                         order,
-                         order_state) -> None:
+                         order) -> None:
     """_summary_
 
     Args:
@@ -97,7 +113,9 @@ async def saving_orders (order_table,
 
     filter_trade="order_id"
 
-    order_id = order["order_id"]
+    order_id = order[f"{filter_trade}"]
+    
+    order_state= order["order_state"]
     
     if order_state == "cancelled" or order_state == "filled":
         

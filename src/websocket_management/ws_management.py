@@ -494,6 +494,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
         
 async def update_trades_from_exchange (currency: str,
                                     archive_db_table,
+                                    order_table,
                                     qty_trades: int =  100) -> None:
     """
     """
@@ -506,11 +507,14 @@ async def update_trades_from_exchange (currency: str,
 
         if trades_from_exchange_without_futures_combo:
                 
-                await saving_traded_orders (trades_from_exchange_without_futures_combo, archive_db_table)
+                await saving_traded_orders (trades_from_exchange_without_futures_combo, 
+                                            archive_db_table,
+                                            order_table)
 
     
 async def on_restart(currencies_default: str,
-                     cancellable_strategies: list,) -> None:
+                     cancellable_strategies: list,
+                     order_table) -> None:
     """
     """
 
@@ -533,8 +537,9 @@ async def on_restart(currencies_default: str,
         await resupply_sub_accountdb(currency)
         
         await update_trades_from_exchange (currency,
-                                    archive_db_table,
-                                    100)
+                                           archive_db_table,
+                                           order_table,
+                                           100)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
 
     

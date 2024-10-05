@@ -126,23 +126,20 @@ async def update_user_changes(data_orders,
     if orders:
         
         if trades:
-            await saving_traded_orders (trades, trade_db_table)
-            await saving_traded_orders (trades, archive_db_table)
+            
+            await saving_traded_orders (trades, trade_db_table, order_db_table)
+            await saving_traded_orders (trades, archive_db_table, order_db_table)
             await resupply_sub_accountdb(currency)
             
         else:
             for order in orders:
                 
                 order_state= order["order_state"]
-                
+                log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
                 if order_state == "cancelled" or order_state == "filled":
-                    await saving_orders (order_db_table,
-                                         order,
-                                         order_state)
+                    await saving_orders (order_db_table, order)
                 
                 else:
-                        
-                    log.debug (f"order {order}")  
                     
                     label= order["label"]
 
@@ -150,13 +147,11 @@ async def update_user_changes(data_orders,
                     
                     label_and_side_consistent= is_label_and_side_consistent(order)
                     
-                    log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
+                    #log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
                     
                     if label_and_side_consistent and label:
                         
-                        await saving_orders (order_db_table,
-                                            order,
-                                            order_state)
+                        await saving_orders (order_db_table, order)
                         
                     # check if transaction has label. Provide one if not any
                     if  not label_and_side_consistent:
@@ -249,7 +244,8 @@ class StreamAccountData:
             
             # Establish restart procedure
             await on_restart(currencies,
-                            cancellable_strategies,)
+                            cancellable_strategies,
+                            order_db_table)
             
             settlement_periods= get_settlement_period (strategy_attributes)
                             
