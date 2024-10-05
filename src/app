@@ -415,7 +415,7 @@ class StreamAccountData:
                                 my_path_ticker = provide_path_for_file(
                                     "ticker", instrument_ticker)
                                 
-                                await self.distribute_ticker_result_as_per_data_type(
+                                await distribute_ticker_result_as_per_data_type(
                                     my_path_ticker, data_orders, instrument_ticker)
                                             
                                 try:
