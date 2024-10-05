@@ -32,7 +32,7 @@ from strategies.basic_strategy import (
     are_size_and_order_appropriate)
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from transaction_management.deribit.orders_management import (
-    OrderManagement,)
+    saving_traded_orders,)
 from utilities.system_tools import (
     catch_error_message,
     raise_error_message,
@@ -490,30 +490,27 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
         
         log.error (f"{instrument_name} current_instrument_trading_position {current_instrument_trading_position} current_position_log {current_position_log}")
         
-        if current_instrument_trading_position != current_position_log:
-            
-            trades_from_exchange = await get_my_trades_from_exchange (100, currency)
-            
-            if trades_from_exchange:
-                
-                trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
-
-                if trades_from_exchange_without_futures_combo:
-                    
-                        order_management= OrderManagement(order_db_table, 
-                                                    trade_db_table, 
-                                                    archive_db_table)
-                        
-                        selected_trades_from_exchange = [o for o in trades_from_exchange_without_futures_combo
-                                                        if o["timestamp"] >= last_time_stamp_log]
-                        
-                        await order_management.saving_traded_orders (selected_trades_from_exchange)
+        #if current_instrument_trading_position != current_position_log:
         
+async def update_trades_from_exchange (currency: str,
+                                    archive_db_table,
+                                    qty_trades: int =  100) -> None:
+    """
+    """
+         
+    trades_from_exchange = await get_my_trades_from_exchange (qty_trades, currency)
+    
+    if trades_from_exchange:
+        
+        trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
+
+        if trades_from_exchange_without_futures_combo:
+                
+                await saving_traded_orders (trades_from_exchange_without_futures_combo, archive_db_table)
+
     
 async def on_restart(currencies_default: str,
-                     cancellable_strategies: list,
-                     order_db_table: str, 
-                     trade_db_table: str,) -> None:
+                     cancellable_strategies: list,) -> None:
     """
     """
 
@@ -535,11 +532,9 @@ async def on_restart(currencies_default: str,
         
         await resupply_sub_accountdb(currency)
         
-        await synchronising_my_trade_db_vs_exchange (currency,
-                                                    order_db_table, 
-                                                    trade_db_table,
-                                                    archive_db_table,
-                                                    transaction_log_trading)
+        await update_trades_from_exchange (currency,
+                                    archive_db_table,
+                                    100)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
 
     
