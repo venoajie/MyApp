@@ -135,7 +135,7 @@ async def update_user_changes(data_orders,
                 
                 order_state= order["order_state"]
                 
-                if order_state == "cancelled":
+                if order_state == "cancelled" or order_state == "filled":
                     await saving_orders (order_db_table,
                                          order,
                                          order_state)
@@ -372,7 +372,7 @@ class StreamAccountData:
 
                                 
                             if "user.changes.any" in message_channel:
-                                log.debug (f"user.changes.any.{currency.upper()}.raw")
+                                #log.debug (f"user.changes.any.{currency.upper()}.raw")
                                 
                                 await update_user_changes(data_orders, 
                                                           currency, 
@@ -528,7 +528,7 @@ class StreamAccountData:
                                                                 
                                                                 if send_order["order_allowed"]:
                                                                     
-                                                                    log.error  (f"send_order {send_order}")
+                                                                    #log.error  (f"send_order {send_order}")
                                                                     await if_order_is_true(send_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_order)
 
@@ -560,7 +560,7 @@ class StreamAccountData:
                                                     # check for delivered instrument
 
                                                             if "futureSpread" in strategy:
-                                                                log.error (f"strategy {strategy} {currency}-START")
+                                                                #log.error (f"strategy {strategy} {currency}-START")
                                                                 
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
