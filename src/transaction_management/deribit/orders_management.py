@@ -33,7 +33,10 @@ def get_custom_label(transaction: list) -> str:
     try:
         last_update= transaction["timestamp"]
     except:
-        last_update= transaction["timestamp"]
+        try:
+            last_update= transaction["last_update_timestamp"]
+        except:
+            last_update= transaction["creation_timestamp"]
     
     return (f"custom{side_label.title()}-open-{last_update}")
     
