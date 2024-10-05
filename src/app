@@ -55,8 +55,7 @@ from websocket_management.ws_management import (
     on_restart,
     resupply_sub_accountdb,
     resupply_transaction_log,
-    synchronising_my_trade_db_vs_exchange,
-    send_limit_order,
+    update_trades_from_exchange,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -182,12 +181,9 @@ async def update_user_changes(data_orders,
     
     await resupply_sub_accountdb(currency)
     
-    await synchronising_my_trade_db_vs_exchange (currency,
-                                                    order_db_table, 
-                                                    trade_db_table,
-                                                    archive_db_table,
-                                                    transaction_log_trading)
-
+    await update_trades_from_exchange (currency,
+                                       archive_db_table,
+                                       10)
 
     log.info(f"update_user_changes-END")
 
@@ -484,17 +480,17 @@ class StreamAccountData:
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"] 
                                                         
-                                                        column_trade= "trade_id","label"
+                                                        #column_trade= "trade_id","label"
                                                         
                                                         column_order= "instrument_name","label","order_id","amount"
                                                         
                                                         currency = extract_currency_from_text (instrument_ticker)
                                                         
-                                                        data_from_db_trade_open = await get_query(archive_db_table, 
-                                                                                                instrument_ticker, 
-                                                                                                "all", 
-                                                                                                "all", 
-                                                                                                column_trade)     
+                                                        #data_from_db_trade_open = await get_query(archive_db_table, 
+                                                        #                                        instrument_ticker, 
+                                                        #                                        "all", 
+                                                        #                                        "all", 
+                                                        #                                        column_trade)     
                                                         
                                                         data_from_db_order_open_currency = await get_query(order_db_table, 
                                                                                                 currency, 
@@ -502,10 +498,10 @@ class StreamAccountData:
                                                                                                 "all", 
                                                                                                 column_order)    
                                                          
-                                                        data_from_db_order_open = [o for o in data_from_db_order_open_currency \
-                                                            if instrument_ticker in o["instrument_name"]]
+                                                        #data_from_db_order_open = [o for o in data_from_db_order_open_currency \
+                                                        #    if instrument_ticker in o["instrument_name"]]
                                                         
-                                                        combined_result = data_from_db_trade_open + data_from_db_order_open
+                                                        #combined_result = data_from_db_trade_open + data_from_db_order_open
                                                        
                                                         for strategy in active_strategies:
                                                         
@@ -526,7 +522,7 @@ class StreamAccountData:
                                                                     currency,
                                                                     instrument_ticker,
                                                                     active_futures,
-                                                                    combined_result,
+                                                                    #combined_result,
                                                                     notional,
                                                                     index_price,
                                                                     best_ask_prc,

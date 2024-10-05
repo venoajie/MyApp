@@ -197,7 +197,7 @@ class HedgingSpot(BasicStrategy):
         currency,
         instrument_name: str,
         futures_instruments,
-        combined_result: list,
+        #combined_result: list,
         notional: float,
         index_price,
         ask_price: float,
@@ -290,9 +290,9 @@ class HedgingSpot(BasicStrategy):
             params.update({"label": label_open})
             label_and_side_consistent= is_label_and_side_consistent(params)
                     
-            order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
+            #order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
             
-            if label_and_side_consistent and not order_has_sent_before:
+            if label_and_side_consistent:# and not order_has_sent_before:
                 
                 params.update({"size": abs(size)})
                 params.update({"is_label_and_side_consistent": label_and_side_consistent})
