@@ -92,6 +92,19 @@ def get_settlement_period (strategy_attributes) -> list:
     
     return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_attributes])))
 
+def get_index (data_orders: dict, ticker: dict) -> float:
+
+    try:
+        index_price= data_orders["index_price"]
+        
+    except:
+        
+        index_price= ticker["index_price"]
+        
+        if index_price==[]:
+            index_price = ticker ["estimated_delivery_price"]
+        
+    return index_price
         
 async def update_user_changes(data_orders, 
                               currency, 
@@ -284,6 +297,9 @@ class StreamAccountData:
                             ws_channel=f"incremental_ticker.{instrument}",
                         )
                     )
+                    
+                    await clean_up_closed_transactions (instrument, trade_db_table)        
+
 
                     if "PERPETUAL" in instrument:
                         self.loop.create_task(
@@ -305,9 +321,7 @@ class StreamAccountData:
                                 ws_channel=f"user.changes.any.{currency.upper()}.raw",
                             )
                         )
-                
-                await clean_up_closed_transactions (instrument, trade_db_table)        
-                
+                                
                 while self.websocket_client.open:
                     # Receive WebSocket messages
                     message: bytes = await self.websocket_client.recv()
@@ -377,9 +391,6 @@ class StreamAccountData:
                                                           trade_db_table, 
                                                           archive_db_table,
                                                           transaction_log_trading)
-                                                               #await check_db_consistencies_and_clean_up_imbalances(currency,
-                                #                                                     cancellable_strategies)                           
-                            
                             
                             TABLE_OHLC1: str = f"ohlc{resolution}_{currency_lower}_perp_json"
                             WHERE_FILTER_TICK: str = "tick"
@@ -442,15 +453,7 @@ class StreamAccountData:
                                                                                             
                                             if ticker !=[]:
                                                         
-                                                try:
-                                                    index_price= data_orders["index_price"]
-                                                    
-                                                except:
-                                                    
-                                                    index_price= ticker["index_price"]
-                                                    
-                                                    if index_price==[]:
-                                                        index_price = ticker ["estimated_delivery_price"]
+                                                index_price= get_index (data_orders, ticker)
                                                     
                                                 # get portfolio data  
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
