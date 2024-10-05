@@ -813,9 +813,9 @@ def delta_price_pct(last_traded_price: float, market_price: float) -> bool:
 async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
     """_summary_
     """
-    from transaction_management.deribit.orders_management import labelling_unlabelled_order
+    from transaction_management.deribit.orders_management import labelling_unlabelled_transaction
     
-    labelling_order= labelling_unlabelled_order (order)
+    labelling_order= labelling_unlabelled_transaction (order)
     labelled_order= labelling_order["order"]
     label_open= labelling_order["label_open"]
 
@@ -826,7 +826,6 @@ async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
     
     if not label_has_exist_before:
         await if_order_is_true(labelled_order, instrument_name)
-    await sleep_and_restart()
 
     
 async def distribute_ticker_result_as_per_data_type(my_path_ticker, data_orders, instrument

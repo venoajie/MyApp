@@ -22,12 +22,10 @@ from db_management.sqlite_management import (
 from deribit_get import (
     telegram_bot_sendtext,)
 from strategies.basic_strategy import (
-    check_if_id_has_used_before,
     is_label_and_side_consistent,)
 from strategies.hedging_spot import HedgingSpot  
 from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
 from transaction_management.deribit.orders_management import (
-    labelling_unlabelled_transaction,
     saving_traded_orders,
     saving_orders,)
 from utilities.number_modification import get_closest_value
@@ -55,7 +53,7 @@ from websocket_management.ws_management import (
     on_restart,
     resupply_sub_accountdb,
     resupply_transaction_log,
-    update_trades_from_exchange,
+    labelling_the_unlabelled_and_resend_it,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -135,45 +133,44 @@ async def update_user_changes(data_orders,
         else:
             for order in orders:
                 
-                log.debug (f"order {order}")  
-                
-                label= order["label"]
-
-                order_id= order["order_id"]
-
                 order_state= order["order_state"]
                 
-                label_and_side_consistent= is_label_and_side_consistent(order)
-                
-                log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
-                
-                if label_and_side_consistent and label:
-                    
+                if order_state == "cancelled":
                     await saving_orders (order_db_table,
                                          order,
                                          order_state)
-                    
-                # check if transaction has label. Provide one if not any
-                if  not label_and_side_consistent:
                 
-                    await insert_tables(order_db_table, order)
+                else:
+                        
+                    log.debug (f"order {order}")  
+                    
+                    label= order["label"]
 
-                    await cancel_by_order_id (order_id)                    
-                
-                    await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+                    order_id= order["order_id"]    
+                    
+                    label_and_side_consistent= is_label_and_side_consistent(order)
+                    
+                    log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
+                    
+                    if label_and_side_consistent and label:
+                        
+                        await saving_orders (order_db_table,
+                                            order,
+                                            order_state)
+                        
+                    # check if transaction has label. Provide one if not any
+                    if  not label_and_side_consistent:
+                    
+                        await insert_tables(order_db_table, order)
 
-                if not label:
+                        await cancel_by_order_id (order_id)                    
                     
-                    await insert_tables(order_db_table, order)
-                    
-                    await cancel_by_order_id (order_id)
-                    
-                    order_update = labelling_unlabelled_transaction (order)
-                    
-                    log.error (f"order_update {order_update}")
-                    
-                    await if_order_is_true(order_update["order"], instrument_name)
-                    
+                        await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
+                    if not label:
+                        
+                        await labelling_the_unlabelled_and_resend_it(order, instrument_name)
+                        
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
 
