@@ -348,7 +348,7 @@ def get_transaction_side(transaction: dict) -> str:
     """ 
     status: open/closed
     """
-    log.error (f"transaction {transaction}")    
+    #log.error (f"transaction {transaction}")    
     try:
         return  transaction["direction"] 
     
@@ -411,7 +411,7 @@ def check_if_id_has_used_before(combined_result: str,
     """
     
     id=f"{id_checked}"
-    log.error (f"id {id}")
+    #log.error (f"id {id}")
     if combined_result !=[]:
         result_order_id= [o[id] for o in combined_result]
 
@@ -580,14 +580,14 @@ async def get_basic_closing_paramaters(selected_transaction: list,
 
     size_abs = provide_size_to_close_transaction(basic_size,
                                                  net_size)
-    log.debug (f"side {side}")
+    #log.debug (f"side {side}")
     size = size_abs * ensure_sign_consistency(side)   
     
     closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
                                                                           net_size,
                                                                           size)
 
-    log.debug (f"closing_size_ok {closing_size_ok}")
+    #log.debug (f"closing_size_ok {closing_size_ok}")
     # size=exactly amount of transaction size
     params.update({"size": closing_size_ok })
 

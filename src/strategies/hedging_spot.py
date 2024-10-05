@@ -363,7 +363,7 @@ class HedgingSpot(BasicStrategy):
                                                                 closed_orders_label_strategy,)
             
         size = exit_params["size"]      
-        log.info (f"exit_params {exit_params}")
+        #log.info (f"exit_params {exit_params}")
         order_allowed: bool = True if size != 0 else False
         
         if order_allowed\
@@ -402,8 +402,8 @@ class HedgingSpot(BasicStrategy):
                 #convert size to positive sign
                 exit_params.update({"size": abs (size)})
             
-        log.error (f"order_allowed {order_allowed}")
-        log.info (f"cancel_allowed {cancel_allowed} ")
+        #log.error (f"order_allowed {order_allowed}")
+        #log.info (f"cancel_allowed {cancel_allowed} ")
         return dict(
             order_allowed= order_allowed,
             order_parameters=(

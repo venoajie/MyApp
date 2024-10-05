@@ -509,7 +509,7 @@ class StreamAccountData:
         
                                                             if "hedgingSpot" in strategy:
                                                                 
-                                                                log.debug (f"strategy {strategy}-START")
+#                                                                log.debug (f"strategy {strategy}-START")
                                                                 
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params)
@@ -551,11 +551,11 @@ class StreamAccountData:
                                                                         nearest_transaction_to_index,
                                                                         server_time,
                                                                     )
-                                                                    log.error (f"send_closing_order {send_closing_order}")
+#                                                                    log.error (f"send_closing_order {send_closing_order}")
                                                                     await if_order_is_true(send_closing_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_closing_order)
 
-                                                                log.debug (f"strategy {strategy}-DONE")
+#                                                                log.debug (f"strategy {strategy}-DONE")
 
                                                     # check for delivered instrument
 
@@ -580,7 +580,7 @@ class StreamAccountData:
                                                                 future_spreads = FutureSpreads(strategy,
                                                                                             strategy_params)
 
-                                                                log.error (f"strategy {strategy}-DONE")
+#                                                                log.error (f"strategy {strategy}-DONE")
 
                                                     if delta_time_expiration < 0:
                                                         
