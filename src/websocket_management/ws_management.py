@@ -469,7 +469,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
                                                 "all", 
                                                 column_list)                                       
 
-    instruments = [o["instrument_name"] for o in from_transaction_log]
+    instruments = remove_redundant_elements([o["instrument_name"] for o in from_transaction_log])
     
     #log.error (f"from_transaction_log {from_transaction_log}")
     
