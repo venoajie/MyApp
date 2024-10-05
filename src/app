@@ -298,7 +298,7 @@ class StreamAccountData:
                         )
                     )
                     
-                    await clean_up_closed_transactions (instrument, trade_db_table)        
+                    #await clean_up_closed_transactions (instrument, trade_db_table)        
 
 
                     if "PERPETUAL" in instrument:
@@ -332,13 +332,10 @@ class StreamAccountData:
                         if message["id"] == 9929:
                             
                             if self.refresh_token is None:
-                                # await syn.get_sub_accounts()
-                                log.info("Successfully authenticated WebSocket Connection")
+                                log.info ("Successfully authenticated WebSocket Connection")
 
                             else:
-                                log.info(
-                                    "Successfully refreshed the authentication of the WebSocket Connection"
-                                )
+                                log.info ("Successfully refreshed the authentication of the WebSocket Connection")
 
                             self.refresh_token = message["result"]["refresh_token"]
 
@@ -383,6 +380,11 @@ class StreamAccountData:
                                 
                                 await resupply_sub_accountdb(currency)    
 
+                            log.warning (message_channel)
+                            if "user.changes.any" in message_channel:
+                                log.debug (f"user.changes.any.{currency.upper()}.raw")
+                                
+                                
                             if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
                                 await update_user_changes(data_orders, 
