@@ -114,21 +114,23 @@ async def update_user_changes(data_orders,
                               archive_db_table,
                               transaction_log_trading) -> None:
     
-    log.critical (f"update_user_changes-START")
 
     positions = data_orders["positions"]
     trades = data_orders["trades"]
     orders = data_orders["orders"]
+
+    log.critical (f"update_user_changes {instrument_name} -START")
     
     instrument_name = data_orders["instrument_name"]
 
-    log.info (f"{instrument_name} {data_orders}")
+    log.info (f" {data_orders}")
         
     if orders:
         
         if trades:
             await saving_traded_orders (trades, trade_db_table)
             await saving_traded_orders (trades, archive_db_table)
+            await resupply_sub_accountdb(currency)
             
         else:
             for order in orders:
@@ -143,7 +145,7 @@ async def update_user_changes(data_orders,
                 
                 label_and_side_consistent= is_label_and_side_consistent(order)
                 
-                log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} everything_NOT_consistent {not label_and_side_consistent}')
+                log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
                 
                 if label_and_side_consistent and label:
                     
@@ -179,11 +181,9 @@ async def update_user_changes(data_orders,
                                     transaction_log_trading,
                                     archive_db_table)
     
-    await resupply_sub_accountdb(currency)
-    
-    await update_trades_from_exchange (currency,
-                                       archive_db_table,
-                                       10)
+    #await update_trades_from_exchange (currency,
+    #                                   archive_db_table,
+    #                                   10)
 
     log.info(f"update_user_changes-END")
 
