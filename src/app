@@ -190,7 +190,7 @@ async def update_user_changes(data_orders,
                     
                     combined_result = data_from_db_trade_open + data_from_db_order_open
 
-                    label_has_exist_before= await check_if_id_has_used_before (combined_result,
+                    label_has_exist_before=  check_if_id_has_used_before (combined_result,
                                                                                "order_id",
                                                                                order_id,)
                     await insert_tables(order_db_table, order)
