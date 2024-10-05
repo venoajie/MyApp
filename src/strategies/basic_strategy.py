@@ -348,7 +348,7 @@ def get_transaction_side(transaction: dict) -> str:
     """ 
     status: open/closed
     """
-        
+    log.error (f"get_transaction_side {get_transaction_side}")    
     try:
         return  transaction["direction"] 
     

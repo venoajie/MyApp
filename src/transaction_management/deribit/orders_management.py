@@ -37,7 +37,7 @@ def get_custom_label(transaction: list) -> str:
     
     return (f"custom{side_label.title()}-open-{last_update}")
     
-def labelling_unlabelled_transaction(order) -> None:
+def labelling_unlabelled_transaction(order: dict) -> None:
 
     side= get_transaction_side(order)
     order.update({"everything_is_consistent": True})

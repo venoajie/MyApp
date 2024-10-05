@@ -135,6 +135,8 @@ async def update_user_changes(data_orders,
         else:
             for order in orders:
                 
+                log.debug (f"order {order}")
+                
                 label= order["label"]
                 
                 order_id= order["order_id"]
@@ -380,12 +382,9 @@ class StreamAccountData:
                                 
                                 await resupply_sub_accountdb(currency)    
 
-                            log.warning (message_channel)
+                                
                             if "user.changes.any" in message_channel:
                                 log.debug (f"user.changes.any.{currency.upper()}.raw")
-                                
-                                
-                            if (message_channel== f"user.changes.any.{currency.upper()}.raw"):
                                 
                                 await update_user_changes(data_orders, 
                                                           currency, 
