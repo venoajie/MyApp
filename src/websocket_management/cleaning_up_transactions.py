@@ -436,8 +436,9 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
     """
 
     #prepare basic parameters for table query
-    log.error (f"closing transactions {transaction_with_closed_labels}")
 
+    log.error (f" clean_up_closed_transactions {instrument_name} START")
+    
     where_filter = f"trade_id"
 
     column_list: str= "instrument_name","label", "amount", where_filter
@@ -451,6 +452,8 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
 
     # filtered transactions with closing labels
     transaction_with_closed_labels = get_transactions_with_closed_label (transactions_all)
+
+    log.error (f"closing transactions {transaction_with_closed_labels}")
 
     if transaction_with_closed_labels:
 
@@ -481,6 +484,8 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
                         "=",
                         trade_id,
                     )
+                    
+    log.error (f" clean_up_closed_transactions {instrument_name} DONE")
 
 
 async def count_and_delete_ohlc_rows():
