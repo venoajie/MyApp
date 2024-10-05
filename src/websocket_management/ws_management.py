@@ -488,7 +488,7 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
                 
         current_instrument_trading_position =  0 if from_sqlite_open == [] else sum([o["amount"] for o in from_sqlite_open  ])
         
-        #log.error (f"current_instrument_trading_position {current_instrument_trading_position} current_position_log {current_position_log}")
+        log.error (f"{instrument_name} current_instrument_trading_position {current_instrument_trading_position} current_position_log {current_position_log}")
         
         if current_instrument_trading_position != current_position_log:
             
