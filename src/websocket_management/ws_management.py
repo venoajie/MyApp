@@ -833,4 +833,31 @@ async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
         await if_order_is_true(labelled_order, instrument_name)
     await sleep_and_restart()
 
+    
+async def distribute_ticker_result_as_per_data_type(my_path_ticker, data_orders, instrument
+) -> None:
+    """ """
+
+    try:
+        # ticker: list = pickling.read_data(my_path_ticker)
+
+        if data_orders["type"] == "snapshot":
+            replace_data(my_path_ticker, data_orders)
+
+            # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
+
+        else:
+            ticker_change: list = read_data(my_path_ticker)
+            if ticker_change != []:
+                # log.debug (ticker_change)
+
+                for item in data_orders:
+                    ticker_change[0][item] = data_orders[item]
+                    replace_data(my_path_ticker, ticker_change)
+
+    except Exception as error:
+        await raise_error_message(
+            error,
+            "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
+        )
 

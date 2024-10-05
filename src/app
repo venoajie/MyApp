@@ -46,6 +46,7 @@ from websocket_management.ws_management import (
     compute_notional_value, 
     cancel_by_order_id,
     currency_inline_with_database_address,
+    distribute_ticker_result_as_per_data_type,
     get_config,
     get_futures_instruments,
     if_cancel_is_true,
@@ -87,9 +88,9 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 
     return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
 
-def get_settlement_period (strategy_atributes) -> list:
+def get_settlement_period (strategy_attributes) -> list:
     
-    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_atributes])))
+    return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_attributes])))
 
         
 async def update_user_changes(data_orders, 
@@ -97,7 +98,7 @@ async def update_user_changes(data_orders,
                               order_db_table,
                               trade_db_table, 
                               archive_db_table,
-                              cancellable_strategies) -> None:
+                              transaction_log_trading) -> None:
     
     log.critical (f"update_user_changes-START")
 
@@ -162,7 +163,20 @@ async def update_user_changes(data_orders,
                     
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
-        
+
+    await resupply_transaction_log(currency, 
+                                    transaction_log_trading,
+                                    archive_db_table)
+    
+    await resupply_sub_accountdb(currency)
+    
+    await synchronising_my_trade_db_vs_exchange (currency,
+                                                    order_db_table, 
+                                                    trade_db_table,
+                                                    archive_db_table,
+                                                    transaction_log_trading)
+
+
     log.info(f"update_user_changes-END")
 
 
@@ -218,11 +232,11 @@ class StreamAccountData:
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
             
-            strategy_atributes = config_app["strategies"]
+            strategy_attributes = config_app["strategies"]
                                     
-            active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
+            active_strategies =   [o["strategy_label"] for o in strategy_attributes if o["is_active"]==True]
             
-            cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
+            cancellable_strategies =   [o["strategy_label"] for o in strategy_attributes if o["cancellable"]==True]
             
             trade_db_table= "my_trades_all_json"
             
@@ -234,7 +248,7 @@ class StreamAccountData:
                             order_db_table, 
                             trade_db_table,)
             
-            settlement_periods= get_settlement_period (strategy_atributes)
+            settlement_periods= get_settlement_period (strategy_attributes)
                             
             futures_instruments=await get_futures_instruments(currencies,
                                                                 settlement_periods)  
@@ -259,8 +273,7 @@ class StreamAccountData:
 
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
-
-                
+    
                 for instrument in instruments_name:
 
                     await clean_up_closed_transactions (instrument, trade_db_table)
@@ -281,19 +294,20 @@ class StreamAccountData:
                                 ws_channel=f"chart.trades.{instrument}.1",
                             )
                         )
-                        
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation="subscribe", ws_channel=f"user.portfolio.{currency}"
-                    )
-                )
+                                
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe", ws_channel=f"user.portfolio.{currency}"
+                            )
+                        )
 
-                self.loop.create_task(
-                    self.ws_operation(
-                        operation="subscribe",
-                        ws_channel=f"user.changes.any.{currency.upper()}.raw",
-                    )
-                )
+                        self.loop.create_task(
+                            self.ws_operation(
+                                operation="subscribe",
+                                ws_channel=f"user.changes.any.{currency.upper()}.raw",
+                            )
+                        )
+                        
                 while self.websocket_client.open:
                     # Receive WebSocket messages
                     message: bytes = await self.websocket_client.recv()
@@ -337,8 +351,6 @@ class StreamAccountData:
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
 
-                            data_orders: list = message["params"]["data"]
-   
                             data_orders: list = message["params"]["data"]       
                             
                             currency: str = extract_currency_from_text(message_channel)
@@ -364,20 +376,8 @@ class StreamAccountData:
                                                           order_db_table,
                                                           trade_db_table, 
                                                           archive_db_table,
-                                                          cancellable_strategies)
-                                
-                                await resupply_transaction_log(currency, 
-                                                               transaction_log_trading,
-                                                               archive_db_table)
-                                
-                                await resupply_sub_accountdb(currency)
-                                
-                                await synchronising_my_trade_db_vs_exchange (currency,
-                                                                             order_db_table, 
-                                                                             trade_db_table,
-                                                                             archive_db_table,
-                                                                             transaction_log_trading)
-                                #await check_db_consistencies_and_clean_up_imbalances(currency,
+                                                          transaction_log_trading)
+                                                               #await check_db_consistencies_and_clean_up_imbalances(currency,
                                 #                                                     cancellable_strategies)                           
                             
                             
@@ -513,7 +513,7 @@ class StreamAccountData:
                                                             my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
                                                                 and strategy in (o["label"]) ]
 
-                                                            strategy_params= [o for o in strategy_atributes if o["strategy_label"] == strategy]                                                                
+                                                            strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy]                                                                
         
                                                             if "hedgingSpot" in strategy:
                                                                 
@@ -548,7 +548,8 @@ class StreamAccountData:
 
                                                                     closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
 
-                                                                    nearest_transaction_to_index = [o for o in my_trades_strategy_open if o["price"] == closest_price]
+                                                                    nearest_transaction_to_index = [o for o in my_trades_strategy_open \
+                                                                        if o["price"] == closest_price]
                                                                     #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                                     
                                                                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
@@ -569,15 +570,6 @@ class StreamAccountData:
                                                             if "futureSpread" in strategy:
                                                                 log.error (f"strategy {strategy} {currency}-START")
                                                                 
-                                                                #for combo in active_combo_perp:
-                                                                    #instrumen_ticker = combo["instrument_name"]
-                                                                    #order_book_request = requests.get(order_book_end_point(instrumen_ticker,20)).json()["result"]
-                                                                    #log.info (f"order_book_request {order_book_request}")
-                                                                    #result = [o for o in transform_nested_dict_to_list(order_book_request) ]
-
-                                                                    #log.info (f"instrumen_id {instrumen_ticker}")
-                                                                    #log.info (f"result {result}")
-
                                                                 db_order_open_strategy = [o for o in data_from_db_order_open_currency \
                                                                     if strategy in o["label"]]
                                                                 
@@ -642,34 +634,6 @@ class StreamAccountData:
                         0.1,
                         "WebSocket connection EXCHANGE has broken",
                     )
-        
-    async def distribute_ticker_result_as_per_data_type(
-        self, my_path_ticker, data_orders, instrument
-    ) -> None:
-        """ """
-
-        try:
-            # ticker: list = pickling.read_data(my_path_ticker)
-
-            if data_orders["type"] == "snapshot":
-                replace_data(my_path_ticker, data_orders)
-
-                # ticker_fr_snapshot: list = pickling.read_data(my_path_ticker)
-
-            else:
-                ticker_change: list = read_data(my_path_ticker)
-                if ticker_change != []:
-                    # log.debug (ticker_change)
-
-                    for item in data_orders:
-                        ticker_change[0][item] = data_orders[item]
-                        replace_data(my_path_ticker, ticker_change)
-
-        except Exception as error:
-            await raise_error_message(
-                error,
-                "WebSocket connection - failed to distribute_incremental_ticker_result_as_per_data_type",
-            )
 
     async def establish_heartbeat(self) -> None:
         """
@@ -753,7 +717,11 @@ class StreamAccountData:
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
-        await asyncio.sleep(5)
+        sleep_time: int = 5
+        
+        log.warning (f"sleep for {sleep_time} s'")
+
+        await asyncio.sleep(sleep_time)
 
         id = id_numbering.id(operation, ws_channel)
 
