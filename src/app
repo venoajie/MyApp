@@ -169,7 +169,9 @@ async def update_user_changes(data_orders,
                     
                     order_update = labelling_unlabelled_transaction (order)
                     
-                    await if_order_is_true(order_update, instrument_name)
+                    log.error (f"order_update {order_update}")
+                    
+                    await if_order_is_true(order_update["order"], instrument_name)
                     
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
