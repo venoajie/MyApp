@@ -20,9 +20,7 @@ from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,)
 from deribit_get import (
-    telegram_bot_sendtext,
-    get_currencies,
-    get_instruments)
+    telegram_bot_sendtext,)
 from strategies.basic_strategy import (
     check_if_id_has_used_before,
     is_label_and_side_consistent,)
@@ -45,15 +43,17 @@ from utilities.string_modification import (
     remove_redundant_elements,
     extract_currency_from_text,)
 from websocket_management.ws_management import (
-    cancel_the_cancellables,    
     compute_notional_value, 
     cancel_by_order_id,
+    currency_inline_with_database_address,
     get_config,
-    get_my_trades_from_exchange,
+    get_futures_instruments,
     if_cancel_is_true,
     if_order_is_true,
+    on_restart,
     resupply_sub_accountdb,
     resupply_transaction_log,
+    synchronising_my_trade_db_vs_exchange,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
@@ -61,9 +61,6 @@ from websocket_management.allocating_ohlc import (
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
     )
-
-def deribit_url_main() -> str:
-    return "https://www.deribit.com/api/v2/"
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -94,125 +91,6 @@ def get_settlement_period (strategy_atributes) -> list:
     
     return (remove_redundant_elements(remove_double_brackets_in_list([o["settlement_period"]for o in strategy_atributes])))
 
-
-def get_instruments_kind(currency: str, settlement_periods, kind: str= "all") -> list:
-    """_summary_
-
-    Args:
-        currency (str): _description_
-        kind (str): "future_combo",  "future"
-        Instance:  [
-                    {'tick_size_steps': [], 'quote_currency': 'USD', 'min_trade_amount': 1,'counter_currency': 'USD', 
-                    'settlement_period': 'month', 'settlement_currency': 'ETH', 'creation_timestamp': 1719564006000, 
-                    'instrument_id': 342036, 'base_currency': 'ETH', 'tick_size': 0.05, 'contract_size': 1, 'is_active': True, 
-                    'expiration_timestamp': 1725004800000, 'instrument_type': 'reversed', 'taker_commission': 0.0, 
-                    'maker_commission': 0.0, 'instrument_name': 'ETH-FS-27SEP24_30AUG24', 'kind': 'future_combo', 
-                    'rfq': False, 'price_index': 'eth_usd'}, ]
-     Returns:
-        list: _description_
-        
-        
-    """ 
-    
-    my_path_instruments = provide_path_for_file(
-        "instruments", currency
-    )
-
-    instruments_raw = read_data(my_path_instruments)
-    instruments = instruments_raw[0]["result"]
-    non_spot_instruments=  [
-        o for o in instruments if o["kind"] != "spot"]
-    instruments_kind= non_spot_instruments if kind =="all" else  [
-        o for o in instruments if o["kind"] == kind]
-    
-    return  [o for o in instruments_kind if o["settlement_period"] in settlement_periods]
-
-
-async def get_futures_for_active_currencies (active_currencies,
-                                             settlement_periods) -> list:
-    """_summary_
-
-    Returns:
-        list: _description_
-    """
-    
-    instruments_holder_place= []
-    for currency in active_currencies:
-
-        future_instruments= get_instruments_kind (currency,
-                                                  settlement_periods,
-                                                  "future" )
-
-        future_combo_instruments= get_instruments_kind (currency,
-                                                  settlement_periods,
-                                                  "future_combo" )
-        
-        active_combo_perp = [o for o in future_combo_instruments if "_PERP" in o["instrument_name"]]
-        
-        combined_instruments = future_instruments + active_combo_perp
-        instruments_holder_place.append(combined_instruments)    
-    
-    #removing inner list 
-    # typical result: [['BTC-30AUG24', 'BTC-6SEP24', 'BTC-27SEP24', 'BTC-27DEC24', 
-    # 'BTC-28MAR25', 'BTC-27JUN25', 'BTC-PERPETUAL'], ['ETH-30AUG24', 'ETH-6SEP24', 
-    # 'ETH-27SEP24', 'ETH-27DEC24', 'ETH-28MAR25', 'ETH-27JUN25', 'ETH-PERPETUAL']]
-    
-    instruments_holder_plc= []
-    for instr in instruments_holder_place:
-        instruments_holder_plc.append(instr)
-
-    return remove_double_brackets_in_list(instruments_holder_plc)
-    
-    
-async def get_futures_instruments (active_currencies, 
-                                   settlement_periods) -> list:
-    
-    active_futures=  await get_futures_for_active_currencies(active_currencies,
-                                                             settlement_periods)
-    
-    active_combo = [o for o in active_futures if "future_combo" in o["kind"]]
-          
-    min_expiration_timestamp = min([o["expiration_timestamp"] for o in active_futures]) 
-    
-    return dict(instruments_name = [o["instrument_name"] for o in (active_futures)],
-                min_expiration_timestamp = min_expiration_timestamp,
-                active_futures = [o for o in active_futures if "future" in o["kind"]],
-                active_combo_perp =  active_combo,
-                instruments_name_with_min_expiration_timestamp = [o["instrument_name"] for o in active_futures \
-                    if o["expiration_timestamp"] == min_expiration_timestamp][0]
-                )
-    
-def currency_inline_with_database_address (currency: str, database_address: str) -> bool:
-    return currency.lower()  in str(database_address)
-
-
-async def get_and_save_currencies()->None:
-    
-    connection_url: str = deribit_url_main()
-
-    try:
-
-        get_currencies_all = await get_currencies(connection_url)
-        
-        currencies = [o["currency"] for o in get_currencies_all["result"]]
-        
-        for currency in currencies:
-
-            instruments = await get_instruments(connection_url, currency)
-
-            my_path_instruments = provide_path_for_file("instruments", currency)
-
-            replace_data(my_path_instruments, instruments)
-
-        my_path_cur = provide_path_for_file("currencies")
-
-        replace_data(my_path_cur, currencies)
-        # catch_error('update currencies and instruments')
-
-    except Exception as error:
-        catch_error_message(
-        error, 10, "app"
-        )
         
 async def update_user_changes(data_orders, 
                               currency, 
@@ -288,97 +166,6 @@ async def update_user_changes(data_orders,
     log.info(f"update_user_changes-END")
 
 
-
-async def synchronising_my_trade_db_vs_exchange (currency: str,
-                                                order_db_table: str, 
-                                                trade_db_table: str, 
-                                                archive_db_table: str,
-                                                transaction_log_trading) -> None:
-    """
-    """
-    log.warning("Synchronising my_trade_db vs exchange")
-        
-    column_list= "instrument_name", "position", "timestamp"
-    
-    from_transaction_log = await get_query (transaction_log_trading, 
-                                                currency, 
-                                                "all", 
-                                                "all", 
-                                                column_list)                                       
-
-    instruments = [o["instrument_name"] for o in from_transaction_log]
-    
-    #log.error (f"from_transaction_log {from_transaction_log}")
-    
-    for instrument_name in instruments:
-        
-        last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
-        current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
-        
-        column_list= "instrument_name",  "timestamp", "amount"
-       
-        from_sqlite_open= await get_query (trade_db_table, 
-                                            instrument_name, 
-                                            "all", 
-                                            "all", 
-                                            column_list)                                       
-                
-        current_instrument_trading_position =  0 if from_sqlite_open == [] else sum([o["amount"] for o in from_sqlite_open  ])
-        
-        #log.error (f"current_instrument_trading_position {current_instrument_trading_position} current_position_log {current_position_log}")
-        
-        if current_instrument_trading_position != current_position_log:
-            
-            trades_from_exchange = await get_my_trades_from_exchange (100, currency)
-            
-            if trades_from_exchange:
-                
-                trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
-
-                if trades_from_exchange_without_futures_combo:
-                    
-                        order_management= OrderManagement(order_db_table, 
-                                                    trade_db_table, 
-                                                    archive_db_table)
-                        
-                        selected_trades_from_exchange = [o for o in trades_from_exchange_without_futures_combo
-                                                        if o["timestamp"] >= last_time_stamp_log]
-                        
-                        await order_management.saving_traded_orders (selected_trades_from_exchange)
-        
-    
-async def on_restart(currencies_default: str,
-                     cancellable_strategies: list,
-                     order_db_table: str, 
-                     trade_db_table: str,) -> None:
-    """
-    """
-
-    log.warning("Cancelling selected orders")
-    await cancel_the_cancellables(cancellable_strategies)
-    
-    # refresh databases
-    await get_and_save_currencies()                
-    
-    for currency in currencies_default:
-        
-        archive_db_table= f"my_trades_all_{currency.lower()}_json"
-        
-        transaction_log_trading= f"transaction_log_{currency.lower()}_json"
-        
-        await resupply_transaction_log(currency, 
-                                       transaction_log_trading,
-                                       archive_db_table)
-        
-        await resupply_sub_accountdb(currency)
-        
-        await synchronising_my_trade_db_vs_exchange (currency,
-                                                    order_db_table, 
-                                                    trade_db_table,
-                                                    archive_db_table,
-                                                    transaction_log_trading)
-        #await check_db_consistencies_and_clean_up_imbalances(currency)                           
-
 class StreamAccountData:
 
     """
@@ -422,6 +209,45 @@ class StreamAccountData:
             compression=None,
             close_timeout=60,
         ) as self.websocket_client:
+                
+            file_toml = "config_strategies.toml"
+                
+            config_app = get_config(file_toml)
+
+            tradable_config_app = config_app["tradable"]
+            
+            currencies= [o["spot"] for o in tradable_config_app] [0]
+            
+            strategy_atributes = config_app["strategies"]
+                                    
+            active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
+            
+            cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
+            
+            trade_db_table= "my_trades_all_json"
+            
+            order_db_table= "orders_all_json"                
+            
+            # Establish restart procedure
+            await on_restart(currencies,
+                            cancellable_strategies,
+                            order_db_table, 
+                            trade_db_table,)
+            
+            settlement_periods= get_settlement_period (strategy_atributes)
+                            
+            futures_instruments=await get_futures_instruments(currencies,
+                                                                settlement_periods)  
+            
+            active_futures = futures_instruments["active_futures"]   
+
+            active_combo_perp = futures_instruments["active_combo_perp"]  
+
+            instruments_name = futures_instruments["instruments_name"]   
+            
+            min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
+            
+            resolution = 1                
                             
             while True:
                 
@@ -434,45 +260,6 @@ class StreamAccountData:
                 # Start Authentication Refresh Task
                 self.loop.create_task(self.ws_refresh_auth())
 
-                
-                file_toml = "config_strategies.toml"
-                    
-                config_app = get_config(file_toml)
-
-                tradable_config_app = config_app["tradable"]
-                
-                currencies= [o["spot"] for o in tradable_config_app] [0]
-                
-                strategy_atributes = config_app["strategies"]
-                                        
-                active_strategies =   [o["strategy_label"] for o in strategy_atributes if o["is_active"]==True]
-                
-                cancellable_strategies =   [o["strategy_label"] for o in strategy_atributes if o["cancellable"]==True]
-                
-                trade_db_table= "my_trades_all_json"
-                
-                order_db_table= "orders_all_json"                
-                
-                # Establish restart procedure
-                await on_restart(currencies,
-                                cancellable_strategies,
-                                order_db_table, 
-                                trade_db_table,)
-                
-                settlement_periods= get_settlement_period (strategy_atributes)
-                                
-                futures_instruments=await get_futures_instruments(currencies,
-                                                                  settlement_periods)  
-                
-                active_futures = futures_instruments["active_futures"]   
-
-                active_combo_perp = futures_instruments["active_combo_perp"]  
-
-                instruments_name = futures_instruments["instruments_name"]   
-                
-                min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
-                
-                resolution = 1                
                 
                 for instrument in instruments_name:
 

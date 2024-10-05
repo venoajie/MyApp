@@ -270,8 +270,6 @@ class HedgingSpot(BasicStrategy):
             )
         )
         
-        log.info (f"strong_bearish {strong_bearish} bearish {bearish} waiting_minute_before_cancel {waiting_minute_before_cancel} len_orders {len_orders} open_orders_label_strategy {open_orders_label_strategy} server_time {server_time}")
-
         cancel_allowed: bool = is_cancelling_order_allowed(
             strong_bearish,
             bearish,
@@ -286,7 +284,6 @@ class HedgingSpot(BasicStrategy):
                 and (bearish or strong_bearish)
                 and fluctuation_exceed_threshold
             )
-        print(f"order_allowed {order_allowed}")
         
         if order_allowed :
             label_open: str = get_label("open", self.strategy_label)
