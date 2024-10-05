@@ -119,9 +119,9 @@ async def update_user_changes(data_orders,
     trades = data_orders["trades"]
     orders = data_orders["orders"]
 
-    log.critical (f"update_user_changes {instrument_name} -START")
     
     instrument_name = data_orders["instrument_name"]
+    log.critical (f"update_user_changes {instrument_name} -START")
 
     log.info (f" {data_orders}")
         
