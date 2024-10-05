@@ -276,8 +276,6 @@ class StreamAccountData:
     
                 for instrument in instruments_name:
 
-                    await clean_up_closed_transactions (instrument, trade_db_table)
-
                     currency = extract_currency_from_text(instrument).upper()   
                                     
                     self.loop.create_task(
@@ -307,7 +305,9 @@ class StreamAccountData:
                                 ws_channel=f"user.changes.any.{currency.upper()}.raw",
                             )
                         )
-                        
+                
+                await clean_up_closed_transactions (instrument, trade_db_table)        
+                
                 while self.websocket_client.open:
                     # Receive WebSocket messages
                     message: bytes = await self.websocket_client.recv()
