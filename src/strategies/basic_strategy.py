@@ -348,7 +348,7 @@ def get_transaction_side(transaction: dict) -> str:
     """ 
     status: open/closed
     """
-    log.error (f"get_transaction_side {get_transaction_side}")    
+    log.error (f"transaction {transaction}")    
     try:
         return  transaction["direction"] 
     
@@ -409,8 +409,12 @@ def check_if_id_has_used_before(combined_result: str,
     - order_id only one per order 
     - one label could be processed couple of time (especially when closing the transactions)
     """
+    log.error (f"combined_result {combined_result}")
+    log.error (f"id_checked {id_checked}")
+    log.error (f"transaction_id {transaction_id}")
 
     id=f"{id_checked}"
+    log.error (f"id {id}")
     if combined_result !=[]:
         result_order_id= [o[id] for o in combined_result]
 
