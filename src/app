@@ -134,10 +134,10 @@ async def update_user_changes(data_orders,
         else:
             for order in orders:
                 
-                log.debug (f"order {order}")
+                log.debug (f"order {order}")  
                 
-                
-                
+                label= order["label"]
+
                 order_id= order["order_id"]
 
                 order_state= order["order_state"]
