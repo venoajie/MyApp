@@ -817,15 +817,12 @@ async def labelling_the_unlabelled_and_resend_it(order, instrument_name):
     
     labelling_order= labelling_unlabelled_transaction (order)
     labelled_order= labelling_order["order"]
-    label_open= labelling_order["label_open"]
-
-    label_has_exist_before= await check_if_id_has_used_before (instrument_name,"label",label_open)
     
     order_id= order["order_id"]
+
     await cancel_by_order_id (order_id)
     
-    if not label_has_exist_before:
-        await if_order_is_true(labelled_order, instrument_name)
+    await if_order_is_true(labelled_order, instrument_name)
 
     
 async def distribute_ticker_result_as_per_data_type(my_path_ticker, data_orders, instrument
