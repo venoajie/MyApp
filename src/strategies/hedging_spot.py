@@ -337,6 +337,8 @@ class HedgingSpot(BasicStrategy):
         Returns:
             dict: _description_
         """
+        order_allowed, cancel_allowed, cancel_id = False, False, None
+        
         transaction = selected_transaction[0]
         
         log.warning (f"sum_my_trades_currency_strategy {sum_my_trades_currency_strategy} max_position {max_position}")
@@ -345,12 +347,18 @@ class HedgingSpot(BasicStrategy):
         
         if current_position_exceed_max_position:
             exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
-                                                                    orders_currency_strategy_label_closed,)
+                                                                    orders_currency_strategy_label_closed,)                       
+            exit_params.update({"entry_price": bid_price})
+                
+            #convert size to positive sign
+            exit_params.update({"size": abs (size)})
             log.info (f"exit_params {exit_params}")
+            
+            if bid_price < transaction ["price"]:
+                order_allowed = True
 
         else:
-            order_allowed, cancel_allowed, cancel_id = False, False, None
-            
+                        
             hedging_attributes = self.strategy_parameters[0]
             
             currency = extract_currency_from_text(transaction ["instrument_name"]).lower()
@@ -377,7 +385,7 @@ class HedgingSpot(BasicStrategy):
                     and bid_price < transaction ["price"]:
                 
                     
-                    len_orders: int = get_transactions_len(closed_orders_label_strategy)
+                    len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
                     
                     ONE_SECOND = 1000
                     ONE_MINUTE = ONE_SECOND * 60
@@ -389,13 +397,13 @@ class HedgingSpot(BasicStrategy):
                         bullish,
                         waiting_minute_before_cancel,
                         len_orders,
-                        closed_orders_label_strategy,
+                        orders_currency_strategy_label_closed,
                         server_time,)
                         
                     if cancel_allowed:
-                        cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
+                        cancel_id= min ([o["order_id"] for o in orders_currency_strategy_label_closed])  
                         
-                    log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
+                    log.error (f"closed_orders_label_strategy {orders_currency_strategy_label_closed}")
 
                     #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
                         
