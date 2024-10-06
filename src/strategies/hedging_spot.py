@@ -351,7 +351,7 @@ class HedgingSpot(BasicStrategy):
             exit_params.update({"entry_price": bid_price})
                 
             #convert size to positive sign
-            exit_params.update({"size": abs (size)})
+            exit_params.update({"size": abs (exit_params["size"])})
             log.info (f"exit_params {exit_params}")
             
             if bid_price < transaction ["price"]:
