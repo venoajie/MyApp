@@ -212,12 +212,16 @@ class HedgingSpot(BasicStrategy):
                 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
+        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
+        
         len_orders: int = get_transactions_len(open_orders_label_strategy)
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(currency,
-            TA_result_data, index_price, threshold_market_condition)
+                                                              TA_result_data, 
+                                                              index_price, 
+                                                              threshold_market_condition)
 
         #bullish = market_condition["rising_price"]
         bearish = market_condition["falling_price"]
@@ -244,7 +248,7 @@ class HedgingSpot(BasicStrategy):
                                         max_position, 
                                         SIZE_FACTOR)
 
-            open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
+            
             #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
             
