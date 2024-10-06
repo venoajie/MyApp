@@ -510,17 +510,16 @@ class StreamAccountData:
                                                                 
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params,
+                                                                                      index_price,
                                                                                       server_time)
                                                                 
                                                                 send_order: dict = (
                                                                 await hedging.is_send_and_cancel_open_order_allowed(
-                                                                    currency,
                                                                     instrument_ticker,
                                                                     active_futures,
                                                                     sum_my_trades_currency_strategy,
                                                                     orders_currency_strategy,
                                                                     max_position,
-                                                                    index_price,
                                                                     best_ask_prc,
                                                                     TA_result_data))
                                                                 
@@ -547,7 +546,6 @@ class StreamAccountData:
                                                                         max_position,
                                                                         sum_my_trades_currency_strategy,
                                                                         orders_currency_strategy_label_closed,
-                                                                        index_price,
                                                                         best_bid_prc,
                                                                         nearest_transaction_to_index,
                                                                     )

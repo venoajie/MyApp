@@ -11,7 +11,6 @@ from dataclassy import dataclass
 from strategies.basic_strategy import (
     BasicStrategy,
     are_size_and_order_appropriate,
-    check_if_id_has_used_before,
     delta_pct,
     ensure_sign_consistency,
     get_basic_closing_paramaters,
@@ -21,9 +20,6 @@ from strategies.basic_strategy import (
     is_label_and_side_consistent,
     is_minimum_waiting_time_has_passed,
     size_rounding,)
-from db_management.sqlite_management import (
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query
-    )
 from utilities.string_modification import (
     extract_currency_from_text,
     parsing_label)
@@ -146,7 +142,7 @@ def is_cancelling_order_allowed(
     return cancel_allowed
 
 
-async def get_market_condition_hedging(currency,TA_result_data, index_price, threshold) -> dict:
+async def get_market_condition_hedging(TA_result_data, index_price, threshold) -> dict:
     """ """
     neutral_price, rising_price, falling_price = False, False, False
     strong_rising_price, strong_falling_price = False, False
@@ -188,6 +184,7 @@ async def get_market_condition_hedging(currency,TA_result_data, index_price, thr
 class HedgingSpot(BasicStrategy):
     """ """
     
+    index_price: float
     server_time: int
 
     def get_basic_params(self) -> dict:
@@ -197,13 +194,11 @@ class HedgingSpot(BasicStrategy):
 
     async def is_send_and_cancel_open_order_allowed(
         self,
-        currency,
         instrument_name: str,
         futures_instruments,
         sum_my_trades_currency_strategy_open: int,
         orders_currency_strategy: list,
         max_position: float,
-        index_price,
         ask_price: float,
         TA_result_data: dict
     ) -> dict:
@@ -221,9 +216,8 @@ class HedgingSpot(BasicStrategy):
         
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
-        market_condition = await get_market_condition_hedging(currency,
-                                                              TA_result_data, 
-                                                              index_price, 
+        market_condition = await get_market_condition_hedging(TA_result_data, 
+                                                              self.index_price, 
                                                               threshold_market_condition)
 
         #bullish = market_condition["rising_price"]
@@ -307,7 +301,6 @@ class HedgingSpot(BasicStrategy):
         max_position,
         sum_my_trades_currency_strategy,
         orders_currency_strategy_label_closed,
-        index_price: float,
         bid_price: float,
         selected_transaction: list,
     ) -> dict:
@@ -362,9 +355,8 @@ class HedgingSpot(BasicStrategy):
 
             threshold_market_condition = hedging_attributes ["delta_price_pct"]
             
-            market_condition = await get_market_condition_hedging (currency,
-                                                                TA_result_data, 
-                                                                index_price, 
+            market_condition = await get_market_condition_hedging (TA_result_data, 
+                                                                self.index_price, 
                                                                 threshold_market_condition)
 
             bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
