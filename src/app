@@ -353,7 +353,6 @@ class StreamAccountData:
                             message_channel = message["params"]["channel"]
 
                             data_orders: list = message["params"]["data"]    
-                            log.info (f" data_orders {data_orders}")   
                             
                             currency: str = extract_currency_from_text(message_channel)
                             
@@ -447,17 +446,7 @@ class StreamAccountData:
                                                     
                                                 # get portfolio data  
                                                 portfolio= reading_from_pkl_data("portfolio",currency)
-                                                
-                                                column_list: str= "instrument_name","label", "amount", "price","side"
-                                    
-                                                my_trades_currency: list= await get_query(trade_db_table, 
-                                                                                            currency, 
-                                                                                            "all", 
-                                                                                            "all", 
-                                                                                            column_list)
-                                                
-                                                my_trades_instrument: list= [o for o in my_trades_currency if instrument_ticker in o["instrument_name"]]
-                                                # obtain spot equity
+                                                                                    # obtain spot equity
                                                 equity: float = portfolio[0]["equity"]                                       
                                                                                     
                                                 if ticker !=[] and index_price is not None and equity >0:
@@ -477,35 +466,38 @@ class StreamAccountData:
                                                         notional: float = compute_notional_value(index_price, equity)
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"] 
+                                                                
                                                         
-                                                        #column_trade= "trade_id","label"
+                                                        column_trade: str= "instrument_name","label", "amount", "price","side"
+                                            
+                                                        my_trades_currency: list= await get_query(trade_db_table, 
+                                                                                                    currency, 
+                                                                                                    "all", 
+                                                                                                    "all", 
+                                                                                                    column_trade)
                                                         
                                                         column_order= "instrument_name","label","order_id","amount"
                                                         
-                                                        currency = extract_currency_from_text (instrument_ticker)
-                                                        
-                                                        #data_from_db_trade_open = await get_query(archive_db_table, 
-                                                        #                                        instrument_ticker, 
-                                                        #                                        "all", 
-                                                        #                                        "all", 
-                                                        #                                        column_trade)     
-                                                        
-                                                        data_from_db_order_open_currency = await get_query(order_db_table, 
+                                                        orders_currency = await get_query(order_db_table, 
                                                                                                 currency, 
                                                                                                 "all", 
                                                                                                 "all", 
-                                                                                                column_order)    
-                                                         
-                                                        #data_from_db_order_open = [o for o in data_from_db_order_open_currency \
-                                                        #    if instrument_ticker in o["instrument_name"]]
+                                                                                                column_order)     
                                                         
-                                                        #combined_result = data_from_db_trade_open + data_from_db_order_open
-                                                       
                                                         for strategy in active_strategies:
+                                                            
+                                                            my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
+                                                            
+                                                            orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
                                                         
-                                                            my_trades_strategy_open = [o for o in my_trades_instrument if "open" in (o["label"])\
-                                                                and strategy in (o["label"]) ]
-
+                                                            my_trades_currency_strategy_open = [o for o in my_trades_currency_strategy if "open" in (o["label"])]
+                                                            
+                                                            if my_trades_currency_strategy:
+                                                                sum_my_trades_currency_strategy = sum([o["amount"] for o in my_trades_currency_strategy ])
+                                                            
+                                                            else:
+                                                                sum_my_trades_currency_strategy = 0
+                                                                
                                                             strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy]                                                                
         
                                                             if "hedgingSpot" in strategy:
@@ -520,7 +512,8 @@ class StreamAccountData:
                                                                     currency,
                                                                     instrument_ticker,
                                                                     active_futures,
-                                                                    #combined_result,
+                                                                    sum_my_trades_currency_strategy,
+                                                                    orders_currency_strategy,
                                                                     notional,
                                                                     index_price,
                                                                     best_ask_prc,
@@ -533,15 +526,15 @@ class StreamAccountData:
                                                                     await if_order_is_true(send_order, instrument_ticker)
                                                                     await if_cancel_is_true(send_order)
 
-                                                                if my_trades_strategy_open !=[]:
+                                                                if my_trades_currency_strategy_open !=[]:
                                                                                                                                                
                                                                     best_bid_prc: float = ticker["best_bid_price"]
                                                                     
-                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_strategy_open]
+                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_currency_strategy_open]
 
                                                                     closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
 
-                                                                    nearest_transaction_to_index = [o for o in my_trades_strategy_open \
+                                                                    nearest_transaction_to_index = [o for o in my_trades_currency_strategy_open \
                                                                         if o["price"] == closest_price]
                                                                     #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                                     
@@ -563,14 +556,11 @@ class StreamAccountData:
                                                             if "futureSpread" in strategy:
                                                                 #log.error (f"strategy {strategy} {currency}-START")
                                                                 
-                                                                db_order_open_strategy = [o for o in data_from_db_order_open_currency \
-                                                                    if strategy in o["label"]]
-                                                                
                                                                 db_trade_open_strategy = [o for o in my_trades_currency \
                                                                     if strategy in o["label"]]
                                                                 
-                                                                amount_order_strategy = 0 if db_order_open_strategy == [] \
-                                                                    else sum([o["amount"] for o in db_order_open_strategy])
+                                                                amount_order_strategy = 0 if orders_currency_strategy == [] \
+                                                                    else sum([o["amount"] for o in orders_currency_strategy])
                                                         
                                                                 amount_trade_strategy = 0 if db_trade_open_strategy == [] \
                                                                     else sum([o["amount"] for o in db_trade_open_strategy])

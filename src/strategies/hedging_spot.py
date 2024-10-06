@@ -197,7 +197,8 @@ class HedgingSpot(BasicStrategy):
         currency,
         instrument_name: str,
         futures_instruments,
-        #combined_result: list,
+        sum_my_trades_currency_strategy_open: int,
+        orders_currency_strategy: list,
         notional: float,
         index_price,
         ask_price: float,
@@ -243,19 +244,12 @@ class HedgingSpot(BasicStrategy):
 
         size = determine_opening_size(instrument_name, futures_instruments, params["side"], notional, SIZE_FACTOR)
 
-        open_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                           currency.upper(), 
-                                                           self.strategy_label,
-                                                           "open")
+        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         sum_orders: int = get_transactions_sum(open_orders_label_strategy)
-        
-        my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-
-        sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])     
-           
+                   
         max_position: int = notional * ensure_sign_consistency (params["side"])    
         
         #log.info  (f"params {params} max_position {max_position}")
@@ -263,7 +257,7 @@ class HedgingSpot(BasicStrategy):
         size_and_order_appropriate_for_ordering: bool = (
             are_size_and_order_appropriate (
                 "add_position",
-                sum_my_trades, 
+                sum_my_trades_currency_strategy_open, 
                 sum_orders, 
                 size, 
                 max_position
@@ -366,42 +360,43 @@ class HedgingSpot(BasicStrategy):
         #log.info (f"exit_params {exit_params}")
         order_allowed: bool = True if size != 0 else False
         
-        if order_allowed\
-            and (bullish or strong_bullish) \
+        if order_allowed:
+            
+            if (bullish or strong_bullish) \
                 and bid_price < transaction ["price"]:
             
-            
-            len_orders: int = get_transactions_len(closed_orders_label_strategy)
-            
-            ONE_SECOND = 1000
-            ONE_MINUTE = ONE_SECOND * 60
-            
-            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
+                
+                len_orders: int = get_transactions_len(closed_orders_label_strategy)
+                
+                ONE_SECOND = 1000
+                ONE_MINUTE = ONE_SECOND * 60
+                
+                waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
 
-            cancel_allowed: bool = is_cancelling_order_allowed(
-                strong_bullish,
-                bullish,
-                waiting_minute_before_cancel,
-                len_orders,
-                closed_orders_label_strategy,
-                server_time,)
-                
-            if cancel_allowed:
-                cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
-                
-            log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
-
-            #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
-                
-        
-            if (False if size == 0 else True) and len_orders == 0:# and max_order:
-                
-                
-                exit_params.update({"entry_price": bid_price})
+                cancel_allowed: bool = is_cancelling_order_allowed(
+                    strong_bullish,
+                    bullish,
+                    waiting_minute_before_cancel,
+                    len_orders,
+                    closed_orders_label_strategy,
+                    server_time,)
                     
-                #convert size to positive sign
-                exit_params.update({"size": abs (size)})
+                if cancel_allowed:
+                    cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
+                    
+                log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
+
+                #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
+                    
             
+                if (False if size == 0 else True) and len_orders == 0:# and max_order:
+                    
+                    
+                    exit_params.update({"entry_price": bid_price})
+                        
+                    #convert size to positive sign
+                    exit_params.update({"size": abs (size)})
+                
         #log.error (f"order_allowed {order_allowed}")
         #log.info (f"cancel_allowed {cancel_allowed} ")
         return dict(

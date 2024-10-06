@@ -581,8 +581,8 @@ async def get_basic_closing_paramaters(selected_transaction: list,
     size = size_abs * ensure_sign_consistency(side)   
     
     closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
-                                                                          net_size,
-                                                                          size)
+                                                                               net_size,
+                                                                               size)
 
     #log.debug (f"closing_size_ok {closing_size_ok}")
     # size=exactly amount of transaction size
