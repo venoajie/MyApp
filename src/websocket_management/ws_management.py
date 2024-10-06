@@ -542,7 +542,7 @@ async def on_restart(currencies_default: str,
                                        transaction_log_trading,
                                        archive_db_table)
         
-        await resupply_sub_accountdb(currency)
+        #await resupply_sub_accountdb(currency)
         
         await update_trades_from_exchange (currency,
                                            archive_db_table,

@@ -133,7 +133,7 @@ async def update_user_changes(data_orders,
 
                 await saving_traded_orders (trade, archive_db_table, order_db_table)
                 
-            await resupply_sub_accountdb(currency)
+            
             
         else:
             for order in orders:
@@ -170,6 +170,7 @@ async def update_user_changes(data_orders,
                         
                         await labelling_the_unlabelled_and_resend_it(order, instrument_name)
                         
+            await resupply_sub_accountdb(currency)            
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
 
