@@ -511,6 +511,8 @@ class StreamAccountData:
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params,
                                                                                       max_position,
+                                                                                      sum_my_trades_currency_strategy,
+                                                                                      TA_result_data,
                                                                                       index_price,
                                                                                       server_time)
                                                                 
@@ -518,10 +520,9 @@ class StreamAccountData:
                                                                 await hedging.is_send_and_cancel_open_order_allowed(
                                                                     instrument_ticker,
                                                                     active_futures,
-                                                                    sum_my_trades_currency_strategy,
                                                                     orders_currency_strategy,
                                                                     best_ask_prc,
-                                                                    TA_result_data))
+                                                                    ))
                                                                 
                                                                 if send_order["order_allowed"]:
                                                                     
@@ -542,8 +543,6 @@ class StreamAccountData:
                                                                     #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                                                                     
                                                                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                                                                        TA_result_data,
-                                                                        sum_my_trades_currency_strategy,
                                                                         orders_currency_strategy_label_closed,
                                                                         best_bid_prc,
                                                                         nearest_transaction_to_index,

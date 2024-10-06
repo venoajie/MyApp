@@ -185,6 +185,8 @@ class HedgingSpot(BasicStrategy):
     """ """
     
     max_position: float
+    sum_my_trades_currency_strategy: int
+    TA_result_data: list
     index_price: float
     server_time: int
 
@@ -197,10 +199,8 @@ class HedgingSpot(BasicStrategy):
         self,
         instrument_name: str,
         futures_instruments,
-        sum_my_trades_currency_strategy_open: int,
         orders_currency_strategy: list,
         ask_price: float,
-        TA_result_data: dict
     ) -> dict:
         """ """
 
@@ -216,7 +216,7 @@ class HedgingSpot(BasicStrategy):
         
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
-        market_condition = await get_market_condition_hedging(TA_result_data, 
+        market_condition = await get_market_condition_hedging(self.TA_result_data, 
                                                               self.index_price, 
                                                               threshold_market_condition)
 
@@ -250,7 +250,7 @@ class HedgingSpot(BasicStrategy):
             size_and_order_appropriate_for_ordering: bool = (
                 are_size_and_order_appropriate (
                     "add_position",
-                    sum_my_trades_currency_strategy_open, 
+                    self.sum_my_trades_currency_strategy, 
                     sum_orders, 
                     size, 
                     max_position
@@ -299,8 +299,6 @@ class HedgingSpot(BasicStrategy):
 
     async def is_send_exit_order_allowed(
         self,
-        TA_result_data,
-        sum_my_trades_currency_strategy,
         orders_currency_strategy_label_closed,
         bid_price: float,
         selected_transaction: list,
@@ -329,9 +327,11 @@ class HedgingSpot(BasicStrategy):
         
         transaction = selected_transaction[0]
         
-        log.warning (f"sum_my_trades_currency_strategy {sum_my_trades_currency_strategy} max_position {self.max_position}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} max_position {self.max_position}")
         
-        current_position_exceed_max_position =  abs(sum_my_trades_currency_strategy) > abs(self.max_position) or sum_my_trades_currency_strategy > 0
+        sum_my_trades_currency_str = self.sum_my_trades_currency_strategy
+        
+        current_position_exceed_max_position =  abs(sum_my_trades_currency_str) > abs(self.max_position) or sum_my_trades_currency_str > 0
     
         exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
                                                                 orders_currency_strategy_label_closed,)
@@ -354,9 +354,9 @@ class HedgingSpot(BasicStrategy):
         
             threshold_market_condition = hedging_attributes ["delta_price_pct"]
             
-            market_condition = await get_market_condition_hedging (TA_result_data, 
-                                                                self.index_price, 
-                                                                threshold_market_condition)
+            market_condition = await get_market_condition_hedging (self.TA_result_data, 
+                                                                   self.index_price, 
+                                                                   threshold_market_condition)
 
             bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
 
