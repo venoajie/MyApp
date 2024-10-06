@@ -509,7 +509,8 @@ class StreamAccountData:
                                                                 max_position: int = notional * -1
                                                                 
                                                                 hedging = HedgingSpot(strategy,
-                                                                                      strategy_params)
+                                                                                      strategy_params,
+                                                                                      server_time)
                                                                 
                                                                 send_order: dict = (
                                                                 await hedging.is_send_and_cancel_open_order_allowed(
@@ -521,7 +522,6 @@ class StreamAccountData:
                                                                     max_position,
                                                                     index_price,
                                                                     best_ask_prc,
-                                                                    server_time,
                                                                     TA_result_data))
                                                                 
                                                                 if send_order["order_allowed"]:
@@ -550,7 +550,6 @@ class StreamAccountData:
                                                                         index_price,
                                                                         best_bid_prc,
                                                                         nearest_transaction_to_index,
-                                                                        server_time,
                                                                     )
 #                                                                    log.error (f"send_closing_order {send_closing_order}")
                                                                     await if_order_is_true(send_closing_order, instrument_ticker)
