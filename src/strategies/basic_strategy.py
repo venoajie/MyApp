@@ -141,7 +141,8 @@ def are_size_and_order_appropriate(
         
         if current_size_or_open_position > 0:
             ordering_is_ok = proforma < current_size_or_open_position
-    #log.debug (f"ordering_is_ok  {ordering_is_ok} current_size_or_open_position  {current_size_or_open_position} proforma  {proforma} max_position  {max_position} current_orders_size  {current_orders_size} next_orders_size  {next_orders_size} ")
+    
+    log.debug (f"ordering_is_ok  {ordering_is_ok} current_size_or_open_position  {current_size_or_open_position} proforma  {proforma} max_position  {max_position} current_orders_size  {current_orders_size} next_orders_size  {next_orders_size} ")
         
     return ordering_is_ok
 

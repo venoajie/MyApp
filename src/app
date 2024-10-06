@@ -280,22 +280,24 @@ class StreamAccountData:
                 for instrument in instruments_name:
 
                     currency = extract_currency_from_text(instrument).upper()   
-                                    
-                    self.loop.create_task(
+                    
+                    ws_channel_currency = [f"user.portfolio.{currency}",
+                                         f"user.changes.any.{currency.upper()}.raw",
+                                         f"chart.trades.{instrument}.{resolution}"]
+                                        
+                    ws_channel_instrument = [f"incremental_ticker.{instrument}",]
+                    
+                    for ws in ws_channel_currency:
+                        self.loop.create_task(
                         self.ws_operation(
                             operation="subscribe",
-                            ws_channel=f"incremental_ticker.{instrument}",
-                        )
-                    )
+                            ws_channel= ws_channel_instrument,
+                        ))
                     
-                    
-                    ws_channel=[f"user.portfolio.{currency}",
-                                f"user.changes.any.{currency.upper()}.raw",
-                                f"chart.trades.{instrument}.{resolution}"]
-                                               
+                                           
                     if "PERPETUAL" in instrument:
                         
-                        for ws in ws_channel:
+                        for ws in ws_channel_currency:
 
                             self.loop.create_task(
                                 self.ws_operation(

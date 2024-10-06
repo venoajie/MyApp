@@ -538,9 +538,9 @@ async def on_restart(currencies_default: str,
         
         transaction_log_trading= f"transaction_log_{currency.lower()}_json"
         
-        await resupply_transaction_log(currency, 
-                                       transaction_log_trading,
-                                       archive_db_table)
+        #await resupply_transaction_log(currency, 
+        #                               transaction_log_trading,
+        #                               archive_db_table)
         
         #await resupply_sub_accountdb(currency)
         
