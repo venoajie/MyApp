@@ -229,41 +229,58 @@ class StreamAccountData:
             close_timeout=60,
         ) as self.websocket_client:
                 
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             file_toml = "config_strategies.toml"
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 
             config_app = get_config(file_toml)
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 
             tradable_config_app = config_app["tradable"]
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             strategy_attributes = config_app["strategies"]
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                                     
             active_strategies =   [o["strategy_label"] for o in strategy_attributes if o["is_active"]==True]
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             cancellable_strategies =   [o["strategy_label"] for o in strategy_attributes if o["cancellable"]==True]
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             trade_db_table= "my_trades_all_json"
             
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             order_db_table= "orders_all_json"                
             
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             # Establish restart procedure
             await on_restart(currencies,
                             order_db_table)
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             settlement_periods= get_settlement_period (strategy_attributes)
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                             
             futures_instruments=await get_futures_instruments(currencies,
                                                                 settlement_periods)  
             
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             active_futures = futures_instruments["active_futures"]   
 
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             active_combo_perp = futures_instruments["active_combo_perp"]  
 
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             instruments_name = futures_instruments["instruments_name"]   
             
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
             
+            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             resolution = 1                
                             
             while True:
