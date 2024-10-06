@@ -12,11 +12,11 @@ from loguru import logger as log
 # user defined formula
 
 from configuration.config import main_dotenv
-from deribit_get import (
-    GetPrivateData, 
-    get_currencies,
-    get_instruments,
-    telegram_bot_sendtext, get_tickers)
+from deribit_get import*# (
+    #GetPrivateData, 
+    #get_currencies,
+    #get_instruments,
+    #telegram_bot_sendtext, get_tickers)
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
