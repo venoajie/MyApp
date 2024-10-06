@@ -489,6 +489,8 @@ class StreamAccountData:
                                                             my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
                                                             
                                                             orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
+
+                                                            orders_currency_strategy_label_closed = [o for o in orders_currency_strategy if "closed" in (o["label"]) ]
                                                         
                                                             my_trades_currency_strategy_open = [o for o in my_trades_currency_strategy if "open" in (o["label"])]
                                                             
@@ -504,6 +506,8 @@ class StreamAccountData:
                                                                 
                                                                 log.debug (f"strategy {strategy}-START")
                                                                 
+                                                                max_position: int = notional * -1
+                                                                
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params)
                                                                 
@@ -514,7 +518,7 @@ class StreamAccountData:
                                                                     active_futures,
                                                                     sum_my_trades_currency_strategy,
                                                                     orders_currency_strategy,
-                                                                    notional,
+                                                                    max_position,
                                                                     index_price,
                                                                     best_ask_prc,
                                                                     server_time,
@@ -540,6 +544,9 @@ class StreamAccountData:
                                                                     
                                                                     send_closing_order: dict = await hedging.is_send_exit_order_allowed(
                                                                         TA_result_data,
+                                                                        max_position,
+                                                                        sum_my_trades_currency_strategy,
+                                                                        orders_currency_strategy_label_closed,
                                                                         index_price,
                                                                         best_bid_prc,
                                                                         nearest_transaction_to_index,

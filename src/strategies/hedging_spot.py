@@ -51,12 +51,13 @@ def hedged_value_to_notional(notional: float,
 
 def determine_opening_size(instrument_name: str, 
                            futures_instruments,
-                           side: str, notional: float, 
+                           side: str, 
+                           max_position: float, 
                            factor: float) -> int:
     """ """
     sign = ensure_sign_consistency(side)
     
-    proposed_size= max(1, int(notional * factor)) 
+    proposed_size= max(1, int(abs(max_position) * factor)) 
     
     return size_rounding(instrument_name, futures_instruments, proposed_size) * sign
 
@@ -199,7 +200,7 @@ class HedgingSpot(BasicStrategy):
         futures_instruments,
         sum_my_trades_currency_strategy_open: int,
         orders_currency_strategy: list,
-        notional: float,
+        max_position: float,
         index_price,
         ask_price: float,
         server_time: int,
@@ -214,8 +215,7 @@ class HedgingSpot(BasicStrategy):
         #)
         fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
-        params: dict = self.get_basic_params().get_basic_opening_parameters(
-            ask_price, None, notional)
+        params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
         
         hedging_attributes= self.strategy_parameters[0]
         
@@ -242,15 +242,17 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
 
-        size = determine_opening_size(instrument_name, futures_instruments, params["side"], notional, SIZE_FACTOR)
+        size = determine_opening_size(instrument_name, 
+                                      futures_instruments, 
+                                      params["side"], 
+                                      max_position, 
+                                      SIZE_FACTOR)
 
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         sum_orders: int = get_transactions_sum(open_orders_label_strategy)
-                   
-        max_position: int = notional * ensure_sign_consistency (params["side"])    
         
         #log.info  (f"params {params} max_position {max_position}")
         
@@ -307,6 +309,9 @@ class HedgingSpot(BasicStrategy):
     async def is_send_exit_order_allowed(
         self,
         TA_result_data,
+        max_position,
+        sum_my_trades_currency_strategy,
+        orders_currency_strategy_label_closed,
         index_price: float,
         bid_price: float,
         selected_transaction: list,
@@ -333,70 +338,76 @@ class HedgingSpot(BasicStrategy):
             dict: _description_
         """
         transaction = selected_transaction[0]
+        
+        log.warning (f"sum_my_trades_currency_strategy {sum_my_trades_currency_strategy} max_position {max_position}")
+        
+        current_position_exceed_max_position =  abs(sum_my_trades_currency_strategy) > abs(max_position) or sum_my_trades_currency_strategy > 0
+        
+        if current_position_exceed_max_position:
+            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
+                                                                    orders_currency_strategy_label_closed,)
+            log.info (f"exit_params {exit_params}")
 
-        order_allowed, cancel_allowed, cancel_id = False, False, None
-        
-        hedging_attributes = self.strategy_parameters[0]
-        
-        currency = extract_currency_from_text(transaction ["instrument_name"]).lower()
+        else:
+            order_allowed, cancel_allowed, cancel_id = False, False, None
+            
+            hedging_attributes = self.strategy_parameters[0]
+            
+            currency = extract_currency_from_text(transaction ["instrument_name"]).lower()
 
-        threshold_market_condition = hedging_attributes ["delta_price_pct"]
-        
-        market_condition = await get_market_condition_hedging (currency,
-                                                               TA_result_data, 
-                                                               index_price, 
-                                                               threshold_market_condition)
+            threshold_market_condition = hedging_attributes ["delta_price_pct"]
+            
+            market_condition = await get_market_condition_hedging (currency,
+                                                                TA_result_data, 
+                                                                index_price, 
+                                                                threshold_market_condition)
 
-        bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
-    
-        closed_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                            currency.upper(), 
-                                                            self.strategy_label,
-                                                            "closed")
-        exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
-                                                                closed_orders_label_strategy,)
+            bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
             
-        size = exit_params["size"]      
-        #log.info (f"exit_params {exit_params}")
-        order_allowed: bool = True if size != 0 else False
-        
-        if order_allowed:
-            
-            if (bullish or strong_bullish) \
-                and bid_price < transaction ["price"]:
-            
+            exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
+                                                                    orders_currency_strategy_label_closed,)
                 
-                len_orders: int = get_transactions_len(closed_orders_label_strategy)
-                
-                ONE_SECOND = 1000
-                ONE_MINUTE = ONE_SECOND * 60
-                
-                waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-
-                cancel_allowed: bool = is_cancelling_order_allowed(
-                    strong_bullish,
-                    bullish,
-                    waiting_minute_before_cancel,
-                    len_orders,
-                    closed_orders_label_strategy,
-                    server_time,)
-                    
-                if cancel_allowed:
-                    cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
-                    
-                log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
-
-                #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
-                    
+            size = exit_params["size"]      
+            #log.info (f"exit_params {exit_params}")
+            order_allowed: bool = True if size != 0 else False
             
-                if (False if size == 0 else True) and len_orders == 0:# and max_order:
+            if order_allowed:
+                
+                if (bullish or strong_bullish) \
+                    and bid_price < transaction ["price"]:
+                
                     
+                    len_orders: int = get_transactions_len(closed_orders_label_strategy)
                     
-                    exit_params.update({"entry_price": bid_price})
+                    ONE_SECOND = 1000
+                    ONE_MINUTE = ONE_SECOND * 60
+                    
+                    waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
+
+                    cancel_allowed: bool = is_cancelling_order_allowed(
+                        strong_bullish,
+                        bullish,
+                        waiting_minute_before_cancel,
+                        len_orders,
+                        closed_orders_label_strategy,
+                        server_time,)
                         
-                    #convert size to positive sign
-                    exit_params.update({"size": abs (size)})
+                    if cancel_allowed:
+                        cancel_id= min ([o["order_id"] for o in closed_orders_label_strategy])  
+                        
+                    log.error (f"closed_orders_label_strategy {closed_orders_label_strategy}")
+
+                    #max_order = max_order_stack_has_not_exceeded (len_orders, bullish)
+                        
                 
+                    if (False if size == 0 else True) and len_orders == 0:# and max_order:
+                        
+                        
+                        exit_params.update({"entry_price": bid_price})
+                            
+                        #convert size to positive sign
+                        exit_params.update({"size": abs (size)})
+                    
         #log.error (f"order_allowed {order_allowed}")
         #log.info (f"cancel_allowed {cancel_allowed} ")
         return dict(
