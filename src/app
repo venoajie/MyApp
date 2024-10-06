@@ -127,9 +127,12 @@ async def update_user_changes(data_orders,
     if orders:
         
         if trades:
-            
-            await saving_traded_orders (trades, trade_db_table, order_db_table)
-            await saving_traded_orders (trades, archive_db_table, order_db_table)
+            for trade in trades:
+                
+                await saving_traded_orders (trade, trade_db_table, order_db_table)                      
+
+                await saving_traded_orders (trade, archive_db_table, order_db_table)
+                
             await resupply_sub_accountdb(currency)
             
         else:

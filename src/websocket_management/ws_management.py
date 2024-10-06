@@ -514,8 +514,9 @@ async def update_trades_from_exchange (currency: str,
         trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
 
         if trades_from_exchange_without_futures_combo:
-                
-                await saving_traded_orders (trades_from_exchange_without_futures_combo, 
+            
+            for trade in trades_from_exchange_without_futures_combo:
+                await saving_traded_orders (trade, 
                                             archive_db_table,
                                             order_table)
 

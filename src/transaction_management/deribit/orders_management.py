@@ -56,7 +56,7 @@ def labelling_unlabelled_transaction(order: dict) -> None:
                 label_open=label_open)
 
 
-async def saving_traded_orders (trades,
+async def saving_traded_orders (trade,
                                 table,
                                 order_table,) -> None:
     """_summary_
@@ -65,42 +65,37 @@ async def saving_traded_orders (trades,
         trades (_type_): _description_
         orders (_type_): _description_
     """
+
+    try:
+        label= trade["label"]
+    except:
+        label= get_custom_label(trade)
+        trade.update({"label": label})
     
-    for trade in trades:    
-        instrument_name = trade["instrument_name"]
-                            
+    # check if transaction has additional attributes. If no, provide it with them
+    if "open" in label or "combo_id" in trade:
+        await get_additional_params_for_open_label (trade, label)
+
+    # insert clean trading transaction
+    await insert_tables(table, trade)
+    
+    if "my_trades_all_json" in table:
         filter_trade="order_id"
         
         order_id = trade[f"{filter_trade}"]
-        
-        try:
             
-            await deleting_row (order_table,
-                            "databases/trading.sqlite3",
-                            filter_trade,
-                            "=",
-                            order_id,
-                        )
+        await deleting_row (order_table,
+                        "databases/trading.sqlite3",
+                        filter_trade,
+                        "=",
+                        order_id,)
         
-        except:
-            continue
-        
-        try:
-            label= trade["label"]
-        except:
-            label= get_custom_label(trade)
-            trade.update({"label": label})
-        
-        # check if transaction has additional attributes. If no, provide it with them
-        if "open" in label or "combo_id" in trade:
-            await get_additional_params_for_open_label (trade, label)
+        if   "closed" in label:
 
-        # insert clean trading transaction
-        await insert_tables(table, trade)
-        
-        if "closed" in label:
-            await clean_up_closed_transactions (instrument_name, table)
-
+                instrument_name = trade["instrument_name"]
+                                    
+                await clean_up_closed_transactions (instrument_name, table)
+    
 
 async def saving_orders (order_table,
                          order) -> None:
