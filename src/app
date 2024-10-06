@@ -476,7 +476,7 @@ class StreamAccountData:
                                                                                                     "all", 
                                                                                                     column_trade)
                                                         
-                                                        column_order= "instrument_name","label","order_id","amount","last_update_timestamp"
+                                                        column_order= "instrument_name","label","order_id","amount","timestamp"
                                                         
                                                         orders_currency = await get_query(order_db_table, 
                                                                                                 currency, 
