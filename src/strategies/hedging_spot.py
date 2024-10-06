@@ -208,7 +208,7 @@ class HedgingSpot(BasicStrategy):
     ) -> dict:
         """ """
 
-        ONE_SECOND,  ONE_MINUTE = 1000, ONE_SECOND * 60
+        ONE_SECOND,  ONE_MINUTE = 1000, 60000
                 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
