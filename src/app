@@ -287,9 +287,6 @@ class StreamAccountData:
                         )
                     )
                     
-                    #await clean_up_closed_transactions (instrument, trade_db_table)        
-
-
                     if "PERPETUAL" in instrument:
                         self.loop.create_task(
                             self.ws_operation(
@@ -310,7 +307,9 @@ class StreamAccountData:
                                 ws_channel=f"user.changes.any.{currency.upper()}.raw",
                             )
                         )
-                                
+                    
+                    await clean_up_closed_transactions (instrument, trade_db_table)        
+            
                 while self.websocket_client.open:
                     # Receive WebSocket messages
                     message: bytes = await self.websocket_client.recv()

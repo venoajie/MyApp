@@ -452,44 +452,45 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
                                              column_list,)                                       
 
     # filtered transactions with closing labels
-    transaction_with_closed_labels = get_transactions_with_closed_label (transactions_all)
-    
-    labels_only = remove_redundant_elements ([o["label"] for o in transaction_with_closed_labels])
+    if transactions_all:
+        transaction_with_closed_labels = get_transactions_with_closed_label (transactions_all)
+        
+        labels_only = remove_redundant_elements ([o["label"] for o in transaction_with_closed_labels])
 
-    log.error (f"closing transactions {labels_only}")
+        log.error (f"closing transactions {labels_only}")
 
-    if transaction_with_closed_labels:
+        if transaction_with_closed_labels:
 
-        for label in labels_only:
-            log.error (f"label {label}")
-            
-            label_integer = get_label_integer(label)
-            
-            closed_transactions_all= transactions_under_label_int (label_integer, transactions_all)
-
-            size_to_close = closed_transactions_all["summing_closed_transaction"]
-
-            if size_to_close == 0:
+            for label in labels_only:
+                log.error (f"label {label}")
                 
-                transactions_with_zero_sum = closed_transactions_all["closed_transactions"]
+                label_integer = get_label_integer(label)
                 
-                log.info (F"transactions_with_zero_sum{transactions_with_zero_sum}")
-                            
-                for transaction in transactions_with_zero_sum:
-                    
-                    log.info (F"transaction{transaction}")
-            
-                    trade_id = transaction[where_filter]
-                    log.info (F"trade_id{trade_id}")
+                closed_transactions_all= transactions_under_label_int (label_integer, transactions_all)
 
-                    await deleting_row(
-                        trade_table,
-                        "databases/trading.sqlite3",
-                        where_filter,
-                        "=",
-                        trade_id,
-                    )
+                size_to_close = closed_transactions_all["summing_closed_transaction"]
+
+                if size_to_close == 0:
                     
+                    transactions_with_zero_sum = closed_transactions_all["closed_transactions"]
+                    
+                    log.info (F"transactions_with_zero_sum{transactions_with_zero_sum}")
+                                
+                    for transaction in transactions_with_zero_sum:
+                        
+                        log.info (F"transaction{transaction}")
+                
+                        trade_id = transaction[where_filter]
+                        log.info (F"trade_id{trade_id}")
+
+                        await deleting_row(
+                            trade_table,
+                            "databases/trading.sqlite3",
+                            where_filter,
+                            "=",
+                            trade_id,
+                        )
+                        
     log.error (f" clean_up_closed_transactions {instrument_name} DONE")
 
 
