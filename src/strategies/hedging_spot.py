@@ -207,19 +207,12 @@ class HedgingSpot(BasicStrategy):
         TA_result_data: dict
     ) -> dict:
         """ """
-        
-        #one_minute=60000
 
-        #open_orders_label_strategy: dict = await self.get_basic_params().transaction_attributes(
-        #    "orders_all_json", "open"
-        #)
-        fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
-
-        params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
+        ONE_SECOND,  ONE_MINUTE = 1000, ONE_SECOND * 60
+                
+        order_allowed, cancel_allowed, cancel_id = False, False, None
         
-        hedging_attributes= self.strategy_parameters[0]
-        
-       # log.warning (f"hedging_attributes {hedging_attributes}")
+        len_orders: int = get_transactions_len(open_orders_label_strategy)
 
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
@@ -232,72 +225,77 @@ class HedgingSpot(BasicStrategy):
         #strong_bullish = market_condition["strong_rising_price"]
         strong_bearish = market_condition["strong_falling_price"]
         #neutral = market_condition["neutral_price"]
+        params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
+        
+        hedging_attributes= self.strategy_parameters[0]
         
         weighted_factor= hedging_attributes["weighted_factor"]
 
-        ONE_SECOND = 1000
-        ONE_MINUTE = ONE_SECOND * 60
-        
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-        
-        SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
+                               
+        if len_orders == 0:
+            fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
-        size = determine_opening_size(instrument_name, 
-                                      futures_instruments, 
-                                      params["side"], 
-                                      max_position, 
-                                      SIZE_FACTOR)
+            SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
 
-        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
-        #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
+            size = determine_opening_size(instrument_name, 
+                                        futures_instruments, 
+                                        params["side"], 
+                                        max_position, 
+                                        SIZE_FACTOR)
 
-        len_orders: int = get_transactions_len(open_orders_label_strategy)
-        sum_orders: int = get_transactions_sum(open_orders_label_strategy)
-        
-        #log.info  (f"params {params} max_position {max_position}")
-        
-        size_and_order_appropriate_for_ordering: bool = (
-            are_size_and_order_appropriate (
-                "add_position",
-                sum_my_trades_currency_strategy_open, 
-                sum_orders, 
-                size, 
-                max_position
-            )
-        )
-        
-        cancel_allowed: bool = is_cancelling_order_allowed(
-            strong_bearish,
-            bearish,
-            waiting_minute_before_cancel,
-            len_orders,
-            open_orders_label_strategy,
-            server_time,
-        )
+            open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
+            #log.debug (f"open_orders_label_strategy {open_orders_label_strategy}")
 
-        order_allowed: bool = (
-                size_and_order_appropriate_for_ordering
-                and (bearish or strong_bearish)
-                and fluctuation_exceed_threshold
-            )
-        
-        if order_allowed :
-            label_open: str = get_label("open", self.strategy_label)
-            params.update({"label": label_open})
-            label_and_side_consistent= is_label_and_side_consistent(params)
-                    
-            #order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
             
-            if label_and_side_consistent:# and not order_has_sent_before:
+            sum_orders: int = get_transactions_sum(open_orders_label_strategy)
+            
+            #log.info  (f"params {params} max_position {max_position}")
+            
+            size_and_order_appropriate_for_ordering: bool = (
+                are_size_and_order_appropriate (
+                    "add_position",
+                    sum_my_trades_currency_strategy_open, 
+                    sum_orders, 
+                    size, 
+                    max_position
+                )
+            )
+            
+            order_allowed: bool = (
+                    size_and_order_appropriate_for_ordering
+                    and (bearish or strong_bearish)
+                    and fluctuation_exceed_threshold
+                )
+            
+            if order_allowed :
+                label_open: str = get_label("open", self.strategy_label)
+                params.update({"label": label_open})
+                label_and_side_consistent= is_label_and_side_consistent(params)
+                        
+                #order_has_sent_before =  check_if_id_has_used_before (combined_result, "label", params["label"])
                 
-                params.update({"size": abs(size)})
-                params.update({"is_label_and_side_consistent": label_and_side_consistent})
-                           
-            else:
-                
-                order_allowed=False
+                if label_and_side_consistent:# and not order_has_sent_before:
+                    
+                    params.update({"size": abs(size)})
+                    params.update({"is_label_and_side_consistent": label_and_side_consistent})
+                            
+                else:
+                    
+                    order_allowed=False
         
-        #log.debug (f"params {params} ")
+        else:
+            
+            cancel_allowed: bool = is_cancelling_order_allowed(
+                strong_bearish,
+                bearish,
+                waiting_minute_before_cancel,
+                len_orders,
+                open_orders_label_strategy,
+                server_time,
+            )
+
+
         return dict(
             order_allowed=order_allowed and len_orders == 0,
             order_parameters=[] if order_allowed == False else params,
