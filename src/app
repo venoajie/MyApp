@@ -345,7 +345,8 @@ class StreamAccountData:
                         if message["method"] != "heartbeat":
                             message_channel = message["params"]["channel"]
 
-                            data_orders: list = message["params"]["data"]       
+                            data_orders: list = message["params"]["data"]    
+                            log.info (f" data_orders {data_orders}")   
                             
                             currency: str = extract_currency_from_text(message_channel)
                             
