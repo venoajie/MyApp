@@ -476,8 +476,11 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
                 log.info (F"transactions_with_zero_sum{transactions_with_zero_sum}")
                             
                 for transaction in transactions_with_zero_sum:
+                    
+                    log.info (F"transaction{transaction}")
             
                     trade_id = transaction[where_filter]
+                    log.info (F"trade_id{trade_id}")
 
                     await deleting_row(
                         trade_table,
