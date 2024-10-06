@@ -43,6 +43,7 @@ from utilities.string_modification import (
     extract_currency_from_text,)
 from websocket_management.ws_management import (
     compute_notional_value, 
+    cancel_all,
     cancel_by_order_id,
     currency_inline_with_database_address,
     distribute_ticker_result_as_per_data_type,
@@ -244,7 +245,6 @@ class StreamAccountData:
             
             # Establish restart procedure
             await on_restart(currencies,
-                            cancellable_strategies,
                             order_db_table)
             
             settlement_periods= get_settlement_period (strategy_attributes)
@@ -608,6 +608,7 @@ class StreamAccountData:
                                                                 
                                 except Exception as error:
                                     log.error(error)
+                                    await cancel_all()
                                     await raise_error_message(
                                         "WebSocket connection - failed to process data"
                                     )
@@ -735,6 +736,7 @@ def main():
         log.error("test")
 
     except Exception as error:
+        
         catch_error_message(
             error, 10, "app"
         )

@@ -178,6 +178,12 @@ async def get_my_trades_from_exchange(count: int, currency) -> list:
     return [] if trades == [] else trades["result"]["trades"]
 
 
+async def cancel_all () -> None:
+    private_data = await get_private_data()
+
+    await private_data.get_cancel_order_all()
+    
+
 async def cancel_by_order_id(open_order_id) -> None:
     private_data = await get_private_data()
 
@@ -448,6 +454,9 @@ async def get_and_save_currencies()->None:
         # catch_error('update currencies and instruments')
 
     except Exception as error:
+        
+        await cancel_all ()
+        
         catch_error_message(
         error, 10, "app"
         )
@@ -513,13 +522,12 @@ async def update_trades_from_exchange (currency: str,
 
     
 async def on_restart(currencies_default: str,
-                     cancellable_strategies: list,
-                     order_table) -> None:
+                     order_table: str) -> None:
     """
     """
 
-    log.warning("Cancelling selected orders")
-    await cancel_the_cancellables(cancellable_strategies)
+    log.warning("Cancelling all orders")
+    await cancel_all()
     
     # refresh databases
     await get_and_save_currencies()                
