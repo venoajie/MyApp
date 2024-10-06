@@ -216,6 +216,8 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
 
+        hedging_attributes= self.strategy_parameters[0]
+        
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(currency,
@@ -230,8 +232,6 @@ class HedgingSpot(BasicStrategy):
         strong_bearish = market_condition["strong_falling_price"]
         #neutral = market_condition["neutral_price"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
-        
-        hedging_attributes= self.strategy_parameters[0]
         
         weighted_factor= hedging_attributes["weighted_factor"]
 
