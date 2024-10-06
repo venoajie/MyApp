@@ -27,6 +27,7 @@ from utilities.system_tools import (
     sleep_and_restart,)
 from utilities.string_modification import (
     get_unique_elements, 
+    remove_redundant_elements,
     remove_dict_elements,
     extract_integers_from_text)
 from strategies.basic_strategy import (
@@ -453,7 +454,7 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
     # filtered transactions with closing labels
     transaction_with_closed_labels = get_transactions_with_closed_label (transactions_all)
     
-    labels_only = remove_duplicated_elements([o["label"] for o in transaction_with_closed_labels])
+    labels_only = remove_redundant_elements ([o["label"] for o in transaction_with_closed_labels])
 
     log.error (f"closing transactions {labels_only}")
 
