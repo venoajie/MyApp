@@ -461,6 +461,7 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
     if transaction_with_closed_labels:
 
         for label in labels_only:
+            log.error (f"label {label}")
             
             label_integer = get_label_integer(label)
             
