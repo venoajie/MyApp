@@ -12,11 +12,11 @@ from loguru import logger as log
 # user defined formula
 
 from configuration.config import main_dotenv
-from deribit_get import*# (
-    #GetPrivateData, 
-    #get_currencies,
-    #get_instruments,
-    #telegram_bot_sendtext, get_tickers)
+from deribit_get import (
+    GetPrivateData, 
+    get_currencies,
+    get_instruments,
+    telegram_bot_sendtext, get_tickers)
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
@@ -24,7 +24,11 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query)
 from strategies.config_strategies import paramaters_to_balancing_transactions
-from strategies.basic_strategy import *
+from strategies.basic_strategy import (
+    is_label_and_side_consistent,
+    check_db_consistencies,
+    get_basic_closing_paramaters,
+    are_size_and_order_appropriate)
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from transaction_management.deribit.orders_management import (
     saving_traded_orders,)
