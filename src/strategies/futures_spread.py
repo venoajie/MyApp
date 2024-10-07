@@ -134,15 +134,17 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
                     "=",
                     trade_id_sqlite,
                 )
-
+    
 def determine_opening_size(instrument_name: str, 
+                           active_combo_perp,
                            max_position: float,
-                           max_open_orders) -> int:
+                           max_open_orders: int,
+                           ) -> int:
     """ """
     
-    proposed_size = int(abs(max_position)/max_open_orders)
+    proposed_size= int(abs(max_position) )/max_open_orders
     
-    return size_rounding(instrument_name, futures_instruments, proposed_size) * sign
+    return size_rounding(instrument_name, active_combo_perp, proposed_size) 
 
 
 @dataclass(unsafe_hash=True, slots=True)
@@ -171,6 +173,7 @@ class FutureSpreads(BasicStrategy):
     async def is_send_and_cancel_open_order_allowed (self,
                                                      combo_instruments_name,
                                                      contango,
+                                                     active_combo_perp,
                                                      orders_currency_strategy: list,
     ) -> dict:
         """ """
@@ -191,12 +194,12 @@ class FutureSpreads(BasicStrategy):
         
         params.update({"label": label_open_update})
         
-        size = determine_opening_size(instrument_name, 
-                                    futures_instruments, 
-                                    params["side"], 
-                                    self.max_position, 
-                                    SIZE_FACTOR)
+        size = determine_opening_size(combo_instruments_name, 
+                                    active_combo_perp, 
+                                    self.max_position,
+                                    max_open_orders)
 
+        params.update({"size": size})
         
         if contango:
             params.update({"side": "sell"})
