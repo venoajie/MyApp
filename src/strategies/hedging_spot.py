@@ -211,9 +211,12 @@ class HedgingSpot(BasicStrategy):
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
+        
+        log.error (f"self.strategy_parameters {self.strategy_parameters}")
 
         hedging_attributes= self.strategy_parameters
         
+        log.error (f"hedging_attributes {hedging_attributes}")
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
         market_condition = await get_market_condition_hedging(self.TA_result_data, 

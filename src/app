@@ -494,12 +494,11 @@ class StreamAccountData:
                                                             else:
                                                                 sum_my_trades_currency_strategy = 0
                                                                 
-                                                            strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy]                                                                
+                                                            strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]                                                                
         
                                                             if "hedgingSpot" in strategy:
                                                                 
                                                                 log.debug (f"strategy {strategy}-START")
-                                                                log.debug (f"{strategy_params}")
                                                                 
                                                                 max_position: int = notional * -1
                                                                 
