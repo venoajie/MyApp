@@ -161,6 +161,7 @@ class FutureSpreads(BasicStrategy):
 
     async def is_send_and_cancel_open_order_allowed (self,
                                                      combo_instruments_name,
+                                                     contango,
                                                      orders_currency_strategy: list,
     ) -> dict:
         """ """
@@ -181,6 +182,11 @@ class FutureSpreads(BasicStrategy):
         
         params.update({"label": label_open_update})
         
+        if contango:
+            params.update({"side": "sell"})
+        
+        else:
+            params.update({"side": "buy"})
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
