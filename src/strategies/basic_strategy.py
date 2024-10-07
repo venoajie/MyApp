@@ -548,53 +548,6 @@ async def get_additional_params_for_open_label(transaction: list, label: str) ->
         if "take_profit" not in transaction:
             transaction.update({"take_profit": 0})
             
-    
-async def get_basic_closing_paramaters(selected_transaction: list,
-                                       closed_orders_label_strategy: list) -> dict:
-    """ """
-    transaction: dict = convert_list_to_dict(selected_transaction)
-    
-    # provide dict placeholder for params
-    params = {}
-
-    # default type: limit
-    params.update({"type": "limit"})
-
-    # determine side
-    
-    side = provide_side_to_close_transaction(transaction)
-    params.update({"side": side})
-    basic_size = get_transaction_size(transaction)
-
-    label_integer_open = get_label_integer(transaction ["label"])
-    
-    sum_order_under_closed_label = sum_order_under_closed_label_int (
-        closed_orders_label_strategy,
-        label_integer_open)
-    
-                                       
-    net_size = (basic_size + sum_order_under_closed_label)
-
-    size_abs = provide_size_to_close_transaction(basic_size,
-                                                 net_size)
-    #log.debug (f"side {side}")
-    size = size_abs * ensure_sign_consistency(side)   
-    
-    closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
-                                                                               net_size,
-                                                                               size)
-
-    #log.debug (f"closing_size_ok {closing_size_ok}")
-    # size=exactly amount of transaction size
-    params.update({"size": closing_size_ok })
-
-    label_closed: str = get_label("closed", transaction["label"])
-    params.update({"label": label_closed})
-    
-    params.update({"instrument": transaction ["instrument_name"]})
-    #log.info(f"params {params}")
-        
-    return params
 
 def is_label_and_side_consistent(params) -> bool:
     """ """
@@ -695,23 +648,57 @@ class BasicStrategy:
 
         params.update({"side": side})
 
-        try:
-            cancellable = strategy_config["cancellable"]
-        except:
-            cancellable = False
-       
-        # get transaction label and update the respective parameters
-        params.update({"cancellable": cancellable})
-
         if side == "sell":
             params.update({"entry_price": ask_price})
 
         if side == "buy":
             params.update({"entry_price": bid_price})
+    
+        label_open: str = get_label("open", self.strategy_label)
+        params.update({"label": label_open})
         
-        if "hedgingSpot" not in self.strategy_label:
-            params.update({"are_size_and_order_appropriate": are_size_and_order_appropriate (params)})
-            label_open: str = get_label("open", self.strategy_label)
-            params.update({"label": label_open})
-     
+        return params
+
+    def get_basic_closing_paramaters(self,
+                                    selected_transaction: list,
+                                    closed_orders_label_strategy: list) -> dict:
+        """ """
+        transaction: dict = convert_list_to_dict(selected_transaction)
+        
+        # provide dict placeholder for params
+        params = {}
+
+        # default type: limit
+        params.update({"type": "limit"})
+
+        # determine side        
+        side = provide_side_to_close_transaction(transaction)
+        params.update({"side": side})
+        basic_size = get_transaction_size(transaction)
+
+        label_integer_open = get_label_integer(transaction ["label"])
+        
+        sum_order_under_closed_label = sum_order_under_closed_label_int (
+            closed_orders_label_strategy,
+            label_integer_open)
+        
+        net_size = (basic_size + sum_order_under_closed_label)
+
+        size_abs = provide_size_to_close_transaction(basic_size,
+                                                    net_size)
+        #log.debug (f"side {side}")
+        size = size_abs * ensure_sign_consistency(side)   
+        
+        closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
+                                                                                net_size,
+                                                                                size)
+
+        # size=exactly amount of transaction size
+        params.update({"size": closing_size_ok })
+
+        label_closed: str = get_label("closed", transaction["label"])
+        params.update({"label": label_closed})
+        
+        params.update({"instrument": transaction ["instrument_name"]})
+            
         return params

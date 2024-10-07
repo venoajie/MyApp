@@ -283,8 +283,6 @@ class HedgingSpot(BasicStrategy):
                     )
                 
                 if order_allowed :
-                    label_open: str = get_label("open", self.strategy_label)
-                    params.update({"label": label_open})
                     label_and_side_consistent= is_label_and_side_consistent(params)
                     
                     if label_and_side_consistent:# and not order_has_sent_before:
@@ -356,7 +354,7 @@ class HedgingSpot(BasicStrategy):
         
         log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
     
-        exit_params: dict = await get_basic_closing_paramaters (selected_transaction,
+        exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
                                                                 orders_currency_strategy_label_closed,)
         
         len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
