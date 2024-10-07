@@ -311,7 +311,8 @@ class HedgingSpot(BasicStrategy):
             order_allowed=order_allowed and len_orders == 0,
             order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
-            cancel_id=get_order_id_max_time_stamp(open_orders_label_strategy)
+            cancel_id= None if not cancel_allowed \
+            else get_order_id_max_time_stamp(open_orders_label_strategy)
         )
 
 
@@ -417,5 +418,5 @@ class HedgingSpot(BasicStrategy):
                 [] if order_allowed == False else exit_params
             ),
             cancel_allowed=cancel_allowed,
-            cancel_id=cancel_id
+            cancel_id=None if not cancel_allowed else cancel_id
         )
