@@ -551,12 +551,22 @@ class StreamAccountData:
 
                                                             if "futureSpread" in strategy:
                                                                 log.error (f"strategy {strategy} {currency}-START")
+                                                                
+                                                                
+                                                                
                                                                 for combo in active_combo_perp:
+                                                                
                                                                     combo_instruments_name = combo["instrument_name"]
-                                                                    label_open = combo_instruments_name [7:][:7]
+                                                                    future_instrument_name = combo_instruments_name[7:][:7]
                                                                     combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)
+                                                                    future_ticker= reading_from_pkl_data("ticker",future_instrument_name)
+                                                                    log.info (f"{future_ticker}")
+                                                                    #contango = future_instrument_name - index_price
+                                                                    
                                                                     if combo_ticker:
+                                                                    
                                                                         my_trades_perpetual_strategy = ([o for o in my_trades_currency_strategy if "PERPETUAL" in o["instrument_name"] ])
+                                                                    
                                                                         sum_my_trades_perpetual_strategy = 0 if my_trades_perpetual_strategy == [] \
                                                                             else sum ([o["amount"] for o in sum_my_trades_perpetual_strategy])
                                                                         
@@ -570,6 +580,7 @@ class StreamAccountData:
                                                                 
                                                                         send_order: dict = await future_spreads.is_send_and_cancel_open_order_allowed (combo_instruments_name,
                                                                                                                                                  orders_currency_strategy)
+                                                                        
                                                                         
                                                                         if False and send_order["order_allowed"]:
                                                                             

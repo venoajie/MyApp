@@ -194,7 +194,7 @@ class FutureSpreads(BasicStrategy):
         log.warning (f"sum_my_trades_perpetual_strategy {self.sum_my_trades_perpetual_strategy} over_hedged \
             {self.over_hedged} max_position {self.max_position}")
         
-        if len_orders == 0:
+        if len_orders < max_open_orders :
                     
             if not over_hedged:
             
