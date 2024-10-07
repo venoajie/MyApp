@@ -671,42 +671,12 @@ def check_db_consistencies (instrument_name: str,
                 no_non_label_from_from_sqlite_open= False \
                     if get_non_label_from_transaction(order_from_sqlite_open) != [] else True )
 
-
-
-def get_strategy_config(strategy_parameters_all,
-                        strategy_label: str = None,
-                        ) -> dict:
-    """ """
-    
-    log.warning (f"strategy_parameters_all {strategy_parameters_all} sstrategy_label {strategy_label}")
-    
-    if strategy_label != None:
-        str_config: dict = [
-            o for o in strategy_parameters_all if strategy_label in o["strategy_label"]
-        ][0]
-
-    else:
-        str_config: dict = [
-            o
-            for o in strategy_parameters_all
-            if parsing_label(strategy_label)["main"] in o["strategy_label"]
-        ][0]
-
-    return str_config
-
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
     """ """
 
     strategy_label: str
-    strategy_parameters_all: list
-    strategy_parameters: dict= fields 
-
-    def __post_init__(self):
-        self.strategy_parameters = get_strategy_config(self.strategy_parameters_all,
-                        self.strategy_label
-                        )
-
+    strategy_parameters: dict
 
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
@@ -719,7 +689,7 @@ class BasicStrategy:
         # default type: limit
         params.update({"type": "limit"})
 
-        strategy_config: dict = self.get_strategy_config()
+        strategy_config: dict = self.strategy_parameters
 
         side: str = strategy_config["side"]
 
