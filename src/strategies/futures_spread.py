@@ -132,7 +132,8 @@ class FutureSpreads(BasicStrategy):
     ticker: list
 
     def __post_init__(self):
-        self.ask_price = self.ticker["best_ask_price"]
+        ticker = self.ticker[0]
+        self.ask_price = ticker ["best_ask_price"]
         print (f"self.ask_price {self.ask_price}")
 
     async def is_send_exit_order_allowed(
