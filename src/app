@@ -553,13 +553,13 @@ class StreamAccountData:
                                                                 log.error (f"strategy {strategy} {currency}-START")
                                                                 for combo in active_combo_perp:
                                                                     combo_instruments_name = combo["instrument_name"]
-                                                                    combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)[0]
+                                                                    combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)
                                                                     if combo_ticker:
                                                                         future_spreads = FutureSpreads(strategy,
                                                                                                        strategy_params,
                                                                                                        sum_my_trades_currency_strategy,
                                                                                                        notional,
-                                                                                                       combo_ticker,
+                                                                                                       combo_ticker [0],
                                                                                                        )
                                                                         log.debug (f"combo_instruments_name {combo_instruments_name}")
                                                                         await future_spreads.is_send_and_cancel_open_order_allowed(orders_currency_strategy)

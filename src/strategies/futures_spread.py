@@ -179,8 +179,8 @@ class FutureSpreads(BasicStrategy):
 
         over_hedged  =  self.over_hedged
         
-        log.warning (f"sum_mparamsy_trades_currency_strategy {params}")
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
+        log.warning (f" {params}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged} max_position {self.max_position}")
         
         if len_orders == 0:
                     
