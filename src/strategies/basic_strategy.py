@@ -624,6 +624,49 @@ def check_db_consistencies (instrument_name: str,
                 no_non_label_from_from_sqlite_open= False \
                     if get_non_label_from_transaction(order_from_sqlite_open) != [] else True )
 
+def get_basic_closing_paramaters(selected_transaction: list,
+                                closed_orders_label_strategy: list) -> dict:
+    """ """
+    transaction: dict = convert_list_to_dict(selected_transaction)
+    
+    # provide dict placeholder for params
+    params = {}
+
+    # default type: limit
+    params.update({"type": "limit"})
+
+    # determine side        
+    side = provide_side_to_close_transaction(transaction)
+    params.update({"side": side})
+    basic_size = get_transaction_size(transaction)
+
+    label_integer_open = get_label_integer(transaction ["label"])
+    
+    sum_order_under_closed_label = sum_order_under_closed_label_int (
+        closed_orders_label_strategy,
+        label_integer_open)
+    
+    net_size = (basic_size + sum_order_under_closed_label)
+
+    size_abs = provide_size_to_close_transaction(basic_size,
+                                                net_size)
+    #log.debug (f"side {side}")
+    size = size_abs * ensure_sign_consistency(side)   
+    
+    closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
+                                                                            net_size,
+                                                                            size)
+
+    # size=exactly amount of transaction size
+    params.update({"size": closing_size_ok })
+
+    label_closed: str = get_label("closed", transaction["label"])
+    params.update({"label": label_closed})
+    
+    params.update({"instrument": transaction ["instrument_name"]})
+        
+    return params
+
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
     """ """
@@ -663,42 +706,6 @@ class BasicStrategy:
                                     selected_transaction: list,
                                     closed_orders_label_strategy: list) -> dict:
         """ """
-        transaction: dict = convert_list_to_dict(selected_transaction)
-        
-        # provide dict placeholder for params
-        params = {}
-
-        # default type: limit
-        params.update({"type": "limit"})
-
-        # determine side        
-        side = provide_side_to_close_transaction(transaction)
-        params.update({"side": side})
-        basic_size = get_transaction_size(transaction)
-
-        label_integer_open = get_label_integer(transaction ["label"])
-        
-        sum_order_under_closed_label = sum_order_under_closed_label_int (
-            closed_orders_label_strategy,
-            label_integer_open)
-        
-        net_size = (basic_size + sum_order_under_closed_label)
-
-        size_abs = provide_size_to_close_transaction(basic_size,
-                                                    net_size)
-        #log.debug (f"side {side}")
-        size = size_abs * ensure_sign_consistency(side)   
-        
-        closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
-                                                                                net_size,
-                                                                                size)
-
-        # size=exactly amount of transaction size
-        params.update({"size": closing_size_ok })
-
-        label_closed: str = get_label("closed", transaction["label"])
-        params.update({"label": label_closed})
-        
-        params.update({"instrument": transaction ["instrument_name"]})
             
-        return params
+        return get_basic_closing_paramaters (selected_transaction,
+                                             closed_orders_label_strategy)
