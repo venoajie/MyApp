@@ -147,6 +147,11 @@ class FutureSpreads(BasicStrategy):
         self.best_ask_price = self.ticker ["best_ask_price"]
         self.best_bid_price = self.ticker ["best_bid_price"]
 
+    def get_basic_params(self) -> dict:
+        """ """
+        return BasicStrategy(self.strategy_label, 
+                             self.strategy_parameters)
+
     async def is_send_and_cancel_open_order_allowed (self,
                                                      orders_currency_strategy: list,
     ) -> dict:
