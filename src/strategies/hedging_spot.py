@@ -5,7 +5,6 @@ import asyncio
 from loguru import logger as log
 # installed
 from dataclassy import dataclass, fields
-#from strategies.config_strategies import hedging_spot_attributes
 
 # user defined formula
 from strategies.basic_strategy import (
@@ -13,15 +12,12 @@ from strategies.basic_strategy import (
     are_size_and_order_appropriate,
     delta_pct,
     ensure_sign_consistency,
-    get_basic_closing_paramaters,
-    get_label,
     get_max_time_stamp,
     get_order_id_max_time_stamp,
     is_label_and_side_consistent,
     is_minimum_waiting_time_has_passed,
     size_rounding,)
 from utilities.string_modification import (
-    extract_currency_from_text,
     parsing_label)
 
 def get_transactions_len(result_strategy_label) -> int:
