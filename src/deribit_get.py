@@ -504,13 +504,13 @@ class GetPrivateData:
             )
 
         log.warning(f'order_result {order_result}')
-        result_order = order_result["result"]["order"]
+        #result_order = order_result["result"]["order"]
         # log.warning(f"""result {order_result["result"]}""")
         #log.info(
         #    f"""{result_order["label"]} {result_order["direction"]} {result_order["amount"]} {result_order["order_id"]}"""
         #)
 
-        if order_result != None and ("error" in order_result or "invalid" in order_result):
+        if order_result != None and ("error" in order_result):
             error = order_result ["error"]
             message = error ["message"]
             reason = message ["reason"]
