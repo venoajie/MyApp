@@ -133,6 +133,7 @@ class FutureSpreads(BasicStrategy):
 
     def __post_init__(self):
         ticker = self.ticker[0]
+        print (f"self.ask_price {ticker}")
         self.ask_price = ticker ["best_ask_price"]
         print (f"self.ask_price {self.ask_price}")
 
