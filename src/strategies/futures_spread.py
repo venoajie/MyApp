@@ -4,7 +4,7 @@
 import asyncio
 
 # installed
-from dataclassy import dataclass
+from dataclassy import *
 from loguru import logger as log
 
 # user defined formula
@@ -132,9 +132,7 @@ class FutureSpreads(BasicStrategy):
     ticker: list
 
     def __post_init__(self):
-        ticker = self.ticker[0]
-        print (f"self.ask_price {ticker}")
-        self.ask_price = ticker ["best_ask_price"]
+        self.ask_price = self.ticker ["best_ask_price"]
         print (f"self.ask_price {self.ask_price}")
 
     async def is_send_exit_order_allowed(
