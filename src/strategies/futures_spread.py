@@ -4,7 +4,7 @@
 import asyncio
 
 # installed
-from dataclassy import *
+from dataclassy import dataclass, fields
 from loguru import logger as log
 
 # user defined formula
@@ -130,11 +130,13 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
 class FutureSpreads(BasicStrategy):
     """ """
     ticker: list
-    ask_price: float= fields (init=False)
+    best_ask_price: float= fields 
+    best_bid_price: float= fields 
 
     def __post_init__(self):
-        self.ask_price = self.ticker ["best_ask_price"]
-        print (f"self.ask_price {self.ask_price}")
+        self.best_ask_price = self.ticker ["best_ask_price"]
+        self.best_bid_price = self.ticker ["best_bid_price"]
+        print (f"self.best_ask_price {self.best_ask_price} self.best_bid_price {self.best_bid_price}")
 
     async def is_send_exit_order_allowed(
         self,
