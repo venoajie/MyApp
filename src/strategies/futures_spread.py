@@ -139,13 +139,19 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
     """ """
+    sum_my_trades_currency_strategy: int
+    notional: float
     ticker: list
     best_ask_price: float= fields 
     best_bid_price: float= fields 
+    max_position: float= fields 
+    over_hedged: bool= fields 
 
     def __post_init__(self):
         self.best_ask_price = self.ticker ["best_ask_price"]
         self.best_bid_price = self.ticker ["best_bid_price"]
+        self.max_position = self.strategy_parameters["max_leverage"] * self.notional
+        self.over_hedged = self.max_position > 0
 
     def get_basic_params(self) -> dict:
         """ """

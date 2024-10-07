@@ -557,7 +557,10 @@ class StreamAccountData:
                                                                     if combo_ticker:
                                                                         future_spreads = FutureSpreads(strategy,
                                                                                                        strategy_params,
-                                                                                                       combo_ticker)
+                                                                                                       sum_my_trades_currency_strategy,
+                                                                                                       notional,
+                                                                                                       combo_ticker,
+                                                                                                       )
                                                                         log.debug (f"combo_instruments_name {combo_instruments_name}")
                                                                         await future_spreads.is_send_and_cancel_open_order_allowed(orders_currency_strategy)
                                                                 
