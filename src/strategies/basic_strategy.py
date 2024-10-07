@@ -658,7 +658,7 @@ def get_basic_closing_paramaters(selected_transaction: list,
                                                                             size)
 
     # size=exactly amount of transaction size
-    params.update({"size": closing_size_ok })
+    params.update({"size": size if closing_size_ok else 0 })
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})

@@ -359,11 +359,14 @@ class HedgingSpot(BasicStrategy):
             
             if bid_price < transaction ["price"]:
                 exit_params.update({"entry_price": bid_price})
-                    
-                #convert size to positive sign
-                exit_params.update({"size": abs (exit_params["size"])})
-                log.info (f"exit_params {exit_params}")
-                order_allowed = True
+                
+                size = exit_params["size"]     
+                
+                if size != 0:    
+                    #convert size to positive sign
+                    exit_params.update({"size": abs (exit_params["size"])})
+                    log.info (f"exit_params {exit_params}")
+                    order_allowed = True
 
         else:
           
