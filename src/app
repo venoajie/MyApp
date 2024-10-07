@@ -568,7 +568,7 @@ class StreamAccountData:
                                                                                                        )
                                                                         log.debug (f"combo_instruments_name {combo_instruments_name}")
                                                                 
-                                                                        send_order: dict = future_spreads.is_send_and_cancel_open_order_allowed (combo_instruments_name,
+                                                                        send_order: dict = await future_spreads.is_send_and_cancel_open_order_allowed (combo_instruments_name,
                                                                                                                                                  orders_currency_strategy)
                                                                         
                                                                         if False and send_order["order_allowed"]:
