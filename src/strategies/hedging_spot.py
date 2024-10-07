@@ -212,7 +212,7 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
 
-        hedging_attributes= self.self.strategy_parameters
+        hedging_attributes= self.strategy_parameters
         
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
