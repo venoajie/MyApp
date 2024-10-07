@@ -561,8 +561,8 @@ class StreamAccountData:
                                                                     log.error (f" combo {combo} future_instrument_name {future_instrument_name}")
                                                                     log.error (f" combo_ticker {combo_ticker}")
                                                                     
-                                                                    future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
                                                                     log.error (f""" future_ticker {reading_from_pkl_data("ticker",future_instrument_name)}""")
+                                                                    future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
                                                                     future_mark_price= future_ticker["mark_price"]
                                                                     
                                                                     contango = future_mark_price - index_price > 0
