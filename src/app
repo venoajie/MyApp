@@ -250,24 +250,18 @@ class StreamAccountData:
             # Establish restart procedure
             await on_restart(currencies,
                             order_db_table)
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             
             settlement_periods= get_settlement_period (strategy_attributes)
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                             
             futures_instruments=await get_futures_instruments(currencies,
                                                                 settlement_periods)  
             
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             active_futures = futures_instruments["active_futures"]   
 
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             active_combo_perp = futures_instruments["active_combo_perp"]  
 
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             instruments_name = futures_instruments["instruments_name"]   
             
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
             
             log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
@@ -557,15 +551,14 @@ class StreamAccountData:
 
                                                             if "futureSpread" in strategy:
                                                                 #log.error (f"strategy {strategy} {currency}-START")
-                                                                
-                                                                db_trade_open_strategy = [o for o in my_trades_currency \
-                                                                    if strategy in o["label"]]
+                                                                for instrument_name_combo in active_combo_perp:
+                                                                    log.error (f"combo {instrument_name_combo}")
                                                                 
                                                                 amount_order_strategy = 0 if orders_currency_strategy == [] \
                                                                     else sum([o["amount"] for o in orders_currency_strategy])
                                                         
-                                                                amount_trade_strategy = 0 if db_trade_open_strategy == [] \
-                                                                    else sum([o["amount"] for o in db_trade_open_strategy])
+                                                                amount_trade_strategy = 0 if my_trades_currency_strategy == [] \
+                                                                    else sum([o["amount"] for o in my_trades_currency_strategy])
                                                         
                                                                 
                                                                 net_positions = amount_order_strategy + amount_trade_strategy
@@ -730,7 +723,6 @@ def main():
 
     try:
         StreamAccountData(client_id=client_id, client_secret=client_secret)
-        log.error("test")
 
     except Exception as error:
         
