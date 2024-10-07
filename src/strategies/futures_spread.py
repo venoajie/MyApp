@@ -130,6 +130,7 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
 class FutureSpreads(BasicStrategy):
     """ """
     ticker: list
+    ask_price: float
 
     def __post_init__(self):
         self.ask_price = self.ticker ["best_ask_price"]
