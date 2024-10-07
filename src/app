@@ -550,16 +550,19 @@ class StreamAccountData:
                                                     # check for delivered instrument
 
                                                             if "futureSpread" in strategy:
-                                                                log.error (f"strategy {strategy} {currency}-START")
-                                                                
-                                                                
+                                                                log.error (f"strategy {strategy}-START")
                                                                 
                                                                 for combo in active_combo_perp:
                                                                 
                                                                     combo_instruments_name = combo["instrument_name"]
                                                                     future_instrument_name = f"{currency_upper}-{combo_instruments_name[7:][:7]}"
                                                                     combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)
+                                                                    
+                                                                    log.error (f" combo {combo} future_instrument_name {future_instrument_name}")
+                                                                    log.error (f" combo_ticker {combo_ticker}")
+                                                                    
                                                                     future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
+                                                                    log.error (f" future_ticker {future_ticker}")
                                                                     future_mark_price= future_ticker["mark_price"]
                                                                     
                                                                     contango = future_mark_price - index_price > 0
