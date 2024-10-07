@@ -510,8 +510,11 @@ class GetPrivateData:
         #    f"""{result_order["label"]} {result_order["direction"]} {result_order["amount"]} {result_order["order_id"]}"""
         #)
 
-        if order_result != None and "error" in order_result:
-            await telegram_bot_sendtext("limit order failed")
+        if order_result != None and ("error" in order_result or "invalid" in order_result):
+            error = order_result ["error"]
+            message = error ["message"]
+            reason = message ["reason"]
+            await telegram_bot_sendtext(f"message: {message}, reason: ({reason}), (params: {params})")
 
     async def send_market_order(self, params) -> None:
         """ """
