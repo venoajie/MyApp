@@ -4,7 +4,7 @@
 import asyncio
 
 # installed
-from dataclassy import dataclass
+from dataclassy import dataclass, fields
 
 # user defined formula
 from db_management.sqlite_management import (
@@ -672,31 +672,39 @@ def check_db_consistencies (instrument_name: str,
                     if get_non_label_from_transaction(order_from_sqlite_open) != [] else True )
 
 
+
+def get_strategy_config(strategy_parameters_all,
+                        strategy_label: str = None,
+                        ) -> dict:
+    """ """
+    
+    if strategy_label != None:
+        str_config: dict = [
+            o for o in strategy_parameters_all if strategy_label in o["strategy_label"]
+        ][0]
+
+    else:
+        str_config: dict = [
+            o
+            for o in strategy_parameters_all
+            if parsing_label(strategy_label)["main"] in o["strategy_label"]
+        ][0]
+
+    return str_config
+
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy:
     """ """
 
     strategy_label: str
-    strategy_parameters: list
+    strategy_parameters_all: list
+    strategy_parameters: dict= fields 
 
-    def get_strategy_config(self, strategy_label: str = None) -> dict:
-        """ """
+    def __post_init__(self):
+        self.strategy_parameters = get_strategy_config(self.strategy_parameters_all,
+                        self.strategy_label
+                        )
 
-        params: list = self. strategy_parameters
-        
-        if strategy_label != None:
-            str_config: dict = [
-                o for o in params if self.strategy_label in o["strategy_label"]
-            ][0]
-
-        else:
-            str_config: dict = [
-                o
-                for o in params
-                if parsing_label(self.strategy_label)["main"] in o["strategy_label"]
-            ][0]
-
-        return str_config
 
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
@@ -749,9 +757,7 @@ class BasicStrategy:
 
         transaction_side: str = get_transaction_side(transaction)
 
-        strategy_config: list = self.get_strategy_config(
-            get_transaction_label(transaction)
-        )
+        strategy_config: list = self.strategy_parameters
         
         instrument_name= get_transaction_instrument(transaction)
 

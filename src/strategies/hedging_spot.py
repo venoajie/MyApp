@@ -212,7 +212,7 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
 
-        hedging_attributes= self.strategy_parameters[0]
+        hedging_attributes= self.self.strategy_parameters
         
         threshold_market_condition= hedging_attributes ["delta_price_pct"]
         
@@ -327,7 +327,7 @@ class HedgingSpot(BasicStrategy):
         
         transaction = selected_transaction[0]
         
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} max_position {self.max_position}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} max_position {self.max_position} self.strategy_parameters {self.strategy_parameters}")
         
         sum_my_trades_currency_str = self.sum_my_trades_currency_strategy
         
@@ -350,7 +350,7 @@ class HedgingSpot(BasicStrategy):
 
         else:
           
-            hedging_attributes = self.strategy_parameters[0]
+            hedging_attributes = self.strategy_parameters
         
             threshold_market_condition = hedging_attributes ["delta_price_pct"]
             
