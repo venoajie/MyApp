@@ -220,39 +220,40 @@ class HedgingSpot(BasicStrategy):
                 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
+        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
+        
+        len_orders: int = get_transactions_len(open_orders_label_strategy)
+        
+        hedging_attributes= self.strategy_parameters
+        
+        threshold_market_condition= hedging_attributes ["delta_price_pct"]
+        
+        market_condition = await get_market_condition_hedging(self.TA_result_data, 
+                                                            self.index_price, 
+                                                            threshold_market_condition)
+
+        #bullish = market_condition["rising_price"]
+        bearish = market_condition["falling_price"]
+
+        #strong_bullish = market_condition["strong_rising_price"]
+        strong_bearish = market_condition["strong_falling_price"]
+        #neutral = market_condition["neutral_price"]
+        params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
+        
+        weighted_factor= hedging_attributes["weighted_factor"]
+
+        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
+
         over_hedged  =  self.over_hedged
         
         log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
         
-        if not over_hedged:
+        if len_orders == 0:
+                    
+            if not over_hedged:
             
-            open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
+                max_position = self.max_position
             
-            len_orders: int = get_transactions_len(open_orders_label_strategy)
-            
-            hedging_attributes= self.strategy_parameters
-            
-            threshold_market_condition= hedging_attributes ["delta_price_pct"]
-            
-            market_condition = await get_market_condition_hedging(self.TA_result_data, 
-                                                                self.index_price, 
-                                                                threshold_market_condition)
-
-            #bullish = market_condition["rising_price"]
-            bearish = market_condition["falling_price"]
-
-            #strong_bullish = market_condition["strong_rising_price"]
-            strong_bearish = market_condition["strong_falling_price"]
-            #neutral = market_condition["neutral_price"]
-            params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
-            
-            weighted_factor= hedging_attributes["weighted_factor"]
-
-            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-            
-            max_position = self.max_position
-                                
-            if len_orders == 0:
                 fluctuation_exceed_threshold = True#TA_result_data["1m_fluctuation_exceed_threshold"]
 
                 SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
@@ -260,7 +261,7 @@ class HedgingSpot(BasicStrategy):
                 size = determine_opening_size(instrument_name, 
                                             futures_instruments, 
                                             params["side"], 
-                                            max_position, 
+                                            self.max_position, 
                                             SIZE_FACTOR)
         
                 sum_orders: int = get_transactions_sum(open_orders_label_strategy)
@@ -294,9 +295,14 @@ class HedgingSpot(BasicStrategy):
                     else:
                         
                         order_allowed=False
+        
+        else:
             
-            else:
+            if over_hedged:
+                cancel_allowed = True
                 
+            else:
+                    
                 cancel_allowed: bool = is_cancelling_order_allowed(
                     strong_bearish,
                     bearish,
@@ -355,14 +361,14 @@ class HedgingSpot(BasicStrategy):
         
         len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
         
-        if over_hedged:                       
-            exit_params.update({"entry_price": bid_price})
-                
-            #convert size to positive sign
-            exit_params.update({"size": abs (exit_params["size"])})
-            log.info (f"exit_params {exit_params}")
+        if over_hedged  and len_orders == 0:                       
             
-            if bid_price < transaction ["price"] and len_orders == 0:
+            if bid_price < transaction ["price"]:
+                exit_params.update({"entry_price": bid_price})
+                    
+                #convert size to positive sign
+                exit_params.update({"size": abs (exit_params["size"])})
+                log.info (f"exit_params {exit_params}")
                 order_allowed = True
 
         else:
