@@ -16,7 +16,6 @@ from db_management.sqlite_management import (
     deleting_row,)
 from strategies.basic_strategy import (
     BasicStrategy, 
-    get_basic_closing_paramaters,
     are_size_and_order_appropriate)
 
 
@@ -75,7 +74,7 @@ async def closing_unclosed_transactions_for_delivered_futures(instrument_name: s
                         
                         log.debug (f"transaction {transaction}")                
                         
-                        basic_closing_paramaters= get_basic_closing_paramaters (transaction)  
+                        basic_closing_paramaters= BasicStrategy.get_basic_closing_paramaters (transaction)  
                         basic_closing_paramaters.update({"instrument":transaction["instrument_name"]})
                         tickers= await get_tickers (basic_closing_paramaters["instrument"])
                         
