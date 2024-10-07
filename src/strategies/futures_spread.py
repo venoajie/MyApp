@@ -135,6 +135,15 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
                     trade_id_sqlite,
                 )
 
+def determine_opening_size(instrument_name: str, 
+                           max_position: float,
+                           max_open_orders) -> int:
+    """ """
+    
+    proposed_size = int(abs(max_position)/max_open_orders)
+    
+    return size_rounding(instrument_name, futures_instruments, proposed_size) * sign
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
@@ -181,6 +190,13 @@ class FutureSpreads(BasicStrategy):
         label_open_update: str = label_open.replace("futureSpread", f"futureSpread-{combo_instruments_name[7:][:7]}")
         
         params.update({"label": label_open_update})
+        
+        size = determine_opening_size(instrument_name, 
+                                    futures_instruments, 
+                                    params["side"], 
+                                    self.max_position, 
+                                    SIZE_FACTOR)
+
         
         if contango:
             params.update({"side": "sell"})
