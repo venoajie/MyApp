@@ -14,10 +14,21 @@ from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,
     deleting_row,)
-from strategies.basic_strategy import (
-    BasicStrategy, 
-    are_size_and_order_appropriate)
 
+from strategies.basic_strategy import (
+    BasicStrategy,
+    are_size_and_order_appropriate,
+    delta_pct,
+    ensure_sign_consistency,
+    get_max_time_stamp,
+    get_order_id_max_time_stamp,
+    is_label_and_side_consistent,
+    is_minimum_waiting_time_has_passed,
+    size_rounding,)
+
+def get_transactions_len(result_strategy_label) -> int:
+    """ """
+    return 0 if result_strategy_label == [] else len([o for o in result_strategy_label])
 
 async def closing_unclosed_transactions_for_delivered_futures(instrument_name: str, 
                                                               trade_db_table,
@@ -136,93 +147,40 @@ class FutureSpreads(BasicStrategy):
         self.best_ask_price = self.ticker ["best_ask_price"]
         self.best_bid_price = self.ticker ["best_bid_price"]
 
-    async def is_send_exit_order_allowed(
-        self,
-        TA_result_data,
-        index_price: float,
-        ask_price: float,
-        bid_price: float,
-        selected_transaction: list,
-        server_time: int
+    async def is_send_and_cancel_open_order_allowed (self,
+                                                     orders_currency_strategy: list,
     ) -> dict:
         """ """
-        
-        market_condition = await get_market_condition_hedging(currency,
-            TA_result_data, index_price, threshold_market_condition
-        )
 
-        exit_params: dict = await self.get_basic_params().is_send_exit_order_allowed(
-            market_condition, 
-            ask_price, 
-            bid_price, 
-            selected_transaction,
-        )
+        ONE_SECOND,  ONE_MINUTE = 1000, 60000
+                
+        order_allowed, cancel_allowed, cancel_id = False, False, None
         
-        cancel_allowed: bool = False
-        cancel_id: str = None
+        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         
-        open_orders_label_strategy: list=  await get_query("orders_all_json", 
-                                                           currency.upper(), 
-                                                           self.strategy_label,
-                                                           "closed")
+        params: dict = self.get_basic_params().get_basic_opening_parameters(self.best_ask_price)
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
-        if len_orders != [] and len_orders > 0:
-            
-            log.error (f"order_parameters {exit_params}")
-            log.debug (f"cancel_allowed {cancel_allowed}")
-            
-            #cancel_allowed: bool = True
-            cancel_id= min ([o["order_id"] for o in open_orders_label_strategy])
-            
-            log.error (f"exit_params {exit_params}")
-    
-            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+        hedging_attributes= self.strategy_parameters
+      
+        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
 
-            cancel_allowed: bool = is_cancelling_order_allowed(
-                strong_bullish,
-                bearish,
-                waiting_minute_before_cancel,
-                len_orders,
-                open_orders_label_strategy,
-                server_time,
-            )
-            
-        order_allowed = exit_params["order_allowed"]
+        over_hedged  =  self.over_hedged
         
-        exit_allowed = False
+        log.warning (f"sum_mparamsy_trades_currency_strategy {params}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
         
-        if order_allowed:
-        
-            my_trades_currency_strategy: list= await get_query("my_trades_all_json", currency.upper(), self.strategy_label)
-
-            sum_my_trades: int = sum([o["amount"] for o in my_trades_currency_strategy ])    
+        if len_orders == 0:
+                    
+            if not over_hedged:
             
-            size = exit_params["size"] * ensure_sign_consistency (exit_params["side"])           
-            
-            sum_orders: int = get_transactions_sum(open_orders_label_strategy)
-            
-            size_and_order_appropriate_for_ordering: bool = (
-                are_size_and_order_appropriate (
-                    "reduce_position",
-                    sum_my_trades, 
-                    sum_orders, 
-                    size, 
-                )
-            )
-                
-            #convert size to positive sign
-            exit_params.update({"size": abs (size)})
-            
-            exit_allowed: bool = size_and_order_appropriate_for_ordering \
-                 and (bullish or strong_bullish)
+                max_position = self.max_position
 
         return dict(
-            order_allowed=exit_allowed,
-            order_parameters=(
-                [] if exit_allowed == False else exit_params["order_parameters"]
-            ),
+            order_allowed=order_allowed and len_orders == 0,
+            order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
-            cancel_id=cancel_id
+            cancel_id= None if not cancel_allowed \
+            else get_order_id_max_time_stamp(open_orders_label_strategy)
         )

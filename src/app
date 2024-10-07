@@ -559,6 +559,7 @@ class StreamAccountData:
                                                                                                        strategy_params,
                                                                                                        combo_ticker)
                                                                         log.debug (f"combo_instruments_name {combo_instruments_name}")
+                                                                        await future_spreads.is_send_and_cancel_open_order_allowed(orders_currency_strategy)
                                                                 
                                                                 amount_order_strategy = 0 if orders_currency_strategy == [] \
                                                                     else sum([o["amount"] for o in orders_currency_strategy])
