@@ -678,6 +678,8 @@ def get_strategy_config(strategy_parameters_all,
                         ) -> dict:
     """ """
     
+    log.warning (f"strategy_parameters_all {strategy_parameters_all} sstrategy_label {strategy_label}")
+    
     if strategy_label != None:
         str_config: dict = [
             o for o in strategy_parameters_all if strategy_label in o["strategy_label"]
