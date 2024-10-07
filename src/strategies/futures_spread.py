@@ -144,6 +144,8 @@ def determine_opening_size(instrument_name: str,
     
     proposed_size= int(abs(max_position) )/max_open_orders
     
+    log.debug (f"proposed_size {proposed_size} max_position {max_position} max_open_orders {max_open_orders}")
+    
     return size_rounding(instrument_name, active_combo_perp, proposed_size) 
 
 
