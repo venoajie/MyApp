@@ -139,7 +139,7 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
     """ """
-    sum_my_trades_currency_strategy: int
+    sum_my_trades_perpetual_strategy: int
     notional: float
     ticker: list
     best_ask_price: float= fields 
@@ -151,7 +151,8 @@ class FutureSpreads(BasicStrategy):
         self.best_ask_price = self.ticker ["best_ask_price"]
         self.best_bid_price = self.ticker ["best_bid_price"]
         self.max_position = self.strategy_parameters["max_leverage"] * self.notional
-        self.over_hedged = self.max_position > 0
+        self.over_hedged = self.sum_my_trades_perpetual_strategy > \
+            self.strategy_parameters["max_leverage"] * self.notional
 
     def get_basic_params(self) -> dict:
         """ """
@@ -159,6 +160,7 @@ class FutureSpreads(BasicStrategy):
                              self.strategy_parameters)
 
     async def is_send_and_cancel_open_order_allowed (self,
+                                                     combo_instruments_name,
                                                      orders_currency_strategy: list,
     ) -> dict:
         """ """
@@ -168,12 +170,17 @@ class FutureSpreads(BasicStrategy):
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
         max_open_orders = self.strategy_parameters ["sub_account_max_open_orders"] ["per_instrument"]
-        
-        log.warning (f" max_open_orders {max_open_orders}")
-        
+                
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         
         params: dict = self.get_basic_params().get_basic_opening_parameters(self.best_ask_price)
+        
+        label_open: str = params ["label"]
+
+        label_open_update: str = label_open.replace("futureSpread", f"futureSpread-{combo_instruments_name[7:][:7]}")
+        
+        params.update({"label": label_open_update})
+        
         
         len_orders: int = get_transactions_len(open_orders_label_strategy)
         
@@ -184,7 +191,8 @@ class FutureSpreads(BasicStrategy):
         over_hedged  =  self.over_hedged
         
         log.warning (f" {params}")
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged} max_position {self.max_position}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged \
+            {self.over_hedged} max_position {self.max_position}")
         
         if len_orders == 0:
                     

@@ -1,6 +1,5 @@
 cancel_allowed = False
 
-test = None if not cancel_allowed \
-            else "AAAAAAAAAAAAAAAAAAA"
+test = "ETH-FS-11OCT24_PERP"
             
-print(test)
+print(test[7:][:7])
