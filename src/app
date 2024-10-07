@@ -461,7 +461,6 @@ class StreamAccountData:
                                                             
                                                         best_ask_prc: float = ticker["best_ask_price"] 
                                                                 
-                                                        
                                                         column_trade: str= "instrument_name","label", "amount", "price","side"
                                             
                                                         my_trades_currency: list= await get_query(trade_db_table, 
@@ -489,6 +488,7 @@ class StreamAccountData:
                                                             my_trades_currency_strategy_open = [o for o in my_trades_currency_strategy if "open" in (o["label"])]
                                                             
                                                             if my_trades_currency_strategy:
+                                                                
                                                                 sum_my_trades_currency_strategy = sum([o["amount"] for o in my_trades_currency_strategy ])
                                                             
                                                             else:
@@ -567,7 +567,8 @@ class StreamAccountData:
                                                                 net_positions = amount_order_strategy + amount_trade_strategy
                                                                 #log.error (f"net_positions {net_positions}  amount_strategy {amount_order_strategy} amount_trade_strategy {amount_trade_strategy}")
                                                                 future_spreads = FutureSpreads(strategy,
-                                                                                            strategy_params)
+                                                                                            strategy_params,
+                                                                                            combo_ticker)
 
                                                                 log.error (f"strategy {strategy}-DONE")
 

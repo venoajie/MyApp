@@ -129,6 +129,11 @@ async def delete_respective_closed_futures_from_trade_db (transaction,
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
     """ """
+    ticker: list
+
+    def __post_init__(self):
+        self.ask_price = self.ticker["best_ask_price"]
+        print (f"self.ask_price {self.ask_price}")
 
     async def is_send_exit_order_allowed(
         self,
