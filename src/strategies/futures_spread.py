@@ -167,7 +167,8 @@ class FutureSpreads(BasicStrategy):
                 
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
-        max_open_orders = self.strategy_parameters ["sub_account_max_open_orders"] #= {per_instrument = 50, total = 200}
+        max_open_orders = self.strategy_parameters ["sub_account_max_open_orders"] ["per_instrument"]
+        
         log.warning (f" max_open_orders {max_open_orders}")
         
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
