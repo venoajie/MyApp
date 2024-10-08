@@ -656,13 +656,13 @@ def get_basic_closing_paramaters(selected_transaction: list,
                                                 net_size)
     #log.debug (f"side {side}")
     size = size_abs * ensure_sign_consistency(side)   
-    log.warning (f"basic_size {basic_size} size_abs {size_abs} size {size}")
     closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
                                                                             net_size,
                                                                             size)
 
+    log.warning (f"basic_size {basic_size} size_abs {size_abs} size {size} closing_size_ok {closing_size_ok}")
     # size=exactly amount of transaction size
-    params.update({"size": 0})#size if not closing_size_ok else 0 })
+    params.update({"size": size if closing_size_ok else 0 })
 
     label_closed: str = get_label("closed", transaction["label"])
     params.update({"label": label_closed})
