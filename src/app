@@ -264,7 +264,6 @@ class StreamAccountData:
             
             min_expiration_timestamp = futures_instruments["min_expiration_timestamp"]    
             
-            log.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             resolution = 1                
                             
             while True:
