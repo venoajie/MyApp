@@ -356,9 +356,10 @@ class HedgingSpot(BasicStrategy):
         log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged} len_orders == 0 {len_orders == 0}")
         
         log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
-        if over_hedged  and len_orders == 0:                       
+        
+        if over_hedged :                       
             
-            if bid_price < transaction ["price"]:
+            if  len_orders == 0 and bid_price < transaction ["price"]:
                 exit_params.update({"entry_price": bid_price})
                 
                 size = exit_params["size"]     
