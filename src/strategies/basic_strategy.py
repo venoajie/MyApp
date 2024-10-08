@@ -563,7 +563,9 @@ def is_label_and_side_consistent(params) -> bool:
         side = get_transaction_side(params)
 
         if side == "sell":
-            is_consistent = True if ("Short" in label or "hedging" in label or "future" in label) else False
+            is_consistent = True if ("Short" in label \
+                                    or "hedging" in label \
+                                        or "future" in label) else False
 
         if side == "buy":
             is_consistent = True if "Long" in label else False
