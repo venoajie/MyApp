@@ -242,7 +242,7 @@ class HedgingSpot(BasicStrategy):
 
         over_hedged  =  self.over_hedged
         
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}  len_orders == 0 { len_orders == 0}" )
         
         if len_orders == 0:
                     
@@ -347,20 +347,23 @@ class HedgingSpot(BasicStrategy):
         transaction = selected_transaction[0]
                         
         over_hedged  =  self.over_hedged
-        
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}")
-    
+            
         exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
                                                                 orders_currency_strategy_label_closed,)
         
         len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
+
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged} len_orders == 0 {len_orders == 0}")
         
+        log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
         if over_hedged  and len_orders == 0:                       
             
             if bid_price < transaction ["price"]:
                 exit_params.update({"entry_price": bid_price})
                 
                 size = exit_params["size"]     
+                
+                log.warning (f"""size {size}""")
                 
                 if size != 0:    
                     #convert size to positive sign
