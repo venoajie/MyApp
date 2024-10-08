@@ -178,7 +178,7 @@ def provide_size_to_close_transaction (basic_size: int,
     
     next_size =  (min (basic_size, net_size))
     
-    return next_size 
+    return abs(next_size)
 
 def size_rounding(instrument_name: str, 
                   futures_instruments, 
@@ -647,9 +647,8 @@ def get_basic_closing_paramaters(selected_transaction: list,
 
     label_integer_open = get_label_integer(transaction ["label"])
     
-    sum_order_under_closed_label = sum_order_under_closed_label_int (
-        closed_orders_label_strategy,
-        label_integer_open)
+    sum_order_under_closed_label = sum_order_under_closed_label_int (closed_orders_label_strategy,
+                                                                     label_integer_open)
     
     net_size = (basic_size + sum_order_under_closed_label)
 
