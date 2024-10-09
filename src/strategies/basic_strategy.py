@@ -706,6 +706,10 @@ class ManageStrategy (ABC):
 class BasicStrategy (ManageStrategy):
     """ """
 
+    strategy_label: str
+    strategy_parameters: dict
+
+
     def opening_position (self) -> None:
         """ """
         pass
@@ -725,9 +729,6 @@ class BasicStrategy (ManageStrategy):
     def edit_order (self) -> None:
         """ """
         pass
-
-    strategy_label: str
-    strategy_parameters: dict
 
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
