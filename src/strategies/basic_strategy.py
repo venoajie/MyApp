@@ -5,6 +5,7 @@ import asyncio
 
 # installed
 from dataclassy import dataclass, fields
+from abc import ABC, abstractmethod
 
 # user defined formula
 from db_management.sqlite_management import (
@@ -671,9 +672,60 @@ def get_basic_closing_paramaters(selected_transaction: list,
         
     return params
 
+
 @dataclass(unsafe_hash=True, slots=True)
-class BasicStrategy:
+class ManageStrategy:
     """ """
+
+    @abstractmethod
+    def opening_position (self) -> None:
+        """ """
+        pass
+    
+    @abstractmethod
+    def closing_position (self) -> None:
+        """ """
+        pass
+    
+    @abstractmethod
+    def risk_managament (self) -> None:
+        """ """
+        pass
+    
+    @abstractmethod
+    def cancelling_order (self) -> None:
+        """ """
+        pass
+    
+    @abstractmethod 
+    def edit_order (self) -> None:
+        """ """
+        pass
+
+
+@dataclass(unsafe_hash=True, slots=True)
+class BasicStrategy (ABC):
+    """ """
+
+    def opening_position (self) -> None:
+        """ """
+        pass
+    
+    def closing_position (self) -> None:
+        """ """
+        pass
+    
+    def risk_managament (self) -> None:
+        """ """
+        pass
+    
+    def cancelling_order (self) -> None:
+        """ """
+        pass
+    
+    def edit_order (self) -> None:
+        """ """
+        pass
 
     strategy_label: str
     strategy_parameters: dict
