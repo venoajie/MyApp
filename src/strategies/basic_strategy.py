@@ -678,6 +678,7 @@ def get_basic_closing_paramaters(selected_transaction: list,
 class ManageStrategy ():
     """ """
 
+    @abstractmethod
     def opening_position (self) -> None:
         """ """
         pass
