@@ -236,6 +236,8 @@ class HedgingSpot(BasicStrategy):
         #neutral = market_condition["neutral_price"]
         params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
         
+        print (f"self.get_basic_params(). {self.get_basic_params().closing_position()}")
+        
         weighted_factor= hedging_attributes["weighted_factor"]
 
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
