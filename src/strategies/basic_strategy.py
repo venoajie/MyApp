@@ -715,6 +715,10 @@ class BasicStrategy (ManageStrategy):
     strategy_label: str
     strategy_parameters: dict
 
+
+    def __post_init__(self):
+        super().__post_init__()
+        
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
     ) -> dict:
