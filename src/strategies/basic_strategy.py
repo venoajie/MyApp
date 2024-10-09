@@ -683,18 +683,26 @@ class ManageStrategy ():
         """ """
         pass
     
+
+    @abstractmethod
     def closing_position (self) -> None:
         """ """
         pass
     
+
+    @abstractmethod
     def risk_managament (self) -> None:
         """ """
         pass
     
+
+    @abstractmethod
     def cancelling_order (self) -> None:
         """ """
         pass
     
+
+    @abstractmethod
     def edit_order (self) -> None:
         """ """
         pass
