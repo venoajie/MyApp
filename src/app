@@ -220,6 +220,26 @@ class StreamAccountData:
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
 
+    def opening_position (self) -> None:
+        """ """
+        pass
+    
+    def closing_position (self) -> None:
+        """ """
+        pass
+    
+    def risk_managament (self) -> None:
+        """ """
+        pass
+    
+    def cancelling_order (self) -> None:
+        """ """
+        pass
+    
+    def edit_order (self) -> None:
+        """ """
+        pass
+
     # @lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
