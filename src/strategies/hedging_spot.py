@@ -357,9 +357,11 @@ class HedgingSpot(BasicStrategy):
         
         log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
         
+        bid_price_is_lower = bid_price < transaction ["price"]
+        
         if over_hedged :                       
             
-            if  len_orders == 0 and bid_price < transaction ["price"]:
+            if  len_orders == 0 and bid_price_is_lower:
                 exit_params.update({"entry_price": bid_price})
                 
                 size = exit_params["size"]     
@@ -405,12 +407,12 @@ class HedgingSpot(BasicStrategy):
             else:     
                 size = exit_params["size"]      
                 #log.info (f"exit_params {exit_params}")
-                order_allowed: bool = True if size != 0 else False
+                #order_allowed: bool = True if size != 0 else False
                 
-                if order_allowed:
+                if size != 0 :
                     
                     if (bullish or strong_bullish) \
-                        and bid_price < transaction ["price"]:
+                        and bid_price_is_lower:
                     
                         if (False if size == 0 else True) and len_orders == 0:# and max_order:
                             
@@ -418,6 +420,8 @@ class HedgingSpot(BasicStrategy):
                                 
                             #convert size to positive sign
                             exit_params.update({"size": abs (size)})
+                            
+                            order_allowed: bool = True
         
         return dict(
             order_allowed= order_allowed,
