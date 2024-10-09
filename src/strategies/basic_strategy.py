@@ -706,27 +706,6 @@ class BasicStrategy (ManageStrategy):
     strategy_label: str
     strategy_parameters: dict
 
-
-    def opening_position (self) -> None:
-        """ """
-        pass
-    
-    def closing_position (self) -> None:
-        """ """
-        pass
-    
-    def risk_managament (self) -> None:
-        """ """
-        pass
-    
-    def cancelling_order (self) -> None:
-        """ """
-        pass
-    
-    def edit_order (self) -> None:
-        """ """
-        pass
-
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
     ) -> dict:
