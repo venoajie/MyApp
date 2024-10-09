@@ -673,8 +673,7 @@ def get_basic_closing_paramaters(selected_transaction: list,
     return params
 
 
-@dataclass(unsafe_hash=True, slots=True)
-class ManageStrategy:
+class ManageStrategy (ABC):
     """ """
 
     @abstractmethod
@@ -704,7 +703,7 @@ class ManageStrategy:
 
 
 @dataclass(unsafe_hash=True, slots=True)
-class BasicStrategy (ABC):
+class BasicStrategy (ManageStrategy):
     """ """
 
     def opening_position (self) -> None:
