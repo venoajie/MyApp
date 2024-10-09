@@ -673,30 +673,27 @@ def get_basic_closing_paramaters(selected_transaction: list,
     return params
 
 
-class ManageStrategy (ABC):
+
+@dataclass(unsafe_hash=True, slots=True)
+class ManageStrategy ():
     """ """
 
-    @abstractmethod
     def opening_position (self) -> None:
         """ """
         pass
     
-    @abstractmethod
     def closing_position (self) -> None:
         """ """
         pass
     
-    @abstractmethod
     def risk_managament (self) -> None:
         """ """
         pass
     
-    @abstractmethod
     def cancelling_order (self) -> None:
         """ """
         pass
     
-    @abstractmethod 
     def edit_order (self) -> None:
         """ """
         pass
