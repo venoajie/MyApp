@@ -675,8 +675,8 @@ def get_basic_closing_paramaters(selected_transaction: list,
 
 
 
-@dataclass
-class ManageStrategy (DataClassMeta, ABCMeta):
+@dataclass(unsafe_hash=True, slots=True)
+class ManageStrategy (metaclass=ABCMeta):
     """ """
 
     @abstractmethod
