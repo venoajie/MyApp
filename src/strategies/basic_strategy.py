@@ -6,6 +6,7 @@ import asyncio
 # installed
 from dataclassy import dataclass, fields
 from abc import ABC, abstractmethod,ABCMeta
+from dataclassy.dataclass import DataClassMeta
 
 # user defined formula
 from db_management.sqlite_management import (
@@ -674,7 +675,8 @@ def get_basic_closing_paramaters(selected_transaction: list,
 
 
 
-class ManageStrategy (ABC):
+@dataclass(unsafe_hash=True, slots=True)
+class ManageStrategy (DataClassMeta, ABCMeta):
     """ """
 
     @abstractmethod
@@ -714,10 +716,6 @@ class BasicStrategy (ManageStrategy):
     strategy_label: str
     strategy_parameters: dict
 
-
-    def __post_init__(self):
-        super().__post_init__()
-        
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None
     ) -> dict:
