@@ -517,7 +517,7 @@ class StreamAccountData:
         
                                                             if "hedgingSpot" in strategy:
                                                                 
-                                                                log.debug (f"strategy {strategy}-START")
+                                                                log.debug (f"strategy {strategy} {currency.upper()}-START")
                                                                 
                                                                 max_position: int = notional * -1
                                                                 
