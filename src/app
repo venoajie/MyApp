@@ -524,7 +524,7 @@ class StreamAccountData:
                                                                 hedging = HedgingSpot(strategy,
                                                                                       strategy_params,
                                                                                       max_position,
-                                                                                      sum_my_trades_currency_strategy,
+                                                                                      my_trades_currency_strategy,
                                                                                       TA_result_data,
                                                                                       index_price,
                                                                                       server_time)

@@ -187,16 +187,21 @@ class HedgingSpot(BasicStrategy):
     """ """
     
     max_position: float
-    sum_my_trades_currency_strategy: int
+    my_trades_currency_strategy: int
     TA_result_data: list
     index_price: float
     server_time: int
-    over_hedged: bool= fields 
+    sum_my_trades_currency_strategy: int= fields 
+    over_hedged_opening: bool= fields 
+    over_hedged_closing: bool= fields 
 
     def __post_init__(self):
-        self.over_hedged = current_position_exceed_max_position (self.sum_my_trades_currency_strategy, 
-                                                                 self.max_position)        
+        self.over_hedged_opening = current_position_exceed_max_position (self.sum_my_trades_currency_strategy, 
+                                                                         self.max_position)        
         
+        self.over_hedged_closing = self.sum_my_trades_currency_strategy > 0       
+        self.sum_my_trades_currency_strategy =  get_transactions_sum (self.my_trades_currency_strategy)   
+    
     async def get_basic_params(self) -> dict:
         """ """
         return BasicStrategy(self.strategy_label, 
@@ -341,9 +346,7 @@ class HedgingSpot(BasicStrategy):
         ask_price: float,
     ) -> dict:
         """ """
-
-        ONE_SECOND,  ONE_MINUTE = 1000, 60000
-                
+        
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
@@ -371,7 +374,7 @@ class HedgingSpot(BasicStrategy):
 
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
 
-        over_hedged  =  self.over_hedged
+        over_hedged  =  self.over_hedged_opening
         
         log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged}  len_orders == 0 { len_orders == 0}" )
         
