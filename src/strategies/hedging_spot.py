@@ -196,11 +196,11 @@ class HedgingSpot(BasicStrategy):
     over_hedged_closing: bool= fields 
 
     def __post_init__(self):
+        self.sum_my_trades_currency_strategy =  get_transactions_sum (self.my_trades_currency_strategy)   
         self.over_hedged_opening = current_position_exceed_max_position (self.sum_my_trades_currency_strategy, 
                                                                          self.max_position)        
         
         self.over_hedged_closing = self.sum_my_trades_currency_strategy > 0       
-        self.sum_my_trades_currency_strategy =  get_transactions_sum (self.my_trades_currency_strategy)   
     
     async def get_basic_params(self) -> dict:
         """ """
