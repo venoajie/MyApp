@@ -202,7 +202,7 @@ class HedgingSpot(BasicStrategy):
         
         self.over_hedged_closing = self.sum_my_trades_currency_strategy > 0       
     
-    async def get_basic_params(self) -> dict:
+    def get_basic_params(self) -> dict:
         """ """
         return BasicStrategy(self.strategy_label, 
                              self.strategy_parameters)
@@ -371,6 +371,10 @@ class HedgingSpot(BasicStrategy):
         params: dict = self.get_basic_params().get_basic_opening_parameters(ask_price)
         
         weighted_factor= hedging_attributes["weighted_factor"]
+        
+
+        ONE_SECOND = 1000
+        ONE_MINUTE = ONE_SECOND * 60
 
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
 
