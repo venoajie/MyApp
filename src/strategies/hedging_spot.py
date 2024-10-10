@@ -464,12 +464,12 @@ class HedgingSpot(BasicStrategy):
         
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
                         
-        over_hedged  =  self.over_hedged
+        over_hedged_opening  =  self.over_hedged_opening
             
         exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
                                                                 orders_currency_strategy_label_closed,)
 
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {self.over_hedged_closing} len_orders == 0 {len_orders == 0}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {over_hedged_opening} len_orders == 0 {len_orders == 0}")
         
         log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
                 
@@ -477,7 +477,7 @@ class HedgingSpot(BasicStrategy):
                                                 exit_params,
                                                 bullish, 
                                                 strong_bullish,
-                                                over_hedged,
+                                                over_hedged_opening,
                                                 len_orders,
                                                 bid_price,)
         
