@@ -676,35 +676,43 @@ def get_basic_closing_paramaters(selected_transaction: list,
 
 
 @dataclass(unsafe_hash=True, slots=True)
-class ManageStrategy (metaclass=ABCMeta):
-    """ """
+class ManageStrategy ():
+    """ 
+    https://stackoverflow.com/questions/13646245/is-it-possible-to-make-abstract-classes-in-python/13646263#13646263
+    
+    """
 
-    @abstractmethod
+    #@abstractmethod
+    def understanding_the_market (self) -> None:
+        """ """
+        pass
+    
+
+    #@abstractmethod
+    def risk_managament (self) -> None:
+        """ """
+        pass
+    
+    #@abstractmethod
     def opening_position (self) -> None:
         """ """
         pass
     
 
-    @abstractmethod
+    #@abstractmethod
     def closing_position (self) -> None:
         """ """
         pass
     
 
-    @abstractmethod
-    def risk_managament (self) -> None:
-        """ """
-        pass
-    
-
-    @abstractmethod
+    #@abstractmethod
     def cancelling_order (self) -> None:
         """ """
         pass
     
 
-    @abstractmethod
-    def edit_order (self) -> None:
+    #@abstractmethod
+    def modifying_order (self) -> None:
         """ """
         pass
 

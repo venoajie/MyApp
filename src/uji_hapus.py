@@ -1,54 +1,75 @@
 from abc import ABC, abstractmethod,ABCMeta
-from dataclassy import dataclass
-
+from dataclasses import dataclass
+import asyncio
+#from dataclassy import dataclass
 # Abstract Product Classes
 
-@dataclass(unsafe_hash=True, slots=True)
-class DatabaseConnection:
-    def connect(self):
+
+@dataclass
+class ManageStrategy (metaclass=ABCMeta):
+    """ """
+
+    @abstractmethod
+    async def opening_position (self) -> None:
+        """ """
+        pass
+    
+
+    @abstractmethod
+    async def closing_position (self) -> None:
+        """ """
+        pass
+    
+
+    @abstractmethod
+    async def risk_managament (self) -> None:
+        """ """
+        pass
+    
+
+    @abstractmethod
+    async def cancelling_order (self) -> None:
+        """ """
+        pass
+    
+
+    @abstractmethod
+    async def edit_order (self) -> None:
+        """ """
         pass
 
-# Concrete Product Classes for MySQL
-@dataclass(unsafe_hash=True, slots=True)
-class MySQLConnection(DatabaseConnection):
+@dataclass
+class BasicStrategy (ManageStrategy):
+    """ """
 
-    def connect(self):
-        return "Connecting to MySQL database"
-
-# Concrete Product Classes for PostgreSQL
-@dataclass(unsafe_hash=True, slots=True)
-class PostgreSQLConnection(DatabaseConnection):
-
-    def connect(self):
-        return "Connecting to PostgreSQL database"
-
-# Abstract Factory Class
-@dataclass(unsafe_hash=True, slots=True)
-class DatabaseConnectionFactory:
-
-    def create_connection(self):
+    def opening_position (self) -> None:
+        """ """
         pass
+    
 
-# Concrete Factory Classes
-@dataclass(unsafe_hash=True, slots=True)
-class MySQLConnectionFactory(DatabaseConnectionFactory):
+    def closing_position (self) -> None:
+        """ """
+        pass
+    
 
-    def create_connection(self):
-        return MySQLConnection()
+    def risk_managament (self) -> None:
+        """ """
+        pass
+    
 
-@dataclass(unsafe_hash=True, slots=True)
-class PostgreSQLConnectionFactory(DatabaseConnectionFactory):
+    def cancelling_order (self) -> None:
+        """ """
+        pass
+    
 
-    def create_connection(self):
-        return PostgreSQLConnection()
+    def edit_order (self) -> None:
+        """ """
+        pass
+    
+    def get_basic_opening_parameters(self) -> dict:
+        """ """
 
-# Client Code
-def connect_to_database(factory):
-    connection = factory.create_connection()
-    print(connection.connect())
-
-# Usage
-mysql_factory = MySQLConnectionFactory()
-connect_to_database(mysql_factory)
-postgresql_factory = PostgreSQLConnectionFactory()
-connect_to_database(postgresql_factory)
+        # provide placeholder for params
+        print ("AAAAAAAAAAAAAAAAAAAAAAAAAAA")
+basic_strategy= BasicStrategy()
+basic_strategy.get_basic_opening_parameters()
