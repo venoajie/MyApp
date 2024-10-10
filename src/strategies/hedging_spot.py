@@ -446,6 +446,8 @@ class HedgingSpot(BasicStrategy):
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
         transaction = selected_transaction[0]
+
+        threshold_market_condition = hedging_attributes ["delta_price_pct"]
             
         market_condition = await get_market_condition_hedging (self.TA_result_data, 
                                                                 self.index_price, 
@@ -456,10 +458,7 @@ class HedgingSpot(BasicStrategy):
         len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
 
         hedging_attributes = self.strategy_parameters
-    
-        threshold_market_condition = hedging_attributes ["delta_price_pct"]
         
-
         ONE_SECOND = 1000
         ONE_MINUTE = ONE_SECOND * 60
         
