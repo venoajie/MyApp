@@ -281,7 +281,6 @@ class HedgingSpot(BasicStrategy):
                           exit_params,
                           bullish, 
                           strong_bullish,
-                          over_hedged,
                           len_orders,
                           bid_price,
                           ) -> bool:
@@ -291,31 +290,37 @@ class HedgingSpot(BasicStrategy):
 
         bid_price_is_lower = bid_price < transaction ["price"]
         
-        if over_hedged :                       
+        over_hedged_opening  =  self.over_hedged_opening
+        
+        if over_hedged_opening :                       
             
+            # immediate order. No further check to traded price
             if  len_orders == 0:
                 
-                if bid_price_is_lower:
-                    exit_params.update({"entry_price": bid_price})
-                    
-                    size = exit_params["size"]     
-                    
-                    log.warning (f"""size {size}""")
-                    
-                    if size != 0:    
-                        #convert size to positive sign
-                        exit_params.update({"size": abs (exit_params["size"])})
-                        log.info (f"exit_params {exit_params}")
-                        order_allowed = True
-            else:     
+                exit_params.update({"entry_price": bid_price})
+                
+                size = exit_params["size"]     
+                
+                log.warning (f"""size {size}""")
+                
+                if size != 0:    
+                    #convert size to positive sign
+                    exit_params.update({"size": abs (exit_params["size"])})
+                    log.info (f"exit_params {exit_params}")
+                    order_allowed = True
+        else:     
+            
+            over_hedged_closing  =  self.over_hedged_closing
+            
+            if not over_hedged_closing:
+            
                 size = exit_params["size"]      
                 #log.info (f"exit_params {exit_params}")
                 #order_allowed: bool = True if size != 0 else False
                 
                 if size != 0 :
                     
-                    if (bullish or strong_bullish) \
-                        and bid_price_is_lower:
+                    if (bullish and  bid_price_is_lower ) or strong_bullish :
                     
                         if (False if size == 0 else True) and len_orders == 0:# and max_order:
                             
@@ -463,13 +468,11 @@ class HedgingSpot(BasicStrategy):
         ONE_MINUTE = ONE_SECOND * 60
         
         waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-                        
-        over_hedged_opening  =  self.over_hedged_opening
             
         exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
                                                                 orders_currency_strategy_label_closed,)
 
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged {over_hedged_opening} len_orders == 0 {len_orders == 0}")
+        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged_opening {self.over_hedged_opening} len_orders == 0 {len_orders == 0}")
         
         log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
                 
@@ -477,7 +480,6 @@ class HedgingSpot(BasicStrategy):
                                                 exit_params,
                                                 bullish, 
                                                 strong_bullish,
-                                                over_hedged_opening,
                                                 len_orders,
                                                 bid_price,)
         
