@@ -2,12 +2,12 @@
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
 
-echo "$(basename $(find $pwd -name "*.bak"))"
+echo $(basename $(find $pwd -name "*.sqlite3"))
 sleep 5s
 while true; do
 
 
-    if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
+    if test -f databases/"$(basename $(find $pwd -name "*.sqlite3"))";
         then
                 echo "file exists"
                 echo "Moving local  files to remote..."
