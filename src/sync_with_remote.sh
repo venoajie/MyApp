@@ -3,11 +3,11 @@
 
 echo $(basename $(find $pwd -name "*.bak"))
 flnm = $(basename $(find $pwd -name "*.bak"))
-echo "${flnm%}"
+echo "${flnm}"
 
 while true; do
 
-    if test -f databases/"$flnm";
+    if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
         then
                 echo "file exists"
                 echo "Moving local  files to remote..."
