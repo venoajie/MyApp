@@ -3,7 +3,7 @@
 
 echo $(basename $(find $pwd -name "*.bak"))
 flnm = $(basename $(find $pwd -name "*.bak"))
-echo $(flnm)
+echo "${flnm}"
 
 while true; do
 
