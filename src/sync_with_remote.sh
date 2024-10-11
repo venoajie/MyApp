@@ -5,6 +5,7 @@
 while true; do
 
     echo "basename $(find $pwd -name "*.bak")"
+    slee 5s
 
     if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
         then
