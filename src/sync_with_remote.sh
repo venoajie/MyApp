@@ -1,7 +1,7 @@
 #!/bin/bash
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
-
+echo "$(basename $(find $pwd -name "*.bak"))"
 while true; do
 
     if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
@@ -14,7 +14,6 @@ while true; do
 
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
                 cd databases
-                ls -lh 
                 rm *.bak
                 cd ..
                 
@@ -27,8 +26,6 @@ while true; do
 
                 #clone sync databases  b2:/remote-sqlite  --include *.{bak}
 
-                echo "changes directory"
-                sleep 5s
                 cd databases 
                 rm *.bak
                 cd ..
