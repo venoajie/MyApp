@@ -19,8 +19,8 @@ while true; do
                 echo "changes directory"
                 cd databases
                 ls -lh 
-                #rm *.bak
-                #cd ..
+                rm *.bak
+                cd ..
                 
                 echo "sync_with_remote: sleep 15 minutes"
                 #sleep 15m
