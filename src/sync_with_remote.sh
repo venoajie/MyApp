@@ -2,8 +2,8 @@
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
 echo $(basename $(find $pwd -name "*.bak"))
-flnm = basename $(find $pwd -name "*.bak")
-echo ${flnm}
+flnm = $(basename $(find $pwd -name "*.bak"))
+echo $(flnm)
 
 while true; do
 
