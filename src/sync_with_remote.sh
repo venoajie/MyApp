@@ -1,9 +1,6 @@
 #!/bin/bash
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
-echo $(basename $(find $pwd -name "*.bak"))
-flnm = $(basename $(find $pwd -name "*.bak"))
-echo "${flnm}"
 
 while true; do
 
@@ -16,14 +13,13 @@ while true; do
                 sleep 5s
 
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
-                echo "changes directory"
                 cd databases
                 ls -lh 
                 rm *.bak
                 cd ..
                 
                 echo "sync_with_remote: sleep 15 minutes"
-                #sleep 15m
+                sleep 15m
 
         else
                 echo "sync_with_remote: file does not exist"
@@ -33,9 +29,9 @@ while true; do
 
                 echo "changes directory"
                 sleep 5s
-                #cd databases 
-                #rm *.bak
-                c#d ..
+                cd databases 
+                rm *.bak
+                cd ..
                 
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
