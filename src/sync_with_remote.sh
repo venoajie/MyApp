@@ -2,10 +2,10 @@
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
 
+echo "basename $(find $pwd -name "*.bak")"
+sleep 5s
 while true; do
 
-    echo "basename $(find $pwd -name "*.bak")"
-    slee 5s
 
     if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
         then
