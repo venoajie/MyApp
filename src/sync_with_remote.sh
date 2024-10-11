@@ -17,7 +17,8 @@ while true; do
 
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
                 echo "changes directory"
-                #cd databases 
+                cd databases
+                ls -lh 
                 #rm *.bak
                 #cd ..
                 
