@@ -1,13 +1,10 @@
 #!/bin/bash
 # https://lovethepenguin.com/linux-check-if-a-file-or-directory-exists-e00cfa672249
 
-
-echo $(basename $(find $pwd -name "*.sqlite3"))
-sleep 5s
 while true; do
 
 
-    if test -f databases/"$(basename $(find $pwd -name "*.sqlite3"))";
+    if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
         then
                 echo "file exists"
                 echo "Moving local  files to remote..."
@@ -28,10 +25,8 @@ while true; do
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
 
                 #clone sync databases  b2:/remote-sqlite  --include *.{bak}
-
-                cd databases 
-                rm *.bak
-                cd ..
+                echo "wait file for exist: sleep 5 minutes"
+                sleep 5m
                 
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
