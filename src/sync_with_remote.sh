@@ -4,7 +4,7 @@
 
 while true; do
 
-    echo "$(basename $(find $pwd -name "*.bak"))"
+    echo "basename $(find $pwd -name "*.bak")"
 
     if test -f databases/"$(basename $(find $pwd -name "*.bak"))";
         then
