@@ -8,16 +8,21 @@ while true; do
                 echo "file exists"
                 echo "Moving local  files to remote..."
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
-                rclone sync databases/*.bak remote:/remote-sqlite
+                rclone sync --include databases/*.bak remote:/remote-sqlite
+                cd databases 
                 rm *.bak
+                cd ..
                 
                 echo "sync_with_remote: sleep 15 minutes"
                 sleep 15m
 
         else
                 echo "sync_with_remote: file does not exist"
-                rclone  sync databases/*.bak remote:/remote-sqlite
+                rclone sync --include databases/*.bak remote:/remote-sqlite
+                cd databases 
                 rm *.bak
+                cd ..
+                
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
     fi
