@@ -68,9 +68,13 @@ async def get_currencies_from_deribit(connection_url) -> float:
 
 async def back_up_db():
     import sqlite3
+    from datetime import datetime
+
+    TIMESTAMP = datetime.now().strftime("%Y%m%d-%H-%M-%S")
+
 
     src = sqlite3.connect("databases/trading.sqlite3")
-    dst = sqlite3.connect("databases/trdg.bak")
+    dst = sqlite3.connect(f"databases/trdg-{TIMESTAMP}.bak")
     with dst:
         src.backup(dst)
     dst.close()
