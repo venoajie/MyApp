@@ -124,6 +124,10 @@ class RunningStrategy:
             )
 
 
+    async def account_summary(self) -> dict:
+        account_summary: dict = self.private_data.get_account_summary()
+        return account_summary["result"]
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -134,10 +138,14 @@ async def running_strategy() -> None:
     
     try:
         currency = "ETH"
-        RunningStrategy(
+        running= RunningStrategy(
             sub_account,
             currency,
             )
+        
+        acccount_summary = await running.account_summary()
+        
+        log.error (f"acccount_summary {acccount_summary}")
 
     except Exception as error:
         
