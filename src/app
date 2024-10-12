@@ -105,6 +105,237 @@ def get_index (data_orders: dict, ticker: dict) -> float:
         
     return index_price
         
+        
+async def running_critical_strategy(currencies,
+                                    currency, 
+                                    currency_upper,
+                                    order_db_table,
+                                    trade_db_table, 
+                                    transaction_log_trading,
+                                    min_expiration_timestamp,
+                                    data_orders,
+                                    ticker,
+                                    active_strategies,
+                                    active_futures,
+                                    active_combo_perp,
+                                    strategy_attributes,
+                                    instrument_ticker, 
+                                    futures_instruments,) -> None:
+
+
+    # get portfolio data  
+    portfolio= reading_from_pkl_data("portfolio",currency)
+                                        # obtain spot equity
+    equity: float = portfolio[0]["equity"]                                       
+                                                        
+    index_price= get_index (data_orders, ticker)
+                
+    column_trade: str= "instrument_name","label", "amount", "price","side"
+
+    my_trades_currency: list= await get_query(trade_db_table, 
+                                                currency, 
+                                                "all", 
+                                                "all", 
+                                                column_trade)
+                                                    
+    column_list= "instrument_name", "position", "timestamp"                                                    
+    from_transaction_log = await get_query (transaction_log_trading, 
+                                                currency, 
+                                                "all", 
+                                                "all", 
+                                                column_list)                                       
+
+                                            
+    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
+    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
+    sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
+    
+    sum_from_log_and_trade_is_equal = current_position_log == sum_my_trades_currency
+    
+    log.info (f"sum_from_log_and_trade_is_equal {sum_from_log_and_trade_is_equal} sum_my_trades_currency {sum_my_trades_currency} current_position_log {current_position_log}")
+    
+    if  index_price is not None \
+        and equity >0 \
+            and sum_from_log_and_trade_is_equal:
+    
+        TA_result_data_all = await querying_table("market_analytics_json")
+
+        TA_result_data_only=  TA_result_data_all["list_data_only"]
+        
+        TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]                                                                                                    
+                                                        
+        tick_TA=  max([o["tick"] for o in TA_result_data])
+        
+        server_time = get_now_unix_time()  
+        
+        delta_time = server_time-tick_TA
+        
+        delta_time_seconds = delta_time/1000                                                
+        
+        delta_time_expiration = min_expiration_timestamp - server_time  
+                                                            
+        if delta_time_seconds < 120:#ensure freshness of ta
+            
+            notional: float = compute_notional_value(index_price, equity)
+                
+            best_ask_prc: float = ticker["best_ask_price"] 
+            
+            column_order= "instrument_name","label","order_id","amount","timestamp"
+            
+            orders_currency = await get_query(order_db_table, 
+                                                    currency, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_order)     
+            
+            for strategy in active_strategies:
+                
+                my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
+                
+                orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
+
+                orders_currency_strategy_label_closed = [o for o in orders_currency_strategy if "closed" in (o["label"]) ]
+            
+                my_trades_currency_strategy_open = [o for o in my_trades_currency_strategy if "open" in (o["label"])]
+                
+                #if my_trades_currency_strategy:
+                    
+                #    sum_my_trades_currency_strategy = sum([o["amount"] for o in my_trades_currency_strategy ])
+                
+                #else:
+                #    sum_my_trades_currency_strategy = 0
+                    
+                strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]                                                                
+
+                if "hedgingSpot" in strategy:
+                    
+                    log.debug (f"strategy {strategy} {currency.upper()}-START")
+                    
+                    max_position: int = notional * -1
+                    
+                    hedging = HedgingSpot(strategy,
+                                            strategy_params,
+                                            max_position,
+                                            my_trades_currency_strategy,
+                                            TA_result_data,
+                                            index_price,
+                                            server_time)
+                    
+                    send_order: dict = (
+                    await hedging.is_send_and_cancel_open_order_allowed(
+                        instrument_ticker,
+                        active_futures,
+                        orders_currency_strategy,
+                        best_ask_prc,
+                        ))
+                    
+                    if send_order["order_allowed"]:
+                        
+                        #log.error  (f"send_order {send_order}")
+                        await if_order_is_true(send_order, instrument_ticker)
+                        await if_cancel_is_true(send_order)
+
+                    if my_trades_currency_strategy_open !=[]:
+                                                                                                    
+                        best_bid_prc: float = ticker["best_bid_price"]
+                        
+                        get_prices_in_label_transaction_main = [o["price"] for o in my_trades_currency_strategy_open]
+
+                        closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
+
+                        nearest_transaction_to_index = [o for o in my_trades_currency_strategy_open \
+                            if o["price"] == closest_price]
+                        #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
+                        
+                        send_closing_order: dict = await hedging.is_send_exit_order_allowed(
+                            orders_currency_strategy_label_closed,
+                            best_bid_prc,
+                            nearest_transaction_to_index,
+                        )
+                        log.error (f"send_closing_order {send_closing_order}")
+                        await if_order_is_true(send_closing_order, instrument_ticker)
+                        await if_cancel_is_true(send_closing_order)
+
+                    log.debug (f"strategy {strategy}-DONE")
+
+        # check for delivered instrument
+
+                if "futureSpread" in strategy:
+                    log.error (f"strategy {strategy}-START")
+                    
+                    for combo in active_combo_perp:
+                        
+                    
+                        combo_instruments_name = combo["instrument_name"]
+                        future_instrument_name = f"{currency_upper}-{combo_instruments_name[7:][:7]}"
+                        combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)
+
+                        #min_trade_amount=  [o["min_trade_amount"] for o in active_combo_perp if o["instrument_name"]== combo_instruments_name][0]
+                        
+                        #log.warning (f" combo {combo} future_instrument_name {future_instrument_name} min_trade_amount {min_trade_amount}")
+                        #log.info (f" combo_ticker {combo_ticker}")
+                        
+                        log.error (f""" future_ticker {reading_from_pkl_data("ticker",future_instrument_name)}""")
+                        future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
+                        if future_ticker:
+                            future_mark_price= future_ticker["mark_price"]
+                            
+                            contango = future_mark_price - index_price > 0
+                            
+                            log.info (f"{future_instrument_name} {future_mark_price} contango {contango}")
+                            
+                            if combo_ticker:
+                            
+                                my_trades_perpetual_strategy = ([o for o in my_trades_currency_strategy if "PERPETUAL" in o["instrument_name"] ])
+                            
+                                sum_my_trades_perpetual_strategy = 0 if my_trades_perpetual_strategy == [] \
+                                    else sum ([o["amount"] for o in sum_my_trades_perpetual_strategy])
+                                
+                                future_spreads = FutureSpreads(strategy,
+                                                            strategy_params,
+                                                            sum_my_trades_perpetual_strategy,
+                                                            notional,
+                                                            combo_ticker [0],
+                                                            )
+                                log.debug (f"combo_instruments_name {combo_instruments_name}")
+                        
+                                send_order: dict = await future_spreads.is_send_and_cancel_open_order_allowed (combo_instruments_name,
+                                                                                                            contango,
+                                                                                                            active_combo_perp,
+                                                                                                            orders_currency_strategy)
+                                
+                                
+                                if False and send_order["order_allowed"]:
+                                    
+                                    #log.error  (f"send_order {send_order}")
+                                    await if_order_is_true(send_order, instrument_ticker)
+                                    await if_cancel_is_true(send_order)
+
+                        log.error (f"send_order {send_order}")
+                        log.error (f"strategy {strategy}-DONE")
+
+            if delta_time_expiration < 0:
+                
+                instruments_name_with_min_expiration_timestamp = futures_instruments [
+                    "instruments_name_with_min_expiration_timestamp"]     
+                
+                # check any oustanding instrument that has deliverd
+                
+                for currency in currencies:
+                    
+                    delivered_transactions = [o for o in my_trades_currency \
+                        if instruments_name_with_min_expiration_timestamp in o["instrument_name"]]
+                    
+                    if delivered_transactions:
+                        
+                        for transaction in delivered_transactions:
+                            delete_respective_closed_futures_from_trade_db (transaction, trade_db_table)
+
+                
+                # updating instrument
+                await sleep_and_restart ()
+
+        
 async def update_user_changes(data_orders, 
                               currency, 
                               order_db_table,
@@ -394,11 +625,10 @@ class StreamAccountData:
                                     
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
-                                        if "open_interest" in data_orders:
-                                            await inserting_open_interest(currency, 
-                                                                          WHERE_FILTER_TICK, 
-                                                                          TABLE_OHLC1, 
-                                                                          data_orders)
+                                        await inserting_open_interest(currency, 
+                                                                        WHERE_FILTER_TICK, 
+                                                                        TABLE_OHLC1, 
+                                                                        data_orders)
 
                                         #! is_transactionlog_vs_sub_accounts_ok
                                         #is_transactionlog_vs_my_trd_curr_ok
@@ -407,15 +637,7 @@ class StreamAccountData:
                                         
                                             
                                         try:                                          
-                                                                                        
-                                            #log.critical (f" OPENING HEDGING-START-{instrument_ticker.upper()}")
-                                                                                      
-                                            TA_result_data_all = await querying_table("market_analytics_json")
-
-                                            TA_result_data_only=  TA_result_data_all["list_data_only"]
-                                            
-                                            TA_result_data = [o for o in TA_result_data_only if currency_upper in o["instrument"]]                                                                                                    
-                                            
+                                                                              
                                             ticker= reading_from_pkl_data("ticker",instrument_ticker)
                                             
                                             try:
@@ -423,197 +645,25 @@ class StreamAccountData:
                                             except:
                                                 ticker= []
                                                                                             
-                                            if ticker !=[]:
-                                                        
-                                                index_price= get_index (data_orders, ticker)
+                                            if ticker:
                                                     
-                                                # get portfolio data  
-                                                portfolio= reading_from_pkl_data("portfolio",currency)
-                                                                                    # obtain spot equity
-                                                equity: float = portfolio[0]["equity"]                                       
-                                                                                    
-                                                if ticker !=[] and index_price is not None and equity >0:
-                                                
-                                                    tick_TA=  max([o["tick"] for o in TA_result_data])
-                                                    
-                                                    server_time = get_now_unix_time()  
-                                                    
-                                                    delta_time = server_time-tick_TA
-                                                    
-                                                    delta_time_seconds = delta_time/1000                                                
-                                                    
-                                                    delta_time_expiration = min_expiration_timestamp - server_time  
-                                                                                                        
-                                                    if delta_time_seconds < 120:#ensure freshness of ta
-                                                        
-                                                        notional: float = compute_notional_value(index_price, equity)
-                                                            
-                                                        best_ask_prc: float = ticker["best_ask_price"] 
-                                                                
-                                                        column_trade: str= "instrument_name","label", "amount", "price","side"
-                                            
-                                                        my_trades_currency: list= await get_query(trade_db_table, 
-                                                                                                    currency, 
-                                                                                                    "all", 
-                                                                                                    "all", 
-                                                                                                    column_trade)
-                                                        
-                                                        column_order= "instrument_name","label","order_id","amount","timestamp"
-                                                        
-                                                        orders_currency = await get_query(order_db_table, 
-                                                                                                currency, 
-                                                                                                "all", 
-                                                                                                "all", 
-                                                                                                column_order)     
-                                                        
-                                                        for strategy in active_strategies:
-                                                            
-                                                            my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
-                                                            
-                                                            orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
-
-                                                            orders_currency_strategy_label_closed = [o for o in orders_currency_strategy if "closed" in (o["label"]) ]
-                                                        
-                                                            my_trades_currency_strategy_open = [o for o in my_trades_currency_strategy if "open" in (o["label"])]
-                                                            
-                                                            #if my_trades_currency_strategy:
-                                                                
-                                                            #    sum_my_trades_currency_strategy = sum([o["amount"] for o in my_trades_currency_strategy ])
-                                                            
-                                                            #else:
-                                                            #    sum_my_trades_currency_strategy = 0
-                                                                
-                                                            strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]                                                                
-        
-                                                            if "hedgingSpot" in strategy:
-                                                                
-                                                                log.debug (f"strategy {strategy} {currency.upper()}-START")
-                                                                
-                                                                max_position: int = notional * -1
-                                                                
-                                                                hedging = HedgingSpot(strategy,
-                                                                                      strategy_params,
-                                                                                      max_position,
-                                                                                      my_trades_currency_strategy,
-                                                                                      TA_result_data,
-                                                                                      index_price,
-                                                                                      server_time)
-                                                                
-                                                                send_order: dict = (
-                                                                await hedging.is_send_and_cancel_open_order_allowed(
-                                                                    instrument_ticker,
-                                                                    active_futures,
-                                                                    orders_currency_strategy,
-                                                                    best_ask_prc,
-                                                                    ))
-                                                                
-                                                                if send_order["order_allowed"]:
-                                                                    
-                                                                    #log.error  (f"send_order {send_order}")
-                                                                    await if_order_is_true(send_order, instrument_ticker)
-                                                                    await if_cancel_is_true(send_order)
-
-                                                                if my_trades_currency_strategy_open !=[]:
-                                                                                                                                               
-                                                                    best_bid_prc: float = ticker["best_bid_price"]
-                                                                    
-                                                                    get_prices_in_label_transaction_main = [o["price"] for o in my_trades_currency_strategy_open]
-
-                                                                    closest_price = get_closest_value(get_prices_in_label_transaction_main, best_bid_prc)
-
-                                                                    nearest_transaction_to_index = [o for o in my_trades_currency_strategy_open \
-                                                                        if o["price"] == closest_price]
-                                                                    #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
-                                                                    
-                                                                    send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                                                                        orders_currency_strategy_label_closed,
-                                                                        best_bid_prc,
-                                                                        nearest_transaction_to_index,
-                                                                    )
-                                                                    log.error (f"send_closing_order {send_closing_order}")
-                                                                    await if_order_is_true(send_closing_order, instrument_ticker)
-                                                                    await if_cancel_is_true(send_closing_order)
-
-                                                                log.debug (f"strategy {strategy}-DONE")
-
-                                                    # check for delivered instrument
-
-                                                            if "futureSpread" in strategy:
-                                                                log.error (f"strategy {strategy}-START")
-                                                                
-                                                                for combo in active_combo_perp:
-                                                                    
-                                                                
-                                                                    combo_instruments_name = combo["instrument_name"]
-                                                                    future_instrument_name = f"{currency_upper}-{combo_instruments_name[7:][:7]}"
-                                                                    combo_ticker= reading_from_pkl_data("ticker",combo_instruments_name)
-
-                                                                    #min_trade_amount=  [o["min_trade_amount"] for o in active_combo_perp if o["instrument_name"]== combo_instruments_name][0]
-                                                                    
-                                                                    #log.warning (f" combo {combo} future_instrument_name {future_instrument_name} min_trade_amount {min_trade_amount}")
-                                                                    #log.info (f" combo_ticker {combo_ticker}")
-                                                                    
-                                                                    log.error (f""" future_ticker {reading_from_pkl_data("ticker",future_instrument_name)}""")
-                                                                    future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
-                                                                    if future_ticker:
-                                                                        future_mark_price= future_ticker["mark_price"]
-                                                                        
-                                                                        contango = future_mark_price - index_price > 0
-                                                                        
-                                                                        log.info (f"{future_instrument_name} {future_mark_price} contango {contango}")
-                                                                        
-                                                                        if combo_ticker:
-                                                                        
-                                                                            my_trades_perpetual_strategy = ([o for o in my_trades_currency_strategy if "PERPETUAL" in o["instrument_name"] ])
-                                                                        
-                                                                            sum_my_trades_perpetual_strategy = 0 if my_trades_perpetual_strategy == [] \
-                                                                                else sum ([o["amount"] for o in sum_my_trades_perpetual_strategy])
-                                                                            
-                                                                            future_spreads = FutureSpreads(strategy,
-                                                                                                        strategy_params,
-                                                                                                        sum_my_trades_perpetual_strategy,
-                                                                                                        notional,
-                                                                                                        combo_ticker [0],
-                                                                                                        )
-                                                                            log.debug (f"combo_instruments_name {combo_instruments_name}")
-                                                                    
-                                                                            send_order: dict = await future_spreads.is_send_and_cancel_open_order_allowed (combo_instruments_name,
-                                                                                                                                                        contango,
-                                                                                                                                                        active_combo_perp,
-                                                                                                                                                        orders_currency_strategy)
-                                                                            
-                                                                            
-                                                                            if False and send_order["order_allowed"]:
+                                                running_critical_strategy(currencies,
+                                                                            currency, 
+                                                                            currency_upper,
+                                                                            order_db_table,
+                                                                            trade_db_table, 
+                                                                            transaction_log_trading,
+                                                                            min_expiration_timestamp,
+                                                                            data_orders,
+                                                                            ticker,
+                                                                        active_strategies,
+                                                                        active_futures,
+                                                                        active_combo_perp,
+                                                                        strategy_attributes,
+                                                                        instrument_ticker, 
+                                                                        futures_instruments,
+                                                                        )
                                                                                 
-                                                                                #log.error  (f"send_order {send_order}")
-                                                                                await if_order_is_true(send_order, instrument_ticker)
-                                                                                await if_cancel_is_true(send_order)
-
-                                                                    log.error (f"send_order {send_order}")
-                                                                    log.error (f"strategy {strategy}-DONE")
-
-                                                        if delta_time_expiration < 0:
-                                                            
-                                                            instruments_name_with_min_expiration_timestamp = futures_instruments [
-                                                                "instruments_name_with_min_expiration_timestamp"]     
-                                                            
-                                                            # check any oustanding instrument that has deliverd
-                                                            
-                                                            for currency in currencies:
-                                                                
-                                                                delivered_transactions = [o for o in my_trades_currency \
-                                                                    if instruments_name_with_min_expiration_timestamp in o["instrument_name"]]
-                                                                
-                                                                if delivered_transactions:
-                                                                    
-                                                                    for transaction in delivered_transactions:
-                                                                        delete_respective_closed_futures_from_trade_db (transaction, trade_db_table)
-
-                                                            
-                                                            # updating instrument
-                                                            await sleep_and_restart ()
-                                
-                                            
                                         except ValueError:
                                             import traceback
                                             traceback.format_exc()

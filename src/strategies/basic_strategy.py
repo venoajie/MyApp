@@ -4,7 +4,7 @@
 import asyncio
 
 # installed
-from dataclassy import dataclass, fields
+from dataclassy import dataclass
 
 # user defined formula
 from db_management.sqlite_management import (
@@ -12,8 +12,7 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     querying_ohlc_price_vol,
     querying_additional_params,
-    querying_table,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query)
+    querying_table,)
 from utilities.string_modification import (
     parsing_label)
 from loguru import logger as log
@@ -669,20 +668,6 @@ def get_basic_closing_paramaters(selected_transaction: list,
     params.update({"instrument": transaction ["instrument_name"]})
         
     return params
-
-
-async def get_private_data(currency: str = None) -> list:
-    """
-    Provide class object to access private get API
-    """
-
-    sub_account = "deribit-147691"
-    client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    connection_url: str = "https://www.deribit.com/api/v2/"
-
-    return GetPrivateData(connection_url, client_id, client_secret, currency)
-
 
 
 @dataclass(unsafe_hash=True, slots=True)
