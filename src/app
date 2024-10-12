@@ -629,7 +629,6 @@ class StreamAccountData:
                             instrument_ticker = (message_channel)[19:]  
                             
                             log.debug (f"{instrument_ticker}")
-                            log.debug (f""""PERPETUAL" in data_orders["instrument_name"] {"PERPETUAL" in data_orders["instrument_name"]}""")
                             
                             if (
                                 message_channel
@@ -642,7 +641,9 @@ class StreamAccountData:
                                     my_path_ticker, data_orders, instrument_ticker)
                                             
                                 try:
-                                    
+                                    log.info (f"data_orders {data_orders}")
+                                    log.debug (f""""PERPETUAL" in data_orders["instrument_name"] {"PERPETUAL" in data_orders["instrument_name"]}""")
+
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
                                         await inserting_open_interest(currency, 
