@@ -127,7 +127,7 @@ class RunningStrategy:
     async def account_summary(self) -> dict:
         
         log.error (f"self.client_secret {self.client_secret} sub_account {self.sub_account} currency {self.currency}")
-        account: dict = self.private_data.get_account_summary()
+        account: dict = await self.private_data.get_account_summary()
         log.error (f"account {account}")
         return account["result"]
 
