@@ -54,6 +54,8 @@ def main_dotenv(header: str = "None", filename: str = ".env") -> dict:
 
     # Initialize credentials to None
     credentials = None
+    
+    log.error ("AAAAAAAAAAAAAAAAAAAAAAA")
 
     try:
         # Set the filename
