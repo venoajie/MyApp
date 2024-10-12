@@ -154,14 +154,14 @@ async def running_critical_strategy(currencies,
                                             "all", 
                                             column_order)     
     
-    positions = reading_from_pkl_data("positions",currency)
+    positions = reading_from_pkl_data("positions",currency)[0]
     log.info (f"positions {positions}")
                                             
     last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
     current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
     sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
     sum_orders_currency = 0 if not orders_currency else sum([o["amount"] for o in orders_currency])
-    positions_orders = positions["order"]
+    positions_orders = positions["orders"]
     sum_positions_orders = 0 if not positions_orders else sum([o["amount"] for o in positions_orders])
     
     sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency
