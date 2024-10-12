@@ -5,8 +5,6 @@ import asyncio
 
 # installed
 from dataclassy import dataclass, fields
-from abc import ABC, abstractmethod,ABCMeta
-from dataclassy.dataclass import DataClassMeta
 
 # user defined formula
 from db_management.sqlite_management import (
@@ -19,7 +17,6 @@ from db_management.sqlite_management import (
 from utilities.string_modification import (
     parsing_label)
 from loguru import logger as log
-
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
@@ -674,6 +671,19 @@ def get_basic_closing_paramaters(selected_transaction: list,
     return params
 
 
+async def get_private_data(currency: str = None) -> list:
+    """
+    Provide class object to access private get API
+    """
+
+    sub_account = "deribit-147691"
+    client_id: str = parse_dotenv(sub_account)["client_id"]
+    client_secret: str = parse_dotenv(sub_account)["client_secret"]
+    connection_url: str = "https://www.deribit.com/api/v2/"
+
+    return GetPrivateData(connection_url, client_id, client_secret, currency)
+
+
 
 @dataclass(unsafe_hash=True, slots=True)
 class ManageStrategy ():
@@ -715,7 +725,6 @@ class ManageStrategy ():
     def modifying_order (self) -> None:
         """ """
         pass
-
 
 @dataclass(unsafe_hash=True, slots=True)
 class BasicStrategy (ManageStrategy):

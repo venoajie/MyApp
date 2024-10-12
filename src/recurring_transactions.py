@@ -6,16 +6,20 @@
 import asyncio
 import requests
 
+
 # installed
 import aioschedule as schedule
 import time
 from loguru import logger as log
 import aiohttp
+from dataclassy import dataclass, fields
 # user defined formula
+from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     insert_tables, querying_arithmetic_operator,)
 from deribit_get import (
+    GetPrivateData,
     get_instruments,
     get_currencies, 
     get_server_time)
@@ -99,6 +103,49 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
         )
     )
 
+
+@dataclass(unsafe_hash=True, slots=True)
+class RunningStrategy:
+
+    """ """
+
+    sub_account: str
+    currency: str
+    connection_url: str = "https://www.deribit.com/api/v2/"
+    client_id: str = fields 
+    client_secret: str = fields 
+    private_data: str= fields 
+
+    def __post_init__(self):
+        self.client_id =  parse_dotenv(self.sub_account)["client_id"]
+        self.client_secret =  parse_dotenv(self.sub_account)["client_secret"]
+        self.private_data =  GetPrivateData(
+                self.connection_url, self.client_id, self.client_secret, self.currency
+            )
+
+
+def parse_dotenv(sub_account) -> dict:
+    return config.main_dotenv(sub_account)
+
+
+async def running_strategy() -> None:
+    """ """
+    sub_account = "deribit-147691"
+    
+    try:
+        currency = "ETH"
+        RunningStrategy(
+            sub_account,
+            currency,
+            )
+
+    except Exception as error:
+        
+        catch_error_message(
+            error, 10, "app"
+        )
+
+    
 async def run_every_60_seconds() -> None:
     """ """
 
@@ -213,8 +260,10 @@ if __name__ == "__main__":
     try:
         # asyncio.get_event_loop().run_until_complete(check_and_save_every_60_minutes())
         schedule.every().hour.do(check_and_save_every_60_minutes)
+        
 
         schedule.every().hour.do(back_up_db)
+        schedule.every(1).seconds.do(running_strategy)
         schedule.every(15).seconds.do(run_every_15_seconds)
         #schedule.every(3).seconds.do(run_every_3_seconds)
         #schedule.every(5).seconds.do(run_every_5_seconds)
