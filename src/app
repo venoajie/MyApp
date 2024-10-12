@@ -647,21 +647,21 @@ class StreamAccountData:
                                                                                             
                                             if ticker:
                                                     
-                                                running_critical_strategy(currencies,
-                                                                            currency, 
-                                                                            currency_upper,
-                                                                            order_db_table,
-                                                                            trade_db_table, 
-                                                                            transaction_log_trading,
-                                                                            min_expiration_timestamp,
-                                                                            data_orders,
-                                                                            ticker,
-                                                                        active_strategies,
-                                                                        active_futures,
-                                                                        active_combo_perp,
-                                                                        strategy_attributes,
-                                                                        instrument_ticker, 
-                                                                        futures_instruments,
+                                                await running_critical_strategy (currencies,
+                                                                                 currency, 
+                                                                                currency_upper,
+                                                                                order_db_table,
+                                                                                trade_db_table, 
+                                                                                transaction_log_trading,
+                                                                                min_expiration_timestamp,
+                                                                                data_orders,
+                                                                                ticker,
+                                                                                active_strategies,
+                                                                                active_futures,
+                                                                                active_combo_perp,
+                                                                                strategy_attributes,
+                                                                                instrument_ticker, 
+                                                                                futures_instruments,
                                                                         )
                                                                                 
                                         except ValueError:
