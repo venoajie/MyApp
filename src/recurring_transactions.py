@@ -148,12 +148,11 @@ async def running_strategy() -> None:
     
     try:
         currency = "ETH"
-        running= RunningStrategy(
+        RunningStrategy(
             sub_account,
             currency,
             )
         
-        running()
         
     except Exception as error:
         
