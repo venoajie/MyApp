@@ -137,12 +137,9 @@ async def running_strategy() -> None:
             
     try:
         for currency in currencies:
-            api_req= SendApiRequest (
+            running= RunningStrategy (
                 sub_account,
                 currency,)
-            
-            
-            running= RunningStrategy (api_req)
             
             await running.running_strategies()
         
