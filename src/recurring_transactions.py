@@ -126,11 +126,18 @@ class RunningStrategy:
 
     async def account_summary(self) -> dict:
         
-        log.error (f"self.client_secret {self.client_secret} sub_account {self.sub_account} currency {self.currency}")
         account: dict = await self.private_data.get_account_summary()
-        log.error (f"account {account}")
+
         return account["result"]
 
+    async def running_strategies(self) -> dict:
+              
+            while True:
+
+                acccount_summary = await self.account_summary()
+                
+                log.error (f"acccount_summary {acccount_summary}")
+                
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -146,10 +153,6 @@ async def running_strategy() -> None:
             currency,
             )
         
-        acccount_summary = await running.account_summary()
-        
-        log.error (f"acccount_summary {acccount_summary}")
-
     except Exception as error:
         
         catch_error_message(
