@@ -10,7 +10,7 @@ while true; do
                 echo "Moving local  files to remote..."
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
                 
-                rclone databases/"$(basename $(find $pwd -name "*.bak"))" remote:/remote-sqlite
+                rclone sync databases/"$(basename $(find $pwd -name "*.bak"))" remote:/remote-sqlite
 
                 echo "Delete remaining .bak files..."
                 cd databases
