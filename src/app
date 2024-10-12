@@ -170,7 +170,7 @@ async def running_critical_strategy(currencies,
     log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency} current_position_log {current_position_log}")
     log.info (f"sum_order_from_sub_account_and_db_is_equal {sum_order_from_sub_account_and_db_is_equal} sub_account_size_all {sub_account_size_all} sum_sub_account_orders {sum_sub_account_orders} sum_orders_currency {sum_orders_currency}")
     
-    if  False and index_price is not None \
+    if  index_price is not None \
         and equity >0 \
             and sum_trade_from_log_and_db_is_equal:
     
