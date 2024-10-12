@@ -166,8 +166,8 @@ async def running_strategy() -> None:
                 sub_account,
                 currency,)
             
-            subaccounts = api_req.get_subaccounts()
-            log.error (f"subaccounts {subaccounts}")
+            subaccounts = await api_req.get_subaccounts()
+            log.warning (f"subaccounts {subaccounts}")
             await running.running_strategies()
         
     except Exception as error:
