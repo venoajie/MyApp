@@ -132,11 +132,11 @@ class RunningStrategy:
 
     async def running_strategies(self) -> dict:
               
-            while True:
+        while True:
 
-                acccount_summary = await self.account_summary()
-                
-                log.error (f"acccount_summary {acccount_summary}")
+            acccount_summary = await self.account_summary()
+            
+            log.error (f"acccount_summary {acccount_summary}")
                 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -145,15 +145,22 @@ def parse_dotenv(sub_account) -> dict:
 async def running_strategy() -> None:
     """ """
     sub_account = "deribit-147691"
-    
-    try:
-        currency = "ETH"
-        running= RunningStrategy(
-            sub_account,
-            currency,
-            )
+
+    file_toml = "config_strategies.toml"
         
-        await running.running_strategies()
+    config_app = get_config(file_toml)
+
+    tradable_config_app = config_app["tradable"]
+    
+    currencies= [o["spot"] for o in tradable_config_app] [0]
+            
+    try:
+        for currency in currencies:
+            running= RunningStrategy(
+                sub_account,
+                currency,
+                )
+            await running.running_strategies()
         
     except Exception as error:
         
