@@ -619,8 +619,7 @@ class StreamAccountData:
                                 
                                 log.debug (f"{instrument_ticker}")
                                 
-                                if "PERPETUAL" in data_orders["instrument_name"]:
-                                    log.warning (f"{data_orders}")
+                                log.warning (f"{data_orders}")
                                     
                                                                 
                                 await ohlc_result_per_time_frame(instrument_ticker,
@@ -644,9 +643,7 @@ class StreamAccountData:
                                     my_path_ticker, data_orders, instrument_ticker)
                                             
                                 try:
-                                    
-                                    
-
+                                
                                     if "PERPETUAL" in data_orders["instrument_name"]:
                                         
                                         await inserting_open_interest(currency, 
