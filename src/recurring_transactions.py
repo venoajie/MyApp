@@ -39,6 +39,8 @@ from websocket_management.allocating_ohlc import (
     last_tick_fr_sqlite,)
 from websocket_management.ws_management import (
     get_config,)
+from transaction_management.deribit.api_requests import (
+    SendApiRequest,)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -160,6 +162,12 @@ async def running_strategy() -> None:
                 sub_account,
                 currency,
                 )
+            api_req= SendApiRequest (
+                sub_account,
+                currency,)
+            
+            subaccounts = api_req.get_subaccounts()
+            log.error (f"subaccounts {subaccounts}")
             await running.running_strategies()
         
     except Exception as error:
