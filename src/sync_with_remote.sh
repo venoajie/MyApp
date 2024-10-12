@@ -10,18 +10,18 @@ while true; do
                 echo "Moving local  files to remote..."
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl oci:bucket-20230107-0704
                 
-                sleep 5s
+                rclone databases/"$(basename $(find $pwd -name "*.bak"))" remote:/remote-sqlite
 
-                #rclone sync --include databases/*.bak remote:/remote-sqlite
+                echo "Delete remaining .bak files..."
                 cd databases
                 rm *.bak
                 cd ..
                 
-                echo "sync_with_remote: sleep 15 minutes"
+                echo "sleep 15 minutes"
                 sleep 15m
 
         else
-                echo "sync_with_remote: file does not exist"
+                echo "sync_with_remote: file does not exist yet"
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
 
                 #clone sync databases  b2:/remote-sqlite  --include *.{bak}
