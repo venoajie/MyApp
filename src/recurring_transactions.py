@@ -107,36 +107,15 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 
 
 @dataclass(unsafe_hash=True, slots=True)
-class RunningStrategy:
+class RunningStrategy (SendApiRequest):
 
     """ """
-
-    sub_account: str
-    currency: str
-    connection_url: str = "https://www.deribit.com/api/v2/"
-    client_id: str = fields 
-    client_secret: str = fields 
-    private_data: str= fields 
-
-    def __post_init__(self):
-        self.client_id =  parse_dotenv(self.sub_account)["client_id"]
-        self.client_secret =  parse_dotenv(self.sub_account)["client_secret"]
-        self.private_data =  GetPrivateData(
-                self.connection_url, self.client_id, self.client_secret, self.currency
-            )
-
-
-    async def account_summary(self) -> dict:
-        
-        account: dict = await self.private_data.get_account_summary()
-
-        return account["result"]
 
     async def running_strategies(self) -> dict:
               
         while True:
 
-            acccount_summary = await self.account_summary()
+            acccount_summary = await self.get_subaccounts()
             
             log.error (f"acccount_summary {acccount_summary}")
                 
@@ -158,16 +137,13 @@ async def running_strategy() -> None:
             
     try:
         for currency in currencies:
-            running= RunningStrategy(
-                sub_account,
-                currency,
-                )
             api_req= SendApiRequest (
                 sub_account,
                 currency,)
             
-            subaccounts = await api_req.get_subaccounts()
-            log.warning (f"subaccounts {subaccounts}")
+            
+            running= RunningStrategy (api_req)
+            
             await running.running_strategies()
         
     except Exception as error:

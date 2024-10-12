@@ -3,7 +3,7 @@ import asyncio
 from typing import Dict
 
 # installed
-from dataclassy import dataclass, fields 
+from dataclassy import dataclass 
 
 # import json, orjson
 import aiohttp
@@ -74,8 +74,11 @@ class SendApiRequest:
         # Set endpoint
         endpoint: str = "private/get_subaccounts_details"
 
-        params = {"currency": self.currency, "with_open_orders": True}
+        params = {"currency": self.currency, 
+                  "with_open_orders": True
+                  }
     
-        return await main(self.sub_account,
-                               endpoint=endpoint, 
-                               params=params,)
+        return await main (self.sub_account,
+                           endpoint=endpoint, 
+                           params=params,
+                           )
