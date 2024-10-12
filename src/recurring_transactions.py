@@ -153,6 +153,8 @@ async def running_strategy() -> None:
             currency,
             )
         
+        running()
+        
     except Exception as error:
         
         catch_error_message(
