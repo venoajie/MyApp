@@ -141,8 +141,6 @@ async def running_strategy() -> None:
                 sub_account,
                 currency,)
             
-            running
-        
     except Exception as error:
         
         catch_error_message(
@@ -178,7 +176,6 @@ async def run_every_15_seconds() -> None:
     end_timestamp=     get_now_unix_time()  
     
     for currency in currencies:
-        log.error (f"currency {currency}")
         
         instrument_name= f"{currency}-PERPETUAL"
 
@@ -193,7 +190,6 @@ async def run_every_15_seconds() -> None:
         WHERE_FILTER_TICK: str = "tick"
         
         for resolution in time_frame:
-            log.error (f"resolution {resolution}")
             
             table_ohlc= f"ohlc{resolution}_{currency.lower()}_perp_json" 
                         

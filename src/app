@@ -616,6 +616,8 @@ class StreamAccountData:
                             
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
+                                
+                                log.debug (f"{instrument_ticker}")
                                                                 
                                 await ohlc_result_per_time_frame(instrument_ticker,
                                                                  resolution,
@@ -624,7 +626,10 @@ class StreamAccountData:
                                                                 WHERE_FILTER_TICK,
                                                                 )
                                 
-                            instrument_ticker = (message_channel)[19:]                  
+                            instrument_ticker = (message_channel)[19:]  
+                            
+                            log.debug (f"{instrument_ticker}")
+                            log.debug (f""""PERPETUAL" in data_orders["instrument_name"] {"PERPETUAL" in data_orders["instrument_name"]}""")
                             
                             if (
                                 message_channel
