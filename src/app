@@ -154,7 +154,7 @@ async def running_critical_strategy(currencies,
                                             "all", 
                                             column_order)     
     
-    sub_account = reading_from_pkl_data("sub_accounts",currency)
+    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
     log.info (f"sub_account {sub_account}")
                                             
     last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
