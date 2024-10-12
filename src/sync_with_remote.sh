@@ -25,8 +25,8 @@ while true; do
                 #rclone sync --include databases/*.bak remote:/remote-sqlite
 
                 #clone sync databases  b2:/remote-sqlite  --include *.{bak}
-                echo "wait file for exist: sleep 5 minutes"
-                sleep 5m
+                echo "wait file for exist: sleep 10 minutes"
+                sleep 10m
                 
                 #rclone sync  databases/exchanges/deribit/transactions/eth-myTrades-open-recovery-point.pkl b2:MyAppTrading
                 
