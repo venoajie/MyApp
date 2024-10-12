@@ -192,6 +192,8 @@ async def running_critical_strategy(currencies,
         delta_time_seconds = delta_time/1000                                                
         
         delta_time_expiration = min_expiration_timestamp - server_time  
+        
+        log.warning (f"delta_time_seconds < 120 {delta_time_seconds < 120} {delta_time_seconds}")
                                                             
         if delta_time_seconds < 120:#ensure freshness of ta
             
@@ -216,7 +218,9 @@ async def running_critical_strategy(currencies,
                 #else:
                 #    sum_my_trades_currency_strategy = 0
                     
-                strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]                                                                
+                strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
+                
+                log.error (f"""hedgingSpot in strategy {"hedgingSpot" in strategy} """)                                                             
 
                 if "hedgingSpot" in strategy:
                     
