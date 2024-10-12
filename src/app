@@ -154,22 +154,23 @@ async def running_critical_strategy(currencies,
                                             "all", 
                                             column_order)     
     
-    positions = reading_from_pkl_data("positions",currency)[0]
+    sub_account = reading_from_pkl_data("sub_accounts",currency)
+    log.info (f"sub_account {sub_account}")
                                             
     last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
     current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
     sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
     sum_orders_currency = 0 if not orders_currency else sum([o["amount"] for o in orders_currency])
-    positions_orders = positions["orders"]
-    sum_positions_orders = 0 if not positions_orders else sum([o["amount"] for o in positions_orders])
+    sub_account_orders = sub_account["order"]
+    sum_sub_account_orders = 0 if not sub_account_orders else sum([o["amount"] for o in sub_account_orders])
     
     sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency
-    sum_order_from_positions_and_db_is_equal = sum_orders_currency == sum_positions_orders
+    sum_order_from_sub_account_and_db_is_equal = sum_orders_currency == sum_sub_account_orders
     
-    log.warning (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency} current_position_log {current_position_log}")
-    log.info (f"sum_order_from_positions_and_db_is_equal {sum_order_from_positions_and_db_is_equal} sum_positions_orders {sum_positions_orders} sum_orders_currency {sum_orders_currency}")
+    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency} current_position_log {current_position_log}")
+    log.info (f"sum_order_from_sub_account_and_db_is_equal {sum_order_from_sub_account_and_db_is_equal} sum_sub_account_orders {sum_sub_account_orders} sum_orders_currency {sum_orders_currency}")
     
-    if  index_price is not None \
+    if  False and index_price is not None \
         and equity >0 \
             and sum_trade_from_log_and_db_is_equal:
     
