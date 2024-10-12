@@ -32,7 +32,7 @@ async def main (sub_account: str,
         "params": params,
     }
 
-    if client_id:
+    try:
         
         client_id =  parse_dotenv(sub_account)["client_id"]
         client_secret =  parse_dotenv(sub_account)["client_secret"]
@@ -51,7 +51,7 @@ async def main (sub_account: str,
 
             return response
         
-    else:
+    except:
 
         async with aiohttp.ClientSession() as session:
             async with session.get(connection_url + endpoint) as response:
