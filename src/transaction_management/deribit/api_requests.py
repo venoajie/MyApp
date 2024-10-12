@@ -76,6 +76,6 @@ class SendApiRequest:
 
         params = {"currency": self.currency, "with_open_orders": True}
     
-        return await self.main(self.sub_account,
+        return await main(self.sub_account,
                                endpoint=endpoint, 
                                params=params,)
