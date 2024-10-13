@@ -118,6 +118,97 @@ class SendApiRequest:
     sub_account: str
     currency: str
     
+    
+    async def send_order(
+        self,
+        side: str,
+        instrument,
+        amount,
+        label: str = None,
+        price: float = None,
+        type: str = "limit",
+        trigger_price: float = None,
+        trigger: str = "last_price",
+        time_in_force: str = "fill_or_kill",
+        reduce_only: bool = False,
+        valid_until: int = False,
+        post_only: bool = True,
+        reject_post_only: bool = False,
+    ):
+
+        if valid_until == False:
+            if trigger_price == None:
+                if "market" in type:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "reduce_only": reduce_only,
+                    }
+                else:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+            else:
+                if "market" in type:
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                    }
+                else:
+
+                    params = {
+                        "instrument_name": instrument,
+                        "amount": amount,
+                        "label": label,
+                        "price": price,
+                        # "time_in_force": time_in_force, fik can not apply to post only
+                        "type": type,
+                        "trigger": trigger,
+                        "trigger_price": trigger_price,
+                        "reduce_only": reduce_only,
+                        "post_only": post_only,
+                        "reject_post_only": reject_post_only,
+                    }
+        else:
+            params = {
+                "instrument_name": instrument,
+                "amount": amount,
+                "price": price,
+                "label": label,
+                "valid_until": valid_until,
+                # "time_in_force": time_in_force, fik can not apply to post only
+                "type": type,
+                "reduce_only": reduce_only,
+                "post_only": post_only,
+                "reject_post_only": reject_post_only,
+            }
+
+        result = None
+        if side == "buy":
+            endpoint: str = "private/buy"
+        if side == "sell":
+            endpoint: str = "private/sell"
+        if side != None:
+            result = await main(endpoint=endpoint, params=params)
+        return result
+
 
     async def send_limit_order(self, params) -> None:
         """ """
@@ -178,7 +269,7 @@ class SendApiRequest:
 
         params = {"detailed": False}
 
-        result = await self.parse_main(endpoint=endpoint, params=params)
+        result = await main(endpoint=endpoint, params=params)
         await sqlite_management.deleting_row("orders_all_json")
 
         return result
