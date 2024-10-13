@@ -18,6 +18,7 @@ from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     back_up_db_sqlite,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables, 
     querying_arithmetic_operator,)
 from transaction_management.deribit.api_requests import (
@@ -27,7 +28,9 @@ from transaction_management.deribit.api_requests import (
     SendApiRequest)
 from market_understanding.technical_analysis import (
     insert_market_condition_result,)
-from utilities.pickling import replace_data
+from utilities.pickling import (
+    replace_data,
+    read_data,)
 from utilities.string_modification import (
     remove_redundant_elements, 
     transform_nested_dict_to_list,
@@ -138,6 +141,35 @@ async def running_strategy() -> None:
             error, 10, "app"
         )
 
+
+def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, currency, status)
+
+    data = read_data(path)
+
+    return data
+
+
+async def compare_update_transaction_log_and_Sub_acc(currency) -> None:
+    """ """
+                                               
+    column_list= "instrument_name", "position", "timestamp"      
+    
+    transaction_log_trading= f"transaction_log_{currency.lower()}_json"                                              
+    
+    from_transaction_log = await get_query (transaction_log_trading, 
+                                                currency, 
+                                                "all", 
+                                                "all", 
+                                                column_list)                                       
+
+    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
+    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
+    sub_account_size_all = [o["size"] for o in sub_account["positions"] ][0]
+    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
+    sum_trade_from_log_and_db_is_equal = current_position_log ==  sub_account_size_all
     
 async def run_every_60_seconds() -> None:
     """ """
