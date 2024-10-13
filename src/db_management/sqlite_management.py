@@ -7,6 +7,8 @@ import aiosqlite
 from loguru import logger as log
 import json
 from utilities.string_modification import extract_currency_from_text
+from transaction_management.deribit.api_requests import (
+    telegram_bot_sendtext as telegram_bot,)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -16,9 +18,7 @@ def catch_error(error, idle: int = None) -> list:
 
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
-    import deribit_get
-
-    return await deribit_get.telegram_bot_sendtext(bot_message, purpose)
+    return await telegram_bot(bot_message, purpose)
 
 
 async def create_dataBase_sqlite(db_name: str = "databases/trading.sqlite3") -> None:
@@ -619,3 +619,18 @@ def query_pd(table_name: str, field: str = None):
     con.close()
 
     return result_cleaned
+
+
+async def back_up_db_sqlite():
+    import sqlite3
+    from datetime import datetime
+
+    TIMESTAMP = datetime.now().strftime("%Y%m%d-%H-%M-%S")
+
+
+    src = sqlite3.connect("databases/trading.sqlite3")
+    dst = sqlite3.connect(f"databases/trdg-{TIMESTAMP}.bak")
+    with dst:
+        src.backup(dst)
+    dst.close()
+    src.close()

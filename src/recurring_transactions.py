@@ -17,7 +17,9 @@ from dataclassy import dataclass, fields
 from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
-    insert_tables, querying_arithmetic_operator,)
+    back_up_db_sqlite,
+    insert_tables, 
+    querying_arithmetic_operator,)
 from transaction_management.deribit.api_requests import (
     get_currencies,
     get_instruments,
@@ -73,18 +75,7 @@ async def get_currencies_from_deribit() -> float:
 
 
 async def back_up_db():
-    import sqlite3
-    from datetime import datetime
-
-    TIMESTAMP = datetime.now().strftime("%Y%m%d-%H-%M-%S")
-
-
-    src = sqlite3.connect("databases/trading.sqlite3")
-    dst = sqlite3.connect(f"databases/trdg-{TIMESTAMP}.bak")
-    with dst:
-        src.backup(dst)
-    dst.close()
-    src.close()
+    await back_up_db_sqlite ()
 
 async def current_server_time() -> float:
     """ """

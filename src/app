@@ -23,7 +23,9 @@ from transaction_management.deribit.api_requests import (
 from strategies.basic_strategy import (
     is_label_and_side_consistent,)
 from strategies.hedging_spot import HedgingSpot  
-from strategies.futures_spread import delete_respective_closed_futures_from_trade_db, FutureSpreads
+from strategies.futures_spread import (
+    delete_respective_closed_futures_from_trade_db, 
+    FutureSpreads)
 from transaction_management.deribit.orders_management import (
     saving_traded_orders,
     saving_orders,)
