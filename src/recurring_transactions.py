@@ -217,9 +217,6 @@ async def run_every_15_seconds() -> None:
                 result = [o for o in transform_nested_dict_to_list(ohlc_request) \
                     if o["tick"] > start_timestamp][0]
                 
-                log.info (f"result {result}")
-                
-                
                 await ohlc_result_per_time_frame (instrument_name,
                                                 resolution,
                                                 result,

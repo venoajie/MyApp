@@ -164,11 +164,11 @@ async def running_critical_strategy(currencies,
     sub_account_orders = sub_account["open_orders"]
     sum_sub_account_orders = 0 if not sub_account_orders else sum([o["amount"] for o in sub_account_orders])
     
-    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency
-    sum_order_from_sub_account_and_db_is_equal = sum_orders_currency == sum_sub_account_orders == sub_account_size_all
+    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
+    sum_order_from_sub_account_and_db_is_equal = sum_orders_currency == sum_sub_account_orders 
     
-    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency} current_position_log {current_position_log}")
-    log.info (f"sum_order_from_sub_account_and_db_is_equal {sum_order_from_sub_account_and_db_is_equal} sub_account_size_all {sub_account_size_all} sum_sub_account_orders {sum_sub_account_orders} sum_orders_currency {sum_orders_currency}")
+    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
+    log.info (f"sum_order_from_sub_account_and_db_is_equal {sum_order_from_sub_account_and_db_is_equal} sum_sub_account_orders {sum_sub_account_orders} sum_orders_currency {sum_orders_currency}")
     
     log.warning (f"index_price is not None {index_price is not None} equity > 0 {equity > 0} ")
     
@@ -377,8 +377,6 @@ async def update_user_changes(data_orders,
                 await saving_traded_orders (trade, trade_db_table, order_db_table)                      
 
                 await saving_traded_orders (trade, archive_db_table, order_db_table)
-                
-            
             
         else:
             for order in orders:
