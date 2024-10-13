@@ -18,16 +18,19 @@ from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     back_up_db_sqlite,
+    executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables, 
     querying_arithmetic_operator,)
+from market_understanding.technical_analysis import (
+    insert_market_condition_result,)
+from strategies.config_strategies import paramaters_to_balancing_transactions
 from transaction_management.deribit.api_requests import (
     get_currencies,
     get_instruments,
     get_server_time,
     SendApiRequest)
-from market_understanding.technical_analysis import (
-    insert_market_condition_result,)
+from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from utilities.pickling import (
     replace_data,
     read_data,)
@@ -44,8 +47,6 @@ from websocket_management.allocating_ohlc import (
     last_tick_fr_sqlite,)
 from websocket_management.ws_management import (
     get_config,)
-from transaction_management.deribit.api_requests import (
-    SendApiRequest,)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -153,6 +154,30 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     return data
 
 
+
+async def get_private_data(currency: str = None) -> list:
+    """
+    Provide class object to access private get API
+    """
+
+    sub_account = "deribit-147691"
+    return SendApiRequest (sub_account, currency)
+    #return api_request
+
+async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
+    """ """
+
+    private_data = await get_private_data(currency)
+
+    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
+    
+    result_transaction_log_to_result = result_transaction_log["result"]
+    
+    #log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
+
+    return [] if result_transaction_log_to_result  == []\
+        else result_transaction_log_to_result["logs"]
+
 async def ensuring_db_reconciled_each_other (currency) -> None:
     """ """
                                                
@@ -210,8 +235,38 @@ async def ensuring_db_reconciled_each_other (currency) -> None:
         log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
         
         if not sum_trade_from_log_and_db_is_equal:
-            pass
+            
+            archive_db_table= f"my_trades_all_{currency.lower()}_json"
+                        
+                        
+            where_filter= "timestamp"
+            
+            first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
+            
+            first_tick_query_result = await executing_query_with_return(first_tick_query)
+                
+            balancing_params=paramaters_to_balancing_transactions()
 
+            max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+            
+            first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
+            #log.warning(f"
+            balancing_params=paramaters_to_balancing_transactions()
+
+            max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+            
+            transaction_log= await get_transaction_log (currency, 
+                                                            first_tick_fr_sqlite-1, 
+                                                            max_closed_transactions_downloaded_from_sqlite)
+                #log.warning(f"transaction_log {transaction_log}")
+                        
+            await saving_transaction_log (transaction_log_trading,
+                                            archive_db_table,
+                                            transaction_log, 
+                                            first_tick_fr_sqlite, 
+                                            )
+
+    
         if not len_order_from_sub_account_and_db_is_equal:
             pass
 
