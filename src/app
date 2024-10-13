@@ -250,15 +250,17 @@ async def running_critical_strategy(currencies,
                         #log.error  (f"send_order {send_order}")
                         result_order = await if_order_is_true(send_order, instrument_ticker)
                         
-                        log.error (f"result_order {result_order}")
-                        
-                        data_orders = result_order["result"]
-                        await update_user_changes_non_ws (data_orders, 
-                              currency, 
-                              order_db_table,
-                              trade_db_table, 
-                              archive_db_table,
-                              transaction_log_trading)
+                        if result_order:
+                            
+                            log.error (f"result_order {result_order}")
+                            
+                            data_orders = result_order["result"]
+                            await update_user_changes_non_ws (data_orders, 
+                                currency, 
+                                order_db_table,
+                                trade_db_table, 
+                                archive_db_table,
+                                transaction_log_trading)
                         
                         await if_cancel_is_true(send_order)
 
@@ -281,15 +283,17 @@ async def running_critical_strategy(currencies,
                         )
                         log.error (f"send_closing_order {send_closing_order}")
                         result_order = await if_order_is_true(send_closing_order, instrument_ticker)
-                        log.error (f"result_order {result_order}")
-                        data_orders = result_order["result"]
-                        await update_user_changes_non_ws (data_orders, 
-                              currency, 
-                              order_db_table,
-                              trade_db_table, 
-                              archive_db_table,
-                              transaction_log_trading)
                         
+                        if result_order:
+                            log.error (f"result_order {result_order}")
+                            data_orders = result_order["result"]
+                            await update_user_changes_non_ws (data_orders, 
+                                currency, 
+                                order_db_table,
+                                trade_db_table, 
+                                archive_db_table,
+                                transaction_log_trading)
+                            
                         await if_cancel_is_true(send_closing_order)
 
                     log.debug (f"strategy {strategy}-DONE")
