@@ -111,6 +111,7 @@ async def running_critical_strategy(currencies,
                                     currency_upper,
                                     order_db_table,
                                     trade_db_table, 
+                                    archive_db_table,
                                     transaction_log_trading,
                                     min_expiration_timestamp,
                                     data_orders,
@@ -247,7 +248,16 @@ async def running_critical_strategy(currencies,
                     if send_order["order_allowed"]:
                         
                         #log.error  (f"send_order {send_order}")
-                        await if_order_is_true(send_order, instrument_ticker)
+                        result_order = await if_order_is_true(send_order, instrument_ticker)
+                        
+                        data_orders = result_order["result"]
+                        await update_user_changes(data_orders, 
+                              currency, 
+                              order_db_table,
+                              trade_db_table, 
+                              archive_db_table,
+                              transaction_log_trading)
+                        
                         await if_cancel_is_true(send_order)
 
                     if my_trades_currency_strategy_open !=[]:
@@ -268,7 +278,15 @@ async def running_critical_strategy(currencies,
                             nearest_transaction_to_index,
                         )
                         log.error (f"send_closing_order {send_closing_order}")
-                        await if_order_is_true(send_closing_order, instrument_ticker)
+                        result_order = await if_order_is_true(send_closing_order, instrument_ticker)
+                        data_orders = result_order["result"]
+                        await update_user_changes(data_orders, 
+                              currency, 
+                              order_db_table,
+                              trade_db_table, 
+                              archive_db_table,
+                              transaction_log_trading)
+                        
                         await if_cancel_is_true(send_closing_order)
 
                     log.debug (f"strategy {strategy}-DONE")
@@ -358,10 +376,13 @@ async def update_user_changes(data_orders,
                               archive_db_table,
                               transaction_log_trading) -> None:
     
-
-    positions = data_orders["positions"]
     trades = data_orders["trades"]
-    orders = data_orders["orders"]
+    
+    try:
+        orders = data_orders["orders"]
+
+    except:
+        orders = data_orders["order"]
 
     
     instrument_name = data_orders["instrument_name"]
@@ -671,6 +692,7 @@ class StreamAccountData:
                                                                                 currency_upper,
                                                                                 order_db_table,
                                                                                 trade_db_table, 
+                                                                                archive_db_table,
                                                                                 transaction_log_trading,
                                                                                 min_expiration_timestamp,
                                                                                 data_orders,

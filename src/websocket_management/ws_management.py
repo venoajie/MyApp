@@ -27,10 +27,11 @@ from strategies.basic_strategy import (
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from transaction_management.deribit.orders_management import (
     saving_traded_orders,)
-from transaction_management.deribit.api_requests import (get_currencies,
-                                                         get_instruments,
-                                                         get_tickers,
-                                                         SendApiRequest)
+from transaction_management.deribit.api_requests import (
+    get_currencies,
+    get_instruments,
+    get_tickers,
+    SendApiRequest)
 from utilities.system_tools import (
     catch_error_message,
     raise_error_message,
@@ -80,11 +81,6 @@ async def get_private_data(currency: str = None) -> list:
 
     sub_account = "deribit-147691"
     api_request = SendApiRequest (sub_account, currency)
-    client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]
-    connection_url: str = "https://www.deribit.com/api/v2/"
-
-    #return GetPrivateData(connection_url, client_id, client_secret, currency)
     return api_request
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
@@ -133,7 +129,9 @@ async def send_limit_order(params) -> None:
     """ """
     private_data = await get_private_data()
 
-    await private_data.send_limit_order(params)
+    send_limit_result = await private_data.send_limit_order(params)
+    
+    return send_limit_result
 
 
 async def if_order_is_true(order, instrument: str = None) -> None:
@@ -155,7 +153,12 @@ async def if_order_is_true(order, instrument: str = None) -> None:
 
         if  label_and_side_consistent:
             await inserting_additional_params(params)
-            await send_limit_order(params)
+            send_limit_result = await send_limit_order(params)
+            return send_limit_result
+            #await asyncio.sleep(10)
+        else:
+            
+            return []
             #await asyncio.sleep(10)
 
 

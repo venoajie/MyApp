@@ -292,6 +292,9 @@ class SendApiRequest:
             data = error ["data"]
             await telegram_bot_sendtext(f"message: {message}, data: ({data}), (params: {params})")
     
+        return order_result
+    
+    
     async def get_subaccounts(self):
         # Set endpoint
         endpoint: str = "private/get_subaccounts_details"
