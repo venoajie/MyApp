@@ -12,6 +12,7 @@ from loguru import logger as log
 
 # user defined formula
 from configuration import id_numbering, config
+from db_management import sqlite_management
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -167,3 +168,17 @@ class SendApiRequest:
                            endpoint=endpoint, 
                            params=params,
                            )
+
+
+    async def get_cancel_order_all(self):
+        
+
+        # Set endpoint
+        endpoint: str = "private/cancel_all"
+
+        params = {"detailed": False}
+
+        result = await self.parse_main(endpoint=endpoint, params=params)
+        await sqlite_management.deleting_row("orders_all_json")
+
+        return result
