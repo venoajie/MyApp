@@ -253,7 +253,7 @@ async def running_critical_strategy(currencies,
                         log.error (f"result_order {result_order}")
                         
                         data_orders = result_order["result"]
-                        await update_user_changes(data_orders, 
+                        await update_user_changes_non_ws (data_orders, 
                               currency, 
                               order_db_table,
                               trade_db_table, 
@@ -283,7 +283,7 @@ async def running_critical_strategy(currencies,
                         result_order = await if_order_is_true(send_closing_order, instrument_ticker)
                         log.error (f"result_order {result_order}")
                         data_orders = result_order["result"]
-                        await update_user_changes(data_orders, 
+                        await update_user_changes_non_ws (data_orders, 
                               currency, 
                               order_db_table,
                               trade_db_table, 
@@ -372,6 +372,82 @@ async def running_critical_strategy(currencies,
                 await sleep_and_restart ()
 
         
+async def update_user_changes_non_ws(data_orders, 
+                                     currency, 
+                                     order_db_table,
+                                     trade_db_table, 
+                                     archive_db_table,
+                                     transaction_log_trading) -> None:
+    
+    trades = data_orders["trades"]
+    
+    order = data_orders["order"]
+
+    instrument_name = order["instrument_name"]
+    
+    log.debug (f"update_user_changes non ws {instrument_name} -START")
+    
+    log.info (f" {data_orders}")
+    
+    if trades:
+        for trade in trades:
+            
+            await saving_traded_orders (trade, trade_db_table, order_db_table)                      
+
+            await saving_traded_orders (trade, archive_db_table, order_db_table)
+        
+    else:
+            
+        await saving_order(instrument_name,
+                            order, 
+                            order_db_table)
+                                
+        await resupply_sub_accountdb(currency)            
+    #log.debug (f"positions {positions}")
+    await update_db_pkl("positions", data_orders, currency)
+
+    await resupply_transaction_log(currency, 
+                                    transaction_log_trading,
+                                    archive_db_table)
+
+        
+async def saving_order(instrument_name,
+                       order,
+                       order_db_table) -> None:
+
+                
+    order_state= order["order_state"]
+    #log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
+    if order_state == "cancelled" or order_state == "filled":
+        await saving_orders (order_db_table, order)
+    
+    else:
+        
+        label= order["label"]
+
+        order_id= order["order_id"]    
+        
+        label_and_side_consistent= is_label_and_side_consistent(order)
+        
+        #log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
+        
+        if label_and_side_consistent and label:
+            
+            await saving_orders (order_db_table, order)
+            
+        # check if transaction has label. Provide one if not any
+        if  not label_and_side_consistent:
+        
+            await insert_tables(order_db_table, order)
+
+            await cancel_by_order_id (order_id)                    
+        
+            await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
+        if not label:
+            
+            await labelling_the_unlabelled_and_resend_it(order, instrument_name)
+        
 async def update_user_changes(data_orders, 
                               currency, 
                               order_db_table,
@@ -379,25 +455,16 @@ async def update_user_changes(data_orders,
                               archive_db_table,
                               transaction_log_trading) -> None:
     
-    log.info (f" {data_orders}")
-
     trades = data_orders["trades"]
     
-    try:
-        orders = data_orders["orders"]
+    orders = data_orders["orders"]
 
-    except:
-        orders = data_orders["order"]
-
+    instrument_name = data_orders["instrument_name"]
     
-    try:
-        instrument_name = data_orders["instrument_name"]
-   
-    except:
-        instrument_name = orders["instrument_name"]
     log.critical (f"update_user_changes {instrument_name} -START")
-
-        
+    
+    log.info (f" {data_orders}")
+    
     if orders:
         
         if trades:
@@ -410,38 +477,10 @@ async def update_user_changes(data_orders,
         else:
             for order in orders:
                 
-                order_state= order["order_state"]
-                #log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
-                if order_state == "cancelled" or order_state == "filled":
-                    await saving_orders (order_db_table, order)
-                
-                else:
-                    
-                    label= order["label"]
-
-                    order_id= order["order_id"]    
-                    
-                    label_and_side_consistent= is_label_and_side_consistent(order)
-                    
-                    #log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
-                    
-                    if label_and_side_consistent and label:
-                        
-                        await saving_orders (order_db_table, order)
-                        
-                    # check if transaction has label. Provide one if not any
-                    if  not label_and_side_consistent:
-                    
-                        await insert_tables(order_db_table, order)
-
-                        await cancel_by_order_id (order_id)                    
-                    
-                        await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-
-                    if not label:
-                        
-                        await labelling_the_unlabelled_and_resend_it(order, instrument_name)
-                        
+                await saving_order(instrument_name,
+                                   order, 
+                                   order_db_table)
+                                        
             await resupply_sub_accountdb(currency)            
     #log.debug (f"positions {positions}")
     await update_db_pkl("positions", data_orders, currency)
