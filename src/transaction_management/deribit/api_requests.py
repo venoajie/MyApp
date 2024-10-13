@@ -279,3 +279,26 @@ class SendApiRequest:
         await sqlite_management.deleting_row("orders_all_json")
 
         return result
+
+
+    async def get_transaction_log(
+        self,
+        start_timestamp: int,
+        count: int = 1000,
+    ) -> list:
+        
+        now_unix = get_now_unix()
+
+        # Set endpoint
+        endpoint: str = f"private/get_transaction_log"
+        params = {
+            "count": count,
+            "currency": self.currency.upper(),
+            "end_timestamp": now_unix,
+            "start_timestamp": start_timestamp,
+        }
+
+        return await main (self.sub_account,
+                           endpoint=endpoint, 
+                           params=params,
+                           )
