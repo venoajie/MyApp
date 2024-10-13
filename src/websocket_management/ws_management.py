@@ -86,17 +86,6 @@ async def get_private_data(currency: str = None) -> list:
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return await telegram_bot_sendtext(bot_message, purpose)
-
-
-async def get_sub_account(currency) -> list:
-    """ """
-
-    private_data = await get_private_data(currency)
-    
-    result_sub_account: dict = await private_data.get_subaccounts()
-
-    return result_sub_account["result"]
-
         
 async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
     """ """
@@ -715,8 +704,8 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
-    sub_accounts = await get_sub_account(currency)
-    #log.info(f"sub_accounts {sub_accounts}")
+    sub_accounts = await get_private_data (currency).get_subaccounts()
+    log.info(f"sub_accounts {sub_accounts}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)

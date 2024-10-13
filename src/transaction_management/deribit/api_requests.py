@@ -303,10 +303,11 @@ class SendApiRequest:
                   "with_open_orders": True
                   }
     
-        return await private_connection (self.sub_account,
-                           endpoint=endpoint, 
-                           params=params,
+        result_sub_account = await private_connection (self.sub_account,
+                                                       endpoint=endpoint, 
+                                                       params=params,
                            )
+        return result_sub_account["result"]
 
 
     async def get_cancel_order_all(self):
