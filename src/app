@@ -18,7 +18,7 @@ from db_management.sqlite_management import (
     querying_table,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,)
-from deribit_get import (
+from transaction_management.deribit.api_requests import (
     telegram_bot_sendtext,)
 from strategies.basic_strategy import (
     is_label_and_side_consistent,)
