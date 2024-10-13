@@ -74,9 +74,9 @@ async def telegram_bot_sendtext(
         + bot_message
     )
 
-    return await main(endpoint=endpoint, params={}, connection_url=connection_url)
+    return await private_connection(endpoint=endpoint, params={}, connection_url=connection_url)
 
-async def main (sub_account: str,
+async def private_connection (sub_account: str,
                 endpoint: str,
                 params: str,
                 connection_url: str = "https://www.deribit.com/api/v2/",
@@ -91,35 +91,23 @@ async def main (sub_account: str,
         "params": params,
     }
 
-    try:
+    client_id =  parse_dotenv(sub_account)["client_id"]
+    client_secret =  parse_dotenv(sub_account)["client_secret"]
+    
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            connection_url + endpoint,
+            auth=BasicAuth(client_id, client_secret),
+            json=payload,
+        ) as response:
+            # RESToverHTTP Status Code
+            status_code: int = response.status
+
+            # RESToverHTTP Response Content
+            response: Dict = await response.json()
+
+        return response
         
-        client_id =  parse_dotenv(sub_account)["client_id"]
-        client_secret =  parse_dotenv(sub_account)["client_secret"]
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                connection_url + endpoint,
-                auth=BasicAuth(client_id, client_secret),
-                json=payload,
-            ) as response:
-                # RESToverHTTP Status Code
-                status_code: int = response.status
-
-                # RESToverHTTP Response Content
-                response: Dict = await response.json()
-
-            return response
-        
-    except:
-
-        async with aiohttp.ClientSession() as session:
-            async with session.get(connection_url + endpoint) as response:
-
-                # RESToverHTTP Response Content
-                response: Dict = await response.json()
-
-            return response
-
 async def public_connection (endpoint: str,
                              connection_url: str = "https://www.deribit.com/api/v2/",
                              ) -> None:
@@ -133,7 +121,7 @@ async def public_connection (endpoint: str,
 
         return response
 
-async def get_currencies(connection_url: str) -> list:
+async def get_currencies() -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
 
@@ -260,7 +248,7 @@ class SendApiRequest:
         if side == "sell":
             endpoint: str = "private/sell"
         if side != None:
-            result = await main (self.sub_account,
+            result = await private_connection (self.sub_account,
                                  endpoint=endpoint, 
                                  params=params,
                                  )
@@ -312,7 +300,7 @@ class SendApiRequest:
                   "with_open_orders": True
                   }
     
-        return await main (self.sub_account,
+        return await private_connection (self.sub_account,
                            endpoint=endpoint, 
                            params=params,
                            )
@@ -326,7 +314,7 @@ class SendApiRequest:
 
         params = {"detailed": False}
 
-        result = await main(self.sub_account,
+        result = await private_connection(self.sub_account,
                            endpoint=endpoint, 
                            params=params,
                            )
@@ -352,7 +340,7 @@ class SendApiRequest:
             "start_timestamp": start_timestamp,
         }
 
-        return await main (self.sub_account,
+        return await private_connection (self.sub_account,
                            endpoint=endpoint, 
                            params=params,
                            )
