@@ -9,7 +9,9 @@ from loguru import logger as log
 
 # user defined formula
 
-from deribit_get import get_tickers
+
+from transaction_management.deribit.api_requests import (
+    get_tickers)
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,
