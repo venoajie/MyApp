@@ -390,7 +390,11 @@ async def update_user_changes(data_orders,
         orders = data_orders["order"]
 
     
-    instrument_name = data_orders["instrument_name"]
+    try:
+        instrument_name = data_orders["instrument_name"]
+   
+    except:
+        instrument_name = orders["instrument_name"]
     log.critical (f"update_user_changes {instrument_name} -START")
 
         
