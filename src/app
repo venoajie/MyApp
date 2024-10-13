@@ -310,11 +310,10 @@ async def running_critical_strategy(currencies,
 
         # check for delivered instrument
 
-                if False and "futureSpread" in strategy:
+                if  "futureSpread" in strategy:
                     log.error (f"strategy {strategy}-START")
                     
                     for combo in active_combo_perp:
-                        
                     
                         combo_instruments_name = combo["instrument_name"]
                         future_instrument_name = f"{currency_upper}-{combo_instruments_name[7:][:7]}"

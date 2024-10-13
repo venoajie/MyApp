@@ -106,6 +106,14 @@ class RunningStrategy (SendApiRequest):
 
     """ """
 
+    my_trades_currency: list
+    orders_currency: list
+    leverage: float= fields 
+
+    def __post_init__(self):
+        self.leverage =  sum([abs(o["amount"]) for o in self.my_trades_currency])
+        log.error (f"leverage {self.leverage}")
+
     async def running_strategies(self) -> dict:
               
         while True:
@@ -132,10 +140,52 @@ async def running_strategy() -> None:
             
     try:
         for currency in currencies:
-            running= RunningStrategy (
-                sub_account,
-                currency,)
-            await ensuring_db_reconciled_each_other (currency)
+            
+            trade_db_table= "my_trades_all_json"
+            
+            order_db_table= "orders_all_json"                
+       
+            
+                                        
+            column_list= "instrument_name", "position", "timestamp"      
+            
+            transaction_log_trading= f"transaction_log_{currency.lower()}_json"                                              
+            
+            from_transaction_log = await get_query (transaction_log_trading, 
+                                                        currency, 
+                                                        "all", 
+                                                        "all", 
+                                                        column_list)                                       
+                        
+            column_trade: str= "instrument_name","label", "amount", "price","side"
+
+            sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
+            
+                    
+            my_trades_currency: list= await get_query(trade_db_table, 
+                                                        currency, 
+                                                        "all", 
+                                                        "all", 
+                                                        column_trade)
+
+            column_order= "instrument_name","label","order_id","amount","timestamp"
+            
+            orders_currency = await get_query(order_db_table, 
+                                                    currency, 
+                                                    "all", 
+                                                    "all", 
+                                                    column_order)     
+            
+            running= RunningStrategy (sub_account,
+                                      currency,
+                                      my_trades_currency,
+                                      orders_currency)
+            
+            await ensuring_db_reconciled_each_other (sub_account,
+                                                     currency,
+                                                     my_trades_currency,
+                                                     orders_currency,
+                                                     from_transaction_log)
             
     except Exception as error:
         
@@ -188,41 +238,13 @@ async def resupply_sub_accountdb(currency) -> None:
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
  
-async def ensuring_db_reconciled_each_other (currency) -> None:
+async def ensuring_db_reconciled_each_other (sub_account,
+                                             currency,
+                                             my_trades_currency,
+                                             orders_currency,
+                                             from_transaction_log) -> None:
     """ """
-                                               
-    column_list= "instrument_name", "position", "timestamp"      
-    
-    transaction_log_trading= f"transaction_log_{currency.lower()}_json"                                              
-    
-    from_transaction_log = await get_query (transaction_log_trading, 
-                                                currency, 
-                                                "all", 
-                                                "all", 
-                                                column_list)                                       
-                
-    column_trade: str= "instrument_name","label", "amount", "price","side"
-
-    trade_db_table= "my_trades_all_json"
-    
-    order_db_table= "orders_all_json"                
-            
-    my_trades_currency: list= await get_query(trade_db_table, 
-                                                currency, 
-                                                "all", 
-                                                "all", 
-                                                column_trade)
-
-    column_order= "instrument_name","label","order_id","amount","timestamp"
-    
-    orders_currency = await get_query(order_db_table, 
-                                            currency, 
-                                            "all", 
-                                            "all", 
-                                            column_order)     
-    
-    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
-    
+               
     instrument_from_sub_account = [o["instrument_name"] for o  in sub_account ["positions"]]
     
     for instrument_name in instrument_from_sub_account:
@@ -245,9 +267,11 @@ async def ensuring_db_reconciled_each_other (currency) -> None:
         log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
         
         if not sum_trade_from_log_and_db_is_equal:
+            currency_lower = currency.lower()
             
-            archive_db_table= f"my_trades_all_{currency.lower()}_json"
-                        
+            archive_db_table= f"my_trades_all_{currency_lower}_json"
+            
+            transaction_log_trading= f"transaction_log_{currency_lower}_json"
                         
             where_filter= "timestamp"
             
