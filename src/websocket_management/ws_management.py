@@ -32,6 +32,7 @@ from strategies.basic_strategy import (
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from transaction_management.deribit.orders_management import (
     saving_traded_orders,)
+from transaction_management.deribit.api_requests import SendApiRequest
 from utilities.system_tools import (
     catch_error_message,
     raise_error_message,
@@ -80,22 +81,13 @@ async def get_private_data(currency: str = None) -> list:
     """
 
     sub_account = "deribit-147691"
+    api_request = SendApiRequest (sub_account, currency)
     client_id: str = parse_dotenv(sub_account)["client_id"]
     client_secret: str = parse_dotenv(sub_account)["client_secret"]
     connection_url: str = "https://www.deribit.com/api/v2/"
 
-    return GetPrivateData(connection_url, client_id, client_secret, currency)
-
-
-async def get_account_summary(currency) -> list:
-    """ """
-
-    private_data = await get_private_data(currency)
-
-    account_summary: dict = await private_data.get_account_summary()
-
-    return account_summary["result"]
-
+    #return GetPrivateData(connection_url, client_id, client_secret, currency)
+    return api_request
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
@@ -105,9 +97,11 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 async def get_sub_account(currency) -> list:
     """ """
 
-    private_data = await get_private_data(currency)
+    result_sub_account = await get_private_data(currency).get_subaccounts()
+    
+    log.error (f"result_sub_account {result_sub_account}")
 
-    result_sub_account: dict = await private_data.get_subaccounts()
+    #result_sub_account: dict = await private_data.get_subaccounts()
 
     return result_sub_account["result"]
 
