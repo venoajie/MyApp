@@ -134,6 +134,7 @@ async def running_strategy() -> None:
             running= RunningStrategy (
                 sub_account,
                 currency,)
+            await ensuring_db_reconciled_each_other (currency)
             
     except Exception as error:
         
@@ -152,7 +153,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
     return data
 
 
-async def compare_update_transaction_log_and_Sub_acc(currency) -> None:
+async def ensuring_db_reconciled_each_other (currency) -> None:
     """ """
                                                
     column_list= "instrument_name", "position", "timestamp"      
@@ -164,13 +165,56 @@ async def compare_update_transaction_log_and_Sub_acc(currency) -> None:
                                                 "all", 
                                                 "all", 
                                                 column_list)                                       
+                
+    column_trade: str= "instrument_name","label", "amount", "price","side"
 
-    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
-    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
-    sub_account_size_all = [o["size"] for o in sub_account["positions"] ][0]
-    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
-    sum_trade_from_log_and_db_is_equal = current_position_log ==  sub_account_size_all
+    trade_db_table= "my_trades_all_json"
     
+    order_db_table= "orders_all_json"                
+            
+    my_trades_currency: list= await get_query(trade_db_table, 
+                                                currency, 
+                                                "all", 
+                                                "all", 
+                                                column_trade)
+
+    column_order= "instrument_name","label","order_id","amount","timestamp"
+    
+    orders_currency = await get_query(order_db_table, 
+                                            currency, 
+                                            "all", 
+                                            "all", 
+                                            column_order)     
+    
+    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
+    
+    instrument_from_sub_account = [o["instrument_name"] for o  in sub_account ["positions"]]
+    
+    for instrument_name in instrument_from_sub_account:
+        sub_account_size_all = [o["size"] for o in sub_account["positions"] if o["instrument_name"] == instrument_name ][0]
+                                                
+        last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
+        current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
+        
+        sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
+        
+        len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
+        sub_account_orders = sub_account["open_orders"]
+        len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
+        
+        sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
+        len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
+        
+        log.warning (f" {instrument_name}")
+        log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
+        log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
+        
+        if not sum_trade_from_log_and_db_is_equal:
+            pass
+
+        if not len_order_from_sub_account_and_db_is_equal:
+            pass
+
 async def run_every_60_seconds() -> None:
     """ """
 

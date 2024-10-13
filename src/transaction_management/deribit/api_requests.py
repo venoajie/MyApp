@@ -307,7 +307,6 @@ class SendApiRequest:
                                                        endpoint=endpoint, 
                                                        params=params,)
         
-        log.info (f"result_sub_account {result_sub_account}")
         return result_sub_account["result"]
 
 
