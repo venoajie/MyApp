@@ -80,8 +80,8 @@ async def get_private_data(currency: str = None) -> list:
     """
 
     sub_account = "deribit-147691"
-    api_request = SendApiRequest (sub_account, currency)
-    return api_request
+    return SendApiRequest (sub_account, currency)
+    #return api_request
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
@@ -704,8 +704,9 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
-    sub_accounts = await get_private_data (currency)
-    log.info(f"sub_accounts {sub_accounts.get_subaccounts()}")
+    private_data = await get_private_data (currency)
+    sub_accounts = private_data.get_subaccounts()
+    log.info(f"sub_accounts {sub_accounts}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
