@@ -225,6 +225,8 @@ class HedgingSpot(BasicStrategy):
         """ """
 
         order_allowed: bool = False
+        
+        log.critical (f"len_orders {len_orders} {len_orders == 0}")
 
         if len_orders == 0:
             #bullish = market_condition["rising_price"]
@@ -385,7 +387,7 @@ class HedgingSpot(BasicStrategy):
 
         over_hedged  =  self.over_hedged_opening
         
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} not over_hedged {not self.over_hedged_opening}  len_orders == 0 { len_orders == 0}" )
+        log.critical (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} not over_hedged {not self.over_hedged_opening}  len_orders == 0 { len_orders == 0}" )
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
     
