@@ -137,13 +137,27 @@ async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
 
-    return await public_connection(endpoint=endpoint, connection_url=connection_url)
+    return await public_connection(endpoint=endpoint)
 
-async def get_instruments(connection_url: str, currency):
+
+async def get_server_time() -> int:
+    """
+    Returning server time
+    """
+    # Set endpoint
+    endpoint: str = "public/get_time?"
+
+
+    # Get result
+    result = await public_connection(endpoint=endpoint)
+
+    return result
+
+async def get_instruments(currency):
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
     
-    return await public_connection (endpoint=endpoint, connection_url=connection_url)
+    return await public_connection (endpoint=endpoint)
 
 def get_tickers(instrument_name: str) -> list:
     # Set endpoint

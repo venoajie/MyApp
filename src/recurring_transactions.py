@@ -18,11 +18,11 @@ from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     insert_tables, querying_arithmetic_operator,)
-from deribit_get import (
-    GetPrivateData,
+from transaction_management.deribit.api_requests import (
+    get_currencies,
     get_instruments,
-    get_currencies, 
-    get_server_time)
+    get_server_time,
+    SendApiRequest)
 from market_understanding.technical_analysis import (
     insert_market_condition_result,)
 from utilities.pickling import replace_data
@@ -46,10 +46,10 @@ def catch_error(error, idle: int = None) -> list:
     """ """
     catch_error_message(error, idle)
     
-async def get_instruments_from_deribit(connection_url, currency) -> float:
+async def get_instruments_from_deribit(currency) -> float:
     """ """
 
-    result = await get_instruments(connection_url, currency)
+    result = await get_instruments(currency)
 
     return result
 
@@ -62,12 +62,12 @@ async def future_spreads(currency) -> float:
 
     return result
 
-async def get_currencies_from_deribit(connection_url) -> float:
+async def get_currencies_from_deribit() -> float:
     """ """
 
-    result = await get_currencies(connection_url)
+    result = await get_currencies()
 
-    print(f"get_currencies {connection_url} {result}")
+    print(f"get_currencies {result}")
 
     return result
 
@@ -228,17 +228,16 @@ async def run_every_15_seconds() -> None:
         
 
 async def check_and_save_every_60_minutes():
-    connection_url: str = "https://www.deribit.com/api/v2/"
 
     try:
 
-        get_currencies_all = await get_currencies_from_deribit(connection_url)
+        get_currencies_all = await get_currencies_from_deribit()
         currencies = [o["currency"] for o in get_currencies_all["result"]]
         #        print(currencies)
 
         for currency in currencies:
 
-            instruments = await get_instruments_from_deribit(connection_url, currency)
+            instruments = await get_instruments_from_deribit(currency)
             # print (f'instruments {instruments}')
 
             my_path_instruments = provide_path_for_file("instruments", currency)

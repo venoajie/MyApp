@@ -421,17 +421,15 @@ def currency_inline_with_database_address (currency: str, database_address: str)
 
 async def get_and_save_currencies()->None:
     
-    connection_url: str = deribit_url_main()
-
     try:
 
-        get_currencies_all = await get_currencies(connection_url)
+        get_currencies_all = await get_currencies()
         
         currencies = [o["currency"] for o in get_currencies_all["result"]]
         
         for currency in currencies:
 
-            instruments = await get_instruments(connection_url, currency)
+            instruments = await get_instruments(currency)
 
             my_path_instruments = provide_path_for_file("instruments", currency)
 
