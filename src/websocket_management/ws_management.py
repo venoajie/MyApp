@@ -704,8 +704,8 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
-    sub_accounts = await get_private_data (currency).get_subaccounts()
-    log.info(f"sub_accounts {sub_accounts}")
+    sub_accounts = await get_private_data (currency)
+    log.info(f"sub_accounts {sub_accounts.get_subaccounts()}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
