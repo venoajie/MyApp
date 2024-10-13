@@ -358,7 +358,7 @@ class HedgingSpot(BasicStrategy):
         
         open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
         
-        len_orders: int = get_transactions_len(open_orders_label_strategy)
+        len_open_orders: int = get_transactions_len(open_orders_label_strategy)
         
         hedging_attributes= self.strategy_parameters
         
@@ -387,13 +387,13 @@ class HedgingSpot(BasicStrategy):
 
         over_hedged  =  self.over_hedged_opening
         
-        log.critical (f"len_orders == 0 {len_orders} {len_orders == 0} sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} not over_hedged {not self.over_hedged_opening}" )
+        log.critical (f"len_orders == 0 {len_open_orders} {len_open_orders == 0} sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} not over_hedged {not self.over_hedged_opening}" )
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
     
         if not over_hedged:            
             
-            if len_orders > 1:
+            if len_open_orders > 1:
                 cancel_allowed = True
 
             else:
@@ -404,24 +404,24 @@ class HedgingSpot(BasicStrategy):
                                                           market_condition,
                                                           params,
                                                           SIZE_FACTOR,
-                                                          len_orders)
+                                                          len_open_orders)
             
                 cancel_allowed: bool = is_cancelling_order_allowed(
                     strong_bearish,
                     bearish,
                     waiting_minute_before_cancel,
-                    len_orders,
+                    len_open_orders,
                     open_orders_label_strategy,
                     self.server_time,
                 )
 
         else:
             
-            if len_orders > 0:
+            if len_open_orders > 0:
                 cancel_allowed = True
 
         return dict(
-            order_allowed=order_allowed and len_orders == 0,
+            order_allowed=order_allowed and len_open_orders == 0,
             order_parameters=[] if order_allowed == False else params,
             cancel_allowed=cancel_allowed,
             cancel_id= None if not cancel_allowed \
