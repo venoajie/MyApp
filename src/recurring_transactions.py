@@ -178,6 +178,16 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
 
+async def resupply_sub_accountdb(currency) -> None:
+
+    # resupply sub account db
+    #log.info(f"resupply {currency.upper()} sub account db-START")
+    private_data = await get_private_data (currency)
+    sub_accounts = await private_data.get_subaccounts()
+
+    my_path_sub_account = provide_path_for_file("sub_accounts", currency)
+    replace_data(my_path_sub_account, sub_accounts)
+ 
 async def ensuring_db_reconciled_each_other (currency) -> None:
     """ """
                                                
@@ -265,6 +275,8 @@ async def ensuring_db_reconciled_each_other (currency) -> None:
                                             transaction_log, 
                                             first_tick_fr_sqlite, 
                                             )
+            
+            await resupply_sub_accountdb(currency)
 
     
         if not len_order_from_sub_account_and_db_is_equal:
