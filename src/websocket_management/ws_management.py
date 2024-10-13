@@ -723,7 +723,7 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, cancella
 async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
-    log.info(f"resupply {currency.upper()} sub account db-START")
+    #log.info(f"resupply {currency.upper()} sub account db-START")
     sub_accounts = await get_sub_account(currency)
     #log.info(f"sub_accounts {sub_accounts}")
 
@@ -777,7 +777,7 @@ async def resupply_transaction_log(currency: str,
                                    archive_db_table: str) -> list:
     """ """
 
-    log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
+    #log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
                 
     where_filter= "timestamp"
     
@@ -809,7 +809,7 @@ async def resupply_transaction_log(currency: str,
                                   first_tick_fr_sqlite, 
                                   )
 
-    log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
+    #log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
         
    
 async def inserting_additional_params(params: dict) -> None:

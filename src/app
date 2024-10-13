@@ -382,7 +382,7 @@ async def update_user_changes(data_orders,
             for order in orders:
                 
                 order_state= order["order_state"]
-                log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
+                #log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
                 if order_state == "cancelled" or order_state == "filled":
                     await saving_orders (order_db_table, order)
                 

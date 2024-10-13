@@ -391,9 +391,14 @@ class HedgingSpot(BasicStrategy):
         
         SIZE_FACTOR = get_waiting_time_factor(weighted_factor, strong_bearish, bearish)
     
-        if not over_hedged:
+        if not over_hedged:            
             
-            order_allowed: bool = self. opening_position (instrument_name,
+            if len_orders > 1:
+                cancel_allowed = True
+
+            else:
+                
+                order_allowed: bool = self. opening_position (instrument_name,
                                                           futures_instruments,
                                                           open_orders_label_strategy,
                                                           market_condition,
@@ -401,14 +406,14 @@ class HedgingSpot(BasicStrategy):
                                                           SIZE_FACTOR,
                                                           len_orders)
             
-            cancel_allowed: bool = is_cancelling_order_allowed(
-                strong_bearish,
-                bearish,
-                waiting_minute_before_cancel,
-                len_orders,
-                open_orders_label_strategy,
-                self.server_time,
-            )
+                cancel_allowed: bool = is_cancelling_order_allowed(
+                    strong_bearish,
+                    bearish,
+                    waiting_minute_before_cancel,
+                    len_orders,
+                    open_orders_label_strategy,
+                    self.server_time,
+                )
 
         else:
             
