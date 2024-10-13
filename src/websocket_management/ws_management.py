@@ -12,11 +12,6 @@ from loguru import logger as log
 # user defined formula
 
 from configuration.config import main_dotenv
-from deribit_get import (
-    GetPrivateData, 
-    get_currencies,
-    get_instruments,
-    telegram_bot_sendtext, get_tickers)
 from db_management.sqlite_management import (
     insert_tables,
     deleting_row,
@@ -32,7 +27,10 @@ from strategies.basic_strategy import (
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from transaction_management.deribit.orders_management import (
     saving_traded_orders,)
-from transaction_management.deribit.api_requests import SendApiRequest
+from transaction_management.deribit.api_requests import (get_currencies,
+                                                         get_instruments,
+                                                         get_tickers,
+                                                         SendApiRequest)
 from utilities.system_tools import (
     catch_error_message,
     raise_error_message,
@@ -98,10 +96,8 @@ async def get_sub_account(currency) -> list:
     """ """
 
     private_data = await get_private_data(currency)
-    log.error (f"private_data {private_data}")
     
     result_sub_account: dict = await private_data.get_subaccounts()
-    log.error (f"result_sub_account {result_sub_account}")
 
     return result_sub_account["result"]
 
