@@ -310,6 +310,32 @@ class SendApiRequest:
         return result_sub_account["result"]
 
 
+    async def get_user_trades_by_currency_and_time(
+        self,
+        start_timestamp: int,
+        end_timestamp: int,
+        count: int = 1000,
+        include_old: bool = True,
+    ) -> list:
+
+        # Set endpoint
+        endpoint: str = f"private/get_user_trades_by_currency_and_time"
+
+        params = {
+            "currency": self.currency.upper(),
+            "kind": "any",
+            "start_timestamp": start_timestamp,
+            "end_timestamp": end_timestamp,
+            "count": count,
+            "include_old": include_old,
+        }
+
+        user_trades = await private_connection(self.sub_account,
+                           endpoint=endpoint, 
+                           params=params,
+                           )
+        return [] if user_trades == [] else user_trades["result"]["trades"]
+
     async def get_cancel_order_all(self):
         
 

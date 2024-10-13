@@ -156,7 +156,7 @@ async def get_my_trades_from_exchange(count: int, currency) -> list:
     private_data = await get_private_data(currency)
     trades: list = await private_data.get_user_trades_by_currency(count)
 
-    return [] if trades == [] else trades["result"]["trades"]
+    return trades
 
 
 async def cancel_all () -> None:
@@ -708,7 +708,6 @@ async def resupply_sub_accountdb(currency) -> None:
     #log.info(f"resupply {currency.upper()} sub account db-START")
     private_data = await get_private_data (currency)
     sub_accounts = await private_data.get_subaccounts()
-    log.info(f"sub_accounts {sub_accounts}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
