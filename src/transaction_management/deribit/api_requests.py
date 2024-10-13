@@ -1,5 +1,6 @@
 # built ins
 import asyncio
+from datetime import datetime
 from typing import Dict
 
 # installed
@@ -13,10 +14,19 @@ from loguru import logger as log
 # user defined formula
 from configuration import id_numbering, config
 from db_management import sqlite_management
+from utilities import time_modification
+
+
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
+
+def get_now_unix() -> int:
+
+    now_utc = datetime.now()
+    
+    return time_modification.convert_time_to_unix(now_utc)
 
 async def telegram_bot_sendtext(
     bot_message: str, purpose: str = "general_error"
