@@ -97,11 +97,11 @@ async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> 
 async def get_sub_account(currency) -> list:
     """ """
 
-    result_sub_account = await get_private_data(currency).get_subaccounts()
+    private_data = await get_private_data(currency)
+    log.error (f"private_data {private_data}")
     
+    result_sub_account: dict = await private_data.get_subaccounts()
     log.error (f"result_sub_account {result_sub_account}")
-
-    #result_sub_account: dict = await private_data.get_subaccounts()
 
     return result_sub_account["result"]
 

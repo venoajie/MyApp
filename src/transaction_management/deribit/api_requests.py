@@ -128,7 +128,6 @@ class SendApiRequest:
     sub_account: str
     currency: str
     
-    
     async def send_order(
         self,
         side: str,
