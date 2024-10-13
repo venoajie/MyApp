@@ -686,12 +686,7 @@ class StreamAccountData:
                             
                             if "chart.trades" in message_channel:
                                 instrument_ticker = ((message_channel)[13:]).partition('.')[0] 
-                                
-                                log.debug (f"{instrument_ticker}")
-                                
-                                log.warning (f"{data_orders}")
-                                    
-                                                                
+                                                                                            
                                 await ohlc_result_per_time_frame(instrument_ticker,
                                                                  resolution,
                                                                 data_orders,
@@ -700,7 +695,6 @@ class StreamAccountData:
                                                                 )
                                 
                             instrument_ticker = (message_channel)[19:]  
-                            
                             
                             if (
                                 message_channel
