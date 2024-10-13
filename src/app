@@ -250,6 +250,8 @@ async def running_critical_strategy(currencies,
                         #log.error  (f"send_order {send_order}")
                         result_order = await if_order_is_true(send_order, instrument_ticker)
                         
+                        log.error (f"result_order {result_order}")
+                        
                         data_orders = result_order["result"]
                         await update_user_changes(data_orders, 
                               currency, 
@@ -279,6 +281,7 @@ async def running_critical_strategy(currencies,
                         )
                         log.error (f"send_closing_order {send_closing_order}")
                         result_order = await if_order_is_true(send_closing_order, instrument_ticker)
+                        log.error (f"result_order {result_order}")
                         data_orders = result_order["result"]
                         await update_user_changes(data_orders, 
                               currency, 
@@ -376,6 +379,8 @@ async def update_user_changes(data_orders,
                               archive_db_table,
                               transaction_log_trading) -> None:
     
+    log.info (f" {data_orders}")
+
     trades = data_orders["trades"]
     
     try:
@@ -388,7 +393,6 @@ async def update_user_changes(data_orders,
     instrument_name = data_orders["instrument_name"]
     log.critical (f"update_user_changes {instrument_name} -START")
 
-    log.info (f" {data_orders}")
         
     if orders:
         
