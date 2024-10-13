@@ -206,7 +206,10 @@ class SendApiRequest:
         if side == "sell":
             endpoint: str = "private/sell"
         if side != None:
-            result = await main(endpoint=endpoint, params=params)
+            result = await main (self.sub_account,
+                                 endpoint=endpoint, 
+                                 params=params,
+                                 )
         return result
 
 
@@ -269,7 +272,10 @@ class SendApiRequest:
 
         params = {"detailed": False}
 
-        result = await main(endpoint=endpoint, params=params)
+        result = await main(self.sub_account,
+                           endpoint=endpoint, 
+                           params=params,
+                           )
         await sqlite_management.deleting_row("orders_all_json")
 
         return result
