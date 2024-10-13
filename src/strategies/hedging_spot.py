@@ -481,7 +481,7 @@ class HedgingSpot(BasicStrategy):
 
         log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged_opening {self.over_hedged_opening} len_orders == 0 {len_orders == 0}")
         
-        log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
+        #log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
                 
         order_allowed = self. closing_position (transaction,
                                                 exit_params,
