@@ -120,24 +120,36 @@ async def main (sub_account: str,
 
             return response
 
+async def public_connection (endpoint: str,
+                             connection_url: str = "https://www.deribit.com/api/v2/",
+                             ) -> None:
+
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(connection_url + endpoint) as response:
+
+            # RESToverHTTP Response Content
+            response: Dict = await response.json()
+
+        return response
 
 async def get_currencies(connection_url: str) -> list:
     # Set endpoint
     endpoint: str = f"public/get_currencies?"
-    params = {}
 
-    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+    return await public_connection(endpoint=endpoint, connection_url=connection_url)
 
 async def get_instruments(connection_url: str, currency):
     # Set endpoint
     endpoint: str = f"public/get_instruments?currency={currency.upper()}"
-    params = {}
-
-    return await main(endpoint=endpoint, params=params, connection_url=connection_url)
+    
+    return await public_connection (endpoint=endpoint, connection_url=connection_url)
 
 def get_tickers(instrument_name: str) -> list:
     # Set endpoint
+    
     import requests, json
+    
     return requests.get(f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}").json()["result"] 
 
 @dataclass(unsafe_hash=True, slots=True)
