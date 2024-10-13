@@ -305,8 +305,8 @@ class SendApiRequest:
     
         result_sub_account = await private_connection (self.sub_account,
                                                        endpoint=endpoint, 
-                                                       params=params,
-                           )
+                                                       params=params,)
+        
         return result_sub_account["result"]
 
 
