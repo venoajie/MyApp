@@ -700,12 +700,14 @@ async def check_db_consistencies_and_clean_up_imbalances(currency: str, cancella
             await clean_up_closed_transactions(instrument_name)
             log.critical (f"BALANCING-DONE")
 
+
+
 async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
     private_data = await get_private_data (currency)
-    sub_accounts = private_data.get_subaccounts()
+    sub_accounts = await private_data.get_subaccounts()
     log.info(f"sub_accounts {sub_accounts}")
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
