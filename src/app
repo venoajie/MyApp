@@ -171,7 +171,7 @@ async def running_critical_strategy(currencies,
     log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
     log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
     
-    log.warning (f"index_price is not None {index_price is not None} equity > 0 {equity > 0} ")
+    #log.warning (f"index_price is not None {index_price is not None} equity > 0 {equity > 0} ")
     
     if  index_price is not None \
         and equity > 0 \
@@ -194,7 +194,7 @@ async def running_critical_strategy(currencies,
         
         delta_time_expiration = min_expiration_timestamp - server_time  
         
-        log.warning (f"delta_time_seconds < 120 {delta_time_seconds < 120} {delta_time_seconds} tick_TA {tick_TA} server_time {server_time}")
+        #log.warning (f"delta_time_seconds < 120 {delta_time_seconds < 120} {delta_time_seconds} tick_TA {tick_TA} server_time {server_time}")
                                                             
         if delta_time_seconds < 120:#ensure freshness of ta
             
@@ -221,7 +221,7 @@ async def running_critical_strategy(currencies,
                     
                 strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
                 
-                log.error (f"""hedgingSpot in strategy {"hedgingSpot" in strategy} """)                                                             
+                #log.error (f"""hedgingSpot in strategy {"hedgingSpot" in strategy} """)                                                             
 
                 if "hedgingSpot" in strategy:
                     
