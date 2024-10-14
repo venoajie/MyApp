@@ -74,32 +74,28 @@ def get_config(file_name: str) -> list:
         return []
 
 
-async def get_private_data(currency: str = None) -> list:
+async def get_private_data(sub_account_id: str = "deribit-147691") -> list:
     """
     Provide class object to access private get API
     """
 
-    sub_account = "deribit-147691"
-    return SendApiRequest (sub_account, currency)
+    return SendApiRequest (sub_account_id)
     #return api_request
 
 async def telegram_bot_sendtext(bot_message, purpose: str = "general_error") -> None:
 
     return await telegram_bot_sendtext(bot_message, purpose)
         
-async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
+async def get_transaction_log(currency: str, 
+                              start_timestamp: int, 
+                              count: int= 1000) -> list:
     """ """
 
-    private_data = await get_private_data(currency)
-
-    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
+    private_data = await get_private_data()
     
-    result_transaction_log_to_result = result_transaction_log["result"]
-    
-    #log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
-
-    return [] if result_transaction_log_to_result  == []\
-        else result_transaction_log_to_result["logs"]
+    return await private_data.get_transaction_log(currency,
+                                                  start_timestamp, 
+                                                  count)
     
 def compute_notional_value(index_price: float, 
                            equity: float) -> float:
@@ -153,7 +149,7 @@ async def if_order_is_true(order, instrument: str = None) -> None:
 
 async def get_my_trades_from_exchange(count: int, currency) -> list:
     """ """
-    private_data = await get_private_data(currency)
+    private_data = await get_private_data()
     trades: list = await private_data.get_user_trades_by_currency(count)
 
     return trades
@@ -645,8 +641,8 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
-    private_data = await get_private_data (currency)
-    sub_accounts = await private_data.get_subaccounts()
+    private_data = await get_private_data ()
+    sub_accounts = await private_data.get_subaccounts(currency)
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)

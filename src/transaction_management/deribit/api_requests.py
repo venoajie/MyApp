@@ -159,7 +159,6 @@ class SendApiRequest:
     """ """
 
     sub_account: str
-    currency: str
     
     async def send_order(
         self,
@@ -295,11 +294,12 @@ class SendApiRequest:
         return order_result
     
     
-    async def get_subaccounts(self):
+    async def get_subaccounts(self,
+                              currency):
         # Set endpoint
         endpoint: str = "private/get_subaccounts_details"
 
-        params = {"currency": self.currency, 
+        params = {"currency": currency, 
                   "with_open_orders": True
                   }
     
@@ -312,6 +312,7 @@ class SendApiRequest:
 
     async def get_user_trades_by_currency_and_time(
         self,
+        currency,
         start_timestamp: int,
         end_timestamp: int,
         count: int = 1000,
@@ -322,7 +323,7 @@ class SendApiRequest:
         endpoint: str = f"private/get_user_trades_by_currency_and_time"
 
         params = {
-            "currency": self.currency.upper(),
+            "currency": currency.upper(),
             "kind": "any",
             "start_timestamp": start_timestamp,
             "end_timestamp": end_timestamp,
@@ -355,6 +356,7 @@ class SendApiRequest:
 
     async def get_transaction_log(
         self,
+        currency,
         start_timestamp: int,
         count: int = 1000,
     ) -> list:
@@ -365,16 +367,31 @@ class SendApiRequest:
         endpoint: str = f"private/get_transaction_log"
         params = {
             "count": count,
-            "currency": self.currency.upper(),
+            "currency": currency.upper(),
             "end_timestamp": now_unix,
             "start_timestamp": start_timestamp,
         }
-
-        return await private_connection (self.sub_account,
+        
+        result_transaction_log_to_result = await private_connection (self.sub_account,
                            endpoint=endpoint, 
                            params=params,
                            )
 
+        return [] if result_transaction_log_to_result  == []\
+        else result_transaction_log_to_result["logs"]
+
+
+
+    async def get_cancel_order_byOrderId(self, order_id: int):
+        # Set endpoint
+        endpoint: str = "private/cancel"
+
+        params = {"order_id": order_id}
+
+        result = await private_connection(self.sub_account,
+                                          endpoint=endpoint,
+                                          params=params)
+        return result
 
     async def cancel_by_order_id(self,
                                  open_order_id) -> None:
@@ -455,3 +472,11 @@ class SendApiRequest:
                                 order_id,
                             )
 
+
+
+@dataclass(unsafe_hash=True, slots=True)
+class ModifyOrderDb(SendApiRequest):
+    """ """
+
+    sub_account: str
+    currency: str
