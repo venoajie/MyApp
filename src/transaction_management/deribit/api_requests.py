@@ -351,12 +351,9 @@ class SendApiRequest:
                                                                     params=params,
                                                                     )
     
-        log.error (f"result_transaction_log_to_result {result_transaction_log_to_result}")
         try:
             result = result_transaction_log_to_result["result"]
-            
-            log.error (f"not result_transaction_log_to_result {not result_transaction_log_to_result}")
-            
+                        
             return [] if not result else result["logs"]
 
         except:
