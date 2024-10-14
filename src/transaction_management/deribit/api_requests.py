@@ -350,7 +350,8 @@ class SendApiRequest:
                                                                      endpoint=endpoint, 
                                                                      params=params,
                                                                      )
-        
+        log.error (f"result_transaction_log_to_result {result_transaction_log_to_result}")
+        log.error (f"not result_transaction_log_to_result {not result_transaction_log_to_result}")
         return [] if not result_transaction_log_to_result \
         else result_transaction_log_to_result["result"]["logs"]
 
