@@ -16,8 +16,9 @@ from configuration import id_numbering, config
 from utilities import time_modification
 from db_management.sqlite_management import (
     deleting_row,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
-    )
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,)
+from transaction_management.deribit.telegram_bot import (
+    telegram_bot_sendtext,)
 
 
 def parse_dotenv(sub_account) -> dict:
@@ -29,54 +30,6 @@ def get_now_unix() -> int:
     now_utc = datetime.now()
     
     return time_modification.convert_time_to_unix(now_utc)
-
-async def telegram_bot_sendtext(
-    bot_message: str, purpose: str = "general_error"
-) -> str:
-    """
-    # simple telegram
-    #https://stackoverflow.com/questions/32423837/telegram-bot-how-to-get-a-group-chat-id
-    """
-
-    try:
-        bot_token = config.main_dotenv("telegram-failed_order")["bot_token"]
-
-    except:
-        bot_token = config.main_dotenv("telegram-failed_order")["BOT_TOKEN"]
-
-    if purpose == "failed_order":
-        try:
-            try:
-                bot_chatID = config.main_dotenv("telegram-failed_order")[
-                    "BOT_CHATID_FAILED_ORDER"
-                ]
-            except:
-                bot_chatID = config.main_dotenv("telegram-failed_order")["bot_chatID"]
-        except:
-            bot_chatID = config.main_dotenv("telegram-failed_order")["bot_chatid"]
-
-    if purpose == "general_error":
-        try:
-            try:
-                bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatid"]
-            except:
-                bot_chatID = config.main_dotenv("telegram-general_error")["bot_chatID"]
-        except:
-            bot_chatID = config.main_dotenv("telegram-general_error")[
-                "BOT_CHATID_GENERAL_ERROR"
-            ]
-
-    connection_url = "https://api.telegram.org/bot"
-
-    endpoint = (
-        bot_token
-        + ("/sendMessage?chat_id=")
-        + bot_chatID
-        + ("&parse_mode=HTML&text=")
-        + bot_message
-    )
-
-    return await private_connection(endpoint=endpoint, params={}, connection_url=connection_url)
 
 async def private_connection (sub_account: str,
                 endpoint: str,
