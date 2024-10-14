@@ -41,10 +41,10 @@ def get_now_unix() -> int:
     return time_modification.convert_time_to_unix(now_utc)
 
 async def private_connection (sub_account: str,
-                endpoint: str,
-                params: str,
-                connection_url: str = "https://www.deribit.com/api/v2/",
-                ) -> None:
+                              endpoint: str,
+                              params: str,
+                              connection_url: str = "https://www.deribit.com/api/v2/",
+                              ) -> None:
 
     id = id_numbering.id(endpoint, endpoint)
     
@@ -235,9 +235,9 @@ class SendApiRequest:
             endpoint: str = "private/sell"
         if side != None:
             result = await private_connection (self.sub_account_id,
-                                 endpoint=endpoint, 
-                                 params=params,
-                                 )
+                                               endpoint=endpoint, 
+                                               params=params,
+                                               )
         return result
 
 
@@ -305,7 +305,9 @@ class SendApiRequest:
 
         params = {"currency": currency.upper(), "kind": "any", "count": count}
 
-        user_trades =  await private_connection (endpoint=endpoint, params=params)
+        user_trades =  await private_connection (self.sub_account_id,
+                                                 endpoint=endpoint, 
+                                                 params=params)
 
         return [] if user_trades == [] else user_trades["result"]["trades"]
 
@@ -317,9 +319,9 @@ class SendApiRequest:
 
         params = {"detailed": False}
 
-        result = await private_connection(self.sub_account_id,
-                           endpoint=endpoint, 
-                           params=params,
+        result = await private_connection (self.sub_account_id,
+                                           endpoint=endpoint, 
+                                           params=params,
                            )
         await deleting_row("orders_all_json")
 
@@ -345,22 +347,23 @@ class SendApiRequest:
         }
         
         result_transaction_log_to_result = await private_connection (self.sub_account_id,
-                           endpoint=endpoint, 
-                           params=params,
-                           )
+                                                                     endpoint=endpoint, 
+                                                                     params=params,
+                                                                     )
         
         return [] if not result_transaction_log_to_result \
         else result_transaction_log_to_result["result"]["logs"]
 
 
 
-    async def get_cancel_order_byOrderId(self, order_id: int):
+    async def get_cancel_order_byOrderId (self, 
+                                          order_id: str):
         # Set endpoint
         endpoint: str = "private/cancel"
 
         params = {"order_id": order_id}
 
-        result = await private_connection(self.sub_account_id,
+        result = await private_connection (self.sub_account_id,
                                           endpoint=endpoint,
                                           params=params)
         return result
