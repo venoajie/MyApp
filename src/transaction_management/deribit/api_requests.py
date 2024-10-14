@@ -13,9 +13,11 @@ from loguru import logger as log
 
 # user defined formula
 from configuration import id_numbering, config
-from db_management import sqlite_management
 from utilities import time_modification
-
+from db_management.sqlite_management import (
+    deleting_row,
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    )
 
 
 def parse_dotenv(sub_account) -> dict:
@@ -310,31 +312,17 @@ class SendApiRequest:
         return result_sub_account["result"]
 
 
-    async def get_user_trades_by_currency_and_time(
-        self,
-        currency,
-        start_timestamp: int,
-        end_timestamp: int,
-        count: int = 1000,
-        include_old: bool = True,
-    ) -> list:
+    async def get_user_trades_by_currency(self, 
+                                          currency,
+                                          count: int = 1000) -> list:
 
         # Set endpoint
-        endpoint: str = f"private/get_user_trades_by_currency_and_time"
+        endpoint: str = f"private/get_user_trades_by_currency"
 
-        params = {
-            "currency": currency.upper(),
-            "kind": "any",
-            "start_timestamp": start_timestamp,
-            "end_timestamp": end_timestamp,
-            "count": count,
-            "include_old": include_old,
-        }
+        params = {"currency": currency.upper(), "kind": "any", "count": count}
 
-        user_trades = await private_connection(self.sub_account,
-                           endpoint=endpoint, 
-                           params=params,
-                           )
+        user_trades =  await private_connection (endpoint=endpoint, params=params)
+
         return [] if user_trades == [] else user_trades["result"]["trades"]
 
     async def get_cancel_order_all(self):
@@ -349,7 +337,7 @@ class SendApiRequest:
                            endpoint=endpoint, 
                            params=params,
                            )
-        await sqlite_management.deleting_row("orders_all_json")
+        await deleting_row("orders_all_json")
 
         return result
 
@@ -393,90 +381,76 @@ class SendApiRequest:
                                           params=params)
         return result
 
+@dataclass(unsafe_hash=True, slots=True)
+class ModifyOrderDb(SendApiRequest):
+    """ """
+
+    async def get_private_data(self,
+                               sub_account_id: str = "deribit-147691") -> None:
+        """
+        Provide class object to access private get API
+        """
+
+        return SendApiRequest (sub_account_id)
+        #return ap
+
+
     async def cancel_by_order_id(self,
                                  open_order_id) -> None:
-        private_data = await get_private_data()
 
-        result = await self.get_cancel_order_byOrderId(open_order_id)
+        private_data = await self.get_private_data()
+
+        where_filter = f"order_id"
+        
+        await deleting_row ("orders_all_json",
+                            "databases/trading.sqlite3",
+                            where_filter,
+                            "=",
+                            open_order_id,
+                        )
+
+        result = await private_data.get_cancel_order_byOrderId(open_order_id)
         
         try:
             if (result["error"]["message"])=="not_open_order":
+                log.critical(f"CANCEL non-existing order_id {result} {open_order_id}")
                 
-                where_filter = f"order_id"
-                
-                await deleting_row(
-                                    "orders_all_json",
-                                    "databases/trading.sqlite3",
-                                    where_filter,
-                                    "=",
-                                    open_order_id,
-                                )
                 
         except:
 
             log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
 
-            return result
 
+            return result
 
     async def cancel_the_cancellables(self,
                                       currency,
-                                      cancellable_strategies, 
-                                      filter: str = None) -> None:
+                                      cancellable_strategies) -> None:
 
         where_filter = f"order_id"
         
         column_list= "label", where_filter
+        
         open_orders_sqlite: list=  await get_query("orders_all_json", 
                                                     currency.upper(), 
                                                     "all",
                                                     "all",
                                                     column_list)
-
-        if open_orders_sqlite != []:
-
+    
+        if open_orders_sqlite:
             for strategy in cancellable_strategies:
-                
                 open_orders_cancellables = [
-                    o for o in open_orders_sqlite if strategy in o["label"]
-                ]
-
-
-                if open_orders_cancellables != []:
-
-                    if filter != None and open_orders_cancellables != []:
-
-                        open_orders_cancellables = [
-                            o for o in open_orders_cancellables if filter in o["label"]
-                        ]
-
-                if open_orders_cancellables != []:
-
+                o for o in open_orders_sqlite if strategy in o["label"]
+            ]
+                if open_orders_cancellables:
                     open_orders_cancellables_id = [
-                        o["order_id"] for o in open_orders_cancellables
-                    ]
+                    o["order_id"] for o in open_orders_cancellables
+                ]
+                    for order_id in open_orders_cancellables_id:
 
-                    if open_orders_cancellables_id != []:
+                        await self.cancel_by_order_id(order_id)
 
-                        for order_id in open_orders_cancellables_id:
+                        log.critical(f" cancel_the_cancellable {order_id}")                           
 
-                            await cancel_by_order_id(order_id)
+        
 
-                            log.critical(f" cancel_the_cancellable {order_id}")                           
-
-                            await deleting_row(
-                                "orders_all_json",
-                                "databases/trading.sqlite3",
-                                where_filter,
-                                "=",
-                                order_id,
-                            )
-
-
-
-@dataclass(unsafe_hash=True, slots=True)
-class ModifyOrderDb(SendApiRequest):
-    """ """
-
-    sub_account: str
-    currency: str

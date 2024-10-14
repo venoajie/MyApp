@@ -150,7 +150,8 @@ async def if_order_is_true(order, instrument: str = None) -> None:
 async def get_my_trades_from_exchange(count: int, currency) -> list:
     """ """
     private_data = await get_private_data()
-    trades: list = await private_data.get_user_trades_by_currency(count)
+    trades: list = await private_data.get_user_trades_by_currency(currency,
+                                                                  count)
 
     return trades
 
@@ -444,9 +445,6 @@ async def on_restart(currencies_default: str,
                      order_table: str) -> None:
     """
     """
-
-    log.warning("Cancelling all orders")
-    await cancel_all()
     
     # refresh databases
     await get_and_save_currencies()                

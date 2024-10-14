@@ -19,6 +19,7 @@ from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,)
 from transaction_management.deribit.api_requests import (
+    ModifyOrderDb,
     telegram_bot_sendtext,)
 from strategies.basic_strategy import (
     is_label_and_side_consistent,)
@@ -521,6 +522,7 @@ class StreamAccountData:
     sub_account_id: str
     client_id: str = fields 
     client_secret: str = fields 
+    modify_order_and_db: str = fields 
     # Async Event Loop
     loop = asyncio.get_event_loop()
     ws_connection_url: str = "wss://www.deribit.com/ws/api/v2"
@@ -531,6 +533,7 @@ class StreamAccountData:
     refresh_token_expiry_time: int = None
             
     def __post_init__(self):
+        self.modify_order_and_db: str = ModifyOrderDb(self.sub_account_id)
         self.client_id: str = parse_dotenv(self.sub_account_id)["client_id"]
         self.client_secret: str = parse_dotenv(self.sub_account_id)["client_secret"]
 
@@ -547,12 +550,16 @@ class StreamAccountData:
         ) as self.websocket_client:
                 
             file_toml = "config_strategies.toml"
-                
+             
             config_app = get_config(file_toml)
 
             tradable_config_app = config_app["tradable"]
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
+            
+            for currency in currencies:
+                await self.modify_order_and_db.cancel_the_cancellables (currency,
+                                                                   cancellable_strategies)
             
             strategy_attributes = config_app["strategies"]
                                     
@@ -562,8 +569,9 @@ class StreamAccountData:
             
             trade_db_table= "my_trades_all_json"
             
-            order_db_table= "orders_all_json"                
-            
+            order_db_table= "orders_all_json"         
+                            
+                
             # Establish restart procedure
             await on_restart(currencies,
                             order_db_table)

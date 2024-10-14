@@ -208,21 +208,23 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
 
 
 
-async def get_private_data(currency: str = None) -> list:
+async def get_private_data(sub_account: str = "deribit-147691") -> list:
     """
     Provide class object to access private get API
     """
 
-    sub_account = "deribit-147691"
-    return SendApiRequest (sub_account, currency)
+    
+    return SendApiRequest (sub_account)
     #return api_request
 
 async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
     """ """
 
-    private_data = await get_private_data(currency)
+    private_data = await get_private_data()
 
-    result_transaction_log: dict = await private_data.get_transaction_log(start_timestamp, count)
+    result_transaction_log: dict = await private_data.get_transaction_log(currency,
+                                                                          start_timestamp, 
+                                                                          count)
     
     result_transaction_log_to_result = result_transaction_log["result"]
     
@@ -235,8 +237,8 @@ async def resupply_sub_accountdb(currency) -> None:
 
     # resupply sub account db
     #log.info(f"resupply {currency.upper()} sub account db-START")
-    private_data = await get_private_data (currency)
-    sub_accounts = await private_data.get_subaccounts()
+    private_data = await get_private_data ()
+    sub_accounts = await private_data.get_subaccounts(currency)
 
     my_path_sub_account = provide_path_for_file("sub_accounts", currency)
     replace_data(my_path_sub_account, sub_accounts)
