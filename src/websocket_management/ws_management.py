@@ -422,15 +422,11 @@ async def update_trades_from_exchange (currency: str,
                                     qty_trades: int =  100) -> None:
     """
     """
-    log.warning ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")     
     trades_from_exchange = await get_my_trades_from_exchange (qty_trades, currency)
-    log.warning ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")     
     
     if trades_from_exchange:
-        log.warning ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")     
         
         trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
-        log.warning ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")     
 
         if trades_from_exchange_without_futures_combo:
             
@@ -460,10 +456,10 @@ async def on_restart(currencies_default: str,
                                        transaction_log_trading,
                                        archive_db_table)
         
-        #await update_trades_from_exchange (currency,
-        #                                   archive_db_table,
-        #                                   order_table,
-        #                                   100)
+        await update_trades_from_exchange (currency,
+                                           archive_db_table,
+                                           order_table,
+                                           100)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
 
     log.warning("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
