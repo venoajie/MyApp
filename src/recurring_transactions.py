@@ -161,35 +161,35 @@ async def running_strategy() -> None:
                         
             column_trade: str= "instrument_name","label", "amount", "price","side"
 
-            sub_account_summary = reading_from_pkl_data("sub_accounts",currency)[0]
-            log.info (f"sub_account_summary {sub_account_summary}")
+            sub_account_summary = reading_from_pkl_data("sub_accounts",currency)
             
-                    
-            my_trades_currency: list= await get_query(trade_db_table, 
+            if sub_account_summary:           
+                sub_account_summary[0]
+                        
+                my_trades_currency: list= await get_query(trade_db_table, 
+                                                            currency, 
+                                                            "all", 
+                                                            "all", 
+                                                            column_trade)
+
+                column_order= "instrument_name","label","order_id","amount","timestamp"
+                
+                orders_currency = await get_query(order_db_table, 
                                                         currency, 
                                                         "all", 
                                                         "all", 
-                                                        column_trade)
-            log.error (f"my_trades_currency {my_trades_currency}")
-
-            column_order= "instrument_name","label","order_id","amount","timestamp"
-            
-            orders_currency = await get_query(order_db_table, 
-                                                    currency, 
-                                                    "all", 
-                                                    "all", 
-                                                    column_order)     
-            
-            running= RunningStrategy (sub_account_id,
-                                      sub_account_summary,
-                                      my_trades_currency,
-                                      orders_currency)
-            
-            await ensuring_db_reconciled_each_other (sub_account_summary,
-                                                     currency,
-                                                     my_trades_currency,
-                                                     orders_currency,
-                                                     from_transaction_log)
+                                                        column_order)     
+                
+                running= RunningStrategy (sub_account_id,
+                                        sub_account_summary,
+                                        my_trades_currency,
+                                        orders_currency)
+                
+                await ensuring_db_reconciled_each_other (sub_account_summary,
+                                                        currency,
+                                                        my_trades_currency,
+                                                        orders_currency,
+                                                        from_transaction_log)
             
     except Exception as error:
         
