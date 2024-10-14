@@ -189,8 +189,6 @@ async def running_strategy() -> None:
                 
                 await running.modify_order_and_db.resupply_sub_accountdb(currency)
                 
-                log.error (f"sub_account_summary {sub_account_summary}")
-                            
                 instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
