@@ -275,7 +275,7 @@ class SendApiRequest:
             error = order_result ["error"]
             message = error ["message"]
             data = error ["data"]
-            await telegram_bot_sendtext(f"message: {message}, data: ({data}), (params: {params})")
+            await telegram_bot_sendtext (f"message: {message}, data: ({data}), (params: {params})")
     
         return order_result
     
@@ -347,15 +347,24 @@ class SendApiRequest:
         }
         
         result_transaction_log_to_result = await private_connection (self.sub_account_id,
-                                                                     endpoint=endpoint, 
-                                                                     params=params,
-                                                                     )
+                                                                    endpoint=endpoint, 
+                                                                    params=params,
+                                                                    )
+    
         log.error (f"result_transaction_log_to_result {result_transaction_log_to_result}")
-        log.error (f"not result_transaction_log_to_result {not result_transaction_log_to_result}")
-        return [] if not result_transaction_log_to_result \
-        else result_transaction_log_to_result["result"]["logs"]
+        try:
+            result = result_transaction_log_to_result["result"]
+            
+            log.error (f"not result_transaction_log_to_result {not result_transaction_log_to_result}")
+            
+            return [] if not result else result["logs"]
 
-
+        except:
+            
+            error = result_transaction_log_to_result ["error"]
+            message = error ["message"]
+            await telegram_bot_sendtext (f"transaction_log message: {message}, (params: {params})")
+            
 
     async def get_cancel_order_byOrderId (self, 
                                           order_id: str):
