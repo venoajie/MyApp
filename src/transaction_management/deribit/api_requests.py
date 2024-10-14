@@ -317,6 +317,8 @@ class SendApiRequest:
                            endpoint=endpoint, 
                            params=params,
                            )
+        
+        log.info (result_transaction_log_to_result)
 
         return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
@@ -371,7 +373,7 @@ class ModifyOrderDb(SendApiRequest):
                 
         except:
 
-            log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
+            log.critical(f"CANCEL_by_order_id {result["result"]} {open_order_id}")
 
 
             return result
@@ -403,7 +405,7 @@ class ModifyOrderDb(SendApiRequest):
 
                         await self.cancel_by_order_id(order_id)
 
-                        log.critical(f" cancel_the_cancellable {order_id}")                           
+                        log.critical(f" cancel_the_cancellable done{order_id}")                           
 
         
 
