@@ -893,7 +893,7 @@ def main():
     sub_account = "deribit-147691"
     
     try:
-        StreamAccountData(sub_account=sub_account)
+        StreamAccountData(sub_account)
 
     except Exception as error:
         
