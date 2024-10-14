@@ -128,7 +128,7 @@ def is_each_db_reconciled (currency: str,
     return sum_trade_from_log_and_db_is_equal and len_order_from_sub_account_and_db_is_equal
         
 @dataclass(unsafe_hash=True, slots=True)
-class StreamAccountData:
+class StreamAccountData(ModifyOrderDb):
 
     """
 
@@ -901,10 +901,10 @@ class StreamAccountData:
             
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
-    sub_account = "deribit-147691"
+    sub_account_id = "deribit-147691"
     
     try:
-        StreamAccountData(sub_account)
+        StreamAccountData(sub_account_id)
 
     except Exception as error:
         
