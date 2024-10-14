@@ -374,6 +374,8 @@ class ModifyOrderDb(SendApiRequest):
     def __post_init__(self):
         # Provide class object to access private get API
         self.private_data: str = SendApiRequest (self.sub_account)
+        log.error (f"self.sub_account {self.sub_account}")
+        log.error (f"self.private_data {self.private_data}")
 
 
     async def cancel_by_order_id(self,
@@ -431,8 +433,6 @@ class ModifyOrderDb(SendApiRequest):
 
                         await self.cancel_by_order_id(order_id)
         
-
-
     async def resupply_sub_accountdb(self,
                                      currency) -> None:
 

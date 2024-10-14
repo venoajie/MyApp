@@ -111,8 +111,11 @@ class RunningStrategy (ModifyOrderDb):
     orders_currency: list
     leverage: float= fields 
 
+    modify_order_and_db: object = fields 
+    # Async Event Loop
     def __post_init__(self):
         self.leverage =  sum([abs(o["amount"]) for o in self.my_trades_currency])
+        self.modify_order_and_db: str = ModifyOrderDb(self.sub_account_id)
         log.error (f"leverage {self.leverage}")
         #log.error (f"sub_account_summary {self.sub_account_summary}")
 
@@ -185,7 +188,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                await running.resupply_sub_accountdb(currency)
+                await running.modify_order_and_db.resupply_sub_accountdb(currency)
                 
                 log.error (f"sub_account_summary {sub_account_summary}")
                             
@@ -234,7 +237,7 @@ async def running_strategy() -> None:
                                                         first_tick_fr_sqlite, 
                                                         )
                         
-                        await running.resupply_sub_accountdb(currency)
+                        await running.modify_order_and_db.resupply_sub_accountdb(currency)
 
                 
                     if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
