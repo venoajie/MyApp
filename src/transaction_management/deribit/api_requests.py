@@ -145,7 +145,7 @@ async def inserting_additional_params(params: dict) -> None:
 class SendApiRequest:
     """ """
 
-    sub_account: str
+    sub_account_id: str
     
     async def send_order(
         self,
@@ -234,7 +234,7 @@ class SendApiRequest:
         if side == "sell":
             endpoint: str = "private/sell"
         if side != None:
-            result = await private_connection (self.sub_account,
+            result = await private_connection (self.sub_account_id,
                                  endpoint=endpoint, 
                                  params=params,
                                  )
@@ -289,7 +289,7 @@ class SendApiRequest:
                   "with_open_orders": True
                   }
     
-        result_sub_account = await private_connection (self.sub_account,
+        result_sub_account = await private_connection (self.sub_account_id,
                                                        endpoint=endpoint, 
                                                        params=params,)
         
@@ -317,7 +317,7 @@ class SendApiRequest:
 
         params = {"detailed": False}
 
-        result = await private_connection(self.sub_account,
+        result = await private_connection(self.sub_account_id,
                            endpoint=endpoint, 
                            params=params,
                            )
@@ -344,7 +344,7 @@ class SendApiRequest:
             "start_timestamp": start_timestamp,
         }
         
-        result_transaction_log_to_result = await private_connection (self.sub_account,
+        result_transaction_log_to_result = await private_connection (self.sub_account_id,
                            endpoint=endpoint, 
                            params=params,
                            )
@@ -360,7 +360,7 @@ class SendApiRequest:
 
         params = {"order_id": order_id}
 
-        result = await private_connection(self.sub_account,
+        result = await private_connection(self.sub_account_id,
                                           endpoint=endpoint,
                                           params=params)
         return result
@@ -373,8 +373,8 @@ class ModifyOrderDb(SendApiRequest):
     
     def __post_init__(self):
         # Provide class object to access private get API
-        self.private_data: str = SendApiRequest (self.sub_account)
-        log.error (f"self.sub_account {self.sub_account}")
+        self.private_data: str = SendApiRequest (self.sub_account_id)
+        log.error (f"self.sub_account {self.sub_account_id}")
         log.error (f"self.private_data {self.private_data}")
 
 
