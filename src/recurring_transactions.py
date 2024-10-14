@@ -189,7 +189,7 @@ async def running_strategy() -> None:
                 
                 log.error (f"sub_account_summary {sub_account_summary}")
                             
-                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary ["positions"]]
+                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
 
@@ -289,7 +289,7 @@ def ensuring_db_reconciled_each_other (sub_account,
                                              orders_currency,
                                              from_transaction_log) -> None:
     """ """
-    sub_account_size_all = [o["size"] for o in sub_account["positions"] if o["instrument_name"] == instrument_name ][0]
+    sub_account_size_all = [o["size"] for o in sub_account[0]["positions"] if o["instrument_name"] == instrument_name ][0]
                                             
     last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
     current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
