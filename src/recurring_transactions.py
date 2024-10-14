@@ -186,13 +186,15 @@ async def running_strategy() -> None:
                                         orders_currency)
                 
                 running.resupply_sub_accountdb
+                
+                log.error (f"sub_account_summary {sub_account_summary}")
                             
                 instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
 
                     db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
-                                                            currency,
+                                                            instrument_name,
                                                             my_trades_currency,
                                                             orders_currency,
                                                             from_transaction_log)
