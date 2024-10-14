@@ -185,7 +185,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                running.resupply_sub_accountdb(currency)
+                await running.resupply_sub_accountdb(currency)
                 
                 log.error (f"sub_account_summary {sub_account_summary}")
                             
