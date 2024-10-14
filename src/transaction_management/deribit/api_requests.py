@@ -211,7 +211,6 @@ class SendApiRequest:
 
     async def send_limit_order(self, params) -> None:
         """ """
-        from loguru import logger as log
 
         side = params["side"]
         instrument = params["instrument"]
@@ -318,10 +317,8 @@ class SendApiRequest:
                            params=params,
                            )
         
-        log.info (result_transaction_log_to_result)
-
-        return [] if result_transaction_log_to_result  == []\
-        else result_transaction_log_to_result["logs"]
+        return [] if not result_transaction_log_to_result \
+        else result_transaction_log_to_result["result"]["logs"]
 
 
 
@@ -382,6 +379,8 @@ class ModifyOrderDb(SendApiRequest):
                                       currency,
                                       cancellable_strategies) -> None:
 
+        log.critical(f" cancel_the_cancellables")                           
+
         where_filter = f"order_id"
         
         column_list= "label", where_filter
@@ -404,8 +403,5 @@ class ModifyOrderDb(SendApiRequest):
                     for order_id in open_orders_cancellables_id:
 
                         await self.cancel_by_order_id(order_id)
-
-                        log.critical(f" cancel_the_cancellable done{order_id}")                           
-
         
 
