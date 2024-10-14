@@ -271,7 +271,7 @@ def ensuring_db_reconciled_each_other (sub_account,
     sub_account = sub_account[0]
     sub_account_size_all = [o["size"] for o in sub_account ["positions"] if o["instrument_name"] == instrument_name ][0]
     
-    log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
+    #log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
                                             
     from_transaction_log_instrument = ([o for o in from_transaction_log if o["instrument_name"] == instrument_name])
     last_time_stamp_log = [] if from_transaction_log_instrument == []\
