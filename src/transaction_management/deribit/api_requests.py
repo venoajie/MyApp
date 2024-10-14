@@ -437,7 +437,7 @@ class ModifyOrderDb(SendApiRequest):
                                      currency) -> None:
 
         # resupply sub account db
-        #log.info(f"resupply {currency.upper()} sub account db-START")
+        log.info(f"resupply {currency.upper()} sub account db-START")
         sub_accounts = await self.private_data.get_subaccounts(currency)
 
         my_path_sub_account = provide_path_for_file("sub_accounts", currency)

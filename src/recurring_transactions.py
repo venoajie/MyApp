@@ -114,7 +114,7 @@ class RunningStrategy (ModifyOrderDb):
     def __post_init__(self):
         self.leverage =  sum([abs(o["amount"]) for o in self.my_trades_currency])
         log.error (f"leverage {self.leverage}")
-        log.error (f"sub_account_summary {self.sub_account_summary}")
+        #log.error (f"sub_account_summary {self.sub_account_summary}")
 
     async def running_strategies(self) -> dict:
               
@@ -185,7 +185,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                await running.resupply_sub_accountdb
+                running.resupply_sub_accountdb
                 
                 db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
                                                         currency,
