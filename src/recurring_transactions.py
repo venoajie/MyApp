@@ -187,7 +187,7 @@ async def running_strategy() -> None:
                 
                 running.resupply_sub_accountdb
                             
-                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account ["positions"]]
+                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
 
