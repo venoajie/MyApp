@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict
 
 # installed
-from dataclassy import dataclass 
+from dataclassy import dataclass, fields
 
 # import json, orjson
 import aiohttp
@@ -13,13 +13,16 @@ from loguru import logger as log
 
 # user defined formula
 from configuration import id_numbering, config
-from utilities import time_modification
 from db_management.sqlite_management import (
     deleting_row,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,)
 from transaction_management.deribit.telegram_bot import (
     telegram_bot_sendtext,)
-
+from utilities import time_modification
+from utilities.pickling import replace_data
+from utilities.system_tools import (
+    provide_path_for_file,
+    )
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -337,20 +340,15 @@ class SendApiRequest:
 class ModifyOrderDb(SendApiRequest):
     """ """
 
-    async def get_private_data(self,
-                               sub_account_id: str = "deribit-147691") -> None:
-        """
-        Provide class object to access private get API
-        """
-
-        return SendApiRequest (sub_account_id)
-        #return ap
+    private_data: object = fields 
+    
+    def __post_init__(self):
+        # Provide class object to access private get API
+        self.private_data: str = SendApiRequest (self.sub_account)
 
 
     async def cancel_by_order_id(self,
                                  open_order_id) -> None:
-
-        private_data = await self.get_private_data()
 
         where_filter = f"order_id"
         
@@ -361,7 +359,7 @@ class ModifyOrderDb(SendApiRequest):
                             open_order_id,
                         )
 
-        result = await private_data.get_cancel_order_byOrderId(open_order_id)
+        result = await self.private_data.get_cancel_order_byOrderId(open_order_id)
         
         try:
             if (result["error"]["message"])=="not_open_order":
@@ -405,3 +403,14 @@ class ModifyOrderDb(SendApiRequest):
                         await self.cancel_by_order_id(order_id)
         
 
+
+    async def resupply_sub_accountdb(self,
+                                     currency) -> None:
+
+        # resupply sub account db
+        #log.info(f"resupply {currency.upper()} sub account db-START")
+        sub_accounts = await self.private_data.get_subaccounts(currency)
+
+        my_path_sub_account = provide_path_for_file("sub_accounts", currency)
+        replace_data(my_path_sub_account, sub_accounts)
+    
