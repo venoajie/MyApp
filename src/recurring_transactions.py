@@ -106,7 +106,6 @@ class RunningStrategy (ModifyOrderDb):
 
     """ """
 
-    sub_account_id: str
     sub_account_summary: list
     my_trades_currency: list
     orders_currency: list
