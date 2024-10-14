@@ -186,53 +186,57 @@ async def running_strategy() -> None:
                                         orders_currency)
                 
                 running.resupply_sub_accountdb
+                            
+                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account ["positions"]]
                 
-                db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
-                                                        currency,
-                                                        my_trades_currency,
-                                                        orders_currency,
-                                                        from_transaction_log)
-                
-                if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:        
+                for instrument_name in instrument_from_sub_account:
+
+                    db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
+                                                            currency,
+                                                            my_trades_currency,
+                                                            orders_currency,
+                                                            from_transaction_log)
                     
-                    currency_lower = currency.lower()
-                    
-                    archive_db_table= f"my_trades_all_{currency_lower}_json"
-                    
-                    transaction_log_trading= f"transaction_log_{currency_lower}_json"
-                                
-                    where_filter= "timestamp"
-                    
-                    first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
-                    
-                    first_tick_query_result = await executing_query_with_return(first_tick_query)
+                    if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:        
                         
-                    balancing_params=paramaters_to_balancing_transactions()
+                        currency_lower = currency.lower()
+                        
+                        archive_db_table= f"my_trades_all_{currency_lower}_json"
+                        
+                        transaction_log_trading= f"transaction_log_{currency_lower}_json"
+                                    
+                        where_filter= "timestamp"
+                        
+                        first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
+                        
+                        first_tick_query_result = await executing_query_with_return(first_tick_query)
+                            
+                        balancing_params=paramaters_to_balancing_transactions()
 
-                    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-                    
-                    first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
-                    #log.warning(f"
-                    balancing_params=paramaters_to_balancing_transactions()
+                        max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+                        
+                        first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
+                        #log.warning(f"
+                        balancing_params=paramaters_to_balancing_transactions()
 
-                    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-                    
-                    transaction_log= await get_transaction_log (currency, 
-                                                                    first_tick_fr_sqlite-1, 
-                                                                    max_closed_transactions_downloaded_from_sqlite)
-                        #log.warning(f"transaction_log {transaction_log}")
-                                
-                    await saving_transaction_log (transaction_log_trading,
-                                                    archive_db_table,
-                                                    transaction_log, 
-                                                    first_tick_fr_sqlite, 
-                                                    )
-                    
-                    await running.resupply_sub_accountdb(currency)
+                        max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+                        
+                        transaction_log= await get_transaction_log (currency, 
+                                                                        first_tick_fr_sqlite-1, 
+                                                                        max_closed_transactions_downloaded_from_sqlite)
+                            #log.warning(f"transaction_log {transaction_log}")
+                                    
+                        await saving_transaction_log (transaction_log_trading,
+                                                        archive_db_table,
+                                                        transaction_log, 
+                                                        first_tick_fr_sqlite, 
+                                                        )
+                        
+                        await running.resupply_sub_accountdb(currency)
 
-            
-                if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
-                    pass
+                
+                    if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
+                        pass
                 
     except Exception as error:
         
@@ -278,35 +282,31 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
         else result_transaction_log_to_result["logs"]
 
 def ensuring_db_reconciled_each_other (sub_account,
-                                             currency,
+                                             instrument_name,
                                              my_trades_currency,
                                              orders_currency,
                                              from_transaction_log) -> None:
     """ """
-               
-    instrument_from_sub_account = [o["instrument_name"] for o  in sub_account ["positions"]]
+    sub_account_size_all = [o["size"] for o in sub_account["positions"] if o["instrument_name"] == instrument_name ][0]
+                                            
+    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
+    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
     
-    for instrument_name in instrument_from_sub_account:
-        sub_account_size_all = [o["size"] for o in sub_account["positions"] if o["instrument_name"] == instrument_name ][0]
-                                                
-        last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
-        current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
-        
-        sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
-        
-        len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
-        sub_account_orders = sub_account["open_orders"]
-        len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
-        
-        sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
-        len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
-        
-        log.warning (f" {instrument_name}")
-        log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
-        log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
-        
-        return dict(sum_trade_from_log_and_db_is_equal = sum_trade_from_log_and_db_is_equal,
-                    len_order_from_sub_account_and_db_is_equal = len_order_from_sub_account_and_db_is_equal)
+    sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
+    
+    len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
+    sub_account_orders = sub_account["open_orders"]
+    len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
+    
+    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
+    len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
+    
+    log.warning (f" {instrument_name}")
+    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
+    log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
+    
+    return dict(sum_trade_from_log_and_db_is_equal = sum_trade_from_log_and_db_is_equal,
+                len_order_from_sub_account_and_db_is_equal = len_order_from_sub_account_and_db_is_equal)
 
 async def run_every_60_seconds() -> None:
     """ """
