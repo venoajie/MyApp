@@ -47,15 +47,11 @@ from utilities.string_modification import (
 from websocket_management.ws_management import (
     compute_notional_value, 
     cancel_all,
-    cancel_by_order_id,
     currency_inline_with_database_address,
     distribute_ticker_result_as_per_data_type,
     get_config,
     get_futures_instruments,
-    if_cancel_is_true,
-    if_order_is_true,
     on_restart,
-    resupply_transaction_log,
     labelling_the_unlabelled_and_resend_it,
     check_db_consistencies_and_clean_up_imbalances,)
 from websocket_management.allocating_ohlc import (
@@ -130,43 +126,6 @@ def is_each_db_reconciled (currency: str,
     log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
     
     return sum_trade_from_log_and_db_is_equal and len_order_from_sub_account_and_db_is_equal
-        
-async def saving_order(instrument_name,
-                       order,
-                       order_db_table) -> None:
-
-                
-    order_state= order["order_state"]
-    #log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
-    if order_state == "cancelled" or order_state == "filled":
-        await saving_orders (order_db_table, order)
-    
-    else:
-        
-        label= order["label"]
-
-        order_id= order["order_id"]    
-        
-        label_and_side_consistent= is_label_and_side_consistent(order)
-        
-        #log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
-        
-        if label_and_side_consistent and label:
-            
-            await saving_orders (order_db_table, order)
-            
-        # check if transaction has label. Provide one if not any
-        if  not label_and_side_consistent:
-        
-            await insert_tables(order_db_table, order)
-
-            await cancel_by_order_id (order_id)                    
-        
-            await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
-
-        if not label:
-            
-            await labelling_the_unlabelled_and_resend_it(order, instrument_name)
         
 @dataclass(unsafe_hash=True, slots=True)
 class StreamAccountData:
@@ -580,7 +539,7 @@ class StreamAccountData:
             
         else:
                 
-            await saving_order(instrument_name,
+            await self.saving_order(instrument_name,
                                 order, 
                                 order_db_table)
                                     
@@ -588,7 +547,7 @@ class StreamAccountData:
         #log.debug (f"positions {positions}")
         await update_db_pkl("positions", data_orders, currency)
 
-        await resupply_transaction_log(currency, 
+        await self.modify_order_and_db.resupply_transaction_log(currency, 
                                         transaction_log_trading,
                                         archive_db_table)
 
@@ -722,7 +681,7 @@ class StreamAccountData:
                         if send_order["order_allowed"]:
                             
                             #log.error  (f"send_order {send_order}")
-                            result_order = await if_order_is_true(send_order, instrument_ticker)
+                            result_order = await self.modify_order_and_db.if_order_is_true(send_order, instrument_ticker)
                             
                             if result_order:
                                 
@@ -736,7 +695,7 @@ class StreamAccountData:
                                     archive_db_table,
                                     transaction_log_trading)
                             
-                            await if_cancel_is_true(send_order)
+                            await self.modify_order_and_db.if_cancel_is_true(send_order)
 
                         if my_trades_currency_strategy_open !=[]:
                                                                                                         
@@ -756,7 +715,7 @@ class StreamAccountData:
                                 nearest_transaction_to_index,
                             )
                             log.error (f"send_closing_order {send_closing_order}")
-                            result_order = await if_order_is_true(send_closing_order, instrument_ticker)
+                            result_order = await self.modify_order_and_db.if_order_is_true(send_closing_order, instrument_ticker)
                             
                             if result_order:
                                 log.error (f"result_order {result_order}")
@@ -768,7 +727,7 @@ class StreamAccountData:
                                     archive_db_table,
                                     transaction_log_trading)
                                 
-                            await if_cancel_is_true(send_closing_order)
+                            await self.modify_order_and_db.if_cancel_is_true(send_closing_order)
 
                         log.debug (f"strategy {strategy}-DONE")
 
@@ -821,8 +780,8 @@ class StreamAccountData:
                                     if False and send_order["order_allowed"]:
                                         
                                         #log.error  (f"send_order {send_order}")
-                                        await if_order_is_true(send_order, instrument_ticker)
-                                        await if_cancel_is_true(send_order)
+                                        await self.modify_order_and_db.if_order_is_true(send_order, instrument_ticker)
+                                        await self.modify_order_and_db.if_cancel_is_true(send_order)
 
                             log.error (f"send_order {send_order}")
                             log.error (f"strategy {strategy}-DONE")
@@ -879,7 +838,7 @@ class StreamAccountData:
             else:
                 for order in orders:
                     
-                    await saving_order(instrument_name,
+                    await self.saving_order(instrument_name,
                                     order, 
                                     order_db_table)
                                             
@@ -887,7 +846,7 @@ class StreamAccountData:
         #log.debug (f"positions {positions}")
         await update_db_pkl("positions", data_orders, currency)
 
-        await resupply_transaction_log(currency, 
+        await self.modify_order_and_db.resupply_transaction_log(currency, 
                                         transaction_log_trading,
                                         archive_db_table)
         
@@ -898,6 +857,44 @@ class StreamAccountData:
         log.info(f"update_user_changes-END")
     
 
+    async def saving_order(self,
+                           instrument_name,
+                        order,
+                        order_db_table) -> None:
+
+                    
+        order_state= order["order_state"]
+        #log.info (f"""order_state == "cancelled" or order_state == "filled" {order_state} {order_state == "cancelled" or order_state == "filled"}""")
+        if order_state == "cancelled" or order_state == "filled":
+            await saving_orders (order_db_table, order)
+        
+        else:
+            
+            label= order["label"]
+
+            order_id= order["order_id"]    
+            
+            label_and_side_consistent= is_label_and_side_consistent(order)
+            
+            #log.critical (f' ORDERS label_and_side_consistent {label_and_side_consistent} label {label} everything_NOT_consistent {not label_and_side_consistent}')
+            
+            if label_and_side_consistent and label:
+                
+                await saving_orders (order_db_table, order)
+                
+            # check if transaction has label. Provide one if not any
+            if  not label_and_side_consistent:
+            
+                await insert_tables(order_db_table, order)
+
+                await self.modify_order_and_db. cancel_by_order_id (order_id)                    
+            
+                await telegram_bot_sendtext('size or open order is inconsistent', "general_error")
+
+            if not label:
+                
+                await labelling_the_unlabelled_and_resend_it(order, instrument_name)
+            
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"

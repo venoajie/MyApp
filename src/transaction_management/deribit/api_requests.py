@@ -15,14 +15,20 @@ from loguru import logger as log
 from configuration import id_numbering, config
 from db_management.sqlite_management import (
     deleting_row,
-    executing_query_based_on_currency_or_instrument_and_strategy as get_query,)
+    executing_query_based_on_currency_or_instrument_and_strategy as get_query,
+    executing_query_with_return,
+    insert_tables,
+    querying_arithmetic_operator,)
+from strategies.config_strategies import paramaters_to_balancing_transactions
 from transaction_management.deribit.telegram_bot import (
     telegram_bot_sendtext,)
+from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from utilities import time_modification
 from utilities.pickling import replace_data
 from utilities.system_tools import (
-    provide_path_for_file,
-    )
+    provide_path_for_file)
+from strategies.basic_strategy import (
+    is_label_and_side_consistent,)
 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -111,7 +117,30 @@ def get_tickers(instrument_name: str) -> list:
     import requests, json
     
     return requests.get(f"https://deribit.com/api/v2/public/ticker?instrument_name={instrument_name}").json()["result"] 
+    
+def first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite: int) -> int:
+    """
+    
+    """
+    
+    from configuration.label_numbering import get_now_unix_time
+    
+    server_time = get_now_unix_time()  
+    
+    some_day_ago = 3600000 * max_closed_transactions_downloaded_from_sqlite
+    
+    delta_some_day_ago = server_time - some_day_ago
+    
+    return delta_some_day_ago
+    
+    
+async def inserting_additional_params(params: dict) -> None:
+    """ """
 
+    if "open" in params["label"]:
+        await insert_tables("supporting_items_json", params)
+
+    
 @dataclass(unsafe_hash=True, slots=True)
 class SendApiRequest:
     """ """
@@ -414,3 +443,82 @@ class ModifyOrderDb(SendApiRequest):
         my_path_sub_account = provide_path_for_file("sub_accounts", currency)
         replace_data(my_path_sub_account, sub_accounts)
     
+        
+    async def resupply_transaction_log(self,
+                                       currency: str,
+                                       transaction_log_trading,
+                                       archive_db_table: str) -> list:
+        """ """
+
+        #log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-START")
+                    
+        where_filter= "timestamp"
+        
+        first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
+        
+        first_tick_query_result = await executing_query_with_return(first_tick_query)
+            
+        balancing_params = paramaters_to_balancing_transactions()
+
+        max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+        
+        first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
+        #log.warning(f"first_tick_fr_sqlite {first_tick_fr_sqlite} {not first_tick_fr_sqlite}")
+        
+        if not first_tick_fr_sqlite:
+                    
+            first_tick_fr_sqlite = first_tick_fr_sqlite_if_database_still_empty (max_closed_transactions_downloaded_from_sqlite)
+        
+        #log.debug(f"first_tick_fr_sqlite {first_tick_fr_sqlite}")
+        
+        transaction_log= await self.private_data.get_transaction_log (currency, 
+                                                    first_tick_fr_sqlite-1, 
+                                                    max_closed_transactions_downloaded_from_sqlite)
+        #log.warning(f"transaction_log {transaction_log}")
+                
+        await saving_transaction_log (transaction_log_trading,
+                                    archive_db_table,
+                                    transaction_log, 
+                                    first_tick_fr_sqlite, 
+                                    )
+
+        #log.warning(f"resupply {currency.upper()} TRANSACTION LOG db-DONE")
+                
+    async def if_cancel_is_true(self,
+                                order) -> None:
+        """ """
+        #log.warning (order)
+        if order["cancel_allowed"]:
+
+            # get parameter orders
+            await self.cancel_by_order_id(order["cancel_id"])
+
+
+    async def if_order_is_true(self,
+                               order, 
+                               instrument: str = None) -> None:
+        """ """
+        # log.debug (order)
+        if order["order_allowed"]:
+
+            # get parameter orders
+            try:
+                params = order["order_parameters"]
+            except:
+                params = order
+
+            if instrument != None:
+                # update param orders with instrument
+                params.update({"instrument": instrument})
+
+            label_and_side_consistent = is_label_and_side_consistent(params)
+
+            if  label_and_side_consistent:
+                await inserting_additional_params(params)
+                send_limit_result = await self.private_data.send_limit_order(params)
+                return send_limit_result
+                #await asyncio.sleep(10)
+            else:
+                
+                return []
+                #await asyncio.sleep(10)
