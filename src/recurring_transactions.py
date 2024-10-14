@@ -114,7 +114,7 @@ class RunningStrategy (ModifyOrderDb):
     # Async Event Loop
     def __post_init__(self):
         self.leverage =  sum([abs(o["amount"]) for o in self.my_trades_currency])
-        self.modify_order_and_db: str = ModifyOrderDb(self.s)
+        self.modify_order_and_db: str = ModifyOrderDb(self.sub_account_id)
         log.error (f"leverage {self.leverage}")
         #log.error (f"sub_account_summary {self.sub_account_summary}")
 
