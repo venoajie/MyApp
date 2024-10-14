@@ -373,7 +373,7 @@ class ModifyOrderDb(SendApiRequest):
                 
         except:
 
-            log.critical(f"CANCEL_by_order_id {result["result"]} {open_order_id}")
+            log.critical(f"""CANCEL_by_order_id {result["result"]} {open_order_id}""")
 
 
             return result
