@@ -456,10 +456,10 @@ async def on_restart(currencies_default: str,
                                        transaction_log_trading,
                                        archive_db_table)
         
-        await update_trades_from_exchange (currency,
-                                           archive_db_table,
-                                           order_table,
-                                           100)
+        #await update_trades_from_exchange (currency,
+        #                                   archive_db_table,
+        #                                   order_table,
+        #                                   100)
         #await check_db_consistencies_and_clean_up_imbalances(currency)                           
 
     log.warning("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")

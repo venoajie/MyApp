@@ -206,33 +206,12 @@ async def running_strategy() -> None:
                         archive_db_table= f"my_trades_all_{currency_lower}_json"
                         
                         transaction_log_trading= f"transaction_log_{currency_lower}_json"
+                        
+                        await running.modify_order_and_db.resupply_transaction_log (currency_lower,
+                                                                                    transaction_log_trading,
+                                                                                    archive_db_table
+                                                                                    )
                                     
-                        where_filter= "timestamp"
-                        
-                        first_tick_query= querying_arithmetic_operator(where_filter, "MAX", transaction_log_trading)
-                        
-                        first_tick_query_result = await executing_query_with_return(first_tick_query)
-                            
-                        balancing_params=paramaters_to_balancing_transactions()
-
-                        max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-                        
-                        first_tick_fr_sqlite= first_tick_query_result [0]["MAX (timestamp)"] 
-                        #log.warning(f"
-                        balancing_params=paramaters_to_balancing_transactions()
-
-                        max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
-                        
-                        transaction_log= await get_transaction_log (currency, 
-                                                                        first_tick_fr_sqlite-1, 
-                                                                        max_closed_transactions_downloaded_from_sqlite)
-                            #log.warning(f"transaction_log {transaction_log}")
-                                    
-                        await saving_transaction_log (transaction_log_trading,
-                                                        archive_db_table,
-                                                        transaction_log, 
-                                                        first_tick_fr_sqlite, 
-                                                        )
                         
                         await running.modify_order_and_db.resupply_sub_accountdb(currency)
 
@@ -264,7 +243,7 @@ async def get_private_data(sub_account: str = "deribit-147691") -> list:
     """
 
     
-    return SendApiRequest (sub_account)
+    return ModifyOrderDb (sub_account)
     #return api_request
 
 async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1000) -> list:
