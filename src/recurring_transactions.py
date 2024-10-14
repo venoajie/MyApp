@@ -162,6 +162,7 @@ async def running_strategy() -> None:
             column_trade: str= "instrument_name","label", "amount", "price","side"
 
             sub_account_summary = reading_from_pkl_data("sub_accounts",currency)[0]
+            log.info (f"sub_account_summary {sub_account_summary}")
             
                     
             my_trades_currency: list= await get_query(trade_db_table, 
@@ -169,6 +170,7 @@ async def running_strategy() -> None:
                                                         "all", 
                                                         "all", 
                                                         column_trade)
+            log.error (f"my_trades_currency {my_trades_currency}")
 
             column_order= "instrument_name","label","order_id","amount","timestamp"
             

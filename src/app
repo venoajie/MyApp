@@ -747,10 +747,13 @@ class StreamAccountData:
                             #log.warning (f" combo {combo} future_instrument_name {future_instrument_name} min_trade_amount {min_trade_amount}")
                             #log.info (f" combo_ticker {combo_ticker}")
                             
-                            log.error (f""" future_ticker {reading_from_pkl_data("ticker",future_instrument_name)}""")
-                            future_ticker= reading_from_pkl_data("ticker",future_instrument_name)[0]
+                            #log.error (f""" future_ticker {reading_from_pkl_data("ticker",future_instrument_name)}""")
+                            future_ticker= reading_from_pkl_data("ticker",future_instrument_name)
                             
                             if future_ticker:
+                                
+                                future_ticker= future_ticker[0]
+                                
                                 future_mark_price= future_ticker["mark_price"]
                                 
                                 contango = future_mark_price - index_price > 0
