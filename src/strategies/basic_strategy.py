@@ -16,6 +16,8 @@ from db_management.sqlite_management import (
 from utilities.string_modification import (
     parsing_label)
 from loguru import logger as log
+from transaction_management.deribit.api_requests import (
+    SendApiRequest)
 
 async def get_hlc_vol(window: int = 9, table: str = "ohlc1_eth_perp_json") -> list:
     """ """
@@ -717,6 +719,15 @@ class BasicStrategy (ManageStrategy):
 
     strategy_label: str
     strategy_parameters: dict
+
+    async def get_private_data(sub_account = "deribit-147691",
+                               currency: str = None) -> list:
+        """
+        Provide class object to access private get API
+        """
+
+        return SendApiRequest (sub_account, currency)
+        #return api_request
 
     def get_basic_opening_parameters(
         self, ask_price: float = None, bid_price: float = None, notional: float = None

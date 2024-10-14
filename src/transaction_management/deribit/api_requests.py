@@ -374,3 +374,84 @@ class SendApiRequest:
                            endpoint=endpoint, 
                            params=params,
                            )
+
+
+    async def cancel_by_order_id(self,
+                                 open_order_id) -> None:
+        private_data = await get_private_data()
+
+        result = await self.get_cancel_order_byOrderId(open_order_id)
+        
+        try:
+            if (result["error"]["message"])=="not_open_order":
+                
+                where_filter = f"order_id"
+                
+                await deleting_row(
+                                    "orders_all_json",
+                                    "databases/trading.sqlite3",
+                                    where_filter,
+                                    "=",
+                                    open_order_id,
+                                )
+                
+        except:
+
+            log.critical(f"CANCEL_by_order_id {result} {open_order_id}")
+
+            return result
+
+
+    async def cancel_the_cancellables(self,
+                                      currency,
+                                      cancellable_strategies, 
+                                      filter: str = None) -> None:
+
+        where_filter = f"order_id"
+        
+        column_list= "label", where_filter
+        open_orders_sqlite: list=  await get_query("orders_all_json", 
+                                                    currency.upper(), 
+                                                    "all",
+                                                    "all",
+                                                    column_list)
+
+        if open_orders_sqlite != []:
+
+            for strategy in cancellable_strategies:
+                
+                open_orders_cancellables = [
+                    o for o in open_orders_sqlite if strategy in o["label"]
+                ]
+
+
+                if open_orders_cancellables != []:
+
+                    if filter != None and open_orders_cancellables != []:
+
+                        open_orders_cancellables = [
+                            o for o in open_orders_cancellables if filter in o["label"]
+                        ]
+
+                if open_orders_cancellables != []:
+
+                    open_orders_cancellables_id = [
+                        o["order_id"] for o in open_orders_cancellables
+                    ]
+
+                    if open_orders_cancellables_id != []:
+
+                        for order_id in open_orders_cancellables_id:
+
+                            await cancel_by_order_id(order_id)
+
+                            log.critical(f" cancel_the_cancellable {order_id}")                           
+
+                            await deleting_row(
+                                "orders_all_json",
+                                "databases/trading.sqlite3",
+                                where_filter,
+                                "=",
+                                order_id,
+                            )
+
