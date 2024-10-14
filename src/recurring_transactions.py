@@ -29,7 +29,7 @@ from transaction_management.deribit.api_requests import (
     get_currencies,
     get_instruments,
     get_server_time,
-    SendApiRequest)
+    ModifyOrderDb)
 from transaction_management.deribit.transaction_log import (saving_transaction_log,)
 from utilities.pickling import (
     replace_data,
@@ -102,10 +102,11 @@ def get_label_transaction_net(my_trades_open_remove_closed_labels: list) -> floa
 
 
 @dataclass(unsafe_hash=True, slots=True)
-class RunningStrategy (SendApiRequest):
+class RunningStrategy (ModifyOrderDb):
 
     """ """
 
+    sub_account_id: str
     sub_account_summary: list
     my_trades_currency: list
     orders_currency: list
@@ -181,7 +182,6 @@ async def running_strategy() -> None:
                                                     column_order)     
             
             running= RunningStrategy (sub_account_id,
-                                      currency,
                                       sub_account_summary,
                                       my_trades_currency,
                                       orders_currency)
