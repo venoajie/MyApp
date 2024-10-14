@@ -558,15 +558,15 @@ class StreamAccountData:
             
             currencies= [o["spot"] for o in tradable_config_app] [0]
             
-            for currency in currencies:
-                await self.modify_order_and_db.cancel_the_cancellables (currency,
-                                                                   cancellable_strategies)
-            
             strategy_attributes = config_app["strategies"]
                                     
             active_strategies =   [o["strategy_label"] for o in strategy_attributes if o["is_active"]==True]
             
             cancellable_strategies =   [o["strategy_label"] for o in strategy_attributes if o["cancellable"]==True]
+            
+            for currency in currencies:
+                await self.modify_order_and_db.cancel_the_cancellables (currency,
+                                                                   cancellable_strategies)
             
             trade_db_table= "my_trades_all_json"
             
