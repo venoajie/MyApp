@@ -106,6 +106,7 @@ class RunningStrategy (SendApiRequest):
 
     """ """
 
+    sub_account_summary: list
     my_trades_currency: list
     orders_currency: list
     leverage: float= fields 
@@ -113,6 +114,7 @@ class RunningStrategy (SendApiRequest):
     def __post_init__(self):
         self.leverage =  sum([abs(o["amount"]) for o in self.my_trades_currency])
         log.error (f"leverage {self.leverage}")
+        log.error (f"sub_account_summary {self.sub_account_summary}")
 
     async def running_strategies(self) -> dict:
               
@@ -128,7 +130,7 @@ def parse_dotenv(sub_account) -> dict:
 
 async def running_strategy() -> None:
     """ """
-    sub_account = "deribit-147691"
+    sub_account_id = "deribit-147691"
 
     file_toml = "config_strategies.toml"
         
@@ -159,7 +161,7 @@ async def running_strategy() -> None:
                         
             column_trade: str= "instrument_name","label", "amount", "price","side"
 
-            sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
+            sub_account_summary = reading_from_pkl_data("sub_accounts",currency)[0]
             
                     
             my_trades_currency: list= await get_query(trade_db_table, 
@@ -176,12 +178,13 @@ async def running_strategy() -> None:
                                                     "all", 
                                                     column_order)     
             
-            running= RunningStrategy (sub_account,
+            running= RunningStrategy (sub_account_id,
                                       currency,
+                                      sub_account_summary,
                                       my_trades_currency,
                                       orders_currency)
             
-            await ensuring_db_reconciled_each_other (sub_account,
+            await ensuring_db_reconciled_each_other (sub_account_summary,
                                                      currency,
                                                      my_trades_currency,
                                                      orders_currency,
