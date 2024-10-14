@@ -5,7 +5,7 @@
 from datetime import datetime, timedelta
 import asyncio
 import json
-from dataclassy import dataclass
+from dataclassy import dataclass, fields
 # installed
 import websockets
 import orjson
@@ -508,7 +508,7 @@ async def update_user_changes(data_orders,
 
     log.info(f"update_user_changes-END")
 
-@dataclass
+@dataclass(unsafe_hash=True, slots=True)
 class StreamAccountData:
 
     """
@@ -518,23 +518,27 @@ class StreamAccountData:
 
     """
 
-    def __init__(self, client_id: str, client_secret: str, live=True) -> None:
-        # Async Event Loop
-        self.loop = asyncio.get_event_loop()
+    sub_account_id: str
+    client_id: str = fields 
+    client_secret: str = fields 
+    # Async Event Loop
+    loop = asyncio.get_event_loop()
 
-        self.ws_connection_url: str = "wss://www.deribit.com/ws/api/v2"
+    ws_connection_url: str = "wss://www.deribit.com/ws/api/v2"
         
         # Instance Variables
-        self.connection_url: str = "https://www.deribit.com/api/v2/"
-        self.client_id: str = client_id
-        self.client_secret: str = client_secret
-        self.websocket_client: websockets.WebSocketClientProtocol = None
-        self.refresh_token: str = None
-        self.refresh_token_expiry_time: int = None
+    connection_url: str = "https://www.deribit.com/api/v2/"
+    websocket_client: websockets.WebSocketClientProtocol = None
+    refresh_token: str = None
+    refresh_token_expiry_time: int = None
             
+    def __post_init__(self):
+        self.client_id: str = parse_dotenv(self.sub_account_id)["client_id"]
+        self.client_secret: str = parse_dotenv(self.sub_account_id)["client_secret"]
+
         # Start Primary Coroutine
         self.loop.run_until_complete(self.ws_manager())
-
+    
     # @lru_cache(maxsize=None)
     async def ws_manager(self) -> None:
         async with websockets.connect(
@@ -887,11 +891,9 @@ class StreamAccountData:
 def main():
     # https://www.codementor.io/@jflevesque/python-asynchronous-programming-with-asyncio-library-eq93hghoc
     sub_account = "deribit-147691"
-    client_id: str = parse_dotenv(sub_account)["client_id"]
-    client_secret: str = parse_dotenv(sub_account)["client_secret"]
-
+    
     try:
-        StreamAccountData(client_id=client_id, client_secret=client_secret)
+        StreamAccountData(sub_account=sub_account)
 
     except Exception as error:
         
