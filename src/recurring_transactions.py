@@ -257,7 +257,6 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
     
     result_transaction_log_to_result = result_transaction_log["result"]
     
-    #log.info (f"result_transaction_log_to_result {result_transaction_log_to_result}")
 
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
@@ -268,13 +267,17 @@ def ensuring_db_reconciled_each_other (sub_account,
                                              orders_currency,
                                              from_transaction_log) -> None:
     """ """
+    log.info (f"instrument_name {instrument_name}")
     sub_account = sub_account[0]
     sub_account_size_all = [o["size"] for o in sub_account ["positions"] if o["instrument_name"] == instrument_name ][0]
+    
+    log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
                                             
     last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
     current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
+    my_trades_instrument = [o for o in my_trades_currency if o["instrument_name"] == last_time_stamp_log]
     
-    sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
+    sum_my_trades_currency = 0 if not my_trades_instrument else sum([o["amount"] for o in my_trades_instrument])
     
     len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
     sub_account_orders = sub_account["open_orders"]
