@@ -533,9 +533,11 @@ class StreamAccountData(ModifyOrderDb):
         if trades:
             for trade in trades:
                 
-                await saving_traded_orders (trade, trade_db_table, order_db_table)                      
+                if f"{currency.upper()}-FS-" not in instrument_name:
+                
+                    await saving_traded_orders (trade, trade_db_table, order_db_table)                      
 
-                await saving_traded_orders (trade, archive_db_table, order_db_table)
+                    await saving_traded_orders (trade, archive_db_table, order_db_table)
             
         else:
                 
@@ -834,10 +836,12 @@ class StreamAccountData(ModifyOrderDb):
             
             if trades:
                 for trade in trades:
+                
+                    if f"{currency.upper()}-FS-" not in instrument_name:
                     
-                    await saving_traded_orders (trade, trade_db_table, order_db_table)                      
+                        await saving_traded_orders (trade, trade_db_table, order_db_table)                      
 
-                    await saving_traded_orders (trade, archive_db_table, order_db_table)
+                        await saving_traded_orders (trade, archive_db_table, order_db_table)
                 
             else:
                 for order in orders:

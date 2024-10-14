@@ -66,6 +66,9 @@ async def saving_traded_orders (trade,
         orders (_type_): _description_
     """
 
+
+    instrument_name = trade["instrument_name"]
+    
     try:
         label= trade["label"]
     except:
@@ -77,7 +80,8 @@ async def saving_traded_orders (trade,
         await get_additional_params_for_open_label (trade, label)
 
     # insert clean trading transaction
-    await insert_tables(table, trade)
+    if "-FS-" not in instrument_name:
+        await insert_tables(table, trade)
     
     if "my_trades_all_json" in table:
         filter_trade="order_id"
@@ -91,8 +95,6 @@ async def saving_traded_orders (trade,
                         order_id,)
         
         if   "closed" in label:
-
-                instrument_name = trade["instrument_name"]
                                     
                 await clean_up_closed_transactions (instrument_name, table)
     
