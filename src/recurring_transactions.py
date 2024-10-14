@@ -273,9 +273,12 @@ def ensuring_db_reconciled_each_other (sub_account,
     
     log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
                                             
-    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name])
-    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
-    my_trades_instrument = [o for o in my_trades_currency if o["instrument_name"] == last_time_stamp_log]
+    from_transaction_log_instrument = ([o for o in from_transaction_log if o["instrument_name"] == instrument_name])
+    last_time_stamp_log = [] if from_transaction_log_instrument == []\
+        else max([o["timestamp"] for o in from_transaction_log_instrument ])
+    current_position_log = 0 if from_transaction_log_instrument == []\
+        else [o["position"] for o in from_transaction_log_instrument if o["timestamp"] == last_time_stamp_log][0]
+    my_trades_instrument = [o for o in my_trades_currency if o["instrument_name"] == instrument_name]
     
     sum_my_trades_currency = 0 if not my_trades_instrument else sum([o["amount"] for o in my_trades_instrument])
     
