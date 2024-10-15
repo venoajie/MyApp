@@ -584,11 +584,12 @@ class StreamAccountData(ModifyOrderDb):
                                                                       orders_currency,
                                                                       from_transaction_log)
         
+        log.info (f"db_reconciled_each_other {db_reconciled_each_other} ")
         
         if  index_price is not None \
             and equity > 0 \
-                and not db_reconciled_each_other ["sum_trade_from_log_and_db_is_equal"]\
-                    and not db_reconciled_each_other ["len_order_from_sub_account_and_db_is_equal"]:
+                and  db_reconciled_each_other ["sum_trade_from_log_and_db_is_equal"]\
+                    and  db_reconciled_each_other ["len_order_from_sub_account_and_db_is_equal"]:
         
             TA_result_data_all = await querying_table("market_analytics_json")
 
