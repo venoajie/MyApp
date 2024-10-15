@@ -115,7 +115,6 @@ def ensuring_db_reconciled_each_other (sub_account,
     """ """
     log.info (f"instrument_name {instrument_name}")
     
-    
     try :
         
         sub_account = sub_account[0]
@@ -157,6 +156,7 @@ def ensuring_db_reconciled_each_other (sub_account,
 
     except:
         # when sub account value was None
+        telegram_bot_sendtext (f"sub_account {sub_account}")
         return dict(sum_trade_from_log_and_db_is_equal = False,
                 len_order_from_sub_account_and_db_is_equal = False)
     
