@@ -12,6 +12,7 @@ import asyncio
 # installed
 from loguru import logger as log
 
+# user defined formula
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,
@@ -19,10 +20,16 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     querying_arithmetic_operator,
     querying_duplicated_transactions)
-
-from strategies.config_strategies import paramaters_to_balancing_transactions
-# user defined formula
-
+from strategies.basic_strategy import (
+    get_additional_params_for_open_label,
+    get_additional_params_for_futureSpread_transactions,
+    get_transaction_label,
+    check_db_consistencies,
+    get_label_integer,
+    provide_side_to_close_transaction)
+from strategies.config_strategies import (
+    max_rows,
+    paramaters_to_balancing_transactions)
 from utilities.system_tools import (
     sleep_and_restart,)
 from utilities.string_modification import (
@@ -30,21 +37,14 @@ from utilities.string_modification import (
     remove_redundant_elements,
     remove_dict_elements,
     extract_integers_from_text)
-from strategies.basic_strategy import (
-    get_additional_params_for_open_label,
-    get_additional_params_for_futureSpread_transactions,
-    get_transaction_label,
-    check_db_consistencies,
-    get_label_integer,
-    provide_side_to_close_transaction
-)
-from strategies.config_strategies import max_rows
 
-async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange: list) -> dict:
+
+async def get_unrecorded_trade_and_order_id(instrument_name: str, 
+                                            from_exchange: list) -> dict:
         
-    balancing_params=paramaters_to_balancing_transactions()
+    balancing_params = paramaters_to_balancing_transactions()
         
-    max_closed_transactions_downloaded_from_sqlite=balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
+    max_closed_transactions_downloaded_from_sqlite = balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
     column_list: str="order_id", "trade_id"
     
