@@ -55,7 +55,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                       "all", 
                                       column_list)                                       
 
-    from_sqlite_all= await get_query(f"my_trades_all_{currency.lower()}_json", 
+    from_sqlite_all = await get_query(f"my_trades_all_{currency.lower()}_json", 
                                       instrument_name, 
                                       "all", 
                                       "all", 
@@ -80,13 +80,10 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
     #log.warning (f"from_sqlite_open_trade_id {from_sqlite_open_trade_id}")
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
-    
-    from_exchange_instrument: int = ([] if from_sqlite_all == [] else ([o for o in from_sqlite_all \
-        if o["instrument_name"]==instrument_name])
-                                            )
-    log.info (f"from_exchange_instrument {from_exchange_instrument}")
-    from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
-    from_exchange_trade_id = [o["trade_id"] for o in from_exchange_instrument]
+                                            
+    log.info (f"from_sqlite_all {from_sqlite_all}")
+    from_exchange_order_id = [o["order_id"] for o in from_sqlite_all]
+    from_exchange_trade_id = [o["trade_id"] for o in from_sqlite_all]
     
     combined_order_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
     combined_trade_closed_open = from_sqlite_open_trade_id + from_sqlite_closed_trade_id
