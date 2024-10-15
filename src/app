@@ -627,6 +627,8 @@ class StreamAccountData(ModifyOrderDb):
                     
                     my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
                     
+                    log.info (f"my_trades_currency_strategy {my_trades_currency_strategy}")
+                    
                     orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
                     
                     orders_currency_strategy_label_closed = [o for o in orders_currency_strategy if "closed" in (o["label"]) ]

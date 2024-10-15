@@ -3,10 +3,24 @@ import pytest
 
 
 from strategies.basic_strategy import (
+    are_size_and_order_appropriate,
     check_if_next_closing_size_will_not_exceed_the_original,
     positions_and_orders,
     proforma_size,
-    are_size_and_order_appropriate)
+    sum_order_under_closed_label_int)
+
+@pytest.mark.parametrize("closed_orders_label_strategy, label_integer_open, expected", [
+    ( [], [], 0),
+    ])
+def test_sum_order_under_closed_label_int (closed_orders_label_strategy, 
+                                           label_integer_open,
+                                           expected):
+    
+    result = sum_order_under_closed_label_int (closed_orders_label_strategy, 
+                                              label_integer_open,)
+
+    assert result == expected
+
 
 
 @pytest.mark.parametrize("basic_size, net_size, next_size, expected", [

@@ -146,8 +146,8 @@ def are_size_and_order_appropriate(
 
 
 def check_if_next_closing_size_will_not_exceed_the_original (basic_size: int,
-                                                    net_size: int,
-                                                    next_size: int) -> bool:
+                                                             net_size: int,
+                                                             next_size: int) -> bool:
     """ """
     
     basic_size_higher_than_next_closing_size = abs (basic_size) >= abs (next_size) 
@@ -640,24 +640,21 @@ def get_basic_closing_paramaters(selected_transaction: list,
 
     # determine side        
     side = provide_side_to_close_transaction(transaction)
-    params.update({"side": side})
+    params.update({"side": side}
+                  )
     basic_size = get_transaction_size(transaction)
-
     label_integer_open = get_label_integer(transaction ["label"])
-    
     sum_order_under_closed_label = sum_order_under_closed_label_int (closed_orders_label_strategy,
                                                                      label_integer_open)
-    
     net_size = (basic_size + sum_order_under_closed_label)
-
     size_abs = provide_size_to_close_transaction(basic_size,
                                                 net_size)
-    #log.debug (f"side {side}")
     size = size_abs * ensure_sign_consistency(side)   
     closing_size_ok = check_if_next_closing_size_will_not_exceed_the_original (basic_size,
                                                                             net_size,
                                                                             size)
 
+    #log.debug (f"side {side}")
     #log.warning (f"basic_size {basic_size} size_abs {size_abs} size {size} closing_size_ok {closing_size_ok}")
     # size=exactly amount of transaction size
     params.update({"size": size if closing_size_ok else 0 })
