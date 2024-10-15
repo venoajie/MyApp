@@ -372,7 +372,7 @@ class StreamAccountData(ModifyOrderDb):
                                         "WebSocket connection - failed to process data"
                                     )
 
-                                    continue
+                                    catch_error_message(error, 10, "app")
 
                 else:
                 
