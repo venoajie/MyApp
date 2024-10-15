@@ -47,7 +47,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
         
     max_closed_transactions_downloaded_from_sqlite = balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    column_list: str="order_id", "trade_id","label"
+    column_list: str="order_id", "trade_id","label","amount"
     
     from_sqlite_open= await get_query("my_trades_all_json", 
                                       instrument_name, 
