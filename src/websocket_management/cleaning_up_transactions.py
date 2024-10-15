@@ -35,12 +35,13 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     get_unique_elements, 
     remove_redundant_elements,
-    remove_dict_elements,
+    extract_currency_from_text,
     extract_integers_from_text)
 
 
-async def get_unrecorded_trade_and_order_id(instrument_name: str, 
-                                            from_exchange: list) -> dict:
+async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
+    
+    currency = extract_currency_from_text (instrument_name)
         
     balancing_params = paramaters_to_balancing_transactions()
         
@@ -49,6 +50,12 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str,
     column_list: str="order_id", "trade_id"
     
     from_sqlite_open= await get_query("my_trades_all_json", 
+                                      instrument_name, 
+                                      "all", 
+                                      "all", 
+                                      column_list)                                       
+
+    from_sqlite_all= await get_query(f"my_trades_all_{currency.lower()}_json", 
                                       instrument_name, 
                                       "all", 
                                       "all", 
@@ -74,10 +81,10 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str,
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
     
-    from_exchange_instrument: int = ([] if from_exchange == [] else ([o for o in from_exchange \
+    from_exchange_instrument: int = ([] if from_sqlite_all == [] else ([o for o in from_sqlite_all \
         if o["instrument_name"]==instrument_name])
                                             )
-    #log.info (f"from_exchange_instrument {from_exchange_instrument}")
+    log.info (f"from_exchange_instrument {from_exchange_instrument}")
     from_exchange_order_id = [o["order_id"] for o in from_exchange_instrument]
     from_exchange_trade_id = [o["trade_id"] for o in from_exchange_instrument]
     
@@ -143,7 +150,6 @@ def ensuring_db_reconciled_each_other (sub_account,
         result = dict(sum_trade_from_log_and_db_is_equal = sum_trade_from_log_and_db_is_equal,
                     len_order_from_sub_account_and_db_is_equal = len_order_from_sub_account_and_db_is_equal)
         
-        log.warning (f" {instrument_name}")
         log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
         log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} len_sub_account_orders {len_sub_account_orders} len_db_orders_currency {len_orders_currency}")
         log.warning (f" {result}")

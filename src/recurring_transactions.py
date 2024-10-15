@@ -48,7 +48,8 @@ from websocket_management.allocating_ohlc import (
 from websocket_management.ws_management import (
     get_config,)
 from websocket_management.cleaning_up_transactions import (
-    ensuring_db_reconciled_each_other)
+    ensuring_db_reconciled_each_other,
+    get_unrecorded_trade_and_order_id)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -201,7 +202,11 @@ async def running_strategy() -> None:
                                                                         orders_currency,
                                                                         from_transaction_log)
                     
-                    if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:        
+                    if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:      
+                        
+                        unrecorded_trade_and_order_id = await get_unrecorded_trade_and_order_id (instrument_name)
+                        
+                        log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
                         
                         currency_lower = currency.lower()
                         
