@@ -83,7 +83,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
                                             
-    log.info (f"from_sqlite_all {from_sqlite_all}")
+    #log.info (f"from_sqlite_all {from_sqlite_all}")
     from_exchange_order_id = [o["order_id"] for o in from_sqlite_all]
     from_exchange_trade_id = [o["trade_id"] for o in from_sqlite_all]
     
