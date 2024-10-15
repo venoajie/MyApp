@@ -101,6 +101,42 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str, from_exchange:
                 unrecorded_trade_id=unrecorded_trade_id)
 
 
+def ensuring_db_reconciled_each_other (sub_account,
+                                       instrument_name,
+                                       my_trades_currency,
+                                       orders_currency,
+                                       from_transaction_log) -> None:
+    """ """
+    log.info (f"instrument_name {instrument_name}")
+    sub_account = sub_account[0]
+    sub_account_size_all = [o["size"] for o in sub_account ["positions"] if o["instrument_name"] == instrument_name ][0]
+    
+    #log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
+                                            
+    from_transaction_log_instrument = ([o for o in from_transaction_log if o["instrument_name"] == instrument_name])
+    last_time_stamp_log = [] if from_transaction_log_instrument == []\
+        else max([o["timestamp"] for o in from_transaction_log_instrument ])
+    current_position_log = 0 if from_transaction_log_instrument == []\
+        else [o["position"] for o in from_transaction_log_instrument if o["timestamp"] == last_time_stamp_log][0]
+    my_trades_instrument = [o for o in my_trades_currency if o["instrument_name"] == instrument_name]
+    
+    sum_my_trades_currency = 0 if not my_trades_instrument else sum([o["amount"] for o in my_trades_instrument])
+    
+    len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
+    sub_account_orders = sub_account["open_orders"]
+    len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
+    
+    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
+    len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
+    
+    log.warning (f" {instrument_name}")
+    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
+    log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
+    
+    return dict(sum_trade_from_log_and_db_is_equal = sum_trade_from_log_and_db_is_equal,
+                len_order_from_sub_account_and_db_is_equal = len_order_from_sub_account_and_db_is_equal)
+
+
 def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, instrument_name: str, label: str) -> bool:
     """_summary_
     

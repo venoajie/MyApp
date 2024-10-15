@@ -47,6 +47,8 @@ from websocket_management.allocating_ohlc import (
     last_tick_fr_sqlite,)
 from websocket_management.ws_management import (
     get_config,)
+from websocket_management.cleaning_up_transactions import (
+    ensuring_db_reconciled_each_other)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -194,10 +196,10 @@ async def running_strategy() -> None:
                 for instrument_name in instrument_from_sub_account:
 
                     db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
-                                                            instrument_name,
-                                                            my_trades_currency,
-                                                            orders_currency,
-                                                            from_transaction_log)
+                                                                        instrument_name,
+                                                                        my_trades_currency,
+                                                                        orders_currency,
+                                                                        from_transaction_log)
                     
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:        
                         
@@ -260,41 +262,6 @@ async def get_transaction_log(currency: str, start_timestamp: int, count: int= 1
 
     return [] if result_transaction_log_to_result  == []\
         else result_transaction_log_to_result["logs"]
-
-def ensuring_db_reconciled_each_other (sub_account,
-                                             instrument_name,
-                                             my_trades_currency,
-                                             orders_currency,
-                                             from_transaction_log) -> None:
-    """ """
-    log.info (f"instrument_name {instrument_name}")
-    sub_account = sub_account[0]
-    sub_account_size_all = [o["size"] for o in sub_account ["positions"] if o["instrument_name"] == instrument_name ][0]
-    
-    #log.info (f"""[o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_name] {[o for o in from_transaction_log if o["instrument_name"] == instrument_name]}""")
-                                            
-    from_transaction_log_instrument = ([o for o in from_transaction_log if o["instrument_name"] == instrument_name])
-    last_time_stamp_log = [] if from_transaction_log_instrument == []\
-        else max([o["timestamp"] for o in from_transaction_log_instrument ])
-    current_position_log = 0 if from_transaction_log_instrument == []\
-        else [o["position"] for o in from_transaction_log_instrument if o["timestamp"] == last_time_stamp_log][0]
-    my_trades_instrument = [o for o in my_trades_currency if o["instrument_name"] == instrument_name]
-    
-    sum_my_trades_currency = 0 if not my_trades_instrument else sum([o["amount"] for o in my_trades_instrument])
-    
-    len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
-    sub_account_orders = sub_account["open_orders"]
-    len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
-    
-    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
-    len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
-    
-    log.warning (f" {instrument_name}")
-    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
-    log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
-    
-    return dict(sum_trade_from_log_and_db_is_equal = sum_trade_from_log_and_db_is_equal,
-                len_order_from_sub_account_and_db_is_equal = len_order_from_sub_account_and_db_is_equal)
 
 async def run_every_60_seconds() -> None:
     """ """

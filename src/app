@@ -58,7 +58,7 @@ from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     inserting_open_interest,)
 from websocket_management.cleaning_up_transactions import (
-    clean_up_closed_transactions,
+    clean_up_closed_transactions, ensuring_db_reconciled_each_other
     )
 
 def parse_dotenv(sub_account) -> dict:
@@ -98,34 +98,6 @@ def get_index (data_orders: dict, ticker: dict) -> float:
             index_price = ticker ["estimated_delivery_price"]
         
     return index_price
-        
-
-def is_each_db_reconciled (currency: str,
-                            instrument_ticker: str,
-                            from_transaction_log: list, 
-                            orders_currency: list,
-                            my_trades_currency: list,) -> bool:
-
-    sub_account = reading_from_pkl_data("sub_accounts",currency)[0]
-    sub_account_size_all = [o["size"] for o in sub_account["positions"] if o["instrument_name"] == instrument_ticker ][0]
-                                            
-    last_time_stamp_log = max([o["timestamp"] for o in from_transaction_log if o["instrument_name"] == instrument_ticker])
-    current_position_log = [o["position"] for o in from_transaction_log if o["timestamp"] == last_time_stamp_log][0]
-    
-    sum_my_trades_currency = 0 if not my_trades_currency else sum([o["amount"] for o in my_trades_currency])
-    
-    len_orders_currency = 0 if not orders_currency else len([o["amount"] for o in orders_currency])
-    sub_account_orders = sub_account["open_orders"]
-    len_sub_account_orders = 0 if not sub_account_orders else len([o["amount"] for o in sub_account_orders])
-    
-    sum_trade_from_log_and_db_is_equal = current_position_log == sum_my_trades_currency == sub_account_size_all
-    len_order_from_sub_account_and_db_is_equal = len_orders_currency == len_sub_account_orders 
-    
-    log.warning (f" {instrument_ticker}")
-    log.info (f"sum_from_log_and_trade_is_equal {sum_trade_from_log_and_db_is_equal} sum_my_trades_currency {sum_my_trades_currency}  sub_account_size_all {sub_account_size_all} current_position_log {current_position_log}")
-    log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} sub_account_orders {len_sub_account_orders} db_orders_currency {len_orders_currency}")
-    
-    return sum_trade_from_log_and_db_is_equal and len_order_from_sub_account_and_db_is_equal
         
 @dataclass(unsafe_hash=True, slots=True)
 class StreamAccountData(ModifyOrderDb):
@@ -579,6 +551,8 @@ class StreamAccountData(ModifyOrderDb):
         equity: float = portfolio[0]["equity"]                                       
                                                             
         index_price= get_index (data_orders, ticker)
+        
+        sub_account = reading_from_pkl_data("sub_accounts",currency)
                     
         column_trade: str= "instrument_name","label", "amount", "price","side"
 
@@ -604,14 +578,17 @@ class StreamAccountData(ModifyOrderDb):
                                                 "all", 
                                                 column_order)     
         
-        db_reconciled_each_other = is_each_db_reconciled (currency,
-                                                    instrument_ticker,
-                                                    from_transaction_log, 
-                                                    orders_currency,
-                                                    my_trades_currency,)
+        db_reconciled_each_other = ensuring_db_reconciled_each_other (sub_account,
+                                                                      instrument_ticker,
+                                                                      my_trades_currency,
+                                                                      orders_currency,
+                                                                      from_transaction_log)
+        
+        
         if  index_price is not None \
             and equity > 0 \
-                and db_reconciled_each_other:
+                and not db_reconciled_each_other ["sum_trade_from_log_and_db_is_equal"]\
+                    and not db_reconciled_each_other ["len_order_from_sub_account_and_db_is_equal"]:
         
             TA_result_data_all = await querying_table("market_analytics_json")
 
