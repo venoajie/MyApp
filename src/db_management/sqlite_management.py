@@ -391,7 +391,8 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
                                                            status: str="all",
                                                            columns: list="standard", 
                                                            limit: int= 0, 
-                                                           order: str="id") -> str:
+                                                           order: str=None,
+                                                           ordering: str = "DESC") -> str:
     
     """_summary_
     
@@ -434,11 +435,11 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         where_clause= f"WHERE (instrument_name LIKE '%{currency_or_instrument}%' AND label LIKE '%{strategy}%' AND label LIKE '%{status}%')"
     
     tab = f"SELECT {standard_columns} FROM {table} {where_clause}"
-
-    if "closed" in table:
+    
+    if order is not None:
             
             #tab = f"SELECT instrument_name, label_main as label, amount_dir as amount, order_id, trade_seq FROM {table} {where_clause} ORDER BY {order}"
-            tab = f"SELECT {standard_columns} FROM {table} {where_clause} ORDER BY {order} DESC "
+            tab = f"SELECT {standard_columns} FROM {table} {where_clause} ORDER BY {order} {ordering} "
     
     if limit > 0:
         
