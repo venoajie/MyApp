@@ -627,8 +627,6 @@ class StreamAccountData(ModifyOrderDb):
                     
                     my_trades_currency_strategy = [o for o in my_trades_currency if strategy in (o["label"]) ]
                     
-                    log.info (f"my_trades_currency_strategy {my_trades_currency_strategy}")
-                    
                     orders_currency_strategy = [o for o in orders_currency if strategy in (o["label"]) ]
                     
                     orders_currency_strategy_label_closed = [o for o in orders_currency_strategy if "closed" in (o["label"]) ]
@@ -699,11 +697,10 @@ class StreamAccountData(ModifyOrderDb):
                                 if o["price"] == closest_price]
                             #log.debug (f"nearest_transaction_to_index {nearest_transaction_to_index}")
                             
-                            send_closing_order: dict = await hedging.is_send_exit_order_allowed(
-                                orders_currency_strategy_label_closed,
-                                best_bid_prc,
-                                nearest_transaction_to_index,
-                            )
+                            send_closing_order: dict = await hedging.is_send_exit_order_allowed (orders_currency_strategy_label_closed,
+                                                                                                 best_bid_prc,
+                                                                                                 nearest_transaction_to_index,)
+                            
                             log.error (f"send_closing_order {send_closing_order}")
                             result_order = await self.modify_order_and_db.if_order_is_true(send_closing_order, instrument_ticker)
                             

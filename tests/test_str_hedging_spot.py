@@ -4,10 +4,40 @@ import pytest
 from strategies.hedging_spot import (
     get_timing_factor,
     get_waiting_time_factor,
-    max_order_stack_has_not_exceeded
+    max_order_stack_has_not_exceeded,
+    net_size_of_label,
+    net_size_not_over_bought
     )
 
-from strategies.config_strategies import hedging_spot_attributes
+
+my_trades_currency_strategy = [{'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-closed-1728806470451', 'amount': 3.0, 'price': 2466.25, 'side': 'buy'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-open-1728860066787', 'amount': -5.0, 'price': 2465.55, 'side': 'sell'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-closed-1728806470451', 'amount': 3.0, 'price': 2466.4, 'side': 'buy'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-open-1728859651166', 'amount': -5.0, 'price': 2465.65, 'side': 'sell'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-closed-1728806470451', 'amount': 3.0, 'price': 2466.45, 'side': 'buy'},{'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-closed-1728806470451', 'amount': 3.0, 'price': 2466.55, 'side': 'buy'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-open-1728806470451', 'amount': -2.0, 'price': 2466.6, 'side': 'sell'}, {'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-open-1728806470451', 'amount': -3.0, 'price': 2466.6, 'side': 'sell'}]
+
+transaction = [{'instrument_name': 'ETH-PERPETUAL', 'label': 'hedgingSpot-open-1728806470451', 'amount': -3.0, 'price': 2466.6, 'side': 'sell'}][0]
+
+@pytest.mark.parametrize("my_trades_currency_strategy, transaction, expected", [
+    (my_trades_currency_strategy, transaction, 7),
+    ])
+def test_net_size_of_label (my_trades_currency_strategy,
+                            transaction,
+                            expected):
+    
+    result = net_size_of_label(my_trades_currency_strategy, 
+                               transaction)
+
+    assert result == expected
+
+@pytest.mark.parametrize("my_trades_currency_strategy, transaction, expected", [
+    (my_trades_currency_strategy, transaction, False),
+    ])
+def test_net_size_not_over_bought (my_trades_currency_strategy,
+                            transaction,
+                            expected):
+    
+
+    result = net_size_not_over_bought(my_trades_currency_strategy, 
+                               transaction)
+
+    assert result == expected
 
 hedging_attributes= [{'strategy_label': 'hedgingSpot', 'is_active': True, 
                       'contribute_to_hedging': True, 'cancellable': True, 
@@ -16,8 +46,8 @@ hedging_attributes= [{'strategy_label': 'hedgingSpot', 'is_active': True,
                       'waiting_minute_before_cancel': 3, 'halt_minute_before_reorder': 240, 
                       'max_leverage': 1, 'delta_price_pct': 0.005, 
                       'sub_account_max_open_orders': {'per_instrument': 50, 'total': 200}}]
-weighted_factor= hedging_attributes["weighted_factor"]
-waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"]
+weighted_factor= hedging_attributes[0]["weighted_factor"]
+waiting_minute_before_cancel= hedging_attributes[0]["waiting_minute_before_cancel"]
 
 
 @pytest.mark.parametrize("strong_fluctuation, some_fluctuation, expected", [

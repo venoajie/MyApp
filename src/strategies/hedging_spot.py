@@ -182,6 +182,21 @@ def current_position_exceed_max_position (sum_my_trades_currency_str: int, max_p
     
     return abs(sum_my_trades_currency_str) > abs(max_position) or sum_my_trades_currency_str > 0
 
+def net_size_of_label (my_trades_currency_strategy: list, 
+                       transaction: list) -> bool:
+    """ """
+    
+    label_integer = get_label_integer (transaction["label"])
+    
+    return sum([o["amount"] for o in my_trades_currency_strategy if str(label_integer) in o["label"]])
+    
+        
+def net_size_not_over_bought (my_trades_currency_strategy: list, 
+                              transaction: list) -> bool:
+    """ """
+    return net_size_of_label (my_trades_currency_strategy, 
+                              transaction) < 0
+
 @dataclass(unsafe_hash=True, slots=True)
 class HedgingSpot(BasicStrategy):
     """ """
@@ -459,50 +474,55 @@ class HedgingSpot(BasicStrategy):
         
         transaction = selected_transaction[0]
 
-        hedging_attributes = self.strategy_parameters
-
-        threshold_market_condition = hedging_attributes ["delta_price_pct"]
-            
-        market_condition = await get_market_condition_hedging (self.TA_result_data, 
-                                                                self.index_price, 
-                                                                threshold_market_condition)
-
-        bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
-
-        len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
+        exit_size_not_over_bought = net_size_not_over_bought (self.my_trades_currency_strategy,
+                                                              transaction)
         
-        ONE_SECOND = 1000
-        ONE_MINUTE = ONE_SECOND * 60
-        
-        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-            
-        exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
-                                                                orders_currency_strategy_label_closed,)
-
-        log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged_opening {self.over_hedged_opening} len_orders == 0 {len_orders == 0}")
-        
-        #log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
+        if exit_size_not_over_bought:
                 
-        order_allowed = self. closing_position (transaction,
-                                                exit_params,
-                                                bullish, 
-                                                strong_bullish,
-                                                len_orders,
-                                                bid_price,)
-        
-        if len_orders> 0:          
+            hedging_attributes = self.strategy_parameters
+
+            threshold_market_condition = hedging_attributes ["delta_price_pct"]
+                
+            market_condition = await get_market_condition_hedging (self.TA_result_data, 
+                                                                    self.index_price, 
+                                                                    threshold_market_condition)
+
+            bullish, strong_bullish = market_condition["rising_price"], market_condition["strong_rising_price"]
+
+            len_orders: int = get_transactions_len(orders_currency_strategy_label_closed)
             
-            cancel_allowed: bool = is_cancelling_order_allowed(
-                strong_bullish,
-                bullish,
-                waiting_minute_before_cancel,
-                len_orders,
-                orders_currency_strategy_label_closed,
-                self.server_time,)
+            ONE_SECOND = 1000
+            ONE_MINUTE = ONE_SECOND * 60
             
-            if cancel_allowed:
-                cancel_id= min ([o["order_id"] for o in orders_currency_strategy_label_closed])  
-        
+            waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
+                
+            exit_params: dict = self.get_basic_params(). get_basic_closing_paramaters (selected_transaction,
+                                                                                    orders_currency_strategy_label_closed,)
+
+            log.warning (f"sum_my_trades_currency_strategy {self.sum_my_trades_currency_strategy} over_hedged_opening {self.over_hedged_opening} len_orders == 0 {len_orders == 0}")
+            
+            #log.warning (f"""bid_price {bid_price} transaction ["price"] {transaction ["price"]}""")
+                    
+            order_allowed = self. closing_position (transaction,
+                                                    exit_params,
+                                                    bullish, 
+                                                    strong_bullish,
+                                                    len_orders,
+                                                    bid_price,)
+            
+            if len_orders> 0:          
+                
+                cancel_allowed: bool = is_cancelling_order_allowed(
+                    strong_bullish,
+                    bullish,
+                    waiting_minute_before_cancel,
+                    len_orders,
+                    orders_currency_strategy_label_closed,
+                    self.server_time,)
+                
+                if cancel_allowed:
+                    cancel_id= min ([o["order_id"] for o in orders_currency_strategy_label_closed])  
+            
         return dict(
             order_allowed= order_allowed,
             order_parameters=(
