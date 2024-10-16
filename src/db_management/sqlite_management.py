@@ -77,16 +77,15 @@ async def insert_tables(table_name: str,
 
             if "json" in table_name:
 
-                insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
-
-
                 # input was in list format. Insert them to db one by one
                 if isinstance(params, list):
                     for param in params:
+                        insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
                         await db.execute(insert_table_json)
 
                 # input is in dict format. Insert them to db directly
                 if isinstance(params, dict):
+                    insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
                     await db.execute(insert_table_json)
 
                 if isinstance(params, str):
