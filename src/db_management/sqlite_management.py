@@ -63,7 +63,8 @@ async def db_ops(db_name: str = "databases/trading.sqlite3"):
         await conn.commit()
         await conn.close()
 
-async def insert_tables(table_name, params):
+async def insert_tables(table_name: str, 
+                        params: list|dict|str):
     """
     alternative insert format (safer):
     https://stackoverflow.com/questions/56910918/saving-json-data-to-sqlite-python
@@ -71,45 +72,30 @@ async def insert_tables(table_name, params):
     """
     try:
 
-        async with aiosqlite.connect(
-            "databases/trading.sqlite3", isolation_level=None
-        ) as db:
+        async with aiosqlite.connect("databases/trading.sqlite3",
+                                     isolation_level = None) as db:
 
-            # input was in list format. Insert them to db one by one
-            # log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
-            log.error(f"isinstance(params, list) {isinstance(params, list)}")
-            log.error(f"isinstance(params, dict) {isinstance(params, dict)}")
-            log.error(f"isinstance(params, str) {isinstance(params, str)}")
-            if isinstance(params, list):
-                for param in params:
+            if "json" in table_name:
 
-                    if "json" in table_name:
+                insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
 
-                        insert_table_json = f"""INSERT  OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(param)}'));"""
-                        #log.error(f"insert_table_json {insert_table_json}")
-                        #log.warning(f"{param}")
 
+                # input was in list format. Insert them to db one by one
+                if isinstance(params, list):
+                    for param in params:
                         await db.execute(insert_table_json)
 
-            # input is in dict format. Insert them to db directly
-            if isinstance(params, dict) or isinstance(params, str):
-
-                if "json" in table_name:
-                    
-                    if isinstance(params, dict):
-                        insert_table_json = f"""INSERT OR IGNORE INTO {table_name} (data) VALUES (json ('{json.dumps(params)}'));"""
-
-                    if isinstance(params, str):
-                        insert_table_json = f"""INSERT OR IGNORE INTO {table_name} (data) VALUES (json ('{(params)}'));"""
-
+                # input is in dict format. Insert them to db directly
+                if isinstance(params, dict):
                     await db.execute(insert_table_json)
 
-            log.error (f"insert_tables {insert_table_json} ")
-    except Exception as error:
-        log.error (f"insert_tables {table_name} {error}")
+                if isinstance(params, str):
+                    insert_table_json = f"""INSERT OR IGNORE INTO {table_name} (data) VALUES (json ('{(params)}'));"""                    
+                    await db.execute(insert_table_json)
 
-        await telegram_bot_sendtext("sqlite operation insert_tables", "failed_order")
-        # await telegram_bot_sendtext(f"sqlite operation","failed_order")
+    except Exception as error:
+        log.warning (f"insert_tables {table_name} {error}")
+        await telegram_bot_sendtext(f"sqlite operation insert_tables, failed_order  {table_name} {error} ")
 
 
 async def querying_table(
