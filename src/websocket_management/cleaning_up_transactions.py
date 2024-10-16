@@ -50,7 +50,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
         
     max_closed_transactions_downloaded_from_sqlite = balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    column_list: str="data", "order_id", "trade_id","label","amount","id"
+    column_list: str="data", "trade_id"
     
     from_sqlite_open= await get_query("my_trades_all_json", 
                                       instrument_name, 
@@ -72,36 +72,20 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                       "all", 
                                       "all", 
                                       column_list,
-                                      60,
+                                      100,
                                       "id")                                       
-    
-    from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
-    #log.info (f"from_sqlite_closed_order_id {from_sqlite_closed_order_id}")
-    #log.warning (f"from_sqlite_closed_trade_id {from_sqlite_closed_trade_id}")
-
-    from_sqlite_open_order_id = [o["order_id"] for o in from_sqlite_open]  
     from_sqlite_open_trade_id = [o["trade_id"] for o in from_sqlite_open]  
     #log.info (f"from_sqlite_open_order_id {from_sqlite_open_order_id}")
     #log.warning (f"from_sqlite_open_trade_id {from_sqlite_open_trade_id}")
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
                                             
-    #log.info (f"from_sqlite_all {from_sqlite_all}")
-    from_exchange_order_id = [o["order_id"] for o in from_sqlite_all]
     from_exchange_trade_id = [o["trade_id"] for o in from_sqlite_all]
-    
-    combined_order_closed_open = from_sqlite_open_order_id + from_sqlite_closed_order_id
+
     combined_trade_closed_open = from_sqlite_open_trade_id + from_sqlite_closed_trade_id
     #log.warning (f"combined_order_closed_open {combined_order_closed_open}")
 
-    #if "ETH" in instrument_name:
-    #    log.warning (f"from_exchange_order_id {from_exchange_order_id}")
-        #log.warning (f"from_exchange_trade_id {from_exchange_trade_id}")
-        
-    #    log.debug (f"from_exchange {from_exchange}")
-    
-    unrecorded_order_id = get_unique_elements(from_exchange_order_id, combined_order_closed_open)
     unrecorded_trade_id = get_unique_elements(from_exchange_trade_id, combined_trade_closed_open)
     
     #log.debug (f"unrecorded_order_id {unrecorded_order_id}")
