@@ -72,7 +72,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                       "all", 
                                       "all", 
                                       column_list,
-                                      1,
+                                      10,
                                       "id")                                       
     
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
