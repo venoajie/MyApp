@@ -752,7 +752,7 @@ class StreamAccountData(ModifyOrderDb):
                                     my_trades_perpetual_strategy = ([o for o in my_trades_currency_strategy if "PERPETUAL" in o["instrument_name"] ])
                                 
                                     sum_my_trades_perpetual_strategy = 0 if my_trades_perpetual_strategy == [] \
-                                        else sum ([o["amount"] for o in sum_my_trades_perpetual_strategy])
+                                        else sum ([o["amount"] for o in my_trades_perpetual_strategy])
                                     
                                     future_spreads = FutureSpreads(strategy,
                                                                 strategy_params,
