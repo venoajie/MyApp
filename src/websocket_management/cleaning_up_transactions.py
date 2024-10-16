@@ -66,7 +66,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                          max_closed_transactions_downloaded_from_sqlite, 
                                          "id")    
 
-    column_list: str="data", column_list
+    #column_list: str="data", column_list
     from_sqlite_all = await get_query(f"my_trades_all_{currency.lower()}_json", 
                                       instrument_name, 
                                       "all", 
