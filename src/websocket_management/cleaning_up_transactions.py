@@ -237,11 +237,13 @@ async def update_db_with_unrecorded_data (trades_from_exchange,
     
     log.info (f"trades_from_exchange {trades_from_exchange}")
 
-    for tran_id in unrecorded_id:
+    for transaction in trades_from_exchange:
         
-        log.info (f"trade {tran_id}")
+        log.info (f"transaction {transaction}")
+        
+        tran_id = transaction [f"{tran_id}"]
 
-        transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
+        #transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
         instrument_name= transaction[0] ["instrument_name"]
         #column_list: str="order_id", "trade_id"
         from_sqlite_open= await get_query(table, 
