@@ -48,6 +48,7 @@ from websocket_management.allocating_ohlc import (
 from websocket_management.ws_management import (
     get_config,)
 from websocket_management.cleaning_up_transactions import (
+    clean_up_closed_transactions,
     ensuring_db_reconciled_each_other,
     get_unrecorded_trade_and_order_id)
 
@@ -195,6 +196,8 @@ async def running_strategy() -> None:
                 instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
+                    
+                    await clean_up_closed_transactions (instrument_name, trade_db_table)
 
                     db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
                                                                         instrument_name,

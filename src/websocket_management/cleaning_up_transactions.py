@@ -443,6 +443,7 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
 
                 size_to_close = closed_transactions_all["summing_closed_transaction"]
 
+                log.error (f"size_to_close {size_to_close}")
                 if size_to_close == 0:
                     
                     transactions_with_zero_sum = closed_transactions_all["closed_transactions"]
