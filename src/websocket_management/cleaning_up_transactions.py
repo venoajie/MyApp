@@ -107,8 +107,9 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
     log.debug (f"unrecorded_order_id {unrecorded_order_id}")
     log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
 
-    return dict(unrecorded_order_id=unrecorded_order_id,
-                unrecorded_trade_id=unrecorded_trade_id)
+    return dict(unrecorded_order_id = unrecorded_order_id,
+                unrecorded_trade_id = unrecorded_trade_id,
+                unrecorded_from_all = [] if not from_sqlite_closed else [o["data"] for o in from_sqlite_closed])
 
 
 def ensuring_db_reconciled_each_other (sub_account,
@@ -262,19 +263,16 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                 for transaction in transactions:
                     await get_additional_params_for_futureSpread_transactions(transaction)
                     await insert_tables(table, transaction)
-                
-                await sleep_and_restart()
 
         
             label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
             log.warning (f""""label {label}""")
             
             if "closed" in label:
-                label_open_still_in_active_transaction= check_if_label_open_still_in_active_transaction (from_sqlite_open, instrument_name, label)
+                label_open_still_in_active_transaction = check_if_label_open_still_in_active_transaction (from_sqlite_open, instrument_name, label)
                 
-                if label_open_still_in_active_transaction ==False:
+                if label_open_still_in_active_transaction == False:
                     log.critical ("need manual intervention")
-                    await sleep_and_restart()
                         
             if "label" not in transaction[0]:
                 
@@ -290,7 +288,6 @@ async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, i
                 
                 
             await insert_tables(table, transaction)
-            await sleep_and_restart()
 
 async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction, delivered_transaction):
     

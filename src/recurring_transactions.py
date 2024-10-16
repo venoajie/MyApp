@@ -49,7 +49,8 @@ from websocket_management.ws_management import (
     get_config,)
 from websocket_management.cleaning_up_transactions import (
     ensuring_db_reconciled_each_other,
-    get_unrecorded_trade_and_order_id)
+    get_unrecorded_trade_and_order_id,
+    update_db_with_unrecorded_data)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -205,6 +206,10 @@ async def running_strategy() -> None:
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:      
                         
                         unrecorded_trade_and_order_id = await get_unrecorded_trade_and_order_id (instrument_name)
+                        
+                        #await update_db_with_unrecorded_data (trades_from_exchange, 
+                        #                                      unrecorded_trade_and_order_id, 
+                        #                                      id_desc)
                         
                         log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
                         
