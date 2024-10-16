@@ -205,7 +205,6 @@ async def running_strategy() -> None:
                     
                     
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
-                        id_desc = "trade_id"     
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
                         log.warning (f"unrecorded_transactions {unrecorded_transactions}")
