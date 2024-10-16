@@ -203,15 +203,21 @@ async def running_strategy() -> None:
                                                                         orders_currency,
                                                                         from_transaction_log)
                     
-                    if not db_reconciled["sum_trade_from_log_and_db_is_equal"]:      
+                    
+                    
+                    if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
+                        id_desc = "trade_id"     
                         
-                        unrecorded_trade_and_order_id = await get_unrecorded_trade_and_order_id (instrument_name)
+                        unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
                         
-                        #await update_db_with_unrecorded_data (trades_from_exchange, 
-                        #                                      unrecorded_trade_and_order_id, 
-                        #                                      id_desc)
+                        trades_from_exchange = unrecorded_transactions ["unrecorded_transactions_from_all"]
+                        unrecorded_trade_id = unrecorded_transactions ["unrecorded_trade_id"]
                         
-                        log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
+                        await update_db_with_unrecorded_data (trades_from_exchange, 
+                                                              unrecorded_trade_id, 
+                                                              id_desc)
+                        
+                        #log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
                         
                         currency_lower = currency.lower()
                         

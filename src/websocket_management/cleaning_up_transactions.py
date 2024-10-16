@@ -87,7 +87,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
                                             
-    log.info (f"from_sqlite_all {from_sqlite_all}")
+    #log.info (f"from_sqlite_all {from_sqlite_all}")
     from_exchange_order_id = [o["order_id"] for o in from_sqlite_all]
     from_exchange_trade_id = [o["trade_id"] for o in from_sqlite_all]
     
@@ -104,12 +104,12 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
     unrecorded_order_id = get_unique_elements(from_exchange_order_id, combined_order_closed_open)
     unrecorded_trade_id = get_unique_elements(from_exchange_trade_id, combined_trade_closed_open)
     
-    log.debug (f"unrecorded_order_id {unrecorded_order_id}")
-    log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
+    #log.debug (f"unrecorded_order_id {unrecorded_order_id}")
+    #log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
 
     return dict(unrecorded_order_id = unrecorded_order_id,
                 unrecorded_trade_id = unrecorded_trade_id,
-                unrecorded_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all])
+                unrecorded_transactions_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all])
 
 
 def ensuring_db_reconciled_each_other (sub_account,
@@ -219,7 +219,9 @@ def get_label_from_respected_id (trades_from_exchange, unrecorded_id, marker) ->
     #log.info (f"label {label}")
     return label
 
-async def update_db_with_unrecorded_data (trades_from_exchange, unrecorded_id, id_desc) -> None:
+async def update_db_with_unrecorded_data (trades_from_exchange,
+                                          unrecorded_id, 
+                                          id_desc) -> None:
 
     unrecorded_id.sort(reverse=True)
     #print(f"unrecorded_order_id {unrecorded_order_id}")
