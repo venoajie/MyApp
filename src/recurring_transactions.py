@@ -210,7 +210,7 @@ async def running_strategy() -> None:
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
                         
                         for transaction  in unrecorded_transactions:
-                            log.info (f"transaction {transaction}")
+                            log.error (f"transaction {transaction}")
                             await insert_tables(trade_db_table, transaction)
 
                         
