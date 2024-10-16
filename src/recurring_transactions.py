@@ -210,6 +210,7 @@ async def running_strategy() -> None:
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
                         
+                        #log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
                         trades_from_exchange = unrecorded_transactions ["unrecorded_transactions_from_all"]
                         unrecorded_trade_id = unrecorded_transactions ["unrecorded_trade_id"]
                         
@@ -217,7 +218,6 @@ async def running_strategy() -> None:
                                                               unrecorded_trade_id, 
                                                               id_desc)
                         
-                        #log.debug (f"unrecorded_trade_and_order_id {unrecorded_trade_and_order_id}")   
                         
                         currency_lower = currency.lower()
                         

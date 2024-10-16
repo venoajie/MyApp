@@ -235,67 +235,15 @@ async def update_db_with_unrecorded_data (trades_from_exchange,
     
     marker_plus=marker,"label","amount","instrument_name"
     
+    log.info (f"unrecorded_id {unrecorded_id}")
     log.info (f"trades_from_exchange {trades_from_exchange}")
 
-    for transaction in trades_from_exchange:
+    for transaction  in trades_from_exchange:
         
-        log.info (f"id_desc {id_desc}")
+        transaction = [o for o in trades_from_exchange if unrecorded_id in o]
         log.info (f"transaction {transaction}")
         
-        tran_id = transaction [id_desc]
-        log.info (f"tran_id {tran_id}")
-
-        #transaction = [o for o in trades_from_exchange if o[marker] == tran_id]
-        instrument_name= transaction[0] ["instrument_name"]
-        #column_list: str="order_id", "trade_id"
-        from_sqlite_open= await get_query(table, 
-                                          instrument_name, 
-                                          "all",
-                                          "all",
-                                          marker_plus)
-        id_has_registered_before= [o for o in from_sqlite_open if o[marker] == tran_id]      
-        
-        log.error (f"transaction {instrument_name} {transaction} {tran_id}")
-        
-        if transaction !=[] and id_has_registered_before==[]:
-        
-            #combo get priority to avoid only one instrument is recorded
-            if "combo_id" in transaction[0]:
-                combo_id = [o["combo_trade_id"] for o in trades_from_exchange if o[marker] == tran_id][0]
-                log.error (f"combo_id {combo_id}")
-                trades_from_exchange_with_futures_combo= [ o for o in trades_from_exchange if "combo_id"  in o]
-                log.warning (f"trades_from_exchange_with_futures_combo {trades_from_exchange_with_futures_combo}")
-                transactions = [o for o in trades_from_exchange_with_futures_combo if o["combo_trade_id"]  == combo_id]
-                log.error (f"transactions {transactions}")
-                
-                for transaction in transactions:
-                    await get_additional_params_for_futureSpread_transactions(transaction)
-                    await insert_tables(table, transaction)
-
-        
-            label = get_label_from_respected_id (trades_from_exchange, tran_id, marker)
-            log.warning (f""""label {label}""")
-            
-            if "closed" in label:
-                label_open_still_in_active_transaction = check_if_label_open_still_in_active_transaction (from_sqlite_open, instrument_name, label)
-                
-                if label_open_still_in_active_transaction == False:
-                    log.critical ("need manual intervention")
-                        
-            if "label" not in transaction[0]:
-                
-                if "combo_id" in transaction[0]:
-                    await get_additional_params_for_futureSpread_transactions(transaction)
-            
-                else:
-                    label=None
-                    await get_additional_params_for_open_label(transaction, label)
-            
-            if "open" in label:
-                await get_additional_params_for_open_label(transaction, label)
-                
-                
-            await insert_tables(table, transaction)
+        #await insert_tables(table, transaction)
 
 async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction, delivered_transaction):
     
