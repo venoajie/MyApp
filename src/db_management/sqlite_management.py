@@ -421,8 +421,8 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
     if columns != "standard":
         
         if "data" in columns:
-            standard_columns= f"data"
-            
+            standard_columns= (','.join(str(f"""{i}{("_dir as amount") if i=="amount" else ""}""") for i in columns))
+                
         else:
             standard_columns= (','.join(str(f"""{i}{("_dir as amount") if i=="amount" else ""}""") for i in columns))
         
@@ -445,6 +445,7 @@ def querying_based_on_currency_or_instrument_and_strategy (table: str,
         
         tab= f"{tab} LIMIT {limit}"
     
+    #log.error (f"table {tab}")
     return tab
 
 def querying_closed_transactions(
