@@ -208,6 +208,7 @@ async def running_strategy() -> None:
                         id_desc = "trade_id"     
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
+                        log.warning (f"unrecorded_transactions {unrecorded_transactions}")
                         
                         for transaction  in unrecorded_transactions:
                             log.error (f"transaction {transaction}")
