@@ -72,7 +72,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                       "all", 
                                       "all", 
                                       column_list,
-                                      10,
+                                      60,
                                       "id")                                       
     
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
@@ -107,10 +107,8 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
     #log.debug (f"unrecorded_order_id {unrecorded_order_id}")
     #log.error (f"unrecorded_trade_id {unrecorded_trade_id}")
 
-    return dict(unrecorded_order_id = unrecorded_order_id,
-                unrecorded_trade_id = unrecorded_trade_id,
-                unrecorded_transactions_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all\
-                    if o["trade_id"] in unrecorded_trade_id])
+    return  [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all\
+                    if o["trade_id"] in unrecorded_trade_id]
 
 
 def ensuring_db_reconciled_each_other (sub_account,
@@ -219,29 +217,6 @@ def get_label_from_respected_id (trades_from_exchange, unrecorded_id, marker) ->
     
     #log.info (f"label {label}")
     return label
-
-async def update_db_with_unrecorded_data (trades_from_exchange,
-                                          unrecorded_id, 
-                                          id_desc) -> None:
-
-    unrecorded_id.sort(reverse=True)
-    #print(f"unrecorded_order_id {unrecorded_order_id}")
-    #print(f"trades_from_exchange {trades_from_exchange}")
-    table= "my_trades_all_json"
-    if id_desc== "trade_id":
-        marker="trade_id"
-    
-    if id_desc== "order_id":
-        marker="order_id"
-    
-    marker_plus=marker,"label","amount","instrument_name"
-    
-    log.info (f"unrecorded_id {unrecorded_id}")
-    log.info (f"trades_from_exchange {trades_from_exchange}")
-
-    for transaction  in trades_from_exchange:
-        log.info (f"transaction {transaction}")
-        #await insert_tables(table, transaction)
 
 async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction, delivered_transaction):
     
