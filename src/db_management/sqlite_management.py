@@ -92,7 +92,7 @@ async def insert_tables(table_name, params):
                         await db.execute(insert_table_json)
 
             # input is in dict format. Insert them to db directly
-            if isinstance(params, dict):
+            if isinstance(params, dict) or isinstance(params, dict):
 
                 if "json" in table_name:
 
