@@ -49,8 +49,7 @@ from websocket_management.ws_management import (
     get_config,)
 from websocket_management.cleaning_up_transactions import (
     ensuring_db_reconciled_each_other,
-    get_unrecorded_trade_and_order_id,
-    update_db_with_unrecorded_data)
+    get_unrecorded_trade_and_order_id)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
