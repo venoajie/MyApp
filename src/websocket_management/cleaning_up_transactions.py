@@ -241,7 +241,7 @@ async def update_db_with_unrecorded_data (trades_from_exchange,
     for transaction  in trades_from_exchange:
         log.info (f"transaction {transaction}")
         
-        transaction_valid = [o for o in list(transaction) if unrecorded_id in o]
+        transaction_valid = [o for o in list(transaction) if o in unrecorded_id]
         log.info (f"transaction_valid {transaction_valid}")
         
         #await insert_tables(table, transaction)
