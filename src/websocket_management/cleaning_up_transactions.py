@@ -50,7 +50,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
         
     max_closed_transactions_downloaded_from_sqlite = balancing_params["max_closed_transactions_downloaded_from_sqlite"]   
     
-    column_list: str="order_id", "trade_id","label","amount","id"
+    column_list: str="data", "order_id", "trade_id","label","amount","id"
     
     from_sqlite_open= await get_query("my_trades_all_json", 
                                       instrument_name, 
@@ -66,7 +66,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                          max_closed_transactions_downloaded_from_sqlite, 
                                          "id")    
 
-    column_list: str="order_id", "trade_id","label","amount","id","data", 
+    #column_list: str="order_id", "trade_id","label","amount","id","data", 
     from_sqlite_all = await get_query(f"my_trades_all_{currency.lower()}_json", 
                                       instrument_name, 
                                       "all", 
@@ -109,7 +109,8 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
 
     return dict(unrecorded_order_id = unrecorded_order_id,
                 unrecorded_trade_id = unrecorded_trade_id,
-                unrecorded_transactions_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all])
+                unrecorded_transactions_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all\
+                    if o["trade_id"] in unrecorded_trade_id])
 
 
 def ensuring_db_reconciled_each_other (sub_account,
@@ -240,10 +241,6 @@ async def update_db_with_unrecorded_data (trades_from_exchange,
 
     for transaction  in trades_from_exchange:
         log.info (f"transaction {transaction}")
-        
-        transaction_valid = [o for o in list(transaction) if o in unrecorded_id]
-        log.info (f"transaction_valid {transaction_valid}")
-        
         #await insert_tables(table, transaction)
 
 async def clean_up_closed_futures_because_has_delivered (instrument_name, transaction, delivered_transaction):
