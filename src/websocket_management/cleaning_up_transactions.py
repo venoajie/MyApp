@@ -13,6 +13,7 @@ import asyncio
 from loguru import logger as log
 
 # user defined formula
+
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables,
@@ -30,6 +31,8 @@ from strategies.basic_strategy import (
 from strategies.config_strategies import (
     max_rows,
     paramaters_to_balancing_transactions)
+from transaction_management.deribit.telegram_bot import (
+    telegram_bot_sendtext,)
 from utilities.system_tools import (
     sleep_and_restart,)
 from utilities.string_modification import (
@@ -55,14 +58,6 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                       "all", 
                                       column_list)                                       
 
-    from_sqlite_all = await get_query(f"my_trades_all_{currency.lower()}_json", 
-                                      instrument_name, 
-                                      "all", 
-                                      "all", 
-                                      column_list,
-                                      40,
-                                      "id")                                       
-
     from_sqlite_closed = await get_query("my_trades_closed_json", 
                                          instrument_name, 
                                          "all", 
@@ -70,6 +65,15 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                                          column_list,
                                          max_closed_transactions_downloaded_from_sqlite, 
                                          "id")    
+
+    column_list: str="data", "order_id", "trade_id","label","amount","id"
+    from_sqlite_all = await get_query(f"my_trades_all_{currency.lower()}_json", 
+                                      instrument_name, 
+                                      "all", 
+                                      "all", 
+                                      column_list,
+                                      1,
+                                      "id")                                       
     
     from_sqlite_closed_order_id = [o["order_id"] for o in from_sqlite_closed]
     from_sqlite_closed_trade_id = [o["trade_id"] for o in from_sqlite_closed]
@@ -83,7 +87,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
 
     #from_exchange_with_labels= [o for o in from_exchange if "label" in o]
                                             
-    #log.info (f"from_sqlite_all {from_sqlite_all}")
+    log.info (f"from_sqlite_all {from_sqlite_all}")
     from_exchange_order_id = [o["order_id"] for o in from_sqlite_all]
     from_exchange_trade_id = [o["trade_id"] for o in from_sqlite_all]
     
