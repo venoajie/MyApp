@@ -77,7 +77,8 @@ async def insert_tables(table_name, params):
 
             # input was in list format. Insert them to db one by one
             # log.info(f"list {isinstance(params, list)} dict {isinstance(params, dict)}")
-            # log.error(f"params {params}")
+            log.error(f"isinstance(params, list) {isinstance(params, list)}")
+            log.error(f"isinstance(params, dict) {isinstance(params, dict)}")
             if isinstance(params, list):
                 for param in params:
 
