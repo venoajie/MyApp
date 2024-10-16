@@ -109,7 +109,7 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
 
     return dict(unrecorded_order_id = unrecorded_order_id,
                 unrecorded_trade_id = unrecorded_trade_id,
-                unrecorded_from_all = [] if not from_sqlite_closed else [o["data"] for o in from_sqlite_closed])
+                unrecorded_from_all = [] if not from_sqlite_all else [o["data"] for o in from_sqlite_all])
 
 
 def ensuring_db_reconciled_each_other (sub_account,
