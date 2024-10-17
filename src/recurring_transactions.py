@@ -196,6 +196,8 @@ async def running_strategy() -> None:
 
                 column_order= "instrument_name","label","order_id","amount","timestamp"
                 
+                log.error (f"my_trades_currency {my_trades_currency}")
+                
                 orders_currency = await get_query(order_db_table, 
                                                         currency, 
                                                         "all", 
