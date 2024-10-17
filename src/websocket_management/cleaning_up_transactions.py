@@ -456,6 +456,9 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
                 
                         trade_id = transaction[where_filter]
                         log.info (F"trade_id{trade_id}")
+                        
+                        await insert_tables("my_trades_closed_json", 
+                                            transaction)
 
                         await deleting_row(
                             trade_table,
