@@ -122,7 +122,8 @@ class RunningStrategy (ModifyOrderDb):
         log.error (f"leverage {self.leverage}")
         #log.error (f"sub_account_summary {self.sub_account_summary}")
 
-    async def running_strategies(self) -> dict:
+    async def running_strategies (self,
+                                 currency) -> dict:
         
         file_toml = "config_strategies.toml"
         
@@ -145,6 +146,7 @@ class RunningStrategy (ModifyOrderDb):
                     
                     future_spreads = FutureSpreads (strategy,
                                              strategy_params,
+                                             currency,
                                              my_trades_currency_strategy)
                     await future_spreads.is_send_exit_order_allowed()
                 
@@ -212,7 +214,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                await running.running_strategies()
+                await running.running_strategies(currency)
                 
                 await running.modify_order_and_db.resupply_sub_accountdb (currency)
                 

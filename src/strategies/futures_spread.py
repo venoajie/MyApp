@@ -162,7 +162,8 @@ def determine_opening_size(instrument_name: str,
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
     """ """
-    my_trades_currency_strategy: int
+    currency: str
+    my_trades_currency_strategy: list
 
     #def __post_init__(self):
         
@@ -213,7 +214,11 @@ class FutureSpreads(BasicStrategy):
             
             delta_pct = (abs(delta_price_current_prc) - abs(delta_price))/delta_price
 
-            if delta_price < 0:
+            if delta_price < 0 and delta_pct > .1:
+                
+                instrument_name = f"{self.currency.upper}-FS-{sell_side_instrument}-PERP"
+                instrument_name_ticker= reading_from_pkl_data("ticker",instrument_name)[0]
+                log.warning (f"instrument_name_ticker {instrument_name_ticker}")
                 log.warning (f" delta_price {delta_price} delta_price_current_prc {delta_price_current_prc} delta_pct {delta_pct}")
                 log.error (f" sell_side_current_prc {sell_side_current_prc} buy_side_current_prc {buy_side_current_prc}")
 
