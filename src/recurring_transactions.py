@@ -24,6 +24,7 @@ from db_management.sqlite_management import (
     querying_arithmetic_operator,)
 from market_understanding.technical_analysis import (
     insert_market_condition_result,)
+from strategies.futures_spread import FutureSpreads  
 from strategies.config_strategies import paramaters_to_balancing_transactions
 from transaction_management.deribit.api_requests import (
     get_currencies,
@@ -140,9 +141,10 @@ class RunningStrategy (ModifyOrderDb):
                 
                 strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
                 
-                future_spreads = future_spreads (strategy,
+                future_spreads = FutureSpreads (strategy,
                                              strategy_params,
                                              my_trades_currency_strategy)
+                await future_spreads.is_send_exit_order_allowed()
                 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
