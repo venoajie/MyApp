@@ -201,6 +201,7 @@ class FutureSpreads(BasicStrategy):
             delta_price =  sell_side_trd_prc +   buy_side_trd_prc
             
             if delta_price < 0:
+                log.warning (f" sell_side_instrument {sell_side_instrument} buy_side_instrument {buy_side_instrument}")
                 sell_side_ticker= reading_from_pkl_data("ticker",sell_side_instrument)
                 buy_side_ticker= reading_from_pkl_data("ticker",buy_side_instrument)
                 
