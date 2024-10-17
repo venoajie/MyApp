@@ -850,10 +850,10 @@ class StreamAccountData(ModifyOrderDb):
         log.info(f"update_user_changes-END")
     
 
-    async def saving_order(self,
+    async def saving_order (self,
                            instrument_name,
-                        order,
-                        order_db_table) -> None:
+                           order,
+                           order_db_table) -> None:
 
                     
         order_state= order["order_state"]

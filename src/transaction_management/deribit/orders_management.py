@@ -56,9 +56,9 @@ def labelling_unlabelled_transaction(order: dict) -> None:
                 label_open=label_open)
 
 
-async def saving_traded_orders (trade,
-                                table,
-                                order_table,) -> None:
+async def saving_traded_orders (trade: str,
+                                table: str,
+                                order_db_table: str = "orders_all_json") -> None:
     """_summary_
 
     Args:
@@ -88,11 +88,11 @@ async def saving_traded_orders (trade,
         
         order_id = trade[f"{filter_trade}"]
             
-        await deleting_row (order_table,
-                        "databases/trading.sqlite3",
-                        filter_trade,
-                        "=",
-                        order_id,)
+        await deleting_row (order_db_table,
+                            "databases/trading.sqlite3",
+                            filter_trade,
+                            "=",
+                            order_id,)
         
         if   "closed" in label:
                                     

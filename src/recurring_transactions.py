@@ -197,7 +197,13 @@ async def running_strategy() -> None:
                 
                 for instrument_name in instrument_from_sub_account:
                     
-                    await clean_up_closed_transactions (instrument_name, trade_db_table)
+                    
+                    await running.modify_order_and_db.update_trades_from_exchange (currency,
+                                                                                   archive_db_table,
+                                                                                   5)
+                    
+                    await clean_up_closed_transactions (instrument_name, 
+                                                        trade_db_table)
 
                     db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
                                                                         instrument_name,
@@ -207,6 +213,7 @@ async def running_strategy() -> None:
                     
                     
                     
+                    log.warning (f"db_reconciled {db_reconciled}")
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)

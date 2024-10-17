@@ -19,10 +19,14 @@ from db_management.sqlite_management import (
     executing_query_with_return,
     insert_tables,
     querying_arithmetic_operator,)
-from strategies.config_strategies import paramaters_to_balancing_transactions
+from strategies.config_strategies import (
+    paramaters_to_balancing_transactions)
+from transaction_management.deribit.orders_management import (
+    saving_traded_orders,)
 from transaction_management.deribit.telegram_bot import (
     telegram_bot_sendtext,)
-from transaction_management.deribit.transaction_log import (saving_transaction_log,)
+from transaction_management.deribit.transaction_log import (
+    saving_transaction_log,)
 from utilities import time_modification
 from utilities.pickling import replace_data
 from utilities.system_tools import (
@@ -30,9 +34,10 @@ from utilities.system_tools import (
 from strategies.basic_strategy import (
     is_label_and_side_consistent,)
 
+
+
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
-
 
 def get_now_unix() -> int:
 
@@ -529,3 +534,23 @@ class ModifyOrderDb(SendApiRequest):
                 
                 return []
                 #await asyncio.sleep(10)
+    
+    async def update_trades_from_exchange (self,
+                                            currency: str,
+                                            archive_db_table,
+                                            count: int =  5) -> None:
+        """
+        """
+        trades_from_exchange = await self.private_data.get_user_trades_by_currency (currency,
+                                                                                    count)
+        
+        if trades_from_exchange:
+            
+            trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
+
+            if trades_from_exchange_without_futures_combo:
+                
+                for trade in trades_from_exchange_without_futures_combo:
+
+                    await saving_traded_orders (trade, 
+                                                archive_db_table)

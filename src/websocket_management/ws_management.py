@@ -415,27 +415,6 @@ async def synchronising_my_trade_db_vs_exchange (currency: str,
         log.error (f"{instrument_name} current_instrument_trading_position {current_instrument_trading_position} current_position_log {current_position_log}")
         
         #if current_instrument_trading_position != current_position_log:
-        
-async def update_trades_from_exchange (currency: str,
-                                    archive_db_table,
-                                    order_table,
-                                    qty_trades: int =  100) -> None:
-    """
-    """
-    trades_from_exchange = await get_my_trades_from_exchange (qty_trades, currency)
-    
-    if trades_from_exchange:
-        
-        trades_from_exchange_without_futures_combo = [ o for o in trades_from_exchange if f"{currency}-FS" not in o["instrument_name"]]
-
-        if trades_from_exchange_without_futures_combo:
-            
-            for trade in trades_from_exchange_without_futures_combo:
-                log.info ("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")     
-                await saving_traded_orders (trade, 
-                                            archive_db_table,
-                                            order_table)
-
     
 async def on_restart(currencies_default: str,
                      order_table: str) -> None:
