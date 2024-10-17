@@ -718,7 +718,7 @@ class StreamAccountData(ModifyOrderDb):
 
             # check for delivered instrument
 
-                    if  "futureSpread" in strategy:
+                    if  False and "futureSpread" in strategy:
                         log.error (f"strategy {strategy}-START")
                         
                         for combo in active_combo_perp:
