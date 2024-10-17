@@ -135,10 +135,15 @@ class RunningStrategy (ModifyOrderDb):
         while True:
             
             for strategy in active_strategies:
+                log.error (f"strategy {strategy}")
                 
                 my_trades_currency_strategy = [o for o in self.my_trades_currency if strategy in (o["label"]) ]
                 
+                log.error (f"my_trades_currency_strategy {my_trades_currency_strategy}")
+                
                 strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
+                
+                log.error (f"strategy_params {strategy_params}")
                 
                 if "futureSpreads" in strategy:
                     
