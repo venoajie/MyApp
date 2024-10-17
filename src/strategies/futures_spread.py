@@ -201,16 +201,16 @@ class FutureSpreads(BasicStrategy):
             delta_price =  sell_side_trd_prc +   buy_side_trd_prc
             
             if delta_price < 0:
-                log.warning (f" sell_side_instrument {sell_side_instrument} buy_side_instrument {buy_side_instrument}")
+                #log.warning (f" sell_side_instrument {sell_side_instrument} buy_side_instrument {buy_side_instrument}")
                 buy_side_ticker= reading_from_pkl_data("ticker",buy_side_instrument)[0]
                 sell_side_ticker= reading_from_pkl_data("ticker",sell_side_instrument)[0]
-                log.warning (f" buy_side_ticker {buy_side_ticker} sell_side_ticker {sell_side_ticker}")
+                #log.warning (f" buy_side_ticker {buy_side_ticker} sell_side_ticker {sell_side_ticker}")
                 
                 sell_side_current_prc = sell_side_ticker["best_ask_price"] 
                 buy_side_current_prc = buy_side_ticker["best_ask_price"] 
 
-                log.warning (f" sell_side_ticker {sell_side_ticker} sell_side_current_prc {sell_side_current_prc}")
-                log.error (f" buy_side_ticker {buy_side_ticker} buy_side_current_prc {buy_side_current_prc}")
+                #log.warning (f" sell_side_ticker {sell_side_ticker} sell_side_current_prc {sell_side_current_prc}")
+                #log.error (f" buy_side_ticker {buy_side_ticker} buy_side_current_prc {buy_side_current_prc}")
 
         return dict(
             order_allowed= order_allowed,
