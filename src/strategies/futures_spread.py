@@ -199,18 +199,22 @@ class FutureSpreads(BasicStrategy):
             sell_side_trd_prc = my_trades_label_sell_side ["price"] * -1
             buy_side_trd_prc = my_trades_label_buy_side ["price"]   
             delta_price =  sell_side_trd_prc +   buy_side_trd_prc
+        
+            #log.warning (f" sell_side_instrument {sell_side_instrument} buy_side_instrument {buy_side_instrument}")
+            buy_side_ticker= reading_from_pkl_data("ticker",buy_side_instrument)[0]
+            sell_side_ticker= reading_from_pkl_data("ticker",sell_side_instrument)[0]
+            #log.warning (f" buy_side_ticker {buy_side_ticker} sell_side_ticker {sell_side_ticker}")
             
-            if delta_price < 0:
-                #log.warning (f" sell_side_instrument {sell_side_instrument} buy_side_instrument {buy_side_instrument}")
-                buy_side_ticker= reading_from_pkl_data("ticker",buy_side_instrument)[0]
-                sell_side_ticker= reading_from_pkl_data("ticker",sell_side_instrument)[0]
-                #log.warning (f" buy_side_ticker {buy_side_ticker} sell_side_ticker {sell_side_ticker}")
-                
-                sell_side_current_prc = sell_side_ticker["best_ask_price"] 
-                buy_side_current_prc = buy_side_ticker["best_ask_price"] 
+            sell_side_current_prc = sell_side_ticker["best_ask_price"] * -1
+            buy_side_current_prc = buy_side_ticker["best_ask_price"] 
 
-                #log.warning (f" sell_side_ticker {sell_side_ticker} sell_side_current_prc {sell_side_current_prc}")
-                #log.error (f" buy_side_ticker {buy_side_ticker} buy_side_current_prc {buy_side_current_prc}")
+            delta_price_current_prc =  sell_side_current_prc +   buy_side_current_prc
+            
+            delta_pct = (abs(delta_price_current_prc) - abs(delta_price))/delta_price
+
+            if delta_price < 0:
+                log.warning (f" delta_price {delta_price} delta_price_current_prc {delta_price_current_prc} delta_pct {delta_pct}")
+                log.error (f" sell_side_current_prc {sell_side_current_prc} buy_side_current_prc {buy_side_current_prc}")
 
         return dict(
             order_allowed= order_allowed,
