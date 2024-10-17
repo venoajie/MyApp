@@ -155,7 +155,9 @@ async def running_strategy() -> None:
                                         
             column_list= "instrument_name", "position", "timestamp"      
             
-            transaction_log_trading= f"transaction_log_{currency.lower()}_json"                                              
+            currency_lower = currency.lower()
+            
+            transaction_log_trading= f"transaction_log_{currency_lower}_json"                                              
             
             from_transaction_log = await get_query (transaction_log_trading, 
                                                         currency, 
@@ -195,7 +197,7 @@ async def running_strategy() -> None:
                 
                 for instrument_name in instrument_from_sub_account:
                     
-                    archive_db_table= f"my_trades_all_{currency_lower}_json"                           
+                    archive_db_table= f"my_trades_all_{currency_lower}_json"       
                     
                     await running.modify_order_and_db.update_trades_from_exchange (currency,
                                                                                    archive_db_table,
