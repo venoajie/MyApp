@@ -402,7 +402,8 @@ def get_closed_open_transactions_under_same_label_int(
 
     return [o for o in transactions_all if label_integer in o["label"]]
 
-async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
+async def clean_up_closed_transactions (instrument_name, 
+                                       trade_table) -> None:
     """
     closed transactions: buy and sell in the same label id = 0. When flagged:
     1. remove them from db for open transactions/my_trades_all_json
@@ -430,12 +431,12 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
         
         labels_only = remove_redundant_elements ([o["label"] for o in transaction_with_closed_labels])
 
-        log.error (f"closing transactions {labels_only}")
+        #log.error (f"closing transactions {labels_only}")
 
         if transaction_with_closed_labels:
 
             for label in labels_only:
-                log.error (f"label {label}")
+                #log.error (f"label {label}")
                 
                 label_integer = get_label_integer(label)
                 
@@ -443,19 +444,19 @@ async def clean_up_closed_transactions(instrument_name, trade_table) -> None:
 
                 size_to_close = closed_transactions_all["summing_closed_transaction"]
 
-                log.error (f"size_to_close {size_to_close}")
+                #log.error (f"size_to_close {size_to_close}")
                 if size_to_close == 0:
                     
                     transactions_with_zero_sum = closed_transactions_all["closed_transactions"]
                     
-                    log.info (F"transactions_with_zero_sum{transactions_with_zero_sum}")
+                    #log.info (F"transactions_with_zero_sum{transactions_with_zero_sum}")
                                 
                     for transaction in transactions_with_zero_sum:
                         
-                        log.info (F"transaction{transaction}")
+                        #log.info (F"transaction{transaction}")
                 
                         trade_id = transaction[where_filter]
-                        log.info (F"trade_id{trade_id}")
+                        #log.info (F"trade_id{trade_id}")
                         
                         await insert_tables("my_trades_closed_json", 
                                             transaction)

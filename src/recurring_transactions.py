@@ -167,7 +167,8 @@ async def running_strategy() -> None:
                         
             column_trade: str= "instrument_name","label", "amount", "price","side"
 
-            sub_account_summary = reading_from_pkl_data("sub_accounts",currency)
+            sub_account_summary = reading_from_pkl_data ("sub_accounts",
+                                                        currency)
             
             if sub_account_summary:           
                 sub_account_summary[0]
@@ -191,7 +192,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                await running.modify_order_and_db.resupply_sub_accountdb(currency)
+                await running.modify_order_and_db.resupply_sub_accountdb (currency)
                 
                 instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
                 
@@ -211,20 +212,18 @@ async def running_strategy() -> None:
                                                                         my_trades_currency,
                                                                         orders_currency,
                                                                         from_transaction_log)
-                    
-                    
-                    
+                                                           
                     log.warning (f"db_reconciled {db_reconciled}")
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
-                        log.warning (f"unrecorded_transactions {unrecorded_transactions}")
+                        #log.warning (f"unrecorded_transactions {unrecorded_transactions}")
                         
                         for transaction  in unrecorded_transactions:
-                            log.error (f"transaction {transaction}")
-                            await insert_tables(trade_db_table, transaction)
+                            #log.error (f"transaction {transaction}")
+                            await insert_tables (trade_db_table, 
+                                                transaction)
 
-                        
                         currency_lower = currency.lower()
                         
                         archive_db_table= f"my_trades_all_{currency_lower}_json"
@@ -235,10 +234,6 @@ async def running_strategy() -> None:
                                                                                     transaction_log_trading,
                                                                                     archive_db_table
                                                                                     )
-                                    
-                        
-                        await running.modify_order_and_db.resupply_sub_accountdb(currency)
-
                 
                     if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
                         pass
