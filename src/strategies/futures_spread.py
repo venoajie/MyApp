@@ -193,7 +193,7 @@ class FutureSpreads(BasicStrategy):
             my_trades_label_buy_side = [o for o in my_trades_label if "buy" in o["side"]][0]
 
             sell_side_instrument = my_trades_label_sell_side ["instrument_name"]
-            buy_side_instrument = my_trades_label_sell_side ["instrument_name"]
+            buy_side_instrument = my_trades_label_buy_side ["instrument_name"]
 
             #get instrument traded price
             sell_side_trd_prc = my_trades_label_sell_side ["price"] * -1
