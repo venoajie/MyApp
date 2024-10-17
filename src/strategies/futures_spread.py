@@ -176,9 +176,15 @@ class FutureSpreads(BasicStrategy):
         for label in my_trades_open_label:
             
             log.info (label)
-            label_delta_price = sum([o["amount"] for o in my_trades_currency_strategy_open if label in o["label"]])
-            log.debug (label_delta_price)
-                    
+            my_trades_label = [o for o in my_trades_currency_strategy_open if label in o["label"]]
+            log.info (my_trades_label)
+            my_trades_label_sell_side = [o for o in my_trades_label if "sell" in o["side"]][0]
+            my_trades_label_buy_side = [o for o in my_trades_label if "buy" in o["side"]][0]
+
+            my_trades_label_sell_side_prc = my_trades_label_sell_side ["price"] * -1
+            my_trades_label_buy_side_prc = my_trades_label_buy_side ["price"]   
+            delta_price =  my_trades_label_sell_side_prc +   my_trades_label_buy_side_prc
+            log.info (delta_price)
 
         return dict(
             order_allowed= order_allowed,
