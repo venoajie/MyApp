@@ -179,6 +179,7 @@ class FutureSpreads(BasicStrategy):
             dict: _description_
         """
         order_allowed, cancel_allowed, cancel_id = False, False, None
+        log.info (f"my_trades_currency_strategy {self.my_trades_currency_strategy}")
         my_trades_currency_strategy_open = [o for o in self.my_trades_currency_strategy if "open" in (o["label"])]
         my_trades_open_label = [o["label"] for o in my_trades_currency_strategy_open]
         log.warning (f"my_trades_currency_strategy_open {my_trades_currency_strategy_open}")
