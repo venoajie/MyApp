@@ -123,12 +123,26 @@ class RunningStrategy (ModifyOrderDb):
         #log.error (f"sub_account_summary {self.sub_account_summary}")
 
     async def running_strategies(self) -> dict:
+        
+        file_toml = "config_strategies.toml"
+        
+        config_app = get_config(file_toml)
+        
+        strategy_attributes = config_app["strategies"]
+        
+        active_strategies =   [o["strategy_label"] for o in strategy_attributes if o["is_active"]==True]
               
         while True:
-
-            acccount_summary = await self.get_subaccounts()
             
-            log.error (f"acccount_summary {acccount_summary}")
+            for strategy in active_strategies:
+                
+                my_trades_currency_strategy = [o for o in self.my_trades_currency if strategy in (o["label"]) ]
+                
+                strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
+                
+                future_spreads = future_spreads (strategy,
+                                             strategy_params,
+                                             my_trades_currency_strategy)
                 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
@@ -191,6 +205,8 @@ async def running_strategy() -> None:
                                         sub_account_summary,
                                         my_trades_currency,
                                         orders_currency)
+                
+                await running.running_strategies()
                 
                 await running.modify_order_and_db.resupply_sub_accountdb (currency)
                 

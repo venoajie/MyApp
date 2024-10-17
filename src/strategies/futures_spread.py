@@ -152,85 +152,39 @@ def determine_opening_size(instrument_name: str,
 @dataclass(unsafe_hash=True, slots=True)
 class FutureSpreads(BasicStrategy):
     """ """
-    sum_my_trades_perpetual_strategy: int
-    notional: float
-    ticker: list
-    best_ask_price: float= fields 
-    best_bid_price: float= fields 
-    max_position: float= fields 
-    over_hedged: bool= fields 
+    my_trades_currency_strategy: int
 
-    def __post_init__(self):
-        self.best_ask_price = self.ticker ["best_ask_price"]
-        self.best_bid_price = self.ticker ["best_bid_price"]
-        self.max_position = self.strategy_parameters["max_leverage"] * self.notional
-        self.over_hedged = self.sum_my_trades_perpetual_strategy > \
-            self.strategy_parameters["max_leverage"] * self.notional
-
+    #def __post_init__(self):
+        
     def get_basic_params(self) -> dict:
         """ """
         return BasicStrategy(self.strategy_label, 
                              self.strategy_parameters)
 
-    async def is_send_and_cancel_open_order_allowed (self,
-                                                     combo_instruments_name,
-                                                     contango,
-                                                     active_combo_perp,
-                                                     orders_currency_strategy: list,
-    ) -> dict:
-        """ """
 
-        ONE_SECOND,  ONE_MINUTE = 1000, 60000
-                
+    async def is_send_exit_order_allowed (self,
+                                          my_trades_currency_strategy_open,
+                                          ) -> dict:
+        """
+        Returns:
+            dict: _description_
+        """
         order_allowed, cancel_allowed, cancel_id = False, False, None
         
-        max_open_orders = self.strategy_parameters ["sub_account_max_open_orders"] ["per_instrument"]
-                
-        open_orders_label_strategy: list=  [o for o in orders_currency_strategy if "open" in o["label"]]
-        
-        params: dict = self.get_basic_params().get_basic_opening_parameters(self.best_ask_price)
-        
-        label_open: str = params ["label"]
-
-        label_open_update: str = label_open.replace("futureSpread", f"futureSpread-{combo_instruments_name[7:][:7]}")
-        
-        params.update({"label": label_open_update})
-        
-        size = determine_opening_size(combo_instruments_name, 
-                                    active_combo_perp, 
-                                    self.max_position,
-                                    max_open_orders)
-
-        params.update({"size": size})
-        
-        if contango:
-            params.update({"side": "sell"})
-        
-        else:
-            params.update({"side": "buy"})
-        
-        len_orders: int = get_transactions_len(open_orders_label_strategy)
-        
-        hedging_attributes= self.strategy_parameters
-      
-        waiting_minute_before_cancel= hedging_attributes["waiting_minute_before_cancel"] * ONE_MINUTE
-
-        over_hedged  =  self.over_hedged
-        
-        log.warning (f" {params}")
-        log.warning (f"sum_my_trades_perpetual_strategy {self.sum_my_trades_perpetual_strategy} over_hedged \
-            {self.over_hedged} max_position {self.max_position}")
-        
-        if len_orders < max_open_orders :
-                    
-            if not over_hedged:
+        my_trades_open_label = [o["label"] for o in my_trades_currency_strategy_open]
+        exit_params = {}
+        for label in my_trades_open_label:
             
-                max_position = self.max_position
+            log.info (label)
+            label_delta_price = sum([o["amount"] for o in my_trades_open_label])
+            log.debug (label_delta_price)
+                    
 
         return dict(
-            order_allowed=order_allowed and len_orders == 0,
-            order_parameters=[] if order_allowed == False else params,
+            order_allowed= order_allowed,
+            order_parameters=(
+                [] if order_allowed == False else exit_params
+            ),
             cancel_allowed=cancel_allowed,
-            cancel_id= None if not cancel_allowed \
-            else get_order_id_max_time_stamp(open_orders_label_strategy)
+            cancel_id=None if not cancel_allowed else cancel_id
         )

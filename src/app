@@ -658,13 +658,11 @@ class StreamAccountData(ModifyOrderDb):
                                                 index_price,
                                                 server_time)
                         
-                        send_order: dict = (
-                        await hedging.is_send_and_cancel_open_order_allowed(
-                            instrument_ticker,
-                            active_futures,
-                            orders_currency_strategy,
-                            best_ask_prc,
-                            ))
+                        send_order: dict = await hedging.is_send_and_cancel_open_order_allowed (instrument_ticker,
+                                                                                                active_futures,
+                                                                                                orders_currency_strategy,
+                                                                                                best_ask_prc,
+                                                                                                )
                         
                         if send_order["order_allowed"]:
                             
@@ -677,11 +675,11 @@ class StreamAccountData(ModifyOrderDb):
                                 
                                 data_orders = result_order["result"]
                                 await self.update_user_changes_non_ws (data_orders, 
-                                    currency, 
-                                    order_db_table,
-                                    trade_db_table, 
-                                    archive_db_table,
-                                    transaction_log_trading)
+                                                                        currency, 
+                                                                        order_db_table,
+                                                                        trade_db_table, 
+                                                                        archive_db_table,
+                                                                        transaction_log_trading)
                             
                             await self.modify_order_and_db.if_cancel_is_true(send_order)
 
@@ -749,14 +747,9 @@ class StreamAccountData(ModifyOrderDb):
                                 
                                 if combo_ticker:
                                 
-                                    my_trades_perpetual_strategy = ([o for o in my_trades_currency_strategy if "PERPETUAL" in o["instrument_name"] ])
-                                
-                                    sum_my_trades_perpetual_strategy = 0 if my_trades_perpetual_strategy == [] \
-                                        else sum ([o["amount"] for o in my_trades_perpetual_strategy])
-                                    
                                     future_spreads = FutureSpreads(strategy,
                                                                 strategy_params,
-                                                                sum_my_trades_perpetual_strategy,
+                                                                my_trades_currency_strategy,
                                                                 notional,
                                                                 combo_ticker [0],
                                                                 )
