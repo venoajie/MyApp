@@ -82,7 +82,6 @@ async def get_currencies_from_deribit() -> float:
 
     return result
 
-
 async def back_up_db():
     await back_up_db_sqlite ()
 

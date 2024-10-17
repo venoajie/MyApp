@@ -14,19 +14,29 @@ from transaction_management.deribit.api_requests import (
     get_tickers)
 from db_management.sqlite_management import (
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
-    insert_tables,
     deleting_row,)
-
+from utilities.pickling import (
+    read_data,)
+from utilities.system_tools import (
+    provide_path_for_file,)
 from strategies.basic_strategy import (
     BasicStrategy,
     are_size_and_order_appropriate,
-    delta_pct,
-    ensure_sign_consistency,
-    get_max_time_stamp,
-    get_order_id_max_time_stamp,
-    is_label_and_side_consistent,
-    is_minimum_waiting_time_has_passed,
     size_rounding,)
+
+
+def reading_from_pkl_data(end_point, 
+                          currency, 
+                          status: str = None) -> dict:
+    """ """
+
+    path: str = provide_path_for_file(end_point, 
+                                      currency, status)
+
+    data = read_data(path)
+
+    return data
+
 
 def get_transactions_len(result_strategy_label) -> int:
     """ """
@@ -171,20 +181,34 @@ class FutureSpreads(BasicStrategy):
         order_allowed, cancel_allowed, cancel_id = False, False, None
         my_trades_currency_strategy_open = [o for o in self.my_trades_currency_strategy if "open" in (o["label"])]
         my_trades_open_label = [o["label"] for o in my_trades_currency_strategy_open]
-        log.info (my_trades_currency_strategy_open)
+        log.warning (f"my_trades_currency_strategy_open {my_trades_currency_strategy_open}")
+        log.info (f"my_trades_open_label {my_trades_open_label}")
         exit_params = {}
         for label in my_trades_open_label:
             
-            log.info (label)
+            log.info (f"label {label}")
             my_trades_label = [o for o in my_trades_currency_strategy_open if label in o["label"]]
-            log.info (my_trades_label)
+            log.debug (f"my_trades_label {my_trades_label}")
             my_trades_label_sell_side = [o for o in my_trades_label if "sell" in o["side"]][0]
             my_trades_label_buy_side = [o for o in my_trades_label if "buy" in o["side"]][0]
 
-            my_trades_label_sell_side_prc = my_trades_label_sell_side ["price"] * -1
-            my_trades_label_buy_side_prc = my_trades_label_buy_side ["price"]   
-            delta_price =  my_trades_label_sell_side_prc +   my_trades_label_buy_side_prc
-            log.info (delta_price)
+            sell_side_instrument = my_trades_label_sell_side ["instrument_name"]
+            buy_side_instrument = my_trades_label_sell_side ["instrument_name"]
+
+            #get instrument traded price
+            sell_side_trd_prc = my_trades_label_sell_side ["price"] * -1
+            buy_side_trd_prc = my_trades_label_buy_side ["price"]   
+            delta_price =  sell_side_trd_prc +   buy_side_trd_prc
+            
+            if delta_price < 0:
+                sell_side_ticker= reading_from_pkl_data("ticker",sell_side_instrument)
+                buy_side_ticker= reading_from_pkl_data("ticker",buy_side_instrument)
+                
+                sell_side_current_prc = sell_side_ticker["best_ask_price"] 
+                buy_side_current_prc = buy_side_ticker["best_ask_price"] 
+
+                log.warning (f" sell_side_ticker {sell_side_ticker} sell_side_current_prc {sell_side_current_prc}")
+                log.error (f" buy_side_ticker {buy_side_ticker} buy_side_current_prc {buy_side_current_prc}")
 
         return dict(
             order_allowed= order_allowed,
