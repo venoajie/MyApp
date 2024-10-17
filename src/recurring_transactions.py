@@ -140,10 +140,12 @@ class RunningStrategy (ModifyOrderDb):
                 
                 strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
                 
-                future_spreads = FutureSpreads (strategy,
+                if "futureSpreads" in strategy:
+                    
+                    future_spreads = FutureSpreads (strategy,
                                              strategy_params,
                                              my_trades_currency_strategy)
-                await future_spreads.is_send_exit_order_allowed()
+                    await future_spreads.is_send_exit_order_allowed()
                 
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
