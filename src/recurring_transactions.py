@@ -151,9 +151,7 @@ async def running_strategy() -> None:
             
             trade_db_table= "my_trades_all_json"
             
-            order_db_table= "orders_all_json"                
-       
-            
+            order_db_table= "orders_all_json"                       
                                         
             column_list= "instrument_name", "position", "timestamp"      
             
@@ -197,6 +195,7 @@ async def running_strategy() -> None:
                 
                 for instrument_name in instrument_from_sub_account:
                     
+                    archive_db_table= f"my_trades_all_{currency_lower}_json"                           
                     
                     await running.modify_order_and_db.update_trades_from_exchange (currency,
                                                                                    archive_db_table,
