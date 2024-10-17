@@ -171,11 +171,12 @@ class FutureSpreads(BasicStrategy):
         order_allowed, cancel_allowed, cancel_id = False, False, None
         my_trades_currency_strategy_open = [o for o in self.my_trades_currency_strategy if "open" in (o["label"])]
         my_trades_open_label = [o["label"] for o in my_trades_currency_strategy_open]
+        log.info (my_trades_currency_strategy_open)
         exit_params = {}
         for label in my_trades_open_label:
             
             log.info (label)
-            label_delta_price = sum([o["amount"] for o in my_trades_open_label])
+            label_delta_price = sum([o["amount"] for o in my_trades_currency_strategy_open if label in o["label"]])
             log.debug (label_delta_price)
                     
 
