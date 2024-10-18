@@ -687,7 +687,7 @@ def get_basic_closing_paramaters_combo_pair (selected_transactions: list) -> dic
     side = "buy"
     params.update({"side": side}
                   )
-    basic_size = max( abs( [o["amount"] for o in selected_transactions]))
+    basic_size = abs( max( [o["amount"] for o in selected_transactions]))
     
     label_integer_open =  [o["label"] for o in selected_transactions][0]
     
@@ -789,7 +789,7 @@ class BasicStrategy (ManageStrategy):
 
 
     def get_basic_closing_paramaters_combo_pair (self,
-                                           selected_transactions: list) -> dict:
+                                                 selected_transactions: list) -> dict:
         """ """
             
         return get_basic_closing_paramaters_combo_pair (selected_transactions)
