@@ -5,11 +5,12 @@
 from datetime import datetime, timedelta
 import asyncio
 import json
-from dataclassy import dataclass, fields
+import functools
 # installed
 import websockets
 import orjson
 from loguru import logger as log
+from dataclassy import dataclass, fields
 
 # user defined formula
 from configuration import id_numbering, config
@@ -52,34 +53,55 @@ from websocket_management.ws_management import (
     get_config,
     get_futures_instruments,
     on_restart,
-    labelling_the_unlabelled_and_resend_it,
-    check_db_consistencies_and_clean_up_imbalances,)
+    labelling_the_unlabelled_and_resend_it,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     inserting_open_interest,)
 from websocket_management.cleaning_up_transactions import (
-    clean_up_closed_transactions, ensuring_db_reconciled_each_other
-    )
+    clean_up_closed_transactions, ensuring_db_reconciled_each_other,)
 
-def parse_dotenv(sub_account) -> dict:
+@functools.lru_cache(maxsize=128)
+def memoization (sub_account) -> dict:
+    """_summary_
+    https://dbader.org/blog/python-memoization
+    https://rednafi.com/python/lru_cache_on_methods/
+
+    Args:
+        sub_account (_type_): _description_
+
+    Returns:
+        dict: _description_
+    """
     return config.main_dotenv(sub_account)
 
-def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
+def parse_dotenv (sub_account) -> dict:
+    return config.main_dotenv(sub_account)
+
+def reading_from_pkl_data (end_point, 
+                           currency, 
+                           status: str = None) -> dict:
     """ """
 
-    path: str = provide_path_for_file(end_point, currency, status)
+    path: str = provide_path_for_file (end_point,
+                                      currency,
+                                      status)
 
     data = read_data(path)
 
     return data
 
 
-async def update_db_pkl(path, data_orders, currency) -> None:
+async def update_db_pkl (path, 
+                         data_orders,
+                         currency) -> None:
 
-    my_path_portfolio = provide_path_for_file(path, currency)
+    my_path_portfolio = provide_path_for_file (path,
+                                               currency)
     
-    if currency_inline_with_database_address(currency,my_path_portfolio):
-        replace_data(my_path_portfolio, data_orders)
+    if currency_inline_with_database_address(currency,
+                                             my_path_portfolio):
+        replace_data(my_path_portfolio, 
+                     data_orders)
 
 def get_settlement_period (strategy_attributes) -> list:
     

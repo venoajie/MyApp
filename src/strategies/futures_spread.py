@@ -164,14 +164,12 @@ class FutureSpreads(BasicStrategy):
     """ """
     currency: str
     my_trades_currency_strategy: list
-
-    #def __post_init__(self):
-        
-    def get_basic_params(self) -> dict:
-        """ """
-        return BasicStrategy(self.strategy_label, 
-                             self.strategy_parameters)
-
+    basic_params: object = fields 
+            
+    def __post_init__(self):
+        self.basic_params: str = BasicStrategy (self.strategy_label, 
+                                                      self.strategy_parameters)
+  
 
     async def is_send_exit_order_allowed (self,
                                           ) -> dict:
@@ -218,19 +216,21 @@ class FutureSpreads(BasicStrategy):
             log.debug (f"my_trades_label_buy_side {my_trades_label_buy_side}")
             if delta_price < 0 \
                 and delta_pct > .1:
-
                 
-                try:
-                    instrument_name = my_trades_label_sell_side["combo_id"]
-                
-                except:
-                    instrument_name = f"{self.currency.upper()}-FS-{sell_side_instrument}-PERP"
+                instrument_name_combo_id = my_trades_label_sell_side["combo_id"]
                     
-                log.warning (f"instrument_name {instrument_name}")
-                instrument_name_ticker= reading_from_pkl_data("ticker",instrument_name)[0]
-                log.warning (f"instrument_name_ticker {instrument_name_ticker}")
+                if instrument_name_combo_id:
+                    exit_params: dict = self.basic_params. get_basic_closing_paramaters_combo_pair (my_trades_label,)
+                    
+                    instrument_name_ticker= reading_from_pkl_data("ticker",
+                                                                  instrument_name_combo_id)[0]
+                    log.warning (f"instrument_name_ticker {instrument_name_ticker}")
+                    log.warning (f"exit_params {exit_params}")
+
+                    
+                log.warning (f"instrument_name {instrument_name_combo_id}")
                 log.warning (f" delta_price {delta_price} delta_price_current_prhg                                                                                                                                                                                                            c {delta_price_current_prc} delta_pct {delta_pct}")
-                log.error (f" sell_side_current_prc {sell_side_current_prc} buy_side_current_prc {buy_side_current_prc}")
+                
 
         return dict(
             order_allowed= order_allowed,

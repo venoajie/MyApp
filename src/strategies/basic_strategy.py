@@ -667,6 +667,41 @@ def get_basic_closing_paramaters(selected_transaction: list,
     return params
 
 
+def get_basic_closing_paramaters_combo_pair (selected_transactions: list) -> dict:
+    """_summary_
+
+    Args:
+        selected_transactions (list): pair of instruments in the same futureSpread label
+
+    Returns:
+        dict: _description_
+    """
+    
+    # provide dict placeholder for params
+    params = {}
+
+    # default type: limit
+    params.update({"type": "limit"})
+
+    # determine side        
+    side = "buy"
+    params.update({"side": side}
+                  )
+    basic_size = max( abs( [o["amount"] for o in selected_transactions]))
+    
+    label_integer_open =  [o["label"] for o in selected_transactions][0]
+    
+    instrument_name =  [o["combo_id"] for o in selected_transactions][0]
+    
+    params.update({"size": basic_size})
+
+    label_closed: str = get_label("closed", label_integer_open["label"])
+    params.update({"label": label_closed})
+    
+    params.update({"instrument": instrument_name})
+        
+    return params
+
 @dataclass(unsafe_hash=True, slots=True)
 class ManageStrategy ():
     """ 
@@ -751,3 +786,11 @@ class BasicStrategy (ManageStrategy):
             
         return get_basic_closing_paramaters (selected_transaction,
                                              closed_orders_label_strategy)
+
+
+    def get_basic_closing_paramaters_combo (self,
+                                           selected_transaction: list) -> dict:
+        """ """
+            
+        return get_basic_closing_paramaters_combo (selected_transaction)
+
