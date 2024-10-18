@@ -788,9 +788,9 @@ class BasicStrategy (ManageStrategy):
                                              closed_orders_label_strategy)
 
 
-    def get_basic_closing_paramaters_combo (self,
-                                           selected_transaction: list) -> dict:
+    def get_basic_closing_paramaters_combo_pair (self,
+                                           selected_transactions: list) -> dict:
         """ """
             
-        return get_basic_closing_paramaters_combo (selected_transaction)
+        return get_basic_closing_paramaters_combo_pair (selected_transactions)
 
