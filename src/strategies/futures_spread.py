@@ -219,7 +219,6 @@ class FutureSpreads(BasicStrategy):
             if delta_price < 0 \
                 and delta_pct > .1:
 
-                log.warning (f"instrument_name {instrument_name}")
                 
                 try:
                     instrument_name = my_trades_label_sell_side["combo_id"]
@@ -227,6 +226,7 @@ class FutureSpreads(BasicStrategy):
                 except:
                     instrument_name = f"{self.currency.upper()}-FS-{sell_side_instrument}-PERP"
                     
+                log.warning (f"instrument_name {instrument_name}")
                 instrument_name_ticker= reading_from_pkl_data("ticker",instrument_name)[0]
                 log.warning (f"instrument_name_ticker {instrument_name_ticker}")
                 log.warning (f" delta_price {delta_price} delta_price_current_prhg                                                                                                                                                                                                            c {delta_price_current_prc} delta_pct {delta_pct}")
