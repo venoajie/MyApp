@@ -218,7 +218,7 @@ class FutureSpreads(BasicStrategy):
                 and delta_pct > .1:
                 
                 try:
-                    instrument_name = my_trades_label_sell_side["comboz_id"]
+                    instrument_name = my_trades_label_sell_side["combo_id"]
                 
                 except:
                     instrument_name = f"{self.currency.upper()}-FS-{sell_side_instrument}-PERP"
