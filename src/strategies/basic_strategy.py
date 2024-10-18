@@ -690,6 +690,7 @@ def get_basic_closing_paramaters_combo_pair (selected_transactions: list) -> dic
     basic_size = abs( max( [o["amount"] for o in selected_transactions]))
     
     label_integer_open =  [o["label"] for o in selected_transactions][0]
+    log.warning (f"label_integer_open {label_integer_open}")
     
     instrument_name =  [o["combo_id"] for o in selected_transactions][0]
     
