@@ -214,13 +214,19 @@ class FutureSpreads(BasicStrategy):
             
             delta_pct = (abs(delta_price_current_prc) - abs(delta_price))/delta_price
 
-            if delta_price < 0 and delta_pct > .1:
+            if delta_price < 0 \
+                and delta_pct > .1:
                 
-                instrument_name = f"{self.currency.upper()}-FS-{sell_side_instrument}-PERP"
+                try:
+                    instrument_name = my_trades_label_sell_side["comboz_id"]
+                
+                except:
+                    instrument_name = f"{self.currency.upper()}-FS-{sell_side_instrument}-PERP"
+                    
                 log.warning (f"instrument_name {instrument_name}")
                 instrument_name_ticker= reading_from_pkl_data("ticker",instrument_name)[0]
                 log.warning (f"instrument_name_ticker {instrument_name_ticker}")
-                log.warning (f" delta_price {delta_price} delta_price_current_prc {delta_price_current_prc} delta_pct {delta_pct}")
+                log.warning (f" delta_price {delta_price} delta_price_current_prhg                                                                                                                                                                                                            c {delta_price_current_prc} delta_pct {delta_pct}")
                 log.error (f" sell_side_current_prc {sell_side_current_prc} buy_side_current_prc {buy_side_current_prc}")
 
         return dict(

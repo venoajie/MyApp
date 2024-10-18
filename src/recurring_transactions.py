@@ -185,7 +185,7 @@ async def running_strategy() -> None:
                                                         "all", 
                                                         column_list)                                       
                         
-            column_trade: str= "instrument_name","label", "amount", "price","side"
+            column_trade: str= "instrument_name","label", "combo_id", "amount", "price","side"
 
             sub_account_summary = reading_from_pkl_data ("sub_accounts",
                                                         currency)
