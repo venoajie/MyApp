@@ -161,6 +161,15 @@ async def update_db_pkl (path,
 def currency_inline_with_database_address (currency: str, 
                                            database_address: str) -> bool:
     return currency.lower()  in str(database_address)
+        
+
+def extract_portfolio_per_id_and_currency (sub_account_id: str,
+                                           sub_accounts: list, 
+                                           currency: str) -> list:
+        
+        portfolio_all = ([o for o in sub_accounts if  str(o["id"]) in sub_account_id][0]['portfolio'])
+
+        return portfolio_all[f"{currency.lower()}"] 
 
     
 @dataclass(unsafe_hash=True, slots=True)
@@ -492,11 +501,10 @@ class ModifyOrderDb(SendApiRequest):
         # resupply sub account db
         sub_accounts = await self.private_data.get_subaccounts ()
         
-        portfolio_all = ([o for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
-        log.warning (f"portfolio_all api {portfolio_all}")
-        portfolio = portfolio_all[f"{currency.lower()}"] 
+        portfolio = extract_portfolio_per_id_and_currency (self.sub_account_id,
+                                                           sub_accounts,
+                                                           currency)
         
-        log.error (f"portfolio api {portfolio}")
         await update_db_pkl("portfolio", 
                             portfolio, 
                             currency)
