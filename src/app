@@ -587,6 +587,7 @@ class StreamAccountData(ModifyOrderDb):
         index_price= get_index (data_orders, ticker)
         
         sub_account = reading_from_pkl_data("sub_accounts",currency)
+        log.debug (f"sub_account {sub_account}")
         
         try:
             
