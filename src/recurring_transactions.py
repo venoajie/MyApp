@@ -200,7 +200,7 @@ async def running_strategy() -> None:
                                                         currency)
             
             if sub_account_summary:           
-                sub_account_summary[0]
+                sub_account_summary = sub_account_summary[0]
                         
                 my_trades_currency: list= await get_query(trade_db_table, 
                                                             currency, 
@@ -223,7 +223,7 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
+                instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
                     
@@ -237,10 +237,10 @@ async def running_strategy() -> None:
                                                         trade_db_table)
 
                     db_reconciled =  check_whether_db_reconciled_each_other (sub_account_summary,
-                                                                        instrument_name,
-                                                                        my_trades_currency,
-                                                                        orders_currency,
-                                                                        from_transaction_log)
+                                                                            instrument_name,
+                                                                            my_trades_currency,
+                                                                            orders_currency,
+                                                                            from_transaction_log)
                                                            
                     log.warning (f"db_reconciled {db_reconciled}")
                     
@@ -274,7 +274,8 @@ async def running_strategy() -> None:
                                     
                         await reconciling_sub_account_and_db_open_orders (instrument_name,
                                                                           order_db_table,
-                                                                          orders_currency)
+                                                                          orders_currency,
+                                                                          sub_account_summary)
 
                 await running.running_strategies(currency)
                 

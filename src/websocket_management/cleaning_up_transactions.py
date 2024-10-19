@@ -39,12 +39,11 @@ from utilities.string_modification import (
 
 async def reconciling_sub_account_and_db_open_orders (instrument_name: str,
                                                       order_db_table: str,
-                                                      orders_currency: list) -> None:
+                                                      orders_currency: list,
+                                                      sub_account: list) -> None:
     
     where_filter = f"order_id"
-    
-    sub_account = sub_account[0]
-    
+        
     sub_account_orders = sub_account["open_orders"]
     
     sub_account_orders_instrument = [o for o in sub_account_orders if instrument_name in o["instrument_name"]]
@@ -173,7 +172,6 @@ def check_whether_db_reconciled_each_other (sub_account,
     
     try :
         
-        sub_account = sub_account[0]
         sub_account_size_all = [o["size"] for o in sub_account ["positions"] \
             if o["instrument_name"] == instrument_name ][0]
         sub_account_orders = sub_account["open_orders"]
