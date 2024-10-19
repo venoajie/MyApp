@@ -25,13 +25,13 @@ from market_understanding.technical_analysis import (
     insert_market_condition_result,)
 from strategies.combo_auto import ComboAuto  
 from strategies.futures_spread import FutureSpreads  
-from strategies.config_strategies import paramaters_to_balancing_transactions
 from transaction_management.deribit.api_requests import (
     get_currencies,
     get_instruments,
     get_server_time,
     ModifyOrderDb)
-from transaction_management.deribit.transaction_log import (saving_transaction_log,)
+from transaction_management.deribit.telegram_bot import (
+    telegram_bot_sendtext,)
 from utilities.pickling import (
     replace_data,
     read_data,)
@@ -281,6 +281,9 @@ async def running_strategy() -> None:
                 
                 await running.modify_order_and_db.resupply_sub_accountdb (currency)
 
+            else:  
+                # when sub account value was None
+                await telegram_bot_sendtext (f"sub_account {sub_account_summary}")
                         
     except Exception as error:
         

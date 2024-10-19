@@ -170,7 +170,7 @@ def check_whether_db_reconciled_each_other (sub_account,
     """ """
     log.info (f"instrument_name {instrument_name}")
     
-    try :
+    if sub_account :
         
         sub_account_size_all = [o["size"] for o in sub_account ["positions"] \
             if o["instrument_name"] == instrument_name ][0]
@@ -206,14 +206,11 @@ def check_whether_db_reconciled_each_other (sub_account,
         log.critical (f"len_order {len_order_from_sub_account_and_db_is_equal} len_sub_account_orders {len_sub_account_orders} len_db_orders_currency {len_orders_currency}")
         log.warning (f" {result}")
         
-        return result
-
-    except:
-        # when sub account value was None
-        telegram_bot_sendtext (f"sub_account {sub_account}")
+    
+    else :        
         return dict(sum_trade_from_log_and_db_is_equal = False,
                 len_order_from_sub_account_and_db_is_equal = False)
-    
+
 def check_if_label_open_still_in_active_transaction (from_sqlite_open: list, instrument_name: str, label: str) -> bool:
     """_summary_
     

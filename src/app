@@ -594,7 +594,7 @@ class StreamAccountData(ModifyOrderDb):
                     
         except:
             
-            telegram_bot_sendtext (f"sub_account {sub_account}")
+            await telegram_bot_sendtext (f"sub_account {sub_account}")
                     
         column_trade: str= "instrument_name","label", "amount", "price","side"
 
