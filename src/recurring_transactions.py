@@ -223,10 +223,6 @@ async def running_strategy() -> None:
                                         my_trades_currency,
                                         orders_currency)
                 
-                await running.running_strategies(currency)
-                
-                await running.modify_order_and_db.resupply_sub_accountdb (currency)
-                
                 instrument_from_sub_account = [o["instrument_name"] for o  in sub_account_summary[0] ["positions"]]
                 
                 for instrument_name in instrument_from_sub_account:
@@ -247,6 +243,12 @@ async def running_strategy() -> None:
                                                                         from_transaction_log)
                                                            
                     log.warning (f"db_reconciled {db_reconciled}")
+                    
+                    if db_reconciled["sum_trade_from_log_and_db_is_equal"]\
+                        and db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
+                            pass 
+                    
+                    
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
@@ -274,7 +276,10 @@ async def running_strategy() -> None:
                                                                           order_db_table,
                                                                           orders_currency)
 
-                        
+                await running.running_strategies(currency)
+                
+                await running.modify_order_and_db.resupply_sub_accountdb (currency)
+
                         
     except Exception as error:
         
