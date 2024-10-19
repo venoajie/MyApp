@@ -495,9 +495,11 @@ class ModifyOrderDb(SendApiRequest):
         
         portfolio = ([o for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
 
-        log.error (f"sub_accounts {sub_accounts}")
+        log.error (f"portfolio {portfolio}")
         
-        await update_db_pkl("portfolio", portfolio, currency)
+        await update_db_pkl("portfolio", 
+                            portfolio, 
+                            currency)
         
     async def resupply_transaction_log(self,
                                        currency: str,
