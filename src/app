@@ -100,9 +100,7 @@ async def update_db_pkl (path,
 
     my_path_portfolio = provide_path_for_file (path,
                                                currency)
-    
-    log.debug (f"data_orders portfolio app {data_orders}")
-    
+        
     if currency_inline_with_database_address(currency,
                                              my_path_portfolio):
         replace_data (my_path_portfolio, 
