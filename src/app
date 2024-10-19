@@ -585,13 +585,13 @@ class StreamAccountData(ModifyOrderDb):
         #log.info (f"portfolio_all {portfolio}")
         #portfolio = [o[f"{currency}"] for o in portfolio_all]
                                             # obtain spot equity
-        log.error (f"portfolio {portfolio}")
+        #log.error (f"portfolio {portfolio}")
         equity: float = portfolio[0]["equity"]                                       
                                                             
         index_price= get_index (data_orders, ticker)
         
         sub_account = reading_from_pkl_data("sub_accounts",currency)
-        log.debug (f"sub_account {sub_account}")
+        #log.debug (f"sub_account {sub_account}")
         
         try:
             
