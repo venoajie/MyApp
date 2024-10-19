@@ -494,7 +494,7 @@ class ModifyOrderDb(SendApiRequest):
         
         log.error (f"sub_accounts {sub_accounts}")
         
-        portfolio = sub_accounts ["portfolio"]
+        portfolio = sub_accounts[0] ["portfolio"]
         
         await update_db_pkl("portfolio", portfolio, currency)
         
