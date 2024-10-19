@@ -492,9 +492,8 @@ class ModifyOrderDb(SendApiRequest):
         # resupply sub account db
         sub_accounts = await self.private_data.get_subaccounts ()
         
+        portfolio = ([o[f"{currency}"] for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
         
-        portfolio = ([o for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
-
         log.error (f"portfolio api {portfolio}")
         await update_db_pkl("portfolio", 
                             portfolio, 
