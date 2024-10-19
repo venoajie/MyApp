@@ -145,6 +145,23 @@ async def inserting_additional_params(params: dict) -> None:
     if "open" in params["label"]:
         await insert_tables("supporting_items_json", params)
 
+async def update_db_pkl (path, 
+                         data_orders,
+                         currency) -> None:
+
+    my_path_portfolio = provide_path_for_file (path,
+                                               currency)
+    
+    if currency_inline_with_database_address(currency,
+                                             my_path_portfolio):
+        replace_data(my_path_portfolio, 
+                     data_orders)
+
+
+def currency_inline_with_database_address (currency: str, 
+                                           database_address: str) -> bool:
+    return currency.lower()  in str(database_address)
+
     
 @dataclass(unsafe_hash=True, slots=True)
 class SendApiRequest:
@@ -285,8 +302,21 @@ class SendApiRequest:
         return order_result
     
     
-    async def get_subaccounts(self,
-                              currency):
+    async def get_subaccounts(self):
+        # Set endpoint
+        endpoint: str = "private/get_subaccounts"
+
+        params = {"with_portfolio": True}
+    
+        result_sub_account = await private_connection (self.sub_account_id,
+                                                       endpoint=endpoint, 
+                                                       params=params,)
+        
+        return result_sub_account["result"]
+
+
+    async def get_subaccounts_details (self,
+                                       currency):
         # Set endpoint
         endpoint: str = "private/get_subaccounts_details"
 
@@ -450,11 +480,23 @@ class ModifyOrderDb(SendApiRequest):
 
         # resupply sub account db
         log.info(f"resupply {currency.upper()} sub account db-START")
-        sub_accounts = await self.private_data.get_subaccounts(currency)
+        sub_accounts = await self.private_data.get_subaccounts_details (currency)
 
         my_path_sub_account = provide_path_for_file("sub_accounts", currency)
         replace_data(my_path_sub_account, sub_accounts)
     
+        
+    async def resupply_portfolio (self,
+                                 currency) -> None:
+
+        # resupply sub account db
+        sub_accounts = await self.private_data.get_subaccounts ()
+        
+        log.error (f"sub_accounts {sub_accounts}")
+        
+        portfolio = sub_accounts ["portfolio"]
+        
+        await update_db_pkl("portfolio", portfolio, currency)
         
     async def resupply_transaction_log(self,
                                        currency: str,

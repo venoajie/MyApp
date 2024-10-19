@@ -191,11 +191,13 @@ class StreamAccountData(ModifyOrderDb):
             await on_restart(currencies,
                             order_db_table)
             
-            await self.modify_order_and_db.resupply_sub_accountdb(currency)
+            await self.modify_order_and_db.resupply_sub_accountdb (currency)
+
+            await self.modify_order_and_db.resupply_portfolio (currency)
             
             settlement_periods= get_settlement_period (strategy_attributes)
                             
-            futures_instruments=await get_futures_instruments(currencies,
+            futures_instruments=await get_futures_instruments (currencies,
                                                                 settlement_periods)  
             
             active_futures = futures_instruments["active_futures"]   
