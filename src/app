@@ -44,22 +44,22 @@ from utilities.system_tools import (
 from utilities.string_modification import (
     extract_currency_from_text,
     remove_double_brackets_in_list,
-    remove_redundant_elements,
-    )
+    remove_redundant_elements,)
 from websocket_management.ws_management import (
-    compute_notional_value, 
     cancel_all,
+    compute_notional_value, 
     currency_inline_with_database_address,
     distribute_ticker_result_as_per_data_type,
     get_config,
     get_futures_instruments,
-    on_restart,
-    labelling_the_unlabelled_and_resend_it,)
+    labelling_the_unlabelled_and_resend_it,
+    on_restart,)
 from websocket_management.allocating_ohlc import (
     ohlc_result_per_time_frame,
     inserting_open_interest,)
 from websocket_management.cleaning_up_transactions import (
-    clean_up_closed_transactions, ensuring_db_reconciled_each_other,)
+    clean_up_closed_transactions, 
+    check_whether_db_reconciled_each_other,)
 
 @functools.lru_cache(maxsize=128)
 def memoization (sub_account) -> dict:
@@ -611,7 +611,7 @@ class StreamAccountData(ModifyOrderDb):
                                                 "all", 
                                                 column_order)     
         
-        db_reconciled_each_other = ensuring_db_reconciled_each_other (sub_account,
+        db_reconciled_each_other = check_whether_db_reconciled_each_other (sub_account,
                                                                       instrument_ticker,
                                                                       my_trades_currency,
                                                                       orders_currency,
