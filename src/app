@@ -103,7 +103,7 @@ async def update_db_pkl (path,
     
     if currency_inline_with_database_address(currency,
                                              my_path_portfolio):
-        replace_data(my_path_portfolio, 
+        replace_data (my_path_portfolio, 
                      data_orders)
 
 def get_settlement_period (strategy_attributes) -> list:
@@ -181,7 +181,11 @@ class StreamAccountData(ModifyOrderDb):
             for currency in currencies:
                 await self.modify_order_and_db.cancel_the_cancellables (currency,
                                                                    cancellable_strategies)
-            
+                
+                await self.modify_order_and_db.resupply_sub_accountdb (currency)
+
+                await self.modify_order_and_db.resupply_portfolio (currency)
+                
             trade_db_table= "my_trades_all_json"
             
             order_db_table= "orders_all_json"         
@@ -190,10 +194,6 @@ class StreamAccountData(ModifyOrderDb):
             # Establish restart procedure
             await on_restart(currencies,
                             order_db_table)
-            
-            await self.modify_order_and_db.resupply_sub_accountdb (currency)
-
-            await self.modify_order_and_db.resupply_portfolio (currency)
             
             settlement_periods= get_settlement_period (strategy_attributes)
                             
@@ -303,7 +303,9 @@ class StreamAccountData(ModifyOrderDb):
 
                             if message_channel == f"user.portfolio.{currency.lower()}":
                                 # also always performed at restart                                
-                                await update_db_pkl("portfolio", data_orders, currency)
+                                await update_db_pkl("portfolio", 
+                                                    data_orders, 
+                                                    currency)
                                 
                                 await self.modify_order_and_db.resupply_sub_accountdb(currency)    
 
