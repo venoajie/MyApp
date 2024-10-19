@@ -188,7 +188,7 @@ class FutureSpreads(BasicStrategy):
             
             #log.info (f"label {label}")
             my_trades_label = [o for o in my_trades_currency_strategy_open if label in o["label"]]
-            #log.debug (f"my_trades_label {my_trades_label}")
+            log.debug (f"my_trades_label {my_trades_label}")
             my_trades_label_sell_side = [o for o in my_trades_label if "sell" in o["side"]][0]
             my_trades_label_buy_side = [o for o in my_trades_label if "buy" in o["side"]][0]
 
