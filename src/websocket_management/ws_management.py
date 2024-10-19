@@ -74,7 +74,7 @@ def get_config(file_name: str) -> list:
         return []
 
 
-async def get_private_data(sub_account_id: str = "deribit-147691") -> list:
+async def get_private_data(sub_account_id: str = "deribit-148510") -> list:
     """
     Provide class object to access private get API
     """

@@ -165,7 +165,7 @@ def parse_dotenv(sub_account) -> dict:
 
 async def running_strategy() -> None:
     """ """
-    sub_account_id = "deribit-147691"
+    sub_account_id = "deribit-148510"
 
     file_toml = "config_strategies.toml"
         
@@ -300,7 +300,7 @@ def reading_from_pkl_data(end_point, currency, status: str = None) -> dict:
 
 
 
-async def get_private_data(sub_account: str = "deribit-147691") -> list:
+async def get_private_data(sub_account: str = "deribit-148510") -> list:
     """
     Provide class object to access private get API
     """
