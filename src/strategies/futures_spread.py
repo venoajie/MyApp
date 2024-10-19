@@ -178,17 +178,17 @@ class FutureSpreads(BasicStrategy):
             dict: _description_
         """
         order_allowed, cancel_allowed, cancel_id = False, False, None
-        log.info (f"my_trades_currency_strategy {self.my_trades_currency_strategy}")
+        #log.info (f"my_trades_currency_strategy {self.my_trades_currency_strategy}")
         my_trades_currency_strategy_open = [o for o in self.my_trades_currency_strategy if "open" in (o["label"])]
         my_trades_open_label = [o["label"] for o in my_trades_currency_strategy_open]
-        log.warning (f"my_trades_currency_strategy_open {my_trades_currency_strategy_open}")
-        log.info (f"my_trades_open_label {my_trades_open_label}")
+        #log.warning (f"my_trades_currency_strategy_open {my_trades_currency_strategy_open}")
+        #log.info (f"my_trades_open_label {my_trades_open_label}")
         exit_params = {}
         for label in my_trades_open_label:
             
-            log.info (f"label {label}")
+            #log.info (f"label {label}")
             my_trades_label = [o for o in my_trades_currency_strategy_open if label in o["label"]]
-            log.debug (f"my_trades_label {my_trades_label}")
+            l#og.debug (f"my_trades_label {my_trades_label}")
             my_trades_label_sell_side = [o for o in my_trades_label if "sell" in o["side"]][0]
             my_trades_label_buy_side = [o for o in my_trades_label if "buy" in o["side"]][0]
 
@@ -212,8 +212,8 @@ class FutureSpreads(BasicStrategy):
             
             delta_pct = (abs(delta_price_current_prc) - abs(delta_price))/delta_price
 
-            log.debug (f"my_trades_label_sell_side {my_trades_label_sell_side}")
-            log.debug (f"my_trades_label_buy_side {my_trades_label_buy_side}")
+            #log.debug (f"my_trades_label_sell_side {my_trades_label_sell_side}")
+            #log.debug (f"my_trades_label_buy_side {my_trades_label_buy_side}")
             if delta_price < 0 \
                 and delta_pct > .1:
                 
@@ -228,8 +228,8 @@ class FutureSpreads(BasicStrategy):
                     log.warning (f"exit_params {exit_params}")
 
                     
-                log.warning (f"instrument_name {instrument_name_combo_id}")
-                log.warning (f" delta_price {delta_price} delta_price_current_prhg                                                                                                                                                                                                            c {delta_price_current_prc} delta_pct {delta_pct}")
+                #log.warning (f"instrument_name {instrument_name_combo_id}")
+                #log.warning (f" delta_price {delta_price} delta_price_current_prhg                                                                                                                                                                                                            c {delta_price_current_prc} delta_pct {delta_pct}")
                 
 
         return dict(
