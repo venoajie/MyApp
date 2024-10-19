@@ -494,7 +494,7 @@ class ModifyOrderDb(SendApiRequest):
         
         portfolio_all = ([o for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
         log.warning (f"portfolio_all api {portfolio_all}")
-        portfolio = portfolio_all[f"{currency}"] 
+        portfolio = portfolio_all[f"{currency.lower()}"] 
         
         log.error (f"portfolio api {portfolio}")
         await update_db_pkl("portfolio", 
