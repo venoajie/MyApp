@@ -172,13 +172,11 @@ async def cancel_by_order_id(open_order_id) -> None:
             
             where_filter = f"order_id"
             
-            await deleting_row(
-                                "orders_all_json",
+            await deleting_row ("orders_all_json",
                                 "databases/trading.sqlite3",
                                 where_filter,
                                 "=",
-                                open_order_id,
-                            )
+                                open_order_id,)
             
     except:
 

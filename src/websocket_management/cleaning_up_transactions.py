@@ -22,15 +22,13 @@ from db_management.sqlite_management import (
     querying_arithmetic_operator,
     querying_duplicated_transactions)
 from strategies.basic_strategy import (
-    get_additional_params_for_open_label,
-    get_additional_params_for_futureSpread_transactions,
-    get_transaction_label,
     check_db_consistencies,
-    get_label_integer,
-    provide_side_to_close_transaction)
+    get_label_integer,)
 from strategies.config_strategies import (
     max_rows,
     paramaters_to_balancing_transactions)
+from transaction_management.deribit.orders_management import (
+    saving_orders,)
 from transaction_management.deribit.telegram_bot import (
     telegram_bot_sendtext,)
 from utilities.system_tools import (
@@ -40,6 +38,61 @@ from utilities.string_modification import (
     remove_redundant_elements,
     extract_currency_from_text,
     extract_integers_from_text)
+
+async def reconciling_sub_account_and_db_open_orders (instrument_name: str,
+                                                      order_db_table: str,
+                                                      orders_currency: list) -> None:
+    
+    where_filter = f"order_id"
+    
+    sub_account = sub_account[0]
+    
+    sub_account_orders = sub_account["open_orders"]
+    
+    sub_account_orders_instrument = [o for o in sub_account_orders if instrument_name in o["instrument_name"]]
+    
+    log.error (f"sub_account_orders_instrument {sub_account_orders_instrument}")
+
+    sub_account_orders_instrument_id = [] if sub_account_orders_instrument == [] \
+        else [o["order_id"] for o in sub_account_orders_instrument]
+
+    db_orders_instrument = [o for o in orders_currency if instrument_name in o["instrument_name"]]
+    log.debug (f"db_orders_instrument {db_orders_instrument}")
+
+    db_orders_instrument_id = [] if db_orders_instrument == [] \
+        else [o["order_id"] for o in db_orders_instrument]
+        
+    # sub account contain outstanding order
+    if sub_account_orders_instrument:
+        
+        if not db_orders_instrument:
+            for order in sub_account_orders_instrument:
+                await saving_orders (order_db_table,
+                                    order)
+                
+        # both contain orders, but different id
+        else:
+            unrecorded_order_id = get_unique_elements(db_orders_instrument_id, sub_account_orders_instrument_id)
+            for order_id in unrecorded_order_id:
+                
+                order = [o for o in sub_account_orders_instrument if order_id in ["order_id"]][0]
+                
+                await saving_orders (order_db_table,
+                                    order)
+    
+    # sub account did not contain order from respective instrument
+    else:
+        # if db contain orders, delete them
+        if db_orders_instrument:
+            
+            for open_order_id in db_orders_instrument_id:
+                        
+                await deleting_row ("orders_all_json",
+                                    "databases/trading.sqlite3",
+                                    where_filter,
+                                    "=",
+                                    open_order_id,
+                                )
 
 
 async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
@@ -95,11 +148,11 @@ async def get_unrecorded_trade_and_order_id(instrument_name: str) -> dict:
                     if o["trade_id"] in unrecorded_trade_id]
 
 
-def ensuring_db_reconciled_each_other (sub_account,
-                                       instrument_name,
-                                       my_trades_currency,
-                                       orders_currency,
-                                       from_transaction_log) -> None:
+def check_whether_db_reconciled_each_other (sub_account,
+                                            instrument_name,
+                                            my_trades_currency,
+                                            orders_currency,
+                                            from_transaction_log) -> None:
     """ """
     log.info (f"instrument_name {instrument_name}")
     

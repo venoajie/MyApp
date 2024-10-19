@@ -10,6 +10,7 @@ spot= [
 strategy_labels= [#represert strategy
     "hedgingSpot",
     "futureSpread",
+    "comboAuto",
     "customLong",
     "customShort",
     #"marketMakerShort",
@@ -24,7 +25,7 @@ cancellable = true
 side = "sell"
 take_profit_pct = 0
 settlement_period = ["perpetual"]
-weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
+weighted_factor = {minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 1
@@ -44,7 +45,22 @@ weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
 waiting_minute_before_cancel = 3 #basis?
 halt_minute_before_reorder= 240
 max_leverage= 10
-delta_price_pct= 0.005
+delta_price_pct= 0.1
+sub_account_max_open_orders = {per_instrument = 50, total = 200}
+
+[[strategies]]
+strategy_label = "comboAuto"
+is_active = true
+contribute_to_hedging = false
+cancellable = false
+side = "sell"
+take_profit_pct = 0
+settlement_period =  ["perpetual", "week", "month"]
+weighted_factor = { minimum = 1, medium = 5, extreme=10, flash_crash= 20}
+waiting_minute_before_cancel = 3 #basis?
+halt_minute_before_reorder= 240
+max_leverage= 10
+delta_price_pct= 0.1
 sub_account_max_open_orders = {per_instrument = 50, total = 200}
 
 [[strategies]]

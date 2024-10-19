@@ -42,9 +42,10 @@ from utilities.system_tools import (
     catch_error_message,
     sleep_and_restart,)
 from utilities.string_modification import (
+    extract_currency_from_text,
     remove_double_brackets_in_list,
     remove_redundant_elements,
-    extract_currency_from_text,)
+    )
 from websocket_management.ws_management import (
     compute_notional_value, 
     cancel_all,
@@ -65,6 +66,8 @@ def memoization (sub_account) -> dict:
     """_summary_
     https://dbader.org/blog/python-memoization
     https://rednafi.com/python/lru_cache_on_methods/
+    https://gist.github.com/Morreski/c1d08a3afa4040815eafd3891e16b945
+    https://www.tutorialspoint.com/clear-lru-cache-in-python
 
     Args:
         sub_account (_type_): _description_

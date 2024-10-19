@@ -9,6 +9,7 @@ while true; do
                 echo "Moving local  files to remote..."
                 
                 rclone sync databases/"$(basename $(find $pwd -name "*.bak"))" remote:/remote-sqlite
+                rclone delete remote:remote-sqlite/ --min-age 1d -vv
 
                 echo "Delete remaining .bak files..."
                 cd databases

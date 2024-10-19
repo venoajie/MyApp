@@ -18,12 +18,12 @@ from configuration import config
 from configuration.label_numbering import get_now_unix_time
 from db_management.sqlite_management import (
     back_up_db_sqlite,
-    executing_query_with_return,
     executing_query_based_on_currency_or_instrument_and_strategy as get_query,
     insert_tables, 
     querying_arithmetic_operator,)
 from market_understanding.technical_analysis import (
     insert_market_condition_result,)
+from strategies.combo_auto import ComboAuto  
 from strategies.futures_spread import FutureSpreads  
 from strategies.config_strategies import paramaters_to_balancing_transactions
 from transaction_management.deribit.api_requests import (
@@ -50,8 +50,9 @@ from websocket_management.ws_management import (
     get_config,)
 from websocket_management.cleaning_up_transactions import (
     clean_up_closed_transactions,
-    ensuring_db_reconciled_each_other,
-    get_unrecorded_trade_and_order_id)
+    check_whether_db_reconciled_each_other,
+    get_unrecorded_trade_and_order_id,
+    reconciling_sub_account_and_db_open_orders)
 
 def catch_error(error, idle: int = None) -> list:
     """ """
@@ -150,6 +151,14 @@ class RunningStrategy (ModifyOrderDb):
                                              my_trades_currency_strategy)
                     await future_spreads.is_send_exit_order_allowed()
                 
+                if "comboAuto" in strategy:
+                    
+                    combo_auto = ComboAuto (strategy,
+                                             strategy_params,
+                                             currency,
+                                             my_trades_currency_strategy)
+                    await combo_auto.is_send_exit_order_allowed()
+                
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
@@ -204,10 +213,10 @@ async def running_strategy() -> None:
                 log.error (f"my_trades_currency {my_trades_currency}")
                 
                 orders_currency = await get_query(order_db_table, 
-                                                        currency, 
-                                                        "all", 
-                                                        "all", 
-                                                        column_order)     
+                                                  currency, 
+                                                  "all", 
+                                                  "all", 
+                                                  column_order)     
                 
                 running= RunningStrategy (sub_account_id,
                                         sub_account_summary,
@@ -231,7 +240,7 @@ async def running_strategy() -> None:
                     await clean_up_closed_transactions (instrument_name, 
                                                         trade_db_table)
 
-                    db_reconciled =  ensuring_db_reconciled_each_other (sub_account_summary,
+                    db_reconciled =  check_whether_db_reconciled_each_other (sub_account_summary,
                                                                         instrument_name,
                                                                         my_trades_currency,
                                                                         orders_currency,
@@ -260,8 +269,13 @@ async def running_strategy() -> None:
                                                                                     )
                 
                     if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
-                        pass
-                
+                                    
+                        await reconciling_sub_account_and_db_open_orders (instrument_name,
+                                                                          order_db_table,
+                                                                          orders_currency)
+
+                        
+                        
     except Exception as error:
         
         catch_error_message(
