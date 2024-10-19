@@ -493,7 +493,7 @@ class ModifyOrderDb(SendApiRequest):
         sub_accounts = await self.private_data.get_subaccounts ()
         
         
-        portfolio = ([o for o in sub_accounts if  o["id"] in self.sub_account_id][0]['portfolio'])
+        portfolio = ([o for o in sub_accounts if  str(o["id"]) in self.sub_account_id][0]['portfolio'])
 
         log.error (f"sub_accounts {sub_accounts}")
         
