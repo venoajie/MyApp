@@ -231,7 +231,7 @@ async def running_strategy() -> None:
                     
                     await running.modify_order_and_db.update_trades_from_exchange (currency,
                                                                                    archive_db_table,
-                                                                                   5)
+                                                                                   20)
                     
                     await clean_up_closed_transactions (instrument_name, 
                                                         trade_db_table)
