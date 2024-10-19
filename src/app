@@ -577,7 +577,9 @@ class StreamAccountData(ModifyOrderDb):
 
 
         # get portfolio data  
-        portfolio= reading_from_pkl_data("portfolio",currency)
+        portfolio_all = reading_from_pkl_data("portfolio",currency)
+        log.error (f"currency {currency}")
+        portfolio = [o[f"{currency}"] for o in portfolio_all]
                                             # obtain spot equity
         log.error (f"portfolio {portfolio}")
         equity: float = portfolio[0]["equity"]                                       
