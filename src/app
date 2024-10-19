@@ -252,7 +252,7 @@ class StreamAccountData(ModifyOrderDb):
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    log.warning (message)
+                    #log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
@@ -492,7 +492,7 @@ class StreamAccountData(ModifyOrderDb):
         Requests `public/subscribe` or `public/unsubscribe`
         to DBT's API for the specific WebSocket Channel.
         """
-        sleep_time: int = 3
+        sleep_time: int = 5
         
         log.warning (f"sleep for {sleep_time} s'")
 
