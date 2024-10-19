@@ -191,6 +191,8 @@ class StreamAccountData(ModifyOrderDb):
             await on_restart(currencies,
                             order_db_table)
             
+            await self.modify_order_and_db.resupply_sub_accountdb(currency)
+            
             settlement_periods= get_settlement_period (strategy_attributes)
                             
             futures_instruments=await get_futures_instruments(currencies,
@@ -250,7 +252,7 @@ class StreamAccountData(ModifyOrderDb):
                     message: bytes = await self.websocket_client.recv()
                     message: dict = orjson.loads(message)
                     message_channel: str = None
-                    #log.warning (message)
+                    log.warning (message)
                     if "id" in list(message):
                         if message["id"] == 9929:
                             
