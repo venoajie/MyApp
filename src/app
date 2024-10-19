@@ -101,6 +101,8 @@ async def update_db_pkl (path,
     my_path_portfolio = provide_path_for_file (path,
                                                currency)
     
+    log.debug (f"data_orders portfolio app {data_orders}")
+    
     if currency_inline_with_database_address(currency,
                                              my_path_portfolio):
         replace_data (my_path_portfolio, 
@@ -577,7 +579,8 @@ class StreamAccountData(ModifyOrderDb):
 
 
         # get portfolio data  
-        portfolio_all = reading_from_pkl_data("portfolio",currency)
+        portfolio_all = reading_from_pkl_data ("portfolio",
+                                              currency)
         log.error (f"currency {currency}")
         log.info (f"portfolio_all {portfolio_all}")
         portfolio = [o[f"{currency}"] for o in portfolio_all]
