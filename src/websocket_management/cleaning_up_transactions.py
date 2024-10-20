@@ -48,7 +48,7 @@ async def reconciling_sub_account_and_db_open_orders (instrument_name: str,
     
     sub_account_orders_instrument = [o for o in sub_account_orders if instrument_name in o["instrument_name"]]
     
-    log.error (f"sub_account_orders_instrument {sub_account_orders_instrument}")
+    #log.error (f"sub_account_orders_instrument {sub_account_orders_instrument}")
 
     sub_account_orders_instrument_id = [] if sub_account_orders_instrument == [] \
         else [o["order_id"] for o in sub_account_orders_instrument]
@@ -180,6 +180,8 @@ def check_whether_db_reconciled_each_other (sub_account,
         
         from_transaction_log_instrument = ([o for o in from_transaction_log \
             if o["instrument_name"] == instrument_name])
+        
+        log.info (f"from_transaction_log_instrument {from_transaction_log_instrument}")
         last_time_stamp_log = [] if from_transaction_log_instrument == []\
             else str(max([extract_integers_from_text(o["trade_id"]) for o in from_transaction_log_instrument ]))
         current_position_log = 0 if from_transaction_log_instrument == []\
