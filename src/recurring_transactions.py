@@ -227,8 +227,7 @@ async def running_strategy() -> None:
                 
                 for instrument_name in instrument_from_sub_account:
                     
-                    archive_db_table= f"my_trades_all_{currency_lower}_json"       
-                    
+                    log.warning (f"instrument_name {instrument_name}")
                     await clean_up_closed_transactions (instrument_name, 
                                                         trade_db_table)
 
@@ -242,10 +241,13 @@ async def running_strategy() -> None:
                     
                     if db_reconciled["sum_trade_from_log_and_db_is_equal"]\
                         and db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
-                            pass 
+                        await running.running_strategies(currency)
+                        
                     
                     
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
+                        
+                        archive_db_table= f"my_trades_all_{currency_lower}_json"       
                     
                         await running.modify_order_and_db.update_trades_from_exchange (currency,
                                                                                     archive_db_table,
@@ -269,7 +271,8 @@ async def running_strategy() -> None:
                                                                                     transaction_log_trading,
                                                                                     archive_db_table
                                                                                     )
-                
+                        await running.modify_order_and_db.resupply_sub_accountdb (currency)
+        
                     if not db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
                                     
                         await reconciling_sub_account_and_db_open_orders (instrument_name,
@@ -277,9 +280,7 @@ async def running_strategy() -> None:
                                                                           orders_currency,
                                                                           sub_account_summary)
 
-                await running.running_strategies(currency)
-                
-                await running.modify_order_and_db.resupply_sub_accountdb (currency)
+                        await running.modify_order_and_db.resupply_sub_accountdb (currency)
 
             else:  
                 # when sub account value was None
