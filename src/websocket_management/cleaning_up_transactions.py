@@ -177,7 +177,7 @@ def check_whether_db_reconciled_each_other (sub_account,
         sub_account_orders = sub_account["open_orders"]
         len_sub_account_orders = 0 if not sub_account_orders \
             else len([o["amount"] for o in sub_account_orders])
-        
+        extract_integers_from_text
         from_transaction_log_instrument = ([o for o in from_transaction_log \
             if o["instrument_name"] == instrument_name])
         last_time_stamp_log = [] if from_transaction_log_instrument == []\
