@@ -304,8 +304,8 @@ class SendApiRequest:
             message = error ["message"]
             data = error ["data"]
             await telegram_bot_sendtext (f"message: {message}, 
-                                         data: ({data}), 
-                                         (params: {params})"
+                                         data: {data}, 
+                                         (params: {params}"
                                          )
     
         return order_result
