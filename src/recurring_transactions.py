@@ -243,7 +243,7 @@ async def running_strategy() -> None:
                         and db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
                         await running.running_strategies(currency)
                         
-                    
+                    #
                     
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
                         
