@@ -133,32 +133,30 @@ class RunningStrategy (ModifyOrderDb):
         strategy_attributes = config_app["strategies"]
         
         active_strategies =   [o["strategy_label"] for o in strategy_attributes if o["is_active"]==True]
-              
-        while True:
+        
+        for strategy in active_strategies:
+            log.error (f"strategy {strategy}")
             
-            for strategy in active_strategies:
-                log.error (f"strategy {strategy}")
+            my_trades_currency_strategy = [o for o in self.my_trades_currency if strategy in (o["label"]) ]
+                            
+            strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
+                            
+            if False and "futureSpread" in strategy:
                 
-                my_trades_currency_strategy = [o for o in self.my_trades_currency if strategy in (o["label"]) ]
-                                
-                strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
-                                
-                if False and "futureSpread" in strategy:
-                    
-                    future_spreads = FutureSpreads (strategy,
-                                             strategy_params,
-                                             currency,
-                                             my_trades_currency_strategy)
-                    await future_spreads.is_send_exit_order_allowed()
+                future_spreads = FutureSpreads (strategy,
+                                            strategy_params,
+                                            currency,
+                                            my_trades_currency_strategy)
+                await future_spreads.is_send_exit_order_allowed()
+            
+            if "comboAuto" in strategy:
                 
-                if "comboAuto" in strategy:
-                    
-                    combo_auto = ComboAuto (strategy,
-                                             strategy_params,
-                                             currency,
-                                             my_trades_currency_strategy)
-                    await combo_auto.is_send_exit_order_allowed()
-                
+                combo_auto = ComboAuto (strategy,
+                                            strategy_params,
+                                            currency,
+                                            my_trades_currency_strategy)
+                await combo_auto.is_send_exit_order_allowed()
+            
 def parse_dotenv(sub_account) -> dict:
     return config.main_dotenv(sub_account)
 
