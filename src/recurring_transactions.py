@@ -205,6 +205,10 @@ async def running_strategy() -> None:
                                                             "all", 
                                                             "all", 
                                                             column_trade)
+                
+                if "ETH" in currency:
+                    log.error (f"my_trades_currency {my_trades_currency}")
+                    log.error ([o["amount"] for o in my_trades_currency])
 
                 column_order= "instrument_name","label","order_id","amount","timestamp"
                 
@@ -234,8 +238,6 @@ async def running_strategy() -> None:
                                                                             my_trades_currency,
                                                                             orders_currency,
                                                                             from_transaction_log)
-                                                           
-                    log.warning (f"db_reconciled {db_reconciled}")
                     
                     if db_reconciled["sum_trade_from_log_and_db_is_equal"]\
                         and db_reconciled["len_order_from_sub_account_and_db_is_equal"]:
