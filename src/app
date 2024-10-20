@@ -607,7 +607,7 @@ class StreamAccountData(ModifyOrderDb):
                                                     "all", 
                                                     column_trade)
                                                         
-        column_list= "instrument_name", "position", "timestamp"                                                    
+        column_list= "instrument_name", "position", "timestamp","trade_id"                                                    
         
         from_transaction_log = await get_query (transaction_log_trading, 
                                                     currency, 
