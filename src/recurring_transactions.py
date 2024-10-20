@@ -182,7 +182,7 @@ async def running_strategy() -> None:
             
             order_db_table= "orders_all_json"                       
                                         
-            column_list= "instrument_name", "position", "timestamp"      
+            column_list= "instrument_name", "position", "timestamp","trade_id"      
             
             currency_lower = currency.lower()
             
