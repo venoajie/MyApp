@@ -249,7 +249,7 @@ async def running_strategy() -> None:
                     
                         await running.modify_order_and_db.update_trades_from_exchange (currency,
                                                                                     archive_db_table,
-                                                                                    10)
+                                                                                    5)
                             
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
                         log.warning (f"unrecorded_transactions {unrecorded_transactions}")
