@@ -604,6 +604,8 @@ class ModifyOrderDb(SendApiRequest):
             if trades_from_exchange_without_futures_combo:
                 
                 for trade in trades_from_exchange_without_futures_combo:
+                    
+                    log.error (f"trades_from_exchange {trade}")
 
                     await saving_traded_orders (trade, 
                                                 archive_db_table)

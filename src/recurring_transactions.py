@@ -229,9 +229,9 @@ async def running_strategy() -> None:
                     
                     archive_db_table= f"my_trades_all_{currency_lower}_json"       
                     
-                    #await running.modify_order_and_db.update_trades_from_exchange (currency,
-                    #                                                               archive_db_table,
-                    #                                                               20)
+                    await running.modify_order_and_db.update_trades_from_exchange (currency,
+                                                                                   archive_db_table,
+                                                                                   60)
                     
                     await clean_up_closed_transactions (instrument_name, 
                                                         trade_db_table)
@@ -252,7 +252,7 @@ async def running_strategy() -> None:
                     if not db_reconciled["sum_trade_from_log_and_db_is_equal"]: 
                         
                         unrecorded_transactions = await get_unrecorded_trade_and_order_id (instrument_name)
-                        #log.warning (f"unrecorded_transactions {unrecorded_transactions}")
+                        log.warning (f"unrecorded_transactions {unrecorded_transactions}")
                         
                         for transaction  in unrecorded_transactions:
                             #log.error (f"transaction {transaction}")
