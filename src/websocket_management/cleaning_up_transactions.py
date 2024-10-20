@@ -181,7 +181,7 @@ def check_whether_db_reconciled_each_other (sub_account,
         from_transaction_log_instrument = ([o for o in from_transaction_log \
             if o["instrument_name"] == instrument_name])
         
-        #log.info (f"from_transaction_log_instrument {from_transaction_log_instrument}")
+        #timestamp could be double-> come from combo transaction. hence, trade_id is used to distinguish
         last_time_stamp_log = [] if from_transaction_log_instrument == []\
             else str(max([extract_integers_from_text(o["trade_id"]) for o in from_transaction_log_instrument ]))
         current_position_log = 0 if from_transaction_log_instrument == []\

@@ -143,7 +143,7 @@ class RunningStrategy (ModifyOrderDb):
                                 
                 strategy_params= [o for o in strategy_attributes if o["strategy_label"] == strategy][0]   
                                 
-                if "futureSpread" in strategy:
+                if False and "futureSpread" in strategy:
                     
                     future_spreads = FutureSpreads (strategy,
                                              strategy_params,
@@ -229,9 +229,9 @@ async def running_strategy() -> None:
                     
                     archive_db_table= f"my_trades_all_{currency_lower}_json"       
                     
-                    #await running.modify_order_and_db.update_trades_from_exchange (currency,
-                    #                                                               archive_db_table,
-                    #                                                               20)
+                    await running.modify_order_and_db.update_trades_from_exchange (currency,
+                                                                                   archive_db_table,
+                                                                                   20)
                     
                     await clean_up_closed_transactions (instrument_name, 
                                                         trade_db_table)
