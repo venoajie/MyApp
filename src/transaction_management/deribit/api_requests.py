@@ -287,9 +287,6 @@ class SendApiRequest:
 
         order_result = None
 
-        #log.info(
-        #    f"""params {params}"""
-        #)
         if side != None:
             order_result = await self.send_order(
                 side,
@@ -306,11 +303,81 @@ class SendApiRequest:
             error = order_result ["error"]
             message = error ["message"]
             data = error ["data"]
-            await telegram_bot_sendtext (f"message: {message}, data: ({data}), (params: {params})")
+            await telegram_bot_sendtext (f"message: {message}, 
+                                         data: ({data}), 
+                                         (params: {params})"
+                                         )
     
         return order_result
     
     
+    async def send_triple_orders(self, 
+                                 params) -> None:
+        """
+        triple orders:
+            1 limit order
+            1 SL market order
+            1 TP limit order
+        """
+
+
+        main_side = params["side"]
+        instrument = params["instrument"]
+        main_label = params["label_numbered"]
+        closed_label = params["label_closed_numbered"]
+        size = params["size"]
+        main_prc = params["entry_price"]
+        sl_prc = params["cut_loss_usd"]
+        tp_prc = params["take_profit_usd"]
+
+        order_result = await self.send_order(
+            main_side, instrument, size, main_label, main_prc
+        )
+
+
+        order_result_id = order_result["result"]["order"]["order_id"]
+
+        if "error" in order_result:
+            await self.get_cancel_order_byOrderId(order_result_id)
+            await telegram_bot_sendtext("combo order failed")
+
+        else:
+            if main_side == "buy":
+                closed_side = "sell"
+                trigger_prc = tp_prc - 1
+
+            if main_side == "sell":
+                closed_side = "buy"
+                trigger_prc = tp_prc + 1
+
+            order_result = await self.send_order (closed_side, 
+                                                  instrument, 
+                                                  size, 
+                                                  closed_label, 
+                                                  None,
+                                                  "stop_market",
+                                                  sl_prc)
+            
+            log.info(order_result)
+
+            if "error" in order_result:
+                await self.get_cancel_order_byOrderId(order_result_id)
+                await telegram_bot_sendtext("combo order failed")
+
+            order_result = await self.send_order (closed_side,
+                                                  instrument,
+                                                  size,
+                                                  closed_label,
+                                                  tp_prc,
+                                                  "take_limit",
+                                                  trigger_prc,)
+            log.info(order_result)
+
+            if "error" in order_result:
+                await self.get_cancel_order_byOrderId(order_result_id)
+                await telegram_bot_sendtext("combo order failed")
+
+
     async def get_subaccounts(self):
         # Set endpoint
         endpoint: str = "private/get_subaccounts"
