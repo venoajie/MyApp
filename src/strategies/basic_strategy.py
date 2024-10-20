@@ -497,7 +497,7 @@ def get_additional_params_for_futureSpread_transactions(transaction: list) -> No
      """
 
 
-    log.debug (f"trade {transaction}")
+    #log.debug (f"trade {transaction}")
     
     #convert list to dict
     transaction = convert_list_to_dict(transaction)
